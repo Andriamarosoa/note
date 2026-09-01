@@ -11,6 +11,13 @@ from causal_note.v8_targets import (
     exact_count_to_hierarchical,
     slot_targets_to_exact_counts,
 )
+from causal_note.v81_targets import (
+    DEFAULT_OFFSET_HORIZON_SAMPLES,
+    DEFAULT_ONSET_HORIZON_SAMPLES,
+    cluster_fixed_span,
+    response_window_is_empty,
+    training_context_bounds,
+)
 
 
 class V8TargetTests(unittest.TestCase):
@@ -66,6 +73,33 @@ class V8TargetTests(unittest.TestCase):
                 "offset_multiplicity": 0.0,
             },
         )
+
+
+class V81BurstTargetTests(unittest.TestCase):
+    def test_data_driven_horizons(self):
+        self.assertEqual(DEFAULT_ONSET_HORIZON_SAMPLES, 882)
+        self.assertEqual(DEFAULT_OFFSET_HORIZON_SAMPLES, 1323)
+
+    def test_fixed_span_bursts_do_not_chain_grow(self):
+        bursts = cluster_fixed_span((100, 105, 110, 121), 10)
+        self.assertEqual(
+            [(item.start_sample, item.end_sample, item.count) for item in bursts],
+            [(100, 110, 3), (121, 121, 1)],
+        )
+        self.assertEqual(bursts[0].count_class, 2)
+        self.assertEqual(bursts[1].count_class, 0)
+
+    def test_response_window_rejects_ambiguous_negative(self):
+        positions = (1000, 2000)
+        self.assertFalse(response_window_is_empty(positions, 900, 200))
+        self.assertTrue(response_window_is_empty(positions, 1200, 200))
+        self.assertFalse(
+            response_window_is_empty(positions, 780, 200, margin_samples=32)
+        )
+
+    def test_training_context_contains_past_and_response_horizon(self):
+        self.assertEqual(training_context_bounds(5000, 4093, 1323), (908, 6324, 0))
+        self.assertEqual(training_context_bounds(10, 4093, 1323), (0, 1334, 4082))
 
 
 if __name__ == "__main__":
