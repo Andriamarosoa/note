@@ -26,7 +26,12 @@ def _positions(track):
         for note in notes:
             onset.append(note.onset_sample)
             offset.append(note.offset_sample)
-    return tuple(sorted(onset)), tuple(sorted(offset))
+    return (tuple(sorted(onset)), tuple(sorted(offset)))
+
+
+def _prepare_positions(tracks):
+    """Read each annotation exactly once for all audited horizons."""
+    return tuple(_positions(track) for track in tracks)
 
 
 def _cluster_fixed_span(positions, horizon_samples):
@@ -44,7 +49,7 @@ def _cluster_fixed_span(positions, horizon_samples):
     return clusters
 
 
-def _report(tracks, horizon_ms):
+def _report(prepared_positions, horizon_ms):
     horizon_samples = int(round(horizon_ms * SAMPLE_RATE / 1000.0))
     result = {}
     for kind_index, kind in enumerate(("onset", "offset")):
@@ -53,8 +58,8 @@ def _report(tracks, horizon_ms):
         multi_boundaries = 0
         spans = []
         clusters_total = 0
-        for track in tracks:
-            positions = _positions(track)[kind_index]
+        for onset_positions, offset_positions in prepared_positions:
+            positions = onset_positions if kind_index == 0 else offset_positions
             total_boundaries += len(positions)
             for cluster in _cluster_fixed_span(positions, horizon_samples):
                 size = len(cluster)
@@ -86,6 +91,8 @@ def main(argv=None):
 
     indexed = tuple(track for track in index_guitarset(args.dataset_dir) if track.player_id in ALLOWED_PLAYERS)
     train, validation = split_tracks_by_group(indexed, validation_fraction=0.2, seed=1337)
+    train_positions = _prepare_positions(train)
+    validation_positions = _prepare_positions(validation)
     report = {
         "schema_version": 1,
         "train_tracks": len(train),
@@ -94,8 +101,8 @@ def main(argv=None):
     }
     for horizon in args.horizons_ms:
         report["horizons"][f"{horizon:g}ms"] = {
-            "train": _report(train, horizon),
-            "validation": _report(validation, horizon),
+            "train": _report(train_positions, horizon),
+            "validation": _report(validation_positions, horizon),
         }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
