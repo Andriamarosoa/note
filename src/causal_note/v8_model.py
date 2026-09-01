@@ -174,24 +174,37 @@ def build_v8_stream_model(
 
 
 def build_v8_point_model(**kwargs):
-    """Return a training model that scores only the last causal sample.
+    """Return a fixed-context training model scoring only query sample t.
 
-    A 4093-sample input ending at query sample t is therefore exactly the same
-    causal context that the stream model sees at t.
+    The causal stream model is embedded as one nested layer, so the trained
+    stream model can be extracted and saved directly after point-query training.
     """
 
     tf = _load_tensorflow()
     keras = tf.keras
     stream = build_v8_stream_model(**kwargs)
-    outputs = {
-        output_name: keras.layers.Lambda(
-            lambda value: value[:, -1, :],
+    receptive_field = int(stream.receptive_field)
+    audio = keras.Input(
+        shape=(receptive_field, 1),
+        dtype=tf.float32,
+        name="audio_context",
+    )
+    sequence_outputs = stream(audio)
+    outputs = {}
+    for output_name in STREAM_OUTPUT_NAMES:
+        channels = 1 if output_name.endswith("presence") else MULTIPLICITY_CLASSES
+        last = keras.layers.Cropping1D(
+            cropping=(receptive_field - 1, 0),
+            name=f"{output_name}_last_sample",
+        )(sequence_outputs[output_name])
+        outputs[output_name] = keras.layers.Reshape(
+            (channels,),
             name=output_name,
-        )(stream.output[output_name])
-        for output_name in STREAM_OUTPUT_NAMES
-    }
-    model = keras.Model(stream.input, outputs, name="causal_boundary_v8_point")
-    model.receptive_field = stream.receptive_field
+        )(last)
+
+    model = keras.Model(audio, outputs, name="causal_boundary_v8_point")
+    model.receptive_field = receptive_field
+    model.stream_model_name = stream.name
     model.anonymous_boundaries = True
     model.hierarchical_cardinality = True
     return model
