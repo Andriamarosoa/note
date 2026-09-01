@@ -148,22 +148,22 @@ def build_v8_stream_model(
 
     outputs = {
         "onset_presence": keras.layers.Conv1D(
-            1, 1, activation="sigmoid", name="onset_presence"
+            1, 1, activation="sigmoid", name="onset_presence_sequence"
         )(fused),
         "offset_presence": keras.layers.Conv1D(
-            1, 1, activation="sigmoid", name="offset_presence"
+            1, 1, activation="sigmoid", name="offset_presence_sequence"
         )(fused),
         "onset_multiplicity": keras.layers.Conv1D(
             MULTIPLICITY_CLASSES,
             1,
             activation="softmax",
-            name="onset_multiplicity",
+            name="onset_multiplicity_sequence",
         )(fused),
         "offset_multiplicity": keras.layers.Conv1D(
             MULTIPLICITY_CLASSES,
             1,
             activation="softmax",
-            name="offset_multiplicity",
+            name="offset_multiplicity_sequence",
         )(fused),
     }
     model = keras.Model(audio, outputs, name=name.strip())
@@ -186,7 +186,7 @@ def build_v8_point_model(**kwargs):
     outputs = {
         output_name: keras.layers.Lambda(
             lambda value: value[:, -1, :],
-            name=f"{output_name}_point",
+            name=output_name,
         )(stream.output[output_name])
         for output_name in STREAM_OUTPUT_NAMES
     }
