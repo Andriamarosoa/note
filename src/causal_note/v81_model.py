@@ -1,7 +1,7 @@
 """V8.1 causal burst training wrapper around the V8 stream backbone.
 
 The deployable stream model remains fully causal and keeps the same four public
-score tensors.  V8.1 changes what is optimized during training: each reference
+score tensors. V8.1 changes what is optimized during training: each reference
 burst owns a causal response bag, and the model is rewarded for producing one
 sparse, early pulse anywhere inside that bag instead of being forced to peak at
 one exact annotation sample.
@@ -33,12 +33,12 @@ def build_v81_bag_model(
     onset_horizon_samples: int = DEFAULT_ONSET_HORIZON_SAMPLES,
     offset_horizon_samples: int = DEFAULT_OFFSET_HORIZON_SAMPLES,
 ):
-    """Build the V8.1 MIL-style training model and its nested stream model.
+    """Build the V8.1 MIL-style training model and nested stream model.
 
     Outputs per boundary kind:
     - ``*_bag_presence``: maximum hazard in the allowed causal response bag;
-    - ``*_mass``: total hazard mass, regularized toward one pulse for positives
-      and zero for negatives;
+    - ``*_mass``: mean hazard density. A perfect single-sample pulse of height
+      one has target density ``1 / bag_length``;
     - ``*_delay``: hazard-weighted normalized response delay, minimized only on
       positive bags;
     - ``*_count``: hazard-attended anonymous burst cardinality 1/2/3+.
@@ -94,11 +94,10 @@ def build_v81_bag_model(
             name=f"{kind}_bag_presence"
         )(presence)
 
-        mass = keras.layers.Lambda(
-            lambda tensor: tf.reduce_sum(tensor, axis=1),
+        outputs[f"{kind}_mass"] = keras.layers.Lambda(
+            lambda tensor: tf.reduce_mean(tensor, axis=1),
             name=f"{kind}_mass",
         )(presence)
-        outputs[f"{kind}_mass"] = mass
 
         delay_axis = tf.reshape(
             tf.cast(tf.range(length), tf.float32) / float(horizon),
