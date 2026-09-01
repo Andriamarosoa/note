@@ -144,6 +144,36 @@ def _read_document(annotation_zip: PathInput, annotation_member: str) -> Dict[st
 
 
 
+def _observations(annotation: Dict[str, Any], namespace: str) -> Tuple[Dict[str, Any], ...]:
+    """Normalize JAMS row and vectorized-column serializations to row objects."""
+    data = annotation.get("data")
+    if isinstance(data, list):
+        if any(not isinstance(observation, dict) for observation in data):
+            raise GuitarSetFormatError(f"{namespace} observations must be objects")
+        return tuple(data)
+    if not isinstance(data, dict):
+        raise GuitarSetFormatError(f"{namespace} data must be a list or column object")
+    required = ("time", "duration", "value")
+    if any(not isinstance(data.get(field), list) for field in required):
+        raise GuitarSetFormatError(f"{namespace} column data must contain time/duration/value lists")
+    length = len(data["time"])
+    if len(data["duration"]) != length or len(data["value"]) != length:
+        raise GuitarSetFormatError(f"{namespace} column lengths must match")
+    confidence = data.get("confidence")
+    if confidence is not None and (not isinstance(confidence, list) or len(confidence) != length):
+        raise GuitarSetFormatError(f"{namespace} confidence column length must match")
+    return tuple(
+        {
+            "time": data["time"][index],
+            "duration": data["duration"][index],
+            "value": data["value"][index],
+            "confidence": None if confidence is None else confidence[index],
+        }
+        for index in range(length)
+    )
+
+
+
 def load_rich_annotations(annotation_zip: PathInput, annotation_member: str) -> RichAnnotations:
     """Load note MIDI values and six per-string pitch contours from one JAMS file."""
     document = _read_document(annotation_zip, annotation_member)
@@ -157,14 +187,10 @@ def load_rich_annotations(annotation_zip: PathInput, annotation_member: str) -> 
         if namespace not in ("note_midi", "pitch_contour"):
             continue
         slot = _slot(annotation)
-        observations = annotation.get("data")
-        if not isinstance(observations, list):
-            raise GuitarSetFormatError(f"{namespace} data must be a list")
+        observations = _observations(annotation, namespace)
 
         if namespace == "note_midi":
             for observation in observations:
-                if not isinstance(observation, dict):
-                    raise GuitarSetFormatError("note_midi observations must be objects")
                 time_s = _finite_number(observation.get("time"), "note time", minimum=0.0)
                 duration_s = _finite_number(observation.get("duration"), "note duration", minimum=0.0)
                 if duration_s <= 0.0:
@@ -176,8 +202,6 @@ def load_rich_annotations(annotation_zip: PathInput, annotation_member: str) -> 
             continue
 
         for observation in observations:
-            if not isinstance(observation, dict):
-                raise GuitarSetFormatError("pitch_contour observations must be objects")
             time_s = _finite_number(observation.get("time"), "contour time", minimum=0.0)
             value = observation.get("value")
             if not isinstance(value, dict):
