@@ -1,14 +1,21 @@
-"""V8 anonymous-cardinality causal boundary model.
+"""V8 hierarchical anonymous boundary model.
 
-V8 removes string/slot identity from the neural output. The model predicts only
-how many onsets and offsets occur at each sample. Association to opaque event
-ids is handled later by deterministic runtime logic.
+The dominant V7 failure was false boundary presence. V8 therefore separates:
+1. whether a boundary exists at sample t;
+2. its anonymous multiplicity, conditioned on presence.
+
+String/slot identity is not predicted.
 """
 from typing import Iterable, Tuple
 
-COUNT_CLASSES = 4  # 0, 1, 2, 3+
-OUTPUT_NAMES = ("onset_count", "offset_count")
+MULTIPLICITY_CLASSES = 3  # 1, 2, 3+
 DEFAULT_DILATION_RATES = (1, 2, 4, 8, 16, 32, 64, 128, 256, 512)
+STREAM_OUTPUT_NAMES = (
+    "onset_presence",
+    "offset_presence",
+    "onset_multiplicity",
+    "offset_multiplicity",
+)
 
 
 def _positive_integer(name: str, value: int) -> int:
@@ -50,7 +57,7 @@ def _load_tensorflow():
     return tf
 
 
-def _residual_block(
+def _residual_gated_block(
     keras,
     hidden,
     *,
@@ -59,14 +66,6 @@ def _residual_block(
     dilation: int,
     index: int,
 ):
-    residual = hidden
-    if int(hidden.shape[-1]) != filters:
-        residual = keras.layers.Conv1D(
-            filters,
-            1,
-            padding="same",
-            name=f"v8_residual_proj_{index}",
-        )(residual)
     features = keras.layers.Conv1D(
         filters,
         kernel_size,
@@ -90,25 +89,19 @@ def _residual_block(
         padding="same",
         name=f"v8_mix_{index}",
     )(gated)
-    return keras.layers.Add(name=f"v8_residual_add_{index}")([residual, mixed])
+    return keras.layers.Add(name=f"v8_residual_add_{index}")([hidden, mixed])
 
 
-def build_v8_cardinality_model(
+def build_v8_stream_model(
     *,
     filters: int = 32,
     kernel_size: int = 5,
     dilation_rates: Iterable[int] = DEFAULT_DILATION_RATES,
-    name: str = "causal_boundary_v8",
+    name: str = "causal_boundary_v8_stream",
 ):
-    """Build the first V8 anonymous cardinality model.
+    """Return the causal sequence model used by future live inference."""
 
-    The output classes are 0, 1, 2 and 3+ boundaries independently for onset
-    and offset. The network remains strictly causal and keeps the V7 temporal
-    budget while replacing the plain stack with gated residual blocks and a
-    short transient branch.
-    """
-
-    channel_count = _positive_integer("filters", filters)
+    channels = _positive_integer("filters", filters)
     kernel = _positive_integer("kernel_size", kernel_size)
     rates = _validated_dilation_rates(dilation_rates)
     if not isinstance(name, str) or not name.strip():
@@ -118,25 +111,27 @@ def build_v8_cardinality_model(
     keras = tf.keras
     audio = keras.Input(shape=(None, 1), dtype=tf.float32, name="audio")
 
+    # Short branch keeps local attack/transient evidence explicit.
     transient = keras.layers.Conv1D(
-        channel_count,
+        channels,
         9,
         padding="causal",
         activation="relu",
         name="v8_transient_conv",
     )(audio)
+
     hidden = keras.layers.Conv1D(
-        channel_count,
+        channels,
         1,
         padding="same",
         activation="relu",
         name="v8_input_projection",
     )(audio)
     for index, rate in enumerate(rates, start=1):
-        hidden = _residual_block(
+        hidden = _residual_gated_block(
             keras,
             hidden,
-            filters=channel_count,
+            filters=channels,
             kernel_size=kernel,
             dilation=rate,
             index=index,
@@ -144,34 +139,69 @@ def build_v8_cardinality_model(
 
     fused = keras.layers.Concatenate(name="v8_fusion")([hidden, transient])
     fused = keras.layers.Conv1D(
-        channel_count,
+        channels,
         1,
         padding="same",
         activation="relu",
         name="v8_fusion_projection",
     )(fused)
-    outputs = {
-        output_name: keras.layers.Conv1D(
-            COUNT_CLASSES,
-            1,
-            padding="same",
-            activation="softmax",
-            name=output_name,
-        )(fused)
-        for output_name in OUTPUT_NAMES
-    }
 
+    outputs = {
+        "onset_presence": keras.layers.Conv1D(
+            1, 1, activation="sigmoid", name="onset_presence"
+        )(fused),
+        "offset_presence": keras.layers.Conv1D(
+            1, 1, activation="sigmoid", name="offset_presence"
+        )(fused),
+        "onset_multiplicity": keras.layers.Conv1D(
+            MULTIPLICITY_CLASSES,
+            1,
+            activation="softmax",
+            name="onset_multiplicity",
+        )(fused),
+        "offset_multiplicity": keras.layers.Conv1D(
+            MULTIPLICITY_CLASSES,
+            1,
+            activation="softmax",
+            name="offset_multiplicity",
+        )(fused),
+    }
     model = keras.Model(audio, outputs, name=name.strip())
     model.receptive_field = max(9, calculate_receptive_field(kernel, rates))
-    model.count_classes = COUNT_CLASSES
     model.anonymous_boundaries = True
+    model.hierarchical_cardinality = True
+    return model
+
+
+def build_v8_point_model(**kwargs):
+    """Return a training model that scores only the last causal sample.
+
+    A 4093-sample input ending at query sample t is therefore exactly the same
+    causal context that the stream model sees at t.
+    """
+
+    tf = _load_tensorflow()
+    keras = tf.keras
+    stream = build_v8_stream_model(**kwargs)
+    outputs = {
+        output_name: keras.layers.Lambda(
+            lambda value: value[:, -1, :],
+            name=f"{output_name}_point",
+        )(stream.output[output_name])
+        for output_name in STREAM_OUTPUT_NAMES
+    }
+    model = keras.Model(stream.input, outputs, name="causal_boundary_v8_point")
+    model.receptive_field = stream.receptive_field
+    model.anonymous_boundaries = True
+    model.hierarchical_cardinality = True
     return model
 
 
 __all__ = [
-    "COUNT_CLASSES",
     "DEFAULT_DILATION_RATES",
-    "OUTPUT_NAMES",
-    "build_v8_cardinality_model",
+    "MULTIPLICITY_CLASSES",
+    "STREAM_OUTPUT_NAMES",
+    "build_v8_point_model",
+    "build_v8_stream_model",
     "calculate_receptive_field",
 ]
