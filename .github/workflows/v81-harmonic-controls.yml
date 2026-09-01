@@ -1,0 +1,81 @@
+name: V8.1 harmonic controls
+
+on:
+  push:
+    branches:
+      - v8-anonymous-cardinality
+    paths:
+      - ".github/workflows/v81-harmonic-controls.yml"
+      - "scripts/audit_v81_harmonic_controls.py"
+      - "src/causal_note/guitarset_acoustics.py"
+      - "test/test_guitarset_acoustics.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  controls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+
+      - name: Install NumPy only
+        run: python -m pip install "numpy>=1.23.5,<2.0"
+
+      - name: Restore official GuitarSet cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+
+      - name: Verify GuitarSet data
+        run: |
+          test -f data/GuitarSet/annotation.zip
+          test -f data/GuitarSet/audio_mono-pickup_mix.zip
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+
+      - name: Run acoustic annotation tests
+        env:
+          PYTHONPATH: src
+        run: python -m unittest test.test_guitarset_acoustics -v
+
+      - name: Download completed FP acoustic audit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/fp-audit
+          gh run download 33541729229 \
+            --repo "$GITHUB_REPOSITORY" \
+            --name v81-label-confidence \
+            --dir model/fp-audit
+          test -f model/fp-audit/v81-label-confidence.json
+
+      - name: Run harmonic controls
+        env:
+          PYTHONPATH: src
+        run: |
+          set -o pipefail
+          python -B scripts/audit_v81_harmonic_controls.py \
+            --fp-audit model/fp-audit/v81-label-confidence.json \
+            --output model/v81-harmonic-controls.json \
+            2>&1 | tee model/v81-harmonic-controls.log
+
+      - name: Upload harmonic controls
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v81-harmonic-controls
+          path: |
+            model/v81-harmonic-controls.json
+            model/v81-harmonic-controls.log
+          if-no-files-found: warn
+          retention-days: 14
