@@ -1,0 +1,168 @@
+name: V8.2b true-FP onset replay pilot
+
+on:
+  push:
+    branches:
+      - v8-anonymous-cardinality
+    paths:
+      - ".github/workflows/v82b-pilot.yml"
+      - "scripts/train_v82b.py"
+      - "src/causal_note/v82b_replay.py"
+      - "test/test_v82b_replay.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+
+      - name: Download official GuitarSet pickup-mix data
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 5 --retry-delay 5 -o data/GuitarSet/annotation.zip "https://zenodo.org/records/3371780/files/annotation.zip?download=1"
+          curl -L --fail --retry 5 --retry-delay 5 -o data/GuitarSet/audio_mono-pickup_mix.zip "https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip?download=1"
+
+      - name: Verify GuitarSet checksums
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+
+      - name: Download frozen V8.1 train-FP audit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/train-fp-audit
+          gh run download 33551039906 \
+            --repo "$GITHUB_REPOSITORY" \
+            --name v81-train-fp-harmonic-audit \
+            --dir model/train-fp-audit
+          test -f model/train-fp-audit/v81-train-fp-harmonic-audit.json
+
+      - name: Run V8.2b replay tests and compile trainer
+        env:
+          PYTHONPATH: src
+        run: |
+          python -m unittest test.test_v82b_replay -v
+          python -m py_compile scripts/train_v82b.py
+
+      - name: Smoke true-FP replay training
+        env:
+          PYTHONPATH: src
+          TF_CPP_MIN_LOG_LEVEL: "2"
+        run: |
+          set -o pipefail
+          mkdir -p model
+          python -B scripts/train_v82b.py \
+            --replay-audit model/train-fp-audit/v81-train-fp-harmonic-audit.json \
+            --smoke \
+            --output model/causal-boundaries-v82b-smoke.keras \
+            2>&1 | tee model/v82b-smoke.log
+
+      - name: Train V8.2b three-epoch pilot
+        env:
+          PYTHONPATH: src
+          TF_CPP_MIN_LOG_LEVEL: "2"
+        run: |
+          set -o pipefail
+          python -B scripts/train_v82b.py \
+            --replay-audit model/train-fp-audit/v81-train-fp-harmonic-audit.json \
+            --epochs 3 \
+            --filters 32 \
+            --train-examples 800 \
+            --validation-examples 200 \
+            --max-replay-per-track 16 \
+            --learning-rate 0.001 \
+            --output model/causal-boundaries-v82b-pilot.keras \
+            2>&1 | tee model/v82b-pilot-train.log
+
+      - name: Verify replay manifest invariants
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path("model/causal-boundaries-v82b-pilot.replay.json").read_text())
+          assert data["configuration"]["onset_only"] is True
+          assert data["configuration"]["without_replacement_within_epoch"] is True
+          for epoch in data["epochs"]:
+              points = epoch["points"]
+              keys = {(row["member"], row["sample"]) for row in points}
+              assert len(points) == 200, len(points)
+              assert len(keys) == len(points)
+              assert epoch["summary"]["max_per_track"] <= 16
+          print(json.dumps({"clean_pool": data["clean_pool"], "epochs": [row["summary"] for row in data["epochs"]]}, indent=2))
+          PY
+
+      - name: Sweep every V8.2b epoch on same locked validation subset
+        env:
+          PYTHONPATH: src
+          TF_CPP_MIN_LOG_LEVEL: "2"
+        run: |
+          set -o pipefail
+          for epoch in 01 02 03; do
+            python -B scripts/sweep_v8_thresholds.py \
+              --model "model/causal-boundaries-v82b-pilot.epoch-${epoch}.keras" \
+              --limit-tracks 12 \
+              --thresholds 0.01 0.02 0.05 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 0.95 \
+              --output "model/v82b-pilot-epoch-${epoch}-sweep.json" \
+              > "model/v82b-pilot-epoch-${epoch}-sweep.log"
+          done
+
+      - name: Print best stream operating points
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          print("epoch threshold onset_pred P R F1 offset_pred P R F1 solo_onset_P solo_onset_R comp_onset_P comp_onset_R")
+          for epoch in (1, 2, 3):
+              data = json.loads(Path(f"model/v82b-pilot-epoch-{epoch:02d}-sweep.json").read_text())
+              candidates = []
+              for threshold, payload in data["sweep"].items():
+                  global_ = payload["aggregates"]["global"]
+                  score = global_["onset"]["f1"] + global_["offset"]["f1"]
+                  candidates.append((score, float(threshold), threshold, payload))
+              _, _, threshold, payload = max(candidates, key=lambda row: (row[0], -row[1]))
+              global_ = payload["aggregates"]["global"]
+              comp = payload["aggregates"]["comp"]["onset"]
+              solo = payload["aggregates"]["solo"]["onset"]
+              onset = global_["onset"]
+              offset = global_["offset"]
+              print(epoch, threshold, onset["prediction_count"], f'{onset["precision"]:.6f}', f'{onset["recall"]:.6f}', f'{onset["f1"]:.6f}', offset["prediction_count"], f'{offset["precision"]:.6f}', f'{offset["recall"]:.6f}', f'{offset["f1"]:.6f}', f'{solo["precision"]:.6f}', f'{solo["recall"]:.6f}', f'{comp["precision"]:.6f}', f'{comp["recall"]:.6f}')
+          PY
+
+      - name: Upload V8.2b pilot artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v82b-pilot
+          path: |
+            model/v82b-smoke.log
+            model/v82b-pilot-train.log
+            model/causal-boundaries-v82b-pilot.replay.json
+            model/v82b-pilot-epoch-*-sweep.log
+            model/v82b-pilot-epoch-*-sweep.json
+            model/causal-boundaries-v82b-pilot.keras
+            model/causal-boundaries-v82b-pilot.epoch-*.keras
+          if-no-files-found: warn
+          retention-days: 7
