@@ -28,16 +28,19 @@ jobs:
         env:
           PYTHONPATH: src
         run: |
+          set -o pipefail
           mkdir -p model
           python -B scripts/audit_v8_boundary_bursts.py \
             --horizons-ms 5 10 20 30 50 \
             --output model/v8-boundary-bursts.json \
             2>&1 | tee model/v8-boundary-bursts.log
       - name: Upload audit
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: v8-boundary-bursts
           path: |
             model/v8-boundary-bursts.json
             model/v8-boundary-bursts.log
+          if-no-files-found: warn
           retention-days: 14
