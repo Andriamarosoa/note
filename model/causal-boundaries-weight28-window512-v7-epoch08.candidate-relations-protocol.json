@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "status": "preregistered_before_instrumentation_and_full_audit",
+  "experiment": "v7_epoch08_candidate_relation_audit",
+  "approval": {
+    "user_approved_exact_scope": true,
+    "approval_word": "go"
+  },
+  "baseline": {
+    "repository_commit_before_experiment": "d49deabbfad205d7b6e86cfa2befeeeddc2b2263",
+    "model_path": "model/causal-boundaries-weight28-window512-v7.epochs/epoch-08.keras",
+    "model_sha256": "5634ADD0E112A6889B65D5245AD051AD850A1FFFE66FEB8D9E5E74472BA114BF",
+    "source_rearm_report": "model/causal-boundaries-weight28-window512-v7-epoch08.unassociated-boundary-rearm-low1-16.json",
+    "source_rearm_report_sha256": "4E5249C4AB2E6C3B170AA450BE8E27F6DFCF95692DF0917623C268485E20AD88",
+    "source_rearm_evaluator_sha256": "06FD9C7BF4982F21DFAF9ABF736342A52FDFE29D637A953EF4B67FB047BF1A3A",
+    "chunk_size_samples": 512,
+    "entry_threshold": 0.55,
+    "release_threshold": 0.55,
+    "control_rearm_low_samples": 1,
+    "diagnostic_rearm_low_samples": 16,
+    "reference_onsets": 9541,
+    "reference_offsets": 9541,
+    "diagnostic_onset_candidates": 158032,
+    "diagnostic_offset_candidates": 259632,
+    "diagnostic_onset_false_positives": 148886,
+    "diagnostic_offset_false_positives": 250647
+  },
+  "scope": {
+    "audit_only": true,
+    "single_experimental_change": false,
+    "model_change": false,
+    "training": false,
+    "decoder_change": false,
+    "threshold_change": false,
+    "association": false,
+    "event_id": false,
+    "live_activation": false,
+    "scheduler": false,
+    "public_output_remains": [
+      "type",
+      "position"
+    ],
+    "private_channel_is_diagnostic_only": true
+  },
+  "data": {
+    "dataset": "GuitarSet",
+    "players": [
+      "00",
+      "01",
+      "02",
+      "03",
+      "04"
+    ],
+    "locked_test_player": "05",
+    "locked_test_used": false,
+    "seed": 1337,
+    "validation_fraction": 0.2,
+    "validation_tracks": 60,
+    "validation_notes": 9541,
+    "audio_sample_rate": 44100,
+    "known_minimum_same_channel_successive_onset_gap_samples": 3421,
+    "known_minimum_same_channel_successive_onset_gap_ms": 77.57369614512472,
+    "known_reference_extra_simultaneous_onsets": 45
+  },
+  "instrumentation": {
+    "one_model_inference_per_chunk": true,
+    "same_immutable_score_object_for_decoders_and_observer": true,
+    "aggregate_in_memory_per_track": true,
+    "raw_scores_are_not_persisted": true,
+    "raw_candidate_lists_are_not_written": true,
+    "audit_candidate_fields": [
+      "type",
+      "position",
+      "private_channel",
+      "entry_score",
+      "preceding_low_run_samples",
+      "previous_same_type_channel_gap_samples",
+      "n16_episode_id"
+    ],
+    "reference_identity": [
+      "private_channel",
+      "note_index",
+      "type"
+    ],
+    "required_exact_reproduction": [
+      "N=1 public candidate multiset globally and on every track",
+      "N=16 public candidate multiset globally and on every track",
+      "N=1 and N=16 official TP/FP/FN globally and on every track",
+      "N=16 candidates remain a multiset subset of N=1"
+    ]
+  },
+  "relation_definitions": {
+    "official_tolerance_samples": 2205,
+    "official_tolerance_ms": 50.0,
+    "official_matching": "deterministic maximum-cardinality one-to-one matching identical to Exp07",
+    "candidate_neighborhood": "all reference boundary instances of the same type within the official tolerance; timestamp multiplicity is preserved",
+    "false_positive_partition": {
+      "isolated": "unmatched candidate with zero eligible references",
+      "single_reference_excess": "unmatched candidate with exactly one eligible reference; conservative duplicate-like lower bound",
+      "ambiguous_near": "unmatched candidate with two or more eligible references"
+    },
+    "same_channel_successor_relation": {
+      "same_unique_reference": "two successive N=16 candidates of the same type and private channel each have the same sole eligible reference",
+      "distinct_unique_references": "they have different sole eligible references",
+      "one_or_both_isolated": "at least one has no eligible reference",
+      "ambiguous": "at least one has multiple eligible references"
+    },
+    "same_note_boundary_relation": "for each annotated note identity, report whether N=16 supplies onset candidates, offset candidates, both, or neither within tolerance on the supervised private channel",
+    "proximity_tolerances_ms": [
+      1.0,
+      5.0,
+      10.0,
+      20.0,
+      50.0
+    ],
+    "successor_gap_bins_samples": [
+      "0",
+      "1-15",
+      "16-63",
+      "64-255",
+      "256-511",
+      "512-2205",
+      "2206_plus"
+    ]
+  },
+  "required_aggregates": [
+    "global",
+    "comp",
+    "solo",
+    "12 family-arrangement groups",
+    "per track"
+  ],
+  "required_metrics": [
+    "exact N=1 and N=16 reproduction",
+    "official TP/FP/FN",
+    "isolated versus single-reference-excess versus ambiguous-near false positives",
+    "candidate proximity to any reference and to a same-channel reference at preregistered tolerances",
+    "successive same-type same-channel relation counts and gap distributions",
+    "N=1 fronts per N=16 causal episode",
+    "same-sample same-type cross-channel multiplicity",
+    "per-note onset-only, offset-only, both and neither support",
+    "entry-score, preceding-low-run and successor-gap summaries"
+  ],
+  "interpretation_guards": [
+    "proximity is evidence of relation, not proof of common acoustic cause",
+    "a private model channel is diagnostic state and is not a public string prediction",
+    "multiple eligible references are reported as ambiguous and are not forced to one identity",
+    "same-position candidate and reference multiplicity must never be deduplicated",
+    "the official 50 ms tolerance can inflate apparent relations in dense passages; narrower preregistered tolerances must also be reported",
+    "the offline ground-truth relation audit is not a live association algorithm",
+    "no filtering duration or future decoder change is selected in this audit"
+  ],
+  "decision_rule": {
+    "diagnostic_only": true,
+    "no_runtime_promotion_regardless_of_result": true,
+    "no_training_regardless_of_result": true,
+    "stop_after_report_for_user_approval": true,
+    "claim_temporal_duplicates_dominate_only_if": "single-reference-excess is more than 50 percent of official false positives and the direction is consistent in all 12 family-arrangement groups",
+    "claim_isolated_false_positives_dominate_only_if": "isolated candidates are more than 50 percent of official false positives and the direction is consistent in all 12 family-arrangement groups",
+    "otherwise": "report a mixed or unresolved mechanism"
+  }
+}

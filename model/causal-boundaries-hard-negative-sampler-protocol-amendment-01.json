@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "status": "preregistered_clarification_before_implementation",
+  "experiment": "exact_point_query_hard_negative_background_audit",
+  "reason": "remove an ambiguity between train-only candidate selection and the requirement to report validation ESS without tuning on validation",
+  "locked_protocol": {
+    "path": "model/causal-boundaries-hard-negative-sampler-protocol.json",
+    "sha256": "D3FF0F3F9A35C6B0AE8079B9781E961DE9FAE380A42A601922217D2530999CBB",
+    "commit": "b1c6a2186be32d8225c29bb507b15b0d837b1ac7"
+  },
+  "clarification": {
+    "candidate_selection": "choose the smallest h using only train structural checks, train distance-1 exposure, train ESS, train far-background retention, train analytical prior error and train mean-weight error",
+    "validation": "after h is locked, audit only its preregistered corresponding validation quotas",
+    "validation_failure": "a failed validation structural or ESS check rejects the selected candidate; it must not cause selection of a different h",
+    "grid_changed": false,
+    "thresholds_changed": false,
+    "observed_results_used": false
+  },
+  "scope_guard": {
+    "sampler_grid_changed": false,
+    "loss_selected_or_changed": false,
+    "model_selected_or_changed": false,
+    "decoder_changed": false,
+    "live_changed": false,
+    "training_started": false
+  }
+}

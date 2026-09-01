@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "status": "preregistered_before_implementation",
+  "experiment": "exact_point_query_hard_negative_background_audit",
+  "approval": {
+    "user_approved_exact_scope": true,
+    "approval_word": "go",
+    "approved_scope": "sampler-only audit of boundary-distance background strata; no model, loss, training, decoder or live change"
+  },
+  "baseline": {
+    "repository_commit_before_experiment": "2825ecdf19a0b68d325db3cdb7fd57242d9e291f",
+    "experiment_12_source": "scripts/audit_exact_point_query_sampler.py",
+    "experiment_12_source_sha256": "4F8DDA1D84E41910E1DFEA17DAF4150BD278FDDEFD02415D20A6DA812D12B193",
+    "experiment_12_tests": "test/test_exact_point_query_sampler.py",
+    "experiment_12_tests_sha256": "787ED1B1BF84581567D5477706ADBEA7750ACF5CB3491C3B7E38B2DC376F5734",
+    "experiment_12_result": "model/causal-boundaries-exact-point-query-sampler-audit.json",
+    "experiment_12_result_sha256": "1056B0349E826FE9D2E8845AA8CE88D5E4F5E9C719E209CC73C41F9A19D1EF56",
+    "experiment_12_protocol": "model/causal-boundaries-exact-point-query-sampler-protocol.json",
+    "experiment_12_protocol_sha256": "A57062D99AC907E35E081BF8A73CE12CBE9A7E9477D8CB915D11D88D1D25804F",
+    "experiment_12_amendment_01_sha256": "DB3D5937B0A4F5DF7C004E7D7742ACC1FD5A5268E4AC876C1B4E4CCA0D701930",
+    "experiment_12_amendment_02_sha256": "A54B4CE82DA79A67AAAB1D46F572F0B2CB237B3EA1C485DD4A891A1D25FCDDA6"
+  },
+  "scope": {
+    "single_experimental_change": "replace only the uniform background component of Experiment 12 by exact nearest-boundary-distance background strata and audit a preregistered one-dimensional quota grid",
+    "positive_pools_changed": false,
+    "positive_draw_counts_changed": false,
+    "total_query_counts_changed": false,
+    "targets_changed": false,
+    "context_contract_changed": false,
+    "loss_selected_or_changed": false,
+    "model_selected_or_changed": false,
+    "audio_crop_implemented": false,
+    "decoder_changed": false,
+    "live_changed": false,
+    "training_started": false,
+    "player_05_content_opened": false,
+    "stop_after_post_change_audit": true
+  },
+  "locked_contract": {
+    "query": "one unique track/sample position t",
+    "targets": [
+      "exact onset_count[t]",
+      "exact offset_count[t]"
+    ],
+    "allowed_count_classes": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "multiplicity": "one position with count k remains one draw opportunity with target k",
+    "forbidden_target_identity": [
+      "slot",
+      "string",
+      "fret",
+      "pitch",
+      "active",
+      "eventId"
+    ],
+    "candidate_context_only": "audio[max(0,t-4092):t+1]",
+    "future_audio_samples": 0,
+    "exclusive_end_offsets": "excluded from acoustic targets"
+  },
+  "background_partition": {
+    "distance_reference": "nearest onset or internal offset boundary in the same track",
+    "background_requirement": "onset_count[t] == 0 and offset_count[t] == 0",
+    "ordered_strata": [
+      "distance_1",
+      "distance_2_to_15",
+      "distance_16_to_63",
+      "distance_64_plus"
+    ],
+    "distance_1": "nearest distance exactly 1 sample",
+    "distance_2_to_15": "nearest distance from 2 through 15 samples inclusive",
+    "distance_16_to_63": "nearest distance from 16 through 63 samples inclusive",
+    "distance_64_plus": "nearest distance at least 64 samples",
+    "partition_requirement": "the four background strata are exhaustive, disjoint and sum exactly to the locked Experiment 12 background pool",
+    "sampling_within_each_stratum": "uniform over all eligible global track/sample positions with replacement",
+    "implementation_constraint": "uniform global-frame rejection sampling; no audio decoding"
+  },
+  "fixed_draws": {
+    "train": {
+      "queries": 1600,
+      "onset_bearing": 534,
+      "offset_only": 533,
+      "background_total": 533,
+      "base_seed": 1337
+    },
+    "validation": {
+      "queries": 400,
+      "onset_bearing": 134,
+      "offset_only": 133,
+      "background_total": 133,
+      "base_seed": 1338
+    },
+    "independent_rng_streams": "positive and each background stratum use deterministic derived seeds; candidate draws are prefixes so unchanged strata remain comparable",
+    "historical_epoch_count_for_exposure_diagnostic": 20
+  },
+  "preregistered_grid": {
+    "selection_parameter": "hard_negative_scale h",
+    "ordered_train_values": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "train_background_counts": {
+      "distance_1": "h",
+      "distance_2_to_15": "4*h",
+      "distance_16_to_63": "16*h",
+      "distance_64_plus": "533 - 21*h"
+    },
+    "validation_background_counts": {
+      "distance_1": "ceil(h/4)",
+      "distance_2_to_15": "ceil(4*h/4)",
+      "distance_16_to_63": "ceil(16*h/4)",
+      "distance_64_plus": "133 minus the other validation background counts"
+    },
+    "selection_uses": "train analytical and structural guards only",
+    "validation_use": "report the preregistered corresponding draw only; never select h from validation results",
+    "selection_rule": "choose the smallest h in the locked order that passes every selection gate; if none passes, select none"
+  },
+  "prior_diagnostic": {
+    "live_stratum_probability": "p_s = full-stream positions in stratum s / all full-stream positions",
+    "sampled_stratum_probability": "q_s = fixed draws in stratum s / fixed queries",
+    "importance_weight": "w_s = p_s / q_s",
+    "normalization": "sum_s q_s*w_s must equal one analytically",
+    "use": "audit only; importance weights are not approved as a training loss"
+  },
+  "required_before_after_audit": [
+    "exact full-stream position counts for every new background stratum",
+    "sum and disjointness against Experiment 12 background",
+    "fixed draw counts and exact distance validation",
+    "selected unique positions and repeated draws",
+    "player, arrangement and track exposure",
+    "unweighted joint and per-head exact-count histograms",
+    "analytical importance-weighted joint prior and mean weight",
+    "importance-weight range and effective sample size",
+    "constant categorical optimum and positive/negative diagnostic mass",
+    "distance-1 exposure over 20 fresh epochs",
+    "far-background retention",
+    "rare count 2 and 3 exposure unchanged from Experiment 12",
+    "comparison of every grid candidate to Experiment 12"
+  ],
+  "selection_gates": {
+    "positive_draw_counts_exactly_match_experiment_12": true,
+    "background_partition_exact": true,
+    "every_selected_background_position_is_negative_and_in_declared_distance_stratum": true,
+    "minimum_train_distance_1_draws_over_20_fresh_epochs": 20,
+    "minimum_effective_sample_size_ratio_on_train_and_validation": 0.25,
+    "minimum_train_distance_64_plus_fraction_of_background_draws": 0.8,
+    "analytical_weighted_joint_prior_max_absolute_error": 1e-12,
+    "analytical_sampled_mean_weight_absolute_error": 1e-12,
+    "player_05_content_opened": false
+  },
+  "interpretation_guards": {
+    "hard_negative_causality": "greater adjacent-negative exposure is a sampler fact; reduction of broad or isolated model predictions remains unproved until a later compatible training experiment",
+    "rare_counts": "this experiment deliberately does not repair count-2 or count-3 exposure",
+    "unweighted_prior": "positive draw counts remain unchanged, so the approximately one-third positive batch prior remains uncalibrated for live use",
+    "importance_weights": "analytical correction may estimate the live distribution but is not selected as a loss",
+    "crop_live_equivalence": "remains unverified because no compatible point-query model exists",
+    "training_readiness": "cannot pass in this experiment because rare-count exposure, loss selection, crop implementation and crop/live equality remain unresolved",
+    "no_training_regardless_of_result": true,
+    "stop_for_user_approval_before_any_loss_model_training_or_live_change": true
+  }
+}

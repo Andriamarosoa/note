@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "status": "preregistered_before_implementation",
+  "experiment": "explicit_end_of_stream_control_finalization",
+  "approval": {
+    "user_approved_exact_scope": true,
+    "approval_word": "go"
+  },
+  "baseline": {
+    "repository_commit_before_experiment": "54e5b9236d7100572288f7a37929823883b6a5f9",
+    "detector_source": "src/causal_note/detector.py",
+    "detector_source_sha256": "BE4F15D4999D802640074D91F1A772EAC764F91F391F6E35EAA6CF2FAB5460FB",
+    "pipeline_source": "src/causal_note/pipeline.py",
+    "pipeline_source_sha256": "C80F6DD2A524799CBDB5CC0A2BE45F4BA84B904DD2FA121FC78C2E07CD2D93EB",
+    "scheduler_source": "src/causal_note/scheduler.py",
+    "scheduler_source_sha256": "5CDC698F17F9097029E7DF6B355C2420F0EFCA8B02F3A0C4EAA099EA3A226F66",
+    "live_cli_source": "scripts/detect_live.py",
+    "live_cli_source_sha256": "810FA1963AAD52DFA3E597C1BCD10047ECDAC21845D313F00A2AA2F893B20030",
+    "anonymous_target_audit": "model/causal-boundaries-type-position-target-audit.json",
+    "anonymous_target_audit_sha256": "D1B311666BAFE8191D6CE3B655EE6CFB8B140F053741B7DF9D98613D0E93CA14"
+  },
+  "scope": {
+    "single_semantic_change": "explicit terminal closure of events still open when the source signals end of stream",
+    "acoustic_model_change": false,
+    "target_change": false,
+    "training_change": false,
+    "sampler_change": false,
+    "loss_change": false,
+    "threshold_change": false,
+    "association_algorithm_change": false,
+    "continuous_live_behavior_change_before_eof": false,
+    "public_event_fields_unchanged": [
+      "eventId",
+      "type",
+      "position"
+    ],
+    "stop_after_post_change_audit": true
+  },
+  "semantic_contract": {
+    "classification": "control finalization, not acoustic offset detection",
+    "trigger": "one explicit end-of-stream signal after the last received sample",
+    "terminal_position": "exclusive audio end N for a stream containing samples 0 through N-1",
+    "event_rule": "emit one offset(eventId, N) for every eventId still open",
+    "multiplicity": "k open events emit k offsets at the same terminal position",
+    "identity": "each terminal offset reuses the opaque eventId of its onset",
+    "already_closed_events": "emit nothing",
+    "empty_stream_or_no_open_events": "emit nothing",
+    "target_policy": "offsets at position frame_count remain excluded from the acoustic sample target",
+    "no_shift": "never move an exclusive-end offset to frame_count - 1",
+    "no_padding": true,
+    "restart_policy": "terminal offsets create no restart frame because no future 512-sample frame can exist",
+    "evaluation_policy": "report terminal control closures separately from acoustically detected offsets",
+    "real_prediction_guard": "a false predicted onset still open at EOF will also receive a terminal closure; oracle compatibility is not model-association accuracy"
+  },
+  "runtime_contract": {
+    "tracker_api": "LiveEventTracker.finish_all(end_sample)",
+    "decoder_api": "LiveBoundaryScoreDecoder.finalize_stream(end_sample=None)",
+    "energy_baseline_api": "LiveEnergyDetector.finalize_stream(end_sample=None)",
+    "model_detector_api": "LiveModelDetector.finalize_stream(end_sample=None)",
+    "scheduler_api": "RestartScheduler.accept_terminal_events(events)",
+    "pipeline_api": "LiveOnsetOffsetPipeline.finalize_stream()",
+    "cli_sources": [
+      "WAV EOF",
+      "stdin PCM16 EOF"
+    ],
+    "atomicity": "validate terminal position, event types, unique IDs and the complete open-ID set before mutating scheduler state",
+    "deterministic_order": "ascending onset position then eventId",
+    "one_shot": true,
+    "process_after_finalization": "raise explicitly",
+    "finalization_after_finalization": "raise explicitly",
+    "terminal_requested_frames": [],
+    "pending_preexisting_restart_frames": "remain separate and are not created or reclassified by finalization"
+  },
+  "data": {
+    "dataset": "GuitarSet",
+    "players": [
+      "00",
+      "01",
+      "02",
+      "03",
+      "04"
+    ],
+    "locked_test_player": "05",
+    "player_05_content_opened": false,
+    "split_seed": 1337,
+    "validation_fraction": 0.2,
+    "train": {
+      "tracks": 240,
+      "tracks_with_terminal_offsets": 140,
+      "internal_offsets": 43894,
+      "terminal_offsets": 326,
+      "terminal_multiplicity_per_affected_track": {
+        "1": 67,
+        "2": 18,
+        "3": 21,
+        "4": 16,
+        "5": 12,
+        "6": 6
+      }
+    },
+    "validation": {
+      "tracks": 60,
+      "tracks_with_terminal_offsets": 36,
+      "internal_offsets": 9459,
+      "terminal_offsets": 82,
+      "terminal_multiplicity_per_affected_track": {
+        "1": 17,
+        "2": 3,
+        "3": 6,
+        "4": 9,
+        "5": 1,
+        "6": 0
+      }
+    },
+    "total": {
+      "tracks": 300,
+      "tracks_with_terminal_offsets": 176,
+      "tracks_without_terminal_offsets": 124,
+      "terminal_offsets": 408,
+      "maximum_terminal_multiplicity": 6
+    }
+  },
+  "post_change_audit": {
+    "oracle_replay": "replay every annotated onset and every internal offset through LiveEventTracker, with offset before onset at equal positions, then finalize at frame_count",
+    "required_before_after_metrics": [
+      "open events immediately before EOF",
+      "terminal offsets emitted",
+      "missing terminal reference offsets",
+      "extra terminal offsets",
+      "open events after EOF",
+      "terminal multiplicity per track",
+      "internal acoustic target counts unchanged"
+    ],
+    "required_runtime_tests": [
+      "multiple open IDs close at one exclusive terminal position with their original IDs",
+      "no open ID produces no event",
+      "already closed IDs are not duplicated",
+      "invalid terminal position fails atomically",
+      "scheduler rejects partial, duplicate, unknown, non-offset or non-terminal event sets atomically",
+      "terminal events create no restart frames",
+      "ordinary process_chunk output is unchanged before EOF",
+      "processing and finalizing twice are rejected",
+      "WAV and stdin EOF call finalization exactly once"
+    ]
+  },
+  "acceptance_rule": {
+    "oracle_open_before_equals_terminal_references": true,
+    "oracle_emitted_equals_terminal_references": true,
+    "oracle_missing": 0,
+    "oracle_extra": 0,
+    "oracle_open_after": 0,
+    "normal_chunk_events_bit_exact_before_eof": true,
+    "terminal_restart_frames": 0,
+    "player_05_content_opened": false,
+    "all_tests_must_pass": true,
+    "no_training_regardless_of_result": true,
+    "stop_for_user_approval_before_sampler_or_loss_design": true
+  }
+}

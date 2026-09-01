@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "status": "preregistered_amendment_before_implementation",
+  "experiment": "exact_causal_point_query_sampler_audit",
+  "reason": "independent read-only review identified missing diagnostics for hard negatives adjacent to a true boundary and confirmed that rare multiplicities may be effectively absent from fixed draws",
+  "locked_protocol": {
+    "path": "model/causal-boundaries-exact-point-query-sampler-protocol.json",
+    "sha256": "A57062D99AC907E35E081BF8A73CE12CBE9A7E9477D8CB915D11D88D1D25804F"
+  },
+  "scope_guard": {
+    "sampler_definition_changed": false,
+    "loss_changed": false,
+    "model_changed": false,
+    "decoder_changed": false,
+    "live_changed": false,
+    "training_started": false,
+    "purpose": "audit the already preregistered candidate, not repair it inside the same experiment"
+  },
+  "additional_required_audit": {
+    "background_distance_to_nearest_boundary_samples": [
+      1,
+      15,
+      63
+    ],
+    "for_each_distance": [
+      "full-stream background positions within the inclusive distance",
+      "fraction of the complete background stratum",
+      "expected fixed-draw background queries",
+      "observed fixed-draw background queries",
+      "expected draws over 20 historical train epochs"
+    ],
+    "rare_multiplicity": [
+      "pool positions for every observed exact nonzero count class",
+      "expected draws per fixed epoch",
+      "expected draws over 20 historical epochs",
+      "probability of observing the class at least once over 20 epochs"
+    ],
+    "track_boundary_context": [
+      "positive positions requiring left zero initialization because t is below 4092",
+      "internal offsets in the final 4092 samples",
+      "exclusive-end offsets kept outside the acoustic target"
+    ]
+  },
+  "additional_training_readiness_guards": {
+    "minimum_expected_background_draws_within_one_sample_of_a_boundary_over_20_train_epochs": 20.0,
+    "minimum_expected_draws_per_observed_nonzero_count_class_over_20_train_epochs": 20.0,
+    "fixed_validation_near_boundary_counts": "report only; do not tune the sampler on validation",
+    "point_crop_equals_continuous_model_output": "must be verified after a compatible causal model exists and before any long training; it cannot be asserted by this sampler-only audit"
+  },
+  "interpretation_guard": {
+    "importance_weights": "valid for estimating full-stream metrics; this experiment does not approve them as a training loss",
+    "unweighted_cycle": "deliberately changes the class prior and therefore cannot be called live-calibrated",
+    "expected_failure_action": "if near-boundary negatives or multiplicity classes are underexposed, mark the candidate not training-ready and stop for approval before designing a different sampler",
+    "forbidden_same_experiment_fix": "do not add hard-negative or multiplicity strata in this audit"
+  }
+}

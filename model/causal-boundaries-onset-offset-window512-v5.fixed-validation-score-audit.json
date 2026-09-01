@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "model_path": "model/causal-boundaries-onset-offset-window512-v5.keras",
+  "metadata_path": "model/causal-boundaries-onset-offset-window512-v5.metadata.json",
+  "configuration": {
+    "batches": 50,
+    "threshold": 0.5,
+    "seed": 1338,
+    "window_samples": 8192,
+    "batch_size": 8,
+    "warmup_samples": 4092,
+    "onset_target_width_samples": 512,
+    "offset_target_width_samples": 512
+  },
+  "heads": {
+    "onset": {
+      "positive_scores": {
+        "count": 261423,
+        "count_ge_threshold": 225765,
+        "p50": 0.8854778409004211,
+        "p90": 0.9677019238471984,
+        "p95": 0.976125818490982,
+        "p99": 0.9870097351074218,
+        "max": 0.9978116750717163
+      },
+      "negative_scores": {
+        "count": 9578577,
+        "count_ge_threshold": 2749945,
+        "p50": 0.35187971591949463,
+        "p90": 0.7756256699562074,
+        "p95": 0.8806165456771851,
+        "p99": 0.9565738105773927,
+        "max": 0.9971863031387329
+      },
+      "confusion": {
+        "true_positive": 225765,
+        "false_negative": 35658,
+        "false_positive": 2749945,
+        "true_negative": 6828632
+      },
+      "precision": 0.07586928833790928,
+      "recall": 0.8636003718112025,
+      "f1": 0.13948453770666822,
+      "negative_false_positive_rate": 0.2870932707436606
+    },
+    "offset": {
+      "positive_scores": {
+        "count": 249851,
+        "count_ge_threshold": 228895,
+        "p50": 0.7337750196456909,
+        "p90": 0.9124904870986938,
+        "p95": 0.9324221611022949,
+        "p99": 0.9574227929115295,
+        "max": 0.9837259650230408
+      },
+      "negative_scores": {
+        "count": 9590149,
+        "count_ge_threshold": 5817820,
+        "p50": 0.5690444111824036,
+        "p90": 0.7900733470916749,
+        "p95": 0.8537469029426574,
+        "p99": 0.9233083462715148,
+        "max": 0.9893355965614319
+      },
+      "confusion": {
+        "true_positive": 228895,
+        "false_negative": 20956,
+        "false_positive": 5817820,
+        "true_negative": 3772329
+      },
+      "precision": 0.037854438318988076,
+      "recall": 0.9161260111026172,
+      "f1": 0.07270470920180937,
+      "negative_false_positive_rate": 0.6066454233401379
+    }
+  }
+}

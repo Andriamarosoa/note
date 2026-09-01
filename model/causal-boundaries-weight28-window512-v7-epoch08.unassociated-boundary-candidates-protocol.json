@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "status": "preregistered_before_implementation_and_full_evaluation",
+  "experiment": "v7_epoch08_unassociated_boundary_candidates",
+  "approval": {
+    "user_approved_exact_plan": true,
+    "approval_word": "go"
+  },
+  "baseline": {
+    "repository_commit_before_experiment": "9b96b5de36e491aa86ed17bc35d93501c3a04755",
+    "model_path": "model/causal-boundaries-weight28-window512-v7.epochs/epoch-08.keras",
+    "model_sha256": "5634ADD0E112A6889B65D5245AD051AD850A1FFFE66FEB8D9E5E74472BA114BF",
+    "chunk_size_samples": 512,
+    "onset_entry_threshold": 0.55,
+    "onset_release_threshold": 0.55,
+    "offset_entry_threshold": 0.55,
+    "offset_release_threshold": 0.55,
+    "reference_onsets": 9541,
+    "reference_offsets": 9541,
+    "associated_decoder": {
+      "predicted_onsets": 111169,
+      "predicted_offsets": 110987,
+      "incomplete_events": 182,
+      "onset_true_positive": 8856,
+      "onset_false_positive": 102313,
+      "onset_false_negative": 685,
+      "onset_f1_percent": 14.67320292721793,
+      "offset_true_positive": 7980,
+      "offset_false_positive": 103007,
+      "offset_false_negative": 1561,
+      "offset_f1_percent": 13.241692287978842
+    }
+  },
+  "single_experimental_change": {
+    "name": "decode_every_boundary_score_rising_edge_without_event_association",
+    "training": false,
+    "checkpoint_change": false,
+    "target_change": false,
+    "loss_change": false,
+    "sampler_change": false,
+    "score_change": false,
+    "control": "official LiveBoundaryScoreDecoder with one open event per internal channel",
+    "treatment": "independent onset and offset rising-edge detection for every internal channel",
+    "candidate_public_fields": [
+      "type",
+      "position"
+    ],
+    "candidate_forbidden_fields": [
+      "eventId",
+      "slot",
+      "string",
+      "pitch",
+      "fret",
+      "active"
+    ],
+    "multiplicity_rule": "two channel crossings at the same sample produce two candidates",
+    "onset_gate_rule": "an onset crossing is emitted even while any previous event remains open",
+    "offset_gate_rule": "an offset crossing is emitted without requiring an open event",
+    "association": false,
+    "interval_metrics": false,
+    "scheduler": false,
+    "official_live_activation": false
+  },
+  "pre_implementation_data_audit": {
+    "dataset": "GuitarSet",
+    "players": [
+      "00",
+      "01",
+      "02",
+      "03",
+      "04"
+    ],
+    "locked_test_player": "05",
+    "locked_test_used": false,
+    "seed": 1337,
+    "validation_fraction": 0.2,
+    "validation_tracks": 60,
+    "validation_notes": 9541,
+    "validation_onsets_while_an_older_note_is_open": 6409,
+    "validation_onsets_while_an_older_note_is_open_percent": 67.173252,
+    "validation_extra_simultaneous_onsets": 45,
+    "validation_maximum_exact_onset_multiplicity": 3,
+    "validation_offsets_exactly_at_audio_end": 82,
+    "naive_global_binary_window512_rejected": true,
+    "naive_global_binary_window512_validation_onsets_merged": 2815,
+    "naive_global_binary_window512_validation_onsets_merged_percent": 29.504245,
+    "naive_global_binary_training_density": {
+      "onset": 0.05798881,
+      "offset": 0.061858807
+    },
+    "naive_global_binary_weight28_constant_optimum": {
+      "onset": 0.63284407,
+      "offset": 0.64866097
+    },
+    "live_threshold": 0.55,
+    "conclusion": "do not train a one-bit global window-512 head; first measure unassociated boundary candidates from immutable V7 scores"
+  },
+  "evaluation": {
+    "same_immutable_score_chunk_for_control_and_treatment": true,
+    "onset_tolerance_ms": 50.0,
+    "offset_tolerance_ms": 50.0,
+    "reference_multiplicity_preserved": true,
+    "metrics": [
+      "candidate count",
+      "true positive",
+      "false positive",
+      "false negative",
+      "precision",
+      "recall",
+      "f1",
+      "latency",
+      "exact-position onset multiplicity"
+    ],
+    "aggregates": [
+      "global",
+      "comp",
+      "solo",
+      "per track",
+      "family-arrangement"
+    ],
+    "required_fixture": [
+      "onset(type-only, 100)",
+      "onset(type-only, 700)",
+      "offset(type-only, 820)"
+    ],
+    "required_post_change_audit": [
+      "control exact reproduction globally and per track",
+      "identical model scores consumed once by both decoders",
+      "every onset rising edge counted independently of open events",
+      "every offset rising edge counted independently of open events",
+      "same-sample multiplicity retained",
+      "global, comp, solo, family-arrangement and per-track onset and offset metrics",
+      "player 05 remains unread"
+    ]
+  },
+  "decision_rule": {
+    "diagnostic_only": true,
+    "no_runtime_activation_regardless_of_result": true,
+    "no_training_in_this_experiment": true,
+    "no_associated_interval_claim": true,
+    "stop_after_report_for_user_approval": true,
+    "next_decision": "use measured candidate behavior to decide whether V7 boundary scores are reusable or a multiplicity-preserving no-string detector must be trained"
+  }
+}

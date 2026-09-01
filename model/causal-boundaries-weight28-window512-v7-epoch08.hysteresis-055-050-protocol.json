@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "status": "preregistered_before_full_comparison",
+  "baseline": {
+    "calibration_commit": "1a7f49b9cc15ccfaf2f34f1b487397aaecd425e5",
+    "model_path": "model/causal-boundaries-weight28-window512-v7.epochs/epoch-08.keras",
+    "model_sha256": "5634ADD0E112A6889B65D5245AD051AD850A1FFFE66FEB8D9E5E74472BA114BF",
+    "entry_threshold": 0.55,
+    "release_threshold": 0.55,
+    "global": {
+      "reference_intervals": 9541,
+      "predicted_intervals": 110987,
+      "incomplete_events": 182,
+      "onset_true_positives": 8856,
+      "offset_true_positives": 7980,
+      "interval_true_positives": 3488,
+      "interval_false_positives": 107499,
+      "interval_false_negatives": 6053,
+      "interval_f1_percent": 5.787866719766362
+    },
+    "comp": {
+      "reference_intervals": 6919,
+      "predicted_intervals": 90277,
+      "incomplete_events": 70,
+      "onset_true_positives": 6609,
+      "offset_true_positives": 5902,
+      "interval_true_positives": 1943,
+      "interval_false_positives": 88334,
+      "interval_f1_percent": 3.998106917980163
+    },
+    "solo": {
+      "reference_intervals": 2622,
+      "predicted_intervals": 20710,
+      "incomplete_events": 112,
+      "onset_true_positives": 2247,
+      "offset_true_positives": 2078,
+      "interval_true_positives": 1545,
+      "interval_false_positives": 19165,
+      "interval_f1_percent": 13.243613920795472
+    }
+  },
+  "change_under_test": {
+    "name": "causal_hysteresis",
+    "single_experimental_change": true,
+    "entry_threshold": 0.55,
+    "control_release_threshold": 0.55,
+    "treatment_release_threshold": 0.5,
+    "common_thresholds_for_onset_offset_and_all_slots": true,
+    "low_to_high_rule": "score >= entry_threshold",
+    "remain_high_rule": "score >= release_threshold",
+    "release_rule": "score < release_threshold",
+    "lookahead": false,
+    "added_first_event_delay": false,
+    "training": false
+  },
+  "audit": {
+    "purpose": "compare control and one causal hysteresis treatment on identical stored model scores",
+    "dataset": "GuitarSet",
+    "players": ["00", "01", "02", "03", "04"],
+    "locked_test_player": "05",
+    "locked_test_used": false,
+    "seed": 1337,
+    "validation_fraction": 0.2,
+    "expected_tracks": 60,
+    "chunk_size_samples": 512,
+    "onset_tolerance_ms": 50.0,
+    "offset_tolerance_ms": 50.0,
+    "release_thresholds": [0.55, 0.5],
+    "single_model_pass_for_both_decoders": true,
+    "required_post_change_checks": [
+      "raw decoded event counts",
+      "global comp solo metrics",
+      "per-track metrics",
+      "incomplete event counts",
+      "control exact reproduction",
+      "threshold-gap morphology when available"
+    ]
+  },
+  "acceptance_rule": {
+    "all_conditions_required": true,
+    "control_must_exactly_reproduce_official_threshold_0_55_result": true,
+    "treatment": {
+      "global_max_interval_false_positives_exclusive": 107499,
+      "global_min_interval_f1_percent_exclusive": 5.787866719766362,
+      "comp_min_interval_f1_percent_inclusive": 3.998106917980163,
+      "solo_min_interval_f1_percent_inclusive": 13.243613920795472,
+      "global_max_incomplete_events_inclusive": 182,
+      "comp_max_incomplete_events_inclusive": 70,
+      "solo_max_incomplete_events_inclusive": 112,
+      "comp_min_onset_true_positives": 6279,
+      "comp_min_offset_true_positives": 5607,
+      "comp_min_interval_true_positives": 1749,
+      "solo_min_onset_true_positives": 2135,
+      "solo_min_offset_true_positives": 1975,
+      "solo_min_interval_true_positives": 1391
+    },
+    "decision": "accept release 0.50 only if every condition passes; otherwise retain the non-hysteretic release 0.55 baseline",
+    "no_additional_release_threshold_in_this_experiment": true
+  }
+}

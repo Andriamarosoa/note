@@ -1,0 +1,2173 @@
+{
+  "background_partition": {
+    "train": {
+      "positions": {
+        "distance_1": 175349,
+        "distance_16_to_63": 7473182,
+        "distance_2_to_15": 2405813,
+        "distance_64_plus": 310000161
+      },
+      "reconciliation": {
+        "all_exact": true,
+        "checks": {
+          "all_background_reconciles": true,
+          "distance_1_matches_exp12": true,
+          "through_15_matches_exp12": true,
+          "through_63_matches_exp12": true
+        }
+      }
+    },
+    "validation": {
+      "positions": {
+        "distance_1": 37822,
+        "distance_16_to_63": 1640990,
+        "distance_2_to_15": 520337,
+        "distance_64_plus": 80729591
+      },
+      "reconciliation": {
+        "all_exact": true,
+        "checks": {
+          "all_background_reconciles": true,
+          "distance_1_matches_exp12": true,
+          "through_15_matches_exp12": true,
+          "through_63_matches_exp12": true
+        }
+      }
+    }
+  },
+  "comparison_to_experiment_12": {
+    "train": {
+      "distance_1_draws_over_20_epochs": {
+        "experiment_12_expected_uniform": 5.840318791950764,
+        "experiment_13_exact": 20
+      },
+      "distance_1_draws_per_fixed_epoch": {
+        "experiment_12_expected_uniform": 0.29201593959753824,
+        "experiment_13_exact": 1,
+        "experiment_13_over_experiment_12": 3.4244706004001646
+      },
+      "effective_sample_size_ratio": {
+        "absolute_change": -0.0008273529211774711,
+        "experiment_12": 0.3333078774406388,
+        "experiment_13": 0.3324805245194613
+      },
+      "positive_source_draw_counts": {
+        "offset_only": {
+          "exact_match": true,
+          "experiment_12": 533,
+          "experiment_13": 533
+        },
+        "onset_bearing": {
+          "exact_match": true,
+          "experiment_12": 534,
+          "experiment_13": 534
+        }
+      },
+      "selected_h": 1,
+      "unweighted_head_positive_probability": {
+        "offset": {
+          "experiment_12_empirical_fixed_draw": 0.33375,
+          "experiment_13_analytical_expectation": 0.3334810282802605,
+          "interpretation": "distinct quantities; simultaneous onset+offset positions make the offset empirical draw vary while source quotas stay fixed",
+          "signed_analytical_minus_empirical": -0.00026897171973949696
+        },
+        "onset": {
+          "experiment_12_empirical_fixed_draw": 0.33375,
+          "experiment_13_analytical_expectation": 0.33375,
+          "interpretation": "distinct quantities; simultaneous onset+offset positions make the offset empirical draw vary while source quotas stay fixed",
+          "signed_analytical_minus_empirical": 0.0
+        }
+      }
+    },
+    "validation": {
+      "distance_1_draws_over_20_epochs": {
+        "experiment_12_expected_uniform": 1.2131683177629373,
+        "experiment_13_exact": 20
+      },
+      "distance_1_draws_per_fixed_epoch": {
+        "experiment_12_expected_uniform": 0.06065841588814686,
+        "experiment_13_exact": 1,
+        "experiment_13_over_experiment_12": 16.485758577078304
+      },
+      "effective_sample_size_ratio": {
+        "absolute_change": -0.0035285504142064106,
+        "experiment_12": 0.3326518872891422,
+        "experiment_13": 0.3291233368749358
+      },
+      "positive_source_draw_counts": {
+        "offset_only": {
+          "exact_match": true,
+          "experiment_12": 133,
+          "experiment_13": 133
+        },
+        "onset_bearing": {
+          "exact_match": true,
+          "experiment_12": 134,
+          "experiment_13": 134
+        }
+      },
+      "selected_h": 1,
+      "unweighted_head_positive_probability": {
+        "offset": {
+          "experiment_12_empirical_fixed_draw": 0.3325,
+          "experiment_13_analytical_expectation": 0.3327469460825611,
+          "interpretation": "distinct quantities; simultaneous onset+offset positions make the offset empirical draw vary while source quotas stay fixed",
+          "signed_analytical_minus_empirical": 0.00024694608256109474
+        },
+        "onset": {
+          "experiment_12_empirical_fixed_draw": 0.335,
+          "experiment_13_analytical_expectation": 0.335,
+          "interpretation": "distinct quantities; simultaneous onset+offset positions make the offset empirical draw vary while source quotas stay fixed",
+          "signed_analytical_minus_empirical": 0.0
+        }
+      }
+    }
+  },
+  "data_guard": {
+    "actual_players": [
+      "00",
+      "01",
+      "02",
+      "03",
+      "04"
+    ],
+    "locked_test_player": "05",
+    "locked_test_used": false,
+    "train_tracks": 240,
+    "validation_members_exactly_match_v7": true,
+    "validation_tracks": 60
+  },
+  "decision": {
+    "audio_crop_implemented": false,
+    "background_distance_1_constraint_repaired": true,
+    "background_distance_1_guard_passes_at_exact_minimum_without_margin": true,
+    "category": "background_constraint_repaired_but_sampler_not_training_ready",
+    "crop_live_equivalence_verified": false,
+    "importance_weights_approved_for_training_loss": false,
+    "live_changed": false,
+    "loss_selected": false,
+    "model_selected": false,
+    "next_action_requires_user_approval": true,
+    "rare_count_exposure_pass": false,
+    "selected_h": 1,
+    "stop_reasons": [
+      "rare_exact_count_classes_remain_underexposed",
+      "selected_h_meets_the_distance_1_draw_guard_without_margin",
+      "unweighted_positive_prior_remains_far_above_live",
+      "importance_weights_are_not_approved_as_training_loss",
+      "point_query_loss_and_model_are_not_selected",
+      "audio_crop_and_crop_live_equivalence_are_not_verified"
+    ],
+    "structural_checks": {
+      "actual_players_are_exactly_00_through_04": true,
+      "background_bands_reconcile_exactly": true,
+      "full_stream_exactly_matches_experiment_12": true,
+      "locked_oracle_reconciliation_exact": true,
+      "player_05_absent": true,
+      "positive_source_draw_counts_exactly_match_experiment_12": true,
+      "rare_count_expected_exposure_exactly_unchanged": true,
+      "selected_train_positions_valid": true,
+      "selected_train_source_counts_exact": true,
+      "selected_train_track_exposure_reconciles": true,
+      "selected_validation_positions_valid": true,
+      "selected_validation_source_counts_exact": true,
+      "selected_validation_track_exposure_reconciles": true,
+      "validation_ess_at_least_0_25": true,
+      "validation_weighted_joint_prior_within_1e_12": true,
+      "validation_weighted_stratum_prior_within_1e_12": true
+    },
+    "structural_pass": true,
+    "training_ready": false,
+    "training_started": false
+  },
+  "generated_at_utc": "2026-09-01T12:58:21.669160+00:00",
+  "locked_inputs": {
+    "anonymous_target_helper_sha256": "7C414A863E941B3595F03F7A420A5FB80810A5F4D2D9C5350C8089491135B356",
+    "audit_source_sha256": "294A3B17BF887B3493B6BC1BCA5867EADA3145B425CF3D24B178C14CF4B3DC04",
+    "experiment_12": "C:\\Users\\user\\Desktop\\NOTE\\model\\causal-boundaries-exact-point-query-sampler-audit.json",
+    "experiment_12_sha256": "1056B0349E826FE9D2E8845AA8CE88D5E4F5E9C719E209CC73C41F9A19D1EF56",
+    "experiment_12_source_sha256": "4F8DDA1D84E41910E1DFEA17DAF4150BD278FDDEFD02415D20A6DA812D12B193",
+    "guitarset_source_sha256": "52E56D374294748074A34DB06B64B03D096008CA44B8ACA0C390C981C04F94E9",
+    "metadata_sha256": "8AB99DC6DD191B39043A303D41BB405A0C84C2CE607C608E330E4DEF33F52A25",
+    "prior_audit_sha256": "D1B311666BAFE8191D6CE3B655EE6CFB8B140F053741B7DF9D98613D0E93CA14",
+    "protocol": "C:\\Users\\user\\Desktop\\NOTE\\model\\causal-boundaries-hard-negative-sampler-protocol.json",
+    "protocol_amendment": "C:\\Users\\user\\Desktop\\NOTE\\model\\causal-boundaries-hard-negative-sampler-protocol-amendment-01.json",
+    "protocol_amendment_sha256": "46C739E90BD03469D3DB160DEF3A6215605C1C395E3FBF60865612C8EFD3F6EF",
+    "protocol_report_amendment": "C:\\Users\\user\\Desktop\\NOTE\\model\\causal-boundaries-hard-negative-sampler-protocol-amendment-02.json",
+    "protocol_report_amendment_sha256": "1E130543D20C2B91AB620A26E9228FABE90FF3D5C52C5BBE338A1BC4DB38C055",
+    "protocol_review_amendment": "C:\\Users\\user\\Desktop\\NOTE\\model\\causal-boundaries-hard-negative-sampler-protocol-amendment-03.json",
+    "protocol_review_amendment_sha256": "69F12014A41766611F0ADE37080C68213E68C2ADD752A923FB84A2EE9DB21680",
+    "protocol_sha256": "D3FF0F3F9A35C6B0AE8079B9781E961DE9FAE380A42A601922217D2530999CBB",
+    "protocol_status": "preregistered_before_implementation",
+    "training_source_sha256": "3006FD2A586CE87166A82021C5D461472D4A492E6B5EBFA18910D492D80F136A"
+  },
+  "schema_version": 1,
+  "scope": {
+    "audio_crop_implemented": false,
+    "decoder_changed": false,
+    "live_changed": false,
+    "loss_selected_or_changed": false,
+    "model_selected_or_changed": false,
+    "player_05_content_read": false,
+    "positive_draw_counts_changed": false,
+    "positive_pools_changed": false,
+    "single_change": "uniform background subdivided by exact nearest-boundary distance",
+    "targets": [
+      "onset_count[t]",
+      "offset_count[t]"
+    ],
+    "total_query_counts_changed": false,
+    "training_started": false
+  },
+  "selected_candidate": {
+    "distance_1_epoch_exposure": {
+      "train": {
+        "fresh_independent_epochs": {
+          "assumption": "fresh independent draws with replacement every epoch",
+          "draws_over_20_epochs": 20,
+          "draws_per_epoch": 1,
+          "expected_unique_positions_over_20_epochs": 19.998916483584363
+        },
+        "interpretation": "the draw-count guard passes; it does not assert 20 unique positions when one cached batch is repeated",
+        "pool_positions": 175349,
+        "same_cached_fixed_batch_repeated": {
+          "draws_over_20_repetitions": 20,
+          "unique_positions_after_20_repetitions": 1,
+          "unique_positions_in_fixed_batch": 1
+        }
+      },
+      "validation": {
+        "fresh_independent_epochs": {
+          "assumption": "fresh independent draws with replacement every epoch",
+          "draws_over_20_epochs": 20,
+          "draws_per_epoch": 1,
+          "expected_unique_positions_over_20_epochs": 19.99497726554263
+        },
+        "interpretation": "the draw-count guard passes; it does not assert 20 unique positions when one cached batch is repeated",
+        "pool_positions": 37822,
+        "same_cached_fixed_batch_repeated": {
+          "draws_over_20_repetitions": 20,
+          "unique_positions_after_20_repetitions": 1,
+          "unique_positions_in_fixed_batch": 1
+        }
+      }
+    },
+    "h": 1,
+    "rare_count_comparison_to_experiment_12": {
+      "all_expected_exposures_exactly_unchanged": true,
+      "checks_by_head": {
+        "offset": true,
+        "onset": true
+      },
+      "details": {
+        "offset_1": {
+          "expected_draws_over_20_epochs": true,
+          "expected_draws_per_fixed_epoch": true,
+          "pool_positions": true,
+          "positions_by_stratum": true,
+          "probability_seen_at_least_once_over_20_epochs": true
+        },
+        "offset_2": {
+          "expected_draws_over_20_epochs": true,
+          "expected_draws_per_fixed_epoch": true,
+          "pool_positions": true,
+          "positions_by_stratum": true,
+          "probability_seen_at_least_once_over_20_epochs": true
+        },
+        "offset_3": {
+          "expected_draws_over_20_epochs": true,
+          "expected_draws_per_fixed_epoch": true,
+          "pool_positions": true,
+          "positions_by_stratum": true,
+          "probability_seen_at_least_once_over_20_epochs": true
+        },
+        "onset_1": {
+          "expected_draws_over_20_epochs": true,
+          "expected_draws_per_fixed_epoch": true,
+          "pool_positions": true,
+          "positions_by_stratum": true,
+          "probability_seen_at_least_once_over_20_epochs": true
+        },
+        "onset_2": {
+          "expected_draws_over_20_epochs": true,
+          "expected_draws_per_fixed_epoch": true,
+          "pool_positions": true,
+          "positions_by_stratum": true,
+          "probability_seen_at_least_once_over_20_epochs": true
+        },
+        "onset_3": {
+          "expected_draws_over_20_epochs": true,
+          "expected_draws_per_fixed_epoch": true,
+          "pool_positions": true,
+          "positions_by_stratum": true,
+          "probability_seen_at_least_once_over_20_epochs": true
+        }
+      }
+    },
+    "rare_count_exposure": {
+      "by_head": {
+        "offset": {
+          "classes": {
+            "1": {
+              "expected_draws_over_20_epochs": 10656.785496207547,
+              "expected_draws_per_fixed_epoch": 532.8392748103773,
+              "pool_positions": 43773,
+              "positions_by_stratum": {
+                "offset_only": 43726,
+                "onset_bearing": 47
+              },
+              "probability_seen_at_least_once_over_20_epochs": 1.0
+            },
+            "2": {
+              "expected_draws_over_20_epochs": 14.363951948111266,
+              "expected_draws_per_fixed_epoch": 0.7181975974055633,
+              "pool_positions": 59,
+              "positions_by_stratum": {
+                "offset_only": 59,
+                "onset_bearing": 0
+              },
+              "probability_seen_at_least_once_over_20_epochs": 0.9999994277203662
+            },
+            "3": {
+              "expected_draws_over_20_epochs": 0.243456812679852,
+              "expected_draws_per_fixed_epoch": 0.0121728406339926,
+              "pool_positions": 1,
+              "positions_by_stratum": {
+                "offset_only": 1,
+                "onset_bearing": 0
+              },
+              "probability_seen_at_least_once_over_20_epochs": 0.2160888489516507
+            }
+          },
+          "fresh_epoch_probability_assumption": "fresh independent draws with replacement in every epoch"
+        },
+        "onset": {
+          "classes": {
+            "1": {
+              "expected_draws_over_20_epochs": 10641.700447127714,
+              "expected_draws_per_fixed_epoch": 532.0850223563857,
+              "pool_positions": 43901,
+              "positions_by_stratum": {
+                "offset_only": 0,
+                "onset_bearing": 43901
+              },
+              "probability_seen_at_least_once_over_20_epochs": 1.0
+            },
+            "2": {
+              "expected_draws_over_20_epochs": 37.572346172178214,
+              "expected_draws_per_fixed_epoch": 1.8786173086089106,
+              "pool_positions": 155,
+              "positions_by_stratum": {
+                "offset_only": 0,
+                "onset_bearing": 155
+              },
+              "probability_seen_at_least_once_over_20_epochs": 1.0
+            },
+            "3": {
+              "expected_draws_over_20_epochs": 0.7272067001066751,
+              "expected_draws_per_fixed_epoch": 0.036360335005333755,
+              "pool_positions": 3,
+              "positions_by_stratum": {
+                "offset_only": 0,
+                "onset_bearing": 3
+              },
+              "probability_seen_at_least_once_over_20_epochs": 0.5167549766162435
+            }
+          },
+          "fresh_epoch_probability_assumption": "fresh independent draws with replacement in every epoch"
+        }
+      },
+      "minimum_expected_draws_over_20_epochs": 0.243456812679852,
+      "passes": false,
+      "required_minimum": 20.0
+    },
+    "selection_used_validation": false,
+    "train": {
+      "analytical": {
+        "guards": {
+          "analytical_sampled_mean_weight_within_1e_12": true,
+          "analytical_weighted_joint_prior_within_1e_12": true,
+          "analytical_weighted_stratum_prior_within_1e_12": true,
+          "distance_1_draws_over_20_fresh_epochs": 20,
+          "distance_1_exposure_at_least_20": true,
+          "distance_64_plus_fraction_at_least_0_8": true,
+          "distance_64_plus_fraction_of_background_draws": 0.9606003752345216,
+          "effective_sample_size_ratio_at_least_0_25": true,
+          "passes_all_train_selection_gates": true
+        },
+        "heads": {
+          "offset": {
+            "constant_categorical_optimum": {
+              "full_stream": {
+                "class_probabilities": {
+                  "0": 0.9998630827817688,
+                  "1": 0.0001367298016023185,
+                  "2": 1.84293018402595e-07,
+                  "3": 3.1236104813999153e-09
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.0001369172182312025
+              },
+              "importance_weighted": {
+                "class_probabilities": {
+                  "0": 0.9998630827817688,
+                  "1": 0.00013672980160231847,
+                  "2": 1.8429301840259498e-07,
+                  "3": 3.123610481399915e-09
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.00013691721823120247
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.6665189717197394,
+                  "1": 0.33302454675648574,
+                  "2": 0.000448873498378477,
+                  "3": 7.608025396245374e-06
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.33348102828026044
+              }
+            },
+            "diagnostic_mass_for_fixed_query_count": {
+              "importance_weighted_negative": 1599.78093245083,
+              "importance_weighted_positive": 0.21906754916992394
+            },
+            "full_stream_positive_probability": 0.00013691721823120247,
+            "importance_weighted_positive_probability": 0.00013691721823120247,
+            "unweighted_over_full": 2435.6398164410157,
+            "unweighted_positive_probability": 0.3334810282802605
+          },
+          "onset": {
+            "constant_categorical_optimum": {
+              "full_stream": {
+                "class_probabilities": {
+                  "0": 0.9998623768458,
+                  "1": 0.00013712962374393768,
+                  "2": 4.841596246169869e-07,
+                  "3": 9.370831444199747e-09
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.00013762315419999887
+              },
+              "importance_weighted": {
+                "class_probabilities": {
+                  "0": 0.9998623768458,
+                  "1": 0.00013712962374393765,
+                  "2": 4.841596246169868e-07,
+                  "3": 9.370831444199745e-09
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.00013762315419999885
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.66625,
+                  "1": 0.3325531389727411,
+                  "2": 0.0011741358178805692,
+                  "3": 2.2725209378333597e-05
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.33375
+              }
+            },
+            "diagnostic_mass_for_fixed_query_count": {
+              "importance_weighted_negative": 1599.77980295328,
+              "importance_weighted_positive": 0.22019704671999815
+            },
+            "full_stream_positive_probability": 0.00013762315419999885,
+            "importance_weighted_positive_probability": 0.00013762315419999885,
+            "unweighted_over_full": 2425.100644873919,
+            "unweighted_positive_probability": 0.33375
+          }
+        },
+        "importance_correction": {
+          "analytical_sampled_mean_weight": 1.0,
+          "analytical_sampled_mean_weight_absolute_error_from_one": 0.0,
+          "analytical_weighted_joint_max_absolute_error": 1.1102230246251565e-16,
+          "analytical_weighted_joint_probabilities": {
+            "0|0": 0.9997256064372615,
+            "0|1": 0.00013658299190969268,
+            "0|2": 1.8429301840259498e-07,
+            "0|3": 3.123610481399915e-09,
+            "1|0": 0.00013698281405131186,
+            "1|1": 1.4680969262579599e-07,
+            "2|0": 4.841596246169868e-07,
+            "3|0": 9.370831444199745e-09
+          },
+          "analytical_weighted_stratum_max_absolute_error": 8.673617379884035e-19,
+          "analytical_weighted_stratum_probabilities": {
+            "distance_1": 0.0005477219743029937,
+            "distance_16_to_63": 0.023343309624609176,
+            "distance_2_to_15": 0.007514822703088174,
+            "distance_64_plus": 0.9683197521352611,
+            "offset_only": 0.00013677040853857667,
+            "onset_bearing": 0.00013762315419999885
+          },
+          "approved_for_training_loss": false,
+          "effective_sample_size": 531.9688392311381,
+          "effective_sample_size_ratio": 0.3324805245194613,
+          "full_stream_joint_probabilities": {
+            "0|0": 0.9997256064372614,
+            "0|1": 0.00013658299190969268,
+            "0|2": 1.8429301840259498e-07,
+            "0|3": 3.123610481399915e-09,
+            "1|0": 0.00013698281405131186,
+            "1|1": 1.4680969262579599e-07,
+            "2|0": 4.841596246169868e-07,
+            "3|0": 9.370831444199745e-09
+          },
+          "live_stratum_probabilities": {
+            "distance_1": 0.0005477219743029937,
+            "distance_16_to_63": 0.023343309624609176,
+            "distance_2_to_15": 0.007514822703088173,
+            "distance_64_plus": 0.9683197521352611,
+            "offset_only": 0.00013677040853857667,
+            "onset_bearing": 0.00013762315419999885
+          },
+          "maximum_over_minimum": 7370.2784304004845,
+          "maximum_weight": 3.025999225422691,
+          "minimum_weight": 0.00041056783050979866,
+          "sampled_stratum_probabilities": {
+            "distance_1": 0.000625,
+            "distance_16_to_63": 0.01,
+            "distance_2_to_15": 0.0025,
+            "distance_64_plus": 0.32,
+            "offset_only": 0.333125,
+            "onset_bearing": 0.33375
+          },
+          "weights_p_live_over_p_sample": {
+            "distance_1": 0.8763551588847899,
+            "distance_16_to_63": 2.3343309624609176,
+            "distance_2_to_15": 3.0059290812352693,
+            "distance_64_plus": 3.025999225422691,
+            "offset_only": 0.00041056783050979866,
+            "onset_bearing": 0.0004123540200749029
+          }
+        },
+        "live_stratum_sizes": {
+          "distance_1": 175349,
+          "distance_16_to_63": 7473182,
+          "distance_2_to_15": 2405813,
+          "distance_64_plus": 310000161,
+          "offset_only": 43786,
+          "onset_bearing": 44059
+        },
+        "queries": 1600,
+        "source_counts": {
+          "distance_1": 1,
+          "distance_16_to_63": 16,
+          "distance_2_to_15": 4,
+          "distance_64_plus": 512,
+          "offset_only": 533,
+          "onset_bearing": 534
+        }
+      },
+      "fixed_draw": {
+        "all_selected_positions_match_declared_strata": true,
+        "empirical_importance_weighted_joint_mass": {
+          "0|0": 1599.5609702996271,
+          "0|1": 0.21883265366172353,
+          "1|0": 0.2193723386798456,
+          "1|1": 0.0004123540200749029,
+          "2|0": 0.0004123540200749029
+        },
+        "empirical_weight_sum": 1600.0000000000086,
+        "heads": {
+          "offset": {
+            "importance_weighted_exact_count_mass": {
+              "0": 1599.780754992327,
+              "1": 0.21924500768179842
+            },
+            "unweighted_exact_count_histogram": {
+              "0": 1066,
+              "1": 534
+            },
+            "unweighted_positive_queries": 534
+          },
+          "onset": {
+            "importance_weighted_exact_count_mass": {
+              "0": 1599.779802953289,
+              "1": 0.2197846926999205,
+              "2": 0.0004123540200749029
+            },
+            "unweighted_exact_count_histogram": {
+              "0": 1066,
+              "1": 533,
+              "2": 1
+            },
+            "unweighted_positive_queries": 534
+          }
+        },
+        "joint_exact_count_histogram": {
+          "0|0": 533,
+          "0|1": 533,
+          "1|0": 532,
+          "1|1": 1,
+          "2|0": 1
+        },
+        "selection": {
+          "background_distance_summary": {
+            "distance_1": {
+              "maximum": 1,
+              "minimum": 1
+            },
+            "distance_16_to_63": {
+              "maximum": 61,
+              "minimum": 22
+            },
+            "distance_2_to_15": {
+              "maximum": 10,
+              "minimum": 3
+            },
+            "distance_64_plus": {
+              "maximum": 45680,
+              "minimum": 69
+            }
+          },
+          "background_rejection_attempts": {
+            "distance_1": 41,
+            "distance_16_to_63": 529,
+            "distance_2_to_15": 456,
+            "distance_64_plus": 529
+          },
+          "by_arrangement": {
+            "comp": 1069,
+            "solo": 531
+          },
+          "by_player": {
+            "00": 423,
+            "01": 320,
+            "02": 286,
+            "03": 279,
+            "04": 292
+          },
+          "by_stratum": {
+            "distance_1": {
+              "draws": 1,
+              "repeated_draws": 0,
+              "unique_positions": 1
+            },
+            "distance_16_to_63": {
+              "draws": 16,
+              "repeated_draws": 0,
+              "unique_positions": 16
+            },
+            "distance_2_to_15": {
+              "draws": 4,
+              "repeated_draws": 0,
+              "unique_positions": 4
+            },
+            "distance_64_plus": {
+              "draws": 512,
+              "repeated_draws": 0,
+              "unique_positions": 512
+            },
+            "offset_only": {
+              "draws": 533,
+              "repeated_draws": 2,
+              "unique_positions": 531
+            },
+            "onset_bearing": {
+              "draws": 534,
+              "repeated_draws": 3,
+              "unique_positions": 531
+            }
+          },
+          "by_track": {
+            "00_BN1-147-Gb_comp.jams": 7,
+            "00_BN1-147-Gb_solo.jams": 9,
+            "00_BN2-166-Ab_comp.jams": 1,
+            "00_BN2-166-Ab_solo.jams": 4,
+            "00_BN3-154-E_comp.jams": 3,
+            "00_BN3-154-E_solo.jams": 3,
+            "00_Funk1-114-Ab_comp.jams": 14,
+            "00_Funk1-114-Ab_solo.jams": 3,
+            "00_Funk2-108-Eb_comp.jams": 20,
+            "00_Funk2-108-Eb_solo.jams": 3,
+            "00_Funk2-119-G_comp.jams": 19,
+            "00_Funk2-119-G_solo.jams": 5,
+            "00_Funk3-112-C#_comp.jams": 20,
+            "00_Funk3-112-C#_solo.jams": 5,
+            "00_Funk3-98-A_comp.jams": 6,
+            "00_Funk3-98-A_solo.jams": 4,
+            "00_Jazz1-130-D_comp.jams": 7,
+            "00_Jazz1-130-D_solo.jams": 3,
+            "00_Jazz1-200-B_comp.jams": 6,
+            "00_Jazz1-200-B_solo.jams": 3,
+            "00_Jazz2-110-Bb_comp.jams": 8,
+            "00_Jazz2-110-Bb_solo.jams": 7,
+            "00_Jazz2-187-F#_comp.jams": 8,
+            "00_Jazz2-187-F#_solo.jams": 4,
+            "00_Jazz3-137-Eb_comp.jams": 9,
+            "00_Jazz3-137-Eb_solo.jams": 3,
+            "00_Jazz3-150-C_comp.jams": 12,
+            "00_Jazz3-150-C_solo.jams": 3,
+            "00_Rock1-130-A_comp.jams": 20,
+            "00_Rock1-130-A_solo.jams": 3,
+            "00_Rock1-90-C#_comp.jams": 23,
+            "00_Rock1-90-C#_solo.jams": 6,
+            "00_Rock2-142-D_comp.jams": 21,
+            "00_Rock2-142-D_solo.jams": 8,
+            "00_Rock2-85-F_comp.jams": 25,
+            "00_Rock2-85-F_solo.jams": 5,
+            "00_Rock3-117-Bb_comp.jams": 20,
+            "00_Rock3-117-Bb_solo.jams": 5,
+            "00_Rock3-148-C_comp.jams": 19,
+            "00_Rock3-148-C_solo.jams": 4,
+            "00_SS1-68-E_comp.jams": 10,
+            "00_SS1-68-E_solo.jams": 6,
+            "00_SS2-107-Ab_comp.jams": 8,
+            "00_SS2-107-Ab_solo.jams": 10,
+            "00_SS2-88-F_comp.jams": 8,
+            "00_SS2-88-F_solo.jams": 5,
+            "00_SS3-98-C_comp.jams": 13,
+            "00_SS3-98-C_solo.jams": 5,
+            "01_BN1-147-Gb_solo.jams": 3,
+            "01_BN2-166-Ab_comp.jams": 5,
+            "01_BN2-166-Ab_solo.jams": 4,
+            "01_BN3-154-E_comp.jams": 8,
+            "01_BN3-154-E_solo.jams": 4,
+            "01_Funk1-114-Ab_comp.jams": 10,
+            "01_Funk1-114-Ab_solo.jams": 9,
+            "01_Funk2-108-Eb_comp.jams": 9,
+            "01_Funk2-108-Eb_solo.jams": 6,
+            "01_Funk2-119-G_comp.jams": 7,
+            "01_Funk2-119-G_solo.jams": 5,
+            "01_Funk3-112-C#_comp.jams": 11,
+            "01_Funk3-112-C#_solo.jams": 5,
+            "01_Funk3-98-A_comp.jams": 7,
+            "01_Funk3-98-A_solo.jams": 8,
+            "01_Jazz1-130-D_comp.jams": 2,
+            "01_Jazz1-130-D_solo.jams": 3,
+            "01_Jazz1-200-B_comp.jams": 3,
+            "01_Jazz1-200-B_solo.jams": 3,
+            "01_Jazz2-110-Bb_comp.jams": 7,
+            "01_Jazz2-110-Bb_solo.jams": 4,
+            "01_Jazz2-187-F#_comp.jams": 5,
+            "01_Jazz2-187-F#_solo.jams": 7,
+            "01_Jazz3-137-Eb_comp.jams": 10,
+            "01_Jazz3-137-Eb_solo.jams": 8,
+            "01_Jazz3-150-C_comp.jams": 2,
+            "01_Jazz3-150-C_solo.jams": 4,
+            "01_Rock1-130-A_comp.jams": 6,
+            "01_Rock1-130-A_solo.jams": 7,
+            "01_Rock1-90-C#_comp.jams": 13,
+            "01_Rock1-90-C#_solo.jams": 3,
+            "01_Rock2-142-D_comp.jams": 9,
+            "01_Rock2-142-D_solo.jams": 8,
+            "01_Rock2-85-F_comp.jams": 7,
+            "01_Rock2-85-F_solo.jams": 11,
+            "01_Rock3-117-Bb_comp.jams": 11,
+            "01_Rock3-117-Bb_solo.jams": 9,
+            "01_Rock3-148-C_comp.jams": 5,
+            "01_Rock3-148-C_solo.jams": 3,
+            "01_SS1-68-E_comp.jams": 14,
+            "01_SS1-68-E_solo.jams": 7,
+            "01_SS2-107-Ab_comp.jams": 7,
+            "01_SS2-107-Ab_solo.jams": 9,
+            "01_SS2-88-F_comp.jams": 5,
+            "01_SS2-88-F_solo.jams": 7,
+            "01_SS3-98-C_comp.jams": 14,
+            "01_SS3-98-C_solo.jams": 6,
+            "02_BN1-147-Gb_comp.jams": 3,
+            "02_BN1-147-Gb_solo.jams": 2,
+            "02_BN2-166-Ab_comp.jams": 6,
+            "02_BN2-166-Ab_solo.jams": 3,
+            "02_BN3-154-E_comp.jams": 11,
+            "02_BN3-154-E_solo.jams": 4,
+            "02_Funk1-114-Ab_comp.jams": 12,
+            "02_Funk1-114-Ab_solo.jams": 1,
+            "02_Funk2-108-Eb_comp.jams": 17,
+            "02_Funk2-108-Eb_solo.jams": 2,
+            "02_Funk2-119-G_comp.jams": 7,
+            "02_Funk2-119-G_solo.jams": 2,
+            "02_Funk3-112-C#_comp.jams": 8,
+            "02_Funk3-112-C#_solo.jams": 7,
+            "02_Funk3-98-A_comp.jams": 7,
+            "02_Funk3-98-A_solo.jams": 4,
+            "02_Jazz1-130-D_comp.jams": 10,
+            "02_Jazz1-130-D_solo.jams": 2,
+            "02_Jazz1-200-B_comp.jams": 6,
+            "02_Jazz1-200-B_solo.jams": 2,
+            "02_Jazz2-110-Bb_comp.jams": 10,
+            "02_Jazz2-110-Bb_solo.jams": 4,
+            "02_Jazz2-187-F#_comp.jams": 10,
+            "02_Jazz2-187-F#_solo.jams": 4,
+            "02_Jazz3-137-Eb_comp.jams": 6,
+            "02_Jazz3-137-Eb_solo.jams": 6,
+            "02_Jazz3-150-C_comp.jams": 4,
+            "02_Jazz3-150-C_solo.jams": 3,
+            "02_Rock1-130-A_comp.jams": 4,
+            "02_Rock1-90-C#_comp.jams": 6,
+            "02_Rock1-90-C#_solo.jams": 3,
+            "02_Rock2-142-D_comp.jams": 6,
+            "02_Rock2-142-D_solo.jams": 1,
+            "02_Rock2-85-F_comp.jams": 7,
+            "02_Rock2-85-F_solo.jams": 6,
+            "02_Rock3-117-Bb_comp.jams": 12,
+            "02_Rock3-117-Bb_solo.jams": 4,
+            "02_Rock3-148-C_comp.jams": 11,
+            "02_Rock3-148-C_solo.jams": 3,
+            "02_SS1-68-E_comp.jams": 6,
+            "02_SS1-68-E_solo.jams": 6,
+            "02_SS2-107-Ab_comp.jams": 7,
+            "02_SS2-107-Ab_solo.jams": 7,
+            "02_SS2-88-F_comp.jams": 8,
+            "02_SS2-88-F_solo.jams": 8,
+            "02_SS3-98-C_comp.jams": 11,
+            "02_SS3-98-C_solo.jams": 7,
+            "03_BN1-147-Gb_comp.jams": 2,
+            "03_BN1-147-Gb_solo.jams": 2,
+            "03_BN2-166-Ab_comp.jams": 5,
+            "03_BN2-166-Ab_solo.jams": 2,
+            "03_BN3-154-E_comp.jams": 5,
+            "03_BN3-154-E_solo.jams": 5,
+            "03_Funk1-114-Ab_comp.jams": 7,
+            "03_Funk1-114-Ab_solo.jams": 1,
+            "03_Funk2-108-Eb_comp.jams": 13,
+            "03_Funk2-108-Eb_solo.jams": 7,
+            "03_Funk2-119-G_comp.jams": 7,
+            "03_Funk2-119-G_solo.jams": 5,
+            "03_Funk3-112-C#_comp.jams": 8,
+            "03_Funk3-112-C#_solo.jams": 5,
+            "03_Funk3-98-A_comp.jams": 9,
+            "03_Funk3-98-A_solo.jams": 3,
+            "03_Jazz1-130-D_comp.jams": 2,
+            "03_Jazz1-130-D_solo.jams": 3,
+            "03_Jazz1-200-B_comp.jams": 3,
+            "03_Jazz1-200-B_solo.jams": 3,
+            "03_Jazz2-110-Bb_comp.jams": 9,
+            "03_Jazz2-110-Bb_solo.jams": 5,
+            "03_Jazz2-187-F#_comp.jams": 5,
+            "03_Jazz2-187-F#_solo.jams": 2,
+            "03_Jazz3-137-Eb_comp.jams": 6,
+            "03_Jazz3-150-C_comp.jams": 2,
+            "03_Jazz3-150-C_solo.jams": 4,
+            "03_Rock1-130-A_comp.jams": 11,
+            "03_Rock1-130-A_solo.jams": 3,
+            "03_Rock1-90-C#_comp.jams": 6,
+            "03_Rock1-90-C#_solo.jams": 4,
+            "03_Rock2-142-D_comp.jams": 4,
+            "03_Rock2-142-D_solo.jams": 4,
+            "03_Rock2-85-F_comp.jams": 12,
+            "03_Rock2-85-F_solo.jams": 7,
+            "03_Rock3-117-Bb_comp.jams": 14,
+            "03_Rock3-117-Bb_solo.jams": 4,
+            "03_Rock3-148-C_comp.jams": 11,
+            "03_Rock3-148-C_solo.jams": 1,
+            "03_SS1-68-E_comp.jams": 19,
+            "03_SS1-68-E_solo.jams": 6,
+            "03_SS2-107-Ab_comp.jams": 12,
+            "03_SS2-107-Ab_solo.jams": 3,
+            "03_SS2-88-F_comp.jams": 9,
+            "03_SS2-88-F_solo.jams": 3,
+            "03_SS3-98-C_comp.jams": 11,
+            "03_SS3-98-C_solo.jams": 5,
+            "04_BN1-147-Gb_comp.jams": 11,
+            "04_BN1-147-Gb_solo.jams": 3,
+            "04_BN2-166-Ab_comp.jams": 3,
+            "04_BN2-166-Ab_solo.jams": 7,
+            "04_BN3-154-E_comp.jams": 8,
+            "04_BN3-154-E_solo.jams": 2,
+            "04_Funk1-114-Ab_comp.jams": 7,
+            "04_Funk1-114-Ab_solo.jams": 5,
+            "04_Funk2-108-Eb_comp.jams": 14,
+            "04_Funk2-108-Eb_solo.jams": 4,
+            "04_Funk2-119-G_comp.jams": 11,
+            "04_Funk2-119-G_solo.jams": 8,
+            "04_Funk3-112-C#_comp.jams": 17,
+            "04_Funk3-112-C#_solo.jams": 4,
+            "04_Funk3-98-A_comp.jams": 8,
+            "04_Funk3-98-A_solo.jams": 4,
+            "04_Jazz1-130-D_comp.jams": 5,
+            "04_Jazz1-130-D_solo.jams": 1,
+            "04_Jazz1-200-B_comp.jams": 3,
+            "04_Jazz1-200-B_solo.jams": 3,
+            "04_Jazz2-110-Bb_comp.jams": 6,
+            "04_Jazz2-110-Bb_solo.jams": 2,
+            "04_Jazz2-187-F#_comp.jams": 2,
+            "04_Jazz2-187-F#_solo.jams": 3,
+            "04_Jazz3-137-Eb_comp.jams": 9,
+            "04_Jazz3-137-Eb_solo.jams": 3,
+            "04_Jazz3-150-C_comp.jams": 5,
+            "04_Jazz3-150-C_solo.jams": 5,
+            "04_Rock1-130-A_comp.jams": 3,
+            "04_Rock1-130-A_solo.jams": 1,
+            "04_Rock1-90-C#_comp.jams": 4,
+            "04_Rock1-90-C#_solo.jams": 3,
+            "04_Rock2-142-D_comp.jams": 13,
+            "04_Rock2-142-D_solo.jams": 3,
+            "04_Rock2-85-F_solo.jams": 6,
+            "04_Rock3-117-Bb_comp.jams": 10,
+            "04_Rock3-117-Bb_solo.jams": 5,
+            "04_Rock3-148-C_comp.jams": 13,
+            "04_Rock3-148-C_solo.jams": 3,
+            "04_SS1-68-E_comp.jams": 17,
+            "04_SS1-68-E_solo.jams": 6,
+            "04_SS2-107-Ab_comp.jams": 12,
+            "04_SS2-107-Ab_solo.jams": 3,
+            "04_SS2-88-F_comp.jams": 6,
+            "04_SS2-88-F_solo.jams": 1,
+            "04_SS3-98-C_comp.jams": 11,
+            "04_SS3-98-C_solo.jams": 9
+          },
+          "contexts_requiring_left_zero_initialization": 3,
+          "left_zero_padding_samples_total": 10842,
+          "right_padding_samples": 0,
+          "track_exposure": {
+            "all_tracks_query_count_summary": {
+              "maximum": 25,
+              "median_lower": 6,
+              "minimum": 0
+            },
+            "missing_track_count": 4,
+            "missing_tracks": [
+              "01_BN1-147-Gb_comp.jams",
+              "02_Rock1-130-A_solo.jams",
+              "03_Jazz3-137-Eb_solo.jams",
+              "04_Rock2-85-F_comp.jams"
+            ],
+            "represented_tracks": 236,
+            "represented_tracks_query_count_summary": {
+              "maximum": 25,
+              "median_lower": 6,
+              "minimum": 1
+            },
+            "selected_queries_reconciled": 1600,
+            "total_query_accounting_exact": true,
+            "total_tracks": 240
+          }
+        },
+        "source_counts": {
+          "distance_1": 1,
+          "distance_16_to_63": 16,
+          "distance_2_to_15": 4,
+          "distance_64_plus": 512,
+          "offset_only": 533,
+          "onset_bearing": 534
+        }
+      }
+    },
+    "validation": {
+      "analytical": {
+        "guards": {
+          "analytical_sampled_mean_weight_within_1e_12": true,
+          "analytical_weighted_joint_prior_within_1e_12": true,
+          "analytical_weighted_stratum_prior_within_1e_12": true,
+          "distance_1_draws_over_20_fresh_epochs": 20,
+          "distance_1_exposure_at_least_20": true,
+          "distance_64_plus_fraction_at_least_0_8": true,
+          "distance_64_plus_fraction_of_background_draws": 0.9548872180451128,
+          "effective_sample_size_ratio_at_least_0_25": true,
+          "passes_all_train_selection_gates": true
+        },
+        "heads": {
+          "offset": {
+            "constant_categorical_optimum": {
+              "full_stream": {
+                "class_probabilities": {
+                  "0": 0.9998860607071831,
+                  "1": 0.00011384284647864774,
+                  "2": 9.644633822187673e-08
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.00011393929281686962
+              },
+              "importance_weighted": {
+                "class_probabilities": {
+                  "0": 0.9998860607071831,
+                  "1": 0.00011384284647864774,
+                  "2": 9.644633822187673e-08
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.00011393929281686962
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.6672530539174389,
+                  "1": 0.3324652857691346,
+                  "2": 0.0002816603134265142
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.3327469460825611
+              }
+            },
+            "diagnostic_mass_for_fixed_query_count": {
+              "importance_weighted_negative": 399.9544242828732,
+              "importance_weighted_positive": 0.04557571712674785
+            },
+            "full_stream_positive_probability": 0.00011393929281686962,
+            "importance_weighted_positive_probability": 0.00011393929281686962,
+            "unweighted_over_full": 2920.388022921758,
+            "unweighted_positive_probability": 0.3327469460825611
+          },
+          "onset": {
+            "constant_categorical_optimum": {
+              "full_stream": {
+                "class_probabilities": {
+                  "0": 0.9998855181965306,
+                  "1": 0.00011395134860914736,
+                  "2": 5.183990679425875e-07,
+                  "3": 1.2055792277734591e-08
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.00011448180346936769
+              },
+              "importance_weighted": {
+                "class_probabilities": {
+                  "0": 0.9998855181965306,
+                  "1": 0.00011395134860914738,
+                  "2": 5.183990679425875e-07,
+                  "3": 1.2055792277734591e-08
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.0001144818034693677
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.665,
+                  "1": 0.3334477674810447,
+                  "2": 0.0015169545071609099,
+                  "3": 3.5278011794439764e-05
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.335
+              }
+            },
+            "diagnostic_mass_for_fixed_query_count": {
+              "importance_weighted_negative": 399.9542072786122,
+              "importance_weighted_positive": 0.04579272138774708
+            },
+            "full_stream_positive_probability": 0.00011448180346936769,
+            "importance_weighted_positive_probability": 0.0001144818034693677,
+            "unweighted_over_full": 2926.229233361415,
+            "unweighted_positive_probability": 0.335
+          }
+        },
+        "importance_correction": {
+          "analytical_sampled_mean_weight": 1.0,
+          "analytical_sampled_mean_weight_absolute_error_from_one": 0.0,
+          "analytical_weighted_joint_max_absolute_error": 1.3552527156068805e-20,
+          "analytical_weighted_joint_probabilities": {
+            "0|0": 0.9997716632942597,
+            "0|1": 0.0001137584559327036,
+            "0|2": 9.644633822187673e-08,
+            "1|0": 0.00011386695806320323,
+            "1|1": 8.439054594414215e-08,
+            "2|0": 5.183990679425875e-07,
+            "3|0": 1.2055792277734591e-08
+          },
+          "analytical_weighted_stratum_max_absolute_error": 1.3552527156068805e-20,
+          "analytical_weighted_stratum_probabilities": {
+            "distance_1": 0.0004559741755284777,
+            "distance_16_to_63": 0.01978343456983969,
+            "distance_2_to_15": 0.006273074786419584,
+            "distance_64_plus": 0.973259179762472,
+            "offset_only": 0.00011385490227092548,
+            "onset_bearing": 0.00011448180346936769
+          },
+          "approved_for_training_loss": false,
+          "effective_sample_size": 131.64933474997432,
+          "effective_sample_size_ratio": 0.3291233368749358,
+          "full_stream_joint_probabilities": {
+            "0|0": 0.9997716632942597,
+            "0|1": 0.0001137584559327036,
+            "0|2": 9.644633822187673e-08,
+            "1|0": 0.00011386695806320322,
+            "1|1": 8.439054594414213e-08,
+            "2|0": 5.183990679425875e-07,
+            "3|0": 1.2055792277734591e-08
+          },
+          "live_stratum_probabilities": {
+            "distance_1": 0.0004559741755284777,
+            "distance_16_to_63": 0.01978343456983969,
+            "distance_2_to_15": 0.006273074786419584,
+            "distance_64_plus": 0.973259179762472,
+            "offset_only": 0.00011385490227092548,
+            "onset_bearing": 0.00011448180346936768
+          },
+          "maximum_over_minimum": 8970.014058136374,
+          "maximum_weight": 3.0653832433463686,
+          "minimum_weight": 0.00034173672677423187,
+          "sampled_stratum_probabilities": {
+            "distance_1": 0.0025,
+            "distance_16_to_63": 0.01,
+            "distance_2_to_15": 0.0025,
+            "distance_64_plus": 0.3175,
+            "offset_only": 0.3325,
+            "onset_bearing": 0.335
+          },
+          "weights_p_live_over_p_sample": {
+            "distance_1": 0.18238967021139108,
+            "distance_16_to_63": 1.9783434569839689,
+            "distance_2_to_15": 2.5092299145678334,
+            "distance_64_plus": 3.0653832433463686,
+            "offset_only": 0.0003424207587095503,
+            "onset_bearing": 0.00034173672677423187
+          }
+        },
+        "live_stratum_sizes": {
+          "distance_1": 37822,
+          "distance_16_to_63": 1640990,
+          "distance_2_to_15": 520337,
+          "distance_64_plus": 80729591,
+          "offset_only": 9444,
+          "onset_bearing": 9496
+        },
+        "queries": 400,
+        "source_counts": {
+          "distance_1": 1,
+          "distance_16_to_63": 4,
+          "distance_2_to_15": 1,
+          "distance_64_plus": 127,
+          "offset_only": 133,
+          "onset_bearing": 134
+        }
+      },
+      "fixed_draw": {
+        "all_selected_positions_match_declared_strata": true,
+        "empirical_importance_weighted_joint_mass": {
+          "0|0": 399.9086653177046,
+          "0|1": 0.045541960908370115,
+          "1|0": 0.04510924793419872,
+          "2|0": 0.0006834734535484637
+        },
+        "empirical_weight_sum": 400.00000000000074,
+        "heads": {
+          "offset": {
+            "importance_weighted_exact_count_mass": {
+              "0": 399.95445803909234,
+              "1": 0.045541960908370115
+            },
+            "unweighted_exact_count_histogram": {
+              "0": 267,
+              "1": 133
+            },
+            "unweighted_positive_queries": 133
+          },
+          "onset": {
+            "importance_weighted_exact_count_mass": {
+              "0": 399.954207278613,
+              "1": 0.04510924793419872,
+              "2": 0.0006834734535484637
+            },
+            "unweighted_exact_count_histogram": {
+              "0": 266,
+              "1": 132,
+              "2": 2
+            },
+            "unweighted_positive_queries": 134
+          }
+        },
+        "joint_exact_count_histogram": {
+          "0|0": 133,
+          "0|1": 133,
+          "1|0": 132,
+          "2|0": 2
+        },
+        "selection": {
+          "background_distance_summary": {
+            "distance_1": {
+              "maximum": 1,
+              "minimum": 1
+            },
+            "distance_16_to_63": {
+              "maximum": 61,
+              "minimum": 18
+            },
+            "distance_2_to_15": {
+              "maximum": 9,
+              "minimum": 9
+            },
+            "distance_64_plus": {
+              "maximum": 40519,
+              "minimum": 85
+            }
+          },
+          "background_rejection_attempts": {
+            "distance_1": 1281,
+            "distance_16_to_63": 264,
+            "distance_2_to_15": 125,
+            "distance_64_plus": 129
+          },
+          "by_arrangement": {
+            "comp": 257,
+            "solo": 143
+          },
+          "by_player": {
+            "00": 66,
+            "01": 85,
+            "02": 91,
+            "03": 81,
+            "04": 77
+          },
+          "by_stratum": {
+            "distance_1": {
+              "draws": 1,
+              "repeated_draws": 0,
+              "unique_positions": 1
+            },
+            "distance_16_to_63": {
+              "draws": 4,
+              "repeated_draws": 0,
+              "unique_positions": 4
+            },
+            "distance_2_to_15": {
+              "draws": 1,
+              "repeated_draws": 0,
+              "unique_positions": 1
+            },
+            "distance_64_plus": {
+              "draws": 127,
+              "repeated_draws": 0,
+              "unique_positions": 127
+            },
+            "offset_only": {
+              "draws": 133,
+              "repeated_draws": 1,
+              "unique_positions": 132
+            },
+            "onset_bearing": {
+              "draws": 134,
+              "repeated_draws": 1,
+              "unique_positions": 133
+            }
+          },
+          "by_track": {
+            "00_BN1-129-Eb_comp.jams": 2,
+            "00_BN1-129-Eb_solo.jams": 4,
+            "00_BN2-131-B_comp.jams": 9,
+            "00_BN2-131-B_solo.jams": 8,
+            "00_BN3-119-G_comp.jams": 3,
+            "00_BN3-119-G_solo.jams": 5,
+            "00_Funk1-97-C_comp.jams": 11,
+            "00_Funk1-97-C_solo.jams": 5,
+            "00_SS1-100-C#_comp.jams": 5,
+            "00_SS1-100-C#_solo.jams": 3,
+            "00_SS3-84-Bb_comp.jams": 7,
+            "00_SS3-84-Bb_solo.jams": 4,
+            "01_BN1-129-Eb_comp.jams": 5,
+            "01_BN1-129-Eb_solo.jams": 3,
+            "01_BN2-131-B_comp.jams": 6,
+            "01_BN2-131-B_solo.jams": 6,
+            "01_BN3-119-G_comp.jams": 8,
+            "01_BN3-119-G_solo.jams": 4,
+            "01_Funk1-97-C_comp.jams": 14,
+            "01_Funk1-97-C_solo.jams": 7,
+            "01_SS1-100-C#_comp.jams": 12,
+            "01_SS1-100-C#_solo.jams": 2,
+            "01_SS3-84-Bb_comp.jams": 9,
+            "01_SS3-84-Bb_solo.jams": 9,
+            "02_BN1-129-Eb_comp.jams": 8,
+            "02_BN1-129-Eb_solo.jams": 5,
+            "02_BN2-131-B_comp.jams": 14,
+            "02_BN2-131-B_solo.jams": 1,
+            "02_BN3-119-G_comp.jams": 6,
+            "02_BN3-119-G_solo.jams": 5,
+            "02_Funk1-97-C_comp.jams": 7,
+            "02_Funk1-97-C_solo.jams": 5,
+            "02_SS1-100-C#_comp.jams": 14,
+            "02_SS1-100-C#_solo.jams": 2,
+            "02_SS3-84-Bb_comp.jams": 16,
+            "02_SS3-84-Bb_solo.jams": 8,
+            "03_BN1-129-Eb_comp.jams": 8,
+            "03_BN1-129-Eb_solo.jams": 3,
+            "03_BN2-131-B_comp.jams": 12,
+            "03_BN2-131-B_solo.jams": 5,
+            "03_BN3-119-G_comp.jams": 4,
+            "03_BN3-119-G_solo.jams": 3,
+            "03_Funk1-97-C_comp.jams": 7,
+            "03_Funk1-97-C_solo.jams": 5,
+            "03_SS1-100-C#_comp.jams": 16,
+            "03_SS1-100-C#_solo.jams": 4,
+            "03_SS3-84-Bb_comp.jams": 10,
+            "03_SS3-84-Bb_solo.jams": 4,
+            "04_BN1-129-Eb_comp.jams": 5,
+            "04_BN1-129-Eb_solo.jams": 3,
+            "04_BN2-131-B_comp.jams": 7,
+            "04_BN2-131-B_solo.jams": 6,
+            "04_BN3-119-G_comp.jams": 6,
+            "04_BN3-119-G_solo.jams": 6,
+            "04_Funk1-97-C_comp.jams": 7,
+            "04_Funk1-97-C_solo.jams": 9,
+            "04_SS1-100-C#_comp.jams": 7,
+            "04_SS1-100-C#_solo.jams": 4,
+            "04_SS3-84-Bb_comp.jams": 12,
+            "04_SS3-84-Bb_solo.jams": 5
+          },
+          "contexts_requiring_left_zero_initialization": 2,
+          "left_zero_padding_samples_total": 3943,
+          "right_padding_samples": 0,
+          "track_exposure": {
+            "all_tracks_query_count_summary": {
+              "maximum": 16,
+              "median_lower": 6,
+              "minimum": 1
+            },
+            "missing_track_count": 0,
+            "missing_tracks": [],
+            "represented_tracks": 60,
+            "represented_tracks_query_count_summary": {
+              "maximum": 16,
+              "median_lower": 6,
+              "minimum": 1
+            },
+            "selected_queries_reconciled": 400,
+            "total_query_accounting_exact": true,
+            "total_tracks": 60
+          }
+        },
+        "source_counts": {
+          "distance_1": 1,
+          "distance_16_to_63": 4,
+          "distance_2_to_15": 1,
+          "distance_64_plus": 127,
+          "offset_only": 133,
+          "onset_bearing": 134
+        }
+      }
+    }
+  },
+  "status": "completed_audit_only",
+  "train_grid": {
+    "1": {
+      "guards": {
+        "analytical_sampled_mean_weight_within_1e_12": true,
+        "analytical_weighted_joint_prior_within_1e_12": true,
+        "analytical_weighted_stratum_prior_within_1e_12": true,
+        "distance_1_draws_over_20_fresh_epochs": 20,
+        "distance_1_exposure_at_least_20": true,
+        "distance_64_plus_fraction_at_least_0_8": true,
+        "distance_64_plus_fraction_of_background_draws": 0.9606003752345216,
+        "effective_sample_size_ratio_at_least_0_25": true,
+        "passes_all_train_selection_gates": true
+      },
+      "heads": {
+        "offset": {
+          "constant_categorical_optimum": {
+            "full_stream": {
+              "class_probabilities": {
+                "0": 0.9998630827817688,
+                "1": 0.0001367298016023185,
+                "2": 1.84293018402595e-07,
+                "3": 3.1236104813999153e-09
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.0001369172182312025
+            },
+            "importance_weighted": {
+              "class_probabilities": {
+                "0": 0.9998630827817688,
+                "1": 0.00013672980160231847,
+                "2": 1.8429301840259498e-07,
+                "3": 3.123610481399915e-09
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.00013691721823120247
+            },
+            "unweighted": {
+              "class_probabilities": {
+                "0": 0.6665189717197394,
+                "1": 0.33302454675648574,
+                "2": 0.000448873498378477,
+                "3": 7.608025396245374e-06
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.33348102828026044
+            }
+          },
+          "diagnostic_mass_for_fixed_query_count": {
+            "importance_weighted_negative": 1599.78093245083,
+            "importance_weighted_positive": 0.21906754916992394
+          },
+          "full_stream_positive_probability": 0.00013691721823120247,
+          "importance_weighted_positive_probability": 0.00013691721823120247,
+          "unweighted_over_full": 2435.6398164410157,
+          "unweighted_positive_probability": 0.3334810282802605
+        },
+        "onset": {
+          "constant_categorical_optimum": {
+            "full_stream": {
+              "class_probabilities": {
+                "0": 0.9998623768458,
+                "1": 0.00013712962374393768,
+                "2": 4.841596246169869e-07,
+                "3": 9.370831444199747e-09
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.00013762315419999887
+            },
+            "importance_weighted": {
+              "class_probabilities": {
+                "0": 0.9998623768458,
+                "1": 0.00013712962374393765,
+                "2": 4.841596246169868e-07,
+                "3": 9.370831444199745e-09
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.00013762315419999885
+            },
+            "unweighted": {
+              "class_probabilities": {
+                "0": 0.66625,
+                "1": 0.3325531389727411,
+                "2": 0.0011741358178805692,
+                "3": 2.2725209378333597e-05
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.33375
+            }
+          },
+          "diagnostic_mass_for_fixed_query_count": {
+            "importance_weighted_negative": 1599.77980295328,
+            "importance_weighted_positive": 0.22019704671999815
+          },
+          "full_stream_positive_probability": 0.00013762315419999885,
+          "importance_weighted_positive_probability": 0.00013762315419999885,
+          "unweighted_over_full": 2425.100644873919,
+          "unweighted_positive_probability": 0.33375
+        }
+      },
+      "importance_correction": {
+        "analytical_sampled_mean_weight": 1.0,
+        "analytical_sampled_mean_weight_absolute_error_from_one": 0.0,
+        "analytical_weighted_joint_max_absolute_error": 1.1102230246251565e-16,
+        "analytical_weighted_joint_probabilities": {
+          "0|0": 0.9997256064372615,
+          "0|1": 0.00013658299190969268,
+          "0|2": 1.8429301840259498e-07,
+          "0|3": 3.123610481399915e-09,
+          "1|0": 0.00013698281405131186,
+          "1|1": 1.4680969262579599e-07,
+          "2|0": 4.841596246169868e-07,
+          "3|0": 9.370831444199745e-09
+        },
+        "analytical_weighted_stratum_max_absolute_error": 8.673617379884035e-19,
+        "analytical_weighted_stratum_probabilities": {
+          "distance_1": 0.0005477219743029937,
+          "distance_16_to_63": 0.023343309624609176,
+          "distance_2_to_15": 0.007514822703088174,
+          "distance_64_plus": 0.9683197521352611,
+          "offset_only": 0.00013677040853857667,
+          "onset_bearing": 0.00013762315419999885
+        },
+        "approved_for_training_loss": false,
+        "effective_sample_size": 531.9688392311381,
+        "effective_sample_size_ratio": 0.3324805245194613,
+        "full_stream_joint_probabilities": {
+          "0|0": 0.9997256064372614,
+          "0|1": 0.00013658299190969268,
+          "0|2": 1.8429301840259498e-07,
+          "0|3": 3.123610481399915e-09,
+          "1|0": 0.00013698281405131186,
+          "1|1": 1.4680969262579599e-07,
+          "2|0": 4.841596246169868e-07,
+          "3|0": 9.370831444199745e-09
+        },
+        "live_stratum_probabilities": {
+          "distance_1": 0.0005477219743029937,
+          "distance_16_to_63": 0.023343309624609176,
+          "distance_2_to_15": 0.007514822703088173,
+          "distance_64_plus": 0.9683197521352611,
+          "offset_only": 0.00013677040853857667,
+          "onset_bearing": 0.00013762315419999885
+        },
+        "maximum_over_minimum": 7370.2784304004845,
+        "maximum_weight": 3.025999225422691,
+        "minimum_weight": 0.00041056783050979866,
+        "sampled_stratum_probabilities": {
+          "distance_1": 0.000625,
+          "distance_16_to_63": 0.01,
+          "distance_2_to_15": 0.0025,
+          "distance_64_plus": 0.32,
+          "offset_only": 0.333125,
+          "onset_bearing": 0.33375
+        },
+        "weights_p_live_over_p_sample": {
+          "distance_1": 0.8763551588847899,
+          "distance_16_to_63": 2.3343309624609176,
+          "distance_2_to_15": 3.0059290812352693,
+          "distance_64_plus": 3.025999225422691,
+          "offset_only": 0.00041056783050979866,
+          "onset_bearing": 0.0004123540200749029
+        }
+      },
+      "live_stratum_sizes": {
+        "distance_1": 175349,
+        "distance_16_to_63": 7473182,
+        "distance_2_to_15": 2405813,
+        "distance_64_plus": 310000161,
+        "offset_only": 43786,
+        "onset_bearing": 44059
+      },
+      "queries": 1600,
+      "source_counts": {
+        "distance_1": 1,
+        "distance_16_to_63": 16,
+        "distance_2_to_15": 4,
+        "distance_64_plus": 512,
+        "offset_only": 533,
+        "onset_bearing": 534
+      }
+    },
+    "2": {
+      "guards": {
+        "analytical_sampled_mean_weight_within_1e_12": true,
+        "analytical_weighted_joint_prior_within_1e_12": true,
+        "analytical_weighted_stratum_prior_within_1e_12": true,
+        "distance_1_draws_over_20_fresh_epochs": 40,
+        "distance_1_exposure_at_least_20": true,
+        "distance_64_plus_fraction_at_least_0_8": true,
+        "distance_64_plus_fraction_of_background_draws": 0.9212007504690432,
+        "effective_sample_size_ratio_at_least_0_25": true,
+        "passes_all_train_selection_gates": true
+      },
+      "heads": {
+        "offset": {
+          "constant_categorical_optimum": {
+            "full_stream": {
+              "class_probabilities": {
+                "0": 0.9998630827817688,
+                "1": 0.0001367298016023185,
+                "2": 1.84293018402595e-07,
+                "3": 3.1236104813999153e-09
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.0001369172182312025
+            },
+            "importance_weighted": {
+              "class_probabilities": {
+                "0": 0.9998630827817688,
+                "1": 0.00013672980160231847,
+                "2": 1.8429301840259498e-07,
+                "3": 3.123610481399915e-09
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.00013691721823120247
+            },
+            "unweighted": {
+              "class_probabilities": {
+                "0": 0.6665189717197394,
+                "1": 0.33302454675648574,
+                "2": 0.000448873498378477,
+                "3": 7.608025396245374e-06
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.33348102828026044
+            }
+          },
+          "diagnostic_mass_for_fixed_query_count": {
+            "importance_weighted_negative": 1599.78093245083,
+            "importance_weighted_positive": 0.21906754916992394
+          },
+          "full_stream_positive_probability": 0.00013691721823120247,
+          "importance_weighted_positive_probability": 0.00013691721823120247,
+          "unweighted_over_full": 2435.6398164410157,
+          "unweighted_positive_probability": 0.3334810282802605
+        },
+        "onset": {
+          "constant_categorical_optimum": {
+            "full_stream": {
+              "class_probabilities": {
+                "0": 0.9998623768458,
+                "1": 0.00013712962374393768,
+                "2": 4.841596246169869e-07,
+                "3": 9.370831444199747e-09
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.00013762315419999887
+            },
+            "importance_weighted": {
+              "class_probabilities": {
+                "0": 0.9998623768458,
+                "1": 0.00013712962374393765,
+                "2": 4.841596246169868e-07,
+                "3": 9.370831444199745e-09
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.00013762315419999885
+            },
+            "unweighted": {
+              "class_probabilities": {
+                "0": 0.66625,
+                "1": 0.3325531389727411,
+                "2": 0.0011741358178805692,
+                "3": 2.2725209378333597e-05
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.33375
+            }
+          },
+          "diagnostic_mass_for_fixed_query_count": {
+            "importance_weighted_negative": 1599.77980295328,
+            "importance_weighted_positive": 0.22019704671999815
+          },
+          "full_stream_positive_probability": 0.00013762315419999885,
+          "importance_weighted_positive_probability": 0.00013762315419999885,
+          "unweighted_over_full": 2425.100644873919,
+          "unweighted_positive_probability": 0.33375
+        }
+      },
+      "importance_correction": {
+        "analytical_sampled_mean_weight": 1.0,
+        "analytical_sampled_mean_weight_absolute_error_from_one": 0.0,
+        "analytical_weighted_joint_max_absolute_error": 1.1102230246251565e-16,
+        "analytical_weighted_joint_probabilities": {
+          "0|0": 0.9997256064372615,
+          "0|1": 0.00013658299190969268,
+          "0|2": 1.8429301840259498e-07,
+          "0|3": 3.123610481399915e-09,
+          "1|0": 0.00013698281405131186,
+          "1|1": 1.4680969262579599e-07,
+          "2|0": 4.841596246169868e-07,
+          "3|0": 9.370831444199745e-09
+        },
+        "analytical_weighted_stratum_max_absolute_error": 8.673617379884035e-19,
+        "analytical_weighted_stratum_probabilities": {
+          "distance_1": 0.0005477219743029937,
+          "distance_16_to_63": 0.023343309624609176,
+          "distance_2_to_15": 0.007514822703088174,
+          "distance_64_plus": 0.9683197521352611,
+          "offset_only": 0.00013677040853857667,
+          "onset_bearing": 0.00013762315419999885
+        },
+        "approved_for_training_loss": false,
+        "effective_sample_size": 517.0904204309409,
+        "effective_sample_size_ratio": 0.32318151276933804,
+        "full_stream_joint_probabilities": {
+          "0|0": 0.9997256064372614,
+          "0|1": 0.00013658299190969268,
+          "0|2": 1.8429301840259498e-07,
+          "0|3": 3.123610481399915e-09,
+          "1|0": 0.00013698281405131186,
+          "1|1": 1.4680969262579599e-07,
+          "2|0": 4.841596246169868e-07,
+          "3|0": 9.370831444199745e-09
+        },
+        "live_stratum_probabilities": {
+          "distance_1": 0.0005477219743029937,
+          "distance_16_to_63": 0.023343309624609176,
+          "distance_2_to_15": 0.007514822703088173,
+          "distance_64_plus": 0.9683197521352611,
+          "offset_only": 0.00013677040853857667,
+          "onset_bearing": 0.00013762315419999885
+        },
+        "maximum_over_minimum": 7685.504188116187,
+        "maximum_weight": 3.1554207808888344,
+        "minimum_weight": 0.00041056783050979866,
+        "sampled_stratum_probabilities": {
+          "distance_1": 0.00125,
+          "distance_16_to_63": 0.02,
+          "distance_2_to_15": 0.005,
+          "distance_64_plus": 0.306875,
+          "offset_only": 0.333125,
+          "onset_bearing": 0.33375
+        },
+        "weights_p_live_over_p_sample": {
+          "distance_1": 0.43817757944239494,
+          "distance_16_to_63": 1.1671654812304588,
+          "distance_2_to_15": 1.5029645406176346,
+          "distance_64_plus": 3.1554207808888344,
+          "offset_only": 0.00041056783050979866,
+          "onset_bearing": 0.0004123540200749029
+        }
+      },
+      "live_stratum_sizes": {
+        "distance_1": 175349,
+        "distance_16_to_63": 7473182,
+        "distance_2_to_15": 2405813,
+        "distance_64_plus": 310000161,
+        "offset_only": 43786,
+        "onset_bearing": 44059
+      },
+      "queries": 1600,
+      "source_counts": {
+        "distance_1": 2,
+        "distance_16_to_63": 32,
+        "distance_2_to_15": 8,
+        "distance_64_plus": 491,
+        "offset_only": 533,
+        "onset_bearing": 534
+      }
+    },
+    "4": {
+      "guards": {
+        "analytical_sampled_mean_weight_within_1e_12": true,
+        "analytical_weighted_joint_prior_within_1e_12": true,
+        "analytical_weighted_stratum_prior_within_1e_12": true,
+        "distance_1_draws_over_20_fresh_epochs": 80,
+        "distance_1_exposure_at_least_20": true,
+        "distance_64_plus_fraction_at_least_0_8": true,
+        "distance_64_plus_fraction_of_background_draws": 0.8424015009380863,
+        "effective_sample_size_ratio_at_least_0_25": true,
+        "passes_all_train_selection_gates": true
+      },
+      "heads": {
+        "offset": {
+          "constant_categorical_optimum": {
+            "full_stream": {
+              "class_probabilities": {
+                "0": 0.9998630827817688,
+                "1": 0.0001367298016023185,
+                "2": 1.84293018402595e-07,
+                "3": 3.1236104813999153e-09
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.0001369172182312025
+            },
+            "importance_weighted": {
+              "class_probabilities": {
+                "0": 0.9998630827817688,
+                "1": 0.00013672980160231847,
+                "2": 1.8429301840259498e-07,
+                "3": 3.123610481399915e-09
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.00013691721823120247
+            },
+            "unweighted": {
+              "class_probabilities": {
+                "0": 0.6665189717197394,
+                "1": 0.33302454675648574,
+                "2": 0.000448873498378477,
+                "3": 7.608025396245374e-06
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.33348102828026044
+            }
+          },
+          "diagnostic_mass_for_fixed_query_count": {
+            "importance_weighted_negative": 1599.78093245083,
+            "importance_weighted_positive": 0.21906754916992394
+          },
+          "full_stream_positive_probability": 0.00013691721823120247,
+          "importance_weighted_positive_probability": 0.00013691721823120247,
+          "unweighted_over_full": 2435.6398164410157,
+          "unweighted_positive_probability": 0.3334810282802605
+        },
+        "onset": {
+          "constant_categorical_optimum": {
+            "full_stream": {
+              "class_probabilities": {
+                "0": 0.9998623768458,
+                "1": 0.00013712962374393768,
+                "2": 4.841596246169869e-07,
+                "3": 9.370831444199747e-09
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.00013762315419999887
+            },
+            "importance_weighted": {
+              "class_probabilities": {
+                "0": 0.9998623768458,
+                "1": 0.00013712962374393765,
+                "2": 4.841596246169868e-07,
+                "3": 9.370831444199745e-09
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.00013762315419999885
+            },
+            "unweighted": {
+              "class_probabilities": {
+                "0": 0.66625,
+                "1": 0.3325531389727411,
+                "2": 0.0011741358178805692,
+                "3": 2.2725209378333597e-05
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.33375
+            }
+          },
+          "diagnostic_mass_for_fixed_query_count": {
+            "importance_weighted_negative": 1599.77980295328,
+            "importance_weighted_positive": 0.22019704671999815
+          },
+          "full_stream_positive_probability": 0.00013762315419999885,
+          "importance_weighted_positive_probability": 0.00013762315419999885,
+          "unweighted_over_full": 2425.100644873919,
+          "unweighted_positive_probability": 0.33375
+        }
+      },
+      "importance_correction": {
+        "analytical_sampled_mean_weight": 1.0,
+        "analytical_sampled_mean_weight_absolute_error_from_one": 0.0,
+        "analytical_weighted_joint_max_absolute_error": 1.1102230246251565e-16,
+        "analytical_weighted_joint_probabilities": {
+          "0|0": 0.9997256064372615,
+          "0|1": 0.00013658299190969268,
+          "0|2": 1.8429301840259498e-07,
+          "0|3": 3.123610481399915e-09,
+          "1|0": 0.00013698281405131186,
+          "1|1": 1.4680969262579599e-07,
+          "2|0": 4.841596246169868e-07,
+          "3|0": 9.370831444199745e-09
+        },
+        "analytical_weighted_stratum_max_absolute_error": 8.673617379884035e-19,
+        "analytical_weighted_stratum_probabilities": {
+          "distance_1": 0.0005477219743029937,
+          "distance_16_to_63": 0.023343309624609176,
+          "distance_2_to_15": 0.007514822703088174,
+          "distance_64_plus": 0.9683197521352611,
+          "offset_only": 0.00013677040853857667,
+          "onset_bearing": 0.00013762315419999885
+        },
+        "approved_for_training_loss": false,
+        "effective_sample_size": 476.0973192801642,
+        "effective_sample_size_ratio": 0.29756082455010263,
+        "full_stream_joint_probabilities": {
+          "0|0": 0.9997256064372614,
+          "0|1": 0.00013658299190969268,
+          "0|2": 1.8429301840259498e-07,
+          "0|3": 3.123610481399915e-09,
+          "1|0": 0.00013698281405131186,
+          "1|1": 1.4680969262579599e-07,
+          "2|0": 4.841596246169868e-07,
+          "3|0": 9.370831444199745e-09
+        },
+        "live_stratum_probabilities": {
+          "distance_1": 0.0005477219743029937,
+          "distance_16_to_63": 0.023343309624609176,
+          "distance_2_to_15": 0.007514822703088173,
+          "distance_64_plus": 0.9683197521352611,
+          "offset_only": 0.00013677040853857667,
+          "onset_bearing": 0.00013762315419999885
+        },
+        "maximum_over_minimum": 8404.415493017923,
+        "maximum_weight": 3.4505826356713087,
+        "minimum_weight": 0.00041056783050979866,
+        "sampled_stratum_probabilities": {
+          "distance_1": 0.0025,
+          "distance_16_to_63": 0.04,
+          "distance_2_to_15": 0.01,
+          "distance_64_plus": 0.280625,
+          "offset_only": 0.333125,
+          "onset_bearing": 0.33375
+        },
+        "weights_p_live_over_p_sample": {
+          "distance_1": 0.21908878972119747,
+          "distance_16_to_63": 0.5835827406152294,
+          "distance_2_to_15": 0.7514822703088173,
+          "distance_64_plus": 3.4505826356713087,
+          "offset_only": 0.00041056783050979866,
+          "onset_bearing": 0.0004123540200749029
+        }
+      },
+      "live_stratum_sizes": {
+        "distance_1": 175349,
+        "distance_16_to_63": 7473182,
+        "distance_2_to_15": 2405813,
+        "distance_64_plus": 310000161,
+        "offset_only": 43786,
+        "onset_bearing": 44059
+      },
+      "queries": 1600,
+      "source_counts": {
+        "distance_1": 4,
+        "distance_16_to_63": 64,
+        "distance_2_to_15": 16,
+        "distance_64_plus": 449,
+        "offset_only": 533,
+        "onset_bearing": 534
+      }
+    },
+    "8": {
+      "guards": {
+        "analytical_sampled_mean_weight_within_1e_12": true,
+        "analytical_weighted_joint_prior_within_1e_12": true,
+        "analytical_weighted_stratum_prior_within_1e_12": true,
+        "distance_1_draws_over_20_fresh_epochs": 160,
+        "distance_1_exposure_at_least_20": true,
+        "distance_64_plus_fraction_at_least_0_8": false,
+        "distance_64_plus_fraction_of_background_draws": 0.6848030018761726,
+        "effective_sample_size_ratio_at_least_0_25": false,
+        "passes_all_train_selection_gates": false
+      },
+      "heads": {
+        "offset": {
+          "constant_categorical_optimum": {
+            "full_stream": {
+              "class_probabilities": {
+                "0": 0.9998630827817688,
+                "1": 0.0001367298016023185,
+                "2": 1.84293018402595e-07,
+                "3": 3.1236104813999153e-09
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.0001369172182312025
+            },
+            "importance_weighted": {
+              "class_probabilities": {
+                "0": 0.9998630827817688,
+                "1": 0.00013672980160231847,
+                "2": 1.8429301840259498e-07,
+                "3": 3.123610481399915e-09
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.00013691721823120247
+            },
+            "unweighted": {
+              "class_probabilities": {
+                "0": 0.6665189717197394,
+                "1": 0.33302454675648574,
+                "2": 0.000448873498378477,
+                "3": 7.608025396245374e-06
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.33348102828026044
+            }
+          },
+          "diagnostic_mass_for_fixed_query_count": {
+            "importance_weighted_negative": 1599.78093245083,
+            "importance_weighted_positive": 0.21906754916992394
+          },
+          "full_stream_positive_probability": 0.00013691721823120247,
+          "importance_weighted_positive_probability": 0.00013691721823120247,
+          "unweighted_over_full": 2435.6398164410157,
+          "unweighted_positive_probability": 0.3334810282802605
+        },
+        "onset": {
+          "constant_categorical_optimum": {
+            "full_stream": {
+              "class_probabilities": {
+                "0": 0.9998623768458,
+                "1": 0.00013712962374393768,
+                "2": 4.841596246169869e-07,
+                "3": 9.370831444199747e-09
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.00013762315419999887
+            },
+            "importance_weighted": {
+              "class_probabilities": {
+                "0": 0.9998623768458,
+                "1": 0.00013712962374393765,
+                "2": 4.841596246169868e-07,
+                "3": 9.370831444199745e-09
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.00013762315419999885
+            },
+            "unweighted": {
+              "class_probabilities": {
+                "0": 0.66625,
+                "1": 0.3325531389727411,
+                "2": 0.0011741358178805692,
+                "3": 2.2725209378333597e-05
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.33375
+            }
+          },
+          "diagnostic_mass_for_fixed_query_count": {
+            "importance_weighted_negative": 1599.77980295328,
+            "importance_weighted_positive": 0.22019704671999815
+          },
+          "full_stream_positive_probability": 0.00013762315419999885,
+          "importance_weighted_positive_probability": 0.00013762315419999885,
+          "unweighted_over_full": 2425.100644873919,
+          "unweighted_positive_probability": 0.33375
+        }
+      },
+      "importance_correction": {
+        "analytical_sampled_mean_weight": 1.0,
+        "analytical_sampled_mean_weight_absolute_error_from_one": 0.0,
+        "analytical_weighted_joint_max_absolute_error": 1.1102230246251565e-16,
+        "analytical_weighted_joint_probabilities": {
+          "0|0": 0.9997256064372615,
+          "0|1": 0.00013658299190969268,
+          "0|2": 1.8429301840259498e-07,
+          "0|3": 3.123610481399915e-09,
+          "1|0": 0.00013698281405131186,
+          "1|1": 1.4680969262579599e-07,
+          "2|0": 4.841596246169868e-07,
+          "3|0": 9.370831444199745e-09
+        },
+        "analytical_weighted_stratum_max_absolute_error": 8.673617379884035e-19,
+        "analytical_weighted_stratum_probabilities": {
+          "distance_1": 0.0005477219743029937,
+          "distance_16_to_63": 0.023343309624609176,
+          "distance_2_to_15": 0.007514822703088174,
+          "distance_64_plus": 0.9683197521352611,
+          "offset_only": 0.00013677040853857667,
+          "onset_bearing": 0.00013762315419999885
+        },
+        "approved_for_training_loss": false,
+        "effective_sample_size": 388.3578443097887,
+        "effective_sample_size_ratio": 0.24272365269361793,
+        "full_stream_joint_probabilities": {
+          "0|0": 0.9997256064372614,
+          "0|1": 0.00013658299190969268,
+          "0|2": 1.8429301840259498e-07,
+          "0|3": 3.123610481399915e-09,
+          "1|0": 0.00013698281405131186,
+          "1|1": 1.4680969262579599e-07,
+          "2|0": 4.841596246169868e-07,
+          "3|0": 9.370831444199745e-09
+        },
+        "live_stratum_probabilities": {
+          "distance_1": 0.0005477219743029937,
+          "distance_16_to_63": 0.023343309624609176,
+          "distance_2_to_15": 0.007514822703088173,
+          "distance_64_plus": 0.9683197521352611,
+          "offset_only": 0.00013677040853857667,
+          "onset_bearing": 0.00013762315419999885
+        },
+        "maximum_over_minimum": 10338.58234620561,
+        "maximum_weight": 4.244689324428542,
+        "minimum_weight": 0.00041056783050979866,
+        "sampled_stratum_probabilities": {
+          "distance_1": 0.005,
+          "distance_16_to_63": 0.08,
+          "distance_2_to_15": 0.02,
+          "distance_64_plus": 0.228125,
+          "offset_only": 0.333125,
+          "onset_bearing": 0.33375
+        },
+        "weights_p_live_over_p_sample": {
+          "distance_1": 0.10954439486059873,
+          "distance_16_to_63": 0.2917913703076147,
+          "distance_2_to_15": 0.37574113515440866,
+          "distance_64_plus": 4.244689324428542,
+          "offset_only": 0.00041056783050979866,
+          "onset_bearing": 0.0004123540200749029
+        }
+      },
+      "live_stratum_sizes": {
+        "distance_1": 175349,
+        "distance_16_to_63": 7473182,
+        "distance_2_to_15": 2405813,
+        "distance_64_plus": 310000161,
+        "offset_only": 43786,
+        "onset_bearing": 44059
+      },
+      "queries": 1600,
+      "source_counts": {
+        "distance_1": 8,
+        "distance_16_to_63": 128,
+        "distance_2_to_15": 32,
+        "distance_64_plus": 365,
+        "offset_only": 533,
+        "onset_bearing": 534
+      }
+    }
+  },
+  "train_grid_comparison_to_experiment_12": {
+    "1": {
+      "distance_1_draws_over_20_epochs": 20,
+      "distance_1_draws_per_epoch": 1,
+      "distance_1_over_experiment_12": 3.4244706004001646,
+      "distance_64_plus_fraction_of_background_draws": 0.9606003752345216,
+      "effective_sample_size_ratio": 0.3324805245194613,
+      "effective_sample_size_ratio_absolute_change": -0.0008273529211774711,
+      "experiment_12_effective_sample_size_ratio": 0.3333078774406388,
+      "experiment_12_expected_distance_1_draws_per_epoch": 0.29201593959753824,
+      "passes_all_train_selection_gates": true,
+      "positive_source_draw_counts_exactly_match": true,
+      "source_counts": {
+        "distance_1": 1,
+        "distance_16_to_63": 16,
+        "distance_2_to_15": 4,
+        "distance_64_plus": 512,
+        "offset_only": 533,
+        "onset_bearing": 534
+      }
+    },
+    "2": {
+      "distance_1_draws_over_20_epochs": 40,
+      "distance_1_draws_per_epoch": 2,
+      "distance_1_over_experiment_12": 6.848941200800329,
+      "distance_64_plus_fraction_of_background_draws": 0.9212007504690432,
+      "effective_sample_size_ratio": 0.32318151276933804,
+      "effective_sample_size_ratio_absolute_change": -0.010126364671300736,
+      "experiment_12_effective_sample_size_ratio": 0.3333078774406388,
+      "experiment_12_expected_distance_1_draws_per_epoch": 0.29201593959753824,
+      "passes_all_train_selection_gates": true,
+      "positive_source_draw_counts_exactly_match": true,
+      "source_counts": {
+        "distance_1": 2,
+        "distance_16_to_63": 32,
+        "distance_2_to_15": 8,
+        "distance_64_plus": 491,
+        "offset_only": 533,
+        "onset_bearing": 534
+      }
+    },
+    "4": {
+      "distance_1_draws_over_20_epochs": 80,
+      "distance_1_draws_per_epoch": 4,
+      "distance_1_over_experiment_12": 13.697882401600658,
+      "distance_64_plus_fraction_of_background_draws": 0.8424015009380863,
+      "effective_sample_size_ratio": 0.29756082455010263,
+      "effective_sample_size_ratio_absolute_change": -0.035747052890536146,
+      "experiment_12_effective_sample_size_ratio": 0.3333078774406388,
+      "experiment_12_expected_distance_1_draws_per_epoch": 0.29201593959753824,
+      "passes_all_train_selection_gates": true,
+      "positive_source_draw_counts_exactly_match": true,
+      "source_counts": {
+        "distance_1": 4,
+        "distance_16_to_63": 64,
+        "distance_2_to_15": 16,
+        "distance_64_plus": 449,
+        "offset_only": 533,
+        "onset_bearing": 534
+      }
+    },
+    "8": {
+      "distance_1_draws_over_20_epochs": 160,
+      "distance_1_draws_per_epoch": 8,
+      "distance_1_over_experiment_12": 27.395764803201317,
+      "distance_64_plus_fraction_of_background_draws": 0.6848030018761726,
+      "effective_sample_size_ratio": 0.24272365269361793,
+      "effective_sample_size_ratio_absolute_change": -0.09058422474702085,
+      "experiment_12_effective_sample_size_ratio": 0.3333078774406388,
+      "experiment_12_expected_distance_1_draws_per_epoch": 0.29201593959753824,
+      "passes_all_train_selection_gates": false,
+      "positive_source_draw_counts_exactly_match": true,
+      "source_counts": {
+        "distance_1": 8,
+        "distance_16_to_63": 128,
+        "distance_2_to_15": 32,
+        "distance_64_plus": 365,
+        "offset_only": 533,
+        "onset_bearing": 534
+      }
+    }
+  }
+}

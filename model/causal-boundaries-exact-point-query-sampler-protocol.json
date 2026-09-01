@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "status": "preregistered_before_implementation",
+  "experiment": "exact_causal_point_query_sampler_audit",
+  "approval": {
+    "user_approved_exact_scope": true,
+    "approval_word": "go"
+  },
+  "baseline": {
+    "repository_commit_before_experiment": "8cace0010a70ae6a3f03de6a233d13c7e022b8d5",
+    "training_source": "scripts/train_boundaries.py",
+    "training_source_sha256": "3006FD2A586CE87166A82021C5D461472D4A492E6B5EBFA18910D492D80F136A",
+    "guitarset_source": "src/causal_note/guitarset.py",
+    "guitarset_source_sha256": "52E56D374294748074A34DB06B64B03D096008CA44B8ACA0C390C981C04F94E9",
+    "anonymous_target_audit": "model/causal-boundaries-type-position-target-audit.json",
+    "anonymous_target_audit_sha256": "D1B311666BAFE8191D6CE3B655EE6CFB8B140F053741B7DF9D98613D0E93CA14",
+    "end_of_stream_audit": "model/causal-boundaries-end-of-stream-finalization-audit.json",
+    "end_of_stream_audit_sha256": "19E18FE798D9E204AFDD6C243A8CD17939DBDC9FF286F29AAD70E272C2AC870F",
+    "v7_metadata": "model/causal-boundaries-weight28-window512-v7-epoch08.recovery.metadata.json",
+    "v7_metadata_sha256": "8AB99DC6DD191B39043A303D41BB405A0C84C2CE607C608E330E4DEF33F52A25"
+  },
+  "scope": {
+    "single_experimental_change": "replace the audited V7 window-anchor proposal with a candidate exact point-query sampler specification and audit that candidate",
+    "sampler_training_code_changed": false,
+    "loss_changed": false,
+    "model_changed": false,
+    "decoder_changed": false,
+    "live_changed": false,
+    "training_started": false,
+    "player_05_content_opened": false,
+    "stop_after_post_change_audit": true
+  },
+  "point_query_contract": {
+    "query": "one unique track/sample position t",
+    "onset_target": "exact onset_count[t]",
+    "offset_target": "exact offset_count[t]",
+    "multiplicity": "a count k remains one query position whose target is k; it is never inserted k times into a draw pool",
+    "public_event_expansion": "a predicted count k expands later into k anonymous events with the same type and position",
+    "forbidden_target_identity": [
+      "slot",
+      "string",
+      "fret",
+      "pitch",
+      "active",
+      "eventId"
+    ],
+    "context_samples": 4093,
+    "context_interval": "audio[max(0,t-4092):t+1] with zero initialization only before sample zero",
+    "query_location": "the final context sample",
+    "future_audio_samples": 0,
+    "exclusive_end_offsets": "excluded because no acoustic sample t=frame_count exists"
+  },
+  "strata": {
+    "partition_order": [
+      "onset_bearing",
+      "offset_only",
+      "background"
+    ],
+    "onset_bearing": "onset_count[t] > 0, including positions where offset_count[t] > 0",
+    "offset_only": "onset_count[t] == 0 and offset_count[t] > 0",
+    "background": "onset_count[t] == 0 and offset_count[t] == 0",
+    "partition_requirement": "each supervised sample belongs to exactly one stratum",
+    "within_positive_stratum_sampling": "uniform over unique track/sample positions with replacement",
+    "within_background_sampling": "uniform over all background samples globally with replacement, implemented by a uniform global frame draw followed by rejection of boundary positions",
+    "source_cycle": "onset_bearing, offset_only, background, repeated"
+  },
+  "fixed_audit_draws": {
+    "train": {
+      "seed": 1337,
+      "queries": 1600,
+      "expected_source_counts": {
+        "onset_bearing": 534,
+        "offset_only": 533,
+        "background": 533
+      }
+    },
+    "validation": {
+      "seed": 1338,
+      "queries": 400,
+      "expected_source_counts": {
+        "onset_bearing": 134,
+        "offset_only": 133,
+        "background": 133
+      }
+    },
+    "historical_epoch_count_for_exposure_diagnostic": 20
+  },
+  "prior_correction": {
+    "live_stratum_probability": "p_s = number of full-stream samples in stratum s / total full-stream samples",
+    "sampled_stratum_probability": "q_s = fixed draws from stratum s / total fixed draws",
+    "importance_weight": "w_s = p_s / q_s",
+    "normalization": "the sampled mean importance weight must equal one analytically",
+    "use_in_this_experiment": "audit only; no loss is selected or implemented"
+  },
+  "required_audit": {
+    "full_stream": [
+      "joint histogram of onset_count and offset_count",
+      "stratum pool sizes",
+      "per-head exact count histograms and event mass",
+      "player, arrangement and track frame distributions"
+    ],
+    "fixed_draws": [
+      "source counts",
+      "joint target histogram",
+      "unique and repeated selected positions",
+      "same-sample multiplicity exposure",
+      "left-zero-initialized contexts",
+      "unweighted sampled priors",
+      "importance-weighted empirical priors",
+      "importance-weight distribution and effective sample size"
+    ],
+    "objective_diagnostics_only": [
+      "positive and negative loss mass per head",
+      "constant categorical optimum before and after prior correction",
+      "historical threshold 0.55 decision without changing that threshold",
+      "expected draws and probability of observing every nonzero count class over 20 historical epochs"
+    ],
+    "before_after": "compare the candidate sampler both to the full live stream and to the audited V7 sampler"
+  },
+  "acceptance_rule": {
+    "hard_structural_requirements": {
+      "strata_partition_all_full_stream_samples_exactly": true,
+      "positive_pools_use_unique_positions": true,
+      "same_sample_multiplicity_preserved": true,
+      "exclusive_end_offsets_supervised": 0,
+      "future_audio_samples": 0,
+      "source_cycle_matches_fixed_counts": true,
+      "analytical_importance_weighted_joint_prior_max_absolute_error": 1e-12,
+      "analytical_sampled_mean_importance_weight_absolute_error": 1e-12,
+      "minimum_effective_sample_size_ratio": 0.25,
+      "player_05_content_opened": false
+    },
+    "training_readiness_guard": {
+      "minimum_expected_draws_per_observed_nonzero_count_class_over_20_epochs": 20.0,
+      "fixed_draw_empirical_prior_error": "report only; it is stochastic and cannot override an exact analytical correction",
+      "unweighted_sampler_live_calibration": "reject whenever its class prior differs from the full stream"
+    },
+    "decision_categories": [
+      "structurally_rejected",
+      "structurally_admissible_with_prior_correction_but_not_training_ready",
+      "structurally_admissible_with_prior_correction_and_training_ready"
+    ],
+    "all_tests_must_pass": true,
+    "no_training_regardless_of_result": true,
+    "stop_for_user_approval_before_loss_model_or_live_changes": true
+  }
+}

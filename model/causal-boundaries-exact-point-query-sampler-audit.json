@@ -1,0 +1,4495 @@
+{
+  "comparison_to_v7": {
+    "train": {
+      "offset": {
+        "audited_v7_sampled_exact_density": 0.00034684798660902186,
+        "candidate_over_full": 2437.604300698104,
+        "candidate_unweighted_point_density": 0.33375,
+        "full_stream_exact_density": 0.00013691721823120247,
+        "v7_over_full": 2.533267846731476
+      },
+      "onset": {
+        "audited_v7_sampled_exact_density": 0.0003602292329139732,
+        "candidate_over_full": 2425.100644873919,
+        "candidate_unweighted_point_density": 0.33375,
+        "full_stream_exact_density": 0.00013762315419999885,
+        "v7_over_full": 2.617504554433299
+      }
+    },
+    "validation": {
+      "offset": {
+        "audited_v7_sampled_exact_density": 0.0002975609756097561,
+        "candidate_over_full": 2918.22067506084,
+        "candidate_unweighted_point_density": 0.3325,
+        "full_stream_exact_density": 0.00011393929281686962,
+        "v7_over_full": 2.6115747101222997
+      },
+      "onset": {
+        "audited_v7_sampled_exact_density": 0.0003201219512195122,
+        "candidate_over_full": 2926.2292333614155,
+        "candidate_unweighted_point_density": 0.335,
+        "full_stream_exact_density": 0.00011448180346936768,
+        "v7_over_full": 2.796269289251444
+      }
+    }
+  },
+  "data_guard": {
+    "locked_test_player": "05",
+    "locked_test_used": false,
+    "selected_players": [
+      "00",
+      "01",
+      "02",
+      "03",
+      "04"
+    ],
+    "train_tracks": 240,
+    "validation_members_exactly_match_v7": true,
+    "validation_tracks": 60
+  },
+  "decision": {
+    "category": "structurally_admissible_with_prior_correction_but_not_training_ready",
+    "importance_weights_approved_for_training_loss": false,
+    "live_changed": false,
+    "locked_oracle_reconciliation": {
+      "actual_players": [
+        "00",
+        "01",
+        "02",
+        "03",
+        "04"
+      ],
+      "all_exact": true,
+      "checks": {
+        "actual_players_are_exactly_00_through_04": true,
+        "player_05_absent_from_indexed_tracks": true,
+        "train_all_supervised_offsets_internal": true,
+        "train_exclusive_end_count": true,
+        "train_frames": true,
+        "train_offset_event_instances": true,
+        "train_offset_histogram": true,
+        "train_offset_maximum_exact_count": true,
+        "train_offset_positive_positions": true,
+        "train_onset_event_instances": true,
+        "train_onset_histogram": true,
+        "train_onset_maximum_exact_count": true,
+        "train_onset_positive_positions": true,
+        "train_raw_offset_reconciliation": true,
+        "validation_all_supervised_offsets_internal": true,
+        "validation_exclusive_end_count": true,
+        "validation_frames": true,
+        "validation_offset_event_instances": true,
+        "validation_offset_histogram": true,
+        "validation_offset_maximum_exact_count": true,
+        "validation_offset_positive_positions": true,
+        "validation_onset_event_instances": true,
+        "validation_onset_histogram": true,
+        "validation_onset_maximum_exact_count": true,
+        "validation_onset_positive_positions": true,
+        "validation_raw_offset_reconciliation": true
+      },
+      "details": {
+        "train": {
+          "exclusive_end": {
+            "actual_excluded_instances": 326,
+            "all_supervised_offset_positions_strictly_before_frame_count": true,
+            "expected_instances": 326
+          },
+          "offset": {
+            "event_instances": true,
+            "histogram": true,
+            "maximum_exact_count": true,
+            "positive_positions": true
+          },
+          "onset": {
+            "event_instances": true,
+            "histogram": true,
+            "maximum_exact_count": true,
+            "positive_positions": true
+          }
+        },
+        "validation": {
+          "exclusive_end": {
+            "actual_excluded_instances": 82,
+            "all_supervised_offset_positions_strictly_before_frame_count": true,
+            "expected_instances": 82
+          },
+          "offset": {
+            "event_instances": true,
+            "histogram": true,
+            "maximum_exact_count": true,
+            "positive_positions": true
+          },
+          "onset": {
+            "event_instances": true,
+            "histogram": true,
+            "maximum_exact_count": true,
+            "positive_positions": true
+          }
+        }
+      }
+    },
+    "loss_selected": false,
+    "model_selected": false,
+    "next_action_requires_user_approval": true,
+    "stop_reasons": [
+      "unweighted_fixed_cycle_prior_is_not_the_live_prior",
+      "uniform_background_underexposes_boundary_adjacent_negatives",
+      "fixed_cycle_underexposes_rare_exact_count_classes",
+      "candidate_audio_crop_is_not_implemented_or_verified",
+      "crop_live_equivalence_requires_a_future_compatible_model"
+    ],
+    "structural_admissibility_scope": "target partition, draw distribution and analytical prior correction only",
+    "structural_checks": {
+      "actual_players_are_exactly_00_through_04": true,
+      "analytical_importance_weighted_joint_prior_within_1e_12": true,
+      "analytical_sampled_mean_importance_weight_within_1e_12": true,
+      "effective_sample_size_ratio_at_least_0_25": true,
+      "exclusive_end_offsets_excluded_and_reconciled": true,
+      "locked_oracle_reconciliation_exact": true,
+      "player_05_absent_from_indexed_tracks": true,
+      "positive_pools_use_unique_positions": true,
+      "source_cycle_matches_fixed_counts": true,
+      "strata_partition_all_full_stream_samples_exactly": true
+    },
+    "structurally_admissible_with_prior_correction": true,
+    "training_readiness_guards": {
+      "audio_crop_implementation_verified": false,
+      "candidate_context_interval_contract_ends_at_t_plus_1": true,
+      "count_class_exposure_pass": false,
+      "expected_background_draws_within_one_sample_over_20_train_epochs": 5.840318791950764,
+      "minimum_expected_count_class_draws_over_20_train_epochs": 0.243456812679852,
+      "near_boundary_exposure_pass": false,
+      "point_crop_equals_continuous_model_output_verified": false,
+      "point_crop_equivalence_deferred_reason": "no compatible point-query causal model exists in this sampler-only audit",
+      "required_minimum_count_class_draws": 20.0,
+      "required_minimum_near_boundary_draws": 20.0,
+      "unweighted_sampler_live_calibrated": false
+    },
+    "training_ready": false,
+    "training_started": false
+  },
+  "generated_at_utc": "2026-09-01T05:57:42.458563+00:00",
+  "locked_inputs": {
+    "audit_helper_sha256": "7C414A863E941B3595F03F7A420A5FB80810A5F4D2D9C5350C8089491135B356",
+    "audit_source_sha256": "4F8DDA1D84E41910E1DFEA17DAF4150BD278FDDEFD02415D20A6DA812D12B193",
+    "metadata": "C:\\Users\\user\\Desktop\\NOTE\\model\\causal-boundaries-weight28-window512-v7-epoch08.recovery.metadata.json",
+    "metadata_sha256": "8AB99DC6DD191B39043A303D41BB405A0C84C2CE607C608E330E4DEF33F52A25",
+    "prior_target_audit": "C:\\Users\\user\\Desktop\\NOTE\\model\\causal-boundaries-type-position-target-audit.json",
+    "prior_target_audit_sha256": "D1B311666BAFE8191D6CE3B655EE6CFB8B140F053741B7DF9D98613D0E93CA14",
+    "protocol": "C:\\Users\\user\\Desktop\\NOTE\\model\\causal-boundaries-exact-point-query-sampler-protocol.json",
+    "protocol_amendment": "C:\\Users\\user\\Desktop\\NOTE\\model\\causal-boundaries-exact-point-query-sampler-protocol-amendment-01.json",
+    "protocol_amendment_sha256": "DB3D5937B0A4F5DF7C004E7D7742ACC1FD5A5268E4AC876C1B4E4CCA0D701930",
+    "protocol_review_amendment": "C:\\Users\\user\\Desktop\\NOTE\\model\\causal-boundaries-exact-point-query-sampler-protocol-amendment-02.json",
+    "protocol_review_amendment_sha256": "A54B4CE82DA79A67AAAB1D46F572F0B2CB237B3EA1C485DD4A891A1D25FCDDA6",
+    "protocol_sha256": "A57062D99AC907E35E081BF8A73CE12CBE9A7E9477D8CB915D11D88D1D25804F",
+    "protocol_status": "preregistered_before_implementation"
+  },
+  "schema_version": 1,
+  "scope": {
+    "candidate_only": "exact causal point-query sampler",
+    "context_samples": 4093,
+    "decoder_changed": false,
+    "future_audio_samples": 0,
+    "live_changed": false,
+    "loss_changed": false,
+    "model_changed": false,
+    "player_05_content_read": false,
+    "targets": [
+      "onset_count[t]",
+      "offset_count[t]"
+    ],
+    "training_run": false
+  },
+  "splits": {
+    "train": {
+      "fixed_point_query_sampler": {
+        "background_near_boundary": {
+          "1": {
+            "expected_draws_over_20_repeated_fixed_epochs": 5.840318791950764,
+            "expected_fixed_draws": 0.29201593959753824,
+            "fraction_of_background": 0.0005478723069372199,
+            "full_stream_background_positions": 175349,
+            "observed_fixed_draws": 0
+          },
+          "15": {
+            "expected_draws_over_20_repeated_fixed_epochs": 85.97031596227649,
+            "expected_fixed_draws": 4.298515798113824,
+            "fraction_of_background": 0.00806475759496027,
+            "full_stream_background_positions": 2581162,
+            "observed_fixed_draws": 3
+          },
+          "63": {
+            "expected_draws_over_20_repeated_fixed_epochs": 334.87829530785694,
+            "expected_fixed_draws": 16.743914765392848,
+            "fraction_of_background": 0.031414474231506284,
+            "full_stream_background_positions": 10054344,
+            "observed_fixed_draws": 16
+          }
+        },
+        "heads": {
+          "offset": {
+            "constant_categorical_optimum": {
+              "full_stream": {
+                "class_probabilities": {
+                  "0": 0.9998630827817688,
+                  "1": 0.0001367298016023185,
+                  "2": 1.84293018402595e-07,
+                  "3": 3.1236104813999153e-09
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.0001369172182312025
+              },
+              "importance_weighted_fixed_queries": {
+                "class_probabilities": {
+                  "0": 0.9998629718701989,
+                  "1": 0.00013677152490705404,
+                  "2": 2.5660489406862166e-07
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.00013702812980112265
+              },
+              "unweighted_fixed_queries": {
+                "class_probabilities": {
+                  "0": 0.66625,
+                  "1": 0.333125,
+                  "2": 0.000625
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.33375
+              }
+            },
+            "full_stream_positive_probability": 0.00013691721823120247,
+            "importance_weighted_exact_count_mass": {
+              "0": 1599.7807549923339,
+              "1": 0.21883443985128861,
+              "2": 0.00041056783050979866
+            },
+            "importance_weighted_negative_mass": 1599.7807549923416,
+            "importance_weighted_positive_mass": 0.21924500768179842,
+            "importance_weighted_positive_probability": 0.000137028129801122,
+            "unweighted_exact_count_histogram": {
+              "0": 1066,
+              "1": 533,
+              "2": 1
+            },
+            "unweighted_positive_probability": 0.33375,
+            "unweighted_positive_queries": 534,
+            "weighted_empirical_relative_error_to_full": 0.0008100629807731427
+          },
+          "onset": {
+            "constant_categorical_optimum": {
+              "full_stream": {
+                "class_probabilities": {
+                  "0": 0.9998623768458,
+                  "1": 0.00013712962374393768,
+                  "2": 4.841596246169869e-07,
+                  "3": 9.370831444199747e-09
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.00013762315419999887
+              },
+              "importance_weighted_fixed_queries": {
+                "class_probabilities": {
+                  "0": 0.9998623768458,
+                  "1": 0.00013762315419999576
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.00013762315419999576
+              },
+              "unweighted_fixed_queries": {
+                "class_probabilities": {
+                  "0": 0.66625,
+                  "1": 0.33375
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.33375
+              }
+            },
+            "full_stream_positive_probability": 0.00013762315419999885,
+            "importance_weighted_exact_count_mass": {
+              "0": 1599.7798029532958,
+              "1": 0.22019704671999538
+            },
+            "importance_weighted_negative_mass": 1599.7798029533035,
+            "importance_weighted_positive_mass": 0.22019704671999538,
+            "importance_weighted_positive_probability": 0.0001376231541999951,
+            "unweighted_exact_count_histogram": {
+              "0": 1066,
+              "1": 534
+            },
+            "unweighted_positive_probability": 0.33375,
+            "unweighted_positive_queries": 534,
+            "weighted_empirical_relative_error_to_full": 2.7179274569155468e-14
+          }
+        },
+        "importance_correction": {
+          "analytical_sampled_mean_weight": 1.0,
+          "analytical_sampled_mean_weight_absolute_error_from_one": 0.0,
+          "analytical_weighted_joint_max_absolute_error": 0.0,
+          "analytical_weighted_joint_probabilities": {
+            "0|0": 0.9997256064372614,
+            "0|1": 0.00013658299190969268,
+            "0|2": 1.8429301840259498e-07,
+            "0|3": 3.123610481399915e-09,
+            "1|0": 0.00013698281405131186,
+            "1|1": 1.4680969262579599e-07,
+            "2|0": 4.841596246169868e-07,
+            "3|0": 9.370831444199745e-09
+          },
+          "approved_for_training_loss": false,
+          "effective_sample_size": 533.292603905022,
+          "effective_sample_size_ratio": 0.3333078774406388,
+          "empirical_weighted_joint_probabilities": {
+            "0|0": 0.9997256064372566,
+            "0|1": 0.00013651380364450657,
+            "0|2": 2.566048940686204e-07,
+            "1|0": 0.00013736543293744829,
+            "1|1": 2.5772126254681057e-07
+          },
+          "full_stream_joint_probabilities": {
+            "0|0": 0.9997256064372614,
+            "0|1": 0.00013658299190969268,
+            "0|2": 1.8429301840259498e-07,
+            "0|3": 3.123610481399915e-09,
+            "1|0": 0.00013698281405131186,
+            "1|1": 1.4680969262579599e-07,
+            "2|0": 4.841596246169868e-07,
+            "3|0": 9.370831444199745e-09
+          },
+          "live_stratum_probabilities": {
+            "background": 0.9997256064372614,
+            "offset_only": 0.00013677040853857667,
+            "onset_bearing": 0.00013762315419999885
+          },
+          "maximum_over_minimum": 7309.516854702415,
+          "maximum_weight": 3.001052477109978,
+          "minimum_weight": 0.00041056783050979866,
+          "sampled_stratum_probabilities": {
+            "background": 0.333125,
+            "offset_only": 0.333125,
+            "onset_bearing": 0.33375
+          },
+          "weights_p_live_over_p_sample": {
+            "background": 3.001052477109978,
+            "offset_only": 0.00041056783050979866,
+            "onset_bearing": 0.0004123540200749029
+          }
+        },
+        "joint_exact_count_histogram": {
+          "0|0": 533,
+          "0|1": 532,
+          "0|2": 1,
+          "1|0": 533,
+          "1|1": 1
+        },
+        "queries": 1600,
+        "rare_count_class_exposure": {
+          "offset": {
+            "classes": {
+              "1": {
+                "draws_if_that_same_fixed_batch_is_repeated_20_times": 10660,
+                "expected_draws_over_20_epochs": 10656.785496207547,
+                "expected_draws_per_fixed_epoch": 532.8392748103773,
+                "observed_in_single_cached_fixed_batch": 533,
+                "pool_positions": 43773,
+                "positions_by_stratum": {
+                  "offset_only": 43726,
+                  "onset_bearing": 47
+                },
+                "probability_seen_at_least_once_over_20_epochs": 1.0,
+                "seen_if_that_same_fixed_batch_is_repeated": true
+              },
+              "2": {
+                "draws_if_that_same_fixed_batch_is_repeated_20_times": 20,
+                "expected_draws_over_20_epochs": 14.363951948111266,
+                "expected_draws_per_fixed_epoch": 0.7181975974055633,
+                "observed_in_single_cached_fixed_batch": 1,
+                "pool_positions": 59,
+                "positions_by_stratum": {
+                  "offset_only": 59,
+                  "onset_bearing": 0
+                },
+                "probability_seen_at_least_once_over_20_epochs": 0.9999994277203662,
+                "seen_if_that_same_fixed_batch_is_repeated": true
+              },
+              "3": {
+                "draws_if_that_same_fixed_batch_is_repeated_20_times": 0,
+                "expected_draws_over_20_epochs": 0.243456812679852,
+                "expected_draws_per_fixed_epoch": 0.0121728406339926,
+                "observed_in_single_cached_fixed_batch": 0,
+                "pool_positions": 1,
+                "positions_by_stratum": {
+                  "offset_only": 1,
+                  "onset_bearing": 0
+                },
+                "probability_seen_at_least_once_over_20_epochs": 0.2160888489516507,
+                "seen_if_that_same_fixed_batch_is_repeated": false
+              }
+            },
+            "fresh_epoch_probability_assumption": "fresh independent draws with replacement in every epoch",
+            "observed_fixed_draws": {
+              "1": 533,
+              "2": 1
+            }
+          },
+          "onset": {
+            "classes": {
+              "1": {
+                "draws_if_that_same_fixed_batch_is_repeated_20_times": 10680,
+                "expected_draws_over_20_epochs": 10641.700447127714,
+                "expected_draws_per_fixed_epoch": 532.0850223563857,
+                "observed_in_single_cached_fixed_batch": 534,
+                "pool_positions": 43901,
+                "positions_by_stratum": {
+                  "offset_only": 0,
+                  "onset_bearing": 43901
+                },
+                "probability_seen_at_least_once_over_20_epochs": 1.0,
+                "seen_if_that_same_fixed_batch_is_repeated": true
+              },
+              "2": {
+                "draws_if_that_same_fixed_batch_is_repeated_20_times": 0,
+                "expected_draws_over_20_epochs": 37.572346172178214,
+                "expected_draws_per_fixed_epoch": 1.8786173086089106,
+                "observed_in_single_cached_fixed_batch": 0,
+                "pool_positions": 155,
+                "positions_by_stratum": {
+                  "offset_only": 0,
+                  "onset_bearing": 155
+                },
+                "probability_seen_at_least_once_over_20_epochs": 1.0,
+                "seen_if_that_same_fixed_batch_is_repeated": false
+              },
+              "3": {
+                "draws_if_that_same_fixed_batch_is_repeated_20_times": 0,
+                "expected_draws_over_20_epochs": 0.7272067001066751,
+                "expected_draws_per_fixed_epoch": 0.036360335005333755,
+                "observed_in_single_cached_fixed_batch": 0,
+                "pool_positions": 3,
+                "positions_by_stratum": {
+                  "offset_only": 0,
+                  "onset_bearing": 3
+                },
+                "probability_seen_at_least_once_over_20_epochs": 0.5167549766162435,
+                "seen_if_that_same_fixed_batch_is_repeated": false
+              }
+            },
+            "fresh_epoch_probability_assumption": "fresh independent draws with replacement in every epoch",
+            "observed_fixed_draws": {
+              "1": 534
+            }
+          }
+        },
+        "seed": 1337,
+        "selection": {
+          "background_global_frame_attempts": 533,
+          "background_rejections_on_boundary_positions": 0,
+          "by_arrangement": {
+            "comp": 1068,
+            "solo": 532
+          },
+          "by_player": {
+            "00": 379,
+            "01": 339,
+            "02": 282,
+            "03": 275,
+            "04": 325
+          },
+          "by_stratum": {
+            "background": {
+              "draws": 533,
+              "positions_selected_more_than_once": 0,
+              "repeated_draws": 0,
+              "unique_positions": 533
+            },
+            "offset_only": {
+              "draws": 533,
+              "positions_selected_more_than_once": 1,
+              "repeated_draws": 1,
+              "unique_positions": 532
+            },
+            "onset_bearing": {
+              "draws": 534,
+              "positions_selected_more_than_once": 7,
+              "repeated_draws": 7,
+              "unique_positions": 527
+            }
+          },
+          "contexts_requiring_left_zero_initialization": 4,
+          "left_zero_padding_samples_total": 11722,
+          "right_padding_samples": 0
+        },
+        "source_counts": {
+          "background": 533,
+          "offset_only": 533,
+          "onset_bearing": 534
+        },
+        "source_probabilities": {
+          "background": 0.333125,
+          "offset_only": 0.333125,
+          "onset_bearing": 0.33375
+        }
+      },
+      "full_stream": {
+        "background_near_boundary": {
+          "1": {
+            "fraction_of_background": 0.0005478723069372199,
+            "positions": 175349
+          },
+          "15": {
+            "fraction_of_background": 0.00806475759496027,
+            "positions": 2581162
+          },
+          "63": {
+            "fraction_of_background": 0.031414474231506284,
+            "positions": 10054344
+          }
+        },
+        "context_edges": {
+          "exclusive_end_offset_instances_excluded_from_acoustic_target": 326,
+          "internal_offset_positions_in_final_4092_samples": 87,
+          "offset_positions_requiring_left_zero_initialization": 1,
+          "onset_positions_requiring_left_zero_initialization": 371,
+          "right_padding_samples": 0
+        },
+        "duration_seconds": 7259.463718820862,
+        "frame_distribution": {
+          "by_arrangement": {
+            "comp": 160071175,
+            "solo": 160071175
+          },
+          "by_player": {
+            "00": 64028470,
+            "01": 64028470,
+            "02": 64028470,
+            "03": 64028470,
+            "04": 64028470
+          },
+          "by_track": {
+            "00_BN1-147-Gb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN1-147-Gb",
+              "frames": 863725,
+              "player": "00",
+              "strata": {
+                "background": 863425,
+                "offset_only": 150,
+                "onset_bearing": 150
+              }
+            },
+            "00_BN1-147-Gb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN1-147-Gb",
+              "frames": 863725,
+              "player": "00",
+              "strata": {
+                "background": 863548,
+                "offset_only": 88,
+                "onset_bearing": 89
+              }
+            },
+            "00_BN2-166-Ab_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN2-166-Ab",
+              "frames": 1020033,
+              "player": "00",
+              "strata": {
+                "background": 1019639,
+                "offset_only": 198,
+                "onset_bearing": 196
+              }
+            },
+            "00_BN2-166-Ab_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN2-166-Ab",
+              "frames": 1020033,
+              "player": "00",
+              "strata": {
+                "background": 1019859,
+                "offset_only": 87,
+                "onset_bearing": 87
+              }
+            },
+            "00_BN3-154-E_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN3-154-E",
+              "frames": 1099501,
+              "player": "00",
+              "strata": {
+                "background": 1099160,
+                "offset_only": 172,
+                "onset_bearing": 169
+              }
+            },
+            "00_BN3-154-E_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN3-154-E",
+              "frames": 1099501,
+              "player": "00",
+              "strata": {
+                "background": 1099301,
+                "offset_only": 99,
+                "onset_bearing": 101
+              }
+            },
+            "00_Funk1-114-Ab_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk1-114-Ab",
+              "frames": 1113895,
+              "player": "00",
+              "strata": {
+                "background": 1113282,
+                "offset_only": 306,
+                "onset_bearing": 307
+              }
+            },
+            "00_Funk1-114-Ab_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk1-114-Ab",
+              "frames": 1113895,
+              "player": "00",
+              "strata": {
+                "background": 1113779,
+                "offset_only": 58,
+                "onset_bearing": 58
+              }
+            },
+            "00_Funk2-108-Eb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk2-108-Eb",
+              "frames": 1567684,
+              "player": "00",
+              "strata": {
+                "background": 1566642,
+                "offset_only": 521,
+                "onset_bearing": 521
+              }
+            },
+            "00_Funk2-108-Eb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk2-108-Eb",
+              "frames": 1567684,
+              "player": "00",
+              "strata": {
+                "background": 1567442,
+                "offset_only": 121,
+                "onset_bearing": 121
+              }
+            },
+            "00_Funk2-119-G_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk2-119-G",
+              "frames": 1422807,
+              "player": "00",
+              "strata": {
+                "background": 1421889,
+                "offset_only": 460,
+                "onset_bearing": 458
+              }
+            },
+            "00_Funk2-119-G_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk2-119-G",
+              "frames": 1422807,
+              "player": "00",
+              "strata": {
+                "background": 1422651,
+                "offset_only": 78,
+                "onset_bearing": 78
+              }
+            },
+            "00_Funk3-112-C#_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk3-112-C#",
+              "frames": 1511942,
+              "player": "00",
+              "strata": {
+                "background": 1510968,
+                "offset_only": 487,
+                "onset_bearing": 487
+              }
+            },
+            "00_Funk3-112-C#_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk3-112-C#",
+              "frames": 1511942,
+              "player": "00",
+              "strata": {
+                "background": 1511654,
+                "offset_only": 144,
+                "onset_bearing": 144
+              }
+            },
+            "00_Funk3-98-A_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk3-98-A",
+              "frames": 1727785,
+              "player": "00",
+              "strata": {
+                "background": 1726887,
+                "offset_only": 448,
+                "onset_bearing": 450
+              }
+            },
+            "00_Funk3-98-A_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk3-98-A",
+              "frames": 1727785,
+              "player": "00",
+              "strata": {
+                "background": 1727551,
+                "offset_only": 115,
+                "onset_bearing": 119
+              }
+            },
+            "00_Jazz1-130-D_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz1-130-D",
+              "frames": 976692,
+              "player": "00",
+              "strata": {
+                "background": 976286,
+                "offset_only": 200,
+                "onset_bearing": 206
+              }
+            },
+            "00_Jazz1-130-D_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz1-130-D",
+              "frames": 976692,
+              "player": "00",
+              "strata": {
+                "background": 976579,
+                "offset_only": 56,
+                "onset_bearing": 57
+              }
+            },
+            "00_Jazz1-200-B_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz1-200-B",
+              "frames": 635040,
+              "player": "00",
+              "strata": {
+                "background": 634713,
+                "offset_only": 164,
+                "onset_bearing": 163
+              }
+            },
+            "00_Jazz1-200-B_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz1-200-B",
+              "frames": 635040,
+              "player": "00",
+              "strata": {
+                "background": 634935,
+                "offset_only": 52,
+                "onset_bearing": 53
+              }
+            },
+            "00_Jazz2-110-Bb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz2-110-Bb",
+              "frames": 1539231,
+              "player": "00",
+              "strata": {
+                "background": 1538727,
+                "offset_only": 252,
+                "onset_bearing": 252
+              }
+            },
+            "00_Jazz2-110-Bb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz2-110-Bb",
+              "frames": 1539231,
+              "player": "00",
+              "strata": {
+                "background": 1539065,
+                "offset_only": 81,
+                "onset_bearing": 85
+              }
+            },
+            "00_Jazz2-187-F#_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz2-187-F#",
+              "frames": 905461,
+              "player": "00",
+              "strata": {
+                "background": 904977,
+                "offset_only": 242,
+                "onset_bearing": 242
+              }
+            },
+            "00_Jazz2-187-F#_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz2-187-F#",
+              "frames": 905461,
+              "player": "00",
+              "strata": {
+                "background": 905262,
+                "offset_only": 99,
+                "onset_bearing": 100
+              }
+            },
+            "00_Jazz3-137-Eb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz3-137-Eb",
+              "frames": 1235823,
+              "player": "00",
+              "strata": {
+                "background": 1235402,
+                "offset_only": 209,
+                "onset_bearing": 212
+              }
+            },
+            "00_Jazz3-137-Eb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz3-137-Eb",
+              "frames": 1235823,
+              "player": "00",
+              "strata": {
+                "background": 1235698,
+                "offset_only": 62,
+                "onset_bearing": 63
+              }
+            },
+            "00_Jazz3-150-C_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz3-150-C",
+              "frames": 1128960,
+              "player": "00",
+              "strata": {
+                "background": 1128461,
+                "offset_only": 249,
+                "onset_bearing": 250
+              }
+            },
+            "00_Jazz3-150-C_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz3-150-C",
+              "frames": 1128960,
+              "player": "00",
+              "strata": {
+                "background": 1128799,
+                "offset_only": 80,
+                "onset_bearing": 81
+              }
+            },
+            "00_Rock1-130-A_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock1-130-A",
+              "frames": 976692,
+              "player": "00",
+              "strata": {
+                "background": 975895,
+                "offset_only": 396,
+                "onset_bearing": 401
+              }
+            },
+            "00_Rock1-130-A_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock1-130-A",
+              "frames": 976692,
+              "player": "00",
+              "strata": {
+                "background": 976517,
+                "offset_only": 87,
+                "onset_bearing": 88
+              }
+            },
+            "00_Rock1-90-C#_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock1-90-C#",
+              "frames": 1411200,
+              "player": "00",
+              "strata": {
+                "background": 1409882,
+                "offset_only": 656,
+                "onset_bearing": 662
+              }
+            },
+            "00_Rock1-90-C#_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock1-90-C#",
+              "frames": 1411200,
+              "player": "00",
+              "strata": {
+                "background": 1410845,
+                "offset_only": 177,
+                "onset_bearing": 178
+              }
+            },
+            "00_Rock2-142-D_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock2-142-D",
+              "frames": 1192535,
+              "player": "00",
+              "strata": {
+                "background": 1191450,
+                "offset_only": 540,
+                "onset_bearing": 545
+              }
+            },
+            "00_Rock2-142-D_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock2-142-D",
+              "frames": 1192535,
+              "player": "00",
+              "strata": {
+                "background": 1192276,
+                "offset_only": 129,
+                "onset_bearing": 130
+              }
+            },
+            "00_Rock2-85-F_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock2-85-F",
+              "frames": 1992138,
+              "player": "00",
+              "strata": {
+                "background": 1990517,
+                "offset_only": 806,
+                "onset_bearing": 815
+              }
+            },
+            "00_Rock2-85-F_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock2-85-F",
+              "frames": 1992138,
+              "player": "00",
+              "strata": {
+                "background": 1991867,
+                "offset_only": 134,
+                "onset_bearing": 137
+              }
+            },
+            "00_Rock3-117-Bb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock3-117-Bb",
+              "frames": 1447203,
+              "player": "00",
+              "strata": {
+                "background": 1445911,
+                "offset_only": 647,
+                "onset_bearing": 645
+              }
+            },
+            "00_Rock3-117-Bb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock3-117-Bb",
+              "frames": 1447203,
+              "player": "00",
+              "strata": {
+                "background": 1446889,
+                "offset_only": 155,
+                "onset_bearing": 159
+              }
+            },
+            "00_Rock3-148-C_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock3-148-C",
+              "frames": 1143989,
+              "player": "00",
+              "strata": {
+                "background": 1142626,
+                "offset_only": 680,
+                "onset_bearing": 683
+              }
+            },
+            "00_Rock3-148-C_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock3-148-C",
+              "frames": 1143989,
+              "player": "00",
+              "strata": {
+                "background": 1143698,
+                "offset_only": 145,
+                "onset_bearing": 146
+              }
+            },
+            "00_SS1-68-E_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS1-68-E",
+              "frames": 1867476,
+              "player": "00",
+              "strata": {
+                "background": 1867106,
+                "offset_only": 181,
+                "onset_bearing": 189
+              }
+            },
+            "00_SS1-68-E_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS1-68-E",
+              "frames": 1867476,
+              "player": "00",
+              "strata": {
+                "background": 1867157,
+                "offset_only": 159,
+                "onset_bearing": 160
+              }
+            },
+            "00_SS2-107-Ab_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS2-107-Ab",
+              "frames": 1582590,
+              "player": "00",
+              "strata": {
+                "background": 1582124,
+                "offset_only": 231,
+                "onset_bearing": 235
+              }
+            },
+            "00_SS2-107-Ab_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS2-107-Ab",
+              "frames": 1582590,
+              "player": "00",
+              "strata": {
+                "background": 1582361,
+                "offset_only": 113,
+                "onset_bearing": 116
+              }
+            },
+            "00_SS2-88-F_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS2-88-F",
+              "frames": 1924048,
+              "player": "00",
+              "strata": {
+                "background": 1923596,
+                "offset_only": 224,
+                "onset_bearing": 228
+              }
+            },
+            "00_SS2-88-F_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS2-88-F",
+              "frames": 1924048,
+              "player": "00",
+              "strata": {
+                "background": 1923828,
+                "offset_only": 110,
+                "onset_bearing": 110
+              }
+            },
+            "00_SS3-98-C_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS3-98-C",
+              "frames": 1727785,
+              "player": "00",
+              "strata": {
+                "background": 1727246,
+                "offset_only": 269,
+                "onset_bearing": 270
+              }
+            },
+            "00_SS3-98-C_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS3-98-C",
+              "frames": 1727785,
+              "player": "00",
+              "strata": {
+                "background": 1727474,
+                "offset_only": 154,
+                "onset_bearing": 157
+              }
+            },
+            "01_BN1-147-Gb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN1-147-Gb",
+              "frames": 863725,
+              "player": "01",
+              "strata": {
+                "background": 863463,
+                "offset_only": 128,
+                "onset_bearing": 134
+              }
+            },
+            "01_BN1-147-Gb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN1-147-Gb",
+              "frames": 863725,
+              "player": "01",
+              "strata": {
+                "background": 863590,
+                "offset_only": 67,
+                "onset_bearing": 68
+              }
+            },
+            "01_BN2-166-Ab_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN2-166-Ab",
+              "frames": 1020033,
+              "player": "01",
+              "strata": {
+                "background": 1019519,
+                "offset_only": 254,
+                "onset_bearing": 260
+              }
+            },
+            "01_BN2-166-Ab_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN2-166-Ab",
+              "frames": 1020033,
+              "player": "01",
+              "strata": {
+                "background": 1019803,
+                "offset_only": 115,
+                "onset_bearing": 115
+              }
+            },
+            "01_BN3-154-E_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN3-154-E",
+              "frames": 1099501,
+              "player": "01",
+              "strata": {
+                "background": 1099103,
+                "offset_only": 198,
+                "onset_bearing": 200
+              }
+            },
+            "01_BN3-154-E_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN3-154-E",
+              "frames": 1099501,
+              "player": "01",
+              "strata": {
+                "background": 1099290,
+                "offset_only": 105,
+                "onset_bearing": 106
+              }
+            },
+            "01_Funk1-114-Ab_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk1-114-Ab",
+              "frames": 1113895,
+              "player": "01",
+              "strata": {
+                "background": 1113436,
+                "offset_only": 230,
+                "onset_bearing": 229
+              }
+            },
+            "01_Funk1-114-Ab_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk1-114-Ab",
+              "frames": 1113895,
+              "player": "01",
+              "strata": {
+                "background": 1113655,
+                "offset_only": 120,
+                "onset_bearing": 120
+              }
+            },
+            "01_Funk2-108-Eb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk2-108-Eb",
+              "frames": 1567684,
+              "player": "01",
+              "strata": {
+                "background": 1567104,
+                "offset_only": 288,
+                "onset_bearing": 292
+              }
+            },
+            "01_Funk2-108-Eb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk2-108-Eb",
+              "frames": 1567684,
+              "player": "01",
+              "strata": {
+                "background": 1567302,
+                "offset_only": 191,
+                "onset_bearing": 191
+              }
+            },
+            "01_Funk2-119-G_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk2-119-G",
+              "frames": 1422807,
+              "player": "01",
+              "strata": {
+                "background": 1422262,
+                "offset_only": 271,
+                "onset_bearing": 274
+              }
+            },
+            "01_Funk2-119-G_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk2-119-G",
+              "frames": 1422807,
+              "player": "01",
+              "strata": {
+                "background": 1422533,
+                "offset_only": 137,
+                "onset_bearing": 137
+              }
+            },
+            "01_Funk3-112-C#_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk3-112-C#",
+              "frames": 1511942,
+              "player": "01",
+              "strata": {
+                "background": 1511208,
+                "offset_only": 367,
+                "onset_bearing": 367
+              }
+            },
+            "01_Funk3-112-C#_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk3-112-C#",
+              "frames": 1511942,
+              "player": "01",
+              "strata": {
+                "background": 1511608,
+                "offset_only": 167,
+                "onset_bearing": 167
+              }
+            },
+            "01_Funk3-98-A_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk3-98-A",
+              "frames": 1727785,
+              "player": "01",
+              "strata": {
+                "background": 1727090,
+                "offset_only": 348,
+                "onset_bearing": 347
+              }
+            },
+            "01_Funk3-98-A_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk3-98-A",
+              "frames": 1727785,
+              "player": "01",
+              "strata": {
+                "background": 1727396,
+                "offset_only": 194,
+                "onset_bearing": 195
+              }
+            },
+            "01_Jazz1-130-D_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz1-130-D",
+              "frames": 976692,
+              "player": "01",
+              "strata": {
+                "background": 976489,
+                "offset_only": 101,
+                "onset_bearing": 102
+              }
+            },
+            "01_Jazz1-130-D_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz1-130-D",
+              "frames": 976692,
+              "player": "01",
+              "strata": {
+                "background": 976557,
+                "offset_only": 67,
+                "onset_bearing": 68
+              }
+            },
+            "01_Jazz1-200-B_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz1-200-B",
+              "frames": 635040,
+              "player": "01",
+              "strata": {
+                "background": 634800,
+                "offset_only": 120,
+                "onset_bearing": 120
+              }
+            },
+            "01_Jazz1-200-B_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz1-200-B",
+              "frames": 635040,
+              "player": "01",
+              "strata": {
+                "background": 634872,
+                "offset_only": 84,
+                "onset_bearing": 84
+              }
+            },
+            "01_Jazz2-110-Bb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz2-110-Bb",
+              "frames": 1539231,
+              "player": "01",
+              "strata": {
+                "background": 1538796,
+                "offset_only": 215,
+                "onset_bearing": 220
+              }
+            },
+            "01_Jazz2-110-Bb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz2-110-Bb",
+              "frames": 1539231,
+              "player": "01",
+              "strata": {
+                "background": 1538967,
+                "offset_only": 132,
+                "onset_bearing": 132
+              }
+            },
+            "01_Jazz2-187-F#_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz2-187-F#",
+              "frames": 905461,
+              "player": "01",
+              "strata": {
+                "background": 905132,
+                "offset_only": 163,
+                "onset_bearing": 166
+              }
+            },
+            "01_Jazz2-187-F#_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz2-187-F#",
+              "frames": 905461,
+              "player": "01",
+              "strata": {
+                "background": 905206,
+                "offset_only": 127,
+                "onset_bearing": 128
+              }
+            },
+            "01_Jazz3-137-Eb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz3-137-Eb",
+              "frames": 1235823,
+              "player": "01",
+              "strata": {
+                "background": 1235461,
+                "offset_only": 178,
+                "onset_bearing": 184
+              }
+            },
+            "01_Jazz3-137-Eb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz3-137-Eb",
+              "frames": 1235823,
+              "player": "01",
+              "strata": {
+                "background": 1235582,
+                "offset_only": 120,
+                "onset_bearing": 121
+              }
+            },
+            "01_Jazz3-150-C_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz3-150-C",
+              "frames": 1128960,
+              "player": "01",
+              "strata": {
+                "background": 1128673,
+                "offset_only": 142,
+                "onset_bearing": 145
+              }
+            },
+            "01_Jazz3-150-C_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz3-150-C",
+              "frames": 1128960,
+              "player": "01",
+              "strata": {
+                "background": 1128742,
+                "offset_only": 109,
+                "onset_bearing": 109
+              }
+            },
+            "01_Rock1-130-A_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock1-130-A",
+              "frames": 976692,
+              "player": "01",
+              "strata": {
+                "background": 976305,
+                "offset_only": 192,
+                "onset_bearing": 195
+              }
+            },
+            "01_Rock1-130-A_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock1-130-A",
+              "frames": 976692,
+              "player": "01",
+              "strata": {
+                "background": 976519,
+                "offset_only": 86,
+                "onset_bearing": 87
+              }
+            },
+            "01_Rock1-90-C#_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock1-90-C#",
+              "frames": 1411200,
+              "player": "01",
+              "strata": {
+                "background": 1410628,
+                "offset_only": 284,
+                "onset_bearing": 288
+              }
+            },
+            "01_Rock1-90-C#_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock1-90-C#",
+              "frames": 1411200,
+              "player": "01",
+              "strata": {
+                "background": 1410932,
+                "offset_only": 133,
+                "onset_bearing": 135
+              }
+            },
+            "01_Rock2-142-D_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock2-142-D",
+              "frames": 1192535,
+              "player": "01",
+              "strata": {
+                "background": 1191950,
+                "offset_only": 291,
+                "onset_bearing": 294
+              }
+            },
+            "01_Rock2-142-D_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock2-142-D",
+              "frames": 1192535,
+              "player": "01",
+              "strata": {
+                "background": 1192308,
+                "offset_only": 113,
+                "onset_bearing": 114
+              }
+            },
+            "01_Rock2-85-F_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock2-85-F",
+              "frames": 1992138,
+              "player": "01",
+              "strata": {
+                "background": 1991648,
+                "offset_only": 244,
+                "onset_bearing": 246
+              }
+            },
+            "01_Rock2-85-F_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock2-85-F",
+              "frames": 1992138,
+              "player": "01",
+              "strata": {
+                "background": 1991759,
+                "offset_only": 189,
+                "onset_bearing": 190
+              }
+            },
+            "01_Rock3-117-Bb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock3-117-Bb",
+              "frames": 1447203,
+              "player": "01",
+              "strata": {
+                "background": 1446419,
+                "offset_only": 390,
+                "onset_bearing": 394
+              }
+            },
+            "01_Rock3-117-Bb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock3-117-Bb",
+              "frames": 1447203,
+              "player": "01",
+              "strata": {
+                "background": 1446938,
+                "offset_only": 132,
+                "onset_bearing": 133
+              }
+            },
+            "01_Rock3-148-C_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock3-148-C",
+              "frames": 1143989,
+              "player": "01",
+              "strata": {
+                "background": 1143587,
+                "offset_only": 200,
+                "onset_bearing": 202
+              }
+            },
+            "01_Rock3-148-C_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock3-148-C",
+              "frames": 1143989,
+              "player": "01",
+              "strata": {
+                "background": 1143758,
+                "offset_only": 115,
+                "onset_bearing": 116
+              }
+            },
+            "01_SS1-68-E_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS1-68-E",
+              "frames": 1867476,
+              "player": "01",
+              "strata": {
+                "background": 1867062,
+                "offset_only": 204,
+                "onset_bearing": 210
+              }
+            },
+            "01_SS1-68-E_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS1-68-E",
+              "frames": 1867476,
+              "player": "01",
+              "strata": {
+                "background": 1867226,
+                "offset_only": 125,
+                "onset_bearing": 125
+              }
+            },
+            "01_SS2-107-Ab_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS2-107-Ab",
+              "frames": 1582590,
+              "player": "01",
+              "strata": {
+                "background": 1582073,
+                "offset_only": 256,
+                "onset_bearing": 261
+              }
+            },
+            "01_SS2-107-Ab_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS2-107-Ab",
+              "frames": 1582590,
+              "player": "01",
+              "strata": {
+                "background": 1582104,
+                "offset_only": 243,
+                "onset_bearing": 243
+              }
+            },
+            "01_SS2-88-F_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS2-88-F",
+              "frames": 1924048,
+              "player": "01",
+              "strata": {
+                "background": 1923381,
+                "offset_only": 330,
+                "onset_bearing": 337
+              }
+            },
+            "01_SS2-88-F_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS2-88-F",
+              "frames": 1924048,
+              "player": "01",
+              "strata": {
+                "background": 1923741,
+                "offset_only": 153,
+                "onset_bearing": 154
+              }
+            },
+            "01_SS3-98-C_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS3-98-C",
+              "frames": 1727785,
+              "player": "01",
+              "strata": {
+                "background": 1726786,
+                "offset_only": 497,
+                "onset_bearing": 502
+              }
+            },
+            "01_SS3-98-C_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS3-98-C",
+              "frames": 1727785,
+              "player": "01",
+              "strata": {
+                "background": 1727395,
+                "offset_only": 195,
+                "onset_bearing": 195
+              }
+            },
+            "02_BN1-147-Gb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN1-147-Gb",
+              "frames": 863725,
+              "player": "02",
+              "strata": {
+                "background": 863329,
+                "offset_only": 196,
+                "onset_bearing": 200
+              }
+            },
+            "02_BN1-147-Gb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN1-147-Gb",
+              "frames": 863725,
+              "player": "02",
+              "strata": {
+                "background": 863638,
+                "offset_only": 43,
+                "onset_bearing": 44
+              }
+            },
+            "02_BN2-166-Ab_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN2-166-Ab",
+              "frames": 1020033,
+              "player": "02",
+              "strata": {
+                "background": 1019649,
+                "offset_only": 190,
+                "onset_bearing": 194
+              }
+            },
+            "02_BN2-166-Ab_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN2-166-Ab",
+              "frames": 1020033,
+              "player": "02",
+              "strata": {
+                "background": 1019915,
+                "offset_only": 59,
+                "onset_bearing": 59
+              }
+            },
+            "02_BN3-154-E_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN3-154-E",
+              "frames": 1099501,
+              "player": "02",
+              "strata": {
+                "background": 1099021,
+                "offset_only": 238,
+                "onset_bearing": 242
+              }
+            },
+            "02_BN3-154-E_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN3-154-E",
+              "frames": 1099501,
+              "player": "02",
+              "strata": {
+                "background": 1099343,
+                "offset_only": 79,
+                "onset_bearing": 79
+              }
+            },
+            "02_Funk1-114-Ab_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk1-114-Ab",
+              "frames": 1113895,
+              "player": "02",
+              "strata": {
+                "background": 1113401,
+                "offset_only": 247,
+                "onset_bearing": 247
+              }
+            },
+            "02_Funk1-114-Ab_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk1-114-Ab",
+              "frames": 1113895,
+              "player": "02",
+              "strata": {
+                "background": 1113693,
+                "offset_only": 101,
+                "onset_bearing": 101
+              }
+            },
+            "02_Funk2-108-Eb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk2-108-Eb",
+              "frames": 1567684,
+              "player": "02",
+              "strata": {
+                "background": 1567173,
+                "offset_only": 256,
+                "onset_bearing": 255
+              }
+            },
+            "02_Funk2-108-Eb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk2-108-Eb",
+              "frames": 1567684,
+              "player": "02",
+              "strata": {
+                "background": 1567488,
+                "offset_only": 98,
+                "onset_bearing": 98
+              }
+            },
+            "02_Funk2-119-G_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk2-119-G",
+              "frames": 1422807,
+              "player": "02",
+              "strata": {
+                "background": 1422412,
+                "offset_only": 197,
+                "onset_bearing": 198
+              }
+            },
+            "02_Funk2-119-G_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk2-119-G",
+              "frames": 1422807,
+              "player": "02",
+              "strata": {
+                "background": 1422589,
+                "offset_only": 109,
+                "onset_bearing": 109
+              }
+            },
+            "02_Funk3-112-C#_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk3-112-C#",
+              "frames": 1511942,
+              "player": "02",
+              "strata": {
+                "background": 1511543,
+                "offset_only": 199,
+                "onset_bearing": 200
+              }
+            },
+            "02_Funk3-112-C#_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk3-112-C#",
+              "frames": 1511942,
+              "player": "02",
+              "strata": {
+                "background": 1511664,
+                "offset_only": 139,
+                "onset_bearing": 139
+              }
+            },
+            "02_Funk3-98-A_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk3-98-A",
+              "frames": 1727785,
+              "player": "02",
+              "strata": {
+                "background": 1727526,
+                "offset_only": 129,
+                "onset_bearing": 130
+              }
+            },
+            "02_Funk3-98-A_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk3-98-A",
+              "frames": 1727785,
+              "player": "02",
+              "strata": {
+                "background": 1727628,
+                "offset_only": 78,
+                "onset_bearing": 79
+              }
+            },
+            "02_Jazz1-130-D_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz1-130-D",
+              "frames": 976692,
+              "player": "02",
+              "strata": {
+                "background": 976291,
+                "offset_only": 199,
+                "onset_bearing": 202
+              }
+            },
+            "02_Jazz1-130-D_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz1-130-D",
+              "frames": 976692,
+              "player": "02",
+              "strata": {
+                "background": 976473,
+                "offset_only": 109,
+                "onset_bearing": 110
+              }
+            },
+            "02_Jazz1-200-B_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz1-200-B",
+              "frames": 635040,
+              "player": "02",
+              "strata": {
+                "background": 634663,
+                "offset_only": 187,
+                "onset_bearing": 190
+              }
+            },
+            "02_Jazz1-200-B_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz1-200-B",
+              "frames": 635040,
+              "player": "02",
+              "strata": {
+                "background": 634956,
+                "offset_only": 42,
+                "onset_bearing": 42
+              }
+            },
+            "02_Jazz2-110-Bb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz2-110-Bb",
+              "frames": 1539231,
+              "player": "02",
+              "strata": {
+                "background": 1538709,
+                "offset_only": 260,
+                "onset_bearing": 262
+              }
+            },
+            "02_Jazz2-110-Bb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz2-110-Bb",
+              "frames": 1539231,
+              "player": "02",
+              "strata": {
+                "background": 1539123,
+                "offset_only": 54,
+                "onset_bearing": 54
+              }
+            },
+            "02_Jazz2-187-F#_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz2-187-F#",
+              "frames": 905461,
+              "player": "02",
+              "strata": {
+                "background": 905203,
+                "offset_only": 128,
+                "onset_bearing": 130
+              }
+            },
+            "02_Jazz2-187-F#_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz2-187-F#",
+              "frames": 905461,
+              "player": "02",
+              "strata": {
+                "background": 905352,
+                "offset_only": 54,
+                "onset_bearing": 55
+              }
+            },
+            "02_Jazz3-137-Eb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz3-137-Eb",
+              "frames": 1235823,
+              "player": "02",
+              "strata": {
+                "background": 1235426,
+                "offset_only": 198,
+                "onset_bearing": 199
+              }
+            },
+            "02_Jazz3-137-Eb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz3-137-Eb",
+              "frames": 1235823,
+              "player": "02",
+              "strata": {
+                "background": 1235648,
+                "offset_only": 87,
+                "onset_bearing": 88
+              }
+            },
+            "02_Jazz3-150-C_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz3-150-C",
+              "frames": 1128960,
+              "player": "02",
+              "strata": {
+                "background": 1128372,
+                "offset_only": 293,
+                "onset_bearing": 295
+              }
+            },
+            "02_Jazz3-150-C_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz3-150-C",
+              "frames": 1128960,
+              "player": "02",
+              "strata": {
+                "background": 1128814,
+                "offset_only": 73,
+                "onset_bearing": 73
+              }
+            },
+            "02_Rock1-130-A_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock1-130-A",
+              "frames": 976692,
+              "player": "02",
+              "strata": {
+                "background": 976278,
+                "offset_only": 204,
+                "onset_bearing": 210
+              }
+            },
+            "02_Rock1-130-A_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock1-130-A",
+              "frames": 976692,
+              "player": "02",
+              "strata": {
+                "background": 976562,
+                "offset_only": 65,
+                "onset_bearing": 65
+              }
+            },
+            "02_Rock1-90-C#_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock1-90-C#",
+              "frames": 1411200,
+              "player": "02",
+              "strata": {
+                "background": 1410750,
+                "offset_only": 224,
+                "onset_bearing": 226
+              }
+            },
+            "02_Rock1-90-C#_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock1-90-C#",
+              "frames": 1411200,
+              "player": "02",
+              "strata": {
+                "background": 1411052,
+                "offset_only": 74,
+                "onset_bearing": 74
+              }
+            },
+            "02_Rock2-142-D_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock2-142-D",
+              "frames": 1192535,
+              "player": "02",
+              "strata": {
+                "background": 1192076,
+                "offset_only": 229,
+                "onset_bearing": 230
+              }
+            },
+            "02_Rock2-142-D_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock2-142-D",
+              "frames": 1192535,
+              "player": "02",
+              "strata": {
+                "background": 1192408,
+                "offset_only": 63,
+                "onset_bearing": 64
+              }
+            },
+            "02_Rock2-85-F_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock2-85-F",
+              "frames": 1992138,
+              "player": "02",
+              "strata": {
+                "background": 1991603,
+                "offset_only": 267,
+                "onset_bearing": 268
+              }
+            },
+            "02_Rock2-85-F_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock2-85-F",
+              "frames": 1992138,
+              "player": "02",
+              "strata": {
+                "background": 1991939,
+                "offset_only": 99,
+                "onset_bearing": 100
+              }
+            },
+            "02_Rock3-117-Bb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock3-117-Bb",
+              "frames": 1447203,
+              "player": "02",
+              "strata": {
+                "background": 1446671,
+                "offset_only": 265,
+                "onset_bearing": 267
+              }
+            },
+            "02_Rock3-117-Bb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock3-117-Bb",
+              "frames": 1447203,
+              "player": "02",
+              "strata": {
+                "background": 1446996,
+                "offset_only": 103,
+                "onset_bearing": 104
+              }
+            },
+            "02_Rock3-148-C_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock3-148-C",
+              "frames": 1143989,
+              "player": "02",
+              "strata": {
+                "background": 1143126,
+                "offset_only": 429,
+                "onset_bearing": 434
+              }
+            },
+            "02_Rock3-148-C_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock3-148-C",
+              "frames": 1143989,
+              "player": "02",
+              "strata": {
+                "background": 1143860,
+                "offset_only": 64,
+                "onset_bearing": 65
+              }
+            },
+            "02_SS1-68-E_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS1-68-E",
+              "frames": 1867476,
+              "player": "02",
+              "strata": {
+                "background": 1867237,
+                "offset_only": 118,
+                "onset_bearing": 121
+              }
+            },
+            "02_SS1-68-E_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS1-68-E",
+              "frames": 1867476,
+              "player": "02",
+              "strata": {
+                "background": 1867336,
+                "offset_only": 70,
+                "onset_bearing": 70
+              }
+            },
+            "02_SS2-107-Ab_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS2-107-Ab",
+              "frames": 1582590,
+              "player": "02",
+              "strata": {
+                "background": 1582120,
+                "offset_only": 235,
+                "onset_bearing": 235
+              }
+            },
+            "02_SS2-107-Ab_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS2-107-Ab",
+              "frames": 1582590,
+              "player": "02",
+              "strata": {
+                "background": 1582375,
+                "offset_only": 107,
+                "onset_bearing": 108
+              }
+            },
+            "02_SS2-88-F_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS2-88-F",
+              "frames": 1924048,
+              "player": "02",
+              "strata": {
+                "background": 1923568,
+                "offset_only": 239,
+                "onset_bearing": 241
+              }
+            },
+            "02_SS2-88-F_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS2-88-F",
+              "frames": 1924048,
+              "player": "02",
+              "strata": {
+                "background": 1923881,
+                "offset_only": 83,
+                "onset_bearing": 84
+              }
+            },
+            "02_SS3-98-C_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS3-98-C",
+              "frames": 1727785,
+              "player": "02",
+              "strata": {
+                "background": 1727119,
+                "offset_only": 333,
+                "onset_bearing": 333
+              }
+            },
+            "02_SS3-98-C_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS3-98-C",
+              "frames": 1727785,
+              "player": "02",
+              "strata": {
+                "background": 1727532,
+                "offset_only": 126,
+                "onset_bearing": 127
+              }
+            },
+            "03_BN1-147-Gb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN1-147-Gb",
+              "frames": 863725,
+              "player": "03",
+              "strata": {
+                "background": 863418,
+                "offset_only": 155,
+                "onset_bearing": 152
+              }
+            },
+            "03_BN1-147-Gb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN1-147-Gb",
+              "frames": 863725,
+              "player": "03",
+              "strata": {
+                "background": 863598,
+                "offset_only": 63,
+                "onset_bearing": 64
+              }
+            },
+            "03_BN2-166-Ab_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN2-166-Ab",
+              "frames": 1020033,
+              "player": "03",
+              "strata": {
+                "background": 1019635,
+                "offset_only": 200,
+                "onset_bearing": 198
+              }
+            },
+            "03_BN2-166-Ab_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN2-166-Ab",
+              "frames": 1020033,
+              "player": "03",
+              "strata": {
+                "background": 1019882,
+                "offset_only": 76,
+                "onset_bearing": 75
+              }
+            },
+            "03_BN3-154-E_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN3-154-E",
+              "frames": 1099501,
+              "player": "03",
+              "strata": {
+                "background": 1099144,
+                "offset_only": 180,
+                "onset_bearing": 177
+              }
+            },
+            "03_BN3-154-E_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN3-154-E",
+              "frames": 1099501,
+              "player": "03",
+              "strata": {
+                "background": 1099370,
+                "offset_only": 65,
+                "onset_bearing": 66
+              }
+            },
+            "03_Funk1-114-Ab_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk1-114-Ab",
+              "frames": 1113895,
+              "player": "03",
+              "strata": {
+                "background": 1113547,
+                "offset_only": 174,
+                "onset_bearing": 174
+              }
+            },
+            "03_Funk1-114-Ab_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk1-114-Ab",
+              "frames": 1113895,
+              "player": "03",
+              "strata": {
+                "background": 1113703,
+                "offset_only": 96,
+                "onset_bearing": 96
+              }
+            },
+            "03_Funk2-108-Eb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk2-108-Eb",
+              "frames": 1567684,
+              "player": "03",
+              "strata": {
+                "background": 1567086,
+                "offset_only": 299,
+                "onset_bearing": 299
+              }
+            },
+            "03_Funk2-108-Eb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk2-108-Eb",
+              "frames": 1567684,
+              "player": "03",
+              "strata": {
+                "background": 1567430,
+                "offset_only": 127,
+                "onset_bearing": 127
+              }
+            },
+            "03_Funk2-119-G_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk2-119-G",
+              "frames": 1422807,
+              "player": "03",
+              "strata": {
+                "background": 1422339,
+                "offset_only": 234,
+                "onset_bearing": 234
+              }
+            },
+            "03_Funk2-119-G_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk2-119-G",
+              "frames": 1422807,
+              "player": "03",
+              "strata": {
+                "background": 1422595,
+                "offset_only": 106,
+                "onset_bearing": 106
+              }
+            },
+            "03_Funk3-112-C#_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk3-112-C#",
+              "frames": 1511942,
+              "player": "03",
+              "strata": {
+                "background": 1511536,
+                "offset_only": 203,
+                "onset_bearing": 203
+              }
+            },
+            "03_Funk3-112-C#_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk3-112-C#",
+              "frames": 1511942,
+              "player": "03",
+              "strata": {
+                "background": 1511701,
+                "offset_only": 120,
+                "onset_bearing": 121
+              }
+            },
+            "03_Funk3-98-A_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk3-98-A",
+              "frames": 1727785,
+              "player": "03",
+              "strata": {
+                "background": 1726997,
+                "offset_only": 394,
+                "onset_bearing": 394
+              }
+            },
+            "03_Funk3-98-A_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk3-98-A",
+              "frames": 1727785,
+              "player": "03",
+              "strata": {
+                "background": 1727515,
+                "offset_only": 135,
+                "onset_bearing": 135
+              }
+            },
+            "03_Jazz1-130-D_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz1-130-D",
+              "frames": 976692,
+              "player": "03",
+              "strata": {
+                "background": 976512,
+                "offset_only": 90,
+                "onset_bearing": 90
+              }
+            },
+            "03_Jazz1-130-D_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz1-130-D",
+              "frames": 976692,
+              "player": "03",
+              "strata": {
+                "background": 976553,
+                "offset_only": 69,
+                "onset_bearing": 70
+              }
+            },
+            "03_Jazz1-200-B_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz1-200-B",
+              "frames": 635040,
+              "player": "03",
+              "strata": {
+                "background": 634878,
+                "offset_only": 82,
+                "onset_bearing": 80
+              }
+            },
+            "03_Jazz1-200-B_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz1-200-B",
+              "frames": 635040,
+              "player": "03",
+              "strata": {
+                "background": 634955,
+                "offset_only": 42,
+                "onset_bearing": 43
+              }
+            },
+            "03_Jazz2-110-Bb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz2-110-Bb",
+              "frames": 1539231,
+              "player": "03",
+              "strata": {
+                "background": 1538971,
+                "offset_only": 130,
+                "onset_bearing": 130
+              }
+            },
+            "03_Jazz2-110-Bb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz2-110-Bb",
+              "frames": 1539231,
+              "player": "03",
+              "strata": {
+                "background": 1539033,
+                "offset_only": 99,
+                "onset_bearing": 99
+              }
+            },
+            "03_Jazz2-187-F#_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz2-187-F#",
+              "frames": 905461,
+              "player": "03",
+              "strata": {
+                "background": 905258,
+                "offset_only": 101,
+                "onset_bearing": 102
+              }
+            },
+            "03_Jazz2-187-F#_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz2-187-F#",
+              "frames": 905461,
+              "player": "03",
+              "strata": {
+                "background": 905318,
+                "offset_only": 71,
+                "onset_bearing": 72
+              }
+            },
+            "03_Jazz3-137-Eb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz3-137-Eb",
+              "frames": 1235823,
+              "player": "03",
+              "strata": {
+                "background": 1235609,
+                "offset_only": 107,
+                "onset_bearing": 107
+              }
+            },
+            "03_Jazz3-137-Eb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz3-137-Eb",
+              "frames": 1235823,
+              "player": "03",
+              "strata": {
+                "background": 1235630,
+                "offset_only": 96,
+                "onset_bearing": 97
+              }
+            },
+            "03_Jazz3-150-C_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz3-150-C",
+              "frames": 1128960,
+              "player": "03",
+              "strata": {
+                "background": 1128764,
+                "offset_only": 98,
+                "onset_bearing": 98
+              }
+            },
+            "03_Jazz3-150-C_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz3-150-C",
+              "frames": 1128960,
+              "player": "03",
+              "strata": {
+                "background": 1128807,
+                "offset_only": 76,
+                "onset_bearing": 77
+              }
+            },
+            "03_Rock1-130-A_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock1-130-A",
+              "frames": 976692,
+              "player": "03",
+              "strata": {
+                "background": 976270,
+                "offset_only": 210,
+                "onset_bearing": 212
+              }
+            },
+            "03_Rock1-130-A_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock1-130-A",
+              "frames": 976692,
+              "player": "03",
+              "strata": {
+                "background": 976576,
+                "offset_only": 58,
+                "onset_bearing": 58
+              }
+            },
+            "03_Rock1-90-C#_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock1-90-C#",
+              "frames": 1411200,
+              "player": "03",
+              "strata": {
+                "background": 1410795,
+                "offset_only": 203,
+                "onset_bearing": 202
+              }
+            },
+            "03_Rock1-90-C#_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock1-90-C#",
+              "frames": 1411200,
+              "player": "03",
+              "strata": {
+                "background": 1411051,
+                "offset_only": 75,
+                "onset_bearing": 74
+              }
+            },
+            "03_Rock2-142-D_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock2-142-D",
+              "frames": 1192535,
+              "player": "03",
+              "strata": {
+                "background": 1192018,
+                "offset_only": 258,
+                "onset_bearing": 259
+              }
+            },
+            "03_Rock2-142-D_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock2-142-D",
+              "frames": 1192535,
+              "player": "03",
+              "strata": {
+                "background": 1192359,
+                "offset_only": 88,
+                "onset_bearing": 88
+              }
+            },
+            "03_Rock2-85-F_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock2-85-F",
+              "frames": 1992138,
+              "player": "03",
+              "strata": {
+                "background": 1991619,
+                "offset_only": 259,
+                "onset_bearing": 260
+              }
+            },
+            "03_Rock2-85-F_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock2-85-F",
+              "frames": 1992138,
+              "player": "03",
+              "strata": {
+                "background": 1991944,
+                "offset_only": 97,
+                "onset_bearing": 97
+              }
+            },
+            "03_Rock3-117-Bb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock3-117-Bb",
+              "frames": 1447203,
+              "player": "03",
+              "strata": {
+                "background": 1446721,
+                "offset_only": 241,
+                "onset_bearing": 241
+              }
+            },
+            "03_Rock3-117-Bb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock3-117-Bb",
+              "frames": 1447203,
+              "player": "03",
+              "strata": {
+                "background": 1447018,
+                "offset_only": 92,
+                "onset_bearing": 93
+              }
+            },
+            "03_Rock3-148-C_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock3-148-C",
+              "frames": 1143989,
+              "player": "03",
+              "strata": {
+                "background": 1143407,
+                "offset_only": 289,
+                "onset_bearing": 293
+              }
+            },
+            "03_Rock3-148-C_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock3-148-C",
+              "frames": 1143989,
+              "player": "03",
+              "strata": {
+                "background": 1143857,
+                "offset_only": 66,
+                "onset_bearing": 66
+              }
+            },
+            "03_SS1-68-E_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS1-68-E",
+              "frames": 1867476,
+              "player": "03",
+              "strata": {
+                "background": 1866968,
+                "offset_only": 252,
+                "onset_bearing": 256
+              }
+            },
+            "03_SS1-68-E_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS1-68-E",
+              "frames": 1867476,
+              "player": "03",
+              "strata": {
+                "background": 1867292,
+                "offset_only": 92,
+                "onset_bearing": 92
+              }
+            },
+            "03_SS2-107-Ab_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS2-107-Ab",
+              "frames": 1582590,
+              "player": "03",
+              "strata": {
+                "background": 1581802,
+                "offset_only": 393,
+                "onset_bearing": 395
+              }
+            },
+            "03_SS2-107-Ab_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS2-107-Ab",
+              "frames": 1582590,
+              "player": "03",
+              "strata": {
+                "background": 1582388,
+                "offset_only": 101,
+                "onset_bearing": 101
+              }
+            },
+            "03_SS2-88-F_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS2-88-F",
+              "frames": 1924048,
+              "player": "03",
+              "strata": {
+                "background": 1923369,
+                "offset_only": 339,
+                "onset_bearing": 340
+              }
+            },
+            "03_SS2-88-F_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS2-88-F",
+              "frames": 1924048,
+              "player": "03",
+              "strata": {
+                "background": 1923853,
+                "offset_only": 98,
+                "onset_bearing": 97
+              }
+            },
+            "03_SS3-98-C_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS3-98-C",
+              "frames": 1727785,
+              "player": "03",
+              "strata": {
+                "background": 1726974,
+                "offset_only": 403,
+                "onset_bearing": 408
+              }
+            },
+            "03_SS3-98-C_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS3-98-C",
+              "frames": 1727785,
+              "player": "03",
+              "strata": {
+                "background": 1727564,
+                "offset_only": 110,
+                "onset_bearing": 111
+              }
+            },
+            "04_BN1-147-Gb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN1-147-Gb",
+              "frames": 863725,
+              "player": "04",
+              "strata": {
+                "background": 863392,
+                "offset_only": 169,
+                "onset_bearing": 164
+              }
+            },
+            "04_BN1-147-Gb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN1-147-Gb",
+              "frames": 863725,
+              "player": "04",
+              "strata": {
+                "background": 863602,
+                "offset_only": 61,
+                "onset_bearing": 62
+              }
+            },
+            "04_BN2-166-Ab_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN2-166-Ab",
+              "frames": 1020033,
+              "player": "04",
+              "strata": {
+                "background": 1019602,
+                "offset_only": 218,
+                "onset_bearing": 213
+              }
+            },
+            "04_BN2-166-Ab_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN2-166-Ab",
+              "frames": 1020033,
+              "player": "04",
+              "strata": {
+                "background": 1019937,
+                "offset_only": 48,
+                "onset_bearing": 48
+              }
+            },
+            "04_BN3-154-E_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN3-154-E",
+              "frames": 1099501,
+              "player": "04",
+              "strata": {
+                "background": 1099181,
+                "offset_only": 162,
+                "onset_bearing": 158
+              }
+            },
+            "04_BN3-154-E_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN3-154-E",
+              "frames": 1099501,
+              "player": "04",
+              "strata": {
+                "background": 1099334,
+                "offset_only": 84,
+                "onset_bearing": 83
+              }
+            },
+            "04_Funk1-114-Ab_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk1-114-Ab",
+              "frames": 1113895,
+              "player": "04",
+              "strata": {
+                "background": 1113431,
+                "offset_only": 232,
+                "onset_bearing": 232
+              }
+            },
+            "04_Funk1-114-Ab_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk1-114-Ab",
+              "frames": 1113895,
+              "player": "04",
+              "strata": {
+                "background": 1113691,
+                "offset_only": 102,
+                "onset_bearing": 102
+              }
+            },
+            "04_Funk2-108-Eb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk2-108-Eb",
+              "frames": 1567684,
+              "player": "04",
+              "strata": {
+                "background": 1567026,
+                "offset_only": 329,
+                "onset_bearing": 329
+              }
+            },
+            "04_Funk2-108-Eb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk2-108-Eb",
+              "frames": 1567684,
+              "player": "04",
+              "strata": {
+                "background": 1567446,
+                "offset_only": 119,
+                "onset_bearing": 119
+              }
+            },
+            "04_Funk2-119-G_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk2-119-G",
+              "frames": 1422807,
+              "player": "04",
+              "strata": {
+                "background": 1422107,
+                "offset_only": 349,
+                "onset_bearing": 351
+              }
+            },
+            "04_Funk2-119-G_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk2-119-G",
+              "frames": 1422807,
+              "player": "04",
+              "strata": {
+                "background": 1422560,
+                "offset_only": 124,
+                "onset_bearing": 123
+              }
+            },
+            "04_Funk3-112-C#_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk3-112-C#",
+              "frames": 1511942,
+              "player": "04",
+              "strata": {
+                "background": 1511153,
+                "offset_only": 395,
+                "onset_bearing": 394
+              }
+            },
+            "04_Funk3-112-C#_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk3-112-C#",
+              "frames": 1511942,
+              "player": "04",
+              "strata": {
+                "background": 1511762,
+                "offset_only": 90,
+                "onset_bearing": 90
+              }
+            },
+            "04_Funk3-98-A_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk3-98-A",
+              "frames": 1727785,
+              "player": "04",
+              "strata": {
+                "background": 1726978,
+                "offset_only": 403,
+                "onset_bearing": 404
+              }
+            },
+            "04_Funk3-98-A_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk3-98-A",
+              "frames": 1727785,
+              "player": "04",
+              "strata": {
+                "background": 1727555,
+                "offset_only": 115,
+                "onset_bearing": 115
+              }
+            },
+            "04_Jazz1-130-D_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz1-130-D",
+              "frames": 976692,
+              "player": "04",
+              "strata": {
+                "background": 976290,
+                "offset_only": 203,
+                "onset_bearing": 199
+              }
+            },
+            "04_Jazz1-130-D_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz1-130-D",
+              "frames": 976692,
+              "player": "04",
+              "strata": {
+                "background": 976583,
+                "offset_only": 55,
+                "onset_bearing": 54
+              }
+            },
+            "04_Jazz1-200-B_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz1-200-B",
+              "frames": 635040,
+              "player": "04",
+              "strata": {
+                "background": 634745,
+                "offset_only": 150,
+                "onset_bearing": 145
+              }
+            },
+            "04_Jazz1-200-B_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz1-200-B",
+              "frames": 635040,
+              "player": "04",
+              "strata": {
+                "background": 634911,
+                "offset_only": 64,
+                "onset_bearing": 65
+              }
+            },
+            "04_Jazz2-110-Bb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz2-110-Bb",
+              "frames": 1539231,
+              "player": "04",
+              "strata": {
+                "background": 1538967,
+                "offset_only": 133,
+                "onset_bearing": 131
+              }
+            },
+            "04_Jazz2-110-Bb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz2-110-Bb",
+              "frames": 1539231,
+              "player": "04",
+              "strata": {
+                "background": 1539075,
+                "offset_only": 78,
+                "onset_bearing": 78
+              }
+            },
+            "04_Jazz2-187-F#_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz2-187-F#",
+              "frames": 905461,
+              "player": "04",
+              "strata": {
+                "background": 905121,
+                "offset_only": 170,
+                "onset_bearing": 170
+              }
+            },
+            "04_Jazz2-187-F#_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz2-187-F#",
+              "frames": 905461,
+              "player": "04",
+              "strata": {
+                "background": 905329,
+                "offset_only": 66,
+                "onset_bearing": 66
+              }
+            },
+            "04_Jazz3-137-Eb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz3-137-Eb",
+              "frames": 1235823,
+              "player": "04",
+              "strata": {
+                "background": 1235371,
+                "offset_only": 226,
+                "onset_bearing": 226
+              }
+            },
+            "04_Jazz3-137-Eb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz3-137-Eb",
+              "frames": 1235823,
+              "player": "04",
+              "strata": {
+                "background": 1235666,
+                "offset_only": 79,
+                "onset_bearing": 78
+              }
+            },
+            "04_Jazz3-150-C_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Jazz3-150-C",
+              "frames": 1128960,
+              "player": "04",
+              "strata": {
+                "background": 1128609,
+                "offset_only": 177,
+                "onset_bearing": 174
+              }
+            },
+            "04_Jazz3-150-C_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Jazz3-150-C",
+              "frames": 1128960,
+              "player": "04",
+              "strata": {
+                "background": 1128784,
+                "offset_only": 88,
+                "onset_bearing": 88
+              }
+            },
+            "04_Rock1-130-A_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock1-130-A",
+              "frames": 976692,
+              "player": "04",
+              "strata": {
+                "background": 976314,
+                "offset_only": 188,
+                "onset_bearing": 190
+              }
+            },
+            "04_Rock1-130-A_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock1-130-A",
+              "frames": 976692,
+              "player": "04",
+              "strata": {
+                "background": 976505,
+                "offset_only": 94,
+                "onset_bearing": 93
+              }
+            },
+            "04_Rock1-90-C#_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock1-90-C#",
+              "frames": 1411200,
+              "player": "04",
+              "strata": {
+                "background": 1410729,
+                "offset_only": 233,
+                "onset_bearing": 238
+              }
+            },
+            "04_Rock1-90-C#_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock1-90-C#",
+              "frames": 1411200,
+              "player": "04",
+              "strata": {
+                "background": 1411052,
+                "offset_only": 74,
+                "onset_bearing": 74
+              }
+            },
+            "04_Rock2-142-D_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock2-142-D",
+              "frames": 1192535,
+              "player": "04",
+              "strata": {
+                "background": 1191838,
+                "offset_only": 345,
+                "onset_bearing": 352
+              }
+            },
+            "04_Rock2-142-D_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock2-142-D",
+              "frames": 1192535,
+              "player": "04",
+              "strata": {
+                "background": 1192392,
+                "offset_only": 71,
+                "onset_bearing": 72
+              }
+            },
+            "04_Rock2-85-F_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock2-85-F",
+              "frames": 1992138,
+              "player": "04",
+              "strata": {
+                "background": 1991891,
+                "offset_only": 121,
+                "onset_bearing": 126
+              }
+            },
+            "04_Rock2-85-F_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock2-85-F",
+              "frames": 1992138,
+              "player": "04",
+              "strata": {
+                "background": 1991916,
+                "offset_only": 111,
+                "onset_bearing": 111
+              }
+            },
+            "04_Rock3-117-Bb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock3-117-Bb",
+              "frames": 1447203,
+              "player": "04",
+              "strata": {
+                "background": 1446191,
+                "offset_only": 504,
+                "onset_bearing": 508
+              }
+            },
+            "04_Rock3-117-Bb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock3-117-Bb",
+              "frames": 1447203,
+              "player": "04",
+              "strata": {
+                "background": 1446991,
+                "offset_only": 106,
+                "onset_bearing": 106
+              }
+            },
+            "04_Rock3-148-C_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Rock3-148-C",
+              "frames": 1143989,
+              "player": "04",
+              "strata": {
+                "background": 1143246,
+                "offset_only": 369,
+                "onset_bearing": 374
+              }
+            },
+            "04_Rock3-148-C_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Rock3-148-C",
+              "frames": 1143989,
+              "player": "04",
+              "strata": {
+                "background": 1143847,
+                "offset_only": 71,
+                "onset_bearing": 71
+              }
+            },
+            "04_SS1-68-E_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS1-68-E",
+              "frames": 1867476,
+              "player": "04",
+              "strata": {
+                "background": 1866024,
+                "offset_only": 723,
+                "onset_bearing": 729
+              }
+            },
+            "04_SS1-68-E_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS1-68-E",
+              "frames": 1867476,
+              "player": "04",
+              "strata": {
+                "background": 1867253,
+                "offset_only": 111,
+                "onset_bearing": 112
+              }
+            },
+            "04_SS2-107-Ab_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS2-107-Ab",
+              "frames": 1582590,
+              "player": "04",
+              "strata": {
+                "background": 1582129,
+                "offset_only": 229,
+                "onset_bearing": 232
+              }
+            },
+            "04_SS2-107-Ab_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS2-107-Ab",
+              "frames": 1582590,
+              "player": "04",
+              "strata": {
+                "background": 1582456,
+                "offset_only": 67,
+                "onset_bearing": 67
+              }
+            },
+            "04_SS2-88-F_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS2-88-F",
+              "frames": 1924048,
+              "player": "04",
+              "strata": {
+                "background": 1923684,
+                "offset_only": 179,
+                "onset_bearing": 185
+              }
+            },
+            "04_SS2-88-F_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS2-88-F",
+              "frames": 1924048,
+              "player": "04",
+              "strata": {
+                "background": 1923882,
+                "offset_only": 83,
+                "onset_bearing": 83
+              }
+            },
+            "04_SS3-98-C_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS3-98-C",
+              "frames": 1727785,
+              "player": "04",
+              "strata": {
+                "background": 1727252,
+                "offset_only": 265,
+                "onset_bearing": 268
+              }
+            },
+            "04_SS3-98-C_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS3-98-C",
+              "frames": 1727785,
+              "player": "04",
+              "strata": {
+                "background": 1727541,
+                "offset_only": 121,
+                "onset_bearing": 123
+              }
+            }
+          }
+        },
+        "frames": 320142350,
+        "heads": {
+          "offset": {
+            "constant_categorical_optimum": {
+              "class_probabilities": {
+                "0": 0.9998630827817688,
+                "1": 0.00013672980160231847,
+                "2": 1.8429301840259498e-07,
+                "3": 3.123610481399915e-09
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.00013691721823120247
+            },
+            "event_instances": 43894,
+            "exact_count_histogram": {
+              "0": 320098517,
+              "1": 43773,
+              "2": 59,
+              "3": 1
+            },
+            "maximum_exact_count": 3,
+            "positive_position_density": 0.00013691721823120247,
+            "positive_positions": 43833
+          },
+          "onset": {
+            "constant_categorical_optimum": {
+              "class_probabilities": {
+                "0": 0.9998623768458,
+                "1": 0.00013712962374393765,
+                "2": 4.841596246169868e-07,
+                "3": 9.370831444199745e-09
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.00013762315419999885
+            },
+            "event_instances": 44220,
+            "exact_count_histogram": {
+              "0": 320098291,
+              "1": 43901,
+              "2": 155,
+              "3": 3
+            },
+            "maximum_exact_count": 3,
+            "positive_position_density": 0.00013762315419999885,
+            "positive_positions": 44059
+          }
+        },
+        "joint_exact_count_histogram": {
+          "0|0": 320054505,
+          "0|1": 43726,
+          "0|2": 59,
+          "0|3": 1,
+          "1|0": 43854,
+          "1|1": 47,
+          "2|0": 155,
+          "3|0": 3
+        },
+        "positions_with_both_targets_positive": 47,
+        "strata": {
+          "background": {
+            "by_arrangement": {
+              "comp": 160007360,
+              "solo": 160047145
+            },
+            "by_player": {
+              "00": 64005846,
+              "01": 64010158,
+              "02": 64013531,
+              "03": 64013629,
+              "04": 64011341
+            },
+            "fraction_of_full_stream": 0.9997256064372614,
+            "per_track_summary": {
+              "maximum": 1991944,
+              "median_lower": 1235698,
+              "minimum": 634663,
+              "p95_nearest_rank": 1923853
+            },
+            "positions": 320054505
+          },
+          "offset_only": {
+            "by_arrangement": {
+              "comp": 31805,
+              "solo": 11981
+            },
+            "by_player": {
+              "00": 11271,
+              "01": 9110,
+              "02": 7439,
+              "03": 7412,
+              "04": 8554
+            },
+            "fraction_of_full_stream": 0.00013677040853857667,
+            "per_track_summary": {
+              "maximum": 806,
+              "median_lower": 137,
+              "minimum": 42,
+              "p95_nearest_rank": 429
+            },
+            "positions": 43786
+          },
+          "onset_bearing": {
+            "by_arrangement": {
+              "comp": 32010,
+              "solo": 12049
+            },
+            "by_player": {
+              "00": 11353,
+              "01": 9202,
+              "02": 7500,
+              "03": 7429,
+              "04": 8575
+            },
+            "fraction_of_full_stream": 0.00013762315419999885,
+            "per_track_summary": {
+              "maximum": 815,
+              "median_lower": 137,
+              "minimum": 42,
+              "p95_nearest_rank": 434
+            },
+            "positions": 44059
+          }
+        },
+        "tracks": 240
+      }
+    },
+    "validation": {
+      "fixed_point_query_sampler": {
+        "background_near_boundary": {
+          "1": {
+            "expected_draws_over_20_repeated_fixed_epochs": 1.2131683177629373,
+            "expected_fixed_draws": 0.06065841588814686,
+            "fraction_of_background": 0.00045607831494847264,
+            "full_stream_background_positions": 37822,
+            "observed_fixed_draws": 1
+          },
+          "15": {
+            "expected_draws_over_20_repeated_fixed_epochs": 17.903358232622367,
+            "expected_fixed_draws": 0.8951679116311184,
+            "fraction_of_background": 0.0067305858017377325,
+            "full_stream_background_positions": 558159,
+            "observed_fixed_draws": 1
+          },
+          "63": {
+            "expected_draws_over_20_repeated_fixed_epochs": 70.53931290889021,
+            "expected_fixed_draws": 3.5269656454445104,
+            "fraction_of_background": 0.02651853868755271,
+            "full_stream_background_positions": 2199149,
+            "observed_fixed_draws": 4
+          }
+        },
+        "heads": {
+          "offset": {
+            "constant_categorical_optimum": {
+              "full_stream": {
+                "class_probabilities": {
+                  "0": 0.9998860607071831,
+                  "1": 0.00011384284647864774,
+                  "2": 9.644633822187673e-08
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.00011393929281686962
+              },
+              "importance_weighted_fixed_queries": {
+                "class_probabilities": {
+                  "0": 0.999886145097729,
+                  "1": 0.00011299885037415176,
+                  "2": 8.560518967738782e-07
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.00011385490227092563
+              },
+              "unweighted_fixed_queries": {
+                "class_probabilities": {
+                  "0": 0.6675,
+                  "1": 0.33,
+                  "2": 0.0025
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.3325
+              }
+            },
+            "full_stream_positive_probability": 0.00011393929281686962,
+            "importance_weighted_exact_count_mass": {
+              "0": 399.9544580390904,
+              "1": 0.045199540149660565,
+              "2": 0.0003424207587095503
+            },
+            "importance_weighted_negative_mass": 399.95445803909143,
+            "importance_weighted_positive_mass": 0.045541960908370115,
+            "importance_weighted_positive_probability": 0.00011385490227092533,
+            "unweighted_exact_count_histogram": {
+              "0": 267,
+              "1": 132,
+              "2": 1
+            },
+            "unweighted_positive_probability": 0.3325,
+            "unweighted_positive_queries": 133,
+            "weighted_empirical_relative_error_to_full": 0.0007406623637723533
+          },
+          "onset": {
+            "constant_categorical_optimum": {
+              "full_stream": {
+                "class_probabilities": {
+                  "0": 0.9998855181965306,
+                  "1": 0.00011395134860914736,
+                  "2": 5.183990679425875e-07,
+                  "3": 1.2055792277734591e-08
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.00011448180346936769
+              },
+              "importance_weighted_fixed_queries": {
+                "class_probabilities": {
+                  "0": 0.9998855181965305,
+                  "1": 0.00011362746165243271,
+                  "2": 8.543418169355822e-07
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.0001144818034693683
+              },
+              "unweighted_fixed_queries": {
+                "class_probabilities": {
+                  "0": 0.665,
+                  "1": 0.3325,
+                  "2": 0.0025
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.335
+              }
+            },
+            "full_stream_positive_probability": 0.00011448180346936769,
+            "importance_weighted_exact_count_mass": {
+              "0": 399.954207278611,
+              "1": 0.04545098466097295,
+              "2": 0.00034173672677423187
+            },
+            "importance_weighted_negative_mass": 399.9542072786121,
+            "importance_weighted_positive_mass": 0.04579272138774718,
+            "importance_weighted_positive_probability": 0.000114481803469368,
+            "unweighted_exact_count_histogram": {
+              "0": 266,
+              "1": 133,
+              "2": 1
+            },
+            "unweighted_positive_probability": 0.335,
+            "unweighted_positive_queries": 134,
+            "weighted_empirical_relative_error_to_full": 2.722774407314324e-15
+          }
+        },
+        "importance_correction": {
+          "analytical_sampled_mean_weight": 1.0,
+          "analytical_sampled_mean_weight_absolute_error_from_one": 0.0,
+          "analytical_weighted_joint_max_absolute_error": 1.3552527156068805e-20,
+          "analytical_weighted_joint_probabilities": {
+            "0|0": 0.9997716632942597,
+            "0|1": 0.0001137584559327036,
+            "0|2": 9.644633822187673e-08,
+            "1|0": 0.00011386695806320323,
+            "1|1": 8.439054594414215e-08,
+            "2|0": 5.183990679425875e-07,
+            "3|0": 1.2055792277734591e-08
+          },
+          "approved_for_training_loss": false,
+          "effective_sample_size": 133.06075491565687,
+          "effective_sample_size_ratio": 0.3326518872891422,
+          "empirical_weighted_joint_probabilities": {
+            "0|0": 0.999771663294257,
+            "0|1": 0.00011299885037415146,
+            "0|2": 8.56051896773876e-07,
+            "1|0": 0.00011362746165243243,
+            "2|0": 8.543418169355801e-07
+          },
+          "full_stream_joint_probabilities": {
+            "0|0": 0.9997716632942597,
+            "0|1": 0.0001137584559327036,
+            "0|2": 9.644633822187673e-08,
+            "1|0": 0.00011386695806320322,
+            "1|1": 8.439054594414213e-08,
+            "2|0": 5.183990679425875e-07,
+            "3|0": 1.2055792277734591e-08
+          },
+          "live_stratum_probabilities": {
+            "background": 0.9997716632942597,
+            "offset_only": 0.00011385490227092548,
+            "onset_bearing": 0.00011448180346936768
+          },
+          "maximum_over_minimum": 8798.679903212116,
+          "maximum_weight": 3.0068320700579236,
+          "minimum_weight": 0.00034173672677423187,
+          "sampled_stratum_probabilities": {
+            "background": 0.3325,
+            "offset_only": 0.3325,
+            "onset_bearing": 0.335
+          },
+          "weights_p_live_over_p_sample": {
+            "background": 3.0068320700579236,
+            "offset_only": 0.0003424207587095503,
+            "onset_bearing": 0.00034173672677423187
+          }
+        },
+        "joint_exact_count_histogram": {
+          "0|0": 133,
+          "0|1": 132,
+          "0|2": 1,
+          "1|0": 133,
+          "2|0": 1
+        },
+        "queries": 400,
+        "rare_count_class_exposure": {
+          "offset": {
+            "classes": {
+              "1": {
+                "draws_if_that_same_fixed_batch_is_repeated_20_times": 2640,
+                "expected_draws_over_20_epochs": 2659.7222861530763,
+                "expected_draws_per_fixed_epoch": 132.98611430765382,
+                "observed_in_single_cached_fixed_batch": 132,
+                "pool_positions": 9443,
+                "positions_by_stratum": {
+                  "offset_only": 9436,
+                  "onset_bearing": 7
+                },
+                "probability_seen_at_least_once_over_20_epochs": 1.0,
+                "seen_if_that_same_fixed_batch_is_repeated": true
+              },
+              "2": {
+                "draws_if_that_same_fixed_batch_is_repeated_20_times": 20,
+                "expected_draws_over_20_epochs": 2.2532825074121137,
+                "expected_draws_per_fixed_epoch": 0.11266412537060568,
+                "observed_in_single_cached_fixed_batch": 1,
+                "pool_positions": 8,
+                "positions_by_stratum": {
+                  "offset_only": 8,
+                  "onset_bearing": 0
+                },
+                "probability_seen_at_least_once_over_20_epochs": 0.8950464516155014,
+                "seen_if_that_same_fixed_batch_is_repeated": true
+              }
+            },
+            "fresh_epoch_probability_assumption": "fresh independent draws with replacement in every epoch",
+            "observed_fixed_draws": {
+              "1": 132,
+              "2": 1
+            }
+          },
+          "onset": {
+            "classes": {
+              "1": {
+                "draws_if_that_same_fixed_batch_is_repeated_20_times": 2660,
+                "expected_draws_over_20_epochs": 2667.582139848357,
+                "expected_draws_per_fixed_epoch": 133.37910699241786,
+                "observed_in_single_cached_fixed_batch": 133,
+                "pool_positions": 9452,
+                "positions_by_stratum": {
+                  "offset_only": 0,
+                  "onset_bearing": 9452
+                },
+                "probability_seen_at_least_once_over_20_epochs": 1.0,
+                "seen_if_that_same_fixed_batch_is_repeated": true
+              },
+              "2": {
+                "draws_if_that_same_fixed_batch_is_repeated_20_times": 20,
+                "expected_draws_over_20_epochs": 12.135636057287279,
+                "expected_draws_per_fixed_epoch": 0.6067818028643639,
+                "observed_in_single_cached_fixed_batch": 1,
+                "pool_positions": 43,
+                "positions_by_stratum": {
+                  "offset_only": 0,
+                  "onset_bearing": 43
+                },
+                "probability_seen_at_least_once_over_20_epochs": 0.999994780952875,
+                "seen_if_that_same_fixed_batch_is_repeated": true
+              },
+              "3": {
+                "draws_if_that_same_fixed_batch_is_repeated_20_times": 0,
+                "expected_draws_over_20_epochs": 0.2822240943555181,
+                "expected_draws_per_fixed_epoch": 0.014111204717775905,
+                "observed_in_single_cached_fixed_batch": 0,
+                "pool_positions": 1,
+                "positions_by_stratum": {
+                  "offset_only": 0,
+                  "onset_bearing": 1
+                },
+                "probability_seen_at_least_once_over_20_epochs": 0.24590653182143907,
+                "seen_if_that_same_fixed_batch_is_repeated": false
+              }
+            },
+            "fresh_epoch_probability_assumption": "fresh independent draws with replacement in every epoch",
+            "observed_fixed_draws": {
+              "1": 133,
+              "2": 1
+            }
+          }
+        },
+        "seed": 1338,
+        "selection": {
+          "background_global_frame_attempts": 133,
+          "background_rejections_on_boundary_positions": 0,
+          "by_arrangement": {
+            "comp": 249,
+            "solo": 151
+          },
+          "by_player": {
+            "00": 69,
+            "01": 76,
+            "02": 95,
+            "03": 80,
+            "04": 80
+          },
+          "by_stratum": {
+            "background": {
+              "draws": 133,
+              "positions_selected_more_than_once": 0,
+              "repeated_draws": 0,
+              "unique_positions": 133
+            },
+            "offset_only": {
+              "draws": 133,
+              "positions_selected_more_than_once": 2,
+              "repeated_draws": 2,
+              "unique_positions": 131
+            },
+            "onset_bearing": {
+              "draws": 134,
+              "positions_selected_more_than_once": 1,
+              "repeated_draws": 1,
+              "unique_positions": 133
+            }
+          },
+          "contexts_requiring_left_zero_initialization": 1,
+          "left_zero_padding_samples_total": 3694,
+          "right_padding_samples": 0
+        },
+        "source_counts": {
+          "background": 133,
+          "offset_only": 133,
+          "onset_bearing": 134
+        },
+        "source_probabilities": {
+          "background": 0.3325,
+          "offset_only": 0.3325,
+          "onset_bearing": 0.335
+        }
+      },
+      "full_stream": {
+        "background_near_boundary": {
+          "1": {
+            "fraction_of_background": 0.00045607831494847264,
+            "positions": 37822
+          },
+          "15": {
+            "fraction_of_background": 0.0067305858017377325,
+            "positions": 558159
+          },
+          "63": {
+            "fraction_of_background": 0.02651853868755271,
+            "positions": 2199149
+          }
+        },
+        "context_edges": {
+          "exclusive_end_offset_instances_excluded_from_acoustic_target": 82,
+          "internal_offset_positions_in_final_4092_samples": 10,
+          "offset_positions_requiring_left_zero_initialization": 0,
+          "onset_positions_requiring_left_zero_initialization": 92,
+          "right_padding_samples": 0
+        },
+        "duration_seconds": 1880.8997732426303,
+        "frame_distribution": {
+          "by_arrangement": {
+            "comp": 41473840,
+            "solo": 41473840
+          },
+          "by_player": {
+            "00": 16589536,
+            "01": 16589536,
+            "02": 16589536,
+            "03": 16589536,
+            "04": 16589536
+          },
+          "by_track": {
+            "00_BN1-129-Eb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN1-129-Eb",
+              "frames": 984506,
+              "player": "00",
+              "strata": {
+                "background": 984242,
+                "offset_only": 132,
+                "onset_bearing": 132
+              }
+            },
+            "00_BN1-129-Eb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN1-129-Eb",
+              "frames": 984506,
+              "player": "00",
+              "strata": {
+                "background": 984365,
+                "offset_only": 70,
+                "onset_bearing": 71
+              }
+            },
+            "00_BN2-131-B_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN2-131-B",
+              "frames": 1292412,
+              "player": "00",
+              "strata": {
+                "background": 1291938,
+                "offset_only": 239,
+                "onset_bearing": 235
+              }
+            },
+            "00_BN2-131-B_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN2-131-B",
+              "frames": 1292412,
+              "player": "00",
+              "strata": {
+                "background": 1292218,
+                "offset_only": 97,
+                "onset_bearing": 97
+              }
+            },
+            "00_BN3-119-G_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN3-119-G",
+              "frames": 1422807,
+              "player": "00",
+              "strata": {
+                "background": 1422475,
+                "offset_only": 165,
+                "onset_bearing": 167
+              }
+            },
+            "00_BN3-119-G_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN3-119-G",
+              "frames": 1422807,
+              "player": "00",
+              "strata": {
+                "background": 1422650,
+                "offset_only": 78,
+                "onset_bearing": 79
+              }
+            },
+            "00_Funk1-97-C_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk1-97-C",
+              "frames": 1309258,
+              "player": "00",
+              "strata": {
+                "background": 1308470,
+                "offset_only": 393,
+                "onset_bearing": 395
+              }
+            },
+            "00_Funk1-97-C_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk1-97-C",
+              "frames": 1309258,
+              "player": "00",
+              "strata": {
+                "background": 1309135,
+                "offset_only": 61,
+                "onset_bearing": 62
+              }
+            },
+            "00_SS1-100-C#_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS1-100-C#",
+              "frames": 1270080,
+              "player": "00",
+              "strata": {
+                "background": 1269675,
+                "offset_only": 201,
+                "onset_bearing": 204
+              }
+            },
+            "00_SS1-100-C#_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS1-100-C#",
+              "frames": 1270080,
+              "player": "00",
+              "strata": {
+                "background": 1269952,
+                "offset_only": 64,
+                "onset_bearing": 64
+              }
+            },
+            "00_SS3-84-Bb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS3-84-Bb",
+              "frames": 2015705,
+              "player": "00",
+              "strata": {
+                "background": 2015342,
+                "offset_only": 181,
+                "onset_bearing": 182
+              }
+            },
+            "00_SS3-84-Bb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS3-84-Bb",
+              "frames": 2015705,
+              "player": "00",
+              "strata": {
+                "background": 2015460,
+                "offset_only": 122,
+                "onset_bearing": 123
+              }
+            },
+            "01_BN1-129-Eb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN1-129-Eb",
+              "frames": 984506,
+              "player": "01",
+              "strata": {
+                "background": 984300,
+                "offset_only": 101,
+                "onset_bearing": 105
+              }
+            },
+            "01_BN1-129-Eb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN1-129-Eb",
+              "frames": 984506,
+              "player": "01",
+              "strata": {
+                "background": 984385,
+                "offset_only": 60,
+                "onset_bearing": 61
+              }
+            },
+            "01_BN2-131-B_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN2-131-B",
+              "frames": 1292412,
+              "player": "01",
+              "strata": {
+                "background": 1292007,
+                "offset_only": 200,
+                "onset_bearing": 205
+              }
+            },
+            "01_BN2-131-B_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN2-131-B",
+              "frames": 1292412,
+              "player": "01",
+              "strata": {
+                "background": 1292203,
+                "offset_only": 104,
+                "onset_bearing": 105
+              }
+            },
+            "01_BN3-119-G_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN3-119-G",
+              "frames": 1422807,
+              "player": "01",
+              "strata": {
+                "background": 1422448,
+                "offset_only": 178,
+                "onset_bearing": 181
+              }
+            },
+            "01_BN3-119-G_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN3-119-G",
+              "frames": 1422807,
+              "player": "01",
+              "strata": {
+                "background": 1422630,
+                "offset_only": 88,
+                "onset_bearing": 89
+              }
+            },
+            "01_Funk1-97-C_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk1-97-C",
+              "frames": 1309258,
+              "player": "01",
+              "strata": {
+                "background": 1308759,
+                "offset_only": 249,
+                "onset_bearing": 250
+              }
+            },
+            "01_Funk1-97-C_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk1-97-C",
+              "frames": 1309258,
+              "player": "01",
+              "strata": {
+                "background": 1309050,
+                "offset_only": 104,
+                "onset_bearing": 104
+              }
+            },
+            "01_SS1-100-C#_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS1-100-C#",
+              "frames": 1270080,
+              "player": "01",
+              "strata": {
+                "background": 1269341,
+                "offset_only": 368,
+                "onset_bearing": 371
+              }
+            },
+            "01_SS1-100-C#_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS1-100-C#",
+              "frames": 1270080,
+              "player": "01",
+              "strata": {
+                "background": 1269825,
+                "offset_only": 127,
+                "onset_bearing": 128
+              }
+            },
+            "01_SS3-84-Bb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS3-84-Bb",
+              "frames": 2015705,
+              "player": "01",
+              "strata": {
+                "background": 2015153,
+                "offset_only": 274,
+                "onset_bearing": 278
+              }
+            },
+            "01_SS3-84-Bb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS3-84-Bb",
+              "frames": 2015705,
+              "player": "01",
+              "strata": {
+                "background": 2015380,
+                "offset_only": 162,
+                "onset_bearing": 163
+              }
+            },
+            "02_BN1-129-Eb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN1-129-Eb",
+              "frames": 984506,
+              "player": "02",
+              "strata": {
+                "background": 984201,
+                "offset_only": 151,
+                "onset_bearing": 154
+              }
+            },
+            "02_BN1-129-Eb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN1-129-Eb",
+              "frames": 984506,
+              "player": "02",
+              "strata": {
+                "background": 984393,
+                "offset_only": 56,
+                "onset_bearing": 57
+              }
+            },
+            "02_BN2-131-B_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN2-131-B",
+              "frames": 1292412,
+              "player": "02",
+              "strata": {
+                "background": 1291864,
+                "offset_only": 271,
+                "onset_bearing": 277
+              }
+            },
+            "02_BN2-131-B_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN2-131-B",
+              "frames": 1292412,
+              "player": "02",
+              "strata": {
+                "background": 1292280,
+                "offset_only": 66,
+                "onset_bearing": 66
+              }
+            },
+            "02_BN3-119-G_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN3-119-G",
+              "frames": 1422807,
+              "player": "02",
+              "strata": {
+                "background": 1422249,
+                "offset_only": 276,
+                "onset_bearing": 282
+              }
+            },
+            "02_BN3-119-G_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN3-119-G",
+              "frames": 1422807,
+              "player": "02",
+              "strata": {
+                "background": 1422612,
+                "offset_only": 97,
+                "onset_bearing": 98
+              }
+            },
+            "02_Funk1-97-C_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk1-97-C",
+              "frames": 1309258,
+              "player": "02",
+              "strata": {
+                "background": 1308880,
+                "offset_only": 189,
+                "onset_bearing": 189
+              }
+            },
+            "02_Funk1-97-C_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk1-97-C",
+              "frames": 1309258,
+              "player": "02",
+              "strata": {
+                "background": 1309117,
+                "offset_only": 70,
+                "onset_bearing": 71
+              }
+            },
+            "02_SS1-100-C#_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS1-100-C#",
+              "frames": 1270080,
+              "player": "02",
+              "strata": {
+                "background": 1269391,
+                "offset_only": 343,
+                "onset_bearing": 346
+              }
+            },
+            "02_SS1-100-C#_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS1-100-C#",
+              "frames": 1270080,
+              "player": "02",
+              "strata": {
+                "background": 1269962,
+                "offset_only": 59,
+                "onset_bearing": 59
+              }
+            },
+            "02_SS3-84-Bb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS3-84-Bb",
+              "frames": 2015705,
+              "player": "02",
+              "strata": {
+                "background": 2014863,
+                "offset_only": 422,
+                "onset_bearing": 420
+              }
+            },
+            "02_SS3-84-Bb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS3-84-Bb",
+              "frames": 2015705,
+              "player": "02",
+              "strata": {
+                "background": 2015461,
+                "offset_only": 121,
+                "onset_bearing": 123
+              }
+            },
+            "03_BN1-129-Eb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN1-129-Eb",
+              "frames": 984506,
+              "player": "03",
+              "strata": {
+                "background": 984195,
+                "offset_only": 157,
+                "onset_bearing": 154
+              }
+            },
+            "03_BN1-129-Eb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN1-129-Eb",
+              "frames": 984506,
+              "player": "03",
+              "strata": {
+                "background": 984391,
+                "offset_only": 57,
+                "onset_bearing": 58
+              }
+            },
+            "03_BN2-131-B_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN2-131-B",
+              "frames": 1292412,
+              "player": "03",
+              "strata": {
+                "background": 1291954,
+                "offset_only": 230,
+                "onset_bearing": 228
+              }
+            },
+            "03_BN2-131-B_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN2-131-B",
+              "frames": 1292412,
+              "player": "03",
+              "strata": {
+                "background": 1292270,
+                "offset_only": 70,
+                "onset_bearing": 72
+              }
+            },
+            "03_BN3-119-G_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN3-119-G",
+              "frames": 1422807,
+              "player": "03",
+              "strata": {
+                "background": 1422414,
+                "offset_only": 196,
+                "onset_bearing": 197
+              }
+            },
+            "03_BN3-119-G_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN3-119-G",
+              "frames": 1422807,
+              "player": "03",
+              "strata": {
+                "background": 1422650,
+                "offset_only": 78,
+                "onset_bearing": 79
+              }
+            },
+            "03_Funk1-97-C_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk1-97-C",
+              "frames": 1309258,
+              "player": "03",
+              "strata": {
+                "background": 1308740,
+                "offset_only": 259,
+                "onset_bearing": 259
+              }
+            },
+            "03_Funk1-97-C_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk1-97-C",
+              "frames": 1309258,
+              "player": "03",
+              "strata": {
+                "background": 1309048,
+                "offset_only": 105,
+                "onset_bearing": 105
+              }
+            },
+            "03_SS1-100-C#_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS1-100-C#",
+              "frames": 1270080,
+              "player": "03",
+              "strata": {
+                "background": 1269344,
+                "offset_only": 368,
+                "onset_bearing": 368
+              }
+            },
+            "03_SS1-100-C#_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS1-100-C#",
+              "frames": 1270080,
+              "player": "03",
+              "strata": {
+                "background": 1269860,
+                "offset_only": 109,
+                "onset_bearing": 111
+              }
+            },
+            "03_SS3-84-Bb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS3-84-Bb",
+              "frames": 2015705,
+              "player": "03",
+              "strata": {
+                "background": 2015337,
+                "offset_only": 182,
+                "onset_bearing": 186
+              }
+            },
+            "03_SS3-84-Bb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS3-84-Bb",
+              "frames": 2015705,
+              "player": "03",
+              "strata": {
+                "background": 2015541,
+                "offset_only": 82,
+                "onset_bearing": 82
+              }
+            },
+            "04_BN1-129-Eb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN1-129-Eb",
+              "frames": 984506,
+              "player": "04",
+              "strata": {
+                "background": 984257,
+                "offset_only": 127,
+                "onset_bearing": 122
+              }
+            },
+            "04_BN1-129-Eb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN1-129-Eb",
+              "frames": 984506,
+              "player": "04",
+              "strata": {
+                "background": 984422,
+                "offset_only": 42,
+                "onset_bearing": 42
+              }
+            },
+            "04_BN2-131-B_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN2-131-B",
+              "frames": 1292412,
+              "player": "04",
+              "strata": {
+                "background": 1292009,
+                "offset_only": 206,
+                "onset_bearing": 197
+              }
+            },
+            "04_BN2-131-B_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN2-131-B",
+              "frames": 1292412,
+              "player": "04",
+              "strata": {
+                "background": 1292279,
+                "offset_only": 66,
+                "onset_bearing": 67
+              }
+            },
+            "04_BN3-119-G_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "BN3-119-G",
+              "frames": 1422807,
+              "player": "04",
+              "strata": {
+                "background": 1422467,
+                "offset_only": 172,
+                "onset_bearing": 168
+              }
+            },
+            "04_BN3-119-G_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "BN3-119-G",
+              "frames": 1422807,
+              "player": "04",
+              "strata": {
+                "background": 1422669,
+                "offset_only": 69,
+                "onset_bearing": 69
+              }
+            },
+            "04_Funk1-97-C_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "Funk1-97-C",
+              "frames": 1309258,
+              "player": "04",
+              "strata": {
+                "background": 1309060,
+                "offset_only": 99,
+                "onset_bearing": 99
+              }
+            },
+            "04_Funk1-97-C_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "Funk1-97-C",
+              "frames": 1309258,
+              "player": "04",
+              "strata": {
+                "background": 1309036,
+                "offset_only": 111,
+                "onset_bearing": 111
+              }
+            },
+            "04_SS1-100-C#_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS1-100-C#",
+              "frames": 1270080,
+              "player": "04",
+              "strata": {
+                "background": 1269761,
+                "offset_only": 158,
+                "onset_bearing": 161
+              }
+            },
+            "04_SS1-100-C#_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS1-100-C#",
+              "frames": 1270080,
+              "player": "04",
+              "strata": {
+                "background": 1269938,
+                "offset_only": 71,
+                "onset_bearing": 71
+              }
+            },
+            "04_SS3-84-Bb_comp.jams": {
+              "arrangement": "comp",
+              "composition_group": "SS3-84-Bb",
+              "frames": 2015705,
+              "player": "04",
+              "strata": {
+                "background": 2014986,
+                "offset_only": 357,
+                "onset_bearing": 362
+              }
+            },
+            "04_SS3-84-Bb_solo.jams": {
+              "arrangement": "solo",
+              "composition_group": "SS3-84-Bb",
+              "frames": 2015705,
+              "player": "04",
+              "strata": {
+                "background": 2015436,
+                "offset_only": 134,
+                "onset_bearing": 135
+              }
+            }
+          }
+        },
+        "frames": 82947680,
+        "heads": {
+          "offset": {
+            "constant_categorical_optimum": {
+              "class_probabilities": {
+                "0": 0.9998860607071831,
+                "1": 0.00011384284647864774,
+                "2": 9.644633822187673e-08
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.00011393929281686962
+            },
+            "event_instances": 9459,
+            "exact_count_histogram": {
+              "0": 82938229,
+              "1": 9443,
+              "2": 8
+            },
+            "maximum_exact_count": 2,
+            "positive_position_density": 0.00011393929281686962,
+            "positive_positions": 9451
+          },
+          "onset": {
+            "constant_categorical_optimum": {
+              "class_probabilities": {
+                "0": 0.9998855181965306,
+                "1": 0.00011395134860914736,
+                "2": 5.183990679425875e-07,
+                "3": 1.2055792277734591e-08
+              },
+              "constant_threshold_decision": "always_zero",
+              "historical_threshold": 0.55,
+              "nonzero_probability": 0.00011448180346936769
+            },
+            "event_instances": 9541,
+            "exact_count_histogram": {
+              "0": 82938184,
+              "1": 9452,
+              "2": 43,
+              "3": 1
+            },
+            "maximum_exact_count": 3,
+            "positive_position_density": 0.00011448180346936768,
+            "positive_positions": 9496
+          }
+        },
+        "joint_exact_count_histogram": {
+          "0|0": 82928740,
+          "0|1": 9436,
+          "0|2": 8,
+          "1|0": 9445,
+          "1|1": 7,
+          "2|0": 43,
+          "3|0": 1
+        },
+        "positions_with_both_targets_positive": 7,
+        "strata": {
+          "background": {
+            "by_arrangement": {
+              "comp": 41460122,
+              "solo": 41468618
+            },
+            "by_player": {
+              "00": 16585922,
+              "01": 16585481,
+              "02": 16585273,
+              "03": 16585744,
+              "04": 16586320
+            },
+            "fraction_of_full_stream": 0.9997716632942597,
+            "per_track_summary": {
+              "maximum": 2015541,
+              "median_lower": 1292280,
+              "minimum": 984195,
+              "p95_nearest_rank": 2015436
+            },
+            "positions": 82928740
+          },
+          "offset_only": {
+            "by_arrangement": {
+              "comp": 6844,
+              "solo": 2600
+            },
+            "by_player": {
+              "00": 1803,
+              "01": 2015,
+              "02": 2121,
+              "03": 1893,
+              "04": 1612
+            },
+            "fraction_of_full_stream": 0.00011385490227092548,
+            "per_track_summary": {
+              "maximum": 422,
+              "median_lower": 127,
+              "minimum": 42,
+              "p95_nearest_rank": 368
+            },
+            "positions": 9444
+          },
+          "onset_bearing": {
+            "by_arrangement": {
+              "comp": 6874,
+              "solo": 2622
+            },
+            "by_player": {
+              "00": 1811,
+              "01": 2040,
+              "02": 2142,
+              "03": 1899,
+              "04": 1604
+            },
+            "fraction_of_full_stream": 0.00011448180346936768,
+            "per_track_summary": {
+              "maximum": 420,
+              "median_lower": 123,
+              "minimum": 42,
+              "p95_nearest_rank": 368
+            },
+            "positions": 9496
+          }
+        },
+        "tracks": 60
+      }
+    }
+  },
+  "status": "completed_audit_only"
+}

@@ -1,0 +1,2042 @@
+{
+  "current_v7_sampler": {
+    "train": {
+      "batch_size": 8,
+      "heads": {
+        "offset": {
+          "anchor_pool": {
+            "duplicate_instances": 61,
+            "instances": 43894,
+            "maximum_multiplicity": 3,
+            "unique_anonymous_track_positions": 43833
+          },
+          "anonymous_count_window_512": {
+            "event_mass": 1150251,
+            "histogram": {
+              "0": 5627118,
+              "1": 773759,
+              "2": 152747,
+              "3": 20100,
+              "4": 2522,
+              "5": 122
+            },
+            "loss": {
+              "historical_weight_28_diagnostic": {
+                "class_probabilities": {
+                  "0": 0.17472202020746494,
+                  "1": 0.6727060988846901,
+                  "2": 0.1327982465940167,
+                  "3": 0.017474940630845356,
+                  "4": 0.0021926268791538305,
+                  "5": 0.00010606680382901162
+                },
+                "constant_threshold_decision": "always_nonzero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.8252779797925349,
+                "nonzero_weight": 28.0,
+                "normalized_weighted_cross_entropy": 0.9247308482362695,
+                "per_example_weighted_cross_entropy": 4.528638120089598,
+                "weighted_nonzero_mass": 26579000.0,
+                "weighted_zero_mass": 5627118.0,
+                "zero_probability": 0.17472202020746494
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.8556574084661929,
+                  "1": 0.11765749726900927,
+                  "2": 0.02322665033343633,
+                  "3": 0.003056398303744559,
+                  "4": 0.0003834943543305362,
+                  "5": 1.8551273286409764e-05
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.1443425915338071,
+                "nonzero_weight": 1.0,
+                "normalized_weighted_cross_entropy": 0.49347483015092825,
+                "per_example_weighted_cross_entropy": 0.4934748301509283,
+                "weighted_nonzero_mass": 949250.0,
+                "weighted_zero_mass": 5627118.0,
+                "zero_probability": 0.8556574084661929
+              }
+            },
+            "maximum_count": 5,
+            "mean_event_count_per_sample": 0.1749067266308698,
+            "positive_position_density": 0.1443425915338071,
+            "positive_positions": 949250,
+            "total_samples": 6576368
+          },
+          "density_comparison_to_full_stream": {
+            "anonymous_count_window_512": {
+              "full_density": 0.061858807496102904,
+              "outside_preregistered_0_5_to_2_0_range": true,
+              "sampled_density": 0.1443425915338071,
+              "sampled_over_full_ratio": 2.333420209287104
+            },
+            "exact_anonymous_count": {
+              "full_density": 0.00013691721823120247,
+              "outside_preregistered_0_5_to_2_0_range": true,
+              "sampled_density": 0.00034684798660902186,
+              "sampled_over_full_ratio": 2.533267846731476
+            },
+            "historical_v7_slot_binary_window_512": {
+              "full_density": 0.011699830299448563,
+              "outside_preregistered_0_5_to_2_0_range": true,
+              "sampled_density": 0.029151121105144968,
+              "sampled_over_full_ratio": 2.4915849511525754
+            }
+          },
+          "exact_anonymous_count": {
+            "event_mass": 2283,
+            "histogram": {
+              "0": 6574087,
+              "1": 2279,
+              "2": 2
+            },
+            "loss": {
+              "historical_weight_28_diagnostic": {
+                "class_probabilities": {
+                  "0": 0.9903783620105892,
+                  "1": 0.009613201656232981,
+                  "2": 8.436333177913981e-06
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.009621637989410896,
+                "nonzero_weight": 28.0,
+                "normalized_weighted_cross_entropy": 0.05432341121879558,
+                "per_example_weighted_cross_entropy": 0.05483214429558386,
+                "weighted_nonzero_mass": 63868.0,
+                "weighted_zero_mass": 6574087.0,
+                "zero_probability": 0.9903783620105892
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.999653152013391,
+                  "1": 0.00034654386737481845,
+                  "2": 3.0411923420343876e-07
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.00034684798660902186,
+                "nonzero_weight": 1.0,
+                "normalized_weighted_cross_entropy": 0.003112440054723112,
+                "per_example_weighted_cross_entropy": 0.003112440054723112,
+                "weighted_nonzero_mass": 2281.0,
+                "weighted_zero_mass": 6574087.0,
+                "zero_probability": 0.999653152013391
+              }
+            },
+            "maximum_count": 2,
+            "mean_event_count_per_sample": 0.00034715210584322534,
+            "positive_position_density": 0.00034684798660902186,
+            "positive_positions": 2281,
+            "total_samples": 6576368
+          },
+          "historical_v7_slot_binary_window_512": {
+            "loss": {
+              "historical_weight_28_diagnostic": {
+                "class_probabilities": {
+                  "0": 0.5432598049903861,
+                  "1": 0.45674019500961394
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.45674019500961394,
+                "nonzero_weight": 28.0,
+                "normalized_weighted_cross_entropy": 0.6893996754952886,
+                "per_example_weighted_cross_entropy": 1.2320125581109802,
+                "weighted_nonzero_mass": 32207028.0,
+                "weighted_zero_mass": 38307957.0,
+                "zero_probability": 0.5432598049903861
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.970848878894855,
+                  "1": 0.029151121105144968
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.029151121105144968,
+                "nonzero_weight": 1.0,
+                "normalized_weighted_cross_entropy": 0.1317788852021268,
+                "per_example_weighted_cross_entropy": 0.1317788852021268,
+                "weighted_nonzero_mass": 1150251.0,
+                "weighted_zero_mass": 38307957.0,
+                "zero_probability": 0.970848878894855
+              }
+            },
+            "negative_elements": 38307957,
+            "positive_element_density": 0.029151121105144968,
+            "positive_elements": 1150251,
+            "total_elements": 39458208
+          },
+          "selected_anchors": {
+            "repeated_selection_instances": 2,
+            "rows": 533,
+            "rows_anchored_on_a_simultaneous_position": 0,
+            "unique_anonymous_track_positions": 531
+          }
+        },
+        "onset": {
+          "anchor_pool": {
+            "duplicate_instances": 161,
+            "instances": 44220,
+            "maximum_multiplicity": 3,
+            "unique_anonymous_track_positions": 44059
+          },
+          "anonymous_count_window_512": {
+            "event_mass": 1178982,
+            "histogram": {
+              "0": 5682113,
+              "1": 666326,
+              "2": 178281,
+              "3": 42984,
+              "4": 6178,
+              "5": 486
+            },
+            "loss": {
+              "historical_weight_28_diagnostic": {
+                "class_probabilities": {
+                  "0": 0.18495707190068061,
+                  "1": 0.6073036148623235,
+                  "2": 0.16248907555951575,
+                  "3": 0.03917652707719962,
+                  "4": 0.005630759917246865,
+                  "5": 0.00044295068303366403
+                },
+                "constant_threshold_decision": "always_nonzero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.8150429280993194,
+                "nonzero_weight": 28.0,
+                "normalized_weighted_cross_entropy": 1.0697882604457956,
+                "per_example_weighted_cross_entropy": 4.997475172555,
+                "weighted_nonzero_mass": 25039140.0,
+                "weighted_zero_mass": 5682113.0,
+                "zero_probability": 0.18495707190068061
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.8640199271087019,
+                  "1": 0.10132127642492025,
+                  "2": 0.02710934059651163,
+                  "3": 0.006536130581500306,
+                  "4": 0.0009394243144544223,
+                  "5": 7.390097391143561e-05
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.13598007289129804,
+                "nonzero_weight": 1.0,
+                "normalized_weighted_cross_entropy": 0.49619316917282824,
+                "per_example_weighted_cross_entropy": 0.49619316917282824,
+                "weighted_nonzero_mass": 894255.0,
+                "weighted_zero_mass": 5682113.0,
+                "zero_probability": 0.8640199271087019
+              }
+            },
+            "maximum_count": 5,
+            "mean_event_count_per_sample": 0.1792755514898193,
+            "positive_position_density": 0.13598007289129804,
+            "positive_positions": 894255,
+            "total_samples": 6576368
+          },
+          "density_comparison_to_full_stream": {
+            "anonymous_count_window_512": {
+              "full_density": 0.05798881029017248,
+              "outside_preregistered_0_5_to_2_0_range": true,
+              "sampled_density": 0.13598007289129804,
+              "sampled_over_full_ratio": 2.3449364146438256
+            },
+            "exact_anonymous_count": {
+              "full_density": 0.00013762315419999885,
+              "outside_preregistered_0_5_to_2_0_range": true,
+              "sampled_density": 0.0003602292329139732,
+              "sampled_over_full_ratio": 2.617504554433299
+            },
+            "historical_v7_slot_binary_window_512": {
+              "full_density": 0.011786756734933694,
+              "outside_preregistered_0_5_to_2_0_range": true,
+              "sampled_density": 0.02987925858163655,
+              "sampled_over_full_ratio": 2.5349855989714403
+            }
+          },
+          "exact_anonymous_count": {
+            "event_mass": 2379,
+            "histogram": {
+              "0": 6573999,
+              "1": 2360,
+              "2": 8,
+              "3": 1
+            },
+            "loss": {
+              "historical_weight_28_diagnostic": {
+                "class_probabilities": {
+                  "0": 0.9900107389225025,
+                  "1": 0.009951311162049,
+                  "2": 3.373325817643729e-05,
+                  "3": 4.216657272054661e-06
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.009989261077497492,
+                "nonzero_weight": 28.0,
+                "normalized_weighted_cross_entropy": 0.0562147926043485,
+                "per_example_weighted_cross_entropy": 0.056761548318042115,
+                "weighted_nonzero_mass": 66332.0,
+                "weighted_zero_mass": 6573999.0,
+                "zero_probability": 0.9900107389225025
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.999639770767086,
+                  "1": 0.0003588606963600577,
+                  "2": 1.216476936813755e-06,
+                  "3": 1.5205961710171938e-07
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.00036022923291397315,
+                "nonzero_weight": 1.0,
+                "normalized_weighted_cross_entropy": 0.003225809242681125,
+                "per_example_weighted_cross_entropy": 0.0032258092426811257,
+                "weighted_nonzero_mass": 2369.0,
+                "weighted_zero_mass": 6573999.0,
+                "zero_probability": 0.999639770767086
+              }
+            },
+            "maximum_count": 3,
+            "mean_event_count_per_sample": 0.00036174982908499035,
+            "positive_position_density": 0.0003602292329139732,
+            "positive_positions": 2369,
+            "total_samples": 6576368
+          },
+          "historical_v7_slot_binary_window_512": {
+            "loss": {
+              "historical_weight_28_diagnostic": {
+                "class_probabilities": {
+                  "0": 0.5369454106524549,
+                  "1": 0.4630545893475451
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.4630545893475451,
+                "nonzero_weight": 28.0,
+                "normalized_weighted_cross_entropy": 0.6904147642155289,
+                "per_example_weighted_cross_entropy": 1.2473999584670652,
+                "weighted_nonzero_mass": 33011496.0,
+                "weighted_zero_mass": 38279226.0,
+                "zero_probability": 0.5369454106524549
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.9701207414183635,
+                  "1": 0.02987925858163655
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.02987925858163655,
+                "nonzero_weight": 1.0,
+                "normalized_weighted_cross_entropy": 0.13432220827775007,
+                "per_example_weighted_cross_entropy": 0.13432220827775007,
+                "weighted_nonzero_mass": 1178982.0,
+                "weighted_zero_mass": 38279226.0,
+                "zero_probability": 0.9701207414183635
+              }
+            },
+            "negative_elements": 38279226,
+            "positive_element_density": 0.02987925858163655,
+            "positive_elements": 1178982,
+            "total_elements": 39458208
+          },
+          "selected_anchors": {
+            "repeated_selection_instances": 2,
+            "rows": 534,
+            "rows_anchored_on_a_simultaneous_position": 2,
+            "unique_anonymous_track_positions": 532
+          }
+        }
+      },
+      "scored_samples": 6576368,
+      "seed": 1337,
+      "source_counts": {
+        "offset_anchor": 533,
+        "onset_anchor": 534,
+        "random": 533
+      },
+      "steps": 200,
+      "windows": 1600,
+      "windows_starting_at_zero": 4
+    },
+    "validation": {
+      "batch_size": 8,
+      "heads": {
+        "offset": {
+          "anchor_pool": {
+            "duplicate_instances": 8,
+            "instances": 9459,
+            "maximum_multiplicity": 2,
+            "unique_anonymous_track_positions": 9451
+          },
+          "anonymous_count_window_512": {
+            "event_mass": 249851,
+            "histogram": {
+              "0": 1422494,
+              "1": 189808,
+              "2": 23740,
+              "3": 3269,
+              "4": 689
+            },
+            "loss": {
+              "historical_weight_28_diagnostic": {
+                "class_probabilities": {
+                  "0": 0.18934619978910272,
+                  "1": 0.7074222159868233,
+                  "2": 0.08847995557367015,
+                  "3": 0.012183697336576569,
+                  "4": 0.0025679313138272427
+                },
+                "constant_threshold_decision": "always_nonzero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.8106538002108973,
+                "nonzero_weight": 28.0,
+                "normalized_weighted_cross_entropy": 0.8435446009729175,
+                "per_example_weighted_cross_entropy": 3.864186261606342,
+                "weighted_nonzero_mass": 6090168.0,
+                "weighted_zero_mass": 1422494.0,
+                "zero_probability": 0.18934619978910272
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.8673743902439024,
+                  "1": 0.11573658536585366,
+                  "2": 0.014475609756097562,
+                  "3": 0.0019932926829268295,
+                  "4": 0.0004201219512195122
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.13262560975609758,
+                "nonzero_weight": 1.0,
+                "normalized_weighted_cross_entropy": 0.44996189118746693,
+                "per_example_weighted_cross_entropy": 0.44996189118746693,
+                "weighted_nonzero_mass": 217506.0,
+                "weighted_zero_mass": 1422494.0,
+                "zero_probability": 0.8673743902439024
+              }
+            },
+            "maximum_count": 4,
+            "mean_event_count_per_sample": 0.1523481707317073,
+            "positive_position_density": 0.13262560975609755,
+            "positive_positions": 217506,
+            "total_samples": 1640000
+          },
+          "density_comparison_to_full_stream": {
+            "anonymous_count_window_512": {
+              "full_density": 0.05272025691375576,
+              "outside_preregistered_0_5_to_2_0_range": true,
+              "sampled_density": 0.13262560975609755,
+              "sampled_over_full_ratio": 2.5156480169104203
+            },
+            "exact_anonymous_count": {
+              "full_density": 0.00011393929281686962,
+              "outside_preregistered_0_5_to_2_0_range": true,
+              "sampled_density": 0.0002975609756097561,
+              "sampled_over_full_ratio": 2.6115747101222997
+            },
+            "historical_v7_slot_binary_window_512": {
+              "full_density": 0.009731049741234475,
+              "outside_preregistered_0_5_to_2_0_range": true,
+              "sampled_density": 0.025391361788617887,
+              "sampled_over_full_ratio": 2.6093137394030785
+            }
+          },
+          "exact_anonymous_count": {
+            "event_mass": 489,
+            "histogram": {
+              "0": 1639512,
+              "1": 487,
+              "2": 1
+            },
+            "loss": {
+              "historical_weight_28_diagnostic": {
+                "class_probabilities": {
+                  "0": 0.9917346973341011,
+                  "1": 0.008248365570272009,
+                  "2": 1.693709562684191e-05
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.00826530266589885,
+                "nonzero_weight": 28.0,
+                "normalized_weighted_cross_entropy": 0.04799063673042076,
+                "per_example_weighted_cross_entropy": 0.048376200528932975,
+                "weighted_nonzero_mass": 13664.0,
+                "weighted_zero_mass": 1639512.0,
+                "zero_probability": 0.9917346973341011
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.9997024390243903,
+                  "1": 0.00029695121951219515,
+                  "2": 6.097560975609756e-07
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.0002975609756097561,
+                "nonzero_weight": 1.0,
+                "normalized_weighted_cross_entropy": 0.0027180632184638717,
+                "per_example_weighted_cross_entropy": 0.0027180632184638713,
+                "weighted_nonzero_mass": 488.0,
+                "weighted_zero_mass": 1639512.0,
+                "zero_probability": 0.9997024390243903
+              }
+            },
+            "maximum_count": 2,
+            "mean_event_count_per_sample": 0.0002981707317073171,
+            "positive_position_density": 0.0002975609756097561,
+            "positive_positions": 488,
+            "total_samples": 1640000
+          },
+          "historical_v7_slot_binary_window_512": {
+            "loss": {
+              "historical_weight_28_diagnostic": {
+                "class_probabilities": {
+                  "0": 0.5782082659345301,
+                  "1": 0.4217917340654699
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.4217917340654699,
+                "nonzero_weight": 28.0,
+                "normalized_weighted_cross_entropy": 0.6808637375351598,
+                "per_example_weighted_cross_entropy": 1.1476412897248167,
+                "weighted_nonzero_mass": 6995828.0,
+                "weighted_zero_mass": 9590149.0,
+                "zero_probability": 0.5782082659345301
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.9746086382113821,
+                  "1": 0.025391361788617887
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.025391361788617887,
+                "nonzero_weight": 1.0,
+                "normalized_weighted_cross_entropy": 0.11833750119963142,
+                "per_example_weighted_cross_entropy": 0.1183375011996314,
+                "weighted_nonzero_mass": 249851.0,
+                "weighted_zero_mass": 9590149.0,
+                "zero_probability": 0.9746086382113821
+              }
+            },
+            "negative_elements": 9590149,
+            "positive_element_density": 0.025391361788617887,
+            "positive_elements": 249851,
+            "total_elements": 9840000
+          },
+          "selected_anchors": {
+            "repeated_selection_instances": 0,
+            "rows": 133,
+            "rows_anchored_on_a_simultaneous_position": 0,
+            "unique_anonymous_track_positions": 133
+          }
+        },
+        "onset": {
+          "anchor_pool": {
+            "duplicate_instances": 45,
+            "instances": 9541,
+            "maximum_multiplicity": 3,
+            "unique_anonymous_track_positions": 9496
+          },
+          "anonymous_count_window_512": {
+            "event_mass": 261423,
+            "histogram": {
+              "0": 1433503,
+              "1": 162958,
+              "2": 33267,
+              "3": 9157,
+              "4": 1115
+            },
+            "loss": {
+              "historical_weight_28_diagnostic": {
+                "class_probabilities": {
+                  "0": 0.1986721769033787,
+                  "1": 0.6323713148190008,
+                  "2": 0.12909520569768712,
+                  "3": 0.035534457527691736,
+                  "4": 0.004326845052241596
+                },
+                "constant_threshold_decision": "always_nonzero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.8013278230966212,
+                "nonzero_weight": 28.0,
+                "normalized_weighted_cross_entropy": 1.0172986152681527,
+                "per_example_weighted_cross_entropy": 4.4757535105362924,
+                "weighted_nonzero_mass": 5781916.0,
+                "weighted_zero_mass": 1433503.0,
+                "zero_probability": 0.1986721769033787
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.8740871951219512,
+                  "1": 0.09936463414634146,
+                  "2": 0.020284756097560974,
+                  "3": 0.005583536585365854,
+                  "4": 0.0006798780487804878
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.12591280487804876,
+                "nonzero_weight": 1.0,
+                "normalized_weighted_cross_entropy": 0.46005270608347143,
+                "per_example_weighted_cross_entropy": 0.46005270608347143,
+                "weighted_nonzero_mass": 206497.0,
+                "weighted_zero_mass": 1433503.0,
+                "zero_probability": 0.8740871951219512
+              }
+            },
+            "maximum_count": 4,
+            "mean_event_count_per_sample": 0.15940426829268292,
+            "positive_position_density": 0.1259128048780488,
+            "positive_positions": 206497,
+            "total_samples": 1640000
+          },
+          "density_comparison_to_full_stream": {
+            "anonymous_count_window_512": {
+              "full_density": 0.04874995901030626,
+              "outside_preregistered_0_5_to_2_0_range": true,
+              "sampled_density": 0.1259128048780488,
+              "sampled_over_full_ratio": 2.5828289384085323
+            },
+            "exact_anonymous_count": {
+              "full_density": 0.00011448180346936768,
+              "outside_preregistered_0_5_to_2_0_range": true,
+              "sampled_density": 0.0003201219512195122,
+              "sampled_over_full_ratio": 2.796269289251444
+            },
+            "historical_v7_slot_binary_window_512": {
+              "full_density": 0.00981540813839921,
+              "outside_preregistered_0_5_to_2_0_range": true,
+              "sampled_density": 0.02656737804878049,
+              "sampled_over_full_ratio": 2.706701308205952
+            }
+          },
+          "exact_anonymous_count": {
+            "event_mass": 527,
+            "histogram": {
+              "0": 1639475,
+              "1": 523,
+              "2": 2
+            },
+            "loss": {
+              "historical_weight_28_diagnostic": {
+                "class_probabilities": {
+                  "0": 0.991113394894736,
+                  "1": 0.008852751371529615,
+                  "2": 3.385373373433887e-05
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.008886605105263954,
+                "nonzero_weight": 28.0,
+                "normalized_weighted_cross_entropy": 0.051042668409453644,
+                "per_example_weighted_cross_entropy": 0.051483845131834134,
+                "weighted_nonzero_mass": 14700.0,
+                "weighted_zero_mass": 1639475.0,
+                "zero_probability": 0.991113394894736
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.9996798780487804,
+                  "1": 0.0003189024390243902,
+                  "2": 1.2195121951219512e-06
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.00032012195121951215,
+                "nonzero_weight": 1.0,
+                "normalized_weighted_cross_entropy": 0.0029040409322242276,
+                "per_example_weighted_cross_entropy": 0.002904040932224228,
+                "weighted_nonzero_mass": 525.0,
+                "weighted_zero_mass": 1639475.0,
+                "zero_probability": 0.9996798780487804
+              }
+            },
+            "maximum_count": 2,
+            "mean_event_count_per_sample": 0.00032134146341463414,
+            "positive_position_density": 0.0003201219512195122,
+            "positive_positions": 525,
+            "total_samples": 1640000
+          },
+          "historical_v7_slot_binary_window_512": {
+            "loss": {
+              "historical_weight_28_diagnostic": {
+                "class_probabilities": {
+                  "0": 0.566832664424682,
+                  "1": 0.43316733557531795
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.43316733557531795,
+                "nonzero_weight": 28.0,
+                "normalized_weighted_cross_entropy": 0.6841871778002958,
+                "per_example_weighted_cross_entropy": 1.1749677818365094,
+                "weighted_nonzero_mass": 7319844.0,
+                "weighted_zero_mass": 9578577.0,
+                "zero_probability": 0.566832664424682
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.9734326219512195,
+                  "1": 0.02656737804878049
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.02656737804878049,
+                "nonzero_weight": 1.0,
+                "normalized_weighted_cross_entropy": 0.12259963703885643,
+                "per_example_weighted_cross_entropy": 0.12259963703885643,
+                "weighted_nonzero_mass": 261423.0,
+                "weighted_zero_mass": 9578577.0,
+                "zero_probability": 0.9734326219512195
+              }
+            },
+            "negative_elements": 9578577,
+            "positive_element_density": 0.02656737804878049,
+            "positive_elements": 261423,
+            "total_elements": 9840000
+          },
+          "selected_anchors": {
+            "repeated_selection_instances": 1,
+            "rows": 134,
+            "rows_anchored_on_a_simultaneous_position": 0,
+            "unique_anonymous_track_positions": 133
+          }
+        }
+      },
+      "scored_samples": 1640000,
+      "seed": 1338,
+      "source_counts": {
+        "offset_anchor": 133,
+        "onset_anchor": 134,
+        "random": 133
+      },
+      "steps": 50,
+      "windows": 400,
+      "windows_starting_at_zero": 0
+    }
+  },
+  "data_guard": {
+    "locked_test_player": "05",
+    "locked_test_used": false,
+    "selected_players": [
+      "00",
+      "01",
+      "02",
+      "03",
+      "04"
+    ],
+    "train_tracks": 240,
+    "validation_members_exactly_match_v7": true,
+    "validation_tracks": 60
+  },
+  "decision": {
+    "anonymous_window_causal_inverse_structurally_exact": true,
+    "binary_union_rejected": true,
+    "binary_union_unseparable_event_instances": 28785,
+    "block_query_capacity_selected": false,
+    "exact_anonymous_count_preserves_supervised_multiplicity": true,
+    "exact_anonymous_count_structurally_admissible_on_sample_grid": true,
+    "exclusive_end_offsets": 408,
+    "exclusive_end_policy_required_before_training": true,
+    "full_annotation_stream_admissible_before_end_policy": false,
+    "historical_weight_28_constant_pressure_on_sampled_data": {
+      "train": {
+        "offset": {
+          "anonymous_count_window_512": "always_nonzero",
+          "exact_anonymous_count": "always_zero",
+          "historical_v7_slot_binary_window_512": "always_zero"
+        },
+        "onset": {
+          "anonymous_count_window_512": "always_nonzero",
+          "exact_anonymous_count": "always_zero",
+          "historical_v7_slot_binary_window_512": "always_zero"
+        }
+      },
+      "validation": {
+        "offset": {
+          "anonymous_count_window_512": "always_nonzero",
+          "exact_anonymous_count": "always_zero",
+          "historical_v7_slot_binary_window_512": "always_zero"
+        },
+        "onset": {
+          "anonymous_count_window_512": "always_nonzero",
+          "exact_anonymous_count": "always_zero",
+          "historical_v7_slot_binary_window_512": "always_zero"
+        }
+      }
+    },
+    "live_changed": false,
+    "model_selected": false,
+    "next_action_requires_user_approval": true,
+    "sampler_distribution_shift_flags": [
+      "train.onset.exact_anonymous_count",
+      "train.onset.anonymous_count_window_512",
+      "train.onset.historical_v7_slot_binary_window_512",
+      "train.offset.exact_anonymous_count",
+      "train.offset.anonymous_count_window_512",
+      "train.offset.historical_v7_slot_binary_window_512",
+      "validation.onset.exact_anonymous_count",
+      "validation.onset.anonymous_count_window_512",
+      "validation.onset.historical_v7_slot_binary_window_512",
+      "validation.offset.exact_anonymous_count",
+      "validation.offset.anonymous_count_window_512",
+      "validation.offset.historical_v7_slot_binary_window_512"
+    ],
+    "smallest_observed_combined_block_query_capacity": 8,
+    "stop_reasons": [
+      "exclusive_end_offsets_require_an_explicit_policy",
+      "current_sampler_changes_target_density_by_more_than_2x",
+      "exact_count_with_historical_weight_favors_constant_no_event",
+      "anonymous_window_with_historical_weight_favors_constant_nonzero",
+      "historical_weight_loss_and_threshold_are_not_transferable"
+    ],
+    "training_ready": false,
+    "training_started": false
+  },
+  "full_stream": {
+    "train": {
+      "combined_anonymous_multiset_per_nonoverlapping_block_512": {
+        "capacity_curve": {
+          "1": {
+            "all_blocks_fit_fraction": 0.9733841824170905,
+            "instances_retained_fraction_if_clipped": 0.7276709716957578,
+            "nonempty_blocks_fit_fraction": 0.7404005115568171
+          },
+          "12": {
+            "all_blocks_fit_fraction": 1.0,
+            "instances_retained_fraction_if_clipped": 1.0,
+            "nonempty_blocks_fit_fraction": 1.0
+          },
+          "16": {
+            "all_blocks_fit_fraction": 1.0,
+            "instances_retained_fraction_if_clipped": 1.0,
+            "nonempty_blocks_fit_fraction": 1.0
+          },
+          "2": {
+            "all_blocks_fit_fraction": 0.9921024017397423,
+            "instances_retained_fraction_if_clipped": 0.9165739837029303,
+            "nonempty_blocks_fit_fraction": 0.9229701487881719
+          },
+          "4": {
+            "all_blocks_fit_fraction": 0.9992388627714349,
+            "instances_retained_fraction_if_clipped": 0.9922827246521552,
+            "nonempty_blocks_fit_fraction": 0.9925761876540129
+          },
+          "6": {
+            "all_blocks_fit_fraction": 0.9999344398605647,
+            "instances_retained_fraction_if_clipped": 0.9994098554145766,
+            "nonempty_blocks_fit_fraction": 0.9993605539786019
+          },
+          "8": {
+            "all_blocks_fit_fraction": 1.0,
+            "instances_retained_fraction_if_clipped": 1.0,
+            "nonempty_blocks_fit_fraction": 1.0
+          }
+        },
+        "empty_block_fraction": 0.8974735360900572,
+        "empty_blocks": 561262,
+        "event_instances": 88114,
+        "histogram": {
+          "0": 561262,
+          "1": 47473,
+          "2": 11706,
+          "3": 3207,
+          "4": 1256,
+          "5": 324,
+          "6": 111,
+          "7": 30,
+          "8": 11
+        },
+        "maximum_events_in_one_block": 8,
+        "nonempty_blocks": 64118,
+        "smallest_capacity_covering_every_block": 8,
+        "total_blocks": 625380
+      },
+      "duration_seconds": 7259.463718820862,
+      "frames": 320142350,
+      "heads": {
+        "offset": {
+          "anonymous_count_window_512": {
+            "binary_union": {
+              "event_instance_loss_fraction": 0.2214197840251515,
+              "event_instances_not_separable_by_rising_edges": 9719,
+              "overlap_mass_removed_by_union": 2670043,
+              "overlap_mass_removed_fraction": 0.11880762494167062,
+              "positive_plateaus_or_rising_edges": 34175,
+              "positive_samples": 19803624
+            },
+            "causal_inverse_roundtrip": {
+              "dense_target_crosscheck_is_unit_tested": true,
+              "exact": true,
+              "passed_tracks": 240,
+              "total_tracks": 240
+            },
+            "event_mass": 22473667,
+            "histogram": {
+              "0": 300338726,
+              "1": 17464422,
+              "2": 2037172,
+              "3": 274507,
+              "4": 26235,
+              "5": 1288
+            },
+            "loss": {
+              "historical_weight_28_diagnostic": {
+                "class_probabilities": {
+                  "0": 0.3513390300347107,
+                  "1": 0.5720412038929409,
+                  "2": 0.06672687612661846,
+                  "3": 0.008991383439832107,
+                  "4": 0.000859318503877844,
+                  "5": 4.21880020199986e-05
+                },
+                "constant_threshold_decision": "always_nonzero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.6486609699652893,
+                "nonzero_weight": 28.0,
+                "normalized_weighted_cross_entropy": 0.9165057444825249,
+                "per_example_weighted_cross_entropy": 2.4472424597419837,
+                "weighted_nonzero_mass": 554501472.0,
+                "weighted_zero_mass": 300338726.0,
+                "zero_probability": 0.3513390300347107
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.938141192503897,
+                  "1": 0.05455205161079126,
+                  "2": 0.006363331811614427,
+                  "3": 0.0008574529424176464,
+                  "4": 8.194792097952677e-05,
+                  "5": 4.02321030004309e-06
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.061858807496102904,
+                "nonzero_weight": 1.0,
+                "normalized_weighted_cross_entropy": 0.2576315971947971,
+                "per_example_weighted_cross_entropy": 0.25763159719479717,
+                "weighted_nonzero_mass": 19803624.0,
+                "weighted_zero_mass": 300338726.0,
+                "zero_probability": 0.938141192503897
+              }
+            },
+            "maximum_count": 5,
+            "mean_event_count_per_sample": 0.07019898179669137,
+            "naive_positive_delta_decoder": {
+              "event_instances": 43894,
+              "fully_visible_positions": 43745,
+              "hidden_positions": 87,
+              "lost_instances": 88,
+              "partially_visible_positions": 1,
+              "recovered_fraction": 0.9979951701827129,
+              "recovered_instances": 43806
+            },
+            "positive_position_density": 0.061858807496102904,
+            "positive_positions": 19803624,
+            "total_samples": 320142350
+          },
+          "anonymous_multiset_per_nonoverlapping_block_512": {
+            "capacity_curve": {
+              "1": {
+                "all_blocks_fit_fraction": 0.9926828488279126,
+                "instances_retained_fraction_if_clipped": 0.8806442794003736,
+                "nonempty_blocks_fit_fraction": 0.8816194541456474
+              },
+              "12": {
+                "all_blocks_fit_fraction": 1.0,
+                "instances_retained_fraction_if_clipped": 1.0,
+                "nonempty_blocks_fit_fraction": 1.0
+              },
+              "16": {
+                "all_blocks_fit_fraction": 1.0,
+                "instances_retained_fraction_if_clipped": 1.0,
+                "nonempty_blocks_fit_fraction": 1.0
+              },
+              "2": {
+                "all_blocks_fit_fraction": 0.9990405833253382,
+                "instances_retained_fraction_if_clipped": 0.9848954298993029,
+                "nonempty_blocks_fit_fraction": 0.9844780752813349
+              },
+              "4": {
+                "all_blocks_fit_fraction": 0.9999984009722089,
+                "instances_retained_fraction_if_clipped": 0.9999772178429853,
+                "nonempty_blocks_fit_fraction": 0.9999741301254689
+              },
+              "6": {
+                "all_blocks_fit_fraction": 1.0,
+                "instances_retained_fraction_if_clipped": 1.0,
+                "nonempty_blocks_fit_fraction": 1.0
+              },
+              "8": {
+                "all_blocks_fit_fraction": 1.0,
+                "instances_retained_fraction_if_clipped": 1.0,
+                "nonempty_blocks_fit_fraction": 1.0
+              }
+            },
+            "empty_block_fraction": 0.9381895807349132,
+            "empty_blocks": 586725,
+            "event_instances": 43894,
+            "histogram": {
+              "0": 586725,
+              "1": 34079,
+              "2": 3976,
+              "3": 538,
+              "4": 61,
+              "5": 1
+            },
+            "maximum_events_in_one_block": 5,
+            "nonempty_blocks": 38655,
+            "smallest_capacity_covering_every_block": 5,
+            "total_blocks": 625380
+          },
+          "exact_anonymous_count": {
+            "event_instances": 43894,
+            "event_mass": 43894,
+            "histogram": {
+              "0": 320098517,
+              "1": 43773,
+              "2": 59,
+              "3": 1
+            },
+            "instance_sum_reconciles": true,
+            "loss": {
+              "historical_weight_28_diagnostic": {
+                "class_probabilities": {
+                  "0": 0.996180437912555,
+                  "1": 0.0038143337497714663,
+                  "2": 5.1411987123687325e-06,
+                  "3": 8.713896122658869e-08
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.0038195620874450615,
+                "nonzero_weight": 28.0,
+                "normalized_weighted_cross_entropy": 0.0251182691577307,
+                "per_example_weighted_cross_entropy": 0.025211125493306896,
+                "weighted_nonzero_mass": 1227324.0,
+                "weighted_zero_mass": 320098517.0,
+                "zero_probability": 0.996180437912555
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.9998630827817688,
+                  "1": 0.00013672980160231847,
+                  "2": 1.8429301840259498e-07,
+                  "3": 3.123610481399915e-09
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.00013691721823120247,
+                "nonzero_weight": 1.0,
+                "normalized_weighted_cross_entropy": 0.001356380735523182,
+                "per_example_weighted_cross_entropy": 0.0013563807355231822,
+                "weighted_nonzero_mass": 43833.0,
+                "weighted_zero_mass": 320098517.0,
+                "zero_probability": 0.9998630827817688
+              }
+            },
+            "maximum_count": 3,
+            "mean_event_count_per_sample": 0.00013710775847056785,
+            "positive_position_density": 0.00013691721823120247,
+            "positive_positions": 43833,
+            "simultaneous_extra_instances": 61,
+            "slot_permutation_invariant": true,
+            "successive_unique_position_gaps": {
+              "bins": {
+                "1-15": 297,
+                "16-63": 1039,
+                "2206_plus": 25173,
+                "256-511": 4260,
+                "512": 65,
+                "513-2205": 8762,
+                "64-255": 3997
+              },
+              "count": 43593,
+              "median_samples": 4204,
+              "minimum_samples": 1,
+              "p95_samples": 23956
+            },
+            "total_samples": 320142350
+          },
+          "historical_v7_slot_binary_window_512": {
+            "loss": {
+              "historical_weight_28_diagnostic": {
+                "class_probabilities": {
+                  "0": 0.7510476563089825,
+                  "1": 0.24895234369101749
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.24895234369101749,
+                "nonzero_weight": 28.0,
+                "normalized_weighted_cross_entropy": 0.561181246901136,
+                "per_example_weighted_cross_entropy": 0.7384558315124945,
+                "weighted_nonzero_mass": 629262676.0,
+                "weighted_zero_mass": 1898380433.0,
+                "zero_probability": 0.7510476563089825
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.9883001697005515,
+                  "1": 0.011699830299448563
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.011699830299448563,
+                "nonzero_weight": 1.0,
+                "normalized_weighted_cross_entropy": 0.06367408094652689,
+                "per_example_weighted_cross_entropy": 0.06367408094652689,
+                "weighted_nonzero_mass": 22473667.0,
+                "weighted_zero_mass": 1898380433.0,
+                "zero_probability": 0.9883001697005515
+              }
+            },
+            "negative_elements": 1898380433,
+            "positive_element_density": 0.011699830299448563,
+            "positive_elements": 22473667,
+            "total_elements": 1920854100
+          },
+          "raw_annotations": {
+            "event_instances": 44220,
+            "exclusive_end_instances": 326,
+            "maximum_multiplicity": 6,
+            "multiplicity_position_histogram": {
+              "1": 43840,
+              "2": 77,
+              "3": 22,
+              "4": 16,
+              "5": 12,
+              "6": 6
+            },
+            "simultaneous_extra_instances": 247,
+            "unique_positions": 43973
+          }
+        },
+        "onset": {
+          "anonymous_count_window_512": {
+            "binary_union": {
+              "event_instance_loss_fraction": 0.32847127996381725,
+              "event_instances_not_separable_by_rising_edges": 14525,
+              "overlap_mass_removed_by_union": 4075966,
+              "overlap_mass_removed_fraction": 0.18002874477046585,
+              "positive_plateaus_or_rising_edges": 29695,
+              "positive_samples": 18564674
+            },
+            "causal_inverse_roundtrip": {
+              "dense_target_crosscheck_is_unit_tested": true,
+              "exact": true,
+              "passed_tracks": 240,
+              "total_tracks": 240
+            },
+            "event_mass": 22640640,
+            "histogram": {
+              "0": 301577676,
+              "1": 15230523,
+              "2": 2698444,
+              "3": 538198,
+              "4": 90298,
+              "5": 5823,
+              "6": 1388
+            },
+            "loss": {
+              "historical_weight_28_diagnostic": {
+                "class_probabilities": {
+                  "0": 0.36715592971719885,
+                  "1": 0.5191874722850409,
+                  "2": 0.09198622525718486,
+                  "3": 0.018346425740525422,
+                  "4": 0.0030781339795353463,
+                  "5": 0.00019849801947810942,
+                  "6": 4.731500103651311e-05
+                },
+                "constant_threshold_decision": "always_nonzero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.6328440702828012,
+                "nonzero_weight": 28.0,
+                "normalized_weighted_cross_entropy": 1.0210113010419577,
+                "per_example_weighted_cross_entropy": 2.6196065283285535,
+                "weighted_nonzero_mass": 519810872.0,
+                "weighted_zero_mass": 301577676.0,
+                "zero_probability": 0.36715592971719885
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.9420111897098276,
+                  "1": 0.04757422128000247,
+                  "2": 0.008428887961870711,
+                  "3": 0.0016811209138684713,
+                  "4": 0.0002820557792494495,
+                  "5": 1.8188783833191705e-05,
+                  "6": 4.335571348183081e-06
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.057988810290172485,
+                "nonzero_weight": 1.0,
+                "normalized_weighted_cross_entropy": 0.25471361896899714,
+                "per_example_weighted_cross_entropy": 0.25471361896899714,
+                "weighted_nonzero_mass": 18564674.0,
+                "weighted_zero_mass": 301577676.0,
+                "zero_probability": 0.9420111897098276
+              }
+            },
+            "maximum_count": 6,
+            "mean_event_count_per_sample": 0.07072054040960217,
+            "naive_positive_delta_decoder": {
+              "event_instances": 44220,
+              "fully_visible_positions": 43939,
+              "hidden_positions": 118,
+              "lost_instances": 120,
+              "partially_visible_positions": 2,
+              "recovered_fraction": 0.9972862957937585,
+              "recovered_instances": 44100
+            },
+            "positive_position_density": 0.05798881029017248,
+            "positive_positions": 18564674,
+            "total_samples": 320142350
+          },
+          "anonymous_multiset_per_nonoverlapping_block_512": {
+            "capacity_curve": {
+              "1": {
+                "all_blocks_fit_fraction": 0.9895727397742172,
+                "instances_retained_fraction_if_clipped": 0.8199231117141564,
+                "nonempty_blocks_fit_fraction": 0.8201450754337094
+              },
+              "12": {
+                "all_blocks_fit_fraction": 1.0,
+                "instances_retained_fraction_if_clipped": 1.0,
+                "nonempty_blocks_fit_fraction": 1.0
+              },
+              "16": {
+                "all_blocks_fit_fraction": 1.0,
+                "instances_retained_fraction_if_clipped": 1.0,
+                "nonempty_blocks_fit_fraction": 1.0
+              },
+              "2": {
+                "all_blocks_fit_fraction": 0.9980252006779878,
+                "instances_retained_fraction_if_clipped": 0.9673903211216645,
+                "nonempty_blocks_fit_fraction": 0.9659376120473288
+              },
+              "4": {
+                "all_blocks_fit_fraction": 0.9999760145831335,
+                "instances_retained_fraction_if_clipped": 0.9996155585707824,
+                "nonempty_blocks_fit_fraction": 0.9995862867859999
+              },
+              "6": {
+                "all_blocks_fit_fraction": 1.0,
+                "instances_retained_fraction_if_clipped": 1.0,
+                "nonempty_blocks_fit_fraction": 1.0
+              },
+              "8": {
+                "all_blocks_fit_fraction": 1.0,
+                "instances_retained_fraction_if_clipped": 1.0,
+                "nonempty_blocks_fit_fraction": 1.0
+              }
+            },
+            "empty_block_fraction": 0.9420240493779782,
+            "empty_blocks": 589123,
+            "event_instances": 44220,
+            "histogram": {
+              "0": 589123,
+              "1": 29736,
+              "2": 5286,
+              "3": 1045,
+              "4": 175,
+              "5": 13,
+              "6": 2
+            },
+            "maximum_events_in_one_block": 6,
+            "nonempty_blocks": 36257,
+            "smallest_capacity_covering_every_block": 6,
+            "total_blocks": 625380
+          },
+          "exact_anonymous_count": {
+            "event_instances": 44220,
+            "event_mass": 44220,
+            "histogram": {
+              "0": 320098291,
+              "1": 43901,
+              "2": 155,
+              "3": 3
+            },
+            "instance_sum_reconciles": true,
+            "loss": {
+              "historical_weight_28_diagnostic": {
+                "class_probabilities": {
+                  "0": 0.9961608174136612,
+                  "1": 0.003825414891914434,
+                  "2": 1.3506282504880008e-05,
+                  "3": 2.614119194492905e-07
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.003839182586338763,
+                "nonzero_weight": 28.0,
+                "normalized_weighted_cross_entropy": 0.0252798002428807,
+                "per_example_weighted_cross_entropy": 0.02537373556074892,
+                "weighted_nonzero_mass": 1233652.0,
+                "weighted_zero_mass": 320098291.0,
+                "zero_probability": 0.9961608174136612
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.9998623768458,
+                  "1": 0.00013712962374393765,
+                  "2": 4.841596246169868e-07,
+                  "3": 9.370831444199745e-09
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.00013762315419999885,
+                "nonzero_weight": 1.0,
+                "normalized_weighted_cross_entropy": 0.0013645379492014692,
+                "per_example_weighted_cross_entropy": 0.0013645379492014695,
+                "weighted_nonzero_mass": 44059.0,
+                "weighted_zero_mass": 320098291.0,
+                "zero_probability": 0.9998623768458
+              }
+            },
+            "maximum_count": 3,
+            "mean_event_count_per_sample": 0.00013812605548750424,
+            "positive_position_density": 0.00013762315419999885,
+            "positive_positions": 44059,
+            "simultaneous_extra_instances": 161,
+            "slot_permutation_invariant": true,
+            "successive_unique_position_gaps": {
+              "bins": {
+                "1-15": 428,
+                "16-63": 1456,
+                "2206_plus": 23720,
+                "256-511": 6291,
+                "512": 66,
+                "513-2205": 5735,
+                "64-255": 6123
+              },
+              "count": 43819,
+              "median_samples": 4605,
+              "minimum_samples": 1,
+              "p95_samples": 22735
+            },
+            "total_samples": 320142350
+          },
+          "historical_v7_slot_binary_window_512": {
+            "loss": {
+              "historical_weight_28_diagnostic": {
+                "class_probabilities": {
+                  "0": 0.7496445413938878,
+                  "1": 0.25035545860611225
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.25035545860611225,
+                "nonzero_weight": 28.0,
+                "normalized_weighted_cross_entropy": 0.5627253189824454,
+                "per_example_weighted_cross_entropy": 0.7418083929551645,
+                "weighted_nonzero_mass": 633937920.0,
+                "weighted_zero_mass": 1898213460.0,
+                "zero_probability": 0.7496445413938878
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.9882132432650663,
+                  "1": 0.011786756734933694
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.011786756734933694,
+                "nonzero_weight": 1.0,
+                "normalized_weighted_cross_entropy": 0.0640593964937052,
+                "per_example_weighted_cross_entropy": 0.0640593964937052,
+                "weighted_nonzero_mass": 22640640.0,
+                "weighted_zero_mass": 1898213460.0,
+                "zero_probability": 0.9882132432650663
+              }
+            },
+            "negative_elements": 1898213460,
+            "positive_element_density": 0.011786756734933694,
+            "positive_elements": 22640640,
+            "total_elements": 1920854100
+          },
+          "raw_annotations": {
+            "event_instances": 44220,
+            "exclusive_end_instances": 0,
+            "maximum_multiplicity": 3,
+            "multiplicity_position_histogram": {
+              "1": 43901,
+              "2": 155,
+              "3": 3
+            },
+            "simultaneous_extra_instances": 161,
+            "unique_positions": 44059
+          }
+        }
+      },
+      "players": {
+        "00": 48,
+        "01": 48,
+        "02": 48,
+        "03": 48,
+        "04": 48
+      },
+      "temporal_relations": {
+        "cross_type_pairs_strictly_below_512_samples": {
+          "offset_before_onset": 24094,
+          "onset_before_offset": 8115,
+          "same_sample": 47,
+          "total_pairs": 32256
+        },
+        "successive_notes_within_original_slot": {
+          "positive_gap_512_or_more": 28229,
+          "positive_gap_below_512": 14763,
+          "retrigger_before_previous_offset": 2,
+          "same_sample": 30,
+          "total_successive_pairs": 43024
+        }
+      },
+      "tracks": 240
+    },
+    "validation": {
+      "combined_anonymous_multiset_per_nonoverlapping_block_512": {
+        "capacity_curve": {
+          "1": {
+            "all_blocks_fit_fraction": 0.9795284823798062,
+            "instances_retained_fraction_if_clipped": 0.7633684210526316,
+            "nonempty_blocks_fit_fraction": 0.7713044677330392
+          },
+          "12": {
+            "all_blocks_fit_fraction": 1.0,
+            "instances_retained_fraction_if_clipped": 1.0,
+            "nonempty_blocks_fit_fraction": 1.0
+          },
+          "16": {
+            "all_blocks_fit_fraction": 1.0,
+            "instances_retained_fraction_if_clipped": 1.0,
+            "nonempty_blocks_fit_fraction": 1.0
+          },
+          "2": {
+            "all_blocks_fit_fraction": 0.9948034314633093,
+            "instances_retained_fraction_if_clipped": 0.9379473684210526,
+            "nonempty_blocks_fit_fraction": 0.9419470490899062
+          },
+          "4": {
+            "all_blocks_fit_fraction": 0.9996790717768315,
+            "instances_retained_fraction_if_clipped": 0.9961052631578947,
+            "nonempty_blocks_fit_fraction": 0.9964147821290679
+          },
+          "6": {
+            "all_blocks_fit_fraction": 0.9999753132136024,
+            "instances_retained_fraction_if_clipped": 0.9997368421052631,
+            "nonempty_blocks_fit_fraction": 0.9997242140099283
+          },
+          "8": {
+            "all_blocks_fit_fraction": 1.0,
+            "instances_retained_fraction_if_clipped": 1.0,
+            "nonempty_blocks_fit_fraction": 1.0
+          }
+        },
+        "empty_block_fraction": 0.9104857125223724,
+        "empty_blocks": 147526,
+        "event_instances": 19000,
+        "histogram": {
+          "0": 147526,
+          "1": 11187,
+          "2": 2475,
+          "3": 579,
+          "4": 211,
+          "5": 35,
+          "6": 13,
+          "7": 3,
+          "8": 1
+        },
+        "maximum_events_in_one_block": 8,
+        "nonempty_blocks": 14504,
+        "smallest_capacity_covering_every_block": 8,
+        "total_blocks": 162030
+      },
+      "duration_seconds": 1880.8997732426303,
+      "frames": 82947680,
+      "heads": {
+        "offset": {
+          "anonymous_count_window_512": {
+            "binary_union": {
+              "event_instance_loss_fraction": 0.1824717200549741,
+              "event_instances_not_separable_by_rising_edges": 1726,
+              "overlap_mass_removed_by_union": 469985,
+              "overlap_mass_removed_fraction": 0.09704402718310604,
+              "positive_plateaus_or_rising_edges": 7733,
+              "positive_samples": 4373023
+            },
+            "causal_inverse_roundtrip": {
+              "dense_target_crosscheck_is_unit_tested": true,
+              "exact": true,
+              "passed_tracks": 60,
+              "total_tracks": 60
+            },
+            "event_mass": 4843008,
+            "histogram": {
+              "0": 78574657,
+              "1": 3953446,
+              "2": 371929,
+              "3": 44888,
+              "4": 2760
+            },
+            "loss": {
+              "historical_weight_28_diagnostic": {
+                "class_probabilities": {
+                  "0": 0.3908811572277828,
+                  "1": 0.550675917433421,
+                  "2": 0.05180603030750763,
+                  "3": 0.006252454335218288,
+                  "4": 0.0003844406960702744
+                },
+                "constant_threshold_decision": "always_nonzero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.6091188427722172,
+                "nonzero_weight": 28.0,
+                "normalized_weighted_cross_entropy": 0.8838246971356977,
+                "per_example_weighted_cross_entropy": 2.141902254828039,
+                "weighted_nonzero_mass": 122444644.0,
+                "weighted_zero_mass": 78574657.0,
+                "zero_probability": 0.3908811572277828
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.9472797430862443,
+                  "1": 0.04766192375724071,
+                  "2": 0.004483898766065549,
+                  "3": 0.0005411604037629503,
+                  "4": 3.3273986686547473e-05
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.05272025691375576,
+                "nonzero_weight": 1.0,
+                "normalized_weighted_cross_entropy": 0.22502955191479493,
+                "per_example_weighted_cross_entropy": 0.22502955191479487,
+                "weighted_nonzero_mass": 4373023.0,
+                "weighted_zero_mass": 78574657.0,
+                "zero_probability": 0.9472797430862443
+              }
+            },
+            "maximum_count": 4,
+            "mean_event_count_per_sample": 0.058386298447406844,
+            "naive_positive_delta_decoder": {
+              "event_instances": 9459,
+              "fully_visible_positions": 9425,
+              "hidden_positions": 26,
+              "lost_instances": 26,
+              "partially_visible_positions": 0,
+              "recovered_fraction": 0.9972512950629031,
+              "recovered_instances": 9433
+            },
+            "positive_position_density": 0.05272025691375576,
+            "positive_positions": 4373023,
+            "total_samples": 82947680
+          },
+          "anonymous_multiset_per_nonoverlapping_block_512": {
+            "capacity_curve": {
+              "1": {
+                "all_blocks_fit_fraction": 0.9950626427204838,
+                "instances_retained_fraction_if_clipped": 0.9050639602494979,
+                "nonempty_blocks_fit_fraction": 0.9065529727835533
+              },
+              "12": {
+                "all_blocks_fit_fraction": 1.0,
+                "instances_retained_fraction_if_clipped": 1.0,
+                "nonempty_blocks_fit_fraction": 1.0
+              },
+              "16": {
+                "all_blocks_fit_fraction": 1.0,
+                "instances_retained_fraction_if_clipped": 1.0,
+                "nonempty_blocks_fit_fraction": 1.0
+              },
+              "2": {
+                "all_blocks_fit_fraction": 0.9994322039128557,
+                "instances_retained_fraction_if_clipped": 0.9896394967755576,
+                "nonempty_blocks_fit_fraction": 0.9892535918701086
+              },
+              "4": {
+                "all_blocks_fit_fraction": 1.0,
+                "instances_retained_fraction_if_clipped": 1.0,
+                "nonempty_blocks_fit_fraction": 1.0
+              },
+              "6": {
+                "all_blocks_fit_fraction": 1.0,
+                "instances_retained_fraction_if_clipped": 1.0,
+                "nonempty_blocks_fit_fraction": 1.0
+              },
+              "8": {
+                "all_blocks_fit_fraction": 1.0,
+                "instances_retained_fraction_if_clipped": 1.0,
+                "nonempty_blocks_fit_fraction": 1.0
+              }
+            },
+            "empty_block_fraction": 0.9471641054125779,
+            "empty_blocks": 153469,
+            "event_instances": 9459,
+            "histogram": {
+              "0": 153469,
+              "1": 7761,
+              "2": 708,
+              "3": 86,
+              "4": 6
+            },
+            "maximum_events_in_one_block": 4,
+            "nonempty_blocks": 8561,
+            "smallest_capacity_covering_every_block": 4,
+            "total_blocks": 162030
+          },
+          "exact_anonymous_count": {
+            "event_instances": 9459,
+            "event_mass": 9459,
+            "histogram": {
+              "0": 82938229,
+              "1": 9443,
+              "2": 8
+            },
+            "instance_sum_reconciles": true,
+            "loss": {
+              "historical_weight_28_diagnostic": {
+                "class_probabilities": {
+                  "0": 0.996819484215548,
+                  "1": 0.003177823569207485,
+                  "2": 2.692215244483732e-06
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.0031805157844519687,
+                "nonzero_weight": 28.0,
+                "normalized_weighted_cross_entropy": 0.021487419515254808,
+                "per_example_weighted_cross_entropy": 0.02155352257262355,
+                "weighted_nonzero_mass": 264628.0,
+                "weighted_zero_mass": 82938229.0,
+                "zero_probability": 0.996819484215548
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.9998860607071831,
+                  "1": 0.00011384284647864774,
+                  "2": 9.644633822187673e-08
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.00011393929281686962,
+                "nonzero_weight": 1.0,
+                "normalized_weighted_cross_entropy": 0.0011492626023232879,
+                "per_example_weighted_cross_entropy": 0.001149262602323288,
+                "weighted_nonzero_mass": 9451.0,
+                "weighted_zero_mass": 82938229.0,
+                "zero_probability": 0.9998860607071831
+              }
+            },
+            "maximum_count": 2,
+            "mean_event_count_per_sample": 0.00011403573915509149,
+            "positive_position_density": 0.00011393929281686962,
+            "positive_positions": 9451,
+            "simultaneous_extra_instances": 8,
+            "slot_permutation_invariant": true,
+            "successive_unique_position_gaps": {
+              "bins": {
+                "1-15": 60,
+                "16-63": 187,
+                "2206_plus": 5763,
+                "256-511": 775,
+                "512": 20,
+                "513-2205": 1910,
+                "64-255": 676
+              },
+              "count": 9391,
+              "median_samples": 5441,
+              "minimum_samples": 1,
+              "p95_samples": 28931
+            },
+            "total_samples": 82947680
+          },
+          "historical_v7_slot_binary_window_512": {
+            "loss": {
+              "historical_weight_28_diagnostic": {
+                "class_probabilities": {
+                  "0": 0.7842233949241146,
+                  "1": 0.2157766050758853
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.2157766050758853,
+                "nonzero_weight": 28.0,
+                "normalized_weighted_cross_entropy": 0.5215103383465595,
+                "per_example_weighted_cross_entropy": 0.6585311005080561,
+                "weighted_nonzero_mass": 135604224.0,
+                "weighted_zero_mass": 492843072.0,
+                "zero_probability": 0.7842233949241146
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.9902689502587655,
+                  "1": 0.009731049741234475
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.009731049741234475,
+                "nonzero_weight": 1.0,
+                "normalized_weighted_cross_entropy": 0.05476198957383311,
+                "per_example_weighted_cross_entropy": 0.05476198957383311,
+                "weighted_nonzero_mass": 4843008.0,
+                "weighted_zero_mass": 492843072.0,
+                "zero_probability": 0.9902689502587655
+              }
+            },
+            "negative_elements": 492843072,
+            "positive_element_density": 0.009731049741234475,
+            "positive_elements": 4843008,
+            "total_elements": 497686080
+          },
+          "raw_annotations": {
+            "event_instances": 9541,
+            "exclusive_end_instances": 82,
+            "maximum_multiplicity": 5,
+            "multiplicity_position_histogram": {
+              "1": 9460,
+              "2": 11,
+              "3": 6,
+              "4": 9,
+              "5": 1
+            },
+            "simultaneous_extra_instances": 54,
+            "unique_positions": 9487
+          }
+        },
+        "onset": {
+          "anonymous_count_window_512": {
+            "binary_union": {
+              "event_instance_loss_fraction": 0.2950424483806729,
+              "event_instances_not_separable_by_rising_edges": 2815,
+              "overlap_mass_removed_by_union": 841296,
+              "overlap_mass_removed_fraction": 0.17222054816057017,
+              "positive_plateaus_or_rising_edges": 6726,
+              "positive_samples": 4043696
+            },
+            "causal_inverse_roundtrip": {
+              "dense_target_crosscheck_is_unit_tested": true,
+              "exact": true,
+              "passed_tracks": 60,
+              "total_tracks": 60
+            },
+            "event_mass": 4884992,
+            "histogram": {
+              "0": 78903984,
+              "1": 3373990,
+              "2": 521750,
+              "3": 124614,
+              "4": 23050,
+              "5": 292
+            },
+            "loss": {
+              "historical_weight_28_diagnostic": {
+                "class_probabilities": {
+                  "0": 0.4106855889927079,
+                  "1": 0.49171375137856393,
+                  "2": 0.0760380587321734,
+                  "3": 0.018160817730428474,
+                  "4": 0.0033592280858200227,
+                  "5": 4.2555080306266663e-05
+                },
+                "constant_threshold_decision": "always_nonzero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.589314411007292,
+                "nonzero_weight": 28.0,
+                "normalized_weighted_cross_entropy": 1.0028012704789444,
+                "per_example_weighted_cross_entropy": 2.3227373329248975,
+                "weighted_nonzero_mass": 113223488.0,
+                "weighted_zero_mass": 78903984.0,
+                "zero_probability": 0.4106855889927079
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.9512500409896938,
+                  "1": 0.04067612258715373,
+                  "2": 0.006290109620908023,
+                  "3": 0.0015023204988976184,
+                  "4": 0.0002778860120017823,
+                  "5": 3.5202913450985004e-06
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.04874995901030625,
+                "nonzero_weight": 1.0,
+                "normalized_weighted_cross_entropy": 0.22176044925519686,
+                "per_example_weighted_cross_entropy": 0.22176044925519692,
+                "weighted_nonzero_mass": 4043696.0,
+                "weighted_zero_mass": 78903984.0,
+                "zero_probability": 0.9512500409896938
+              }
+            },
+            "maximum_count": 5,
+            "mean_event_count_per_sample": 0.05889244883039526,
+            "naive_positive_delta_decoder": {
+              "event_instances": 9541,
+              "fully_visible_positions": 9481,
+              "hidden_positions": 14,
+              "lost_instances": 15,
+              "partially_visible_positions": 1,
+              "recovered_fraction": 0.998427837752856,
+              "recovered_instances": 9526
+            },
+            "positive_position_density": 0.04874995901030626,
+            "positive_positions": 4043696,
+            "total_samples": 82947680
+          },
+          "anonymous_multiset_per_nonoverlapping_block_512": {
+            "capacity_curve": {
+              "1": {
+                "all_blocks_fit_fraction": 0.9918410170955996,
+                "instances_retained_fraction_if_clipped": 0.8274813960800754,
+                "nonempty_blocks_fit_fraction": 0.8325522482583914
+              },
+              "12": {
+                "all_blocks_fit_fraction": 1.0,
+                "instances_retained_fraction_if_clipped": 1.0,
+                "nonempty_blocks_fit_fraction": 1.0
+              },
+              "16": {
+                "all_blocks_fit_fraction": 1.0,
+                "instances_retained_fraction_if_clipped": 1.0,
+                "nonempty_blocks_fit_fraction": 1.0
+              },
+              "2": {
+                "all_blocks_fit_fraction": 0.9982595815589705,
+                "instances_retained_fraction_if_clipped": 0.9660412954616916,
+                "nonempty_blocks_fit_fraction": 0.9642811906269791
+              },
+              "4": {
+                "all_blocks_fit_fraction": 1.0,
+                "instances_retained_fraction_if_clipped": 1.0,
+                "nonempty_blocks_fit_fraction": 1.0
+              },
+              "6": {
+                "all_blocks_fit_fraction": 1.0,
+                "instances_retained_fraction_if_clipped": 1.0,
+                "nonempty_blocks_fit_fraction": 1.0
+              },
+              "8": {
+                "all_blocks_fit_fraction": 1.0,
+                "instances_retained_fraction_if_clipped": 1.0,
+                "nonempty_blocks_fit_fraction": 1.0
+              }
+            },
+            "empty_block_fraction": 0.9512744553477751,
+            "empty_blocks": 154135,
+            "event_instances": 9541,
+            "histogram": {
+              "0": 154135,
+              "1": 6573,
+              "2": 1040,
+              "3": 240,
+              "4": 42
+            },
+            "maximum_events_in_one_block": 4,
+            "nonempty_blocks": 7895,
+            "smallest_capacity_covering_every_block": 4,
+            "total_blocks": 162030
+          },
+          "exact_anonymous_count": {
+            "event_instances": 9541,
+            "event_mass": 9541,
+            "histogram": {
+              "0": 82938184,
+              "1": 9452,
+              "2": 43,
+              "3": 1
+            },
+            "instance_sum_reconciles": true,
+            "loss": {
+              "historical_weight_28_diagnostic": {
+                "class_probabilities": {
+                  "0": 0.9968043871698972,
+                  "1": 0.0031808058624823075,
+                  "2": 1.4470445629151419e-05,
+                  "3": 3.365219913756144e-07
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.0031956128301028346,
+                "nonzero_weight": 28.0,
+                "normalized_weighted_cross_entropy": 0.021648375164681117,
+                "per_example_weighted_cross_entropy": 0.021715290480519036,
+                "weighted_nonzero_mass": 265888.0,
+                "weighted_zero_mass": 82938184.0,
+                "zero_probability": 0.9968043871698972
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.9998855181965306,
+                  "1": 0.00011395134860914736,
+                  "2": 5.183990679425875e-07,
+                  "3": 1.2055792277734591e-08
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.00011448180346936769,
+                "nonzero_weight": 1.0,
+                "normalized_weighted_cross_entropy": 0.0011568461135952716,
+                "per_example_weighted_cross_entropy": 0.0011568461135952714,
+                "weighted_nonzero_mass": 9496.0,
+                "weighted_zero_mass": 82938184.0,
+                "zero_probability": 0.9998855181965306
+              }
+            },
+            "maximum_count": 3,
+            "mean_event_count_per_sample": 0.00011502431412186574,
+            "positive_position_density": 0.00011448180346936768,
+            "positive_positions": 9496,
+            "simultaneous_extra_instances": 45,
+            "slot_permutation_invariant": true,
+            "successive_unique_position_gaps": {
+              "bins": {
+                "1-15": 87,
+                "16-63": 356,
+                "2206_plus": 5642,
+                "256-511": 1034,
+                "512": 9,
+                "513-2205": 1024,
+                "64-255": 1284
+              },
+              "count": 9436,
+              "median_samples": 6549,
+              "minimum_samples": 1,
+              "p95_samples": 25187
+            },
+            "total_samples": 82947680
+          },
+          "historical_v7_slot_binary_window_512": {
+            "loss": {
+              "historical_weight_28_diagnostic": {
+                "class_probabilities": {
+                  "0": 0.7827447055315836,
+                  "1": 0.21725529446841638
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.21725529446841638,
+                "nonzero_weight": 28.0,
+                "normalized_weighted_cross_entropy": 0.5234120634496289,
+                "per_example_weighted_cross_entropy": 0.6621246451872639,
+                "weighted_nonzero_mass": 136779776.0,
+                "weighted_zero_mass": 492801088.0,
+                "zero_probability": 0.7827447055315836
+              },
+              "unweighted": {
+                "class_probabilities": {
+                  "0": 0.9901845918616008,
+                  "1": 0.00981540813839921
+                },
+                "constant_threshold_decision": "always_zero",
+                "historical_threshold": 0.55,
+                "nonzero_probability": 0.00981540813839921,
+                "nonzero_weight": 1.0,
+                "normalized_weighted_cross_entropy": 0.055151581130705306,
+                "per_example_weighted_cross_entropy": 0.055151581130705306,
+                "weighted_nonzero_mass": 4884992.0,
+                "weighted_zero_mass": 492801088.0,
+                "zero_probability": 0.9901845918616008
+              }
+            },
+            "negative_elements": 492801088,
+            "positive_element_density": 0.00981540813839921,
+            "positive_elements": 4884992,
+            "total_elements": 497686080
+          },
+          "raw_annotations": {
+            "event_instances": 9541,
+            "exclusive_end_instances": 0,
+            "maximum_multiplicity": 3,
+            "multiplicity_position_histogram": {
+              "1": 9452,
+              "2": 43,
+              "3": 1
+            },
+            "simultaneous_extra_instances": 45,
+            "unique_positions": 9496
+          }
+        }
+      },
+      "players": {
+        "00": 12,
+        "01": 12,
+        "02": 12,
+        "03": 12,
+        "04": 12
+      },
+      "temporal_relations": {
+        "cross_type_pairs_strictly_below_512_samples": {
+          "offset_before_onset": 3918,
+          "onset_before_offset": 1142,
+          "same_sample": 7,
+          "total_pairs": 5067
+        },
+        "successive_notes_within_original_slot": {
+          "positive_gap_512_or_more": 6638,
+          "positive_gap_below_512": 2597,
+          "retrigger_before_previous_offset": 1,
+          "same_sample": 7,
+          "total_successive_pairs": 9243
+        }
+      },
+      "tracks": 60
+    }
+  },
+  "generated_at_utc": "2026-09-01T03:50:57.540725+00:00",
+  "integrity": {
+    "causal_inverse_roundtrip": true,
+    "exact_instance_sums": true,
+    "fixed_validation_slot_positive_elements": {
+      "offset": {
+        "actual": 249851,
+        "exact": true,
+        "expected": 249851
+      },
+      "onset": {
+        "actual": 261423,
+        "exact": true,
+        "expected": 261423
+      }
+    },
+    "fixed_validation_source_cycle_exact": true,
+    "slot_permutation_invariance": true
+  },
+  "locked_inputs": {
+    "audit_source_sha256": "7C414A863E941B3595F03F7A420A5FB80810A5F4D2D9C5350C8089491135B356",
+    "metadata": "C:\\Users\\user\\Desktop\\NOTE\\model\\causal-boundaries-weight28-window512-v7-epoch08.recovery.metadata.json",
+    "metadata_sha256": "8AB99DC6DD191B39043A303D41BB405A0C84C2CE607C608E330E4DEF33F52A25",
+    "protocol": "C:\\Users\\user\\Desktop\\NOTE\\model\\causal-boundaries-type-position-target-audit-protocol.json",
+    "protocol_amendment": "C:\\Users\\user\\Desktop\\NOTE\\model\\causal-boundaries-type-position-target-audit-protocol-amendment-01.json",
+    "protocol_amendment_sha256": "8DADC12687037C9AC5DF6408F5C3F88A9AEF06145DBB214B4B53351E0B310BAF",
+    "protocol_sha256": "BDAFD38D09C230841CE4AE42EC341129FFB7263F662683C3BA7F10F6F194D1A9"
+  },
+  "schema_version": 1,
+  "scope": {
+    "decoder_changed": false,
+    "live_changed": false,
+    "model_changed": false,
+    "multiplicity_encoding": "repeat the identical type-position event k times",
+    "player_05_content_read": false,
+    "public_event_fields": [
+      "type",
+      "position"
+    ],
+    "training_run": false
+  },
+  "status": "completed_audit_only"
+}

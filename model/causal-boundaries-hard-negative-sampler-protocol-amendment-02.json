@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "status": "report_correction_registered_before_final_audit",
+  "experiment": "exact_point_query_hard_negative_background_audit",
+  "reason": "the first generated report compared an Experiment 13 analytical expected offset prior with the Experiment 12 empirical fixed-draw offset prior and labeled the small difference as a changed positive prior",
+  "locked_inputs": {
+    "protocol_sha256": "D3FF0F3F9A35C6B0AE8079B9781E961DE9FAE380A42A601922217D2530999CBB",
+    "amendment_01_sha256": "46C739E90BD03469D3DB160DEF3A6215605C1C395E3FBF60865612C8EFD3F6EF",
+    "reviewed_source_sha256": "3F2D1762B0B6C20538CC7C98BE57E9F5CECC95EFB3802969BC4AA13EF0B124EC",
+    "reviewed_test_sha256": "92AD9DFA9F0EC2419E1384E0411F3323717D5F5582845E9496FEA12BA35FDCD7",
+    "pre_correction_result_sha256": "C272F6C6614C057E1993366B0AA259545A5DB205FE19C1FCC295E30B424631D9"
+  },
+  "required_corrections": {
+    "positive_draw_guard": "compare the positive source draw counts directly; they must exactly match Experiment 12",
+    "prior_report": "report Experiment 12 empirical fixed-draw prior and Experiment 13 analytical expectation as distinct quantities with their signed difference; do not label them unchanged",
+    "rare_count_guard": "explicitly verify that every analytical rare-count exposure value remains identical to Experiment 12",
+    "epoch_exposure_interpretation": "separate 20 fresh independently sampled epochs from repeating the same cached fixed batch; draw-count coverage does not imply the same number of unique positions"
+  },
+  "scope_guard": {
+    "sampler_definition_changed": false,
+    "grid_changed": false,
+    "selection_changed": false,
+    "thresholds_changed": false,
+    "loss_selected_or_changed": false,
+    "model_selected_or_changed": false,
+    "decoder_changed": false,
+    "live_changed": false,
+    "training_started": false
+  }
+}

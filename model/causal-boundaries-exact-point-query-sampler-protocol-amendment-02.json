@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "status": "independent_review_correction_registered_before_final_audit",
+  "experiment": "exact_causal_point_query_sampler_audit",
+  "reason": "independent code review found hard-pass fields that were contractual constants rather than measured checks, a tautological multiplicity reconciliation, a missing multi-track sampler test, and an unstated independent-resampling assumption",
+  "locked_before_review_correction": {
+    "protocol": "model/causal-boundaries-exact-point-query-sampler-protocol.json",
+    "protocol_sha256": "A57062D99AC907E35E081BF8A73CE12CBE9A7E9477D8CB915D11D88D1D25804F",
+    "amendment_01": "model/causal-boundaries-exact-point-query-sampler-protocol-amendment-01.json",
+    "amendment_01_sha256": "DB3D5937B0A4F5DF7C004E7D7742ACC1FD5A5268E4AC876C1B4E4CCA0D701930",
+    "reviewed_audit_source_sha256": "453B62A0BCE5D9005FC42BE3921ACB105D995D646FD13189F5962DF3D04244E0",
+    "reviewed_pre_correction_output_sha256": "A6BD29EC25CD5519AD711A659AD8383C09E6A6DA48901D41E5F2BCCEDA6A72C2"
+  },
+  "scope_guard": {
+    "sampler_definition_changed": false,
+    "fixed_seeds_changed": false,
+    "acceptance_thresholds_changed": false,
+    "loss_changed": false,
+    "model_changed": false,
+    "decoder_changed": false,
+    "live_changed": false,
+    "training_started": false
+  },
+  "required_corrections": {
+    "oracle_reconciliation": "compare frames, exact per-head count histograms, event instances, positive positions and exclusive-end offsets against the locked anonymous-target audit instead of comparing two views derived from the new pools",
+    "exclusive_end_guard": "derive acoustic exclusion from every prepared offset position being strictly below its track frame_count and reconcile the excluded raw count with the locked oracle",
+    "player_guard": "derive the result from the actual indexed players and the explicit absence of player 05; do not use a literal true",
+    "causal_context_guard": "the interval ending at t+1 is a candidate contract only; actual crop implementation and crop-versus-continuous-model equality remain not verified and stay outside the sampler structural hard-pass",
+    "multi_track_test": "cover deterministic background sampling across unequal track lengths and prove that selected background positions never contain a boundary",
+    "epoch_probability_assumption": "probability seen over 20 epochs assumes fresh independent draws with replacement every epoch; separately report what the single cached fixed batch actually observed"
+  },
+  "decision_semantics": {
+    "structural_admissibility": "applies only to target partition, draw distribution and analytical prior correction",
+    "does_not_prove": [
+      "audio crop implementation",
+      "crop/live model equivalence",
+      "training-loss suitability",
+      "live calibration"
+    ],
+    "expected_final_category_if_numbers_reproduce": "structurally_admissible_with_prior_correction_but_not_training_ready"
+  }
+}

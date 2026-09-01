@@ -1,0 +1,106 @@
+{
+  "schema_version": 5,
+  "model_path": "C:\\Users\\user\\Desktop\\NOTE\\model\\causal-boundaries-weight28-window512-v7.epochs\\epoch-08.keras",
+  "seed": 1337,
+  "selected_players": [
+    "00",
+    "01",
+    "02",
+    "03",
+    "04"
+  ],
+  "split": {
+    "validation_members": [
+      "00_BN1-129-Eb_comp.jams",
+      "00_BN1-129-Eb_solo.jams",
+      "00_BN2-131-B_comp.jams",
+      "00_BN2-131-B_solo.jams",
+      "00_BN3-119-G_comp.jams",
+      "00_BN3-119-G_solo.jams",
+      "00_Funk1-97-C_comp.jams",
+      "00_Funk1-97-C_solo.jams",
+      "00_SS1-100-C#_comp.jams",
+      "00_SS1-100-C#_solo.jams",
+      "00_SS3-84-Bb_comp.jams",
+      "00_SS3-84-Bb_solo.jams",
+      "01_BN1-129-Eb_comp.jams",
+      "01_BN1-129-Eb_solo.jams",
+      "01_BN2-131-B_comp.jams",
+      "01_BN2-131-B_solo.jams",
+      "01_BN3-119-G_comp.jams",
+      "01_BN3-119-G_solo.jams",
+      "01_Funk1-97-C_comp.jams",
+      "01_Funk1-97-C_solo.jams",
+      "01_SS1-100-C#_comp.jams",
+      "01_SS1-100-C#_solo.jams",
+      "01_SS3-84-Bb_comp.jams",
+      "01_SS3-84-Bb_solo.jams",
+      "02_BN1-129-Eb_comp.jams",
+      "02_BN1-129-Eb_solo.jams",
+      "02_BN2-131-B_comp.jams",
+      "02_BN2-131-B_solo.jams",
+      "02_BN3-119-G_comp.jams",
+      "02_BN3-119-G_solo.jams",
+      "02_Funk1-97-C_comp.jams",
+      "02_Funk1-97-C_solo.jams",
+      "02_SS1-100-C#_comp.jams",
+      "02_SS1-100-C#_solo.jams",
+      "02_SS3-84-Bb_comp.jams",
+      "02_SS3-84-Bb_solo.jams",
+      "03_BN1-129-Eb_comp.jams",
+      "03_BN1-129-Eb_solo.jams",
+      "03_BN2-131-B_comp.jams",
+      "03_BN2-131-B_solo.jams",
+      "03_BN3-119-G_comp.jams",
+      "03_BN3-119-G_solo.jams",
+      "03_Funk1-97-C_comp.jams",
+      "03_Funk1-97-C_solo.jams",
+      "03_SS1-100-C#_comp.jams",
+      "03_SS1-100-C#_solo.jams",
+      "03_SS3-84-Bb_comp.jams",
+      "03_SS3-84-Bb_solo.jams",
+      "04_BN1-129-Eb_comp.jams",
+      "04_BN1-129-Eb_solo.jams",
+      "04_BN2-131-B_comp.jams",
+      "04_BN2-131-B_solo.jams",
+      "04_BN3-119-G_comp.jams",
+      "04_BN3-119-G_solo.jams",
+      "04_Funk1-97-C_comp.jams",
+      "04_Funk1-97-C_solo.jams",
+      "04_SS1-100-C#_comp.jams",
+      "04_SS1-100-C#_solo.jams",
+      "04_SS3-84-Bb_comp.jams",
+      "04_SS3-84-Bb_solo.jams"
+    ]
+  },
+  "model": {
+    "outputs": [
+      "onset",
+      "offset"
+    ],
+    "slots": 6,
+    "receptive_field_samples": 4093
+  },
+  "training": {
+    "positive_sample_weights": {
+      "onset": 28.0,
+      "offset": 28.0
+    },
+    "targets": {
+      "onset": {
+        "encoding": "causal_binary_window",
+        "width_samples": 512
+      },
+      "offset": {
+        "encoding": "causal_binary_window",
+        "width_samples": 512
+      }
+    }
+  },
+  "recovery": {
+    "status": "interrupted_during_epoch_11",
+    "best_completed_epoch": 8,
+    "source_history": "C:\\Users\\user\\Desktop\\NOTE\\model\\causal-boundaries-weight28-window512-v7.history.csv",
+    "checkpoint_sha256": "5634ADD0E112A6889B65D5245AD051AD850A1FFFE66FEB8D9E5E74472BA114BF"
+  }
+}

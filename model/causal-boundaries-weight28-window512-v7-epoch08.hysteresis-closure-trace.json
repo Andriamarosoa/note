@@ -1,0 +1,2269 @@
+{
+  "answer": {
+    "identity_diverged_after_miss": 0,
+    "net_incomplete_event_increase": 10,
+    "permanently_open_never_rearmed_after_miss": 10,
+    "permanently_open_rearmed_but_no_later_offset": 23,
+    "same_event_offset_closure_opportunities_suppressed": 23422,
+    "suppressed_and_event_remained_open_at_track_end": 33,
+    "suppressed_but_event_closed_later": 23389,
+    "treatment_incomplete_event_breakdown": {
+      "absent_from_control_starts": 9,
+      "control_complete_same_slot_and_onset": 33,
+      "control_incomplete_same_slot_and_onset": 150
+    }
+  },
+  "configuration": {
+    "chunk_size": 512,
+    "control_release_threshold": 0.55,
+    "entry_threshold": 0.55,
+    "event_identity_for_comparison": [
+      "track",
+      "internal_slot",
+      "exact_onset_sample"
+    ],
+    "offset_processed_before_onset_at_same_sample": true,
+    "player_05_read": false,
+    "players": [
+      "00",
+      "01",
+      "02",
+      "03",
+      "04"
+    ],
+    "seed": 1337,
+    "tracks": 60,
+    "treatment_release_threshold": 0.5,
+    "validation_fraction": 0.2
+  },
+  "delayed_closure_latency": {
+    "count": 23389,
+    "max_ms": 25360.136054421768,
+    "max_samples": 1118382,
+    "p50_ms": 17.006802721088434,
+    "p50_samples": 750.0,
+    "p90_ms": 108.69387755102045,
+    "p90_samples": 4793.4000000000015
+  },
+  "kind": "hysteresis_event_closure_trace",
+  "model_path": "C:\\Users\\user\\Desktop\\NOTE\\model\\causal-boundaries-weight28-window512-v7.epochs\\epoch-08.keras",
+  "model_sha256": "5634ADD0E112A6889B65D5245AD051AD850A1FFFE66FEB8D9E5E74472BA114BF",
+  "per_track": [
+    {
+      "audio_samples": 984506,
+      "control": {
+        "closures": 1226,
+        "incomplete": 4,
+        "starts": 1230
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 283,
+        "missed_same_event_closure_opportunities": 283,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "00_BN1-129-Eb_comp.jams",
+      "treatment": {
+        "closures": 608,
+        "incomplete": 4,
+        "starts": 612
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 4
+      }
+    },
+    {
+      "audio_samples": 984506,
+      "control": {
+        "closures": 1572,
+        "incomplete": 3,
+        "starts": 1575
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 329,
+        "missed_same_event_closure_opportunities": 329,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "00_BN1-129-Eb_solo.jams",
+      "treatment": {
+        "closures": 852,
+        "incomplete": 3,
+        "starts": 855
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 1,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 2
+      }
+    },
+    {
+      "audio_samples": 1292412,
+      "control": {
+        "closures": 1369,
+        "incomplete": 4,
+        "starts": 1373
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 255,
+        "missed_same_event_closure_opportunities": 255,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "00_BN2-131-B_comp.jams",
+      "treatment": {
+        "closures": 719,
+        "incomplete": 4,
+        "starts": 723
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 4
+      }
+    },
+    {
+      "audio_samples": 1292412,
+      "control": {
+        "closures": 454,
+        "incomplete": 6,
+        "starts": 460
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 37,
+        "missed_same_event_closure_opportunities": 37,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "00_BN2-131-B_solo.jams",
+      "treatment": {
+        "closures": 359,
+        "incomplete": 6,
+        "starts": 365
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 6
+      }
+    },
+    {
+      "audio_samples": 1422807,
+      "control": {
+        "closures": 4440,
+        "incomplete": 2,
+        "starts": 4442
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 935,
+        "missed_same_event_closure_opportunities": 936,
+        "remained_open_at_track_end": 1,
+        "remained_open_never_rearmed_after_miss": 1,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "00_BN3-119-G_comp.jams",
+      "treatment": {
+        "closures": 1902,
+        "incomplete": 2,
+        "starts": 1904
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 1,
+        "control_incomplete_same_slot_and_onset": 1
+      }
+    },
+    {
+      "audio_samples": 1422807,
+      "control": {
+        "closures": 2466,
+        "incomplete": 2,
+        "starts": 2468
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 457,
+        "missed_same_event_closure_opportunities": 457,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "00_BN3-119-G_solo.jams",
+      "treatment": {
+        "closures": 1154,
+        "incomplete": 2,
+        "starts": 1156
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 2
+      }
+    },
+    {
+      "audio_samples": 1309258,
+      "control": {
+        "closures": 3273,
+        "incomplete": 1,
+        "starts": 3274
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 690,
+        "missed_same_event_closure_opportunities": 690,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "00_Funk1-97-C_comp.jams",
+      "treatment": {
+        "closures": 1350,
+        "incomplete": 1,
+        "starts": 1351
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 1
+      }
+    },
+    {
+      "audio_samples": 1309258,
+      "control": {
+        "closures": 162,
+        "incomplete": 4,
+        "starts": 166
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 35,
+        "missed_same_event_closure_opportunities": 36,
+        "remained_open_at_track_end": 1,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 1
+      },
+      "trace_reproduces_source_report": true,
+      "track": "00_Funk1-97-C_solo.jams",
+      "treatment": {
+        "closures": 96,
+        "incomplete": 4,
+        "starts": 100
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 1,
+        "control_incomplete_same_slot_and_onset": 3
+      }
+    },
+    {
+      "audio_samples": 1270080,
+      "control": {
+        "closures": 7567,
+        "incomplete": 0,
+        "starts": 7567
+      },
+      "incomplete_delta": 4,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 1735,
+        "missed_same_event_closure_opportunities": 1739,
+        "remained_open_at_track_end": 4,
+        "remained_open_never_rearmed_after_miss": 2,
+        "remained_open_rearmed_but_no_later_offset": 2
+      },
+      "trace_reproduces_source_report": true,
+      "track": "00_SS1-100-C#_comp.jams",
+      "treatment": {
+        "closures": 3784,
+        "incomplete": 4,
+        "starts": 3788
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 4,
+        "control_incomplete_same_slot_and_onset": 0
+      }
+    },
+    {
+      "audio_samples": 1270080,
+      "control": {
+        "closures": 2153,
+        "incomplete": 1,
+        "starts": 2154
+      },
+      "incomplete_delta": 1,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 468,
+        "missed_same_event_closure_opportunities": 470,
+        "remained_open_at_track_end": 2,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 2
+      },
+      "trace_reproduces_source_report": true,
+      "track": "00_SS1-100-C#_solo.jams",
+      "treatment": {
+        "closures": 944,
+        "incomplete": 2,
+        "starts": 946
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 2,
+        "control_incomplete_same_slot_and_onset": 0
+      }
+    },
+    {
+      "audio_samples": 2015705,
+      "control": {
+        "closures": 391,
+        "incomplete": 6,
+        "starts": 397
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 40,
+        "missed_same_event_closure_opportunities": 40,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "00_SS3-84-Bb_comp.jams",
+      "treatment": {
+        "closures": 246,
+        "incomplete": 6,
+        "starts": 252
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 1,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 5
+      }
+    },
+    {
+      "audio_samples": 2015705,
+      "control": {
+        "closures": 884,
+        "incomplete": 6,
+        "starts": 890
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 177,
+        "missed_same_event_closure_opportunities": 177,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "00_SS3-84-Bb_solo.jams",
+      "treatment": {
+        "closures": 436,
+        "incomplete": 6,
+        "starts": 442
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 1,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 5
+      }
+    },
+    {
+      "audio_samples": 984506,
+      "control": {
+        "closures": 1363,
+        "incomplete": 2,
+        "starts": 1365
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 331,
+        "missed_same_event_closure_opportunities": 332,
+        "remained_open_at_track_end": 1,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 1
+      },
+      "trace_reproduces_source_report": true,
+      "track": "01_BN1-129-Eb_comp.jams",
+      "treatment": {
+        "closures": 669,
+        "incomplete": 2,
+        "starts": 671
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 1,
+        "control_incomplete_same_slot_and_onset": 1
+      }
+    },
+    {
+      "audio_samples": 984506,
+      "control": {
+        "closures": 295,
+        "incomplete": 6,
+        "starts": 301
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 35,
+        "missed_same_event_closure_opportunities": 35,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "01_BN1-129-Eb_solo.jams",
+      "treatment": {
+        "closures": 224,
+        "incomplete": 6,
+        "starts": 230
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 6
+      }
+    },
+    {
+      "audio_samples": 1292412,
+      "control": {
+        "closures": 2487,
+        "incomplete": 1,
+        "starts": 2488
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 512,
+        "missed_same_event_closure_opportunities": 512,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "01_BN2-131-B_comp.jams",
+      "treatment": {
+        "closures": 1130,
+        "incomplete": 1,
+        "starts": 1131
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 1
+      }
+    },
+    {
+      "audio_samples": 1292412,
+      "control": {
+        "closures": 612,
+        "incomplete": 5,
+        "starts": 617
+      },
+      "incomplete_delta": -2,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 84,
+        "missed_same_event_closure_opportunities": 84,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "01_BN2-131-B_solo.jams",
+      "treatment": {
+        "closures": 406,
+        "incomplete": 3,
+        "starts": 409
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 3
+      }
+    },
+    {
+      "audio_samples": 1422807,
+      "control": {
+        "closures": 2484,
+        "incomplete": 2,
+        "starts": 2486
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 474,
+        "missed_same_event_closure_opportunities": 474,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "01_BN3-119-G_comp.jams",
+      "treatment": {
+        "closures": 1249,
+        "incomplete": 2,
+        "starts": 1251
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 1,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 1
+      }
+    },
+    {
+      "audio_samples": 1422807,
+      "control": {
+        "closures": 364,
+        "incomplete": 5,
+        "starts": 369
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 32,
+        "missed_same_event_closure_opportunities": 32,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "01_BN3-119-G_solo.jams",
+      "treatment": {
+        "closures": 325,
+        "incomplete": 5,
+        "starts": 330
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 5
+      }
+    },
+    {
+      "audio_samples": 1309258,
+      "control": {
+        "closures": 1807,
+        "incomplete": 6,
+        "starts": 1813
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 312,
+        "missed_same_event_closure_opportunities": 313,
+        "remained_open_at_track_end": 1,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 1
+      },
+      "trace_reproduces_source_report": true,
+      "track": "01_Funk1-97-C_comp.jams",
+      "treatment": {
+        "closures": 1052,
+        "incomplete": 6,
+        "starts": 1058
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 1,
+        "control_complete_same_slot_and_onset": 1,
+        "control_incomplete_same_slot_and_onset": 4
+      }
+    },
+    {
+      "audio_samples": 1309258,
+      "control": {
+        "closures": 425,
+        "incomplete": 3,
+        "starts": 428
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 41,
+        "missed_same_event_closure_opportunities": 41,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "01_Funk1-97-C_solo.jams",
+      "treatment": {
+        "closures": 366,
+        "incomplete": 3,
+        "starts": 369
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 3
+      }
+    },
+    {
+      "audio_samples": 1270080,
+      "control": {
+        "closures": 4385,
+        "incomplete": 4,
+        "starts": 4389
+      },
+      "incomplete_delta": 1,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 927,
+        "missed_same_event_closure_opportunities": 929,
+        "remained_open_at_track_end": 2,
+        "remained_open_never_rearmed_after_miss": 2,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "01_SS1-100-C#_comp.jams",
+      "treatment": {
+        "closures": 1806,
+        "incomplete": 5,
+        "starts": 1811
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 2,
+        "control_incomplete_same_slot_and_onset": 3
+      }
+    },
+    {
+      "audio_samples": 1270080,
+      "control": {
+        "closures": 679,
+        "incomplete": 2,
+        "starts": 681
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 100,
+        "missed_same_event_closure_opportunities": 100,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "01_SS1-100-C#_solo.jams",
+      "treatment": {
+        "closures": 548,
+        "incomplete": 2,
+        "starts": 550
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 2
+      }
+    },
+    {
+      "audio_samples": 2015705,
+      "control": {
+        "closures": 7815,
+        "incomplete": 2,
+        "starts": 7817
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 1794,
+        "missed_same_event_closure_opportunities": 1795,
+        "remained_open_at_track_end": 1,
+        "remained_open_never_rearmed_after_miss": 1,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "01_SS3-84-Bb_comp.jams",
+      "treatment": {
+        "closures": 3172,
+        "incomplete": 2,
+        "starts": 3174
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 1,
+        "control_complete_same_slot_and_onset": 1,
+        "control_incomplete_same_slot_and_onset": 0
+      }
+    },
+    {
+      "audio_samples": 2015705,
+      "control": {
+        "closures": 804,
+        "incomplete": 5,
+        "starts": 809
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 100,
+        "missed_same_event_closure_opportunities": 100,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "01_SS3-84-Bb_solo.jams",
+      "treatment": {
+        "closures": 651,
+        "incomplete": 5,
+        "starts": 656
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 5
+      }
+    },
+    {
+      "audio_samples": 984506,
+      "control": {
+        "closures": 2334,
+        "incomplete": 1,
+        "starts": 2335
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 594,
+        "missed_same_event_closure_opportunities": 595,
+        "remained_open_at_track_end": 1,
+        "remained_open_never_rearmed_after_miss": 1,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "02_BN1-129-Eb_comp.jams",
+      "treatment": {
+        "closures": 1116,
+        "incomplete": 1,
+        "starts": 1117
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 1,
+        "control_incomplete_same_slot_and_onset": 0
+      }
+    },
+    {
+      "audio_samples": 984506,
+      "control": {
+        "closures": 380,
+        "incomplete": 1,
+        "starts": 381
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 52,
+        "missed_same_event_closure_opportunities": 52,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "02_BN1-129-Eb_solo.jams",
+      "treatment": {
+        "closures": 256,
+        "incomplete": 1,
+        "starts": 257
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 1
+      }
+    },
+    {
+      "audio_samples": 1292412,
+      "control": {
+        "closures": 1921,
+        "incomplete": 5,
+        "starts": 1926
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 406,
+        "missed_same_event_closure_opportunities": 408,
+        "remained_open_at_track_end": 2,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 2
+      },
+      "trace_reproduces_source_report": true,
+      "track": "02_BN2-131-B_comp.jams",
+      "treatment": {
+        "closures": 855,
+        "incomplete": 5,
+        "starts": 860
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 1,
+        "control_complete_same_slot_and_onset": 2,
+        "control_incomplete_same_slot_and_onset": 2
+      }
+    },
+    {
+      "audio_samples": 1292412,
+      "control": {
+        "closures": 211,
+        "incomplete": 3,
+        "starts": 214
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 9,
+        "missed_same_event_closure_opportunities": 9,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "02_BN2-131-B_solo.jams",
+      "treatment": {
+        "closures": 175,
+        "incomplete": 3,
+        "starts": 178
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 3
+      }
+    },
+    {
+      "audio_samples": 1422807,
+      "control": {
+        "closures": 2850,
+        "incomplete": 3,
+        "starts": 2853
+      },
+      "incomplete_delta": 1,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 690,
+        "missed_same_event_closure_opportunities": 694,
+        "remained_open_at_track_end": 4,
+        "remained_open_never_rearmed_after_miss": 1,
+        "remained_open_rearmed_but_no_later_offset": 3
+      },
+      "trace_reproduces_source_report": true,
+      "track": "02_BN3-119-G_comp.jams",
+      "treatment": {
+        "closures": 1357,
+        "incomplete": 4,
+        "starts": 1361
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 4,
+        "control_incomplete_same_slot_and_onset": 0
+      }
+    },
+    {
+      "audio_samples": 1422807,
+      "control": {
+        "closures": 657,
+        "incomplete": 4,
+        "starts": 661
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 94,
+        "missed_same_event_closure_opportunities": 94,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "02_BN3-119-G_solo.jams",
+      "treatment": {
+        "closures": 393,
+        "incomplete": 4,
+        "starts": 397
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 4
+      }
+    },
+    {
+      "audio_samples": 1309258,
+      "control": {
+        "closures": 1042,
+        "incomplete": 1,
+        "starts": 1043
+      },
+      "incomplete_delta": 1,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 239,
+        "missed_same_event_closure_opportunities": 240,
+        "remained_open_at_track_end": 1,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 1
+      },
+      "trace_reproduces_source_report": true,
+      "track": "02_Funk1-97-C_comp.jams",
+      "treatment": {
+        "closures": 608,
+        "incomplete": 2,
+        "starts": 610
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 1,
+        "control_incomplete_same_slot_and_onset": 1
+      }
+    },
+    {
+      "audio_samples": 1309258,
+      "control": {
+        "closures": 560,
+        "incomplete": 3,
+        "starts": 563
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 75,
+        "missed_same_event_closure_opportunities": 75,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "02_Funk1-97-C_solo.jams",
+      "treatment": {
+        "closures": 331,
+        "incomplete": 3,
+        "starts": 334
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 3
+      }
+    },
+    {
+      "audio_samples": 1270080,
+      "control": {
+        "closures": 3929,
+        "incomplete": 3,
+        "starts": 3932
+      },
+      "incomplete_delta": 1,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 1042,
+        "missed_same_event_closure_opportunities": 1045,
+        "remained_open_at_track_end": 3,
+        "remained_open_never_rearmed_after_miss": 1,
+        "remained_open_rearmed_but_no_later_offset": 2
+      },
+      "trace_reproduces_source_report": true,
+      "track": "02_SS1-100-C#_comp.jams",
+      "treatment": {
+        "closures": 1835,
+        "incomplete": 4,
+        "starts": 1839
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 3,
+        "control_incomplete_same_slot_and_onset": 1
+      }
+    },
+    {
+      "audio_samples": 1270080,
+      "control": {
+        "closures": 1496,
+        "incomplete": 0,
+        "starts": 1496
+      },
+      "incomplete_delta": 1,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 278,
+        "missed_same_event_closure_opportunities": 279,
+        "remained_open_at_track_end": 1,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 1
+      },
+      "trace_reproduces_source_report": true,
+      "track": "02_SS1-100-C#_solo.jams",
+      "treatment": {
+        "closures": 763,
+        "incomplete": 1,
+        "starts": 764
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 1,
+        "control_incomplete_same_slot_and_onset": 0
+      }
+    },
+    {
+      "audio_samples": 2015705,
+      "control": {
+        "closures": 3776,
+        "incomplete": 0,
+        "starts": 3776
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 943,
+        "missed_same_event_closure_opportunities": 943,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "02_SS3-84-Bb_comp.jams",
+      "treatment": {
+        "closures": 1685,
+        "incomplete": 0,
+        "starts": 1685
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 0
+      }
+    },
+    {
+      "audio_samples": 2015705,
+      "control": {
+        "closures": 818,
+        "incomplete": 3,
+        "starts": 821
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 120,
+        "missed_same_event_closure_opportunities": 120,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "02_SS3-84-Bb_solo.jams",
+      "treatment": {
+        "closures": 531,
+        "incomplete": 3,
+        "starts": 534
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 3
+      }
+    },
+    {
+      "audio_samples": 984506,
+      "control": {
+        "closures": 2294,
+        "incomplete": 6,
+        "starts": 2300
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 583,
+        "missed_same_event_closure_opportunities": 583,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "03_BN1-129-Eb_comp.jams",
+      "treatment": {
+        "closures": 1177,
+        "incomplete": 6,
+        "starts": 1183
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 6
+      }
+    },
+    {
+      "audio_samples": 984506,
+      "control": {
+        "closures": 283,
+        "incomplete": 6,
+        "starts": 289
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 27,
+        "missed_same_event_closure_opportunities": 27,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "03_BN1-129-Eb_solo.jams",
+      "treatment": {
+        "closures": 231,
+        "incomplete": 6,
+        "starts": 237
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 6
+      }
+    },
+    {
+      "audio_samples": 1292412,
+      "control": {
+        "closures": 1361,
+        "incomplete": 0,
+        "starts": 1361
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 350,
+        "missed_same_event_closure_opportunities": 350,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "03_BN2-131-B_comp.jams",
+      "treatment": {
+        "closures": 899,
+        "incomplete": 0,
+        "starts": 899
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 0
+      }
+    },
+    {
+      "audio_samples": 1292412,
+      "control": {
+        "closures": 238,
+        "incomplete": 6,
+        "starts": 244
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 14,
+        "missed_same_event_closure_opportunities": 14,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "03_BN2-131-B_solo.jams",
+      "treatment": {
+        "closures": 230,
+        "incomplete": 6,
+        "starts": 236
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 6
+      }
+    },
+    {
+      "audio_samples": 1422807,
+      "control": {
+        "closures": 2528,
+        "incomplete": 1,
+        "starts": 2529
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 679,
+        "missed_same_event_closure_opportunities": 679,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "03_BN3-119-G_comp.jams",
+      "treatment": {
+        "closures": 1511,
+        "incomplete": 1,
+        "starts": 1512
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 1
+      }
+    },
+    {
+      "audio_samples": 1422807,
+      "control": {
+        "closures": 311,
+        "incomplete": 6,
+        "starts": 317
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 13,
+        "missed_same_event_closure_opportunities": 13,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "03_BN3-119-G_solo.jams",
+      "treatment": {
+        "closures": 283,
+        "incomplete": 6,
+        "starts": 289
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 6
+      }
+    },
+    {
+      "audio_samples": 1309258,
+      "control": {
+        "closures": 2503,
+        "incomplete": 6,
+        "starts": 2509
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 497,
+        "missed_same_event_closure_opportunities": 497,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "03_Funk1-97-C_comp.jams",
+      "treatment": {
+        "closures": 1299,
+        "incomplete": 6,
+        "starts": 1305
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 6
+      }
+    },
+    {
+      "audio_samples": 1309258,
+      "control": {
+        "closures": 314,
+        "incomplete": 4,
+        "starts": 318
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 14,
+        "missed_same_event_closure_opportunities": 14,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "03_Funk1-97-C_solo.jams",
+      "treatment": {
+        "closures": 294,
+        "incomplete": 4,
+        "starts": 298
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 4
+      }
+    },
+    {
+      "audio_samples": 1270080,
+      "control": {
+        "closures": 4578,
+        "incomplete": 0,
+        "starts": 4578
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 1212,
+        "missed_same_event_closure_opportunities": 1212,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "03_SS1-100-C#_comp.jams",
+      "treatment": {
+        "closures": 2406,
+        "incomplete": 0,
+        "starts": 2406
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 0
+      }
+    },
+    {
+      "audio_samples": 1270080,
+      "control": {
+        "closures": 2387,
+        "incomplete": 6,
+        "starts": 2393
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 338,
+        "missed_same_event_closure_opportunities": 338,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "03_SS1-100-C#_solo.jams",
+      "treatment": {
+        "closures": 1107,
+        "incomplete": 6,
+        "starts": 1113
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 6
+      }
+    },
+    {
+      "audio_samples": 2015705,
+      "control": {
+        "closures": 7821,
+        "incomplete": 3,
+        "starts": 7824
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 1589,
+        "missed_same_event_closure_opportunities": 1591,
+        "remained_open_at_track_end": 2,
+        "remained_open_never_rearmed_after_miss": 1,
+        "remained_open_rearmed_but_no_later_offset": 1
+      },
+      "trace_reproduces_source_report": true,
+      "track": "03_SS3-84-Bb_comp.jams",
+      "treatment": {
+        "closures": 3215,
+        "incomplete": 3,
+        "starts": 3218
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 2,
+        "control_incomplete_same_slot_and_onset": 1
+      }
+    },
+    {
+      "audio_samples": 2015705,
+      "control": {
+        "closures": 307,
+        "incomplete": 2,
+        "starts": 309
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 7,
+        "missed_same_event_closure_opportunities": 7,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "03_SS3-84-Bb_solo.jams",
+      "treatment": {
+        "closures": 282,
+        "incomplete": 2,
+        "starts": 284
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 2
+      }
+    },
+    {
+      "audio_samples": 984506,
+      "control": {
+        "closures": 1623,
+        "incomplete": 0,
+        "starts": 1623
+      },
+      "incomplete_delta": 1,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 474,
+        "missed_same_event_closure_opportunities": 475,
+        "remained_open_at_track_end": 1,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 1
+      },
+      "trace_reproduces_source_report": true,
+      "track": "04_BN1-129-Eb_comp.jams",
+      "treatment": {
+        "closures": 992,
+        "incomplete": 1,
+        "starts": 993
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 1,
+        "control_incomplete_same_slot_and_onset": 0
+      }
+    },
+    {
+      "audio_samples": 984506,
+      "control": {
+        "closures": 218,
+        "incomplete": 3,
+        "starts": 221
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 29,
+        "missed_same_event_closure_opportunities": 29,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "04_BN1-129-Eb_solo.jams",
+      "treatment": {
+        "closures": 171,
+        "incomplete": 3,
+        "starts": 174
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 3
+      }
+    },
+    {
+      "audio_samples": 1292412,
+      "control": {
+        "closures": 1945,
+        "incomplete": 0,
+        "starts": 1945
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 493,
+        "missed_same_event_closure_opportunities": 493,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "04_BN2-131-B_comp.jams",
+      "treatment": {
+        "closures": 1152,
+        "incomplete": 0,
+        "starts": 1152
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 0
+      }
+    },
+    {
+      "audio_samples": 1292412,
+      "control": {
+        "closures": 219,
+        "incomplete": 4,
+        "starts": 223
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 12,
+        "missed_same_event_closure_opportunities": 12,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "04_BN2-131-B_solo.jams",
+      "treatment": {
+        "closures": 204,
+        "incomplete": 4,
+        "starts": 208
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 4
+      }
+    },
+    {
+      "audio_samples": 1422807,
+      "control": {
+        "closures": 1463,
+        "incomplete": 1,
+        "starts": 1464
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 404,
+        "missed_same_event_closure_opportunities": 404,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "04_BN3-119-G_comp.jams",
+      "treatment": {
+        "closures": 906,
+        "incomplete": 1,
+        "starts": 907
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 1
+      }
+    },
+    {
+      "audio_samples": 1422807,
+      "control": {
+        "closures": 541,
+        "incomplete": 4,
+        "starts": 545
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 86,
+        "missed_same_event_closure_opportunities": 87,
+        "remained_open_at_track_end": 1,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 1
+      },
+      "trace_reproduces_source_report": true,
+      "track": "04_BN3-119-G_solo.jams",
+      "treatment": {
+        "closures": 352,
+        "incomplete": 4,
+        "starts": 356
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 1,
+        "control_incomplete_same_slot_and_onset": 3
+      }
+    },
+    {
+      "audio_samples": 1309258,
+      "control": {
+        "closures": 804,
+        "incomplete": 1,
+        "starts": 805
+      },
+      "incomplete_delta": 2,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 116,
+        "missed_same_event_closure_opportunities": 118,
+        "remained_open_at_track_end": 2,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 2
+      },
+      "trace_reproduces_source_report": true,
+      "track": "04_Funk1-97-C_comp.jams",
+      "treatment": {
+        "closures": 691,
+        "incomplete": 3,
+        "starts": 694
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 2,
+        "control_incomplete_same_slot_and_onset": 1
+      }
+    },
+    {
+      "audio_samples": 1309258,
+      "control": {
+        "closures": 298,
+        "incomplete": 2,
+        "starts": 300
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 12,
+        "missed_same_event_closure_opportunities": 12,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "04_Funk1-97-C_solo.jams",
+      "treatment": {
+        "closures": 279,
+        "incomplete": 2,
+        "starts": 281
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 2
+      }
+    },
+    {
+      "audio_samples": 1270080,
+      "control": {
+        "closures": 2255,
+        "incomplete": 1,
+        "starts": 2256
+      },
+      "incomplete_delta": -1,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 503,
+        "missed_same_event_closure_opportunities": 503,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "04_SS1-100-C#_comp.jams",
+      "treatment": {
+        "closures": 1129,
+        "incomplete": 0,
+        "starts": 1129
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 0
+      }
+    },
+    {
+      "audio_samples": 1270080,
+      "control": {
+        "closures": 198,
+        "incomplete": 2,
+        "starts": 200
+      },
+      "incomplete_delta": 1,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 12,
+        "missed_same_event_closure_opportunities": 13,
+        "remained_open_at_track_end": 1,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 1
+      },
+      "trace_reproduces_source_report": true,
+      "track": "04_SS1-100-C#_solo.jams",
+      "treatment": {
+        "closures": 186,
+        "incomplete": 3,
+        "starts": 189
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 1,
+        "control_incomplete_same_slot_and_onset": 2
+      }
+    },
+    {
+      "audio_samples": 2015705,
+      "control": {
+        "closures": 6643,
+        "incomplete": 4,
+        "starts": 6647
+      },
+      "incomplete_delta": -1,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 1179,
+        "missed_same_event_closure_opportunities": 1180,
+        "remained_open_at_track_end": 1,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 1
+      },
+      "trace_reproduces_source_report": true,
+      "track": "04_SS3-84-Bb_comp.jams",
+      "treatment": {
+        "closures": 2466,
+        "incomplete": 3,
+        "starts": 2469
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 2,
+        "control_complete_same_slot_and_onset": 1,
+        "control_incomplete_same_slot_and_onset": 0
+      }
+    },
+    {
+      "audio_samples": 2015705,
+      "control": {
+        "closures": 404,
+        "incomplete": 5,
+        "starts": 409
+      },
+      "incomplete_delta": 0,
+      "same_event_offset_effect": {
+        "eventually_closed_later": 21,
+        "missed_same_event_closure_opportunities": 21,
+        "remained_open_at_track_end": 0,
+        "remained_open_never_rearmed_after_miss": 0,
+        "remained_open_rearmed_but_no_later_offset": 0
+      },
+      "trace_reproduces_source_report": true,
+      "track": "04_SS3-84-Bb_solo.jams",
+      "treatment": {
+        "closures": 386,
+        "incomplete": 5,
+        "starts": 391
+      },
+      "treatment_incomplete_breakdown": {
+        "absent_from_control_starts": 0,
+        "control_complete_same_slot_and_onset": 0,
+        "control_incomplete_same_slot_and_onset": 5
+      }
+    }
+  ],
+  "permanently_open_events": [
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 1422516,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5390130877494812,
+      "onset_sample": 1422487,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5511084198951721,
+      "slot": 1,
+      "track": "00_BN3-119-G_comp.jams",
+      "treatment_first_rearm_sample": null,
+      "treatment_offset_high_since": 1422462,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": null
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 697737,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5402400493621826,
+      "onset_sample": 697719,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5504404306411743,
+      "slot": 0,
+      "track": "00_Funk1-97-C_solo.jams",
+      "treatment_first_rearm_sample": 698241,
+      "treatment_offset_high_since": 697682,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": 0.49952733516693115
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 1269543,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5178025960922241,
+      "onset_sample": 1269512,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5515855550765991,
+      "slot": 0,
+      "track": "00_SS1-100-C#_comp.jams",
+      "treatment_first_rearm_sample": 1269580,
+      "treatment_offset_high_since": 1269423,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": 0.4968091547489166
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 1269718,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5417145490646362,
+      "onset_sample": 1269283,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5519400238990784,
+      "slot": 2,
+      "track": "00_SS1-100-C#_comp.jams",
+      "treatment_first_rearm_sample": null,
+      "treatment_offset_high_since": 1268877,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": null
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 1269693,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5085073709487915,
+      "onset_sample": 1269282,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5507109761238098,
+      "slot": 3,
+      "track": "00_SS1-100-C#_comp.jams",
+      "treatment_first_rearm_sample": null,
+      "treatment_offset_high_since": 1268885,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": null
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 1269346,
+      "minimum_score_during_treatment_high_before_control_offset": 0.50203937292099,
+      "onset_sample": 1269323,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5525618195533752,
+      "slot": 4,
+      "track": "00_SS1-100-C#_comp.jams",
+      "treatment_first_rearm_sample": 1269691,
+      "treatment_offset_high_since": 1269273,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": 0.49285879731178284
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 1181578,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5265893936157227,
+      "onset_sample": 1180408,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5511205196380615,
+      "slot": 1,
+      "track": "00_SS1-100-C#_solo.jams",
+      "treatment_first_rearm_sample": 1182481,
+      "treatment_offset_high_since": 1175690,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": 0.4989068806171417
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 1169827,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5373609662055969,
+      "onset_sample": 1169822,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5522077679634094,
+      "slot": 4,
+      "track": "00_SS1-100-C#_solo.jams",
+      "treatment_first_rearm_sample": 1169975,
+      "treatment_offset_high_since": 1169779,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": 0.4962177276611328
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 976275,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5138874650001526,
+      "onset_sample": 976235,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5532009601593018,
+      "slot": 1,
+      "track": "01_BN1-129-Eb_comp.jams",
+      "treatment_first_rearm_sample": 976477,
+      "treatment_offset_high_since": 976139,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": 0.4991709887981415
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 1302598,
+      "minimum_score_during_treatment_high_before_control_offset": 0.520691990852356,
+      "onset_sample": 1302551,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.551472544670105,
+      "slot": 5,
+      "track": "01_Funk1-97-C_comp.jams",
+      "treatment_first_rearm_sample": 1304022,
+      "treatment_offset_high_since": 1302437,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": 0.4983091950416565
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 1269544,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5389808416366577,
+      "onset_sample": 1269463,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5547557473182678,
+      "slot": 1,
+      "track": "01_SS1-100-C#_comp.jams",
+      "treatment_first_rearm_sample": null,
+      "treatment_offset_high_since": 1269399,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": null
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 1269557,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5474597215652466,
+      "onset_sample": 1269434,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5530603528022766,
+      "slot": 4,
+      "track": "01_SS1-100-C#_comp.jams",
+      "treatment_first_rearm_sample": null,
+      "treatment_offset_high_since": 1269390,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": null
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 2014684,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5043535232543945,
+      "onset_sample": 2014604,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.552516520023346,
+      "slot": 2,
+      "track": "01_SS3-84-Bb_comp.jams",
+      "treatment_first_rearm_sample": null,
+      "treatment_offset_high_since": 2014571,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": null
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 980514,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5156192183494568,
+      "onset_sample": 979939,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.550096869468689,
+      "slot": 1,
+      "track": "02_BN1-129-Eb_comp.jams",
+      "treatment_first_rearm_sample": null,
+      "treatment_offset_high_since": 978908,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": null
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 1289379,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5306893587112427,
+      "onset_sample": 1288829,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5508829355239868,
+      "slot": 0,
+      "track": "02_BN2-131-B_comp.jams",
+      "treatment_first_rearm_sample": 1289555,
+      "treatment_offset_high_since": 1288334,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": 0.4999258518218994
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 1289550,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5311638712882996,
+      "onset_sample": 1288896,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5500083565711975,
+      "slot": 3,
+      "track": "02_BN2-131-B_comp.jams",
+      "treatment_first_rearm_sample": 1289692,
+      "treatment_offset_high_since": 1288561,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": 0.4999810457229614
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 1419274,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5488987565040588,
+      "onset_sample": 1419027,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.550102949142456,
+      "slot": 0,
+      "track": "02_BN3-119-G_comp.jams",
+      "treatment_first_rearm_sample": 1419893,
+      "treatment_offset_high_since": 1418892,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": 0.4964780807495117
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 1420166,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5055806040763855,
+      "onset_sample": 1418892,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5518924593925476,
+      "slot": 1,
+      "track": "02_BN3-119-G_comp.jams",
+      "treatment_first_rearm_sample": 1420491,
+      "treatment_offset_high_since": 1418606,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": 0.4967131018638611
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 1422536,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5237032771110535,
+      "onset_sample": 1422521,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5501521229743958,
+      "slot": 2,
+      "track": "02_BN3-119-G_comp.jams",
+      "treatment_first_rearm_sample": null,
+      "treatment_offset_high_since": 1422472,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": null
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 1418988,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5327659249305725,
+      "onset_sample": 1418957,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.551141083240509,
+      "slot": 4,
+      "track": "02_BN3-119-G_comp.jams",
+      "treatment_first_rearm_sample": 1420158,
+      "treatment_offset_high_since": 1418931,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": 0.4979972243309021
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 1293154,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5411068797111511,
+      "onset_sample": 1288012,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5513330101966858,
+      "slot": 1,
+      "track": "02_Funk1-97-C_comp.jams",
+      "treatment_first_rearm_sample": 1304016,
+      "treatment_offset_high_since": 1286955,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": 0.49987801909446716
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 1268962,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5418669581413269,
+      "onset_sample": 1268781,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5509058833122253,
+      "slot": 0,
+      "track": "02_SS1-100-C#_comp.jams",
+      "treatment_first_rearm_sample": 1269159,
+      "treatment_offset_high_since": 1268634,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": 0.49912288784980774
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 1269018,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5422958731651306,
+      "onset_sample": 1268689,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5531727075576782,
+      "slot": 2,
+      "track": "02_SS1-100-C#_comp.jams",
+      "treatment_first_rearm_sample": null,
+      "treatment_offset_high_since": 1268129,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": null
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 1261058,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5212363004684448,
+      "onset_sample": 1260148,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5526975393295288,
+      "slot": 5,
+      "track": "02_SS1-100-C#_comp.jams",
+      "treatment_first_rearm_sample": 1261262,
+      "treatment_offset_high_since": 1260112,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": 0.4981769621372223
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 1210794,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5097275972366333,
+      "onset_sample": 1210663,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5518579483032227,
+      "slot": 1,
+      "track": "02_SS1-100-C#_solo.jams",
+      "treatment_first_rearm_sample": 1260314,
+      "treatment_offset_high_since": 1210660,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": 0.49992409348487854
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 2004046,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5090012550354004,
+      "onset_sample": 2003016,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5507031679153442,
+      "slot": 1,
+      "track": "03_SS3-84-Bb_comp.jams",
+      "treatment_first_rearm_sample": 2004700,
+      "treatment_offset_high_since": 2003009,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": 0.4972670078277588
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 2015047,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5061817169189453,
+      "onset_sample": 2015024,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5536231994628906,
+      "slot": 2,
+      "track": "03_SS3-84-Bb_comp.jams",
+      "treatment_first_rearm_sample": null,
+      "treatment_offset_high_since": 2015023,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": null
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 975549,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5475957989692688,
+      "onset_sample": 973805,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5500843524932861,
+      "slot": 2,
+      "track": "04_BN1-129-Eb_comp.jams",
+      "treatment_first_rearm_sample": 978341,
+      "treatment_offset_high_since": 973796,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": 0.49975547194480896
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 1323353,
+      "minimum_score_during_treatment_high_before_control_offset": 0.529313325881958,
+      "onset_sample": 1322920,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5501313805580139,
+      "slot": 5,
+      "track": "04_BN3-119-G_solo.jams",
+      "treatment_first_rearm_sample": 1323404,
+      "treatment_offset_high_since": 1322582,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": 0.4981682300567627
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 1305851,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5014821290969849,
+      "onset_sample": 1293639,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5505738854408264,
+      "slot": 0,
+      "track": "04_Funk1-97-C_comp.jams",
+      "treatment_first_rearm_sample": 1305997,
+      "treatment_offset_high_since": 1287048,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": 0.4999271333217621
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 1281815,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5166640281677246,
+      "onset_sample": 1281609,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5516284108161926,
+      "slot": 1,
+      "track": "04_Funk1-97-C_comp.jams",
+      "treatment_first_rearm_sample": 1306645,
+      "treatment_offset_high_since": 1281532,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": 0.49835172295570374
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 1188472,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5194467902183533,
+      "onset_sample": 1175106,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5500896573066711,
+      "slot": 1,
+      "track": "04_SS1-100-C#_solo.jams",
+      "treatment_first_rearm_sample": 1197523,
+      "treatment_offset_high_since": 1172017,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": 0.4996729791164398
+    },
+    {
+      "closure_delay_ms": null,
+      "closure_delay_samples": null,
+      "control_offset_sample": 2009816,
+      "minimum_score_during_treatment_high_before_control_offset": 0.5254514217376709,
+      "onset_sample": 2009785,
+      "outcome": "remained_open_at_track_end",
+      "score_at_control_offset": 0.5509549379348755,
+      "slot": 4,
+      "track": "04_SS3-84-Bb_comp.jams",
+      "treatment_first_rearm_sample": 2010048,
+      "treatment_offset_high_since": 2009767,
+      "treatment_offset_sample": null,
+      "treatment_rearm_score": 0.4990732967853546
+    }
+  ],
+  "question": "How many same-slot same-onset offset closures emitted by the release-0.55 control are suppressed by release 0.50, and how many of those events remain open at track end?",
+  "runtime": {
+    "audio_samples": 82947680,
+    "audio_seconds": 1880.8997732426303,
+    "model_inference_seconds": 1627.7606493,
+    "trace_decoding_seconds": 457.0009366,
+    "wall_seconds": 2099.5055694000002
+  },
+  "schema_version": 1,
+  "source_report_path": "C:\\Users\\user\\Desktop\\NOTE\\model\\causal-boundaries-weight28-window512-v7-epoch08.hysteresis-entry055-release055-050.json",
+  "source_report_sha256": "9C608D329A97320A9799C7F68CC0E5A0CF76D7B1D71979FFCBA47144729DB093",
+  "trace_validation": {
+    "exact_global_reproduction": true,
+    "expected_global_counts": {
+      "control": {
+        "closures": 110987,
+        "incomplete": 182,
+        "starts": 111169
+      },
+      "treatment": {
+        "closures": 55801,
+        "incomplete": 192,
+        "starts": 55993
+      }
+    },
+    "observed_global_counts": {
+      "control": {
+        "closures": 110987,
+        "incomplete": 182,
+        "starts": 111169
+      },
+      "treatment": {
+        "closures": 55801,
+        "incomplete": 192,
+        "starts": 55993
+      }
+    },
+    "reproduces_source_report_per_track": true
+  }
+}

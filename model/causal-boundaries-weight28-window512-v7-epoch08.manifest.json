@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "experiment": "causal_boundary_weight28_window512_v7_epoch08_baseline",
+  "baseline_status": "working_baseline",
+  "training_status": "interrupted_during_epoch_11",
+  "selected_completed_epoch": 8,
+  "source_commit": "45a3f9a62df8261a499b2208e3d89bc1b05709b4",
+  "created_utc": "2026-08-30T21:06:09.5515041Z",
+  "live_calibration": {
+    "status": "official_validation_calibration",
+    "common_onset_offset_threshold": 0.55,
+    "onset_threshold": 0.55,
+    "offset_threshold": 0.55,
+    "historical_baseline_threshold": 0.5,
+    "calibration_baseline_commit": "3e23aa981178f0093488169a4530258f9c17a85b",
+    "dataset": "GuitarSet",
+    "players": [
+      "00",
+      "01",
+      "02",
+      "03",
+      "04"
+    ],
+    "tracks": 60,
+    "player_05_read": false,
+    "selection": "unique_eligible_candidate_under_preregistered_rule",
+    "global_interval_metrics": {
+      "true_positive": 3488,
+      "false_positive": 107499,
+      "false_negative": 6053,
+      "prediction_count": 110987,
+      "reference_count": 9541,
+      "precision": 0.03142710407525206,
+      "recall": 0.3655801278691961,
+      "f1": 0.057878667197663616
+    }
+  },
+  "artifacts": {
+    "model_checkpoint": {
+      "path": "model/causal-boundaries-weight28-window512-v7.epochs/epoch-08.keras",
+      "bytes": 394010,
+      "sha256": "5634ADD0E112A6889B65D5245AD051AD850A1FFFE66FEB8D9E5E74472BA114BF"
+    },
+    "recovery_metadata": {
+      "path": "model/causal-boundaries-weight28-window512-v7-epoch08.recovery.metadata.json",
+      "bytes": 2995,
+      "sha256": "8AB99DC6DD191B39043A303D41BB405A0C84C2CE607C608E330E4DEF33F52A25"
+    },
+    "interrupted_history": {
+      "path": "model/causal-boundaries-weight28-window512-v7.history.csv",
+      "bytes": 1255,
+      "sha256": "622AF765520F917286A9200794D04AD504705B67B4FAA3A8B6F25121A82515C9"
+    },
+    "fixed_validation_score_audit": {
+      "path": "model/causal-boundaries-weight28-window512-v7-epoch08.fixed-validation-score-audit.json",
+      "bytes": 2354,
+      "sha256": "9461C7242AC58765D7C3AE540D470AB0380755FE0FB8255BA0CAE7300F11C8F7"
+    },
+    "evaluation_threshold_0_5": {
+      "path": "model/causal-boundaries-weight28-window512-v7-epoch08.evaluation-v2-threshold-0.5.json",
+      "bytes": 244466,
+      "sha256": "C895DDD20384B456B1DFDCCF9A82EFC21FDD80AADA6A2FD989468851E1B6AE9C"
+    },
+    "threshold_sweep_protocol": {
+      "path": "model/causal-boundaries-weight28-window512-v7-epoch08.threshold-sweep-protocol.json",
+      "bytes": 2231,
+      "sha256": "59059568C199FB01BF59ACD4923C6241ABCB5D0F08E85060EC98B4A57EF065FC"
+    },
+    "threshold_sweep_report": {
+      "path": "model/causal-boundaries-weight28-window512-v7-epoch08.threshold-sweep-common-0.50-0.90.json",
+      "bytes": 2403163,
+      "sha256": "33742307A34586F3CB4A04FAA844B859F526734D983EDD9A9DC64D486F607C5B"
+    }
+  }
+}

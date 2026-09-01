@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "status": "independent_review_corrections_registered_before_final_audit",
+  "experiment": "exact_point_query_hard_negative_background_audit",
+  "reason": "independent read-only review reproduced the central result but found incomplete track-exposure reporting, dependency locking, all-grid comparison, validation sequencing and statistical uniformity coverage",
+  "locked_pre_correction_artifacts": {
+    "source_sha256": "E568CED5F54C3A878D393BE8E8DEC285968D7B8CB9732BABC61540B6D6A9C0B7",
+    "tests_sha256": "B6EB36AFC9A71A8E722E37D72777A427ABB1EF3D374635D1B03EFD2561D67E73",
+    "result_sha256": "2FE89C9EA8904C8CA18C992C14D50BDE3DD6ACE67025E03C9B22235E548FB58D"
+  },
+  "required_corrections": {
+    "track_exposure": "report selected-query counts for every represented track, absent tracks, represented/total counts and min/median/max; verify that the accounting sums to every fixed query",
+    "dependency_hashes": {
+      "scripts/audit_anonymous_boundary_targets.py": "7C414A863E941B3595F03F7A420A5FB80810A5F4D2D9C5350C8089491135B356",
+      "scripts/audit_exact_point_query_sampler.py": "4F8DDA1D84E41910E1DFEA17DAF4150BD278FDDEFD02415D20A6DA812D12B193",
+      "scripts/train_boundaries.py": "3006FD2A586CE87166A82021C5D461472D4A492E6B5EBFA18910D492D80F136A",
+      "src/causal_note/guitarset.py": "52E56D374294748074A34DB06B64B03D096008CA44B8ACA0C390C981C04F94E9"
+    },
+    "all_grid_comparison": "compare every preregistered train h candidate explicitly to Experiment 12, not only the selected candidate",
+    "validation_sequence": "prepare and audit validation content only after h has been selected from the train population",
+    "uniformity_test": "add a deterministic statistical regression on a synthetic multi-track band; retain the mathematical rejection-sampling argument"
+  },
+  "decision_guard": {
+    "track_coverage": "report only; no minimum represented-track threshold was preregistered",
+    "track_accounting": "hard structural check",
+    "validation_must_not_select_h": true,
+    "sampler_or_selected_h_changed": false
+  },
+  "scope_guard": {
+    "sampler_definition_changed": false,
+    "grid_changed": false,
+    "selection_changed": false,
+    "thresholds_changed": false,
+    "loss_selected_or_changed": false,
+    "model_selected_or_changed": false,
+    "decoder_changed": false,
+    "live_changed": false,
+    "training_started": false
+  }
+}

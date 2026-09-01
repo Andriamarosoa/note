@@ -1,0 +1,166 @@
+{
+  "before_after": {
+    "after": {
+      "acoustic_offsets_unchanged": 53353,
+      "oracle_events_left_open": 0,
+      "terminal_control_offsets": 408
+    },
+    "before": {
+      "acoustic_offsets": 53353,
+      "oracle_events_left_open": 408,
+      "terminal_references_not_on_sample_grid": 408
+    }
+  },
+  "data_guard": {
+    "locked_test_player": "05",
+    "player_05_content_opened": false,
+    "players": [
+      "00",
+      "01",
+      "02",
+      "03",
+      "04"
+    ],
+    "train_tracks": 240,
+    "validation_tracks": 60
+  },
+  "decision": {
+    "classification": "control finalization, not acoustic detection",
+    "continuous_live_before_eof": "not measured by this data-only oracle replay",
+    "next_step_requires_user_approval": true,
+    "oracle_policy_accepted": true,
+    "real_prediction_limit": "a false predicted onset still open at EOF is also closed; oracle exactness is not predicted-association accuracy",
+    "runtime_contract_status": "requires separate test-suite evidence",
+    "terminal_policy": "close every still-open eventId at exclusive EOF",
+    "terminal_restart_frames_by_policy": 0,
+    "training_ready": false,
+    "training_started": false
+  },
+  "generated_at_utc": "2026-09-01T05:30:10.834671+00:00",
+  "integrity": {
+    "acoustic_targets_unchanged_from_experiment_10": true,
+    "all_tracks_exact": true,
+    "raw_references_unchanged_from_experiment_10": true,
+    "terminal_closures_are_reported_separately": true
+  },
+  "locked_inputs": {
+    "audit_source_sha256": "93FF47884D574B52553087DC4BE53B6FCBC2133826FD6D05355817CAEBB4087F",
+    "prior_anonymous_target_audit": "C:\\Users\\user\\Desktop\\NOTE\\model\\causal-boundaries-type-position-target-audit.json",
+    "prior_anonymous_target_audit_sha256": "D1B311666BAFE8191D6CE3B655EE6CFB8B140F053741B7DF9D98613D0E93CA14",
+    "protocol": "C:\\Users\\user\\Desktop\\NOTE\\model\\causal-boundaries-end-of-stream-finalization-protocol.json",
+    "protocol_sha256": "68DD2207BB3F84A9688750613D26ADE8CFE3CAC852832E0879408EF232003E41",
+    "runtime_source_sha256": {
+      "scripts/detect_live.py": "C913789643C87AB63DC36CAE324DED359F1C7D5F2FAFF3E01AAF754061C5FDFC",
+      "src/causal_note/detector.py": "7D25E9601884CC8D2C7896E2A450F9A897E054A94481737CE7A361702DC2155F",
+      "src/causal_note/pipeline.py": "9C6FA49C4660274A12C298DBDBF2DE1C11A148D21F7F12E5433D7C1808F64331",
+      "src/causal_note/scheduler.py": "A98EAB662D2EBEFE586D69190E1F18BF46327E81AD089FD485410C6ABFA5CE30"
+    }
+  },
+  "schema_version": 1,
+  "scope": {
+    "acoustic_prediction": false,
+    "acoustic_targets_changed": false,
+    "classification": "end-of-stream control finalization",
+    "loss_changed": false,
+    "model_changed": false,
+    "player_05_content_opened": false,
+    "sampler_changed": false,
+    "training_run": false
+  },
+  "splits": {
+    "train": {
+      "affected_tracks_by_arrangement": {
+        "comp": 84,
+        "solo": 56
+      },
+      "after": {
+        "extra_terminal_offsets": 0,
+        "missing_terminal_offsets": 0,
+        "open_events_after_finalization": 0,
+        "terminal_control_offsets_emitted": 326,
+        "total_offsets_acoustic_plus_terminal_control": 44220
+      },
+      "all_tracks_exact": true,
+      "before": {
+        "acoustic_offset_targets": 43894,
+        "open_events_at_eof": 326
+      },
+      "internal_reference_offsets": 43894,
+      "last_real_sample_active_terminal_notes": 326,
+      "maximum_terminal_multiplicity": 6,
+      "notes": 44220,
+      "players": {
+        "00": 48,
+        "01": 48,
+        "02": 48,
+        "03": 48,
+        "04": 48
+      },
+      "raw_reference_offsets": 44220,
+      "terminal_multiplicity_per_affected_track": {
+        "1": 67,
+        "2": 18,
+        "3": 21,
+        "4": 16,
+        "5": 12,
+        "6": 6
+      },
+      "terminal_reference_offsets": 326,
+      "tracks": 240,
+      "tracks_with_terminal_offsets": 140,
+      "tracks_without_terminal_offsets": 100
+    },
+    "validation": {
+      "affected_tracks_by_arrangement": {
+        "comp": 18,
+        "solo": 18
+      },
+      "after": {
+        "extra_terminal_offsets": 0,
+        "missing_terminal_offsets": 0,
+        "open_events_after_finalization": 0,
+        "terminal_control_offsets_emitted": 82,
+        "total_offsets_acoustic_plus_terminal_control": 9541
+      },
+      "all_tracks_exact": true,
+      "before": {
+        "acoustic_offset_targets": 9459,
+        "open_events_at_eof": 82
+      },
+      "internal_reference_offsets": 9459,
+      "last_real_sample_active_terminal_notes": 82,
+      "maximum_terminal_multiplicity": 5,
+      "notes": 9541,
+      "players": {
+        "00": 12,
+        "01": 12,
+        "02": 12,
+        "03": 12,
+        "04": 12
+      },
+      "raw_reference_offsets": 9541,
+      "terminal_multiplicity_per_affected_track": {
+        "1": 17,
+        "2": 3,
+        "3": 6,
+        "4": 9,
+        "5": 1
+      },
+      "terminal_reference_offsets": 82,
+      "tracks": 60,
+      "tracks_with_terminal_offsets": 36,
+      "tracks_without_terminal_offsets": 24
+    }
+  },
+  "status": "completed_audit_only",
+  "total": {
+    "extra_terminal_offsets": 0,
+    "missing_terminal_offsets": 0,
+    "open_events_after_finalization": 0,
+    "open_events_before_finalization": 408,
+    "terminal_control_offsets_emitted": 408,
+    "terminal_reference_offsets": 408,
+    "tracks": 300,
+    "tracks_with_terminal_offsets": 176
+  }
+}

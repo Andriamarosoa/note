@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "kind": "candidate_relation_reference_preaudit",
+  "created_before_relation_observer_implementation": true,
+  "dataset": "GuitarSet",
+  "split": {
+    "players": [
+      "00",
+      "01",
+      "02",
+      "03",
+      "04"
+    ],
+    "player_05_read": false,
+    "seed": 1337,
+    "validation_fraction": 0.2,
+    "validation_tracks": 60,
+    "validation_notes": 9541
+  },
+  "same_private_channel_successive_boundaries": {
+    "onset": {
+      "pair_count": 9243,
+      "minimum_gap_samples": 3421,
+      "minimum_gap_ms": 77.57369614512472,
+      "p01_gap_ms": 101.08888888888889,
+      "median_gap_ms": 453.6734693877551
+    },
+    "offset": {
+      "pair_count": 9243,
+      "minimum_gap_samples": 2844,
+      "minimum_gap_ms": 64.48979591836735,
+      "p01_gap_ms": 98.19591836734696,
+      "median_gap_ms": 427.86848072562356
+    }
+  },
+  "all_channel_reference_relations": {
+    "minimum_nonzero_onset_gap_samples": 1,
+    "minimum_nonzero_onset_gap_ms": 0.022675736961451247,
+    "minimum_nonzero_offset_gap_samples": 1,
+    "minimum_nonzero_offset_gap_ms": 0.022675736961451247,
+    "extra_exactly_simultaneous_onsets": 45,
+    "extra_exactly_simultaneous_offsets": 54,
+    "adjacent_onset_pairs_within_ms": {
+      "1": 381,
+      "5": 1530,
+      "10": 2573,
+      "20": 3404,
+      "50": 3839
+    },
+    "adjacent_offset_pairs_within_ms": {
+      "1": 233,
+      "5": 857,
+      "10": 1554,
+      "20": 2526,
+      "50": 3682
+    }
+  },
+  "successive_same_channel_note_relation": {
+    "pair_count": 9243,
+    "next_onset_before_previous_offset_count": 1,
+    "next_onset_exactly_at_previous_offset_count": 7,
+    "minimum_next_onset_minus_previous_offset_ms": -0.022675736961451247
+  },
+  "preimplementation_conclusion": [
+    "A global cooldown would be invalid because real boundaries on different channels can be simultaneous or one sample apart.",
+    "Same-channel annotated onsets and offsets are at least 77.57 ms and 64.49 ms apart respectively on validation, far above the 0.3628 ms N=16 rearm.",
+    "The relation audit must retain private-channel identity diagnostically while preserving anonymous public output and cross-channel multiplicity.",
+    "No consolidation duration is selected by this preaudit."
+  ]
+}

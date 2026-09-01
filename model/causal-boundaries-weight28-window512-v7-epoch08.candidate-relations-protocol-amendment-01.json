@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "candidate_relation_protocol_methodological_amendment",
+  "status": "reviewed_before_full_audit",
+  "original_protocol_path": "model/causal-boundaries-weight28-window512-v7-epoch08.candidate-relations-protocol.json",
+  "original_protocol_sha256": "4EB624BC721A457B0CB512F2AD9F684AA32B70EF979FBC711A401DCEAB91C8D7",
+  "reason": "Independent pre-run review found that proximity to one reference does not by itself prove temporal duplication, and that overlapping 50 ms windows could reuse one candidate as support for two annotated notes.",
+  "corrections": {
+    "false_positive_partition": {
+      "isolated": "unmatched N=16 candidate with zero eligible same-type references within 50 ms",
+      "same_channel_same_reference_successor_excess": "unmatched N=16 candidate with exactly one eligible reference which participates in an adjacent same-type same-private-channel N=16 pair whose two candidates have that same sole reference",
+      "single_reference_near_excess": "unmatched N=16 candidate with exactly one eligible reference but without the stronger successive same-channel relation",
+      "ambiguous_near": "unmatched N=16 candidate with at least two eligible references"
+    },
+    "legacy_three_class_reporting": "The original single_reference_excess count remains derivable exactly as same_channel_same_reference_successor_excess plus single_reference_near_excess.",
+    "same_note_support": "Candidates and annotated boundaries are matched one-to-one separately by type and private channel before onset and offset support are joined by annotated note identity. One candidate cannot support two notes.",
+    "interpretation": "single_reference_near_excess is proximity-only evidence. Even the stronger successor class is evidence of temporal repetition around one annotated boundary, not proof of one common acoustic cause."
+  },
+  "revised_decision_rule": {
+    "claim_strong_temporal_repetition_relation_dominates_only_if": "same_channel_same_reference_successor_excess exceeds 50 percent of official false positives and exceeds 50 percent in all 12 family-arrangement groups",
+    "claim_isolated_false_positives_dominate_only_if": "isolated exceeds 50 percent of official false positives and exceeds 50 percent in all 12 family-arrangement groups",
+    "otherwise": "report a mixed or unresolved mechanism",
+    "causal_acoustic_identity_claim_allowed": false,
+    "no_filter_selected": true,
+    "no_live_activation": true,
+    "no_training": true
+  }
+}

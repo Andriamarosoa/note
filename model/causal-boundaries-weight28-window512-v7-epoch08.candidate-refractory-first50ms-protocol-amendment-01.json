@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "kind": "candidate_refractory_protocol_methodological_amendment",
+  "status": "reviewed_before_implementation_and_full_evaluation",
+  "original_protocol_path": "model/causal-boundaries-weight28-window512-v7-epoch08.candidate-refractory-first50ms-protocol.json",
+  "original_protocol_sha256": "A8C5B1BF5D9D05BFE59C7F2800B5BC756771485045F043CFB0B0B210781A5576",
+  "reason": "Independent pre-implementation review required an exact matching definition, an exact simultaneous-reference support definition, and disclosure that 50 ms was selected from the same validation tracks.",
+  "corrections": {
+    "official_evaluation": {
+      "onset_tolerance_samples_inclusive": 2205,
+      "offset_tolerance_samples_inclusive": 2205,
+      "matching": "deterministic maximum-cardinality one-to-one matching identical to Exp07 and Exp08",
+      "reference_and_prediction_multiplicity_is_preserved": true
+    },
+    "adaptive_validation_disclosure": {
+      "duration_selected_after_inspecting_the_same_60_validation_tracks": true,
+      "result_scope": "descriptive result on the adaptation validation set",
+      "independent_confirmation": false,
+      "locked_player_05_read": false,
+      "generalization_claim_allowed": false,
+      "live_promotion_claim_allowed": false
+    },
+    "simultaneous_reference_support": {
+      "simultaneous_reference_instance": "an annotated boundary instance whose exact sample position has reference multiplicity greater than one for the same boundary type",
+      "support": "number of those reference instances selected by the official one-to-one matching, calculated separately for onset and offset",
+      "acceptance": "treatment support must be greater than or equal to N16 control support for onset and for offset"
+    },
+    "suppression_distance_bins_samples": {
+      "1_to_44": [
+        1,
+        44
+      ],
+      "45_to_220": [
+        45,
+        220
+      ],
+      "221_to_441": [
+        221,
+        441
+      ],
+      "442_to_882": [
+        442,
+        882
+      ],
+      "883_to_2205": [
+        883,
+        2205
+      ]
+    },
+    "zero_gap_integrity": "Two N16 candidates with the same boundary type, private channel, and sample are impossible; any observed zero gap must fail the evaluation.",
+    "timing_metrics": {
+      "signed_delay": "prediction sample minus reference sample for each official matched pair",
+      "absolute_delay": "absolute value of signed delay",
+      "causal_delay": "the Exp07 latency metric: only non-negative signed delays are retained",
+      "reported_summaries": "counts plus p50 and p90 in samples and milliseconds; causal maximum is also reported"
+    },
+    "boolean_field_names": {
+      "association_enabled": false,
+      "event_id_enabled": false,
+      "scheduler_enabled": false,
+      "official_live_activation_enabled": false
+    }
+  },
+  "clarified_decision_thresholds": {
+    "useful_filter": {
+      "onset_false_positive_at_most": 126553,
+      "offset_false_positive_at_most": 213049,
+      "onset_true_positive_at_least": 9055,
+      "offset_true_positive_at_least": 8896,
+      "both_boundary_note_support_at_least": 7198,
+      "global_f1_strictly_improves_for_both_heads": true,
+      "comp_and_solo_f1_strictly_improve_for_both_heads": true,
+      "family_arrangement_groups_with_strict_f1_improvement_at_least_per_head": 10,
+      "simultaneous_reference_support_does_not_decrease_for_each_head": true
+    },
+    "overprediction_resolved_on_adaptation_validation_diagnostic_only": {
+      "onset_prediction_count_at_most": 19082,
+      "offset_prediction_count_at_most": 19082,
+      "onset_recall_at_least": 0.9,
+      "offset_recall_at_least": 0.9
+    },
+    "no_runtime_promotion_regardless_of_result": true,
+    "no_generalization_claim_regardless_of_result": true,
+    "no_training_regardless_of_result": true,
+    "stop_after_post_change_report_for_user_approval": true
+  },
+  "attribution_guard": "Suppressed control candidates and their anchors may be described by their original control matching status, while the causal contribution of one suppression to net TP loss must not be claimed because complete one-to-one rematching can reassign candidates."
+}

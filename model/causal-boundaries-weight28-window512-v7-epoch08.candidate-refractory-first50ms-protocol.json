@@ -1,0 +1,177 @@
+{
+  "schema_version": 1,
+  "status": "preregistered_before_implementation_and_full_evaluation",
+  "experiment": "v7_epoch08_n16_fixed_first_candidate_refractory_50ms",
+  "approval": {
+    "user_approved_announced_next_experiment": true,
+    "approval_word": "go"
+  },
+  "baseline": {
+    "repository_commit_before_experiment": "a90892e0d27c904e5a53e2faad089a8d3e7dbd9c",
+    "model_path": "model/causal-boundaries-weight28-window512-v7.epochs/epoch-08.keras",
+    "model_sha256": "5634ADD0E112A6889B65D5245AD051AD850A1FFFE66FEB8D9E5E74472BA114BF",
+    "metadata_path": "model/causal-boundaries-weight28-window512-v7-epoch08.recovery.metadata.json",
+    "metadata_sha256": "8AB99DC6DD191B39043A303D41BB405A0C84C2CE607C608E330E4DEF33F52A25",
+    "detector_sha256_before_experiment": "F2359EC1B1357580403B2DBB8BECBD407B5FC07A841909F01BA219C6F2B8FCFD",
+    "source_rearm_report": "model/causal-boundaries-weight28-window512-v7-epoch08.unassociated-boundary-rearm-low1-16.json",
+    "source_rearm_report_sha256": "4E5249C4AB2E6C3B170AA450BE8E27F6DFCF95692DF0917623C268485E20AD88",
+    "source_relation_report": "model/causal-boundaries-weight28-window512-v7-epoch08.candidate-relations.json",
+    "source_relation_report_sha256": "C117BA2C15B0FF9B5A907831C38CEDB71B4BAB67E7158FBA8DE88F743BBBE25B",
+    "source_relation_evaluator": "scripts/audit_boundary_candidate_relations.py",
+    "source_relation_evaluator_sha256": "2C0E732CD3DB4534C00840D79A55C3970DBC025F1DC588DC7EDB390DC2758402",
+    "chunk_size_samples": 512,
+    "entry_threshold": 0.55,
+    "release_threshold": 0.55,
+    "rearm_low_samples": 16,
+    "reference_onsets": 9541,
+    "reference_offsets": 9541,
+    "control_onset_candidates": 158032,
+    "control_offset_candidates": 259632,
+    "control_onset_true_positive": 9146,
+    "control_offset_true_positive": 8985,
+    "control_onset_false_positive": 148886,
+    "control_offset_false_positive": 250647,
+    "control_onset_false_negative": 395,
+    "control_offset_false_negative": 556
+  },
+  "single_experimental_change": {
+    "name": "fixed causal first-candidate refractory period",
+    "state_key": [
+      "boundary_type",
+      "private_model_channel"
+    ],
+    "duration_samples": 2205,
+    "duration_ms": 50.0,
+    "rule": "emit the first N=16 candidate immediately; suppress a later candidate of the same key when its distance from the last kept candidate is between 1 and 2205 samples inclusive",
+    "anchor_update": "only a kept candidate replaces the anchor; a suppressed candidate never extends the window",
+    "next_candidate_is_eligible_when": "distance from the last kept candidate is greater than 2205 samples",
+    "state_persists_across_chunks": true,
+    "state_resets_between_tracks": true,
+    "onset_and_offset_states_are_independent": true,
+    "private_channels_are_independent": true,
+    "first_candidate_position_is_unchanged": true,
+    "lookahead_samples": 0,
+    "added_algorithmic_latency_samples": 0
+  },
+  "unchanged": {
+    "model": true,
+    "training": true,
+    "targets": true,
+    "weights": true,
+    "loss": true,
+    "sampler": true,
+    "thresholds": true,
+    "rearm_low_samples": true,
+    "association": false,
+    "event_id": false,
+    "scheduler": false,
+    "official_live_activation": false,
+    "public_output": [
+      "type",
+      "position"
+    ]
+  },
+  "data": {
+    "dataset": "GuitarSet",
+    "players": [
+      "00",
+      "01",
+      "02",
+      "03",
+      "04"
+    ],
+    "locked_test_player": "05",
+    "locked_test_used": false,
+    "seed": 1337,
+    "validation_fraction": 0.2,
+    "validation_tracks": 60,
+    "validation_notes": 9541,
+    "audio_sample_rate": 44100,
+    "minimum_same_channel_successive_onset_gap_samples": 3421,
+    "minimum_same_channel_successive_onset_gap_ms": 77.57369614512472,
+    "minimum_same_channel_successive_offset_gap_samples": 2844,
+    "minimum_same_channel_successive_offset_gap_ms": 64.48979591836735,
+    "nominal_onset_margin_beyond_filter_samples": 1216,
+    "nominal_offset_margin_beyond_filter_samples": 639,
+    "reference_extra_simultaneous_onsets": 45,
+    "reference_extra_simultaneous_offsets": 54
+  },
+  "execution_integrity": {
+    "one_model_inference_per_chunk": true,
+    "same_immutable_score_object_for_control_treatment_and_observer": true,
+    "control": "N=16 with consolidation disabled",
+    "treatment": "N=16 with the fixed 2205-sample refractory period",
+    "required_exact_control_reproduction": [
+      "public candidate multiset globally and on every track",
+      "official TP FP FN globally and on every track",
+      "Exp08 false-positive relation partition globally and on every track"
+    ],
+    "required_treatment_invariants": [
+      "treatment candidates form a multiset subset of control candidates",
+      "control count equals kept plus suppressed by type track and private channel",
+      "every suppression is caused only by the last kept candidate of the same type and private channel at a distance from 1 through 2205 samples",
+      "a suppressed candidate never moves the anchor",
+      "retained candidates of one type and private channel are separated by more than 2205 samples",
+      "public positions are never shifted",
+      "cross-channel candidates never suppress each other"
+    ],
+    "raw_scores_are_not_persisted": true,
+    "raw_candidate_lists_are_not_persisted": true,
+    "aggregate_only_output": true
+  },
+  "required_aggregates": [
+    "global",
+    "comp",
+    "solo",
+    "12 family-arrangement groups",
+    "per track"
+  ],
+  "required_post_change_audit": [
+    "predictions TP FP FN precision recall and F1 for onset and offset",
+    "predictions per second and prediction-to-reference ratio",
+    "suppressed count and percent",
+    "suppression distance bins at 1 5 10 20 and 50 ms",
+    "signed absolute and causal timing errors for official matches",
+    "control and treatment false-positive relation partitions using the Exp08 definitions",
+    "original control status of suppressed occurrences: matched isolated strong-repeat single-near or ambiguous",
+    "net TP and FP changes after complete one-to-one rematching",
+    "same-sample multiplicity and simultaneous-reference support",
+    "one-to-one same-channel per-note onset-only offset-only both and neither support",
+    "F1 direction for every track and family-arrangement group",
+    "raw candidate counts output density threshold and all causal invariants"
+  ],
+  "training_audit_not_applicable": {
+    "target_density": "unchanged because there is no training change",
+    "sample_weights": "unchanged because there is no training change",
+    "sampler_distribution": "unchanged because there is no training change",
+    "loss_constant_output_optimum": "unchanged because there is no training change"
+  },
+  "interpretation_guards": [
+    "this is a fixed causal refractory period retaining the first candidate, not a peak-maximum selector",
+    "the annotation gap minima do not guarantee zero TP loss because an earlier false candidate can occupy the window",
+    "the private channel is supervised from GuitarSet and the treatment therefore depends indirectly on that private channel",
+    "private channel is never published as string fret pitch or public type",
+    "the treatment cannot merge one acoustic reaction when the model spreads it across several channels",
+    "the treatment does not associate onset with offset",
+    "validation matching is an offline measurement and not a live association algorithm"
+  ],
+  "decision_rule": {
+    "technical_validity_requires_all_integrity_checks": true,
+    "claim_filter_useful_only_if": {
+      "false_positive_reduction_at_least_percent_for_each_head": 15.0,
+      "true_positive_retention_at_least_percent_for_each_head": 99.0,
+      "global_f1_strictly_improves_for_each_head": true,
+      "comp_and_solo_f1_strictly_improve_for_each_head": true,
+      "family_arrangement_groups_with_strict_f1_improvement_at_least_per_head": 10,
+      "matched_extra_simultaneous_reference_boundaries_do_not_decrease": true,
+      "both_onset_and_offset_note_support_retention_at_least_percent": 99.0
+    },
+    "claim_overprediction_resolved_only_if": {
+      "prediction_to_reference_ratio_at_most_for_each_head": 2.0,
+      "recall_at_least_percent_for_each_head": 90.0
+    },
+    "no_runtime_promotion_regardless_of_result": true,
+    "no_training_regardless_of_result": true,
+    "stop_after_post_change_report_for_user_approval": true
+  }
+}

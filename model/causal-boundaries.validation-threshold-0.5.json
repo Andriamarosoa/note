@@ -1,0 +1,3637 @@
+{
+  "configuration": {
+    "chunk_size": 512,
+    "offset_threshold": 0.5,
+    "offset_tolerance_ms": 50.0,
+    "offset_tolerance_samples": 2205,
+    "onset_threshold": 0.5,
+    "onset_tolerance_ms": 50.0,
+    "onset_tolerance_samples": 2205
+  },
+  "counts": {
+    "predicted_complete_events": 0,
+    "predicted_event_ids": 0,
+    "predicted_incomplete_events": 0,
+    "raw_predicted_offsets": 0,
+    "raw_predicted_onsets": 0,
+    "reference_complete_events": 9541
+  },
+  "dataset_dir": "C:\\Users\\user\\Desktop\\NOTE\\data\\GuitarSet",
+  "metadata_path": "C:\\Users\\user\\Desktop\\NOTE\\model\\causal-boundaries.metadata.json",
+  "metrics": {
+    "associated_interval": {
+      "f1": 0.0,
+      "false_negative": 9541,
+      "false_positive": 0,
+      "precision": 0.0,
+      "prediction_count": 0,
+      "recall": 0.0,
+      "reference_count": 9541,
+      "true_positive": 0
+    },
+    "offset": {
+      "f1": 0.0,
+      "false_negative": 9541,
+      "false_positive": 0,
+      "precision": 0.0,
+      "prediction_count": 0,
+      "recall": 0.0,
+      "reference_count": 9541,
+      "true_positive": 0
+    },
+    "onset": {
+      "f1": 0.0,
+      "false_negative": 9541,
+      "false_positive": 0,
+      "precision": 0.0,
+      "prediction_count": 0,
+      "recall": 0.0,
+      "reference_count": 9541,
+      "true_positive": 0
+    },
+    "onset_latency": {
+      "causal_match_count": 0,
+      "causal_max_ms": null,
+      "causal_max_samples": null,
+      "causal_p50_ms": null,
+      "causal_p50_samples": null,
+      "causal_p90_ms": null,
+      "causal_p90_samples": null,
+      "early_match_count": 0,
+      "matched_count": 0,
+      "signed_p50_ms": null,
+      "signed_p50_samples": null,
+      "signed_p90_ms": null,
+      "signed_p90_samples": null
+    }
+  },
+  "model_path": "C:\\Users\\user\\Desktop\\NOTE\\model\\causal-boundaries.keras",
+  "runtime": {
+    "audio_duration_seconds": 1880.8997732426303,
+    "chunk_compute_max_ms": 178.84409999999917,
+    "chunk_compute_p50_ms": 6.373,
+    "chunk_compute_p95_ms": 9.562,
+    "chunks": 162030,
+    "inference_elapsed_seconds": 1146.313499999984,
+    "realtime_factor": 0.6094495391552759
+  },
+  "schema_version": 1,
+  "split": {
+    "player_05_read": false,
+    "players": [
+      "00",
+      "01",
+      "02",
+      "03",
+      "04"
+    ],
+    "seed": 1337,
+    "validation_fraction": 0.2,
+    "validation_groups": 6,
+    "validation_members": [
+      "00_BN1-129-Eb_comp.jams",
+      "00_BN1-129-Eb_solo.jams",
+      "00_BN2-131-B_comp.jams",
+      "00_BN2-131-B_solo.jams",
+      "00_BN3-119-G_comp.jams",
+      "00_BN3-119-G_solo.jams",
+      "00_Funk1-97-C_comp.jams",
+      "00_Funk1-97-C_solo.jams",
+      "00_SS1-100-C#_comp.jams",
+      "00_SS1-100-C#_solo.jams",
+      "00_SS3-84-Bb_comp.jams",
+      "00_SS3-84-Bb_solo.jams",
+      "01_BN1-129-Eb_comp.jams",
+      "01_BN1-129-Eb_solo.jams",
+      "01_BN2-131-B_comp.jams",
+      "01_BN2-131-B_solo.jams",
+      "01_BN3-119-G_comp.jams",
+      "01_BN3-119-G_solo.jams",
+      "01_Funk1-97-C_comp.jams",
+      "01_Funk1-97-C_solo.jams",
+      "01_SS1-100-C#_comp.jams",
+      "01_SS1-100-C#_solo.jams",
+      "01_SS3-84-Bb_comp.jams",
+      "01_SS3-84-Bb_solo.jams",
+      "02_BN1-129-Eb_comp.jams",
+      "02_BN1-129-Eb_solo.jams",
+      "02_BN2-131-B_comp.jams",
+      "02_BN2-131-B_solo.jams",
+      "02_BN3-119-G_comp.jams",
+      "02_BN3-119-G_solo.jams",
+      "02_Funk1-97-C_comp.jams",
+      "02_Funk1-97-C_solo.jams",
+      "02_SS1-100-C#_comp.jams",
+      "02_SS1-100-C#_solo.jams",
+      "02_SS3-84-Bb_comp.jams",
+      "02_SS3-84-Bb_solo.jams",
+      "03_BN1-129-Eb_comp.jams",
+      "03_BN1-129-Eb_solo.jams",
+      "03_BN2-131-B_comp.jams",
+      "03_BN2-131-B_solo.jams",
+      "03_BN3-119-G_comp.jams",
+      "03_BN3-119-G_solo.jams",
+      "03_Funk1-97-C_comp.jams",
+      "03_Funk1-97-C_solo.jams",
+      "03_SS1-100-C#_comp.jams",
+      "03_SS1-100-C#_solo.jams",
+      "03_SS3-84-Bb_comp.jams",
+      "03_SS3-84-Bb_solo.jams",
+      "04_BN1-129-Eb_comp.jams",
+      "04_BN1-129-Eb_solo.jams",
+      "04_BN2-131-B_comp.jams",
+      "04_BN2-131-B_solo.jams",
+      "04_BN3-119-G_comp.jams",
+      "04_BN3-119-G_solo.jams",
+      "04_Funk1-97-C_comp.jams",
+      "04_Funk1-97-C_solo.jams",
+      "04_SS1-100-C#_comp.jams",
+      "04_SS1-100-C#_solo.jams",
+      "04_SS3-84-Bb_comp.jams",
+      "04_SS3-84-Bb_solo.jams"
+    ],
+    "validation_tracks": 60
+  },
+  "tracks": [
+    {
+      "annotation_member": "00_BN1-129-Eb_comp.jams",
+      "audio_member": "00_BN1-129-Eb_comp_mix.wav",
+      "audio_samples": 984506,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 133,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 133,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 133,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 133,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 133,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 133,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 133
+      }
+    },
+    {
+      "annotation_member": "00_BN1-129-Eb_solo.jams",
+      "audio_member": "00_BN1-129-Eb_solo_mix.wav",
+      "audio_samples": 984506,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 71,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 71,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 71,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 71,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 71,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 71,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 71
+      }
+    },
+    {
+      "annotation_member": "00_BN2-131-B_comp.jams",
+      "audio_member": "00_BN2-131-B_comp_mix.wav",
+      "audio_samples": 1292412,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 239,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 239,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 239,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 239,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 239,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 239,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 239
+      }
+    },
+    {
+      "annotation_member": "00_BN2-131-B_solo.jams",
+      "audio_member": "00_BN2-131-B_solo_mix.wav",
+      "audio_samples": 1292412,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 97,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 97,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 97,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 97,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 97,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 97,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 97
+      }
+    },
+    {
+      "annotation_member": "00_BN3-119-G_comp.jams",
+      "audio_member": "00_BN3-119-G_comp_mix.wav",
+      "audio_samples": 1422807,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 169,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 169,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 169,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 169,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 169,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 169,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 169
+      }
+    },
+    {
+      "annotation_member": "00_BN3-119-G_solo.jams",
+      "audio_member": "00_BN3-119-G_solo_mix.wav",
+      "audio_samples": 1422807,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 79,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 79,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 79,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 79,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 79,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 79,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 79
+      }
+    },
+    {
+      "annotation_member": "00_Funk1-97-C_comp.jams",
+      "audio_member": "00_Funk1-97-C_comp_mix.wav",
+      "audio_samples": 1309258,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 396,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 396,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 396,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 396,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 396,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 396,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 396
+      }
+    },
+    {
+      "annotation_member": "00_Funk1-97-C_solo.jams",
+      "audio_member": "00_Funk1-97-C_solo_mix.wav",
+      "audio_samples": 1309258,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 62,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 62,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 62,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 62,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 62,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 62,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 62
+      }
+    },
+    {
+      "annotation_member": "00_SS1-100-C#_comp.jams",
+      "audio_member": "00_SS1-100-C#_comp_mix.wav",
+      "audio_samples": 1270080,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 204,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 204,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 204,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 204,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 204,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 204,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 204
+      }
+    },
+    {
+      "annotation_member": "00_SS1-100-C#_solo.jams",
+      "audio_member": "00_SS1-100-C#_solo_mix.wav",
+      "audio_samples": 1270080,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 64,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 64,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 64,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 64,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 64,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 64,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 64
+      }
+    },
+    {
+      "annotation_member": "00_SS3-84-Bb_comp.jams",
+      "audio_member": "00_SS3-84-Bb_comp_mix.wav",
+      "audio_samples": 2015705,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 184,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 184,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 184,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 184,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 184,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 184,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 184
+      }
+    },
+    {
+      "annotation_member": "00_SS3-84-Bb_solo.jams",
+      "audio_member": "00_SS3-84-Bb_solo_mix.wav",
+      "audio_samples": 2015705,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 123,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 123,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 123,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 123,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 123,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 123,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 123
+      }
+    },
+    {
+      "annotation_member": "01_BN1-129-Eb_comp.jams",
+      "audio_member": "01_BN1-129-Eb_comp_mix.wav",
+      "audio_samples": 984506,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 105,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 105,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 105,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 105,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 105,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 105,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 105
+      }
+    },
+    {
+      "annotation_member": "01_BN1-129-Eb_solo.jams",
+      "audio_member": "01_BN1-129-Eb_solo_mix.wav",
+      "audio_samples": 984506,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 61,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 61,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 61,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 61,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 61,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 61,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 61
+      }
+    },
+    {
+      "annotation_member": "01_BN2-131-B_comp.jams",
+      "audio_member": "01_BN2-131-B_comp_mix.wav",
+      "audio_samples": 1292412,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 205,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 205,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 205,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 205,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 205,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 205,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 205
+      }
+    },
+    {
+      "annotation_member": "01_BN2-131-B_solo.jams",
+      "audio_member": "01_BN2-131-B_solo_mix.wav",
+      "audio_samples": 1292412,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 105,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 105,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 105,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 105,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 105,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 105,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 105
+      }
+    },
+    {
+      "annotation_member": "01_BN3-119-G_comp.jams",
+      "audio_member": "01_BN3-119-G_comp_mix.wav",
+      "audio_samples": 1422807,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 181,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 181,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 181,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 181,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 181,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 181,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 181
+      }
+    },
+    {
+      "annotation_member": "01_BN3-119-G_solo.jams",
+      "audio_member": "01_BN3-119-G_solo_mix.wav",
+      "audio_samples": 1422807,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 89,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 89,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 89,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 89,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 89,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 89,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 89
+      }
+    },
+    {
+      "annotation_member": "01_Funk1-97-C_comp.jams",
+      "audio_member": "01_Funk1-97-C_comp_mix.wav",
+      "audio_samples": 1309258,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 252,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 252,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 252,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 252,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 252,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 252,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 252
+      }
+    },
+    {
+      "annotation_member": "01_Funk1-97-C_solo.jams",
+      "audio_member": "01_Funk1-97-C_solo_mix.wav",
+      "audio_samples": 1309258,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 104,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 104,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 104,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 104,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 104,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 104,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 104
+      }
+    },
+    {
+      "annotation_member": "01_SS1-100-C#_comp.jams",
+      "audio_member": "01_SS1-100-C#_comp_mix.wav",
+      "audio_samples": 1270080,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 374,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 374,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 374,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 374,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 374,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 374,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 374
+      }
+    },
+    {
+      "annotation_member": "01_SS1-100-C#_solo.jams",
+      "audio_member": "01_SS1-100-C#_solo_mix.wav",
+      "audio_samples": 1270080,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 128,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 128,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 128,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 128,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 128,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 128,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 128
+      }
+    },
+    {
+      "annotation_member": "01_SS3-84-Bb_comp.jams",
+      "audio_member": "01_SS3-84-Bb_comp_mix.wav",
+      "audio_samples": 2015705,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 278,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 278,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 278,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 278,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 278,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 278,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 278
+      }
+    },
+    {
+      "annotation_member": "01_SS3-84-Bb_solo.jams",
+      "audio_member": "01_SS3-84-Bb_solo_mix.wav",
+      "audio_samples": 2015705,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 163,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 163,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 163,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 163,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 163,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 163,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 163
+      }
+    },
+    {
+      "annotation_member": "02_BN1-129-Eb_comp.jams",
+      "audio_member": "02_BN1-129-Eb_comp_mix.wav",
+      "audio_samples": 984506,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 154,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 154,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 154,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 154,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 154,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 154,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 154
+      }
+    },
+    {
+      "annotation_member": "02_BN1-129-Eb_solo.jams",
+      "audio_member": "02_BN1-129-Eb_solo_mix.wav",
+      "audio_samples": 984506,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 57,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 57,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 57,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 57,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 57,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 57,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 57
+      }
+    },
+    {
+      "annotation_member": "02_BN2-131-B_comp.jams",
+      "audio_member": "02_BN2-131-B_comp_mix.wav",
+      "audio_samples": 1292412,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 278,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 278,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 278,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 278,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 278,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 278,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 278
+      }
+    },
+    {
+      "annotation_member": "02_BN2-131-B_solo.jams",
+      "audio_member": "02_BN2-131-B_solo_mix.wav",
+      "audio_samples": 1292412,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 66,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 66,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 66,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 66,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 66,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 66,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 66
+      }
+    },
+    {
+      "annotation_member": "02_BN3-119-G_comp.jams",
+      "audio_member": "02_BN3-119-G_comp_mix.wav",
+      "audio_samples": 1422807,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 282,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 282,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 282,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 282,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 282,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 282,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 282
+      }
+    },
+    {
+      "annotation_member": "02_BN3-119-G_solo.jams",
+      "audio_member": "02_BN3-119-G_solo_mix.wav",
+      "audio_samples": 1422807,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 98,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 98,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 98,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 98,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 98,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 98,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 98
+      }
+    },
+    {
+      "annotation_member": "02_Funk1-97-C_comp.jams",
+      "audio_member": "02_Funk1-97-C_comp_mix.wav",
+      "audio_samples": 1309258,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 189,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 189,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 189,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 189,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 189,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 189,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 189
+      }
+    },
+    {
+      "annotation_member": "02_Funk1-97-C_solo.jams",
+      "audio_member": "02_Funk1-97-C_solo_mix.wav",
+      "audio_samples": 1309258,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 71,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 71,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 71,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 71,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 71,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 71,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 71
+      }
+    },
+    {
+      "annotation_member": "02_SS1-100-C#_comp.jams",
+      "audio_member": "02_SS1-100-C#_comp_mix.wav",
+      "audio_samples": 1270080,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 346,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 346,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 346,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 346,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 346,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 346,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 346
+      }
+    },
+    {
+      "annotation_member": "02_SS1-100-C#_solo.jams",
+      "audio_member": "02_SS1-100-C#_solo_mix.wav",
+      "audio_samples": 1270080,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 59,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 59,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 59,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 59,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 59,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 59,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 59
+      }
+    },
+    {
+      "annotation_member": "02_SS3-84-Bb_comp.jams",
+      "audio_member": "02_SS3-84-Bb_comp_mix.wav",
+      "audio_samples": 2015705,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 423,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 423,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 423,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 423,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 423,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 423,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 423
+      }
+    },
+    {
+      "annotation_member": "02_SS3-84-Bb_solo.jams",
+      "audio_member": "02_SS3-84-Bb_solo_mix.wav",
+      "audio_samples": 2015705,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 123,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 123,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 123,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 123,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 123,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 123,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 123
+      }
+    },
+    {
+      "annotation_member": "03_BN1-129-Eb_comp.jams",
+      "audio_member": "03_BN1-129-Eb_comp_mix.wav",
+      "audio_samples": 984506,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 157,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 157,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 157,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 157,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 157,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 157,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 157
+      }
+    },
+    {
+      "annotation_member": "03_BN1-129-Eb_solo.jams",
+      "audio_member": "03_BN1-129-Eb_solo_mix.wav",
+      "audio_samples": 984506,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 58,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 58,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 58,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 58,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 58,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 58,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 58
+      }
+    },
+    {
+      "annotation_member": "03_BN2-131-B_comp.jams",
+      "audio_member": "03_BN2-131-B_comp_mix.wav",
+      "audio_samples": 1292412,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 230,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 230,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 230,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 230,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 230,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 230,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 230
+      }
+    },
+    {
+      "annotation_member": "03_BN2-131-B_solo.jams",
+      "audio_member": "03_BN2-131-B_solo_mix.wav",
+      "audio_samples": 1292412,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 72,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 72,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 72,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 72,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 72,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 72,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 72
+      }
+    },
+    {
+      "annotation_member": "03_BN3-119-G_comp.jams",
+      "audio_member": "03_BN3-119-G_comp_mix.wav",
+      "audio_samples": 1422807,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 199,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 199,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 199,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 199,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 199,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 199,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 199
+      }
+    },
+    {
+      "annotation_member": "03_BN3-119-G_solo.jams",
+      "audio_member": "03_BN3-119-G_solo_mix.wav",
+      "audio_samples": 1422807,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 79,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 79,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 79,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 79,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 79,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 79,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 79
+      }
+    },
+    {
+      "annotation_member": "03_Funk1-97-C_comp.jams",
+      "audio_member": "03_Funk1-97-C_comp_mix.wav",
+      "audio_samples": 1309258,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 259,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 259,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 259,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 259,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 259,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 259,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 259
+      }
+    },
+    {
+      "annotation_member": "03_Funk1-97-C_solo.jams",
+      "audio_member": "03_Funk1-97-C_solo_mix.wav",
+      "audio_samples": 1309258,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 105,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 105,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 105,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 105,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 105,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 105,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 105
+      }
+    },
+    {
+      "annotation_member": "03_SS1-100-C#_comp.jams",
+      "audio_member": "03_SS1-100-C#_comp_mix.wav",
+      "audio_samples": 1270080,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 368,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 368,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 368,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 368,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 368,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 368,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 368
+      }
+    },
+    {
+      "annotation_member": "03_SS1-100-C#_solo.jams",
+      "audio_member": "03_SS1-100-C#_solo_mix.wav",
+      "audio_samples": 1270080,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 111,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 111,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 111,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 111,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 111,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 111,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 111
+      }
+    },
+    {
+      "annotation_member": "03_SS3-84-Bb_comp.jams",
+      "audio_member": "03_SS3-84-Bb_comp_mix.wav",
+      "audio_samples": 2015705,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 186,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 186,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 186,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 186,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 186,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 186,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 186
+      }
+    },
+    {
+      "annotation_member": "03_SS3-84-Bb_solo.jams",
+      "audio_member": "03_SS3-84-Bb_solo_mix.wav",
+      "audio_samples": 2015705,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 82,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 82,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 82,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 82,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 82,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 82,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 82
+      }
+    },
+    {
+      "annotation_member": "04_BN1-129-Eb_comp.jams",
+      "audio_member": "04_BN1-129-Eb_comp_mix.wav",
+      "audio_samples": 984506,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 127,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 127,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 127,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 127,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 127,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 127,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 127
+      }
+    },
+    {
+      "annotation_member": "04_BN1-129-Eb_solo.jams",
+      "audio_member": "04_BN1-129-Eb_solo_mix.wav",
+      "audio_samples": 984506,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 42,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 42,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 42,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 42,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 42,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 42,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 42
+      }
+    },
+    {
+      "annotation_member": "04_BN2-131-B_comp.jams",
+      "audio_member": "04_BN2-131-B_comp_mix.wav",
+      "audio_samples": 1292412,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 206,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 206,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 206,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 206,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 206,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 206,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 206
+      }
+    },
+    {
+      "annotation_member": "04_BN2-131-B_solo.jams",
+      "audio_member": "04_BN2-131-B_solo_mix.wav",
+      "audio_samples": 1292412,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 67,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 67,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 67,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 67,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 67,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 67,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 67
+      }
+    },
+    {
+      "annotation_member": "04_BN3-119-G_comp.jams",
+      "audio_member": "04_BN3-119-G_comp_mix.wav",
+      "audio_samples": 1422807,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 172,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 172,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 172,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 172,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 172,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 172,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 172
+      }
+    },
+    {
+      "annotation_member": "04_BN3-119-G_solo.jams",
+      "audio_member": "04_BN3-119-G_solo_mix.wav",
+      "audio_samples": 1422807,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 69,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 69,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 69,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 69,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 69,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 69,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 69
+      }
+    },
+    {
+      "annotation_member": "04_Funk1-97-C_comp.jams",
+      "audio_member": "04_Funk1-97-C_comp_mix.wav",
+      "audio_samples": 1309258,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 99,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 99,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 99,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 99,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 99,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 99,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 99
+      }
+    },
+    {
+      "annotation_member": "04_Funk1-97-C_solo.jams",
+      "audio_member": "04_Funk1-97-C_solo_mix.wav",
+      "audio_samples": 1309258,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 111,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 111,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 111,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 111,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 111,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 111,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 111
+      }
+    },
+    {
+      "annotation_member": "04_SS1-100-C#_comp.jams",
+      "audio_member": "04_SS1-100-C#_comp_mix.wav",
+      "audio_samples": 1270080,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 162,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 162,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 162,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 162,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 162,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 162,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 162
+      }
+    },
+    {
+      "annotation_member": "04_SS1-100-C#_solo.jams",
+      "audio_member": "04_SS1-100-C#_solo_mix.wav",
+      "audio_samples": 1270080,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 71,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 71,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 71,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 71,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 71,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 71,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 71
+      }
+    },
+    {
+      "annotation_member": "04_SS3-84-Bb_comp.jams",
+      "audio_member": "04_SS3-84-Bb_comp_mix.wav",
+      "audio_samples": 2015705,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 362,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 362,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 362,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 362,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 362,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 362,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 362
+      }
+    },
+    {
+      "annotation_member": "04_SS3-84-Bb_solo.jams",
+      "audio_member": "04_SS3-84-Bb_solo_mix.wav",
+      "audio_samples": 2015705,
+      "metrics": {
+        "associated_interval": {
+          "f1": 0.0,
+          "false_negative": 135,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 135,
+          "true_positive": 0
+        },
+        "offset": {
+          "f1": 0.0,
+          "false_negative": 135,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 135,
+          "true_positive": 0
+        },
+        "onset": {
+          "f1": 0.0,
+          "false_negative": 135,
+          "false_positive": 0,
+          "precision": 0.0,
+          "prediction_count": 0,
+          "recall": 0.0,
+          "reference_count": 135,
+          "true_positive": 0
+        },
+        "onset_latency": {
+          "causal_match_count": 0,
+          "causal_max_ms": null,
+          "causal_max_samples": null,
+          "causal_p50_ms": null,
+          "causal_p50_samples": null,
+          "causal_p90_ms": null,
+          "causal_p90_samples": null,
+          "early_match_count": 0,
+          "matched_count": 0,
+          "signed_p50_ms": null,
+          "signed_p50_samples": null,
+          "signed_p90_ms": null,
+          "signed_p90_samples": null
+        },
+        "predicted_complete_events": 0,
+        "predicted_event_ids": 0,
+        "predicted_incomplete_events": 0,
+        "raw_predicted_offsets": 0,
+        "raw_predicted_onsets": 0,
+        "reference_complete_events": 135
+      }
+    }
+  ]
+}

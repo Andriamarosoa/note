@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "status": "preregistered_before_full_comparison",
+  "baseline": {
+    "repository_commit_before_experiment": "998350d2fb1001ca3836aa39272f436b7a9d7e3e",
+    "model_path": "model/causal-boundaries-weight28-window512-v7.epochs/epoch-08.keras",
+    "model_sha256": "5634ADD0E112A6889B65D5245AD051AD850A1FFFE66FEB8D9E5E74472BA114BF",
+    "entry_threshold": 0.55,
+    "onset_release_threshold": 0.55,
+    "offset_release_threshold": 0.55,
+    "global": {
+      "reference_intervals": 9541,
+      "predicted_intervals": 110987,
+      "incomplete_events": 182,
+      "onset_true_positives": 8856,
+      "offset_true_positives": 7980,
+      "interval_true_positives": 3488,
+      "interval_false_positives": 107499,
+      "interval_false_negatives": 6053,
+      "interval_f1_percent": 5.787866719766362
+    },
+    "comp": {
+      "reference_intervals": 6919,
+      "predicted_intervals": 90277,
+      "incomplete_events": 70,
+      "onset_true_positives": 6609,
+      "offset_true_positives": 5902,
+      "interval_true_positives": 1943,
+      "interval_false_positives": 88334,
+      "interval_f1_percent": 3.998106917980163
+    },
+    "solo": {
+      "reference_intervals": 2622,
+      "predicted_intervals": 20710,
+      "incomplete_events": 112,
+      "onset_true_positives": 2247,
+      "offset_true_positives": 2078,
+      "interval_true_positives": 1545,
+      "interval_false_positives": 19165,
+      "interval_f1_percent": 13.243613920795472
+    }
+  },
+  "single_experimental_change": {
+    "name": "offset_only_causal_hysteresis",
+    "training": false,
+    "model_scores": "identical immutable score chunks for both decoders",
+    "entry_thresholds": {
+      "onset": 0.55,
+      "offset": 0.55
+    },
+    "control_release_thresholds": {
+      "onset": 0.55,
+      "offset": 0.55
+    },
+    "treatment_release_thresholds": {
+      "onset": 0.55,
+      "offset": 0.5
+    },
+    "unchanged": [
+      "checkpoint",
+      "audio",
+      "validation split",
+      "chunk size",
+      "onset entry and release rules",
+      "offset entry rule",
+      "slot association",
+      "matching tolerances"
+    ],
+    "low_to_high_rule": "score >= entry_threshold",
+    "remain_high_rule": "score >= release_threshold",
+    "release_rule": "score < release_threshold",
+    "lookahead": false,
+    "added_first_event_delay": false
+  },
+  "pre_run_data_audit": {
+    "dataset": "GuitarSet",
+    "players": [
+      "00",
+      "01",
+      "02",
+      "03",
+      "04"
+    ],
+    "locked_test_player": "05",
+    "locked_test_used": false,
+    "seed": 1337,
+    "validation_fraction": 0.2,
+    "expected_tracks": 60,
+    "expected_reference_intervals": 9541,
+    "chunk_size_samples": 512,
+    "audio_duration_seconds": 1880.8997732426303,
+    "onset_tolerance_ms": 50.0,
+    "offset_tolerance_ms": 50.0,
+    "prior_same_score_morphology_observation": {
+      "source_report": "model/causal-boundaries-weight28-window512-v7-epoch08.hysteresis-entry055-release055-050.json",
+      "source_report_sha256": "9C608D329A97320A9799C7F68CC0E5A0CF76D7B1D71979FFCBA47144729DB093",
+      "onset_bridged_dips_between_0_50_and_0_55_excluded_from_this_treatment": 254464,
+      "offset_bridged_dips_between_0_50_and_0_55_in_scope": 533338
+    },
+    "predicted_effect": [
+      "raw labels, target density, weights, sampler and model outputs remain unchanged because there is no training",
+      "the onset latch is identical in control and treatment",
+      "offset closures may be delayed when the score dips below 0.55 without crossing below 0.50",
+      "delayed offset closure may indirectly suppress a later onset while its slot remains occupied"
+    ],
+    "required_post_change_checks": [
+      "control exact reproduction globally and per track",
+      "raw decoded onset, offset and incomplete counts",
+      "global, comp, solo and per-track metrics",
+      "onset morphology remains exactly zero for both candidates",
+      "offset morphology matches the isolated 0.50 release band",
+      "same-event closure opportunities suppressed",
+      "closures recovered later and their latency",
+      "events remaining open at track end",
+      "identity divergence caused by a previously delayed offset"
+    ]
+  },
+  "acceptance_rule": {
+    "all_conditions_required": true,
+    "control_must_exactly_reproduce_official_threshold_0_55_result": true,
+    "treatment": {
+      "global_max_interval_false_positives_exclusive": 107499,
+      "global_min_interval_f1_percent_exclusive": 5.787866719766362,
+      "comp_min_interval_f1_percent_inclusive": 3.998106917980163,
+      "solo_min_interval_f1_percent_inclusive": 13.243613920795472,
+      "global_max_incomplete_events_inclusive": 182,
+      "comp_max_incomplete_events_inclusive": 70,
+      "solo_max_incomplete_events_inclusive": 112,
+      "comp_min_onset_true_positives": 6279,
+      "comp_min_offset_true_positives": 5607,
+      "comp_min_interval_true_positives": 1749,
+      "solo_min_onset_true_positives": 2135,
+      "solo_min_offset_true_positives": 1975,
+      "solo_min_interval_true_positives": 1391
+    },
+    "decision": "accept offset release 0.50 only if every condition passes; otherwise retain onset release 0.55 and offset release 0.55",
+    "no_additional_threshold_in_this_experiment": true
+  }
+}

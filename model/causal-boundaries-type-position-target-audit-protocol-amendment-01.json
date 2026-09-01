@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "status": "preregistered_after_read_only_review_and_before_audit_implementation",
+  "amends": "model/causal-boundaries-type-position-target-audit-protocol.json",
+  "reason": "Independent read-only review identified temporal-order and exact sampler-reproduction checks that strengthen the audit without changing any decision threshold.",
+  "known_before_implementation": {
+    "validation_tracks": 60,
+    "validation_boundary_instances_per_type": 9541,
+    "validation_exclusive_end_offsets": 82,
+    "v7_fixed_validation_sampled_slot_positive_elements": {
+      "onset": 261423,
+      "offset": 249851
+    }
+  },
+  "required_exact_reproduction": [
+    "the 50 fixed V7 validation steps reproduce 261423 positive onset slot-elements and 249851 positive offset slot-elements",
+    "the sampled source cycle contains 134 onset anchors, 133 offset anchors and 133 random windows"
+  ],
+  "additional_metrics": {
+    "anonymous_cross_type_pairs": {
+      "definition": "count every onset-offset instance pair on one track with absolute separation strictly below 512 samples; preserve multiplicity",
+      "categories": [
+        "offset_before_onset",
+        "onset_before_offset",
+        "same_sample"
+      ],
+      "interpretation": "exposure to possible order confusion, not an observed model inversion"
+    },
+    "successive_notes_within_original_slot": {
+      "definition": "sort annotated notes within each original GuitarSet slot and compare the previous offset to the next onset",
+      "categories": {
+        "retrigger_before_previous_offset": "next_onset < previous_offset",
+        "same_sample": "next_onset = previous_offset",
+        "positive_gap_below_512": "0 < next_onset - previous_offset < 512",
+        "positive_gap_512_or_more": "next_onset - previous_offset >= 512"
+      },
+      "guard": "the slot is used only to audit annotated temporal succession; it is never an input field, target field or public event field"
+    }
+  },
+  "window_boundary_clarification": {
+    "overlap": "two half-open width-512 windows overlap only when their start positions differ by at most 511 samples",
+    "binary_rising_edge": "starts 512 samples apart do not overlap, but remain one contiguous positive plateau because there is no zero sample between them",
+    "separate_binary_plateaus_require": "start-position difference of at least 513 samples",
+    "causal_count_inverse_still_recovers_difference_512": true
+  },
+  "decision_rules_changed": false,
+  "model_or_training_scope_changed": false
+}

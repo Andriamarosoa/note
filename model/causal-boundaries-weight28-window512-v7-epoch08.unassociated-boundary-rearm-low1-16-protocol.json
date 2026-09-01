@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "status": "preregistered_before_implementation_and_full_evaluation",
+  "experiment": "v7_epoch08_unassociated_boundary_rearm_low1_vs_low16",
+  "approval": {
+    "user_approved_exact_plan": true,
+    "approval_word": "go"
+  },
+  "baseline": {
+    "repository_commit_before_experiment": "94ff2c9d049778d10410594585cc3a14e8e207f1",
+    "model_path": "model/causal-boundaries-weight28-window512-v7.epochs/epoch-08.keras",
+    "model_sha256": "5634ADD0E112A6889B65D5245AD051AD850A1FFFE66FEB8D9E5E74472BA114BF",
+    "source_candidate_report": "model/causal-boundaries-weight28-window512-v7-epoch08.unassociated-boundary-candidates.json",
+    "source_candidate_report_sha256": "3725ABDB75383AC51C2B800C1232FDAE9A3E5F271F8D3D40743C498AAA07AB81",
+    "source_evaluator_sha256": "A9C5A02361495C6EC0C1EBCAA54D068EADEE7DF44585AA816718C00F7F75C698",
+    "chunk_size_samples": 512,
+    "onset_entry_threshold": 0.55,
+    "onset_release_threshold": 0.55,
+    "offset_entry_threshold": 0.55,
+    "offset_release_threshold": 0.55,
+    "control_rearm_low_samples": 1,
+    "candidate_counts": {
+      "reference_onsets": 9541,
+      "reference_offsets": 9541,
+      "predicted_onsets": 401104,
+      "predicted_offsets": 658417,
+      "onset_true_positive": 9155,
+      "onset_false_positive": 391949,
+      "onset_false_negative": 386,
+      "onset_f1_percent": 4.458836662385244,
+      "offset_true_positive": 9029,
+      "offset_false_positive": 649388,
+      "offset_false_negative": 512,
+      "offset_f1_percent": 2.703460836528778
+    }
+  },
+  "single_experimental_change": {
+    "name": "require_consecutive_low_score_samples_before_candidate_rearm",
+    "control_rearm_low_samples": 1,
+    "treatment_rearm_low_samples": 16,
+    "treatment_rearm_duration_ms_at_44100_hz": 0.36281179138322,
+    "state_scope": "independent per boundary type and private score channel",
+    "rearm_rule": "after a rising edge, remain disarmed until N consecutive scores are below the unchanged release threshold",
+    "interrupted_low_run_rule": "a score at or above the release threshold resets the consecutive-low counter to zero",
+    "training": false,
+    "checkpoint_change": false,
+    "score_change": false,
+    "target_change": false,
+    "loss_change": false,
+    "sampler_change": false,
+    "entry_threshold_change": false,
+    "release_threshold_change": false,
+    "association": false,
+    "event_open_state": false,
+    "candidate_public_fields": [
+      "type",
+      "position"
+    ],
+    "candidate_forbidden_fields": [
+      "eventId",
+      "slot",
+      "string",
+      "pitch",
+      "fret",
+      "active"
+    ],
+    "same_sample_multiplicity_preserved": true,
+    "onset_before_previous_offset_allowed": true
+  },
+  "pre_implementation_data_audit": {
+    "dataset": "GuitarSet",
+    "players": [
+      "00",
+      "01",
+      "02",
+      "03",
+      "04"
+    ],
+    "locked_test_player": "05",
+    "locked_test_used": false,
+    "seed": 1337,
+    "validation_fraction": 0.2,
+    "validation_tracks": 60,
+    "validation_notes": 9541,
+    "same_slot_successive_onset_pairs": 9243,
+    "minimum_same_slot_onset_gap_samples": 3421,
+    "minimum_same_slot_onset_gap_ms": 77.57369614512472,
+    "same_slot_onsets_before_previous_offset": 1,
+    "treatment_low_run_samples": 16,
+    "treatment_low_run_is_smaller_than_minimum_same_slot_gap": true,
+    "reference_extra_simultaneous_onsets": 45,
+    "reference_maximum_exact_onset_multiplicity": 3,
+    "source_score_morphology_release_050": {
+      "interpretation_limit": "supporting evidence only; this experiment does not change the release threshold to 0.50",
+      "onset_release_band_dips": 254464,
+      "onset_mean_dip_ms": 0.207672747796302,
+      "offset_release_band_dips": 533338,
+      "offset_mean_dip_ms": 0.449609416257744
+    },
+    "conclusion": "candidate chatter occurs on a sub-millisecond scale while annotated same-slot onsets are much farther apart; test one 16-sample low-run confirmation without event occupancy"
+  },
+  "evaluation": {
+    "same_immutable_score_chunk_for_control_and_treatment": true,
+    "model_passes": 1,
+    "onset_tolerance_ms": 50.0,
+    "offset_tolerance_ms": 50.0,
+    "reference_multiplicity_preserved": true,
+    "metrics": [
+      "candidate count",
+      "true positive",
+      "false positive",
+      "false negative",
+      "precision",
+      "recall",
+      "f1",
+      "latency",
+      "exact-position onset multiplicity",
+      "suppressed candidate count",
+      "observed low-run lengths"
+    ],
+    "aggregates": [
+      "global",
+      "comp",
+      "solo",
+      "per track",
+      "family-arrangement"
+    ],
+    "required_control_reproduction": "N=1 must reproduce the source candidate report globally and on all 60 tracks",
+    "required_fixtures": [
+      "N=1 exactly preserves historical candidate edges",
+      "a low run shorter than N does not rearm across chunk boundaries",
+      "N consecutive low samples rearm",
+      "onset(type-only,100) then onset(type-only,700) without an intervening offset",
+      "same-sample multiplicity is preserved",
+      "offset rearm is independent of onset rearm"
+    ],
+    "required_post_change_audit": [
+      "control exact reproduction globally and per track",
+      "identical model scores consumed once by both decoders",
+      "global, comp, solo, family-arrangement and per-track onset and offset metrics",
+      "suppressed candidates and low-run morphology by boundary type",
+      "close and simultaneous onset behavior",
+      "player 05 remains unread"
+    ]
+  },
+  "decision_rule": {
+    "diagnostic_only": true,
+    "no_runtime_activation_regardless_of_result": true,
+    "no_training_in_this_experiment": true,
+    "no_associated_interval_claim": true,
+    "do_not_promote_if_either_boundary_f1_decreases": true,
+    "report_recall_loss_even_if_f1_improves": true,
+    "stop_after_report_for_user_approval": true
+  }
+}

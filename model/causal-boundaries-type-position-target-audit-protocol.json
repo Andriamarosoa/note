@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "status": "preregistered_before_audit_implementation_and_data_pass",
+  "experiment": "anonymous_type_position_target_audit",
+  "approval": {
+    "user_approved_exact_scope": true,
+    "approval_word": "go"
+  },
+  "baseline": {
+    "repository_commit_before_experiment": "b04b6f53ff59fb5493c7e83f0df650d7eff403cb",
+    "training_source": "scripts/train_boundaries.py",
+    "training_source_sha256": "3006FD2A586CE87166A82021C5D461472D4A492E6B5EBFA18910D492D80F136A",
+    "guitarset_source": "src/causal_note/guitarset.py",
+    "guitarset_source_sha256": "52E56D374294748074A34DB06B64B03D096008CA44B8ACA0C390C981C04F94E9",
+    "v7_metadata": "model/causal-boundaries-weight28-window512-v7-epoch08.recovery.metadata.json",
+    "v7_metadata_sha256": "8AB99DC6DD191B39043A303D41BB405A0C84C2CE607C608E330E4DEF33F52A25",
+    "historical_target_width_samples": 512,
+    "historical_positive_weight": 28.0,
+    "historical_decoder_threshold": 0.55
+  },
+  "scope": {
+    "audit_only": true,
+    "model_change": false,
+    "training": false,
+    "decoder_change": false,
+    "live_activation": false,
+    "association": false,
+    "event_id": false,
+    "pitch": false,
+    "string_or_channel_target": false,
+    "fret_target": false,
+    "stop_after_report_for_user_approval": true
+  },
+  "data": {
+    "dataset": "GuitarSet",
+    "dataset_dir": "data/GuitarSet",
+    "players": [
+      "00",
+      "01",
+      "02",
+      "03",
+      "04"
+    ],
+    "locked_test_player": "05",
+    "locked_test_used": false,
+    "seed": 1337,
+    "validation_fraction": 0.2,
+    "required_validation_members_source": "baseline.v7_metadata",
+    "audio_sample_rate": 44100,
+    "raw_offset_domain": "0 < offset_position <= frame_count",
+    "sample_supervision_domain": "0 <= position < frame_count",
+    "exclusive_end_offset_policy": "retain and count separately; never discard or shift; architecture decision required before training"
+  },
+  "representations_under_audit": {
+    "exact_anonymous_count": {
+      "definition": {
+        "onset_count_t": "number of annotated onset instances exactly at sample t",
+        "offset_count_t": "number of annotated offset instances exactly at sample t"
+      },
+      "public_expansion": "a count k emits k repeated events with fields type and position only",
+      "simultaneous_multiplicity_is_preserved": true,
+      "block_partition_invariant": true
+    },
+    "anonymous_count_window_512": {
+      "definition": "each boundary instance adds one to its type count on [position, position + 512), clipped to the sample supervision domain",
+      "binary_union_is_also_measured": true,
+      "naive_decoder": "positive sample-to-sample count increments",
+      "causal_inverse": "x[t] = y[t] - y[t-1] + x[t-512]",
+      "inverse_roundtrip_must_be_exact_on_the_annotation_counts": true
+    },
+    "anonymous_multiset_per_nonoverlapping_block_512": {
+      "definition": "all repeated type-position events whose positions lie in one causal block [b, b + 512)",
+      "query_capacity_curve": [
+        1,
+        2,
+        4,
+        6,
+        8,
+        12,
+        16
+      ],
+      "no_query_budget_is_selected_by_this_audit": true
+    },
+    "historical_v7_slot_binary_window_512": {
+      "definition": "six binary slot elements per type and sample",
+      "purpose": "baseline density and weighted-loss comparison only",
+      "not_a_candidate_public_representation": true
+    }
+  },
+  "full_stream_metrics": [
+    "tracks, frames, duration and raw note-boundary instances",
+    "exclusive-end offsets",
+    "exact count histogram and positive-position density",
+    "unique positions, simultaneous extra instances and maximum multiplicity",
+    "successive unique-position gap distribution",
+    "anonymous 512-count histogram and nonzero density",
+    "events hidden by a binary union while it is already positive",
+    "naive positive-delta recovery and exact causal-inverse roundtrip",
+    "nonoverlapping 512-block event-count histogram and capacity curve",
+    "historical six-slot positive-element density"
+  ],
+  "sampler_audit": {
+    "implementation_to_reproduce": "BalancedWindowBatcher selection without audio decoding",
+    "window_samples": 8192,
+    "batch_size": 8,
+    "train_steps": 200,
+    "validation_steps": 50,
+    "train_seed": 1337,
+    "validation_seed": 1338,
+    "cycle": [
+      "onset_anchor",
+      "offset_anchor",
+      "random"
+    ],
+    "warmup_samples": 4092,
+    "warmup_is_masked_only_when_window_start_is_greater_than_zero": true,
+    "required_metrics": [
+      "selection counts by source",
+      "duplicate anonymous anchor positions",
+      "scored samples",
+      "exact and anonymous-window count histograms",
+      "historical six-slot positive-element density",
+      "full-stream versus sampled nonzero-density ratio"
+    ]
+  },
+  "loss_audit": {
+    "anonymous_candidate_loss": "categorical cross entropy over count classes 0 through observed maximum",
+    "historical_baseline_loss": "elementwise binary cross entropy over six slots",
+    "regimes": {
+      "unweighted": {
+        "class_zero_weight": 1.0,
+        "nonzero_class_weight": 1.0
+      },
+      "historical_weight_28_diagnostic": {
+        "class_zero_weight": 1.0,
+        "nonzero_class_weight": 28.0
+      }
+    },
+    "constant_optimum": "weighted empirical class distribution",
+    "reported_for": [
+      "full train",
+      "full validation",
+      "sampled train",
+      "sampled validation"
+    ],
+    "historical_threshold_is_diagnostic_only": true
+  },
+  "integrity_requirements": [
+    "generated validation members exactly equal the V7 metadata members",
+    "no player 05 annotation or audio member content is opened",
+    "raw exact-count sums equal all annotated boundary instances",
+    "sample-grid exact-count sums equal raw instances minus exclusive-end offsets",
+    "no slot, string, fret, pitch or channel appears in an anonymous target",
+    "same-position multiplicity is never deduplicated",
+    "the causal inverse reconstructs every sample-grid boundary instance exactly",
+    "all reported histograms reconcile with their declared domains"
+  ],
+  "decision_rule": {
+    "exact_count_is_structurally_admissible_only_if": "all integrity requirements concerning exact counts and anonymity pass",
+    "anonymous_window_is_structurally_admissible_only_if": "the causal inverse roundtrip is exact; naive rising-edge losses remain a separately reported decoder risk",
+    "binary_union_is_rejected_if": "at least one boundary starts while the same-type union target is already positive",
+    "block_multiset_result": "report the smallest query budget covering all observed blocks and instances, without selecting an architecture",
+    "sampler_distribution_shift_requires_redesign_if": "sampled nonzero density divided by full-stream nonzero density is below 0.5 or above 2.0",
+    "constant_output_pressure": {
+      "below_0_55": "the constant optimum favors no event at the historical decoder threshold",
+      "at_or_above_0_55": "the constant optimum favors an always-nonzero output at the historical decoder threshold"
+    },
+    "no_training_regardless_of_result": true,
+    "stop_if_collapse_overdetection_or_objective_decoder_mismatch_is_predicted": true,
+    "stop_after_report_for_user_approval": true
+  }
+}

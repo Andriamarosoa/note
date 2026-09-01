@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "status": "preregistered_before_full_sweep",
+  "baseline": {
+    "git_commit": "3e23aa981178f0093488169a4530258f9c17a85b",
+    "model_path": "model/causal-boundaries-weight28-window512-v7.epochs/epoch-08.keras",
+    "model_sha256": "5634ADD0E112A6889B65D5245AD051AD850A1FFFE66FEB8D9E5E74472BA114BF",
+    "evaluation_path": "model/causal-boundaries-weight28-window512-v7-epoch08.evaluation-v2-threshold-0.5.json",
+    "evaluation_sha256": "C895DDD20384B456B1DFDCCF9A82EFC21FDD80AADA6A2FD989468851E1B6AE9C",
+    "threshold": 0.5,
+    "global": {
+      "interval_true_positives": 3006,
+      "interval_false_positives": 140083,
+      "interval_f1_percent": 3.9389
+    },
+    "comp": {
+      "onset_true_positives": 6704,
+      "offset_true_positives": 5872,
+      "interval_true_positives": 1467,
+      "interval_f1_percent": 2.4556
+    },
+    "solo": {
+      "onset_true_positives": 2326,
+      "offset_true_positives": 2151,
+      "interval_true_positives": 1539,
+      "interval_f1_percent": 9.2851
+    }
+  },
+  "audit": {
+    "purpose": "measure threshold calibration only; no model or training change",
+    "dataset": "GuitarSet",
+    "players": ["00", "01", "02", "03", "04"],
+    "locked_test_player": "05",
+    "locked_test_used": false,
+    "seed": 1337,
+    "validation_fraction": 0.2,
+    "chunk_size_samples": 512,
+    "onset_tolerance_ms": 50.0,
+    "offset_tolerance_ms": 50.0,
+    "common_thresholds": [0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9],
+    "separate_onset_offset_thresholds": false,
+    "regime_specific_thresholds": false
+  },
+  "selection_rule": {
+    "eligibility": {
+      "comp_min_onset_true_positives": 6369,
+      "comp_min_offset_true_positives": 5579,
+      "comp_min_interval_true_positives": 1321,
+      "solo_min_onset_true_positives": 2210,
+      "solo_min_offset_true_positives": 2044,
+      "solo_min_interval_true_positives": 1386,
+      "global_min_interval_f1_percent_exclusive": 3.9389,
+      "global_max_interval_false_positives_exclusive": 140083
+    },
+    "ranking": [
+      "maximize_macro_comp_solo_interval_f1",
+      "maximize_worst_regime_interval_f1",
+      "minimize_global_interval_false_positives",
+      "prefer_lower_threshold"
+    ]
+  }
+}
