@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "scope": "GuitarSet players 00-04; player 05 locked",
+  "sample_rate": 44100,
+  "combined": {
+    "tracks": 300,
+    "total_notes": 53761,
+    "successive_pairs": 52267,
+    "offset_before_next_onset": 52227,
+    "offset_before_next_onset_fraction": 0.9992346987582987,
+    "same_sample": 37,
+    "overlap_next_onset_before_offset": 3,
+    "relations": {
+      "0_to_5_ms": 13273,
+      "5_to_10_ms": 3354,
+      "10_to_20_ms": 2904,
+      "20_to_50_ms": 7477,
+      "50_to_100_ms": 3148,
+      "100_to_250_ms": 8308,
+      "250_to_500_ms": 6549,
+      "over_500_ms": 7214,
+      "same_sample": 37,
+      "overlap_negative": 3
+    },
+    "terminal_notes": 1494,
+    "terminal_before_audio_end": 1086,
+    "terminal_at_or_after_audio_end": 408
+  },
+  "train": {
+    "tracks": 240,
+    "total_notes": 44220,
+    "successive_pairs": 43024,
+    "offset_before_next_onset": 42992,
+    "offset_before_next_onset_fraction": 0.999256229081443,
+    "same_sample": 30,
+    "overlap_next_onset_before_offset": 2,
+    "relations": {
+      "0_to_5_ms": 11323,
+      "5_to_10_ms": 2816,
+      "10_to_20_ms": 2439,
+      "20_to_50_ms": 6107,
+      "50_to_100_ms": 2563,
+      "100_to_250_ms": 6849,
+      "250_to_500_ms": 5222,
+      "over_500_ms": 5673,
+      "same_sample": 30,
+      "overlap_negative": 2
+    },
+    "terminal_notes": 1196,
+    "terminal_before_audio_end": 870,
+    "terminal_at_or_after_audio_end": 326
+  },
+  "validation": {
+    "tracks": 60,
+    "total_notes": 9541,
+    "successive_pairs": 9243,
+    "offset_before_next_onset": 9235,
+    "offset_before_next_onset_fraction": 0.9991344801471383,
+    "same_sample": 7,
+    "overlap_next_onset_before_offset": 1,
+    "relations": {
+      "0_to_5_ms": 1950,
+      "5_to_10_ms": 538,
+      "10_to_20_ms": 465,
+      "20_to_50_ms": 1370,
+      "50_to_100_ms": 585,
+      "100_to_250_ms": 1459,
+      "250_to_500_ms": 1327,
+      "over_500_ms": 1541,
+      "same_sample": 7,
+      "overlap_negative": 1
+    },
+    "terminal_notes": 298,
+    "terminal_before_audio_end": 216,
+    "terminal_at_or_after_audio_end": 82
+  }
+}
