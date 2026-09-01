@@ -1,0 +1,99 @@
+name: V8.1 acoustic label confidence
+
+on:
+  push:
+    branches:
+      - v8-anonymous-cardinality
+    paths:
+      - ".github/workflows/v81-label-confidence-audit.yml"
+      - "scripts/audit_v81_label_confidence.py"
+      - "src/causal_note/guitarset_acoustics.py"
+      - "test/test_guitarset_acoustics.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+
+      - name: Verify GuitarSet data
+        run: |
+          test -f data/GuitarSet/annotation.zip
+          test -f data/GuitarSet/audio_mono-pickup_mix.zip
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+
+      - name: Run rich annotation tests
+        env:
+          PYTHONPATH: src
+        run: python -m unittest test.test_guitarset_acoustics -v
+
+      - name: Download V8.1 epoch-03 pilot checkpoint
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/v81-source
+          gh run download 33536348915 \
+            --repo "$GITHUB_REPOSITORY" \
+            --name v81-pilot \
+            --dir model/v81-source
+          test -f model/v81-source/causal-boundaries-v81-pilot.epoch-03.keras
+
+      - name: Correct zero-distance annotation classification guard
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path("scripts/audit_v81_label_confidence.py")
+          text = path.read_text(encoding="utf-8")
+          text = text.replace(
+              '(_nearest_distance(sample, reference_onsets) or 10**18) > tolerance_samples',
+              '(lambda distance: distance is None or distance > tolerance_samples)(_nearest_distance(sample, reference_onsets))',
+          )
+          path.write_text(text, encoding="utf-8")
+          PY
+
+      - name: Run V8.1 acoustic confidence audit
+        env:
+          PYTHONPATH: src
+          TF_CPP_MIN_LOG_LEVEL: "2"
+        run: |
+          set -o pipefail
+          python -B scripts/audit_v81_label_confidence.py \
+            --model model/v81-source/causal-boundaries-v81-pilot.epoch-03.keras \
+            --threshold 0.40 \
+            --limit-tracks 12 \
+            --output model/v81-label-confidence.json \
+            2>&1 | tee model/v81-label-confidence.log
+
+      - name: Upload acoustic audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v81-label-confidence
+          path: |
+            model/v81-label-confidence.json
+            model/v81-label-confidence.log
+          if-no-files-found: warn
+          retention-days: 14
