@@ -1,4 +1,4 @@
-"""TensorFlow smoke check for the V8 architecture and saved stream model."""
+"""TensorFlow smoke checks for V8 architecture and exact stateful streaming."""
 from pathlib import Path
 import tempfile
 
@@ -6,6 +6,18 @@ import numpy as np
 
 from causal_note.v8_model import build_v8_point_model
 from causal_note.v8_predictor import V8KerasPredictor
+
+
+def _flatten_scores(scores):
+    return np.concatenate(
+        (
+            np.asarray(scores.onset_presence, dtype=np.float32)[:, None],
+            np.asarray(scores.offset_presence, dtype=np.float32)[:, None],
+            np.asarray(scores.onset_multiplicity, dtype=np.float32),
+            np.asarray(scores.offset_multiplicity, dtype=np.float32),
+        ),
+        axis=1,
+    )
 
 
 def main() -> None:
@@ -31,21 +43,54 @@ def main() -> None:
     with tempfile.TemporaryDirectory() as directory:
         path = Path(directory) / "v8-smoke.keras"
         stream.save(path)
-        predictor = V8KerasPredictor.from_path(
+        fast = V8KerasPredictor.from_path(
             str(path),
             receptive_field=receptive_field,
+            use_stateful=True,
         )
-        predictor.warm_up(32)
-        scores = predictor.predict_chunk((0.0,) * 32, start_sample=0)
-        if scores.sample_count != 32:
-            raise AssertionError("reloaded V8 stream model returned wrong length")
-        if predictor.next_sample != 32:
-            raise AssertionError("V8 predictor did not advance stream position")
+        slow = V8KerasPredictor.from_path(
+            str(path),
+            receptive_field=receptive_field,
+            use_stateful=False,
+        )
+        if not fast.stateful_enabled:
+            raise AssertionError("V8 saved model did not enable the stateful runner")
+
+        fast.warm_up(32)
+        slow.warm_up(32)
+        rng = np.random.default_rng(1337)
+        audio = rng.normal(0.0, 0.1, size=97).astype(np.float32)
+        chunk_sizes = (1, 7, 13, 5, 32, 11, 28)
+        if sum(chunk_sizes) != len(audio):
+            raise AssertionError("smoke chunk partition changed")
+
+        position = 0
+        max_error = 0.0
+        for size in chunk_sizes:
+            chunk = tuple(float(value) for value in audio[position : position + size])
+            fast_scores = fast.predict_chunk(chunk, start_sample=position)
+            slow_scores = slow.predict_chunk(chunk, start_sample=position)
+            fast_values = _flatten_scores(fast_scores)
+            slow_values = _flatten_scores(slow_scores)
+            error = float(np.max(np.abs(fast_values - slow_values)))
+            max_error = max(max_error, error)
+            np.testing.assert_allclose(
+                fast_values,
+                slow_values,
+                rtol=2e-5,
+                atol=2e-6,
+            )
+            position += size
+
+        if fast.next_sample != len(audio) or slow.next_sample != len(audio):
+            raise AssertionError("V8 predictors did not advance stream position")
 
     print(
         "V8 TensorFlow smoke PASS:",
         f"receptive_field={receptive_field}",
         f"point_outputs={actual}",
+        "stateful=True",
+        f"stateful_max_abs_error={max_error:.9g}",
     )
 
 
