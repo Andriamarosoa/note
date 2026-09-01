@@ -1,0 +1,43 @@
+name: V8 boundary burst audit
+
+on:
+  push:
+    branches:
+      - v8-anonymous-cardinality
+    paths:
+      - "scripts/audit_v8_boundary_bursts.py"
+      - ".github/workflows/v8-burst-audit.yml"
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore official GuitarSet cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+      - name: Verify annotation data
+        run: |
+          test -f data/GuitarSet/annotation.zip
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+      - name: Audit boundary bursts
+        env:
+          PYTHONPATH: src
+        run: |
+          mkdir -p model
+          python -B scripts/audit_v8_boundary_bursts.py \
+            --horizons-ms 5 10 20 30 50 \
+            --output model/v8-boundary-bursts.json \
+            2>&1 | tee model/v8-boundary-bursts.log
+      - name: Upload audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: v8-boundary-bursts
+          path: |
+            model/v8-boundary-bursts.json
+            model/v8-boundary-bursts.log
+          retention-days: 14
