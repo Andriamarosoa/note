@@ -43,6 +43,11 @@ from scripts.train_boundaries import (
 )
 
 
+SMOKE_TRAIN_EXAMPLES = 96
+SMOKE_VALIDATION_EXAMPLES = 48
+SMOKE_FILTERS = 8
+
+
 class _AudioCache:
     def __init__(self, capacity: int = 4) -> None:
         self._capacity = capacity
@@ -122,6 +127,25 @@ def _select_examples(
     return tuple(examples)
 
 
+def _deterministic_subset(examples, limit: int):
+    """Select a stable spread over an ordered candidate list for smoke tests."""
+
+    values = tuple(examples)
+    if isinstance(limit, bool) or not isinstance(limit, int) or limit <= 0:
+        raise ValueError("limit must be an integer > 0")
+    if len(values) <= limit:
+        return values
+    if limit == 1:
+        return (values[len(values) // 2],)
+    indices = tuple(
+        round(index * (len(values) - 1) / (limit - 1))
+        for index in range(limit)
+    )
+    if len(set(indices)) != limit:
+        raise AssertionError("smoke subset indices unexpectedly collided")
+    return tuple(values[index] for index in indices)
+
+
 def _assemble_numpy(np, population, examples, receptive_field: int):
     cache = _AudioCache()
     count = len(examples)
@@ -132,10 +156,7 @@ def _assemble_numpy(np, population, examples, receptive_field: int):
         "onset_multiplicity": np.zeros((count,), dtype=np.int32),
         "offset_multiplicity": np.zeros((count,), dtype=np.int32),
     }
-    weights = {
-        name: np.zeros((count,), dtype=np.float32)
-        for name in targets
-    }
+    weights = {name: np.zeros((count,), dtype=np.float32) for name in targets}
 
     for row, example in enumerate(examples):
         item = population.tracks[example.track_index]
@@ -228,7 +249,8 @@ def main(argv=None):
 
     np, tf = _configure_cpu_dependencies(args.seed)
     receptive_field = calculate_receptive_field()
-    model = build_v8_point_model(filters=args.filters)
+    model_filters = min(args.filters, SMOKE_FILTERS) if args.smoke else args.filters
+    model = build_v8_point_model(filters=model_filters)
 
     model.compile(
         optimizer=tf.keras.optimizers.Adam(args.learning_rate),
@@ -259,6 +281,11 @@ def main(argv=None):
         seed=args.seed + 1,
         rare_extra=args.rare_extra_validation,
     )
+    if args.smoke:
+        validation_examples = _deterministic_subset(
+            validation_examples,
+            SMOKE_VALIDATION_EXAMPLES,
+        )
     validation_data = _assemble_numpy(
         np,
         validation_population,
@@ -285,6 +312,18 @@ def main(argv=None):
                 else args.rare_extra_train
             ),
         )
+        if args.smoke:
+            train_examples = _deterministic_subset(
+                train_examples,
+                SMOKE_TRAIN_EXAMPLES,
+            )
+            print(
+                "V8 data smoke:",
+                f"train_examples={len(train_examples)}",
+                f"validation_examples={len(validation_examples)}",
+                f"filters={model_filters}",
+                f"receptive_field={receptive_field}",
+            )
         train_data = _assemble_numpy(
             np,
             train_population,
