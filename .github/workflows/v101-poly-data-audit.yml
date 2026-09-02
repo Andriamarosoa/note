@@ -1,0 +1,129 @@
+name: V10.1 poly data audit
+
+on:
+  push:
+    branches: [v8-anonymous-cardinality]
+    paths:
+      - 'scripts/audit_v101_poly_data.py'
+      - '.github/workflows/v101-poly-data-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+      - name: Download GuitarSet when cache misses
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+      - name: Verify GuitarSet checksums
+        shell: bash
+        run: |
+          set -o pipefail
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Download V10 spectral caches
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v100-spectral-cache
+          for shard in 0 1 2 3 4 5 6 7; do
+            mkdir -p "model/v100-spectral-cache/$shard"
+            gh run download 33605122369 --repo "$GITHUB_REPOSITORY" --name "v100-spectral-$shard" --dir "model/v100-spectral-cache/$shard"
+          done
+          test "$(find model/v100-spectral-cache -name 'v100-spectral-shard-*.npz' | wc -l)" -eq 8
+      - name: Download frozen stack and V10.1 weights
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/source-v84 model/source-v86 model/source-v87 model/source-v88 model/source-v101
+          gh run download 33571604757 --repo "$GITHUB_REPOSITORY" --name v84-independent-ab --dir model/source-v84
+          gh run download 33586296528 --repo "$GITHUB_REPOSITORY" --name v86-state-transition-proposal-pilot --dir model/source-v86
+          gh run download 33588164652 --repo "$GITHUB_REPOSITORY" --name v87-causal-candidate-memory-pilot --dir model/source-v87
+          gh run download 33589654195 --repo "$GITHUB_REPOSITORY" --name v88-regime-moe-pilot --dir model/source-v88
+          gh run download 33618443266 --repo "$GITHUB_REPOSITORY" --name v101-string-query-attention --dir model/source-v101
+          test -f model/source-v101/v101-string-query-result/v101-string-query-attention.weights.h5
+      - name: Compile audit
+        env:
+          PYTHONPATH: .:src
+        run: python -m py_compile scripts/audit_v101_poly_data.py
+      - name: Run diagnostic audit
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+        shell: bash
+        run: |
+          set -o pipefail
+          python -B scripts/audit_v101_poly_data.py \
+            --cache-dir model/v100-spectral-cache \
+            --v101-weights model/source-v101/v101-string-query-result/v101-string-query-attention.weights.h5 \
+            --base-model model/source-v84/v84-pilot/control.epoch-01.keras \
+            --v86-weights model/source-v86/v86-state-transition-pilot/result/v86-state-transition-refiner.weights.h5 \
+            --v86-report model/source-v86/v86-state-transition-pilot/result/report.json \
+            --v87-weights model/source-v87/v87-candidate-memory-pilot/result/v87-causal-candidate-memory.weights.h5 \
+            --v87-report model/source-v87/v87-candidate-memory-pilot/result/report.json \
+            --v88-weights model/source-v88/v88-regime-moe-pilot/result/v88-regime-moe.weights.h5 \
+            --v88-report model/source-v88/v88-regime-moe-pilot/result/report.json \
+            --output-dir model/v101-poly-data-audit \
+            2>&1 | tee model/v101-poly-data-audit.log
+      - name: Verify audit integrity
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('model/v101-poly-data-audit/audit.json').read_text())
+          i=d['data_integrity']
+          assert i['train_clusters'] == 76768
+          assert i['train_exact_vs_slot_count_match'] > 0.999
+          assert i['locked_exact_vs_slot_count_match'] > 0.99
+          assert i['train_reconstruction']['top_sample_match_fraction'] > 0.999
+          assert d['purpose'].startswith('diagnostic-only')
+          e=d['locked12_model_error_decomposition']
+          print('poly_string_vector_exact_accuracy', e['poly_string_vector_exact_accuracy'])
+          print('poly_slot_threshold_count_accuracy', e['poly_slot_threshold_count_accuracy'])
+          print('representation_exact_but_ordinal_wrong', e['poly_representation_exact_but_ordinal_wrong_fraction'])
+          print('slot_count_correct_but_ordinal_wrong', e['poly_slot_count_correct_but_ordinal_wrong_fraction'])
+          print('by_k', e['by_k'])
+          print('pattern_novelty', d['locked12_pattern_novelty_vs_train'])
+          PY
+      - name: Upload audit artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: v101-poly-data-audit
+          path: |
+            model/v101-poly-data-audit.log
+            model/v101-poly-data-audit/audit.json
+          compression-level: 6
+          if-no-files-found: error
+          retention-days: 14
