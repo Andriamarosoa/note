@@ -84,6 +84,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
+          mkdir -p model/v85-error-audit
           python -B scripts/audit_v85_errors.py \
             --base-model model/source-v84/v84-pilot/control.epoch-01.keras \
             --verifier-weights model/source-v85/v85-transition-pilot/v85-transition-verifier.weights.h5 \
