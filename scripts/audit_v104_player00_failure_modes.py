@@ -70,6 +70,12 @@ def _card(k, pred):
     return v102._cardinality_report(np.asarray(k, dtype=np.int32), np.asarray(pred, dtype=np.int32))
 
 
+def _delta(a, b):
+    if a is None or b is None:
+        return None
+    return float(a) - float(b)
+
+
 def _mode(member: str):
     if member.endswith("_comp.jams"):
         return "comp"
@@ -119,17 +125,17 @@ def _slice_report(cache, train_split, k_all, predictions, idx):
         "true_positive": b["onset"]["true_positive"] - a["onset"]["true_positive"],
         "false_positive": b["onset"]["false_positive"] - a["onset"]["false_positive"],
         "false_negative": b["onset"]["false_negative"] - a["onset"]["false_negative"],
-        "cardinality_accuracy": b["cardinality"]["accuracy"] - a["cardinality"]["accuracy"],
-        "birth_accuracy": b["cardinality"]["birth_cluster_accuracy"] - a["cardinality"]["birth_cluster_accuracy"],
-        "poly_accuracy": b["cardinality"]["poly_cluster_accuracy"] - a["cardinality"]["poly_cluster_accuracy"],
-        "mae": b["cardinality"]["mean_absolute_class_error"] - a["cardinality"]["mean_absolute_class_error"],
+        "cardinality_accuracy": _delta(b["cardinality"]["accuracy"], a["cardinality"]["accuracy"]),
+        "birth_accuracy": _delta(b["cardinality"]["birth_cluster_accuracy"], a["cardinality"]["birth_cluster_accuracy"]),
+        "poly_accuracy": _delta(b["cardinality"]["poly_cluster_accuracy"], a["cardinality"]["poly_cluster_accuracy"]),
+        "mae": _delta(b["cardinality"]["mean_absolute_class_error"], a["cardinality"]["mean_absolute_class_error"]),
     }
     out["delta_v104_probe_minus_deploy"] = {
         "f1": p["onset"]["f1"] - b["onset"]["f1"],
         "precision": p["onset"]["precision"] - b["onset"]["precision"],
         "recall": p["onset"]["recall"] - b["onset"]["recall"],
-        "cardinality_accuracy": p["cardinality"]["accuracy"] - b["cardinality"]["accuracy"],
-        "poly_accuracy": p["cardinality"]["poly_cluster_accuracy"] - b["cardinality"]["poly_cluster_accuracy"],
+        "cardinality_accuracy": _delta(p["cardinality"]["accuracy"], b["cardinality"]["accuracy"]),
+        "poly_accuracy": _delta(p["cardinality"]["poly_cluster_accuracy"], b["cardinality"]["poly_cluster_accuracy"]),
     }
     return out
 
