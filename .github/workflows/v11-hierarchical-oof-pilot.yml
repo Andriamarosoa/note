@@ -60,18 +60,22 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           pattern: v104-oof-*
-          path: model/v104-oof
+          path: model/v104-oof-download
           merge-multiple: true
           repository: Andriamarosoa/note
           run-id: ${{ env.SOURCE_OOF_RUN }}
           github-token: ${{ github.token }}
 
-      - name: Verify strict OOF shards
+      - name: Flatten and verify strict OOF shards
         shell: bash
         run: |
           set -o pipefail
+          mkdir -p model/v104-oof
+          find model/v104-oof-download -type f -name 'v104-oof-fold-*.npz' -exec cp {} model/v104-oof/ \;
+          find model/v104-oof-download -type f -name 'v104-oof-fold-*.json' -exec cp {} model/v104-oof/ \;
           test "$(find model/v104-oof -maxdepth 1 -name 'v104-oof-fold-*.npz' | wc -l)" -eq 5
           test "$(find model/v104-oof -maxdepth 1 -name 'v104-oof-fold-*.json' | wc -l)" -eq 5
+          ls -lh model/v104-oof
 
       - name: Download frozen V10 spectral caches
         env:
