@@ -1,0 +1,280 @@
+name: V9.1 ordinal full-train cardinality
+
+on:
+  push:
+    branches: [v8-anonymous-cardinality]
+    paths:
+      - 'scripts/train_v91_ordinal_cardinality.py'
+      - '.github/workflows/v91-ordinal-full-train.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHON_VERSION: '3.11'
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+
+jobs:
+  mine:
+    name: mine-shard-${{ matrix.shard }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 70
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+
+      - name: Download official GuitarSet pickup-mix data
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+
+      - name: Verify GuitarSet checksums
+        shell: bash
+        run: |
+          set -o pipefail
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+
+      - name: Download frozen V8.4/V8.6/V8.7/V8.8 stack
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/source-v84 model/source-v86 model/source-v87 model/source-v88
+          gh run download 33571604757 --repo "$GITHUB_REPOSITORY" --name v84-independent-ab --dir model/source-v84
+          gh run download 33586296528 --repo "$GITHUB_REPOSITORY" --name v86-state-transition-proposal-pilot --dir model/source-v86
+          gh run download 33588164652 --repo "$GITHUB_REPOSITORY" --name v87-causal-candidate-memory-pilot --dir model/source-v87
+          gh run download 33589654195 --repo "$GITHUB_REPOSITORY" --name v88-regime-gated-moe-pilot --dir model/source-v88
+          test -f model/source-v84/v84-pilot/control.epoch-01.keras
+          test -f model/source-v86/v86-state-transition-pilot/result/report.json
+          test -f model/source-v86/v86-state-transition-pilot/result/v86-state-transition-refiner.weights.h5
+          test -f model/source-v87/v87-candidate-memory-pilot/result/report.json
+          test -f model/source-v87/v87-candidate-memory-pilot/result/v87-causal-candidate-memory.weights.h5
+          test -f model/source-v88/v88-regime-moe-pilot/result/report.json
+          test -f model/source-v88/v88-regime-moe-pilot/result/v88-regime-moe.weights.h5
+
+      - name: Compile V9.1
+        env:
+          PYTHONPATH: src
+        run: python -m py_compile scripts/train_v91_ordinal_cardinality.py
+
+      - name: Mine frozen full-train cache shard
+        env:
+          PYTHONPATH: src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+        shell: bash
+        run: |
+          set -o pipefail
+          python -B scripts/train_v91_ordinal_cardinality.py mine \
+            --base-model model/source-v84/v84-pilot/control.epoch-01.keras \
+            --v86-weights model/source-v86/v86-state-transition-pilot/result/v86-state-transition-refiner.weights.h5 \
+            --v86-report model/source-v86/v86-state-transition-pilot/result/report.json \
+            --v87-weights model/source-v87/v87-candidate-memory-pilot/result/v87-causal-candidate-memory.weights.h5 \
+            --v87-report model/source-v87/v87-candidate-memory-pilot/result/report.json \
+            --v88-weights model/source-v88/v88-regime-moe-pilot/result/v88-regime-moe.weights.h5 \
+            --v88-report model/source-v88/v88-regime-moe-pilot/result/report.json \
+            --shard-index ${{ matrix.shard }} \
+            --shard-count 8 \
+            --output-dir model/v91-cache/shard-${{ matrix.shard }} \
+            2>&1 | tee model/v91-cache-shard-${{ matrix.shard }}.log
+
+      - name: Verify shard isolation
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          shard='${{ matrix.shard }}'
+          p=pathlib.Path(f'model/v91-cache/shard-{shard}/report.json')
+          d=json.loads(p.read_text())
+          assert d['architecture']['runtime_inputs_use_annotations'] is False
+          assert d['architecture']['offset_stream_executed'] is False
+          assert d['data']['shard_track_count'] > 0
+          assert d['data']['shard_cluster_count'] > 0
+          print('train_tracks_total', d['data']['train_split_track_count'])
+          print('validation_tracks_total', d['data']['validation_track_count'])
+          print('shard_tracks', d['data']['shard_track_count'])
+          print('shard_clusters', d['data']['shard_cluster_count'])
+          print('histogram', d['data']['target_histogram'])
+          PY
+
+      - name: Upload cache shard
+        uses: actions/upload-artifact@v4
+        with:
+          name: v91-cache-${{ matrix.shard }}
+          path: |
+            model/v91-cache/shard-${{ matrix.shard }}/v91-cache-shard-*.npz
+            model/v91-cache/shard-${{ matrix.shard }}/report.json
+            model/v91-cache-shard-${{ matrix.shard }}.log
+          compression-level: 1
+          if-no-files-found: error
+          retention-days: 7
+
+  train-eval:
+    needs: mine
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache-final
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+
+      - name: Download official GuitarSet pickup-mix data
+        if: steps.guitarset-cache-final.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+
+      - name: Verify GuitarSet checksums
+        shell: bash
+        run: |
+          set -o pipefail
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+
+      - name: Download frozen V8.4/V8.6/V8.7/V8.8 stack
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/source-v84 model/source-v86 model/source-v87 model/source-v88
+          gh run download 33571604757 --repo "$GITHUB_REPOSITORY" --name v84-independent-ab --dir model/source-v84
+          gh run download 33586296528 --repo "$GITHUB_REPOSITORY" --name v86-state-transition-proposal-pilot --dir model/source-v86
+          gh run download 33588164652 --repo "$GITHUB_REPOSITORY" --name v87-causal-candidate-memory-pilot --dir model/source-v87
+          gh run download 33589654195 --repo "$GITHUB_REPOSITORY" --name v88-regime-gated-moe-pilot --dir model/source-v88
+
+      - name: Download all V9.1 train cache shards
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v91-cache-*
+          path: model/v91-cache-merged
+          merge-multiple: true
+
+      - name: Verify complete shard set
+        shell: bash
+        run: |
+          set -o pipefail
+          count=$(find model/v91-cache-merged -name 'v91-cache-shard-*.npz' | wc -l)
+          echo "cache_shards=$count"
+          test "$count" -eq 8
+          du -sh model/v91-cache-merged
+
+      - name: Train ordinal decoder and evaluate locked12 once
+        env:
+          PYTHONPATH: src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+        shell: bash
+        run: |
+          set -o pipefail
+          python -B scripts/train_v91_ordinal_cardinality.py train-eval \
+            --base-model model/source-v84/v84-pilot/control.epoch-01.keras \
+            --v86-weights model/source-v86/v86-state-transition-pilot/result/v86-state-transition-refiner.weights.h5 \
+            --v86-report model/source-v86/v86-state-transition-pilot/result/report.json \
+            --v87-weights model/source-v87/v87-candidate-memory-pilot/result/v87-causal-candidate-memory.weights.h5 \
+            --v87-report model/source-v87/v87-candidate-memory-pilot/result/report.json \
+            --v88-weights model/source-v88/v88-regime-moe-pilot/result/v88-regime-moe.weights.h5 \
+            --v88-report model/source-v88/v88-regime-moe-pilot/result/report.json \
+            --cache-dir model/v91-cache-merged \
+            --output-dir model/v91-ordinal/result \
+            2>&1 | tee model/v91-ordinal.log
+
+      - name: Verify isolation and summarize V9.1
+        shell: bash
+        run: |
+          set -o pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('model/v91-ordinal/result/report.json').read_text())
+          a=d['architecture']; c=d['configuration']; data=d['data']; l=d['locked12']
+          assert a['base_trainable'] is False
+          assert a['runtime_inputs_use_annotations'] is False
+          assert a['offset_stream_executed'] is False
+          assert a['offset_weights_modified'] is False
+          assert a['ordinal_monotonic_cumulative_probability'] is True
+          assert c['decode_mode_selected_on_locked_validation'] is False
+          assert data['composition_group_leakage'] is False
+          assert data['cache_shard_count'] == 8
+          assert data['full_train_track_count'] > 30
+          print('full_train_tracks', data['full_train_track_count'])
+          print('full_validation_tracks', data['full_validation_track_count'])
+          print('cached_clusters', data['cached_cluster_count'])
+          print('fit_tracks', data['fit_track_count'], 'holdout_tracks', data['holdout_track_count'])
+          print('cache_histogram', data['cache_target_histogram'])
+          print('decode_mode', c['decode_mode'])
+          print('v91_parameters', a['v91_trainable_parameters'])
+          print('max_delay_ms', a['maximum_verification_delay_ms'])
+          o=l['v91_ordinal']
+          print('cardinality_accuracy', o['accuracy'])
+          print('birth_cluster_accuracy', o['birth_cluster_accuracy'])
+          print('poly_cluster_accuracy', o['poly_cluster_accuracy'])
+          print('predicted_histogram', o['predicted_histogram'])
+          for stage,row in o['conditional_stages'].items():
+              print('stage', stage, row)
+          for regime in ('global','solo','comp'):
+              base=l['frozen_v88_baseline_metrics'][regime]
+              v=l['v91_metrics'][regime]
+              oracle=l['oracle_exact_cardinality_metrics'][regime]
+              print(regime,
+                    'v88', f"{base['f1']:.6f}",
+                    'v91', f"{v['f1']:.6f}",
+                    'delta', f"{v['f1']-base['f1']:+.6f}",
+                    'oracle', f"{oracle['f1']:.6f}",
+                    'P', f"{v['precision']:.6f}",
+                    'R', f"{v['recall']:.6f}",
+                    'pred_ref', f"{v['prediction_reference_ratio']:.6f}")
+          PY
+
+      - name: Upload V9.1 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: v91-ordinal-full-train
+          path: |
+            model/v91-ordinal.log
+            model/v91-ordinal/result/report.json
+            model/v91-ordinal/result/v91-ordinal-cardinality.weights.h5
+          if-no-files-found: error
+          retention-days: 14
