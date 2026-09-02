@@ -94,10 +94,11 @@ jobs:
           run-id: ${{ env.SOURCE_NESTED_RUN }}
           github-token: ${{ github.token }}
 
-      - name: Verify nested artifact coverage
+      - name: Keep only inner-held OOF NPZs and verify coverage
         shell: bash
         run: |
           set -o pipefail
+          find model/v104-nested-inner -name '*probe-from-inner*.npz' -delete
           test "$(find model/v104-nested-inner -name 'v104-nested-outer-*-inner-*.npz' | wc -l)" -eq 20
           test "$(find model/v104-nested-outer -name 'v104-nested-outer-*-deploy.npz' | wc -l)" -eq 5
           test "$(find model/v104-nested-eval -name 'v104-nested-eval-*.npz' | wc -l)" -eq 5
