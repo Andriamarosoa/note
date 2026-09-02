@@ -1,0 +1,184 @@
+name: V10.2 source-time assignment
+
+on:
+  push:
+    branches: [v8-anonymous-cardinality]
+    paths:
+      - 'scripts/train_v102_source_time_assignment.py'
+      - 'scripts/run_v102_competitive_mass.py'
+      - '.github/workflows/v102-source-time-assignment.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+
+jobs:
+  train-eval:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+
+      - name: Download GuitarSet when cache misses
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+
+      - name: Verify GuitarSet checksums
+        shell: bash
+        run: |
+          set -o pipefail
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+
+      - name: Download frozen V10 spectral caches
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v100-spectral-cache
+          for shard in 0 1 2 3 4 5 6 7; do
+            mkdir -p "model/v100-spectral-cache/$shard"
+            gh run download 33605122369 --repo "$GITHUB_REPOSITORY" --name "v100-spectral-$shard" --dir "model/v100-spectral-cache/$shard"
+          done
+          test "$(find model/v100-spectral-cache -name 'v100-spectral-shard-*.npz' | wc -l)" -eq 8
+
+      - name: Download frozen stack and V10.1 report
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/source-v84 model/source-v86 model/source-v87 model/source-v88 model/source-v101 /tmp/v102-artifacts
+          download_artifact () {
+            local id="$1"
+            local dest="$2"
+            local zip="/tmp/v102-artifacts/${id}.zip"
+            gh api -H "Accept: application/vnd.github+json" "/repos/$GITHUB_REPOSITORY/actions/artifacts/$id/zip" > "$zip"
+            unzip -q "$zip" -d "$dest"
+          }
+          download_artifact 9826945605 model/source-v84
+          download_artifact 9830602382 model/source-v86
+          download_artifact 9831120911 model/source-v87
+          download_artifact 9831664553 model/source-v88
+          download_artifact 9842799517 model/source-v101
+          test -f model/source-v84/v84-pilot/control.epoch-01.keras
+          test -f model/source-v86/v86-state-transition-pilot/result/v86-state-transition-refiner.weights.h5
+          test -f model/source-v87/v87-candidate-memory-pilot/result/v87-causal-candidate-memory.weights.h5
+          test -f model/source-v88/v88-regime-moe-pilot/result/v88-regime-moe.weights.h5
+          test -f model/source-v101/v101-string-query-result/report.json
+
+      - name: Compile V10.2
+        env:
+          PYTHONPATH: .:src
+        run: |
+          python -m py_compile scripts/train_v102_source_time_assignment.py scripts/run_v102_competitive_mass.py
+
+      - name: Build V10.2 graph
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+        shell: bash
+        run: |
+          python - <<'PY'
+          from scripts import run_v102_competitive_mass as w
+          m, losses, shape = w._build_model_mass_aware()
+          assert shape[0] == 23
+          assert m.output['structured_count'].shape[-1] == 7
+          assert m.output['time_0'].shape[-1] == 23
+          print('params', m.count_params(), 'token_shape', shape)
+          print('structured_count_loss', losses['structured_count'])
+          PY
+
+      - name: Train V10.2 and evaluate locked12 once
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+        shell: bash
+        run: |
+          set -o pipefail
+          python -B scripts/run_v102_competitive_mass.py \
+            --cache-dir model/v100-spectral-cache \
+            --v101-report model/source-v101/v101-string-query-result/report.json \
+            --base-model model/source-v84/v84-pilot/control.epoch-01.keras \
+            --v86-weights model/source-v86/v86-state-transition-pilot/result/v86-state-transition-refiner.weights.h5 \
+            --v86-report model/source-v86/v86-state-transition-pilot/result/report.json \
+            --v87-weights model/source-v87/v87-candidate-memory-pilot/result/v87-causal-candidate-memory.weights.h5 \
+            --v87-report model/source-v87/v87-candidate-memory-pilot/result/report.json \
+            --v88-weights model/source-v88/v88-regime-moe-pilot/result/v88-regime-moe.weights.h5 \
+            --v88-report model/source-v88/v88-regime-moe-pilot/result/report.json \
+            --output-dir model/v102-source-time-result \
+            --epochs 20 \
+            2>&1 | tee model/v102-source-time.log
+
+      - name: Verify V10.2 isolation and summarize
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v102-source-time-result/report.json').read_text())
+          a=r['architecture']; c=r['configuration']; d=r['data']; l=r['locked12']
+          assert a['runtime_inputs_use_annotations'] is False
+          assert a['string_labels_training_only'] is True
+          assert a['pitch_labels_training_only'] is True
+          assert a['birth_time_labels_training_only'] is True
+          assert a['offset_stream_executed'] is False
+          assert a['offset_weights_modified'] is False
+          assert a['time_frames_preserved'] == 23
+          assert a['source_count'] == 7
+          assert a['background_source'] is True
+          assert a['ordinal_is_auxiliary_only'] is True
+          assert c['ordinal_decode_allowed'] is False
+          assert c['decode_mode'] in ['structured_pb_argmax','structured_pb_expected_round','slot_expected_round']
+          assert c['decode_mode_selected_on_locked_validation'] is False
+          assert d['train_supervision']['slot_mask_agreement'] > .999
+          assert d['train_supervision']['active_slot_time_coverage'] > .995
+          assert d['composition_group_leakage'] is False
+          print('decode_mode', c['decode_mode'])
+          print('epochs', c['epochs_ran'])
+          print('params', a['v102_trainable_parameters'])
+          print('v101', l['v101_metrics'])
+          print('v102', l['v102_metrics'])
+          print('poly_by_k', l['v102_poly_by_k'])
+          print('cardinality', l['v102_cardinality'])
+          print('string_slots', l['v102_string_slots'])
+          print('time', l['v102_time'])
+          PY
+
+      - name: Upload V10.2 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: v102-source-time-assignment
+          path: |
+            model/v102-source-time.log
+            model/v102-source-time-result/report.json
+            model/v102-source-time-result/v102-source-time-assignment.weights.h5
+          compression-level: 6
+          if-no-files-found: error
+          retention-days: 14
