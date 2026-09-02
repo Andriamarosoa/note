@@ -1,0 +1,176 @@
+name: V10.4 fusion recovery
+
+on:
+  push:
+    branches: [v8-anonymous-cardinality]
+    paths:
+      - '.github/workflows/v104-fusion-recovery.yml'
+
+env:
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+  SOURCE_OOF_RUN: '33634747432'
+
+jobs:
+  fuse:
+    name: Recover OOF fusion and locked12
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+
+      - name: Download GuitarSet when cache misses
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+
+      - name: Verify GuitarSet checksums
+        shell: bash
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+
+      - name: Download completed strict OOF shards
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v104-oof-*
+          path: model/v104-oof-download
+          merge-multiple: true
+          repository: ${{ github.repository }}
+          run-id: ${{ env.SOURCE_OOF_RUN }}
+          github-token: ${{ github.token }}
+
+      - name: Flatten and verify OOF shards
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v104-oof
+          find model/v104-oof-download -name 'v104-oof-fold-*.npz' -exec cp {} model/v104-oof/ \;
+          find model/v104-oof-download -name 'v104-oof-fold-*.json' -exec cp {} model/v104-oof/ \;
+          test "$(find model/v104-oof -maxdepth 1 -name 'v104-oof-fold-*.npz' | wc -l)" -eq 5
+          test "$(find model/v104-oof -maxdepth 1 -name 'v104-oof-fold-*.json' | wc -l)" -eq 5
+          ls -lh model/v104-oof
+
+      - name: Download frozen V10 spectral caches
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v100-spectral-cache
+          for shard in 0 1 2 3 4 5 6 7; do
+            mkdir -p "model/v100-spectral-cache/$shard"
+            gh run download 33605122369 --repo "$GITHUB_REPOSITORY" --name "v100-spectral-$shard" --dir "model/v100-spectral-cache/$shard"
+          done
+
+      - name: Download frozen full experts, proposal stack and V10.3 report
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/source-v84 model/source-v86 model/source-v87 model/source-v88 model/source-v101 model/source-v102 model/source-v103 /tmp/v104-final
+          f(){ gh api -H "Accept: application/vnd.github+json" "/repos/$GITHUB_REPOSITORY/actions/artifacts/$1/zip" > "/tmp/v104-final/$1.zip"; unzip -q "/tmp/v104-final/$1.zip" -d "$2"; }
+          f 9826945605 model/source-v84
+          f 9830602382 model/source-v86
+          f 9831120911 model/source-v87
+          f 9831664553 model/source-v88
+          f 9842799517 model/source-v101
+          f 9845793222 model/source-v102
+          f 9847422510 model/source-v103
+          test -f model/source-v101/v101-string-query-result/v101-string-query-attention.weights.h5
+          test -f model/source-v102/v102-source-time-result/v102-source-time-assignment.weights.h5
+          test -f model/source-v103/v103-residual-soft-fusion-result/report.json
+
+      - name: Compile V10.4 fusion
+        env:
+          PYTHONPATH: .:src
+        run: python -m py_compile scripts/train_v104_oof_fold.py scripts/train_v104_class_conditional_fusion.py
+
+      - name: Train OOF fusion and evaluate locked12 once
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+        shell: bash
+        run: |
+          set -o pipefail
+          python -B scripts/train_v104_class_conditional_fusion.py \
+            --cache-dir model/v100-spectral-cache \
+            --oof-dir model/v104-oof \
+            --v101-weights model/source-v101/v101-string-query-result/v101-string-query-attention.weights.h5 \
+            --v101-report model/source-v101/v101-string-query-result/report.json \
+            --v102-weights model/source-v102/v102-source-time-result/v102-source-time-assignment.weights.h5 \
+            --v102-report model/source-v102/v102-source-time-result/report.json \
+            --v103-report model/source-v103/v103-residual-soft-fusion-result/report.json \
+            --base-model model/source-v84/v84-pilot/control.epoch-01.keras \
+            --v86-weights model/source-v86/v86-state-transition-pilot/result/v86-state-transition-refiner.weights.h5 \
+            --v86-report model/source-v86/v86-state-transition-pilot/result/report.json \
+            --v87-weights model/source-v87/v87-candidate-memory-pilot/result/v87-causal-candidate-memory.weights.h5 \
+            --v87-report model/source-v87/v87-candidate-memory-pilot/result/report.json \
+            --v88-weights model/source-v88/v88-regime-moe-pilot/result/v88-regime-moe.weights.h5 \
+            --v88-report model/source-v88/v88-regime-moe-pilot/result/report.json \
+            --output-dir model/v104-class-conditional-result \
+            2>&1 | tee model/v104-class-conditional.log
+
+      - name: Verify V10.4 isolation and summarize
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v104-class-conditional-result/report.json').read_text())
+          a=r['architecture']; c=r['configuration']; d=r['data']; l=r['locked12']
+          assert a['oof_fold_count'] == 5
+          assert a['class_gate_count'] == 7
+          assert a['hard_routing'] is False
+          assert a['runtime_inputs_use_annotations'] is False
+          assert a['offset_stream_executed'] is False
+          assert a['offset_weights_modified'] is False
+          assert c['locked12_used_for_training_or_calibration'] is False
+          assert c['decode_mode_selected_on_locked_validation'] is False
+          assert c['selected_epochs_from_locked12'] is False
+          assert d['oof_full_exact_coverage'] is True
+          assert d['oof_cluster_count'] == d['cached_train_cluster_count']
+          print('oof_clusters', d['oof_cluster_count'], 'groups', d['oof_group_count'])
+          print('selected_epochs', c['selected_epochs'])
+          print('meta_v104', r['oof_meta_validation']['v104_metrics'])
+          print('v101', l['v101_metrics'])
+          print('v102', l['v102_metrics'])
+          print('v103', l['v103_metrics'])
+          print('v104', l['v104_metrics'])
+          print('poly', l['v104_poly_by_k'])
+          print('cardinality', l['v104_cardinality'])
+          print('class_alpha', l['class_alpha'])
+          PY
+
+      - name: Upload V10.4 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: v104-class-conditional-oof-recovered
+          path: |
+            model/v104-class-conditional.log
+            model/v104-class-conditional-result/report.json
+            model/v104-class-conditional-result/v104-class-conditional-fusion.weights.h5
+            model/v104-class-conditional-result/v104-feature-scaler.npz
+          compression-level: 6
+          if-no-files-found: error
+          retention-days: 14
