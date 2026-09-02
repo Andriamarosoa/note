@@ -79,11 +79,11 @@ jobs:
           test -f model/source-v100/v100-spectral-result/report.json
       - name: Compile V10.1
         env:
-          PYTHONPATH: src
+          PYTHONPATH: .:src
         run: python -m py_compile scripts/train_v101_string_query_attention.py scripts/run_v101_fixed_pitch_index.py
       - name: Train V10.1 and evaluate locked12 once
         env:
-          PYTHONPATH: src
+          PYTHONPATH: .:src
           TF_CPP_MIN_LOG_LEVEL: '2'
         shell: bash
         run: |
