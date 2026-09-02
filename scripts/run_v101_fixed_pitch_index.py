@@ -2,7 +2,7 @@
 
 The first V10.1 run correctly failed its supervision integrity guard because
 training-only MIDI pitch labels were written with a per-track local row index
-into global cache arrays.  This wrapper replaces only that target-construction
+into global cache arrays. This wrapper replaces only that target-construction
 function; architecture, losses, calibration, latency and locked12 protocol stay
 identical to V10.1.
 """
@@ -10,9 +10,14 @@ from __future__ import annotations
 
 from collections import defaultdict
 from pathlib import Path
+import sys
 from typing import Dict, List
 
 import numpy as np
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from scripts import train_v101_string_query_attention as v
 
@@ -48,7 +53,7 @@ def _derive_pitch_targets_fixed(cache, dataset_dir: Path):
                 unassigned += 1
                 continue
             _, cid = min(choices)
-            # cid is already the global cache-row index.  The failed first run
+            # cid is already the global cache-row index. The failed first run
             # incorrectly converted it to a per-track local row before writing.
             if mask[cid, slot] > 0.5:
                 collisions += 1
