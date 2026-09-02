@@ -16,7 +16,7 @@ import json
 from pathlib import Path
 import random
 import sys
-from typing import Dict, Optional, Sequence, Tuple
+from typing import Dict, Optional, Sequence
 
 import numpy as np
 
@@ -153,22 +153,34 @@ def run_fold(args):
         f"groups={groups_per_fold[args.fold]} epochs101={epochs101} epochs102={epochs102}"
     )
 
-    # Training-only annotation targets.  Runtime/OOF model inputs remain acoustic.
-    pitch101, pitch_mask101, pitch_diag = v101._derive_pitch_targets(cache, args.dataset_dir)
+    # Use the V10.2 global event-to-cluster assignment for both experts' pitch
+    # auxiliaries.  It is the corrected exact assignment used by the successful
+    # V10.2 run and is verified against the cached six-string occupancy labels.
+    # This avoids V10.1's older local-row pitch helper, whose row indexing is not
+    # valid when reused as a full-cache cross-fitting primitive.
     candidate_samples, reconstruction = v102._reconstruct_candidates(cache)
-    pitch102, time_mask, time_targets, time_sample, time_diag = v102._derive_supervision(
+    pitch_targets, time_mask, time_targets, time_sample, time_diag = v102._derive_supervision(
         [str(x) for x in cache["members"]],
         candidate_samples,
         args.dataset_dir,
         expected_slot_targets=cache["slot_targets"],
     )
     time_diag["cluster_reconstruction"] = reconstruction
+    pitch_mask = np.asarray(time_mask, dtype=np.float32)
+    pitch_diag = {
+        "source": "V10.2 exact global event-to-cluster assignment",
+        "shared_with_v102": True,
+        "slot_mask_agreement": time_diag.get("slot_mask_agreement"),
+        "active_slot_pitch_coverage": time_diag.get("active_slot_time_coverage"),
+        "assigned_events": time_diag.get("assigned_events"),
+        "unassigned_events": time_diag.get("unassigned_events"),
+    }
 
     model101 = _train_v101(
-        cache, fit_idx, pitch101, pitch_mask101, k, epochs101, args.seed + 100 + args.fold
+        cache, fit_idx, pitch_targets, pitch_mask, k, epochs101, args.seed + 100 + args.fold
     )
     model102 = _train_v102(
-        cache, fit_idx, pitch102, time_mask, time_targets, k, epochs102, args.seed + 200 + args.fold
+        cache, fit_idx, pitch_targets, time_mask, time_targets, k, epochs102, args.seed + 200 + args.fold
     )
 
     inputs102 = v102._inputs(cache, hold_idx)
