@@ -1,0 +1,130 @@
+name: V10.4 player00 failure-mode audit
+
+on:
+  push:
+    branches: [v8-anonymous-cardinality]
+    paths:
+      - 'scripts/audit_v104_player00_failure_modes.py'
+      - '.github/workflows/v104-player00-failure-modes.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+  SOURCE_NESTED_RUN: '33647694565'
+  SOURCE_SPECTRAL_RUN: '33605122369'
+
+jobs:
+  audit:
+    name: Audit player00 failure modes
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+
+      - name: Download GuitarSet when cache misses
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+
+      - name: Verify GuitarSet checksums
+        shell: bash
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+
+      - name: Download frozen V10 spectral caches
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v100-spectral-cache
+          for shard in 0 1 2 3 4 5 6 7; do
+            mkdir -p "model/v100-spectral-cache/$shard"
+            gh run download "$SOURCE_SPECTRAL_RUN" --repo "$GITHUB_REPOSITORY" --name "v100-spectral-$shard" --dir "model/v100-spectral-cache/$shard"
+          done
+
+      - name: Download completed nested outer evaluations
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v104-nested-eval-*
+          path: model/v104-nested-evals
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+
+      - name: Verify nested evaluation shards
+        shell: bash
+        run: |
+          set -o pipefail
+          test "$(find model/v104-nested-evals -name 'v104-nested-eval-*.npz' | wc -l)" -eq 5
+          test "$(find model/v104-nested-evals -name 'v104-nested-eval-*.json' | wc -l)" -eq 5
+
+      - name: Compile audit
+        env:
+          PYTHONPATH: .:src
+        run: python -m py_compile scripts/audit_v104_player00_failure_modes.py
+
+      - name: Run player00 failure-mode audit
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v104-player00-failure-audit
+          python -B scripts/audit_v104_player00_failure_modes.py \
+            --cache-dir model/v100-spectral-cache \
+            --eval-dir model/v104-nested-evals \
+            --output model/v104-player00-failure-audit/report.json \
+            2>&1 | tee model/v104-player00-failure-audit/audit.log
+
+      - name: Verify isolation and summarize
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v104-player00-failure-audit/report.json').read_text())
+          assert r['protocol']['historical_validation_or_locked12_indexed_or_evaluated'] is False
+          assert r['protocol']['models_retrained_or_tuned'] is False
+          o=r['overall_player00']
+          print('player00 V101 F1', o['v101_deployment']['onset']['f1'])
+          print('player00 V104 F1', o['v104_deployment']['onset']['f1'])
+          print(json.dumps(r['failure_mode_counts'], indent=2))
+          print('worst groups')
+          for x in r['group_ranking']['worst'][:5]: print(x)
+          PY
+
+      - name: Upload audit artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: v104-player00-failure-audit
+          path: model/v104-player00-failure-audit
+          compression-level: 6
+          if-no-files-found: error
+          retention-days: 14
