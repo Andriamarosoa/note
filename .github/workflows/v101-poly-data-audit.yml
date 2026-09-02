@@ -66,12 +66,24 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          mkdir -p model/source-v84 model/source-v86 model/source-v87 model/source-v88 model/source-v101
-          gh run download 33571604757 --repo "$GITHUB_REPOSITORY" --name v84-independent-ab --dir model/source-v84
-          gh run download 33586296528 --repo "$GITHUB_REPOSITORY" --name v86-state-transition-proposal-pilot --dir model/source-v86
-          gh run download 33588164652 --repo "$GITHUB_REPOSITORY" --name v87-causal-candidate-memory-pilot --dir model/source-v87
-          gh run download 33589654195 --repo "$GITHUB_REPOSITORY" --name v88-regime-moe-pilot --dir model/source-v88
-          gh run download 33618443266 --repo "$GITHUB_REPOSITORY" --name v101-string-query-attention --dir model/source-v101
+          mkdir -p model/source-v84 model/source-v86 model/source-v87 model/source-v88 model/source-v101 /tmp/audit-artifacts
+          download_artifact () {
+            local id="$1"
+            local dest="$2"
+            local zip="/tmp/audit-artifacts/${id}.zip"
+            echo "artifact_id=$id -> $dest"
+            gh api -H "Accept: application/vnd.github+json" "/repos/$GITHUB_REPOSITORY/actions/artifacts/$id/zip" > "$zip"
+            unzip -q "$zip" -d "$dest"
+          }
+          download_artifact 9826945605 model/source-v84
+          download_artifact 9830602382 model/source-v86
+          download_artifact 9831120911 model/source-v87
+          download_artifact 9831664553 model/source-v88
+          download_artifact 9842799517 model/source-v101
+          test -f model/source-v84/v84-pilot/control.epoch-01.keras
+          test -f model/source-v86/v86-state-transition-pilot/result/v86-state-transition-refiner.weights.h5
+          test -f model/source-v87/v87-candidate-memory-pilot/result/v87-causal-candidate-memory.weights.h5
+          test -f model/source-v88/v88-regime-moe-pilot/result/v88-regime-moe.weights.h5
           test -f model/source-v101/v101-string-query-result/v101-string-query-attention.weights.h5
       - name: Compile audit
         env:
