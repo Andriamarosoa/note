@@ -1,0 +1,130 @@
+name: V11 hierarchical birth multiplicity pilot
+
+on:
+  push:
+    branches: [v8-anonymous-cardinality]
+    paths:
+      - 'scripts/train_v11_hierarchical_birth_multiplicity.py'
+      - '.github/workflows/v11-hierarchical-oof-pilot.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+  SOURCE_OOF_RUN: '33634747432'
+  SOURCE_SPECTRAL_RUN: '33605122369'
+
+jobs:
+  pilot:
+    name: Strict OOF hierarchical pilot
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+
+      - name: Download GuitarSet when cache misses
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+
+      - name: Verify GuitarSet checksums
+        shell: bash
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+
+      - name: Download strict V10.4 OOF expert shards
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v104-oof-*
+          path: model/v104-oof
+          merge-multiple: true
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_OOF_RUN }}
+          github-token: ${{ github.token }}
+
+      - name: Verify strict OOF shards
+        shell: bash
+        run: |
+          set -o pipefail
+          test "$(find model/v104-oof -maxdepth 1 -name 'v104-oof-fold-*.npz' | wc -l)" -eq 5
+          test "$(find model/v104-oof -maxdepth 1 -name 'v104-oof-fold-*.json' | wc -l)" -eq 5
+
+      - name: Download frozen V10 spectral caches
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v100-spectral-cache
+          for shard in 0 1 2 3 4 5 6 7; do
+            mkdir -p "model/v100-spectral-cache/$shard"
+            gh run download "$SOURCE_SPECTRAL_RUN" --repo "$GITHUB_REPOSITORY" --name "v100-spectral-$shard" --dir "model/v100-spectral-cache/$shard"
+          done
+
+      - name: Compile pilot
+        env:
+          PYTHONPATH: .:src
+        run: python -m py_compile scripts/train_v11_hierarchical_birth_multiplicity.py
+
+      - name: Run strict OOF V11 pilot
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v11-hierarchical-pilot
+          python -B scripts/train_v11_hierarchical_birth_multiplicity.py \
+            --cache-dir model/v100-spectral-cache \
+            --oof-dir model/v104-oof \
+            --output model/v11-hierarchical-pilot/report.json \
+            2>&1 | tee model/v11-hierarchical-pilot/train.log
+
+      - name: Verify isolation and summarize
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v11-hierarchical-pilot/report.json').read_text())
+          p=r['protocol']
+          assert p['historical_validation_or_locked12_indexed_or_evaluated'] is False
+          assert p['held_fold_used_for_hyperparameter_or_epoch_selection'] is False
+          assert p['multiplicity_loss_receives_k0_weight'] is False
+          for s in ('aggregate','player00','player00_comp','player00_rock_comp'):
+              x=r['strata'][s]
+              print(s, 'v101', x['v101']['metrics']['global']['f1'], 'v104', x['v104']['metrics']['global']['f1'], 'v11', x['v11']['metrics']['global']['f1'])
+          PY
+
+      - name: Upload pilot artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: v11-hierarchical-birth-multiplicity-pilot
+          path: model/v11-hierarchical-pilot
+          compression-level: 6
+          if-no-files-found: error
+          retention-days: 14
