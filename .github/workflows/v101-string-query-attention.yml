@@ -5,6 +5,7 @@ on:
     branches: [v8-anonymous-cardinality]
     paths:
       - 'scripts/train_v101_string_query_attention.py'
+      - 'scripts/run_v101_fixed_pitch_index.py'
       - '.github/workflows/v101-string-query-attention.yml'
   workflow_dispatch:
 
@@ -79,7 +80,7 @@ jobs:
       - name: Compile V10.1
         env:
           PYTHONPATH: src
-        run: python -m py_compile scripts/train_v101_string_query_attention.py
+        run: python -m py_compile scripts/train_v101_string_query_attention.py scripts/run_v101_fixed_pitch_index.py
       - name: Train V10.1 and evaluate locked12 once
         env:
           PYTHONPATH: src
@@ -87,7 +88,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          python -B scripts/train_v101_string_query_attention.py \
+          python -B scripts/run_v101_fixed_pitch_index.py \
             --base-model model/source-v84/v84-pilot/control.epoch-01.keras \
             --v86-weights model/source-v86/v86-state-transition-pilot/result/v86-state-transition-refiner.weights.h5 \
             --v86-report model/source-v86/v86-state-transition-pilot/result/report.json \
@@ -120,6 +121,7 @@ jobs:
           assert data['full_train_track_count'] == 240
           assert data['cache_shard_count'] == 8
           assert data['pitch_supervision']['slot_pitch_mask_agreement'] >= 0.999
+          assert data['pitch_supervision']['indexing_fix'] == 'global_cluster_row'
           print('decode_mode', c['decode_mode'])
           print('epochs_ran', c['epochs_ran'])
           print('parameters', a['v101_trainable_parameters'])
