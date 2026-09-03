@@ -1,12 +1,12 @@
-"""Run V13 outer-clean while disabling one known non-headline diagnostic.
+"""Run V13 outer-clean with two static-audit guards.
 
-Static audit found that train_v130_causal_event_set_decoder currently calls its
-outer event-time diagnostic with full supervision arrays rather than the local
-outer prediction arrays.  This does not affect training, event-presence decode,
-cardinality, onset F1, per-K results, or saved predictions, but would make the
-time/candidate diagnostic invalid.  Disable that diagnostic explicitly so no
-misleading value can enter the report.  A post-hoc diagnostic can be computed
-from the saved outer predictions if V13 is promising.
+1) The initial V13 event-time diagnostic call passes supervision arrays instead
+   of local outer prediction arrays.  Headline training/cardinality/F1 are not
+   affected, but that diagnostic would be invalid, so it is disabled explicitly.
+2) V13's final console summary asks for the legacy alias
+   ``poly_exact_accuracy`` while the shared cardinality report exposes
+   ``poly_cluster_accuracy``.  Add the alias in the runner so a successful fold
+   cannot fail after training merely while printing its summary.
 """
 from __future__ import annotations
 
@@ -21,7 +21,19 @@ def _disabled_event_diagnostics(*_args, **_kwargs):
     }
 
 
+_original_card = v130.v120._card
+
+
+def _card_with_legacy_alias(k, pred):
+    report = _original_card(k, pred)
+    if "poly_exact_accuracy" not in report and "poly_cluster_accuracy" in report:
+        report = dict(report)
+        report["poly_exact_accuracy"] = report["poly_cluster_accuracy"]
+    return report
+
+
 v130._event_diagnostics = _disabled_event_diagnostics
+v130.v120._card = _card_with_legacy_alias
 
 if __name__ == "__main__":
     raise SystemExit(v130.main())
