@@ -1,0 +1,109 @@
+name: V16 cardinality deep audit
+
+on:
+  push:
+    branches: [v8-anonymous-cardinality]
+    paths:
+      - 'scripts/audit_v160_cardinality.py'
+      - '.github/workflows/v160-cardinality-deep-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+  SOURCE_NESTED_RUN: '33647694565'
+  SOURCE_V160_RUN: '33778269817'
+
+jobs:
+  audit:
+    name: Audit V16 cardinality before next architecture
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Compile audit
+        env:
+          PYTHONPATH: .:src
+        run: python -m py_compile scripts/audit_v160_cardinality.py
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+      - name: Download GuitarSet when cache misses
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+      - name: Verify GuitarSet checksums
+        shell: bash
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Download frozen spectral bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: v104-nested-spectral-bundle
+          path: model/v100-spectral-cache
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download completed V16 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v160-parallel-coverage-fold-*
+          path: model/v160-folds
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V160_RUN }}
+          github-token: ${{ github.token }}
+      - name: Run deep audit
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v160-cardinality-audit
+          python -B scripts/audit_v160_cardinality.py \
+            --input-dir model/v160-folds \
+            --cache-dir model/v100-spectral-cache \
+            --output-dir model/v160-cardinality-audit \
+            2>&1 | tee model/v160-cardinality-audit/audit.log
+      - name: Verify audit invariants
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v160-cardinality-audit/report.json').read_text())
+          assert r['protocol']['audit_only'] is True
+          assert r['protocol']['outer_clean_rows'] == 76768
+          assert r['protocol']['locked12_indexed_or_evaluated'] is False
+          assert r['protocol']['threshold_tuned'] is False
+          assert r['protocol']['model_trained'] is False
+          assert r['measurement_integrity']['legacy_fold_event_diagnostics_are_invalid'] is True
+          print(json.dumps(json.loads(Path('model/v160-cardinality-audit/summary.json').read_text()), indent=2))
+          PY
+      - name: Upload deep audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v160-cardinality-deep-audit
+          path: model/v160-cardinality-audit
+          if-no-files-found: warn
+          retention-days: 30
