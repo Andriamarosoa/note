@@ -1,0 +1,221 @@
+name: V14 sequential STOP explaining-away outer-clean
+
+on:
+  push:
+    branches: [v8-anonymous-cardinality]
+    paths:
+      - 'scripts/train_v140_sequential_stop_explaining_away.py'
+      - 'scripts/summarize_v140_sequential_stop.py'
+      - '.github/workflows/v140-sequential-stop-outer-clean.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+  SOURCE_NESTED_RUN: '33647694565'
+  SOURCE_V13_RUN: '33721052619'
+
+jobs:
+  preflight:
+    name: V14 architecture preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Compile V14
+        env:
+          PYTHONPATH: .:src
+        run: |
+          python -m py_compile scripts/train_v140_sequential_stop_explaining_away.py
+          python -m py_compile scripts/summarize_v140_sequential_stop.py
+      - name: Build V14 Keras graph
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+        run: |
+          python - <<'PY'
+          from scripts import train_v140_sequential_stop_explaining_away as v
+          model, weights, shape = v._build_model()
+          assert v.STEPS == 6
+          assert 'v140_count_norm' in model.output_names
+          for q in range(6):
+              assert f'v140_continue_{q}' in model.output_names
+              assert f'v140_event_time_{q}' in model.output_names
+              assert f'v140_event_candidate_{q}' in model.output_names
+              assert f'v140_tf_mass_{q}' in model.output_names
+          print('params', model.count_params(), 'tf_shape', shape, 'outputs', len(model.output_names))
+          PY
+
+  fold:
+    name: V14 outer fold ${{ matrix.fold }}
+    needs: preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        fold: [0, 1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+      - name: Download GuitarSet when cache misses
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+      - name: Verify GuitarSet checksums
+        shell: bash
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Download frozen nested spectral bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: v104-nested-spectral-bundle
+          path: model/v100-spectral-cache
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download outer-clean V10 baselines
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v104-nested-eval-*
+          path: model/v104-nested-eval
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download frozen V13 fold
+        uses: actions/download-artifact@v4
+        with:
+          name: v130-event-set-fold-${{ matrix.fold }}
+          path: model/v130-frozen/fold-${{ matrix.fold }}
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V13_RUN }}
+          github-token: ${{ github.token }}
+      - name: Train and evaluate outer-clean V14 fold
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p "model/v140-fold-${{ matrix.fold }}"
+          python -B scripts/train_v140_sequential_stop_explaining_away.py \
+            --cache-dir model/v100-spectral-cache \
+            --baseline-eval-dir model/v104-nested-eval \
+            --v130-dir model/v130-frozen \
+            --outer-fold "${{ matrix.fold }}" \
+            --output-dir "model/v140-fold-${{ matrix.fold }}" \
+            2>&1 | tee "model/v140-fold-${{ matrix.fold }}/train.log"
+      - name: Verify fold protocol
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          f='${{ matrix.fold }}'
+          r=json.loads(Path(f'model/v140-fold-{f}/report-fold-{f}.json').read_text())
+          p=r['protocol']
+          assert p['historical_validation_or_locked12_indexed_or_evaluated'] is False
+          assert p['outer_fold_used_for_training'] is False
+          assert p['outer_fold_used_for_epoch_selection'] is False
+          assert p['runtime_inputs_use_annotations'] is False
+          assert p['categorical_cardinality_head_exists'] is False
+          assert p['conditional_continue_training'] is True
+          assert p['explaining_away_uses_predictions_not_annotations'] is True
+          assert p['stop_threshold_tuned'] is False and p['stop_threshold'] == 0.5
+          print('fold',f,'epochs',r['data']['selected_epochs'],
+                'v104',r['strata']['aggregate']['v104']['metrics']['global']['f1'],
+                'v130',r['strata']['aggregate']['v130']['metrics']['global']['f1'],
+                'v140',r['strata']['aggregate']['v140']['metrics']['global']['f1'])
+          PY
+      - name: Upload V14 fold
+        uses: actions/upload-artifact@v4
+        with:
+          name: v140-sequential-stop-fold-${{ matrix.fold }}
+          path: model/v140-fold-${{ matrix.fold }}
+          compression-level: 6
+          if-no-files-found: error
+          retention-days: 14
+
+  summarize:
+    name: Summarize V14 outer-clean
+    needs: fold
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install summary dependency
+        run: python -m pip install numpy
+      - name: Download V14 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v140-sequential-stop-fold-*
+          path: model/v140-folds
+          merge-multiple: false
+      - name: Summarize five folds
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v140-summary
+          python -B scripts/summarize_v140_sequential_stop.py \
+            --input-dir model/v140-folds \
+            --output-dir model/v140-summary \
+            2>&1 | tee model/v140-summary/summary.log
+      - name: Verify aggregate
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v140-summary/report.json').read_text())
+          p=r['protocol']
+          assert p['five_outer_composition_folds'] is True
+          assert p['every_row_evaluated_once_outer_clean'] is True
+          assert p['historical_validation_or_locked12_indexed_or_evaluated'] is False
+          assert p['conditional_stop_decoder'] is True and p['explaining_away'] is True
+          assert p['stop_threshold_tuned'] is False
+          print('clusters',r['data']['clusters'])
+          print('v104',r['strata']['aggregate']['v104']['metrics']['global']['f1'])
+          print('v130',r['strata']['aggregate']['v130']['metrics']['global']['f1'])
+          print('v140',r['strata']['aggregate']['v140']['metrics']['global']['f1'])
+          print('promotion',r['comparison']['promotion_candidate'])
+          PY
+      - name: Upload V14 summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: v140-sequential-stop-summary
+          path: model/v140-summary
+          compression-level: 6
+          if-no-files-found: error
+          retention-days: 14
