@@ -47,13 +47,18 @@ jobs:
           from scripts import train_v140_sequential_stop_explaining_away as v
           model, weights, shape = v._build_model()
           assert v.STEPS == 6
-          assert 'v140_count_norm' in model.output_names
+          assert isinstance(model.output, dict)
+          keys=set(model.output.keys())
+          assert 'v140_count_norm' in keys
           for q in range(6):
-              assert f'v140_continue_{q}' in model.output_names
-              assert f'v140_event_time_{q}' in model.output_names
-              assert f'v140_event_candidate_{q}' in model.output_names
-              assert f'v140_tf_mass_{q}' in model.output_names
-          print('params', model.count_params(), 'tf_shape', shape, 'outputs', len(model.output_names))
+              assert f'v140_continue_{q}' in keys
+              assert f'v140_event_time_{q}' in keys
+              assert f'v140_event_candidate_{q}' in keys
+              assert f'v140_tf_mass_{q}' in keys
+              assert f'v140_candidate_mass_{q}' in keys
+              assert f'v140_residual_tf_{q}' in keys
+              assert f'v140_residual_candidate_{q}' in keys
+          print('params', model.count_params(), 'tf_shape', shape, 'dict_outputs', len(keys))
           PY
 
   fold:
