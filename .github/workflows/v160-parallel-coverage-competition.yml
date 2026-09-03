@@ -1,0 +1,266 @@
+name: V16 parallel coverage competition outer-clean
+
+on:
+  push:
+    branches: [v8-anonymous-cardinality]
+    paths:
+      - 'scripts/train_v160_parallel_coverage_competition.py'
+      - 'scripts/summarize_v160_parallel_coverage_competition.py'
+      - '.github/workflows/v160-parallel-coverage-competition.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+  SOURCE_NESTED_RUN: '33647694565'
+  SOURCE_V13_RUN: '33721052619'
+  SOURCE_V15_RUN: '33755226241'
+
+jobs:
+  preflight:
+    name: V16 architecture preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Compile V16
+        env:
+          PYTHONPATH: .:src
+        run: |
+          python -m py_compile scripts/train_v160_parallel_coverage_competition.py
+          python -m py_compile scripts/summarize_v160_parallel_coverage_competition.py
+      - name: Build and audit V16 Keras graph
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+        run: |
+          python - <<'PY'
+          from scripts import train_v160_parallel_coverage_competition as v
+          model, weights, shape = v._build_model()
+          assert v.EVENT_QUERIES == 6
+          assert isinstance(model.output, dict)
+          keys = set(model.output.keys())
+          assert 'event_count_norm' in keys
+          for q in range(6):
+              assert f'event_present_{q}' in keys
+              assert f'event_time_{q}' in keys
+              assert f'event_candidate_{q}' in keys
+              assert model.get_layer(f'v160_event_{q}_tf_full_pool') is not None
+              assert model.get_layer(f'v160_event_{q}_tf_novel_pool') is not None
+              assert model.get_layer(f'v160_event_{q}_candidate_full_pool') is not None
+              assert model.get_layer(f'v160_event_{q}_candidate_novel_pool') is not None
+              assert model.get_layer(f'v160_event_{q}_tf_others_coverage') is not None
+              assert model.get_layer(f'v160_event_{q}_candidate_others_coverage') is not None
+          assert model.get_layer('v160_global_reconciliation_attention') is not None
+          assert not any('continue' in layer.name.lower() or 'stop' in layer.name.lower() for layer in model.layers)
+          print('params', model.count_params(), 'tf_shape', shape, 'outputs', len(keys))
+          PY
+
+  fold:
+    name: V16 outer fold ${{ matrix.fold }}
+    needs: preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        fold: [0, 1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+      - name: Download GuitarSet when cache misses
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+      - name: Verify GuitarSet checksums
+        shell: bash
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Download frozen nested spectral bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: v104-nested-spectral-bundle
+          path: model/v100-spectral-cache
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download outer-clean V10 baselines
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v104-nested-eval-*
+          path: model/v104-nested-eval
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Train and evaluate outer-clean V16 fold
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p "model/v160-fold-${{ matrix.fold }}"
+          python -B scripts/train_v160_parallel_coverage_competition.py \
+            --cache-dir model/v100-spectral-cache \
+            --baseline-eval-dir model/v104-nested-eval \
+            --outer-fold "${{ matrix.fold }}" \
+            --output-dir "model/v160-fold-${{ matrix.fold }}" \
+            2>&1 | tee "model/v160-fold-${{ matrix.fold }}/train.log"
+      - name: Verify V16 fold protocol
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          f = '${{ matrix.fold }}'
+          r = json.loads(Path(f'model/v160-fold-{f}/report-fold-{f}.json').read_text())
+          p = r['protocol']
+          assert p['historical_validation_or_locked12_indexed_or_evaluated'] is False
+          assert p['outer_fold_used_for_training'] is False
+          assert p['outer_fold_used_for_epoch_selection'] is False
+          assert p['runtime_inputs_use_annotations'] is False
+          assert p['categorical_cardinality_head_exists'] is False
+          assert p['presence_threshold_tuned'] is False and p['presence_threshold'] == 0.5
+          assert p['parallel_event_decoder'] is True
+          assert p['sequential_stop_decoder'] is False
+          assert p['global_coverage_competition'] is True
+          assert p['leave_one_out_coverage'] is True
+          assert p['global_query_reconciliation'] is True
+          assert p['full_evidence_visible_to_every_proposal'] is True
+          print('fold', f,
+                'epochs', r['data']['selected_epochs'],
+                'v104', r['strata']['aggregate']['v104']['metrics']['global']['f1'],
+                'v160', r['strata']['aggregate']['v160']['metrics']['global']['f1'],
+                'poly', r['strata']['aggregate']['v160']['cardinality']['poly_exact_accuracy'],
+                'k5', r['per_true_k']['5']['v160']['exact'],
+                'k6', r['per_true_k']['6']['v160']['exact'])
+          PY
+      - name: Upload V16 fold
+        uses: actions/upload-artifact@v4
+        with:
+          name: v160-parallel-coverage-fold-${{ matrix.fold }}
+          path: model/v160-fold-${{ matrix.fold }}
+          compression-level: 6
+          if-no-files-found: error
+          retention-days: 14
+
+  summarize:
+    name: Summarize V16 outer-clean
+    needs: fold
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install summary dependency
+        run: python -m pip install numpy
+      - name: Download V16 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v160-parallel-coverage-fold-*
+          path: model/v160-folds
+          merge-multiple: false
+      - name: Download frozen V13 reference folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v130-event-set-fold-*
+          path: model/v130-reference-folds
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V13_RUN }}
+          github-token: ${{ github.token }}
+      - name: Rebuild frozen V13 reference summary
+        env:
+          PYTHONPATH: .:src
+        shell: bash
+        run: |
+          mkdir -p model/v130-reference-summary
+          python -B scripts/summarize_v130_causal_event_set_decoder.py \
+            --input-dir model/v130-reference-folds \
+            --output-dir model/v130-reference-summary
+      - name: Download frozen V15 reference summary
+        uses: actions/download-artifact@v4
+        with:
+          name: v150-full-evidence-coverage-summary
+          path: model/v150-reference-summary
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V15_RUN }}
+          github-token: ${{ github.token }}
+      - name: Summarize five V16 folds
+        env:
+          PYTHONPATH: .:src
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v160-summary
+          python -B scripts/summarize_v160_parallel_coverage_competition.py \
+            --input-dir model/v160-folds \
+            --output-dir model/v160-summary \
+            --v130-report model/v130-reference-summary/report.json \
+            --v150-report model/v150-reference-summary/report.json \
+            2>&1 | tee model/v160-summary/summary.log
+      - name: Verify aggregate
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r = json.loads(Path('model/v160-summary/report.json').read_text())
+          p = r['protocol']
+          assert p['five_outer_composition_folds'] is True
+          assert p['every_row_evaluated_once_outer_clean'] is True
+          assert p['historical_validation_or_locked12_indexed_or_evaluated'] is False
+          assert p['parallel_event_decoder'] is True
+          assert p['sequential_stop_decoder'] is False
+          assert p['global_coverage_competition'] is True
+          assert p['leave_one_out_coverage'] is True
+          assert p['global_query_reconciliation'] is True
+          print('clusters', r['data']['clusters'])
+          print('v104', r['strata']['aggregate']['v104']['metrics']['global']['f1'])
+          print('v130_ref', r['references']['v130']['global_f1'])
+          print('v150_ref', r['references']['v150']['global_f1'])
+          print('v160', r['strata']['aggregate']['v160']['metrics']['global']['f1'])
+          print('poly', r['strata']['aggregate']['v160']['cardinality']['poly_accuracy'])
+          print('k5', r['per_true_k']['5']['v160']['exact'])
+          print('k6', r['per_true_k']['6']['v160']['exact'])
+          print('promotion', r['comparison']['promotion_candidate'])
+          PY
+      - name: Upload V16 summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: v160-parallel-coverage-summary
+          path: model/v160-summary
+          compression-level: 6
+          if-no-files-found: error
+          retention-days: 14
