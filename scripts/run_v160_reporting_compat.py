@@ -1,10 +1,11 @@
-"""Run V16 while tolerating only the stale V13/V16 final-report print key.
+"""Run V16 while tolerating only stale V13/V16 final-report cardinality keys.
 
 The inherited V13 harness writes report/prediction/weight files before its final
-console summary.  Current cardinality reports expose ``poly_accuracy`` while that
-legacy print still asks for ``poly_exact_accuracy``.  V16's own final print has
-the same stale key.  This wrapper catches only that exact KeyError after verifying
-that the expected report exists; all other exceptions still fail the job.
+console summary. Current cardinality reports expose ``poly_cluster_accuracy``
+while legacy prints still ask for ``poly_exact_accuracy``. This wrapper catches
+only that exact KeyError after verifying that the completed report exists; all
+other exceptions still fail the job. No model, data, loss, threshold, seed,
+training or evaluation behavior is changed.
 """
 from __future__ import annotations
 
@@ -15,6 +16,7 @@ from scripts import train_v160_parallel_coverage_competition as v160
 
 
 LEGACY_KEY = "poly_exact_accuracy"
+POLY_KEYS = ("poly_cluster_accuracy", "poly_accuracy", "poly_exact_accuracy")
 _original_v130_train_fold = v130.train_fold
 
 
@@ -33,6 +35,16 @@ def _load_written_report(args, *, require_v160: bool):
     return report
 
 
+def _poly_accuracy(cardinality: dict) -> float:
+    for key in POLY_KEYS:
+        if key in cardinality:
+            return cardinality[key]
+    raise RuntimeError(
+        "completed cardinality report has none of the supported poly accuracy keys: "
+        + ", ".join(POLY_KEYS)
+    )
+
+
 def _v130_train_fold_compat(args):
     try:
         return _original_v130_train_fold(args)
@@ -41,14 +53,13 @@ def _v130_train_fold_compat(args):
             raise
         report = _load_written_report(args, require_v160=False)
         card = report["strata"]["aggregate"]["v130"]["cardinality"]
-        if "poly_accuracy" not in card:
-            raise
+        poly = _poly_accuracy(card)
         print(json.dumps({
             "compat": "recovered_after_v130_legacy_summary_key",
             "outer": args.outer_fold,
             "v104_f1": report["strata"]["aggregate"]["v104"]["metrics"]["global"]["f1"],
             "v130_compat_f1": report["strata"]["aggregate"]["v130"]["metrics"]["global"]["f1"],
-            "poly_accuracy": card["poly_accuracy"],
+            "poly_accuracy": poly,
         }, indent=2, sort_keys=True))
         return report
 
@@ -64,14 +75,13 @@ def main(argv=None):
                 raise
             report = _load_written_report(args, require_v160=True)
             card = report["strata"]["aggregate"]["v160"]["cardinality"]
-            if "poly_accuracy" not in card:
-                raise
+            poly = _poly_accuracy(card)
             print(json.dumps({
                 "compat": "recovered_after_v160_legacy_summary_key",
                 "outer": args.outer_fold,
                 "v104_f1": report["strata"]["aggregate"]["v104"]["metrics"]["global"]["f1"],
                 "v160_f1": report["strata"]["aggregate"]["v160"]["metrics"]["global"]["f1"],
-                "poly_accuracy_v160": card["poly_accuracy"],
+                "poly_accuracy_v160": poly,
                 "k5_exact_v160": report["per_true_k"]["5"]["v160"]["exact"],
                 "k6_exact_v160": report["per_true_k"]["6"]["v160"]["exact"],
             }, indent=2, sort_keys=True))
