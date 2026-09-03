@@ -1,0 +1,74 @@
+name: V12 summary recovery
+
+on:
+  push:
+    branches: [v8-anonymous-cardinality]
+    paths:
+      - '.github/workflows/v120-summary-recovery.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  SOURCE_V120_RUN: '33669276161'
+
+jobs:
+  summary:
+    name: Recover V12 outer-clean summary
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install summary dependency
+        run: python -m pip install 'numpy<2.0'
+
+      - name: Download completed V12 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v120-integrated-fold-*
+          path: model/v120-folds
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V120_RUN }}
+          github-token: ${{ github.token }}
+
+      - name: Verify five folds
+        shell: bash
+        run: test "$(find model/v120-folds -name 'report-fold-*.json' | wc -l)" -eq 5
+
+      - name: Run frozen summarizer
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v120-summary
+          python -B scripts/summarize_v120_integrated_birth_source_time.py \
+            --input-dir model/v120-folds \
+            --output-dir model/v120-summary \
+            2>&1 | tee model/v120-summary/summary.log
+
+      - name: Verify train-only protocol
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v120-summary/report.json').read_text())
+          assert r['protocol']['historical_validation_or_locked12_indexed_or_evaluated'] is False
+          print('V12 global', r['aggregate']['v120']['metrics']['global']['f1'])
+          print('V10.4 global', r['aggregate']['v104']['metrics']['global']['f1'])
+          PY
+
+      - name: Upload recovered summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: v120-integrated-summary-recovered
+          path: model/v120-summary
+          if-no-files-found: error
+          retention-days: 14
