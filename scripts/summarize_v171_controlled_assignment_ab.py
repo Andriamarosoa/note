@@ -35,6 +35,14 @@ def _metric_sum(rows):
     }
 
 
+def _stratum_global(report, stratum_name, model_key):
+    """Return one stratum's global metrics, tolerating explicitly-null sparse strata."""
+    stratum = (report.get("strata", {}) or {}).get(stratum_name) or {}
+    model = stratum.get(model_key) or {}
+    metrics = model.get("metrics") or {}
+    return metrics.get("global")
+
+
 def _card(k, pred):
     k = np.asarray(k, dtype=np.int32)
     pred = np.asarray(pred, dtype=np.int32)
@@ -159,10 +167,10 @@ def summarize(args):
     strata = {}
     for s in strata_names:
         row = {}
-        row["v104"] = _metric_sum([r["strata"].get(s, {}).get("v104", {}).get("metrics", {}).get("global") for r in ro])
+        row["v104"] = _metric_sum([_stratum_global(r, s, "v104") for r in ro])
         for arm, reports in (("ordered", ro), ("permutation", rp)):
             model_key = f"v171_{arm}"
-            row[arm] = _metric_sum([r["strata"].get(s, {}).get(model_key, {}).get("metrics", {}).get("global") for r in reports])
+            row[arm] = _metric_sum([_stratum_global(r, s, model_key) for r in reports])
         strata[s] = row
     cards = {name: _card(k, pred) for name, pred in preds.items()}
     per_k = _per_k(k, preds)
