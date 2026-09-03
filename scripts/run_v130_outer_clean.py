@@ -1,16 +1,11 @@
-"""Run V13 outer-clean with two static-audit guards.
-
-1) The initial V13 event-time diagnostic call passes supervision arrays instead
-   of local outer prediction arrays.  Headline training/cardinality/F1 are not
-   affected, but that diagnostic would be invalid, so it is disabled explicitly.
-2) V13's final console summary asks for the legacy alias
-   ``poly_exact_accuracy`` while the shared cardinality report exposes
-   ``poly_cluster_accuracy``.  Add the alias in the runner so a successful fold
-   cannot fail after training merely while printing its summary.
-"""
+"""Run V13 outer-clean with audited graph/reporting guards."""
 from __future__ import annotations
 
 from scripts import train_v130_causal_event_set_decoder as v130
+from scripts import v130_graph_patch
+
+# Apply the audited Keras graph fix before any model is built.
+v130_graph_patch.apply()
 
 
 def _disabled_event_diagnostics(*_args, **_kwargs):
