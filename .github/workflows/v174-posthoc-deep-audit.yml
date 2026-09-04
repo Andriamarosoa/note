@@ -1,0 +1,106 @@
+name: V17.4 posthoc deep transport audit
+
+on:
+  push:
+    branches: [v174-post-audit]
+    paths:
+      - 'scripts/audit_v174_transport_failure.py'
+      - '.github/workflows/v174-posthoc-deep-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  audit:
+    name: Deep audit V17.4 transport failure mode
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install NumPy
+        run: python -m pip install 'numpy<2.0'
+      - name: Compile audit
+        run: python -m py_compile scripts/audit_v174_transport_failure.py
+
+      - name: Download canonical V17.3 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v173-poibin-fold-*
+          path: model/v173-folds
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: '33829092700'
+          github-token: ${{ github.token }}
+
+      - name: Download canonical V17.4 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v174-transport-fold-*
+          path: model/v174-folds
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: '33838069830'
+          github-token: ${{ github.token }}
+
+      - name: Download V17.3 summary
+        uses: actions/download-artifact@v4
+        with:
+          name: v173-poibin-count-consistency-summary
+          path: model/v173-summary
+          repository: Andriamarosoa/note
+          run-id: '33829092700'
+          github-token: ${{ github.token }}
+
+      - name: Download V17.4 summary
+        uses: actions/download-artifact@v4
+        with:
+          name: v174-candidate-transport-summary
+          path: model/v174-summary
+          repository: Andriamarosoa/note
+          run-id: '33838069830'
+          github-token: ${{ github.token }}
+
+      - name: Run post-V17.4 deep audit
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v174-post-audit
+          python -B scripts/audit_v174_transport_failure.py \
+            --v173-folds model/v173-folds \
+            --v174-folds model/v174-folds \
+            --v173-summary model/v173-summary \
+            --v174-summary model/v174-summary \
+            --output-dir model/v174-post-audit \
+            2>&1 | tee model/v174-post-audit/audit.log
+
+      - name: Verify audit protocol and mechanism gates
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v174-post-audit/report.json').read_text())
+          p=r['protocol']
+          assert p['analysis_only'] is True
+          assert p['canonical_v173_run'] == 33829092700
+          assert p['canonical_v174_run'] == 33838069830
+          assert p['outer_clean_rows'] == 76768
+          assert p['same_rows'] is True
+          assert p['threshold'] == 0.5 and p['threshold_tuned'] is False
+          assert p['locked12_indexed_or_evaluated'] is False
+          print(json.dumps(r['gates'],indent=2,sort_keys=True))
+          print(json.dumps(r['interpretation'],indent=2))
+          PY
+
+      - name: Upload deep audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v174-posthoc-deep-transport-audit
+          path: model/v174-post-audit
+          if-no-files-found: warn
+          retention-days: 30
