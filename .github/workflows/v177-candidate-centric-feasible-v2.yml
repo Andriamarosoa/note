@@ -1,0 +1,327 @@
+name: V17.7 candidate-centric feasible-set correction v2
+
+on:
+  push:
+    branches: [v177-candidate-centric]
+    paths:
+      - '.github/workflows/v177-candidate-centric-feasible-v2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+  SOURCE_NESTED_RUN: '33647694565'
+  SOURCE_V173_RUN: '33829092700'
+  SOURCE_V176_RUN: '33862071407'
+  CONTROL_SEED: '16061'
+
+jobs:
+  preflight:
+    name: V17.7 real-cache feasibility preflight v2
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Compile corrected V17.7
+        env:
+          PYTHONPATH: .:src
+        run: |
+          python -m py_compile scripts/train_v177_candidate_centric.py
+          python -m py_compile scripts/train_v177_candidate_centric_feasible.py
+          python -m py_compile scripts/run_v177_feasible_reporting_compat.py
+          python -m py_compile scripts/summarize_v177_candidate_centric_feasible.py
+      - name: Download frozen nested spectral bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: v104-nested-spectral-bundle
+          path: model/v100-spectral-cache
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Audit real candidate feasibility and corrected loss
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+          TF_DETERMINISTIC_OPS: '1'
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import random
+          import numpy as np
+          import tensorflow as tf
+          from scripts.train_v100_spectral_string_slots import _load_spectral_caches
+          from scripts import train_v172_mass_preserving_exchangeable as v172
+          from scripts import train_v173_poibin_count_consistency as v173
+          from scripts import train_v177_candidate_centric as v177
+          from scripts import train_v177_candidate_centric_feasible as v177f
+
+          assert v177f.DEFAULT_SEED == v173.DEFAULT_SEED == 16061
+          assert v177f.PRESENCE_THRESHOLD == v173.PRESENCE_THRESHOLD == .5
+          assert v177f.COUNT_NLL_WEIGHT == v173.COUNT_NLL_WEIGHT == .35
+          assert v177f.MAX_CANDIDATES == 48 and v177f.EVENT_QUERIES == 6
+
+          cache=_load_spectral_caches(Path('model/v100-spectral-cache'))
+          k=np.minimum(np.asarray(cache['exact'],dtype=np.int32),6)
+          feasible,c=v177f._candidate_feasibility_mask_np(cache['mask'],k)
+          bad=~feasible
+          assert len(k) == 76768, len(k)
+          assert int(np.sum(bad)) == 180, int(np.sum(bad))
+          expected_by_k={0:0,1:0,2:69,3:66,4:28,5:11,6:6}
+          got_by_k={value:int(np.sum((k==value)&bad)) for value in range(7)}
+          assert got_by_k == expected_by_k, got_by_k
+          shortfall={int(value):int(np.sum((k-c)[bad]==value)) for value in np.unique((k-c)[bad])}
+          assert shortfall == {1:138,2:35,3:7}, shortfall
+
+          labels=np.zeros((240,6),dtype=np.float32)
+          labels[:130,0]=1; labels[:72,1]=1; labels[:38,2]=1
+          labels[:18,3]=1; labels[:7,4]=1; labels[:2,5]=1
+          spec=v172._weight_spec(labels,np.arange(len(labels)))
+          for true_k in range(7):
+              for count in (max(true_k,6),max(true_k,9),24,48):
+                  proof=v177._candidate_mass_weights_np(true_k,count,spec)
+                  assert abs(proof['old_total_presence_coefficient_mass']-proof['new_total_presence_coefficient_mass']) < 1e-9
+
+          tf.keras.backend.clear_session()
+          random.seed(16061); np.random.seed(16061); tf.random.set_seed(16061)
+          model,lw,token_shape=v177._build_model(spec)
+          assert model.count_params() == 623992, model.count_params()
+          assert len(model.trainable_weights) == 121, len(model.trainable_weights)
+          assert lw['event_count_norm'] == 0.0
+          assert not any('seed' in layer.name.lower() for layer in model.layers)
+
+          rng=np.random.default_rng(1771)
+          inputs={}
+          for tensor in model.inputs:
+              name=tensor.name.split(':',1)[0]
+              shape=[2]+[int(x) for x in tensor.shape[1:]]
+              inputs[name]=rng.normal(size=shape).astype(np.float32)
+          cm=np.zeros_like(inputs['candidate_mask'],dtype=np.float32)
+          cm[0,:1]=1.0
+          cm[1,:9]=1.0
+          inputs['candidate_mask']=cm
+          out=model(inputs,training=False)
+          yt=np.zeros((2,6,73),dtype=np.float32)
+          yt[:,0,0]=1; yt[:,1,0]=1
+          loss=v177f._candidate_set_loss_feasible(spec)
+          values=np.asarray(loss.call(tf.constant(yt),out['event_set']))
+          assert values.shape == (2,)
+          assert values[0] == 0.0, values
+          assert np.isfinite(values[1]) and values[1] < v177.INF/2, values
+
+          print('rows',len(k),'candidate_infeasible',int(np.sum(bad)),'rate',float(np.mean(bad)))
+          print('by_k',got_by_k,'shortfall',shortfall)
+          print('params',model.count_params(),'trainable_tensors',len(model.trainable_weights),'token_shape',token_shape)
+          print('V17.7 real-cache feasibility preflight v2 OK')
+          PY
+
+  fold:
+    name: V17.7 feasible candidate fold ${{ matrix.fold }}
+    needs: preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        fold: [0, 1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+      - name: Download GuitarSet when cache misses
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+      - name: Verify GuitarSet checksums
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Download frozen nested spectral bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: v104-nested-spectral-bundle
+          path: model/v100-spectral-cache
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download outer-clean V10 baselines
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v104-nested-eval-*
+          path: model/v104-nested-eval
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Train corrected V17.7
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+          TF_DETERMINISTIC_OPS: '1'
+        shell: bash
+        run: |
+          set -o pipefail
+          out="model/v177-feasible-fold-${{ matrix.fold }}"
+          mkdir -p "$out"
+          python -B scripts/run_v177_feasible_reporting_compat.py \
+            --cache-dir model/v100-spectral-cache \
+            --baseline-eval-dir model/v104-nested-eval \
+            --outer-fold "${{ matrix.fold }}" \
+            --arm mass_permutation \
+            --seed "$CONTROL_SEED" \
+            --output-dir "$out" \
+            2>&1 | tee "$out/train.log"
+      - name: Verify corrected V17.7 protocol
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          fold='${{ matrix.fold }}'
+          r=json.loads(Path(f'model/v177-feasible-fold-{fold}/report-fold-{fold}.json').read_text())
+          p=r['protocol']; a=r['v177']['architecture']; f=a['candidate_feasibility']
+          assert p['v177_candidate_centric'] is True
+          assert p['v177_candidate_feasibility_correction'] is True
+          assert p['fixed_or_trainable_anonymous_seed_count'] == 0
+          assert p['candidate_object_token_count'] == 48
+          assert p['candidate_set_dp_states'] == 64
+          assert p['v173_count_nll_weight'] == .35
+          assert p['candidate_infeasible_rows_event_set_weight'] == 0.0
+          assert p['candidate_infeasible_rows_kept_in_outer_evaluation'] is True
+          assert p['candidate_infeasible_rows_removed_from_dataset'] is False
+          assert p['v177_architecture_changed_by_feasibility_correction'] is False
+          assert p['v177_parameters_added_by_feasibility_correction'] == 0
+          assert p['runtime_presence_threshold'] == .5 and p['runtime_presence_threshold_tuned'] is False
+          assert a['anonymous_seed_count'] == 0
+          assert a['selected_candidate_ids_unique_rate'] == 1.0
+          assert f['event_set_loss_masked_only_on_infeasible_rows'] is True
+          assert f['outer_evaluation_includes_infeasible_rows'] is True
+          for row in f['by_true_k'].values():
+              assert row['max_abs_mass_error_on_feasible_rows'] < 1e-6, row
+          g=r['strata']['aggregate']['v177_candidate_centric']['metrics']['global']
+          print(fold,'epochs',r['data']['selected_epochs'],'direct_f1',g['f1'],'count_only_f1',a['count_only_frozen_ranking_global_f1'],'direct_minus_count',a['direct_minus_count_only_global_f1'],'infeasible',f['infeasible_rows'],'soft_count',a['outer_soft_object_count'],'hard_count',a['outer_hard_object_count'],'true_count',a['outer_true_count'])
+          PY
+      - name: Upload corrected V17.7 fold
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v177-feasible-fold-${{ matrix.fold }}
+          path: model/v177-feasible-fold-${{ matrix.fold }}
+          compression-level: 6
+          if-no-files-found: warn
+          retention-days: 30
+
+  summarize:
+    name: Summarize corrected V17.7
+    needs: fold
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install NumPy
+        run: python -m pip install 'numpy<2.0'
+      - name: Download corrected V17.7 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v177-feasible-fold-*
+          path: model/v177-all
+          merge-multiple: false
+      - name: Download canonical V17.3 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v173-poibin-fold-*
+          path: model/v173-all
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V173_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download canonical V17.3 summary
+        uses: actions/download-artifact@v4
+        with:
+          name: v173-poibin-count-consistency-summary
+          path: model/v173-summary
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V173_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download V17.6 summary
+        uses: actions/download-artifact@v4
+        with:
+          name: v176-shared-set-decoder-summary
+          path: model/v176-summary
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V176_RUN }}
+          github-token: ${{ github.token }}
+      - name: Aggregate corrected V17.7
+        env:
+          PYTHONPATH: .:src
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v177-summary
+          python -B scripts/summarize_v177_candidate_centric_feasible.py \
+            --input-dir model/v177-all \
+            --v173-fold-dir model/v173-all \
+            --v173-summary-dir model/v173-summary \
+            --v176-summary-dir model/v176-summary \
+            --output-dir model/v177-summary \
+            2>&1 | tee model/v177-summary/summary.log
+      - name: Verify aggregate protocol
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v177-summary/report.json').read_text())
+          p=r['protocol']; f=r['candidate_feasibility']
+          assert p['v177_candidate_centric'] is True
+          assert p['v177_candidate_feasibility_correction'] is True
+          assert p['mandatory_post_implementation_audit'] is True
+          assert p['outer_clean_rows'] == 76768
+          assert p['same_rows_as_v173'] is True
+          assert p['same_seed'] == 16061
+          assert p['presence_threshold'] == .5 and p['threshold_tuned'] is False
+          assert p['fixed_or_trainable_anonymous_seed_count'] == 0
+          assert p['candidate_object_token_count'] == 48
+          assert p['candidate_set_dp_states'] == 64
+          assert p['v173_count_nll_weight'] == .35
+          assert p['candidate_infeasible_rows_kept_in_outer_evaluation'] is True
+          assert p['candidate_infeasible_rows_removed_from_dataset'] is False
+          assert f['outer_rows'] == 76768
+          assert f['infeasible_rows'] == 180
+          assert f['feasible_rows'] == 76588
+          print(json.dumps(r['comparison'],indent=2,sort_keys=True))
+          print(json.dumps(r['gates'],indent=2,sort_keys=True))
+          print(json.dumps(f,indent=2,sort_keys=True))
+          PY
+      - name: Upload corrected V17.7 summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: v177-candidate-centric-feasible-summary
+          path: model/v177-summary
+          compression-level: 6
+          retention-days: 30
