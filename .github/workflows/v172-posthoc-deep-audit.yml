@@ -1,0 +1,90 @@
+name: V17.2 posthoc deep audit
+
+on:
+  push:
+    branches: [v172-post-audit]
+    paths:
+      - 'scripts/audit_v172_posthoc.py'
+      - '.github/workflows/v172-posthoc-deep-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    env:
+      SOURCE_RUN: '33815575062'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install NumPy
+        run: python -m pip install 'numpy<2.0'
+      - name: Download V17.2 summary
+        uses: actions/download-artifact@v4
+        with:
+          name: v172-mass-preserving-causal-summary
+          path: model/v172-summary
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download all V17.2 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v172-*-fold-*
+          path: model/v172-folds
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_RUN }}
+          github-token: ${{ github.token }}
+      - name: Deep audit V17.2
+        env:
+          PYTHONPATH: .:src
+        run: |
+          mkdir -p model/v172-posthoc-audit
+          python -B scripts/audit_v172_posthoc.py --summary-dir model/v172-summary --folds-dir model/v172-folds --output-dir model/v172-posthoc-audit | tee model/v172-posthoc-audit/audit.log
+      - name: Verify audit gates
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v172-posthoc-audit/report.json').read_text())
+          assert r['protocol']['source_rows'] == 76768
+          assert r['protocol']['training_performed'] is False
+          assert r['protocol']['threshold_tuned'] is False
+          assert r['protocol']['threshold'] == 0.5
+          assert r['protocol']['locked12_indexed_or_evaluated'] is False
+          h=r['headline']
+          assert h['A_to_B_f1_delta'] > 0.008
+          assert h['B_to_C_f1_delta'] > 0.001
+          assert h['C_to_v104_f1_delta'] < -0.01
+          assert h['C_to_v104_precision_delta'] < -0.04
+          assert h['C_to_v104_recall_delta'] > 0.01
+          d=r['derived_checks']
+          assert d['C_K2_below_v104'] is True
+          assert d['C_K3_below_v104'] is True
+          assert d['C_K4_above_v104'] is True
+          assert d['C_K5_above_v104'] is True
+          assert d['C_K6_above_v104'] is True
+          assert d['C_medium_K_overcount_exceeds_v104'] is True
+          assert d['C_soft_probability_mass_bias_fraction'] > 0.15
+          f=r['folds_and_weights']['paired_f1']['aggregate']
+          assert f['B_beats_A_folds'] == 5
+          assert f['C_beats_B_folds'] == 4
+          assert f['C_beats_v104_folds'] == 0
+          assert r['strata']['player00_rock_comp']['delta_C_minus_v104_f1'] > 0.01
+          print(json.dumps(h, indent=2, sort_keys=True))
+          print(json.dumps(r['cardinality']['per_true_k'], indent=2, sort_keys=True))
+          print(json.dumps(r['presence_budget'], indent=2, sort_keys=True))
+          print(json.dumps(r['diagnosis'], indent=2, sort_keys=True))
+          PY
+      - name: Upload audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: v172-posthoc-deep-audit
+          path: model/v172-posthoc-audit
+          retention-days: 30
