@@ -1,0 +1,348 @@
+name: V17.7 candidate-centric birth-object decoder
+
+on:
+  push:
+    branches: [v177-candidate-centric]
+    paths:
+      - 'scripts/train_v177_candidate_centric.py'
+      - 'scripts/run_v177_reporting_compat.py'
+      - 'scripts/summarize_v177_candidate_centric.py'
+      - '.github/workflows/v177-candidate-centric.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+  SOURCE_NESTED_RUN: '33647694565'
+  SOURCE_V173_RUN: '33829092700'
+  SOURCE_V176_RUN: '33862071407'
+  CONTROL_SEED: '16061'
+
+jobs:
+  preflight:
+    name: V17.7 candidate-centric preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Compile V17.7
+        env:
+          PYTHONPATH: .:src
+        run: |
+          python -m py_compile scripts/train_v177_candidate_centric.py
+          python -m py_compile scripts/run_v177_reporting_compat.py
+          python -m py_compile scripts/summarize_v177_candidate_centric.py
+      - name: Prove candidate-centric treatment
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+          TF_DETERMINISTIC_OPS: '1'
+        run: |
+          python - <<'PY'
+          import random
+          import numpy as np
+          import tensorflow as tf
+          from scripts import train_v172_mass_preserving_exchangeable as v172
+          from scripts import train_v173_poibin_count_consistency as v173
+          from scripts import train_v177_candidate_centric as v177
+
+          assert v177.DEFAULT_SEED == v173.DEFAULT_SEED == 16061
+          assert v177.PRESENCE_THRESHOLD == v173.PRESENCE_THRESHOLD == .5
+          assert v177.COUNT_NLL_WEIGHT == v173.COUNT_NLL_WEIGHT == .35
+          assert v177.MAX_CANDIDATES == 48
+          assert v177.EVENT_QUERIES == 6
+
+          labels=np.zeros((240,6),dtype=np.float32)
+          labels[:130,0]=1; labels[:72,1]=1; labels[:38,2]=1
+          labels[:18,3]=1; labels[:7,4]=1; labels[:2,5]=1
+          spec=v172._weight_spec(labels,np.arange(len(labels)))
+          for k in range(7):
+              for c in (max(k,6), max(k,9), 24, 48):
+                  if c < k: continue
+                  p=v177._candidate_mass_weights_np(k,c,spec)
+                  assert abs(p['old_total_presence_coefficient_mass']-p['new_total_presence_coefficient_mass']) < 1e-9, (k,c,p)
+
+          rng=np.random.default_rng(177)
+          p=rng.uniform(.001,.15,size=(3,48)).astype(np.float32)
+          p[:,12:]=0
+          n=v177._poibin48_np(p)
+          t=np.asarray(v177._poibin48_tf(tf,tf.constant(p)))
+          np.testing.assert_allclose(t,n,rtol=2e-6,atol=2e-7)
+
+          tf.keras.backend.clear_session()
+          random.seed(16061); np.random.seed(16061); tf.random.set_seed(16061)
+          model,lw,token_shape=v177._build_model(spec)
+          assert lw['event_count_norm'] == 0.0
+          assert model.output['event_set'].shape[1] == 48
+          assert model.output['event_set'].shape[2] == 73
+          assert model.get_layer('candidate_objectness') is not None
+          assert model.get_layer('candidate_time_distribution') is not None
+          assert model.get_layer('v177_candidate_tf_cross_attention') is not None
+          assert model.get_layer('v177_candidate_self_attention') is not None
+          assert model.get_layer('v177_shared_objectness') is not None
+          assert not any('seed' in layer.name.lower() for layer in model.layers)
+
+          bad=[]
+          for layer in model.layers:
+              if layer.trainable_weights and (
+                  layer.name.startswith('event_present_')
+                  or layer.name.startswith('event_candidate_')
+                  or layer.name.startswith('event_time_')
+              ):
+                  bad.append((layer.name,len(layer.trainable_weights)))
+          assert not bad, bad
+
+          inputs={}
+          for tensor in model.inputs:
+              name=tensor.name.split(':',1)[0]
+              shape=[2]+[int(x) for x in tensor.shape[1:]]
+              inputs[name]=rng.normal(size=shape).astype(np.float32)
+          cm=np.zeros_like(inputs['candidate_mask'],dtype=np.float32); cm[:,:9]=1
+          inputs['candidate_mask']=cm
+          out=model(inputs,training=False)
+          obj=np.asarray(out['candidate_objectness'])
+          ctime=np.asarray(out['candidate_time_distribution'])
+          ids=np.asarray(out['candidate_selected_ids'])
+          eset=np.asarray(out['event_set'])
+          assert obj.shape == (2,48)
+          assert ctime.shape == (2,48,23)
+          assert eset.shape == (2,48,73)
+          assert np.max(np.abs(obj[:,9:])) < 1e-7
+          np.testing.assert_allclose(ctime.sum(2),1.0,rtol=1e-5,atol=1e-5)
+          np.testing.assert_allclose(eset[:,:,1],cm,rtol=0,atol=0)
+          for row in ids:
+              assert len(np.unique(row)) == 6
+
+          # Candidate-token permutation equivariance: no hidden slot identity.
+          perm=np.asarray([8,2,6,0,5,1,7,4,3]+list(range(9,48)),dtype=np.int32)
+          inv=np.argsort(perm)
+          pin={k:np.array(v,copy=True) for k,v in inputs.items()}
+          pin['candidate_set']=pin['candidate_set'][:,perm,:]
+          pin['candidate_mask']=pin['candidate_mask'][:,perm]
+          pout=model(pin,training=False)
+          np.testing.assert_allclose(np.asarray(pout['candidate_objectness'])[:,inv],obj,rtol=2e-5,atol=2e-6)
+          np.testing.assert_allclose(np.asarray(pout['candidate_time_distribution'])[:,inv,:],ctime,rtol=3e-5,atol=3e-6)
+
+          # Exact set loss must be invariant to a permutation of the six truth rows.
+          yt=np.zeros((2,6,73),dtype=np.float32)
+          yt[:,0,0]=1; yt[:,1,0]=1
+          yt[:,0,1]=1; yt[:,1,1]=1
+          yt[:,0,2+4]=1; yt[:,1,2+11]=1
+          yt[:,0,25+1]=1; yt[:,1,25+6]=1
+          loss=v177._candidate_set_loss(spec)
+          a=np.asarray(loss.call(tf.constant(yt),out['event_set']))
+          sw=yt[:,[1,0,2,3,4,5],:]
+          b=np.asarray(loss.call(tf.constant(sw),out['event_set']))
+          np.testing.assert_allclose(a,b,rtol=1e-6,atol=1e-6)
+
+          print('params',model.count_params(),'trainable_tensors',len(model.trainable_weights),'token_shape',token_shape)
+          print('event_set_shape',model.output['event_set'].shape,'q_specific_trainable_layers',bad)
+          print('V17.7 candidate-centric preflight OK')
+          PY
+
+  fold:
+    name: V17.7 candidate-centric fold ${{ matrix.fold }}
+    needs: preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        fold: [0, 1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+      - name: Download GuitarSet when cache misses
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+      - name: Verify GuitarSet checksums
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Download frozen nested spectral bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: v104-nested-spectral-bundle
+          path: model/v100-spectral-cache
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download outer-clean V10 baselines
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v104-nested-eval-*
+          path: model/v104-nested-eval
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Train V17.7
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+          TF_DETERMINISTIC_OPS: '1'
+        shell: bash
+        run: |
+          set -o pipefail
+          out="model/v177-candidate-fold-${{ matrix.fold }}"
+          mkdir -p "$out"
+          python -B scripts/run_v177_reporting_compat.py \
+            --cache-dir model/v100-spectral-cache \
+            --baseline-eval-dir model/v104-nested-eval \
+            --outer-fold "${{ matrix.fold }}" \
+            --arm mass_permutation \
+            --seed "$CONTROL_SEED" \
+            --output-dir "$out" \
+            2>&1 | tee "$out/train.log"
+      - name: Verify V17.7 protocol
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          fold='${{ matrix.fold }}'
+          r=json.loads(Path(f'model/v177-candidate-fold-{fold}/report-fold-{fold}.json').read_text())
+          p=r['protocol']; a=r['v177']['architecture']
+          assert p['v177_candidate_centric'] is True
+          assert p['fixed_or_trainable_anonymous_seed_count'] == 0
+          assert p['candidate_object_token_count'] == 48
+          assert p['candidate_ownership_intrinsic_one_to_one'] is True
+          assert p['candidate_set_dp_states'] == 64
+          assert p['candidate_set_dp_permutation_invariant'] is True
+          assert p['v173_mass_coefficient_preservation'] is True
+          assert p['v173_count_nll_weight'] == .35
+          assert p['runtime_presence_threshold'] == .5 and p['runtime_presence_threshold_tuned'] is False
+          assert p['categorical_cardinality_head_exists'] is False
+          assert p['v175_injective_ownership_used'] is False
+          assert p['historical_validation_or_locked12_indexed_or_evaluated'] is False
+          assert a['anonymous_seed_count'] == 0
+          assert a['selected_candidate_ids_unique_rate'] == 1.0
+          for row in a['mass_preservation_by_true_k'].values():
+              assert row['max_abs_mass_error'] < 1e-6, row
+          g=r['strata']['aggregate']['v177_candidate_centric']['metrics']['global']
+          print(fold,'epochs',r['data']['selected_epochs'],'direct_f1',g['f1'],'count_only_f1',a['count_only_frozen_ranking_global_f1'],'direct_minus_count',a['direct_minus_count_only_global_f1'],'soft_count',a['outer_soft_object_count'],'hard_count',a['outer_hard_object_count'],'true_count',a['outer_true_count'])
+          PY
+      - name: Upload V17.7 fold
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v177-candidate-fold-${{ matrix.fold }}
+          path: model/v177-candidate-fold-${{ matrix.fold }}
+          compression-level: 6
+          if-no-files-found: warn
+          retention-days: 30
+
+  summarize:
+    name: Summarize and audit V17.7
+    needs: fold
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install NumPy
+        run: python -m pip install 'numpy<2.0'
+      - name: Download V17.7 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v177-candidate-fold-*
+          path: model/v177-all
+          merge-multiple: false
+      - name: Download canonical V17.3 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v173-poibin-fold-*
+          path: model/v173-all
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V173_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download canonical V17.3 summary
+        uses: actions/download-artifact@v4
+        with:
+          name: v173-poibin-count-consistency-summary
+          path: model/v173-summary
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V173_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download V17.6 summary
+        uses: actions/download-artifact@v4
+        with:
+          name: v176-shared-set-decoder-summary
+          path: model/v176-summary
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V176_RUN }}
+          github-token: ${{ github.token }}
+      - name: Aggregate and mechanism-audit V17.7
+        env:
+          PYTHONPATH: .:src
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v177-summary
+          python -B scripts/summarize_v177_candidate_centric.py \
+            --input-dir model/v177-all \
+            --v173-fold-dir model/v173-all \
+            --v173-summary-dir model/v173-summary \
+            --v176-summary-dir model/v176-summary \
+            --output-dir model/v177-summary \
+            2>&1 | tee model/v177-summary/summary.log
+      - name: Verify aggregate protocol
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v177-summary/report.json').read_text()); p=r['protocol']; c=r['comparison']; g=r['gates']
+          assert p['v177_candidate_centric'] is True
+          assert p['mandatory_post_implementation_audit'] is True
+          assert p['outer_clean_rows'] == 76768
+          assert p['same_rows_as_v173'] is True
+          assert p['same_seed'] == 16061
+          assert p['presence_threshold'] == .5 and p['threshold_tuned'] is False
+          assert p['fixed_or_trainable_anonymous_seed_count'] == 0
+          assert p['candidate_object_token_count'] == 48
+          assert p['candidate_set_dp_states'] == 64
+          assert p['candidate_set_dp_permutation_invariant'] is True
+          assert p['v173_count_nll_weight'] == .35
+          assert p['v173_mass_coefficient_preservation'] is True
+          assert p['headline_realization'] == 'direct selected candidate objects'
+          assert p['categorical_cardinality_head_exists'] is False
+          assert p['locked12_indexed_or_evaluated'] is False
+          assert c['selected_candidate_ids_unique_rate'] == 1.0
+          assert c['max_mass_preservation_error'] < 1e-6
+          print(json.dumps(c,indent=2,sort_keys=True)); print(json.dumps(g,indent=2,sort_keys=True))
+          PY
+      - name: Upload V17.7 summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: v177-candidate-centric-summary
+          path: model/v177-summary
+          retention-days: 30
