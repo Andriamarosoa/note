@@ -1,0 +1,301 @@
+name: V17.3 exact Poisson-binomial count consistency
+
+on:
+  push:
+    branches: [v173-count-consistency]
+    paths:
+      - 'scripts/train_v173_poibin_count_consistency.py'
+      - 'scripts/run_v173_reporting_compat.py'
+      - 'scripts/summarize_v173_poibin_count_consistency.py'
+      - '.github/workflows/v173-poibin-count-consistency.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+  SOURCE_NESTED_RUN: '33647694565'
+  SOURCE_V172_RUN: '33815575062'
+  CONTROL_SEED: '16061'
+
+jobs:
+  preflight:
+    name: V17.3 Poisson-binomial preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Compile V17.3
+        env:
+          PYTHONPATH: .:src
+        run: |
+          python -m py_compile scripts/train_v173_poibin_count_consistency.py
+          python -m py_compile scripts/run_v173_reporting_compat.py
+          python -m py_compile scripts/summarize_v173_poibin_count_consistency.py
+      - name: Prove graph identity and exact count objective
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+          TF_DETERMINISTIC_OPS: '1'
+        run: |
+          python - <<'PY'
+          import random
+          import numpy as np
+          import tensorflow as tf
+          from scripts import train_v171_controlled_assignment_ab as v171
+          from scripts import train_v172_mass_preserving_exchangeable as v172
+          from scripts import train_v173_poibin_count_consistency as v173
+
+          assert v173.DEFAULT_SEED == 16061
+          assert v173.BASE_ARM == 'mass_permutation'
+          assert v173.PRESENCE_THRESHOLD == 0.5
+          assert v173.COUNT_NLL_WEIGHT == 0.35
+          assert len(v172.PERMUTATIONS) == 720
+
+          # Synthetic V16-style fit-fold weights, shared with both builds.
+          labels=np.zeros((200,6),dtype=np.float32)
+          labels[:100,0]=1; labels[:50,1]=1; labels[:24,2]=1
+          labels[:10,3]=1; labels[:4,4]=1; labels[:1,5]=1
+          spec=v172._weight_spec(labels,np.arange(len(labels)))
+          for k,row in spec['mass']['proof_by_k'].items():
+              assert abs(row['original_total_presence_coefficient_mass']-row['compressed_total_presence_coefficient_mass']) < 1e-9, (k,row)
+
+          def reset():
+              tf.keras.backend.clear_session()
+              random.seed(16161); np.random.seed(16161); tf.random.set_seed(16161)
+
+          reset(); old,_,_=v172._build_model('mass_permutation',spec)
+          old_names=[x.name for x in old.trainable_weights]
+          old_weights=[np.asarray(x.numpy()) for x in old.trainable_weights]
+          old_params=old.count_params()
+          reset(); new,lw,_=v173._build_model(spec)
+          assert old_params == new.count_params() == 1156295
+          assert len(old_names) == len(new.trainable_weights) == 167
+          assert old_names == [x.name for x in new.trainable_weights]
+          for i,(a,b) in enumerate(zip(old_weights,[np.asarray(x.numpy()) for x in new.trainable_weights])):
+              np.testing.assert_array_equal(a,b,err_msg=f'init mismatch tensor {i}')
+          assert new.get_layer('v160_global_reconciliation_attention') is not None
+          assert lw['event_count_norm'] == 0.0
+
+          # Exact Poisson-binomial probability identities.
+          rng=np.random.default_rng(73)
+          p=rng.uniform(.02,.98,size=(16,6))
+          d=v173._poibin_distribution_np(p)
+          np.testing.assert_allclose(d.sum(axis=1),1.0,rtol=1e-12,atol=1e-12)
+          np.testing.assert_allclose(d,v173._poibin_distribution_np(p[:,[5,1,3,0,4,2]]),rtol=1e-12,atol=1e-12)
+          dt=np.asarray(v173._poibin_distribution_tf(tf,tf.constant(p,dtype=tf.float32)))
+          np.testing.assert_allclose(dt,d,rtol=2e-5,atol=2e-6)
+          for k in range(7):
+              perfect=np.zeros((1,6),dtype=np.float64); perfect[0,:k]=1.0
+              dp=v173._poibin_distribution_np(perfect)
+              assert dp[0,k] > .99999999998, (k,dp)
+
+          # Total V17.3 loss remains truth-slot permutation invariant because
+          # both exact matching and the count term are exchangeable.
+          yt=np.zeros((3,6,v171.SET_WIDTH),dtype=np.float32)
+          yt[0,:1,0]=1; yt[1,:3,0]=1; yt[2,:5,0]=1
+          yt[:,:,v171.SET_VALID_OFFSET]=yt[:,:,0]
+          for r in range(3):
+              for q in np.flatnonzero(yt[r,:,0]>.5):
+                  yt[r,q,v171.SET_TIME_OFFSET+(r+q)%23]=1
+                  yt[r,q,v171.SET_CANDIDATE_OFFSET+(r+3*q)%48]=1
+          yp=np.zeros_like(yt)
+          yp[:,:,0]=rng.uniform(.05,.95,size=(3,6))
+          yp[:,:,v171.SET_VALID_OFFSET]=1
+          t=rng.uniform(.01,1,size=(3,6,23)).astype(np.float32); t/=t.sum(2,keepdims=True)
+          c=rng.uniform(.01,1,size=(3,6,48)).astype(np.float32); c/=c.sum(2,keepdims=True)
+          yp[:,:,v171.SET_TIME_OFFSET:v171.SET_CANDIDATE_OFFSET]=t
+          yp[:,:,v171.SET_CANDIDATE_OFFSET:]=c
+          loss=v173._set_loss(spec)
+          a=np.asarray(loss.call(tf.constant(yt),tf.constant(yp)))
+          shuffled=yt[:,[2,0,5,1,4,3],:]
+          b=np.asarray(loss.call(tf.constant(shuffled),tf.constant(yp)))
+          np.testing.assert_allclose(a,b,rtol=1e-5,atol=1e-6)
+          print('params',old_params,'trainable_tensors',len(old_names))
+          print('count_weight',v173.COUNT_NLL_WEIGHT,'old_count_mse_weight',lw['event_count_norm'])
+          print('V17.3 preflight OK')
+          PY
+
+  fold:
+    name: V17.3 Poisson-binomial fold ${{ matrix.fold }}
+    needs: preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        fold: [0, 1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+      - name: Download GuitarSet when cache misses
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+      - name: Verify GuitarSet checksums
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Download frozen nested spectral bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: v104-nested-spectral-bundle
+          path: model/v100-spectral-cache
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download outer-clean V10 baselines
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v104-nested-eval-*
+          path: model/v104-nested-eval
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Train V17.3
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+          TF_DETERMINISTIC_OPS: '1'
+        shell: bash
+        run: |
+          set -o pipefail
+          out="model/v173-poibin-fold-${{ matrix.fold }}"
+          mkdir -p "$out"
+          python -B scripts/run_v173_reporting_compat.py \
+            --cache-dir model/v100-spectral-cache \
+            --baseline-eval-dir model/v104-nested-eval \
+            --outer-fold "${{ matrix.fold }}" \
+            --arm mass_permutation \
+            --seed "$CONTROL_SEED" \
+            --output-dir "$out" \
+            2>&1 | tee "$out/train.log"
+      - name: Verify V17.3 protocol
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          fold='${{ matrix.fold }}'
+          pth=Path(f'model/v173-poibin-fold-{fold}/report-fold-{fold}.json')
+          r=json.loads(pth.read_text()); p=r['protocol']; v=r['v173']
+          assert p['v173_poibin_count_consistency'] is True
+          assert p['v173_base_arm'] == 'mass_permutation'
+          assert p['v16_proposal_graph_unchanged'] is True
+          assert p['shared_seed'] == 16061
+          assert p['outer_fold_used_for_training'] is False
+          assert p['outer_fold_used_for_epoch_selection'] is False
+          assert p['runtime_graph_unchanged_from_v172_c'] is True
+          assert p['runtime_decode_unchanged_from_v172_c'] is True
+          assert p['runtime_presence_threshold_tuned'] is False
+          assert p['runtime_presence_threshold'] == 0.5
+          assert p['poisson_binomial_cardinality_consistency'] is True
+          assert p['poisson_binomial_cardinality_nll_weight'] == 0.35
+          assert p['event_count_norm_mse_loss_weight'] == 0.0
+          assert p['categorical_cardinality_head_exists'] is False
+          assert p['historical_validation_or_locked12_indexed_or_evaluated'] is False
+          for k,row in v['final_fit_weight_spec']['mass']['proof_by_k'].items():
+              assert abs(row['original_total_presence_coefficient_mass']-row['compressed_total_presence_coefficient_mass']) < 1e-8, (k,row)
+          key='v173_poibin'
+          g=r['strata']['aggregate'][key]['metrics']['global']
+          print(fold,'epochs',r['data']['selected_epochs'],'f1',g['f1'],'pred_ref',g['prediction_reference_ratio'],'k2',r['per_true_k']['2'][key]['exact'],'k3',r['per_true_k']['3'][key]['exact'],'k5',r['per_true_k']['5'][key]['exact'],'k6',r['per_true_k']['6'][key]['exact'])
+          PY
+      - name: Upload V17.3 fold
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v173-poibin-fold-${{ matrix.fold }}
+          path: model/v173-poibin-fold-${{ matrix.fold }}
+          compression-level: 6
+          if-no-files-found: warn
+          retention-days: 30
+
+  summarize:
+    name: Summarize V17.3 vs V17.2-C and V10.4
+    needs: fold
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install NumPy
+        run: python -m pip install 'numpy<2.0'
+      - name: Download all V17.3 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v173-poibin-fold-*
+          path: model/v173-all
+          merge-multiple: false
+      - name: Download canonical V17.2 summary
+        uses: actions/download-artifact@v4
+        with:
+          name: v172-mass-preserving-causal-summary
+          path: model/v172-summary
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V172_RUN }}
+          github-token: ${{ github.token }}
+      - name: Aggregate V17.3
+        env:
+          PYTHONPATH: .:src
+        run: |
+          mkdir -p model/v173-summary
+          python -B scripts/summarize_v173_poibin_count_consistency.py \
+            --input-dir model/v173-all \
+            --v172-summary-dir model/v172-summary \
+            --output-dir model/v173-summary \
+            2>&1 | tee model/v173-summary/summary.log
+      - name: Verify aggregate protocol
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v173-summary/report.json').read_text())
+          p=r['protocol']
+          assert p['v173_exact_poisson_binomial_count_consistency'] is True
+          assert p['outer_clean_rows'] == 76768
+          assert p['same_rows_as_v172'] is True
+          assert p['same_seed'] == 16061
+          assert p['same_runtime_threshold'] == 0.5
+          assert p['threshold_tuned'] is False
+          assert p['runtime_graph_unchanged_from_v172_c'] is True
+          assert p['runtime_decode_unchanged_from_v172_c'] is True
+          assert p['categorical_cardinality_head_exists'] is False
+          assert p['locked12_indexed_or_evaluated'] is False
+          print(json.dumps(r['comparison'],indent=2,sort_keys=True))
+          PY
+      - name: Upload V17.3 summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v173-poibin-count-consistency-summary
+          path: model/v173-summary
+          if-no-files-found: warn
+          retention-days: 30
