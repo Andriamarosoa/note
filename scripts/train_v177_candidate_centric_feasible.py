@@ -2,22 +2,21 @@
 
 The first V17.7 run exposed a real representational boundary that the synthetic
 preflight missed: 180/76,768 outer-clean rows have fewer valid candidate tokens
-than true births (C < K).  A one-to-one candidate-object set cannot represent
-those rows.  The original exact-DP loss therefore reached its INF sentinel and
+than true births (C < K). A one-to-one candidate-object set cannot represent
+those rows. The original exact-DP loss therefore reached its INF sentinel and
 made a 0.2345% structural minority dominate optimization.
 
 This correction keeps the V17.7 architecture unchanged: no anonymous seeds,
 queries, dustbins, thresholds, categorical count head or extra parameters are
-introduced.  It changes training treatment only for structurally infeasible
-rows: the candidate-set objective is zero when C < K.  Those rows remain in the
-outer-clean evaluation and therefore still count as model errors.  All feasible
+introduced. It changes training treatment only for structurally infeasible
+rows: the candidate-set objective is zero when C < K. Those rows remain in the
+outer-clean evaluation and therefore still count as model errors. All feasible
 rows retain the original V17.7 loss exactly, including V17.3 mass-preserving
 weights and the 0.35 Poisson-binomial count NLL.
 """
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from typing import Optional, Sequence
 
 import numpy as np
@@ -31,6 +30,7 @@ MODEL_KEY = v177.MODEL_KEY
 MAX_CANDIDATES = v177.MAX_CANDIDATES
 EVENT_QUERIES = v177.EVENT_QUERIES
 COUNT_NLL_WEIGHT = v177.COUNT_NLL_WEIGHT
+_ORIGINAL_SET_LOSS_FACTORY = v177._candidate_set_loss
 
 
 class V177FeasibilityError(RuntimeError):
@@ -51,7 +51,7 @@ def _candidate_set_loss_feasible(spec: dict):
     import tensorflow as tf
     from tensorflow import keras
 
-    base = v177._candidate_set_loss(spec)
+    base = _ORIGINAL_SET_LOSS_FACTORY(spec)
 
     class FeasibleCandidateCentricSetLoss(keras.losses.Loss):
         def __init__(self):
@@ -78,8 +78,7 @@ def _correct_postprocess_report(report: dict, ctx: dict) -> dict:
     feasible, valid_count = _candidate_feasibility_mask_np(candidate_mask, k)
     infeasible = ~feasible
 
-    p = report["protocol"]
-    p.update({
+    report["protocol"].update({
         "v177_candidate_feasibility_correction": True,
         "candidate_set_loss_scope": "only rows with valid_candidate_count >= true_k",
         "candidate_infeasible_rows_event_set_weight": 0.0,
@@ -117,14 +116,15 @@ def _correct_postprocess_report(report: dict, ctx: dict) -> dict:
         }
 
     arch = report["v177"]["architecture"]
+    shortfall = (k - valid_count)[infeasible]
     arch["candidate_feasibility"] = {
         "outer_rows": int(len(k)),
         "feasible_rows": int(np.sum(feasible)),
         "infeasible_rows": int(np.sum(infeasible)),
         "infeasible_rate": float(np.mean(infeasible)),
         "shortfall_histogram": {
-            str(int(s)): int(np.sum((k - valid_count)[infeasible] == s))
-            for s in sorted(np.unique((k - valid_count)[infeasible]).tolist())
+            str(int(s)): int(np.sum(shortfall == s))
+            for s in sorted(np.unique(shortfall).tolist())
         } if np.any(infeasible) else {},
         "by_true_k": by_k,
         "event_set_loss_masked_only_on_infeasible_rows": True,
@@ -132,7 +132,6 @@ def _correct_postprocess_report(report: dict, ctx: dict) -> dict:
     }
     # Replace the original all-row algebra audit, whose error is expected on C<K.
     arch["mass_preservation_by_true_k"] = by_k
-
     return report
 
 
