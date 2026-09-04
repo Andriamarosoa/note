@@ -1,0 +1,294 @@
+name: V17.4 candidate ownership transport
+
+on:
+  push:
+    branches: [v174-candidate-transport]
+    paths:
+      - 'scripts/train_v174_candidate_transport.py'
+      - 'scripts/run_v174_reporting_compat.py'
+      - 'scripts/summarize_v174_candidate_transport.py'
+      - '.github/workflows/v174-candidate-transport.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+  SOURCE_NESTED_RUN: '33647694565'
+  SOURCE_V173_RUN: '33829092700'
+  CONTROL_SEED: '16061'
+
+jobs:
+  preflight:
+    name: V17.4 transport preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Compile V17.4
+        env:
+          PYTHONPATH: .:src
+        run: |
+          python -m py_compile scripts/train_v174_candidate_transport.py
+          python -m py_compile scripts/run_v174_reporting_compat.py
+          python -m py_compile scripts/summarize_v174_candidate_transport.py
+      - name: Prove isolated transport treatment
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+          TF_DETERMINISTIC_OPS: '1'
+        run: |
+          python - <<'PY'
+          import random
+          import numpy as np
+          import tensorflow as tf
+          from scripts import train_v172_mass_preserving_exchangeable as v172
+          from scripts import train_v173_poibin_count_consistency as v173
+          from scripts import train_v174_candidate_transport as v174
+
+          assert v174.DEFAULT_SEED == v173.DEFAULT_SEED == 16061
+          assert v174.PRESENCE_THRESHOLD == v173.PRESENCE_THRESHOLD == 0.5
+          assert v173.COUNT_NLL_WEIGHT == 0.35
+          assert len(v172.PERMUTATIONS) == 720
+          assert v174.TRANSPORT_ITERATIONS == 32
+
+          labels=np.zeros((200,6),dtype=np.float32)
+          labels[:100,0]=1; labels[:50,1]=1; labels[:24,2]=1
+          labels[:10,3]=1; labels[:4,4]=1; labels[:1,5]=1
+          spec=v172._weight_spec(labels,np.arange(len(labels)))
+          for k,row in spec['mass']['proof_by_k'].items():
+              assert abs(row['original_total_presence_coefficient_mass']-row['compressed_total_presence_coefficient_mass']) < 1e-9, (k,row)
+
+          def reset():
+              tf.keras.backend.clear_session()
+              random.seed(16161); np.random.seed(16161); tf.random.set_seed(16161)
+
+          reset(); old,lw173,_=v173._build_model(spec)
+          old_names=[x.name for x in old.trainable_weights]
+          old_weights=[np.asarray(x.numpy()) for x in old.trainable_weights]
+          reset(); new,lw174,_=v174._build_model(spec)
+          assert old.count_params() == new.count_params() == 1156295
+          assert len(old_names) == len(new.trainable_weights) == 167
+          assert old_names == [x.name for x in new.trainable_weights]
+          for i,(a,b) in enumerate(zip(old_weights,[np.asarray(x.numpy()) for x in new.trainable_weights])):
+              np.testing.assert_array_equal(a,b,err_msg=f'init mismatch tensor {i}')
+          assert lw173['event_count_norm'] == lw174['event_count_norm'] == 0.0
+          assert new.get_layer('v174_presence_mass_candidate_transport') is not None
+          assert new.get_layer('v160_global_reconciliation_attention') is not None
+
+          # Count objective is byte-for-byte the same implementation used by V17.3.
+          p=np.array([[.7,.6,.4,.3,.2,.1],[.9,.8,.7,.6,.5,.4]],dtype=np.float64)
+          d=v173._poibin_distribution_np(p)
+          np.testing.assert_allclose(d.sum(axis=1),1.0,rtol=1e-12,atol=1e-12)
+
+          # Capacity transport: mask respected, column capacity respected, permutation equivariant.
+          c=np.array([
+              [[.90,.08,.02,0],[.86,.10,.04,0],[.05,.15,.80,0],[.04,.20,.76,0],[.25,.25,.50,0],[.30,.30,.40,0]],
+              [[.70,.20,.10,0],[.10,.75,.15,0],[.15,.10,.75,0],[.40,.30,.30,0],[.34,.33,.33,0],[.33,.34,.33,0]],
+          ],dtype=np.float64)
+          pres=np.array([[.95,.91,.85,.80,.15,.08],[.9,.8,.7,.3,.2,.1]],dtype=np.float64)
+          mask=np.array([[1,1,1,0],[1,1,1,0]],dtype=np.float64)
+          cond,mass,cap=v174._capacity_transport_np(c,pres,mask)
+          assert np.all(cond[:,:,3] == 0)
+          assert np.all(np.sum(mass,axis=1) <= cap + 2e-5)
+          assert np.all(np.sum(mass,axis=2) <= pres + 2e-5)
+          perm=[5,2,0,4,1,3]
+          cond2,mass2,cap2=v174._capacity_transport_np(c[:,perm,:],pres[:,perm],mask)
+          inv=np.argsort(perm)
+          np.testing.assert_allclose(cond2[:,inv,:],cond,rtol=1e-9,atol=1e-9)
+          np.testing.assert_allclose(mass2[:,inv,:],mass,rtol=1e-9,atol=1e-9)
+          np.testing.assert_allclose(cap2,cap,rtol=1e-12,atol=1e-12)
+          tfcond=np.asarray(v174._capacity_transport_tf(tf,tf.constant(c,dtype=tf.float32),tf.constant(pres,dtype=tf.float32),tf.constant(mask,dtype=tf.float32)))
+          np.testing.assert_allclose(tfcond,cond,rtol=3e-5,atol=3e-6)
+          print('params',new.count_params(),'trainable_tensors',len(new.trainable_weights))
+          print('transport_iterations',v174.TRANSPORT_ITERATIONS,'count_weight',v173.COUNT_NLL_WEIGHT)
+          print('V17.4 preflight OK')
+          PY
+
+  fold:
+    name: V17.4 transport fold ${{ matrix.fold }}
+    needs: preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        fold: [0, 1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+      - name: Download GuitarSet when cache misses
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+      - name: Verify GuitarSet checksums
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Download frozen nested spectral bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: v104-nested-spectral-bundle
+          path: model/v100-spectral-cache
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download outer-clean V10 baselines
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v104-nested-eval-*
+          path: model/v104-nested-eval
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Train V17.4
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+          TF_DETERMINISTIC_OPS: '1'
+        shell: bash
+        run: |
+          set -o pipefail
+          out="model/v174-transport-fold-${{ matrix.fold }}"
+          mkdir -p "$out"
+          python -B scripts/run_v174_reporting_compat.py \
+            --cache-dir model/v100-spectral-cache \
+            --baseline-eval-dir model/v104-nested-eval \
+            --outer-fold "${{ matrix.fold }}" \
+            --arm mass_permutation \
+            --seed "$CONTROL_SEED" \
+            --output-dir "$out" \
+            2>&1 | tee "$out/train.log"
+      - name: Verify V17.4 protocol
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          fold='${{ matrix.fold }}'
+          r=json.loads(Path(f'model/v174-transport-fold-{fold}/report-fold-{fold}.json').read_text())
+          p=r['protocol']
+          assert p['v174_presence_mass_candidate_transport'] is True
+          assert p['v174_only_architecture_change_from_v173'] == 'candidate ownership capacity transport'
+          assert p['v16_trainable_backbone_unchanged'] is True
+          assert p['v173_objectness_count_objective_unchanged'] is True
+          assert p['runtime_count_decode_unchanged_from_v173'] is True
+          assert p['runtime_candidate_ownership_changed'] is True
+          assert p['runtime_presence_threshold'] == 0.5
+          assert p['runtime_presence_threshold_tuned'] is False
+          assert p['candidate_transport_iterations'] == 32
+          assert p['candidate_transport_presence_stop_gradient'] is True
+          assert p['categorical_cardinality_head_exists'] is False
+          assert p['historical_validation_or_locked12_indexed_or_evaluated'] is False
+          key='v174_transport'; g=r['strata']['aggregate'][key]['metrics']['global']
+          print(fold,'epochs',r['data']['selected_epochs'],'f1',g['f1'],'pred_ref',g['prediction_reference_ratio'],'k2',r['per_true_k']['2'][key]['exact'],'k3',r['per_true_k']['3'][key]['exact'],'k5',r['per_true_k']['5'][key]['exact'],'k6',r['per_true_k']['6'][key]['exact'])
+          PY
+      - name: Upload V17.4 fold
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v174-transport-fold-${{ matrix.fold }}
+          path: model/v174-transport-fold-${{ matrix.fold }}
+          compression-level: 6
+          if-no-files-found: warn
+          retention-days: 30
+
+  summarize:
+    name: Summarize and audit V17.4
+    needs: fold
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install NumPy
+        run: python -m pip install 'numpy<2.0'
+      - name: Download V17.4 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v174-transport-fold-*
+          path: model/v174-all
+          merge-multiple: false
+      - name: Download canonical V17.3 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v173-poibin-fold-*
+          path: model/v173-all
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V173_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download canonical V17.3 summary
+        uses: actions/download-artifact@v4
+        with:
+          name: v173-poibin-count-consistency-summary
+          path: model/v173-summary
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V173_RUN }}
+          github-token: ${{ github.token }}
+      - name: Aggregate and mechanism-audit V17.4
+        env:
+          PYTHONPATH: .:src
+        run: |
+          mkdir -p model/v174-summary
+          python -B scripts/summarize_v174_candidate_transport.py \
+            --input-dir model/v174-all \
+            --v173-fold-dir model/v173-all \
+            --v173-summary-dir model/v173-summary \
+            --output-dir model/v174-summary \
+            2>&1 | tee model/v174-summary/summary.log
+      - name: Verify aggregate protocol
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v174-summary/report.json').read_text()); p=r['protocol']
+          assert p['v174_presence_mass_candidate_transport'] is True
+          assert p['mandatory_post_implementation_audit'] is True
+          assert p['outer_clean_rows'] == 76768
+          assert p['same_rows_as_v173'] is True
+          assert p['same_seed'] == 16061
+          assert p['presence_threshold'] == 0.5 and p['threshold_tuned'] is False
+          assert p['poisson_binomial_count_objective_unchanged'] is True
+          assert p['mass_preserving_exchangeable_weights_unchanged'] is True
+          assert p['exact_720_matching_unchanged'] is True
+          assert p['categorical_cardinality_head_exists'] is False
+          assert p['locked12_indexed_or_evaluated'] is False
+          print(json.dumps(r['comparison'],indent=2,sort_keys=True))
+          PY
+      - name: Upload V17.4 summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v174-candidate-transport-summary
+          path: model/v174-summary
+          if-no-files-found: warn
+          retention-days: 30
