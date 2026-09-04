@@ -72,25 +72,32 @@ jobs:
               tf.keras.backend.clear_session()
               random.seed(16161); np.random.seed(16161); tf.random.set_seed(16161)
 
+          def snapshot(model):
+              out={}
+              for layer in model.layers:
+                  if layer.trainable_weights:
+                      out[layer.name]=[np.asarray(w.numpy()) for w in layer.trainable_weights]
+              return out
+
           reset(); old,lw173,_=v173._build_model(spec)
-          old_names=[x.name for x in old.trainable_weights]
-          old_weights=[np.asarray(x.numpy()) for x in old.trainable_weights]
+          old_snap=snapshot(old)
           reset(); new,lw174,_=v174._build_model(spec)
+          new_snap=snapshot(new)
           assert old.count_params() == new.count_params() == 1156295
-          assert len(old_names) == len(new.trainable_weights) == 167
-          assert old_names == [x.name for x in new.trainable_weights]
-          for i,(a,b) in enumerate(zip(old_weights,[np.asarray(x.numpy()) for x in new.trainable_weights])):
-              np.testing.assert_array_equal(a,b,err_msg=f'init mismatch tensor {i}')
+          assert len(old.trainable_weights) == len(new.trainable_weights) == 167
+          assert set(old_snap) == set(new_snap), (sorted(set(old_snap)-set(new_snap)), sorted(set(new_snap)-set(old_snap)))
+          for layer in sorted(old_snap):
+              assert len(old_snap[layer]) == len(new_snap[layer]), layer
+              for i,(a,b) in enumerate(zip(old_snap[layer],new_snap[layer])):
+                  np.testing.assert_array_equal(a,b,err_msg=f'init mismatch {layer}[{i}]')
           assert lw173['event_count_norm'] == lw174['event_count_norm'] == 0.0
           assert new.get_layer('v174_presence_mass_candidate_transport') is not None
           assert new.get_layer('v160_global_reconciliation_attention') is not None
 
-          # Count objective is byte-for-byte the same implementation used by V17.3.
           p=np.array([[.7,.6,.4,.3,.2,.1],[.9,.8,.7,.6,.5,.4]],dtype=np.float64)
           d=v173._poibin_distribution_np(p)
           np.testing.assert_allclose(d.sum(axis=1),1.0,rtol=1e-12,atol=1e-12)
 
-          # Capacity transport: mask respected, column capacity respected, permutation equivariant.
           c=np.array([
               [[.90,.08,.02,0],[.86,.10,.04,0],[.05,.15,.80,0],[.04,.20,.76,0],[.25,.25,.50,0],[.30,.30,.40,0]],
               [[.70,.20,.10,0],[.10,.75,.15,0],[.15,.10,.75,0],[.40,.30,.30,0],[.34,.33,.33,0],[.33,.34,.33,0]],
@@ -109,7 +116,7 @@ jobs:
           np.testing.assert_allclose(cap2,cap,rtol=1e-12,atol=1e-12)
           tfcond=np.asarray(v174._capacity_transport_tf(tf,tf.constant(c,dtype=tf.float32),tf.constant(pres,dtype=tf.float32),tf.constant(mask,dtype=tf.float32)))
           np.testing.assert_allclose(tfcond,cond,rtol=3e-5,atol=3e-6)
-          print('params',new.count_params(),'trainable_tensors',len(new.trainable_weights))
+          print('params',new.count_params(),'trainable_tensors',len(new.trainable_weights),'trainable_layers',len(new_snap))
           print('transport_iterations',v174.TRANSPORT_ITERATIONS,'count_weight',v173.COUNT_NLL_WEIGHT)
           print('V17.4 preflight OK')
           PY
