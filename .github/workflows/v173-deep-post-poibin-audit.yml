@@ -1,0 +1,84 @@
+name: V17.3 deep post-Poisson-binomial audit
+
+on:
+  push:
+    branches:
+      - v173-deep-audit
+    paths:
+      - scripts/audit_v173_post_poibin.py
+      - .github/workflows/v173-deep-post-poibin-audit.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  audit:
+    name: Deep audit V17.3 vs V17.2-C
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install audit dependencies
+        run: python -m pip install 'numpy<2.0'
+
+      - name: Download canonical V17.2-C folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v172-mass_permutation-fold-*
+          path: model/v172-folds
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: '33815575062'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download canonical V17.3 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v173-poibin-fold-*
+          path: model/v173-folds
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: '33829092700'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download V17.2 summary
+        uses: actions/download-artifact@v4
+        with:
+          name: v172-mass-preserving-causal-summary
+          path: model/v172-summary
+          repository: Andriamarosoa/note
+          run-id: '33815575062'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download V17.3 summary
+        uses: actions/download-artifact@v4
+        with:
+          name: v173-poibin-count-consistency-summary
+          path: model/v173-summary
+          repository: Andriamarosoa/note
+          run-id: '33829092700'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run deep post-V17.3 audit
+        run: |
+          mkdir -p model/v173-deep-audit
+          python -B scripts/audit_v173_post_poibin.py \
+            --v172-folds model/v172-folds \
+            --v173-folds model/v173-folds \
+            --v172-summary model/v172-summary \
+            --v173-summary model/v173-summary \
+            --output-dir model/v173-deep-audit \
+            2>&1 | tee model/v173-deep-audit/audit.log
+
+      - name: Upload deep audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: v173-deep-post-poibin-audit
+          path: model/v173-deep-audit
+          retention-days: 30
