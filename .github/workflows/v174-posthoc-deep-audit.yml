@@ -70,10 +70,12 @@ jobs:
 
       - name: Run post-V17.4 deep audit
         shell: bash
+        env:
+          PYTHONPATH: .
         run: |
           set -o pipefail
           mkdir -p model/v174-post-audit
-          python -B scripts/run_v174_transport_failure_audit.py \
+          python -B -m scripts.run_v174_transport_failure_audit \
             --v173-folds model/v173-folds \
             --v174-folds model/v174-folds \
             --v173-summary model/v173-summary \
