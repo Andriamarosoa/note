@@ -1,0 +1,351 @@
+name: V17.5 exact injective candidate ownership
+
+on:
+  push:
+    branches: [v175-discrete-ownership]
+    paths:
+      - 'scripts/train_v175_exact_injective_ownership.py'
+      - 'scripts/run_v175_reporting_compat.py'
+      - 'scripts/summarize_v175_exact_injective_ownership.py'
+      - '.github/workflows/v175-exact-injective-ownership.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+  SOURCE_NESTED_RUN: '33647694565'
+  SOURCE_V173_RUN: '33829092700'
+  CONTROL_SEED: '16061'
+
+jobs:
+  preflight:
+    name: V17.5 injective ownership preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Compile V17.5
+        env:
+          PYTHONPATH: .:src
+        run: |
+          python -m py_compile scripts/train_v175_exact_injective_ownership.py
+          python -m py_compile scripts/run_v175_reporting_compat.py
+          python -m py_compile scripts/summarize_v175_exact_injective_ownership.py
+      - name: Prove isolated exact ownership treatment
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+          TF_DETERMINISTIC_OPS: '1'
+        run: |
+          python - <<'PY'
+          import itertools
+          import random
+          import numpy as np
+          import tensorflow as tf
+          from scripts import train_v172_mass_preserving_exchangeable as v172
+          from scripts import train_v173_poibin_count_consistency as v173
+          from scripts import train_v175_exact_injective_ownership as v175
+
+          assert v175.DEFAULT_SEED == v173.DEFAULT_SEED == 16061
+          assert v175.PRESENCE_THRESHOLD == v173.PRESENCE_THRESHOLD == 0.5
+          assert v173.COUNT_NLL_WEIGHT == 0.35
+          assert v175.OWNERSHIP_NLL_WEIGHT == v172.SET_CANDIDATE_WEIGHT == 0.25
+          assert len(v172.PERMUTATIONS) == 720
+          assert v175.MASK_COUNT == 64
+
+          labels=np.zeros((200,6),dtype=np.float32)
+          labels[:100,0]=1; labels[:50,1]=1; labels[:24,2]=1
+          labels[:10,3]=1; labels[:4,4]=1; labels[:1,5]=1
+          spec=v172._weight_spec(labels,np.arange(len(labels)))
+          for k,row in spec['mass']['proof_by_k'].items():
+              assert abs(row['original_total_presence_coefficient_mass']-row['compressed_total_presence_coefficient_mass']) < 1e-9, (k,row)
+
+          def reset():
+              tf.keras.backend.clear_session()
+              random.seed(16161); np.random.seed(16161); tf.random.set_seed(16161)
+
+          def snapshot(model):
+              out={}
+              for layer in model.layers:
+                  if layer.trainable_weights:
+                      out[layer.name]=[np.asarray(w.numpy()) for w in layer.trainable_weights]
+              return out
+
+          reset(); old,lw173,_=v173._build_model(spec); old_snap=snapshot(old)
+          reset(); new,lw175,_=v175._build_model(spec); new_snap=snapshot(new)
+          assert old.count_params() == new.count_params() == 1156295
+          assert len(old.trainable_weights) == len(new.trainable_weights) == 167
+          assert set(old_snap) == set(new_snap)
+          for layer in sorted(old_snap):
+              assert len(old_snap[layer]) == len(new_snap[layer]), layer
+              for i,(a,b) in enumerate(zip(old_snap[layer],new_snap[layer])):
+                  np.testing.assert_array_equal(a,b,err_msg=f'init mismatch {layer}[{i}]')
+          assert lw173['event_count_norm'] == lw175['event_count_norm'] == 0.0
+          assert new.get_layer('v160_global_reconciliation_attention') is not None
+
+          # Exact injective probability identities.
+          rng=np.random.default_rng(175)
+          c=rng.uniform(.001,1,size=(4,6,48)); c/=c.sum(2,keepdims=True)
+          masks=np.zeros((4,6),dtype=np.float64)
+          masks[0,:0]=1; masks[1,:1]=1; masks[2,:3]=1; masks[3,:5]=1
+          pn=v175._injective_probability_np(c,masks)
+          pt=np.asarray(v175._injective_probability_tf(tf,tf.constant(c,dtype=tf.float32),tf.constant(masks,dtype=tf.float32)))
+          np.testing.assert_allclose(pt,pn,rtol=3e-5,atol=3e-6)
+          np.testing.assert_allclose(pn[:2],[1.0,1.0],rtol=1e-12,atol=1e-12)
+          perm=[5,2,0,4,1,3]; inv=np.argsort(perm)
+          np.testing.assert_allclose(v175._injective_probability_np(c[:,perm,:],masks[:,perm]),pn,rtol=1e-12,atol=1e-12)
+
+          # Brute-force a K3 example supported only on first four candidates.
+          small=np.zeros((1,6,48),dtype=np.float64)
+          small[0,0,:4]=[.55,.25,.15,.05]
+          small[0,1,:4]=[.50,.30,.15,.05]
+          small[0,2,:4]=[.45,.25,.20,.10]
+          small[0,3:,0]=1.0
+          m=np.zeros((1,6)); m[0,:3]=1
+          brute=sum(np.prod([small[0,q,col] for q,col in enumerate(cols)]) for cols in itertools.permutations(range(4),3))
+          exact=float(v175._injective_probability_np(small,m)[0])
+          np.testing.assert_allclose(exact,brute,rtol=1e-12,atol=1e-12)
+
+          # Distinct confident ownership must have larger probability than a collision mode.
+          distinct=np.zeros((1,6,48)); collide=np.zeros_like(distinct)
+          for q in range(3):
+              distinct[0,q,q]=.94; distinct[0,q,(q+1)%3]=.06
+              collide[0,q,0]=.94; collide[0,q,q+1]=.06
+          distinct[0,3:,3]=1; collide[0,3:,3]=1
+          pd=float(v175._injective_probability_np(distinct,m)[0])
+          pc=float(v175._injective_probability_np(collide,m)[0])
+          assert pd > pc + .5, (pd,pc)
+
+          # Runtime exact assignment: duplicate independent argmaxes become unique real IDs.
+          scores=np.zeros((1,6,48),dtype=np.float64)
+          scores[0,0,:4]=[.60,.30,.08,.02]
+          scores[0,1,:4]=[.59,.10,.29,.02]
+          scores[0,2,:4]=[.58,.08,.10,.24]
+          scores[0,3:,3]=1.0
+          pres=np.array([[.9,.85,.8,.1,.1,.1]])
+          mask=np.zeros((1,48)); mask[0,:4]=1
+          ids,diag=v175._injective_runtime_ids(scores,pres,mask)
+          active=np.flatnonzero(pres[0]>=.5)
+          real=ids[0,active]
+          assert np.all(real>=0) and len(np.unique(real)) == len(real), real
+          assert len(np.unique(np.argmax(scores[0,active],axis=1))) == 1
+          chosen=sum(np.log(np.clip(scores[0,q,ids[0,q]],1e-12,1)) for q in active)
+          brute_best=max(sum(np.log(np.clip(scores[0,q,col],1e-12,1)) for q,col in zip(active,cols)) for cols in itertools.permutations(range(4),3))
+          np.testing.assert_allclose(chosen,brute_best,rtol=1e-12,atol=1e-12)
+          assert bool(diag['real_feasible'][0])
+
+          # Query permutation equivariance for a unique optimum.
+          qp=[2,0,1,5,3,4]
+          ids2,_=v175._injective_runtime_ids(scores[:,qp,:],pres[:,qp],mask)
+          np.testing.assert_array_equal(ids2[:,np.argsort(qp)],ids)
+
+          # Insufficient real candidates route excess active queries to private null, never duplicate a real ID.
+          mask2=np.zeros((1,48)); mask2[0,:2]=1
+          ids3,diag3=v175._injective_runtime_ids(scores,pres,mask2)
+          real3=ids3[0,active]; nonnull=real3[real3>=0]
+          assert len(nonnull)==2 and len(np.unique(nonnull))==2 and np.sum(real3<0)==1
+          assert not bool(diag3['real_feasible'][0])
+
+          print('params',new.count_params(),'trainable_tensors',len(new.trainable_weights),'trainable_layers',len(new_snap))
+          print('injective_prob_distinct',pd,'collision',pc,'runtime_ids',ids[0].tolist())
+          print('V17.5 preflight OK')
+          PY
+
+  fold:
+    name: V17.5 injective fold ${{ matrix.fold }}
+    needs: preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        fold: [0, 1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+      - name: Download GuitarSet when cache misses
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+      - name: Verify GuitarSet checksums
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Download frozen nested spectral bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: v104-nested-spectral-bundle
+          path: model/v100-spectral-cache
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download outer-clean V10 baselines
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v104-nested-eval-*
+          path: model/v104-nested-eval
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Train V17.5
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+          TF_DETERMINISTIC_OPS: '1'
+        shell: bash
+        run: |
+          set -o pipefail
+          out="model/v175-injective-fold-${{ matrix.fold }}"
+          mkdir -p "$out"
+          python -B scripts/run_v175_reporting_compat.py \
+            --cache-dir model/v100-spectral-cache \
+            --baseline-eval-dir model/v104-nested-eval \
+            --outer-fold "${{ matrix.fold }}" \
+            --arm mass_permutation \
+            --seed "$CONTROL_SEED" \
+            --output-dir "$out" \
+            2>&1 | tee "$out/train.log"
+      - name: Verify V17.5 protocol
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          fold='${{ matrix.fold }}'
+          r=json.loads(Path(f'model/v175-injective-fold-{fold}/report-fold-{fold}.json').read_text())
+          p=r['protocol']; v=r['v175']
+          assert p['v175_exact_injective_candidate_ownership'] is True
+          assert p['v175_base_version'] == 'V17.3'
+          assert p['v175_only_ownership_mechanism_change'] is True
+          assert p['v173_poisson_binomial_count_objective_unchanged'] is True
+          assert p['v173_count_nll_weight'] == .35
+          assert p['mass_preserving_exchangeable_weights_unchanged'] is True
+          assert p['exact_720_truth_matching_unchanged'] is True
+          assert p['model_graph_unchanged_from_v173'] is True
+          assert p['trainable_parameters_added'] == 0
+          assert p['runtime_count_decode_unchanged_from_v173'] is True
+          assert p['runtime_presence_threshold'] == .5 and p['runtime_presence_threshold_tuned'] is False
+          assert p['runtime_candidate_real_ids_one_to_one_by_construction'] is True
+          assert p['categorical_cardinality_head_exists'] is False
+          assert p['historical_validation_or_locked12_indexed_or_evaluated'] is False
+          d=v['ownership_diagnostics']
+          for k,row in d['per_true_k'].items():
+              x=row['structured_duplicate_real_id_exact_count']
+              if x is not None:
+                  assert abs(x) < 1e-12, (k,x)
+          g=r['strata']['aggregate']['v175_injective']['metrics']['global']
+          print(fold,'epochs',r['data']['selected_epochs'],'f1',g['f1'],'pred_ref',g['prediction_reference_ratio'],'feasible',d['real_assignment_feasible_rate'],'raw_k3_dup',d['per_true_k']['3']['raw_duplicate_argmax_exact_count'])
+          PY
+      - name: Upload V17.5 fold
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v175-injective-fold-${{ matrix.fold }}
+          path: model/v175-injective-fold-${{ matrix.fold }}
+          compression-level: 6
+          if-no-files-found: warn
+          retention-days: 30
+
+  summarize:
+    name: Summarize and audit V17.5
+    needs: fold
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install NumPy
+        run: python -m pip install 'numpy<2.0'
+      - name: Download V17.5 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v175-injective-fold-*
+          path: model/v175-all
+          merge-multiple: false
+      - name: Download canonical V17.3 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v173-poibin-fold-*
+          path: model/v173-all
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V173_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download canonical V17.3 summary
+        uses: actions/download-artifact@v4
+        with:
+          name: v173-poibin-count-consistency-summary
+          path: model/v173-summary
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V173_RUN }}
+          github-token: ${{ github.token }}
+      - name: Aggregate and mechanism-audit V17.5
+        env:
+          PYTHONPATH: .:src
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v175-summary
+          python -B scripts/summarize_v175_exact_injective_ownership.py \
+            --input-dir model/v175-all \
+            --v173-fold-dir model/v173-all \
+            --v173-summary-dir model/v173-summary \
+            --output-dir model/v175-summary \
+            2>&1 | tee model/v175-summary/summary.log
+      - name: Verify aggregate protocol
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v175-summary/report.json').read_text()); p=r['protocol']; c=r['comparison']; g=r['gates']
+          assert p['v175_exact_injective_candidate_ownership'] is True
+          assert p['mandatory_post_implementation_audit'] is True
+          assert p['outer_clean_rows'] == 76768
+          assert p['same_rows_as_v173'] is True
+          assert p['same_seed'] == 16061
+          assert p['presence_threshold'] == .5 and p['threshold_tuned'] is False
+          assert p['v173_poisson_binomial_count_objective_unchanged'] is True
+          assert p['mass_preserving_exchangeable_weights_unchanged'] is True
+          assert p['exact_720_truth_matching_unchanged'] is True
+          assert p['categorical_cardinality_head_exists'] is False
+          assert p['locked12_indexed_or_evaluated'] is False
+          assert g['structured_real_candidate_duplicates_zero'] is True
+          print(json.dumps(c,indent=2,sort_keys=True))
+          print(json.dumps(g,indent=2,sort_keys=True))
+          PY
+      - name: Upload V17.5 summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v175-exact-injective-ownership-summary
+          path: model/v175-summary
+          if-no-files-found: warn
+          retention-days: 30
