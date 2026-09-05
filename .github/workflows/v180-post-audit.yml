@@ -1,0 +1,94 @@
+name: V18 post-audit
+
+on:
+  push:
+    branches: [v180-post-audit]
+    paths:
+      - 'scripts/audit_v180_evidence_seeded.py'
+      - '.github/workflows/v180-post-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  SOURCE_V180_RUN: '33955593836'
+  SOURCE_NESTED_RUN: '33647694565'
+
+jobs:
+  audit:
+    name: Audit V18 evidence-seeded competition
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install NumPy
+        run: python -m pip install 'numpy<2.0'
+      - name: Compile audit
+        run: python -m py_compile scripts/audit_v180_evidence_seeded.py
+      - name: Download all V18 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v180-evidence-fold-*
+          path: model/v180-audit-input
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V180_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download V18 summary
+        uses: actions/download-artifact@v4
+        with:
+          name: v180-evidence-seeded-competition-summary
+          path: model/v180-summary
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V180_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download frozen nested spectral bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: v104-nested-spectral-bundle
+          path: model/v100-spectral-cache
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Run deep V18 post-audit
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v180-post-audit
+          python -B scripts/audit_v180_evidence_seeded.py \
+            --input-dir model/v180-audit-input \
+            --summary-dir model/v180-summary \
+            --cache-dir model/v100-spectral-cache \
+            --output-dir model/v180-post-audit \
+            2>&1 | tee model/v180-post-audit/audit.log
+      - name: Verify audit invariants
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v180-post-audit/report.json').read_text())
+          p=r['protocol']; h=r['headline']; t=r['count_transitions']; a=r['evidence_anchor_diversity']; rp=r['rank_polarity']
+          assert p['outer_clean_rows'] == 76768
+          assert p['source_v180_run'] == 33955593836
+          assert p['no_retraining'] is True and p['locked12_touched'] is False
+          assert abs(h['global_f1_v180'] - 0.7849903559530071) < 1e-12
+          assert abs(h['global_f1_v173'] - 0.7920712806963364) < 1e-12
+          assert abs(h['activity_gini_v180'] - 0.31813348725382967) < 1e-12
+          assert abs(h['effective_active_slots_v180'] - 4.333261848501678) < 1e-12
+          assert a['rows_candidate_infeasible_c_lt_k'] == 180
+          assert t['v173_correct_v180_wrong_rows'] > t['v173_wrong_v180_correct_rows']
+          assert rp['positive_direction_folds'] >= 1 and rp['negative_direction_folds'] >= 1
+          assert r['realization_competition']['headline_uses_frozen_historical_realization_not_event_candidate_argmax'] is True
+          print('V18 post-audit verified')
+          PY
+      - name: Upload V18 post-audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: v180-post-audit
+          path: model/v180-post-audit
+          retention-days: 30
