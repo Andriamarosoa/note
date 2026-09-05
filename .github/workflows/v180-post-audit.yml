@@ -81,8 +81,10 @@ jobs:
           assert abs(h['activity_gini_v180'] - 0.31813348725382967) < 1e-12
           assert abs(h['effective_active_slots_v180'] - 4.333261848501678) < 1e-12
           assert a['rows_candidate_infeasible_c_lt_k'] == 180
-          assert t['v173_correct_v180_wrong_rows'] > t['v173_wrong_v180_correct_rows']
-          assert rp['positive_direction_folds'] >= 1 and rp['negative_direction_folds'] >= 1
+          assert t['net_exact_rows_v180_minus_v173'] == 44
+          assert t['by_true_k']['0']['net_exact_rows_v180_minus_v173'] == 404
+          assert t['by_true_k']['4']['net_exact_rows_v180_minus_v173'] == -221
+          assert rp['positive_direction_folds'] == 2 and rp['negative_direction_folds'] == 3
           assert r['realization_competition']['headline_uses_frozen_historical_realization_not_event_candidate_argmax'] is True
           print('V18 post-audit verified')
           PY
