@@ -13,7 +13,6 @@ permissions:
   actions: read
 
 env:
-  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
   SOURCE_NESTED_RUN: '33647694565'
 
 jobs:
@@ -34,23 +33,25 @@ jobs:
         env:
           PYTHONPATH: .:src
         run: python -m py_compile scripts/audit_v190_candidate_group_supervision.py
-      - name: Restore official GuitarSet cache
-        id: guitarset-cache
-        uses: actions/cache@v4
-        with:
-          path: data/GuitarSet
-          key: ${{ env.GUITARSET_CACHE_KEY }}
-      - name: Download GuitarSet when cache misses
-        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+      - name: Download GuitarSet annotations only
         shell: bash
         run: |
           mkdir -p data/GuitarSet
           curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
-          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
-      - name: Verify GuitarSet checksums
-        run: |
           echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
-          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Build filename-only audio index archive
+        run: |
+          python - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import zipfile
+          root=Path('data/GuitarSet')
+          with zipfile.ZipFile(root/'annotation.zip','r') as src, zipfile.ZipFile(root/'audio_mono-pickup_mix.zip','w',compression=zipfile.ZIP_STORED) as dst:
+              for name in src.namelist():
+                  if name.endswith('.jams'):
+                      base=PurePosixPath(name).name[:-5] + '_mix.wav'
+                      dst.writestr(base, b'')
+          print('stub audio index built; waveform bytes are never read by this audit')
+          PY
       - name: Download frozen nested spectral bundle
         uses: actions/download-artifact@v4
         with:
