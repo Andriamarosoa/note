@@ -1,0 +1,297 @@
+name: V19 dense birth-center decoder
+
+on:
+  push:
+    branches: [v190-dense-birth-centers]
+    paths:
+      - 'scripts/train_v190_dense_birth_centers.py'
+      - 'scripts/run_v190_reporting_compat.py'
+      - 'scripts/summarize_v190_dense_birth_centers.py'
+      - '.github/workflows/v190-dense-birth-centers.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+  SOURCE_NESTED_RUN: '33647694565'
+  SOURCE_V173_RUN: '33829092700'
+  CONTROL_SEED: '16061'
+
+jobs:
+  preflight:
+    name: V19 dense birth-center preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Compile V19
+        env:
+          PYTHONPATH: .:src
+        run: |
+          python -m py_compile scripts/train_v190_dense_birth_centers.py
+          python -m py_compile scripts/run_v190_reporting_compat.py
+          python -m py_compile scripts/summarize_v190_dense_birth_centers.py
+      - name: Prove V19 treatment
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+          TF_DETERMINISTIC_OPS: '1'
+        run: |
+          python - <<'PY'
+          import random
+          import numpy as np
+          import tensorflow as tf
+          from scripts import train_v172_mass_preserving_exchangeable as v172
+          from scripts import train_v173_poibin_count_consistency as v173
+          from scripts import train_v190_dense_birth_centers as v190
+
+          assert v190.DEFAULT_SEED == v173.DEFAULT_SEED == 16061
+          assert v190.PRESENCE_THRESHOLD == v173.PRESENCE_THRESHOLD == .5
+          assert v173.COUNT_NLL_WEIGHT == .35
+          assert len(v172.PERMUTATIONS) == 720
+          assert v190.EVENT_QUERIES == 6
+          assert v190.CENTER_CELLS == 23*64 == 1472
+          assert v190.CENTER_MAP_WEIGHT == .25
+
+          labels=np.zeros((200,6),dtype=np.float32)
+          labels[:100,0]=1; labels[:50,1]=1; labels[:24,2]=1; labels[:10,3]=1; labels[:4,4]=1; labels[:1,5]=1
+          spec=v172._weight_spec(labels,np.arange(len(labels)))
+          for k,row in spec['mass']['proof_by_k'].items():
+              assert abs(row['original_total_presence_coefficient_mass']-row['compressed_total_presence_coefficient_mass']) < 1e-9, (k,row)
+
+          # Training-only center targets: exactly normalized and frequency-aware.
+          cache={'slot_targets':np.zeros((2,6),dtype=np.float32)}
+          cache['slot_targets'][0,:3]=1; cache['slot_targets'][1,:6]=1
+          pitch=np.zeros((2,6),dtype=np.float32)
+          # Normalized MIDI values; choose distinct guitar-range pitches.
+          from scripts import train_v101_string_query_attention as v101
+          pitch[0,:3]=np.asarray([40,47,52],dtype=np.float32)/float(v101.PITCH_SCALE)
+          pitch[1,:6]=np.asarray([40,45,50,55,59,64],dtype=np.float32)/float(v101.PITCH_SCALE)
+          tt=np.zeros((2,6,23),dtype=np.float32)
+          tt[0,0,10]=1; tt[0,1,10]=1; tt[0,2,11]=1
+          for s in range(6): tt[1,s,12]=1
+          target,eligible,distinct=v190._birth_center_targets(cache,pitch,tt,np.asarray([3,6]))
+          np.testing.assert_allclose(target.sum(1),1.0,atol=1e-7)
+          np.testing.assert_array_equal(eligible,np.ones(2,dtype=np.float32))
+          assert distinct.tolist() == [3,6], distinct
+
+          tf.keras.backend.clear_session()
+          random.seed(16061); np.random.seed(16061); tf.random.set_seed(16061)
+          model,lw,token_shape=v190._build_model(spec)
+          assert lw['event_count_norm'] == 0.0
+          assert lw['birth_center_map'] == .25
+          for name in ('v190_dense_conv1','v190_dense_conv2','v190_dense_conv3','v190_birth_center_logits','v190_center_local_pool','v190_center_anchor_indices','v190_dense_anchor_seed','v190_shared_candidate_cross_attention','v190_shared_tf_cross_attention','v190_shared_proposal_self_attention','v190_shared_local_hidden','v190_shared_presence'):
+              assert model.get_layer(name) is not None, name
+          assert all('fixed_anonymous' not in layer.name for layer in model.layers)
+          assert model.get_layer('v190_dense_anchor_seed').trainable_weights == []
+          local=model.get_layer('v190_shared_local_hidden')
+          assert len(local._inbound_nodes) == 6, len(local._inbound_nodes)
+          bad=[]
+          for layer in model.layers:
+              if layer.trainable_weights and (layer.name.startswith('v190_event_') or layer.name.startswith('event_present_') or layer.name.startswith('event_candidate_') or layer.name.startswith('event_time_')):
+                  bad.append((layer.name,len(layer.trainable_weights)))
+          assert not bad,bad
+
+          rng=np.random.default_rng(190)
+          inputs={}
+          for t in model.inputs:
+              name=t.name.split(':',1)[0]; shape=[2]+[int(x) for x in t.shape[1:]]
+              inputs[name]=rng.normal(size=shape).astype(np.float32)
+          cm=np.zeros_like(inputs['candidate_mask'],dtype=np.float32); cm[0,:9]=1; cm[1,:4]=1; inputs['candidate_mask']=cm
+          out=model(inputs,training=False)
+          center=np.asarray(out['birth_center_map']); np.testing.assert_allclose(center.sum(1),1.0,rtol=1e-5,atol=1e-5)
+          idx_model=tf.keras.Model(model.inputs,model.get_layer('v190_center_anchor_indices').output)
+          idx=np.asarray(idx_model(inputs,training=False)); assert idx.shape==(2,6)
+          assert all(len(set(row.tolist()))==6 for row in idx)
+          pres=np.concatenate([np.asarray(out[f'event_present_{q}']) for q in range(6)],axis=1); assert pres.shape==(2,6)
+          for row in range(2):
+              for q in range(6):
+                  c=np.asarray(out[f'event_candidate_{q}'])[row]; t=np.asarray(out[f'event_time_{q}'])[row]
+                  assert np.max(np.abs(c[cm[row] < .5])) < 1e-7
+                  np.testing.assert_allclose(c.sum(),1.0,rtol=1e-4,atol=1e-4)
+                  np.testing.assert_allclose(t.sum(),1.0,rtol=1e-4,atol=1e-4)
+          cn=np.asarray(out['event_count_norm']); np.testing.assert_allclose(cn[:,0],pres.sum(1)/6.0,rtol=1e-6,atol=1e-6)
+          print('params',model.count_params(),'trainable_tensors',len(model.trainable_weights),'token_shape',token_shape)
+          print('shared_local_inbound_nodes',len(local._inbound_nodes),'q_specific_trainable_layers',bad)
+          print('center_indices',idx.tolist())
+          print('V19 preflight OK')
+          PY
+
+  fold:
+    name: V19 dense birth-center fold ${{ matrix.fold }}
+    needs: preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        fold: [0, 1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+      - name: Download GuitarSet when cache misses
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+      - name: Verify GuitarSet checksums
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Download frozen nested spectral bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: v104-nested-spectral-bundle
+          path: model/v100-spectral-cache
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download outer-clean V10 baselines
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v104-nested-eval-*
+          path: model/v104-nested-eval
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Train V19
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+          TF_DETERMINISTIC_OPS: '1'
+        shell: bash
+        run: |
+          set -o pipefail
+          out="model/v190-fold-${{ matrix.fold }}"; mkdir -p "$out"
+          python -B scripts/run_v190_reporting_compat.py \
+            --cache-dir model/v100-spectral-cache \
+            --baseline-eval-dir model/v104-nested-eval \
+            --outer-fold "${{ matrix.fold }}" \
+            --arm mass_permutation \
+            --seed "$CONTROL_SEED" \
+            --output-dir "$out" \
+            2>&1 | tee "$out/train.log"
+      - name: Verify V19 protocol
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          fold='${{ matrix.fold }}'; r=json.loads(Path(f'model/v190-fold-{fold}/report-fold-{fold}.json').read_text()); p=r['protocol']; a=r['v190']['architecture']; c=a['dense_center_diagnostics']
+          assert p['v190_dense_birth_centers'] is True
+          assert p['dense_center_grid'] == [23,64]
+          assert p['dense_center_supervision_training_only'] is True
+          assert p['dense_center_loss_weight'] == .25 and p['dense_center_loss_weight_tuned'] is False
+          assert p['fixed_anonymous_seed_count'] == 0 and p['learned_anonymous_seed_count'] == 0
+          assert p['raw_candidate_is_object_identity'] is False
+          assert p['v173_poisson_binomial_count_objective_unchanged'] is True and p['v173_count_nll_weight'] == .35
+          assert p['mass_preserving_exchangeable_weights_unchanged'] is True and p['exact_720_truth_matching_unchanged'] is True
+          assert p['runtime_presence_threshold'] == .5 and p['runtime_presence_threshold_tuned'] is False
+          assert p['categorical_cardinality_head_exists'] is False
+          assert p['historical_validation_or_locked12_indexed_or_evaluated'] is False
+          g=r['strata']['aggregate']['v190_dense_birth_centers']['metrics']['global']
+          print(fold,'epochs',r['data']['selected_epochs'],'f1',g['f1'],'pred_ref',g['prediction_reference_ratio'],'center_exact_poly',c['top6_exact_center_coverage_poly'],'center_hit_poly',c['top6_mean_center_hit_fraction_poly'],'gini',a['outer_activity_gini'],'effective_slots',a['outer_effective_active_slots'])
+          PY
+      - name: Upload V19 fold
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v190-dense-fold-${{ matrix.fold }}
+          path: model/v190-fold-${{ matrix.fold }}
+          compression-level: 6
+          if-no-files-found: warn
+          retention-days: 30
+
+  summarize:
+    name: Summarize and audit V19
+    needs: fold
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install NumPy
+        run: python -m pip install 'numpy<2.0'
+      - name: Download V19 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v190-dense-fold-*
+          path: model/v190-all
+          merge-multiple: false
+      - name: Download canonical V17.3 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v173-poibin-fold-*
+          path: model/v173-all
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V173_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download canonical V17.3 summary
+        uses: actions/download-artifact@v4
+        with:
+          name: v173-poibin-count-consistency-summary
+          path: model/v173-summary
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V173_RUN }}
+          github-token: ${{ github.token }}
+      - name: Aggregate V19
+        env:
+          PYTHONPATH: .:src
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v190-summary
+          python -B scripts/summarize_v190_dense_birth_centers.py \
+            --input-dir model/v190-all \
+            --v173-fold-dir model/v173-all \
+            --v173-summary-dir model/v173-summary \
+            --output-dir model/v190-summary \
+            2>&1 | tee model/v190-summary/summary.log
+      - name: Verify aggregate protocol
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v190-summary/report.json').read_text()); p=r['protocol']; c=r['comparison']; g=r['gates']; d=r['dense_center']
+          assert p['v190_dense_birth_centers'] is True and p['mandatory_post_implementation_audit'] is True
+          assert p['outer_clean_rows'] == 76768 and p['same_rows_as_v173'] is True and p['same_seed'] == 16061
+          assert p['presence_threshold'] == .5 and p['threshold_tuned'] is False
+          assert p['dense_center_grid'] == [23,64] and p['center_map_loss_weight'] == .25 and p['center_map_weight_tuned'] is False
+          assert p['v173_poisson_binomial_count_objective_unchanged'] is True and p['mass_preserving_exchangeable_weights_unchanged'] is True and p['exact_720_truth_matching_unchanged'] is True
+          assert p['categorical_cardinality_head_exists'] is False and p['locked12_indexed_or_evaluated'] is False
+          print(json.dumps(c,indent=2,sort_keys=True)); print(json.dumps(d,indent=2,sort_keys=True)); print(json.dumps(g,indent=2,sort_keys=True))
+          PY
+      - name: Upload V19 summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: v190-dense-birth-centers-summary
+          path: model/v190-summary
+          retention-days: 30
