@@ -1,0 +1,158 @@
+name: V10.4 transfer audit
+
+on:
+  push:
+    branches: [v8-anonymous-cardinality]
+    paths:
+      - 'scripts/audit_v104_transfer.py'
+      - '.github/workflows/v104-transfer-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+  SOURCE_OOF_RUN: '33634747432'
+
+jobs:
+  audit:
+    name: Audit OOF to full expert transfer
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+
+      - name: Download GuitarSet when cache misses
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+
+      - name: Verify GuitarSet checksums
+        shell: bash
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+
+      - name: Download strict OOF shards
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v104-oof-*
+          path: model/v104-oof-download
+          merge-multiple: true
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_OOF_RUN }}
+          github-token: ${{ github.token }}
+
+      - name: Flatten and verify OOF shards
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v104-oof
+          find model/v104-oof-download -name 'v104-oof-fold-*.npz' -exec cp {} model/v104-oof/ \;
+          find model/v104-oof-download -name 'v104-oof-fold-*.json' -exec cp {} model/v104-oof/ \;
+          test "$(find model/v104-oof -maxdepth 1 -name 'v104-oof-fold-*.npz' | wc -l)" -eq 5
+          test "$(find model/v104-oof -maxdepth 1 -name 'v104-oof-fold-*.json' | wc -l)" -eq 5
+
+      - name: Download frozen V10 spectral caches
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v100-spectral-cache
+          for shard in 0 1 2 3 4 5 6 7; do
+            mkdir -p "model/v100-spectral-cache/$shard"
+            gh run download 33605122369 --repo "$GITHUB_REPOSITORY" --name "v100-spectral-$shard" --dir "model/v100-spectral-cache/$shard"
+          done
+
+      - name: Download full experts and frozen V10.4
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/source-v101 model/source-v102 model/source-v104 /tmp/v104-audit
+          f(){ gh api -H "Accept: application/vnd.github+json" "/repos/$GITHUB_REPOSITORY/actions/artifacts/$1/zip" > "/tmp/v104-audit/$1.zip"; unzip -q "/tmp/v104-audit/$1.zip" -d "$2"; }
+          f 9842799517 model/source-v101
+          f 9845793222 model/source-v102
+          f 9851803543 model/source-v104
+          test -f model/source-v101/v101-string-query-result/v101-string-query-attention.weights.h5
+          test -f model/source-v102/v102-source-time-result/v102-source-time-assignment.weights.h5
+          test -f model/source-v104/v104-class-conditional-result/report.json
+          test -f model/source-v104/v104-class-conditional-result/v104-class-conditional-fusion.weights.h5
+          test -f model/source-v104/v104-class-conditional-result/v104-feature-scaler.npz
+
+      - name: Compile audit
+        env:
+          PYTHONPATH: .:src
+        run: python -m py_compile scripts/audit_v104_transfer.py
+
+      - name: Run train-only transfer audit
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v104-transfer-audit
+          python -B scripts/audit_v104_transfer.py \
+            --cache-dir model/v100-spectral-cache \
+            --oof-dir model/v104-oof \
+            --v101-weights model/source-v101/v101-string-query-result/v101-string-query-attention.weights.h5 \
+            --v101-report model/source-v101/v101-string-query-result/report.json \
+            --v102-weights model/source-v102/v102-source-time-result/v102-source-time-assignment.weights.h5 \
+            --v102-report model/source-v102/v102-source-time-result/report.json \
+            --v104-weights model/source-v104/v104-class-conditional-result/v104-class-conditional-fusion.weights.h5 \
+            --v104-scaler model/source-v104/v104-class-conditional-result/v104-feature-scaler.npz \
+            --v104-report model/source-v104/v104-class-conditional-result/report.json \
+            --output model/v104-transfer-audit/report.json \
+            2>&1 | tee model/v104-transfer-audit/audit.log
+
+      - name: Verify no locked evaluation and summarize
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v104-transfer-audit/report.json').read_text())
+          assert r['protocol']['locked12_indexed_or_evaluated'] is False
+          assert r['protocol']['train_only_audit'] is True
+          print('crossfit', r['cross_fitted_fusion_generalization']['aggregate']['v104_metrics'])
+          s=r['oof_to_full_input_shift']
+          print('v101 shift', s['v101']['probability_shift'], 'agreement', s['v101']['decoded_agreement'])
+          print('v102 shift', s['v102']['probability_shift'], 'agreement', s['v102']['decoded_agreement'])
+          print('features', s['features_83d'])
+          print('gate', s['class_gate'])
+          print('counterfactuals', s['frozen_fusion_counterfactuals'])
+          PY
+
+      - name: Upload audit artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: v104-transfer-audit
+          path: model/v104-transfer-audit
+          compression-level: 6
+          if-no-files-found: error
+          retention-days: 14

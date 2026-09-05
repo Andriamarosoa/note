@@ -1,0 +1,104 @@
+name: V17 after-audit serialization fix
+
+on:
+  push:
+    branches: [v8-anonymous-cardinality]
+    paths:
+      - 'scripts/run_v170_after_audit_serialization_fix.py'
+      - '.github/workflows/v170-after-audit-fix.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+  SOURCE_NESTED_RUN: '33647694565'
+  V16_REFERENCE_RUN: '33778269817'
+  V17_REFERENCE_RUN: '33790613617'
+
+jobs:
+  audit:
+    name: Re-run V17 after-audit only
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - uses: actions/cache@v4
+        id: guitarset
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+      - name: Download GuitarSet when cache misses
+        if: steps.guitarset.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+      - name: Verify GuitarSet checksums
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - uses: actions/download-artifact@v4
+        with:
+          name: v104-nested-spectral-bundle
+          path: model/v100-spectral-cache
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v160-parallel-coverage-fold-*
+          path: model/v160-reference
+          repository: Andriamarosoa/note
+          run-id: ${{ env.V16_REFERENCE_RUN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v170-permutation-set-fold-*
+          path: model/v170-folds
+          repository: Andriamarosoa/note
+          run-id: ${{ env.V17_REFERENCE_RUN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run corrected after-audit
+        env:
+          PYTHONPATH: .:src
+        run: |
+          mkdir -p model/v170-after-audit-fixed
+          python -B scripts/run_v170_after_audit_serialization_fix.py \
+            --v16-input-dir model/v160-reference \
+            --v17-input-dir model/v170-folds \
+            --cache-dir model/v100-spectral-cache \
+            --output-dir model/v170-after-audit-fixed \
+            2>&1 | tee model/v170-after-audit-fixed/audit.log
+      - name: Verify corrected audit
+        env:
+          PYTHONPATH: .:src
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v170-after-audit-fixed/report.json').read_text())
+          p=r['protocol']
+          assert p['audit_only'] is True
+          assert p['outer_clean_rows'] == 76768
+          assert p['locked12_indexed_or_evaluated'] is False
+          assert p['threshold_tuned'] is False
+          assert p['candidate_ranking_changed'] is False
+          assert p['same_rows_v16_v17'] is True
+          print(json.dumps(r['comparison'], indent=2, sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v170-cardinality-after-audit-fixed
+          path: model/v170-after-audit-fixed
+          retention-days: 30

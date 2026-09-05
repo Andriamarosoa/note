@@ -1,0 +1,157 @@
+name: V11.1 nested outer-clean audit
+
+on:
+  push:
+    branches: [v8-anonymous-cardinality]
+    paths:
+      - 'scripts/audit_v111_nested_outer_clean.py'
+      - '.github/workflows/v111-nested-outer-clean-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+  SOURCE_NESTED_RUN: '33647694565'
+
+jobs:
+  audit:
+    name: Nested outer-clean hierarchical audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+
+      - name: Download GuitarSet when cache misses
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+
+      - name: Verify GuitarSet checksums
+        shell: bash
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+
+      - name: Download frozen nested spectral bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: v104-nested-spectral-bundle
+          path: model/v100-spectral-cache
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+
+      - name: Download nested inner OOF artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v104-nested-inner-*
+          path: model/v104-nested-inner
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+
+      - name: Download nested deployment expert artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v104-nested-outer-expert-*
+          path: model/v104-nested-outer
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+
+      - name: Download frozen V10.4 nested eval predictions
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v104-nested-eval-*
+          path: model/v104-nested-eval
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+
+      - name: Keep only inner-held OOF NPZs and verify coverage
+        shell: bash
+        run: |
+          set -o pipefail
+          find model/v104-nested-inner -name '*probe-from-inner*.npz' -delete
+          test "$(find model/v104-nested-inner -name 'v104-nested-outer-*-inner-*.npz' | wc -l)" -eq 20
+          test "$(find model/v104-nested-outer -name 'v104-nested-outer-*-deploy.npz' | wc -l)" -eq 5
+          test "$(find model/v104-nested-eval -name 'v104-nested-eval-*.npz' | wc -l)" -eq 5
+
+      - name: Compile audit
+        env:
+          PYTHONPATH: .:src
+        run: python -m py_compile scripts/audit_v111_nested_outer_clean.py
+
+      - name: Run nested outer-clean V11.1 audit
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v111-nested-audit
+          python -B scripts/audit_v111_nested_outer_clean.py \
+            --cache-dir model/v100-spectral-cache \
+            --inner-dir model/v104-nested-inner \
+            --outer-dir model/v104-nested-outer \
+            --eval-dir model/v104-nested-eval \
+            --output-dir model/v111-nested-audit \
+            2>&1 | tee model/v111-nested-audit/audit.log
+
+      - name: Verify isolation and summarize
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v111-nested-audit/report.json').read_text())
+          p=r['protocol']
+          assert p['historical_validation_or_locked12_indexed_or_evaluated'] is False
+          assert p['outer_fold_seen_by_any_inner_expert_training'] is False
+          assert p['outer_fold_seen_by_v111_training'] is False
+          assert p['outer_fold_seen_by_v111_variant_or_epoch_selection'] is False
+          assert p['multiplicity_loss_receives_k0_weight'] is False
+          assert p['birth_threshold_tuned'] is False
+          assert p['birth_threshold'] == 0.5
+          for s in ('aggregate','player00','player00_comp','player00_rock_comp'):
+              x=r['strata'][s]
+              print(s,
+                    'v101', x['v101']['metrics']['global']['f1'],
+                    'v104', x['v104']['metrics']['global']['f1'],
+                    'v111', x['v111']['metrics']['global']['f1'])
+          PY
+
+      - name: Upload audit artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: v111-nested-outer-clean-audit
+          path: model/v111-nested-audit
+          compression-level: 6
+          if-no-files-found: error
+          retention-days: 14

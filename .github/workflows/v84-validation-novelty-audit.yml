@@ -1,0 +1,127 @@
+name: V8.4 validation novelty audit
+
+on:
+  push:
+    branches:
+      - v8-anonymous-cardinality
+    paths:
+      - ".github/workflows/v84-validation-novelty-audit.yml"
+      - "scripts/audit_v84_validation_novelty.py"
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: requirements-train.txt
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+
+      - name: Download official GuitarSet pickup-mix data
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 5 --retry-delay 5 -o data/GuitarSet/annotation.zip "https://zenodo.org/records/3371780/files/annotation.zip?download=1"
+          curl -L --fail --retry 5 --retry-delay 5 -o data/GuitarSet/audio_mono-pickup_mix.zip "https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip?download=1"
+
+      - name: Verify GuitarSet checksums
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+
+      - name: Download frozen V8.4 A/B artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/source-v84
+          gh run download 33571604757 --repo "$GITHUB_REPOSITORY" --name v84-independent-ab --dir model/source-v84
+          test -f model/source-v84/v84-pilot/control.epoch-01.keras
+          test -f model/source-v84/v84-pilot/replay.epoch-03.keras
+          test -f model/source-v84/v84-ab-summary.json
+
+      - name: Compile validation novelty audit
+        env:
+          PYTHONPATH: src
+        run: python -m py_compile scripts/audit_v84_validation_novelty.py
+
+      - name: Audit frozen V8.4 control and replay predictions
+        env:
+          PYTHONPATH: src
+          TF_CPP_MIN_LOG_LEVEL: "2"
+        run: |
+          set -o pipefail
+          mkdir -p model/v84-validation-novelty
+          python -B scripts/audit_v84_validation_novelty.py \
+            --control-model model/source-v84/v84-pilot/control.epoch-01.keras \
+            --replay-model model/source-v84/v84-pilot/replay.epoch-03.keras \
+            --output model/v84-validation-novelty/audit.json \
+            2>&1 | tee model/v84-validation-novelty/audit.log
+
+      - name: Verify frozen baselines and summarize transfer
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path('model/v84-validation-novelty/audit.json')
+          data = json.loads(path.read_text())
+          assert data['configuration']['validation_threshold_refit'] is False
+          assert data['configuration']['transfer_rules_frozen_from_train'] is True
+          assert data['configuration']['offset_training_or_mutation'] is False
+          assert data['split']['evaluated_tracks'] == 12
+
+          c = data['arms']['control_epoch_01']['baseline']
+          r = data['arms']['replay_epoch_03']['baseline']
+          assert abs(c['global']['f1'] - 0.440561) < 5e-4, c['global']
+          assert abs(c['comp']['f1'] - 0.575076) < 5e-4, c['comp']
+          assert abs(r['global']['f1'] - 0.409429) < 5e-4, r['global']
+          assert abs(r['solo']['f1'] - 0.471233) < 5e-4, r['solo']
+          assert abs(r['comp']['f1'] - 0.377642) < 5e-4, r['comp']
+
+          def show(arm):
+              row = data['arms'][arm]
+              print('\nARM', arm)
+              print('baseline', json.dumps(row['baseline'], sort_keys=True))
+              for regime in ('global','solo','comp'):
+                  rank = row['rank_separation'][regime]
+                  fixed = rank.get('fixed_positive_flux_enrichment')
+                  contour = rank.get('contour_positive_flux_enrichment')
+                  print('auc', regime, 'fixed', fixed, 'contour', contour)
+              for rule in row['transferred_train_rules']:
+                  print('rule', rule['name'],
+                        'solo_fp_rejection', rule['descriptive']['solo']['fp_rejection'],
+                        'solo_tp_retention', rule['descriptive']['solo']['matched_tp_retention'],
+                        'comp_fp_rejection', rule['descriptive']['comp']['fp_rejection'],
+                        'comp_tp_retention', rule['descriptive']['comp']['matched_tp_retention'],
+                        'post_global_f1', rule['exact_postfilter_metrics']['global']['f1'],
+                        'post_solo_f1', rule['exact_postfilter_metrics']['solo']['f1'],
+                        'post_comp_f1', rule['exact_postfilter_metrics']['comp']['f1'])
+          show('control_epoch_01')
+          show('replay_epoch_03')
+          PY
+
+      - name: Upload V8.4 validation novelty artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v84-validation-novelty-audit
+          path: |
+            model/v84-validation-novelty/audit.json
+            model/v84-validation-novelty/audit.log
+          if-no-files-found: warn
+          retention-days: 14

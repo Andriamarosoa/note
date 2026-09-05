@@ -1,0 +1,70 @@
+name: V8 temporal signal diagnostic
+
+on:
+  push:
+    branches:
+      - v8-anonymous-cardinality
+    paths:
+      - "scripts/diagnose_v8_temporal_signal.py"
+      - ".github/workflows/v8-signal-diagnostic.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Restore official GuitarSet cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+      - name: Download GuitarSet if cache is absent
+        run: |
+          mkdir -p data/GuitarSet
+          test -f data/GuitarSet/annotation.zip || curl -L --fail --retry 5 --retry-delay 5 -o data/GuitarSet/annotation.zip "https://zenodo.org/records/3371780/files/annotation.zip?download=1"
+          test -f data/GuitarSet/audio_mono-pickup_mix.zip || curl -L --fail --retry 5 --retry-delay 5 -o data/GuitarSet/audio_mono-pickup_mix.zip "https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip?download=1"
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Download V8 pilot checkpoint
+        uses: actions/download-artifact@v4
+        with:
+          name: v8-pilot
+          path: model/v8-pilot-artifact
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: Andriamarosoa/note
+          run-id: 33527608627
+      - name: Diagnose temporal evidence
+        env:
+          PYTHONPATH: src
+          TF_CPP_MIN_LOG_LEVEL: "2"
+        run: |
+          python -B scripts/diagnose_v8_temporal_signal.py \
+            --model model/v8-pilot-artifact/causal-boundaries-v8-pilot.keras \
+            --limit-tracks 12 \
+            --negative-samples-per-track 12000 \
+            --windows-ms 0 2 5 10 20 50 \
+            --output model/v8-temporal-signal.json \
+            2>&1 | tee model/v8-temporal-signal.log
+      - name: Upload diagnostic
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v8-temporal-signal
+          path: |
+            model/v8-temporal-signal.json
+            model/v8-temporal-signal.log
+          if-no-files-found: warn
+          retention-days: 14

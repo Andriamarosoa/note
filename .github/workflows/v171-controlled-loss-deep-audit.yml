@@ -1,0 +1,63 @@
+name: V17.1 controlled loss deep audit
+
+on:
+  push:
+    branches: [v8-anonymous-cardinality]
+    paths:
+      - 'scripts/audit_v171_controlled_loss.py'
+      - '.github/workflows/v171-controlled-loss-deep-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    env:
+      SOURCE_RUN: '33814528437'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install NumPy
+        run: python -m pip install 'numpy<2.0'
+      - name: Download corrected V17.1 summary
+        uses: actions/download-artifact@v4
+        with:
+          name: v171-controlled-assignment-summary-fixed
+          path: model/v171-summary-fixed
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_RUN }}
+          github-token: ${{ github.token }}
+      - name: Deep audit controlled loss
+        env:
+          PYTHONPATH: .:src
+        run: |
+          mkdir -p model/v171-loss-audit
+          python -B scripts/audit_v171_controlled_loss.py --summary-dir model/v171-summary-fixed --output-dir model/v171-loss-audit | tee model/v171-loss-audit/audit.log
+      - name: Verify audit gates
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v171-loss-audit/report.json').read_text())
+          assert r['protocol']['source_summary_rows'] == 76768
+          assert r['protocol']['training_performed'] is False
+          assert r['protocol']['threshold_tuned'] is False
+          assert r['protocol']['locked12_indexed_or_evaluated'] is False
+          assert r['headline']['ordered_pred_ref'] > 1.5
+          assert r['headline']['permutation_pred_ref'] > 1.5
+          assert r['headline']['matching_effect_fraction_of_controlled_gap'] < 0.10
+          assert r['weighting']['aggregate_distortion']['0']['mean'] > 5.0
+          print(json.dumps(r['headline'], indent=2, sort_keys=True))
+          print(json.dumps(r['diagnosis'], indent=2, sort_keys=True))
+          PY
+      - name: Upload audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: v171-controlled-loss-deep-audit
+          path: model/v171-loss-audit
+          retention-days: 30

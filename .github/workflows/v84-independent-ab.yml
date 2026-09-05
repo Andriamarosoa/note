@@ -1,0 +1,206 @@
+name: V8.4 fully independent task A/B
+
+on:
+  push:
+    branches:
+      - v8-anonymous-cardinality
+    paths:
+      - ".github/workflows/v84-independent-ab.yml"
+      - "scripts/train_v84_ab.py"
+      - "scripts/sweep_v84_thresholds.py"
+      - "src/causal_note/v84_model.py"
+      - "src/causal_note/v84_predictor.py"
+      - "test/test_v84_model.py"
+  workflow_dispatch:
+
+jobs:
+  ab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: requirements-train.txt
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+
+      - name: Download official GuitarSet pickup-mix data
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 5 --retry-delay 5 -o data/GuitarSet/annotation.zip "https://zenodo.org/records/3371780/files/annotation.zip?download=1"
+          curl -L --fail --retry 5 --retry-delay 5 -o data/GuitarSet/audio_mono-pickup_mix.zip "https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip?download=1"
+
+      - name: Verify GuitarSet checksums
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+
+      - name: Download frozen V8.1 epoch-03 source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/source-v81
+          gh run download 33536348915 --repo "$GITHUB_REPOSITORY" --name v81-pilot --dir model/source-v81
+          test -f model/source-v81/causal-boundaries-v81-pilot.epoch-03.keras
+          test -f model/source-v81/v81-pilot-epoch-03-sweep.json
+
+      - name: Download frozen V8.1 train-FP audit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/source-audit
+          gh run download 33551039906 --repo "$GITHUB_REPOSITORY" --name v81-train-fp-harmonic-audit --dir model/source-audit
+          test -f model/source-audit/v81-train-fp-harmonic-audit.json
+
+      - name: Test complete task isolation and predictor
+        env:
+          PYTHONPATH: src
+          TF_CPP_MIN_LOG_LEVEL: "2"
+        run: |
+          python -m unittest test.test_v84_model -v
+          python -m unittest test.test_v82c_ab -v
+          python -m py_compile scripts/train_v84_ab.py scripts/sweep_v84_thresholds.py
+
+      - name: Smoke independent training path
+        env:
+          PYTHONPATH: src
+          TF_CPP_MIN_LOG_LEVEL: "2"
+        run: |
+          set -o pipefail
+          python -B scripts/train_v84_ab.py \
+            --source-model model/source-v81/causal-boundaries-v81-pilot.epoch-03.keras \
+            --replay-audit model/source-audit/v81-train-fp-harmonic-audit.json \
+            --filters 32 --learning-rate 0.0001 --smoke \
+            --output-dir model/v84-smoke 2>&1 | tee model/v84-smoke.log
+
+      - name: Train independent onset control replay and offset pipelines
+        env:
+          PYTHONPATH: src
+          TF_CPP_MIN_LOG_LEVEL: "2"
+        run: |
+          set -o pipefail
+          python -B scripts/train_v84_ab.py \
+            --source-model model/source-v81/causal-boundaries-v81-pilot.epoch-03.keras \
+            --replay-audit model/source-audit/v81-train-fp-harmonic-audit.json \
+            --epochs 3 --filters 32 --train-examples 800 --validation-examples 200 \
+            --learning-rate 0.0001 --replay-fraction 0.25 --max-replay-per-track 16 \
+            --output-dir model/v84-pilot 2>&1 | tee model/v84-pilot-train.log
+
+      - name: Verify zero coupling manifest
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data=json.loads(Path('model/v84-pilot/manifest.json').read_text())
+          arch=data['architecture']; cfg=data['configuration']
+          assert arch['shared_trainable_variables'] == 0
+          assert arch['separate_complete_onset_stream'] is True
+          assert arch['separate_complete_offset_stream'] is True
+          assert arch['same_offset_stream_in_control_and_replay'] is True
+          assert cfg['onset_offset_samplers_independent'] is True
+          assert cfg['onset_replay_can_update_offset'] is False
+          assert cfg['onset_replay_can_select_offset_crops'] is False
+          assert len(data['epochs']) == 3
+          for row in data['epochs']:
+              assert row['replay_summary']['positions'] == 200
+              assert all(v == 0 for k,v in row['onset_control_counts'].items() if k.startswith('offset_'))
+              assert all(v == 0 for k,v in row['onset_replay_counts'].items() if k.startswith('offset_'))
+              assert all(v == 0 for k,v in row['offset_counts'].items() if k.startswith('onset_'))
+          print(json.dumps({'architecture':arch,'configuration':cfg},indent=2))
+          PY
+
+      - name: Sweep both V8.4 arms on locked 12-track subset
+        env:
+          PYTHONPATH: src
+          TF_CPP_MIN_LOG_LEVEL: "2"
+        run: |
+          set -o pipefail
+          for arm in control replay; do
+            for epoch in 01 02 03; do
+              python -B scripts/sweep_v84_thresholds.py \
+                --model "model/v84-pilot/${arm}.epoch-${epoch}.keras" \
+                --limit-tracks 12 \
+                --thresholds 0.01 0.02 0.05 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 0.95 \
+                --output "model/v84-${arm}-epoch-${epoch}-sweep.json" \
+                > "model/v84-${arm}-epoch-${epoch}-sweep.log"
+            done
+          done
+
+      - name: Compare source control replay and prove offset identity
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          def metric(r):
+              return {k:r[k] for k in ('reference_count','prediction_count','true_positive','false_positive','false_negative','precision','recall','f1','prediction_reference_ratio') if k in r}
+          def metrics(p):
+              a=p['aggregates']
+              return {'onset':metric(a['global']['onset']),'offset':metric(a['global']['offset']),'solo_onset':metric(a['solo']['onset']),'comp_onset':metric(a['comp']['onset'])}
+          def summary(path):
+              d=json.loads(Path(path).read_text()); fixed=d['sweep']['0.400000']
+              candidates=[]
+              for t,p in d['sweep'].items():
+                  g=p['aggregates']['global']; candidates.append((g['onset']['f1']+g['offset']['f1'],-float(t),t,p))
+              _,_,bt,bp=max(candidates)
+              return {'fixed_0_40':metrics(fixed),'best_combined_threshold':bt,'best_combined':metrics(bp),'runtime':d['runtime'],'raw_sweep':d['sweep']}
+
+          source=summary('model/source-v81/v81-pilot-epoch-03-sweep.json')
+          report={'schema_version':1,'source_v81_epoch_03':{k:v for k,v in source.items() if k!='raw_sweep'},'control':{},'replay':{},'offset_identity':{}}
+          for e in (1,2,3):
+              c=summary(f'model/v84-control-epoch-{e:02d}-sweep.json')
+              r=summary(f'model/v84-replay-epoch-{e:02d}-sweep.json')
+              for t in c['raw_sweep']:
+                  co=c['raw_sweep'][t]['aggregates']['global']['offset']
+                  ro=r['raw_sweep'][t]['aggregates']['global']['offset']
+                  for key in ('reference_count','prediction_count','true_positive','false_positive','false_negative','precision','recall','f1'):
+                      assert co[key] == ro[key], (e,t,key,co[key],ro[key])
+              report['offset_identity'][str(e)] = True
+              report['control'][str(e)]={k:v for k,v in c.items() if k!='raw_sweep'}
+              report['replay'][str(e)]={k:v for k,v in r.items() if k!='raw_sweep'}
+
+          print('arm epoch mode threshold onset_P onset_R onset_F1 offset_P offset_R offset_F1 solo_P solo_R solo_F1 comp_P comp_R comp_F1 RTF')
+          s=report['source_v81_epoch_03']['fixed_0_40']
+          vals=[]
+          for kind in ('onset','offset','solo_onset','comp_onset'): vals.extend(s[kind][k] for k in ('precision','recall','f1'))
+          print('source 3 fixed 0.400000',*(f'{x:.6f}' for x in vals),f"{report['source_v81_epoch_03']['runtime']['realtime_factor']:.6f}")
+          for arm in ('control','replay'):
+              for e in (1,2,3):
+                  row=report[arm][str(e)]
+                  for mode,t,m in (('fixed','0.400000',row['fixed_0_40']),('best',row['best_combined_threshold'],row['best_combined'])):
+                      vals=[]
+                      for kind in ('onset','offset','solo_onset','comp_onset'): vals.extend(m[kind][k] for k in ('precision','recall','f1'))
+                      print(arm,e,mode,t,*(f'{x:.6f}' for x in vals),f"{row['runtime']['realtime_factor']:.6f}")
+          Path('model/v84-ab-summary.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
+          PY
+
+      - name: Upload V8.4 A/B artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v84-independent-ab
+          path: |
+            model/v84-smoke.log
+            model/v84-pilot-train.log
+            model/v84-pilot/manifest.json
+            model/v84-pilot/control.keras
+            model/v84-pilot/control.epoch-*.keras
+            model/v84-pilot/replay.keras
+            model/v84-pilot/replay.epoch-*.keras
+            model/v84-*-epoch-*-sweep.log
+            model/v84-*-epoch-*-sweep.json
+            model/v84-ab-summary.json
+          if-no-files-found: warn
+          retention-days: 7

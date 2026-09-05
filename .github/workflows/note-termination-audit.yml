@@ -1,0 +1,44 @@
+name: Note termination gap audit
+
+on:
+  push:
+    branches:
+      - v8-anonymous-cardinality
+    paths:
+      - "scripts/audit_note_termination_gaps.py"
+      - ".github/workflows/note-termination-audit.yml"
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore official GuitarSet cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+      - name: Verify GuitarSet data
+        run: |
+          test -f data/GuitarSet/annotation.zip
+          test -f data/GuitarSet/audio_mono-pickup_mix.zip
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Audit termination gaps
+        env:
+          PYTHONPATH: src
+        run: |
+          set -o pipefail
+          python -B scripts/audit_note_termination_gaps.py 2>&1 | tee model/note-termination-gap-audit.log
+      - name: Upload audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: note-termination-gap-audit
+          path: |
+            model/note-termination-gap-audit.json
+            model/note-termination-gap-audit.log
+          retention-days: 14
+          if-no-files-found: warn

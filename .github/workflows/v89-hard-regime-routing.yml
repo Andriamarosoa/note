@@ -1,0 +1,180 @@
+name: V8.9 explicit hard regime routing pilot
+
+on:
+  push:
+    branches: [v8-anonymous-cardinality]
+    paths:
+      - 'scripts/evaluate_v89_hard_regime_routing.py'
+      - '.github/workflows/v89-hard-regime-routing.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  pilot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+
+      - name: Download official GuitarSet pickup-mix data
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+
+      - name: Verify GuitarSet checksums
+        shell: bash
+        run: |
+          set -o pipefail
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+
+      - name: Download frozen V8.4 control source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/source-v84
+          gh run download 33571604757 --repo "$GITHUB_REPOSITORY" --name v84-independent-ab --dir model/source-v84
+          test -f model/source-v84/v84-pilot/control.epoch-01.keras
+
+      - name: Download frozen train-only audit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/source-audit
+          gh run download 33551039906 --repo "$GITHUB_REPOSITORY" --name v81-train-fp-harmonic-audit --dir model/source-audit
+          test -f model/source-audit/v81-train-fp-harmonic-audit.json
+
+      - name: Download frozen V8.6
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/source-v86
+          gh run download 33586296528 --repo "$GITHUB_REPOSITORY" --name v86-state-transition-proposal-pilot --dir model/source-v86
+          test -f model/source-v86/v86-state-transition-pilot/result/report.json
+          test -f model/source-v86/v86-state-transition-pilot/result/v86-state-transition-refiner.weights.h5
+
+      - name: Download frozen V8.7
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/source-v87
+          gh run download 33588164652 --repo "$GITHUB_REPOSITORY" --name v87-causal-candidate-memory-pilot --dir model/source-v87
+          test -f model/source-v87/v87-candidate-memory-pilot/result/report.json
+          test -f model/source-v87/v87-candidate-memory-pilot/result/v87-causal-candidate-memory.weights.h5
+
+      - name: Download frozen V8.8
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/source-v88
+          gh run download 33589654195 --repo "$GITHUB_REPOSITORY" --name v88-regime-gated-moe-pilot --dir model/source-v88
+          test -f model/source-v88/v88-regime-moe-pilot/result/report.json
+          test -f model/source-v88/v88-regime-moe-pilot/result/v88-regime-moe.weights.h5
+
+      - name: Compile V8.9 pilot
+        env:
+          PYTHONPATH: src
+        run: python -m py_compile scripts/evaluate_v89_hard_regime_routing.py
+
+      - name: Evaluate explicit hard routing on fresh calibration then locked12
+        env:
+          PYTHONPATH: src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v89-hard-routing-pilot
+          python -B scripts/evaluate_v89_hard_regime_routing.py \
+            --base-model model/source-v84/v84-pilot/control.epoch-01.keras \
+            --v86-weights model/source-v86/v86-state-transition-pilot/result/v86-state-transition-refiner.weights.h5 \
+            --v86-report model/source-v86/v86-state-transition-pilot/result/report.json \
+            --v87-weights model/source-v87/v87-candidate-memory-pilot/result/v87-causal-candidate-memory.weights.h5 \
+            --v87-report model/source-v87/v87-candidate-memory-pilot/result/report.json \
+            --v88-weights model/source-v88/v88-regime-moe-pilot/result/v88-regime-moe.weights.h5 \
+            --v88-report model/source-v88/v88-regime-moe-pilot/result/report.json \
+            --train-audit model/source-audit/v81-train-fp-harmonic-audit.json \
+            --output-dir model/v89-hard-routing-pilot/result \
+            2>&1 | tee model/v89-hard-routing-pilot.log
+
+      - name: Verify isolation and summarize against V8.5-V8.8
+        shell: bash
+        run: |
+          set -o pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('model/v89-hard-routing-pilot/result/report.json').read_text())
+          a=d['architecture']; c=d['configuration']; locked=d['locked12']
+          assert a['base_trainable'] is False
+          assert a['v86_encoder_trainable'] is False
+          assert a['v87_expert_trainable'] is False
+          assert a['v88_router_cluster_expert_trainable'] is False
+          assert a['new_trainable_parameters'] == 0
+          assert a['offset_stream_executed'] is False
+          assert a['offset_weights_modified'] is False
+          assert a['runtime_inputs_use_annotations'] is False
+          assert a['future_candidate_context'] is False
+          assert a['router_cutoff'] == 0.5
+          assert a['router_cutoff_calibrated'] is False
+          assert c['retain_threshold_selected_on_locked_validation'] is False
+          assert c['single_global_runtime_threshold'] is True
+          assert d['data']['calibration_members_disjoint_source'] is True
+          assert d['data']['calibration_members_disjoint_locked_validation'] is True
+          prior={
+            'v85':{'global':0.5688073394495413,'solo':0.5293631100082713,'comp':0.5879054865839006},
+            'v86':{'global':0.5495131797672762,'solo':0.4544138929088277,'comp':0.5959703075291624},
+            'v87':{'global':0.5537240537240538,'solo':0.5761467889908257,'comp':0.5425434583714547},
+            'v88':{'global':0.5756722151088349,'solo':0.5455927051671732,'comp':0.5909617612977983},
+          }
+          print('retain_threshold', c['retain_threshold'])
+          print('candidate_ceiling_recall', locked['candidate_ceiling']['recall'])
+          print('router_cluster_auc', locked['router_cluster_auc'])
+          print('route_summary', json.dumps(locked['route_summary'], sort_keys=True))
+          for regime in ('global','solo','comp'):
+              m=locked['metrics'][regime]
+              best=max(v[regime] for v in prior.values())
+              print(regime, 'v89_f1', f"{m['f1']:.6f}", 'delta_best_prior', f"{m['f1']-best:+.6f}", 'P', f"{m['precision']:.6f}", 'R', f"{m['recall']:.6f}", 'pred_ref', f"{m['prediction_reference_ratio']:.6f}")
+          print('candidate_auc', json.dumps(locked['candidate_auc_birth_high'], sort_keys=True))
+          PY
+
+      - name: Upload V8.9 pilot artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: v89-hard-regime-routing-pilot
+          path: |
+            model/v89-hard-routing-pilot/result/report.json
+            model/v89-hard-routing-pilot.log
+          retention-days: 14

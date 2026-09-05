@@ -1,0 +1,36 @@
+name: V8 smoke
+
+on:
+  push:
+    branches:
+      - v8-anonymous-cardinality
+  pull_request:
+    paths:
+      - "src/causal_note/v8_*.py"
+      - "scripts/train_v8.py"
+      - "scripts/smoke_v8_model.py"
+      - "scripts/evaluate_v8_boundaries.py"
+      - "test/test_v8*.py"
+      - ".github/workflows/v8-smoke.yml"
+
+jobs:
+  v8-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: requirements-train.txt
+      - name: Install V8 training dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Run V8 unit tests
+        env:
+          PYTHONPATH: src
+        run: python -B -m unittest discover -s test -p "test_v8*.py"
+      - name: Build, save, reload and infer V8
+        env:
+          PYTHONPATH: src
+        run: python -B scripts/smoke_v8_model.py

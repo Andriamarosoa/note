@@ -1,0 +1,125 @@
+name: V8.5 residual error audit
+
+on:
+  push:
+    branches: [v8-anonymous-cardinality]
+    paths:
+      - 'scripts/audit_v85_errors.py'
+      - '.github/workflows/v85-error-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+
+      - name: Download official GuitarSet pickup-mix data
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+
+      - name: Verify GuitarSet checksums
+        shell: bash
+        run: |
+          set -o pipefail
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+
+      - name: Download frozen V8.4 control source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/source-v84
+          gh run download 33571604757 --repo "$GITHUB_REPOSITORY" --name v84-independent-ab --dir model/source-v84
+          test -f model/source-v84/v84-pilot/control.epoch-01.keras
+
+      - name: Download frozen V8.5 verifier
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/source-v85
+          gh run download 33582733234 --repo "$GITHUB_REPOSITORY" --name v85-transition-verifier-pilot --dir model/source-v85
+          test -f model/source-v85/v85-transition-pilot/report.json
+          test -f model/source-v85/v85-transition-pilot/v85-transition-verifier.weights.h5
+
+      - name: Compile audit
+        env:
+          PYTHONPATH: src
+        run: python -m py_compile scripts/audit_v85_errors.py
+
+      - name: Audit frozen V8.5 residual errors
+        env:
+          PYTHONPATH: src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v85-error-audit
+          python -B scripts/audit_v85_errors.py \
+            --base-model model/source-v84/v84-pilot/control.epoch-01.keras \
+            --verifier-weights model/source-v85/v85-transition-pilot/v85-transition-verifier.weights.h5 \
+            --v85-report model/source-v85/v85-transition-pilot/report.json \
+            --output model/v85-error-audit/report.json \
+            2>&1 | tee model/v85-error-audit.log
+
+      - name: Verify frozen counts and summarize
+        shell: bash
+        run: |
+          set -o pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('model/v85-error-audit/report.json').read_text())
+          c=d['counts']
+          assert c['references']==1821, c
+          assert c['predictions']==1885, c
+          assert c['true_positive']==1054, c
+          assert c['false_positive']==831, c
+          assert c['false_negative']==767, c
+          assert c['fn_by_stage']['proposal_miss'] + c['fn_by_stage']['verifier_reject'] == 767
+          print('counts', json.dumps(c, sort_keys=True))
+          print('FP temporal', json.dumps(d['populations']['retained_fp']['temporal_buckets'], sort_keys=True))
+          print('FN proposal spacing', json.dumps(d['populations']['proposal_miss_fn']['spacing_buckets'], sort_keys=True))
+          print('FN verifier spacing', json.dumps(d['populations']['verifier_reject_fn']['spacing_buckets'], sort_keys=True))
+          print('FP separators', json.dumps(list(d['remaining_fp_vs_retained_tp_separation'].items())[:8], sort_keys=True))
+          print('FN separators', json.dumps(list(d['verifier_reject_fn_vs_detected_reference_separation'].items())[:8], sort_keys=True))
+          PY
+
+      - name: Upload V8.5 error audit artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: v85-residual-error-audit
+          path: |
+            model/v85-error-audit/report.json
+            model/v85-error-audit.log
+          retention-days: 14

@@ -1,0 +1,137 @@
+name: V8.6 state transition proposal pilot
+
+on:
+  push:
+    branches: [v8-anonymous-cardinality]
+    paths:
+      - 'scripts/train_v86_state_transition_proposals.py'
+      - '.github/workflows/v86-state-transition-proposals.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  pilot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+
+      - name: Download official GuitarSet pickup-mix data
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+
+      - name: Verify GuitarSet checksums
+        shell: bash
+        run: |
+          set -o pipefail
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+
+      - name: Download frozen V8.4 control source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/source-v84
+          gh run download 33571604757 --repo "$GITHUB_REPOSITORY" --name v84-independent-ab --dir model/source-v84
+          test -f model/source-v84/v84-pilot/control.epoch-01.keras
+
+      - name: Download frozen train-only FP audit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/source-audit
+          gh run download 33551039906 --repo "$GITHUB_REPOSITORY" --name v81-train-fp-harmonic-audit --dir model/source-audit
+          test -f model/source-audit/v81-train-fp-harmonic-audit.json
+
+      - name: Compile V8.6 pilot
+        env:
+          PYTHONPATH: src
+        run: python -m py_compile scripts/train_v86_state_transition_proposals.py
+
+      - name: Train proposal recovery refiner and evaluate locked12 once
+        env:
+          PYTHONPATH: src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v86-state-transition-pilot
+          python -B scripts/train_v86_state_transition_proposals.py \
+            --base-model model/source-v84/v84-pilot/control.epoch-01.keras \
+            --train-audit model/source-audit/v81-train-fp-harmonic-audit.json \
+            --output-dir model/v86-state-transition-pilot/result \
+            --train-members 30 --epochs 20 \
+            2>&1 | tee model/v86-state-transition-pilot.log
+
+      - name: Verify isolation and summarize against V8.5
+        shell: bash
+        run: |
+          set -o pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('model/v86-state-transition-pilot/result/report.json').read_text())
+          a=d['architecture']; c=d['configuration']; locked=d['locked12']
+          assert a['base_trainable'] is False
+          assert a['offset_stream_executed'] is False
+          assert a['offset_weights_modified'] is False
+          assert a['runtime_inputs_use_annotations'] is False
+          assert c['candidate_floor_selected_on_locked_validation'] is False
+          assert c['retain_threshold_selected_on_locked_validation'] is False
+          assert len(d['data']['locked_validation_members']) == 12
+          assert set(d['data']['source_train_members']).isdisjoint(d['data']['locked_validation_members'])
+          print('refiner_parameters', a['refiner_parameters'])
+          print('candidate_floor', c['candidate_floor'])
+          print('retain_threshold', c['retain_threshold'])
+          print('locked_candidate_ceiling_recall', locked['candidate_ceiling']['recall'])
+          print('locked_candidate_ceiling_pred_ref', locked['candidate_ceiling']['prediction_reference_ratio'])
+          v85={'global':0.5688073394495413,'solo':0.5293631100082713,'comp':0.5879054865839006}
+          for regime in ('global','solo','comp'):
+              m=locked['metrics'][regime]
+              print(regime,
+                    'v85_f1', f"{v85[regime]:.6f}",
+                    'v86_f1', f"{m['f1']:.6f}",
+                    'delta', f"{m['f1']-v85[regime]:+.6f}",
+                    'P', f"{m['precision']:.6f}",
+                    'R', f"{m['recall']:.6f}",
+                    'pred_ref', f"{m['prediction_reference_ratio']:.6f}")
+          print('candidate_auc', json.dumps(locked['candidate_auc_birth_high'], sort_keys=True))
+          PY
+
+      - name: Upload V8.6 pilot artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: v86-state-transition-proposal-pilot
+          path: |
+            model/v86-state-transition-pilot/result/report.json
+            model/v86-state-transition-pilot/result/v86-state-transition-refiner.weights.h5
+            model/v86-state-transition-pilot.log
+          retention-days: 14

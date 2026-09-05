@@ -1,0 +1,86 @@
+name: V8.4 solo-comp onset audit
+
+on:
+  push:
+    branches: [v8-anonymous-cardinality]
+    paths:
+      - 'scripts/audit_v84_solo_comp_onsets.py'
+      - '.github/workflows/v84-solo-comp-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+      - name: Download official GuitarSet pickup-mix data
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 'https://zenodo.org/records/3371780/files/annotation.zip?download=1' -o data/GuitarSet/annotation.zip
+          curl -L --fail --retry 3 'https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip?download=1' -o data/GuitarSet/audio_mono-pickup_mix.zip
+      - name: Verify GuitarSet checksums
+        run: |
+          echo 'b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip' | md5sum -c -
+          echo 'aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip' | md5sum -c -
+      - name: Download frozen train-FP acoustic audit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/source-audit
+          gh run download 33551039906 --repo "$GITHUB_REPOSITORY" --name v81-train-fp-harmonic-audit --dir model/source-audit
+          test -f model/source-audit/v81-train-fp-harmonic-audit.json
+      - name: Compile diagnostic
+        run: python -m py_compile scripts/audit_v84_solo_comp_onsets.py
+      - name: Audit solo versus comp onset populations
+        env:
+          PYTHONPATH: src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+        run: |
+          set -o pipefail
+          python -B scripts/audit_v84_solo_comp_onsets.py \
+            --fp-audit model/source-audit/v81-train-fp-harmonic-audit.json \
+            --output model/v84-solo-comp-onset-audit.json 2>&1 | tee model/v84-solo-comp-onset-audit.log
+      - name: Verify report invariants
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('model/v84-solo-comp-onset-audit.json').read_text())
+          assert d['populations']['false_positive']['solo']['positions'] > d['populations']['false_positive']['comp']['positions']
+          assert d['populations']['true_onset']['solo']['positions'] > 0
+          assert d['populations']['true_onset']['comp']['positions'] > 0
+          assert d['rank_separation']['solo_fp_vs_comp_true']
+          assert d['single_metric_operating_points']
+          print('solo FP', d['populations']['false_positive']['solo']['positions'])
+          print('comp FP', d['populations']['false_positive']['comp']['positions'])
+          print('solo true', d['populations']['true_onset']['solo']['positions'])
+          print('comp true', d['populations']['true_onset']['comp']['positions'])
+          print('top separation', list(d['rank_separation']['solo_fp_vs_comp_true'].items())[:5])
+          print('top combined', d['recent_onset_plus_active_family_rules'][:5])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v84-solo-comp-onset-audit
+          path: |
+            model/v84-solo-comp-onset-audit.json
+            model/v84-solo-comp-onset-audit.log
+          retention-days: 14

@@ -1,0 +1,137 @@
+name: V8.4 parallel novelty validation
+
+on:
+  push:
+    branches:
+      - v8-anonymous-cardinality
+    paths:
+      - ".github/workflows/v84-validation-novelty-parallel.yml"
+      - "scripts/audit_v84_validation_novelty.py"
+      - "scripts/audit_v84_validation_novelty_arm.py"
+      - "src/causal_note/v84_onset_predictor.py"
+  workflow_dispatch:
+
+jobs:
+  arm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - key: control
+            name: control_epoch_01
+            model: control.epoch-01.keras
+          - key: replay
+            name: replay_epoch_03
+            model: replay.epoch-03.keras
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+      - name: Download official GuitarSet pickup-mix data
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 5 --retry-delay 5 -o data/GuitarSet/annotation.zip "https://zenodo.org/records/3371780/files/annotation.zip?download=1"
+          curl -L --fail --retry 5 --retry-delay 5 -o data/GuitarSet/audio_mono-pickup_mix.zip "https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip?download=1"
+      - name: Verify GuitarSet checksums
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Download frozen V8.4 A/B artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/source-v84
+          gh run download 33571604757 --repo "$GITHUB_REPOSITORY" --name v84-independent-ab --dir model/source-v84
+          test -f "model/source-v84/v84-pilot/${{ matrix.model }}"
+      - name: Compile arm audit
+        env:
+          PYTHONPATH: src
+        run: python -m py_compile src/causal_note/v84_onset_predictor.py scripts/audit_v84_validation_novelty.py scripts/audit_v84_validation_novelty_arm.py
+      - name: Audit one frozen onset arm
+        env:
+          PYTHONPATH: src
+          TF_CPP_MIN_LOG_LEVEL: "2"
+        run: |
+          set -o pipefail
+          mkdir -p "model/v84-novelty-${{ matrix.key }}"
+          python -B scripts/audit_v84_validation_novelty_arm.py \
+            --name "${{ matrix.name }}" \
+            --model "model/source-v84/v84-pilot/${{ matrix.model }}" \
+            --output "model/v84-novelty-${{ matrix.key }}/audit.json" \
+            2>&1 | tee "model/v84-novelty-${{ matrix.key }}/audit.log"
+      - name: Verify arm baseline
+        run: |
+          KEY="${{ matrix.key }}" python - <<'PY'
+          import json, os
+          from pathlib import Path
+          key=os.environ['KEY']
+          d=json.loads(Path(f'model/v84-novelty-{key}/audit.json').read_text())
+          assert d['split']['evaluated_tracks']==12
+          assert d['configuration']['validation_threshold_refit'] is False
+          assert d['configuration']['offset_stream_executed'] is False
+          b=d['arm']['baseline']
+          if key=='control':
+              assert abs(b['global']['f1']-0.440561)<5e-4, b['global']
+              assert abs(b['comp']['f1']-0.575076)<5e-4, b['comp']
+          else:
+              assert abs(b['global']['f1']-0.409429)<5e-4, b['global']
+              assert abs(b['solo']['f1']-0.471233)<5e-4, b['solo']
+              assert abs(b['comp']['f1']-0.377642)<5e-4, b['comp']
+          print(json.dumps(b,indent=2,sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v84-novelty-${{ matrix.key }}
+          path: |
+            model/v84-novelty-${{ matrix.key }}/audit.json
+            model/v84-novelty-${{ matrix.key }}/audit.log
+          if-no-files-found: warn
+          retention-days: 14
+
+  summarize:
+    needs: arm
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v84-novelty-*
+          path: results
+      - name: Merge and summarize
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          out={"schema_version":1,"arms":{}}
+          for key in ('control','replay'):
+              p=Path(f'results/v84-novelty-{key}/audit.json')
+              d=json.loads(p.read_text())
+              out['arms'][d['name']]=d['arm']
+          Path('results/v84-validation-novelty-summary.json').write_text(json.dumps(out,indent=2,sort_keys=True)+'\n')
+          for name,a in out['arms'].items():
+              print('\nARM',name,'BASELINE',json.dumps(a['baseline'],sort_keys=True))
+              for regime in ('global','solo','comp'):
+                  print('AUC',regime,'fixed',json.dumps(a['rank_separation'][regime].get('fixed_positive_flux_enrichment'),sort_keys=True))
+                  print('AUC',regime,'contour',json.dumps(a['rank_separation'][regime].get('contour_positive_flux_enrichment'),sort_keys=True))
+              for r in a['transferred_train_rules']:
+                  print('RULE',r['name'],json.dumps({'descriptive':r['descriptive'],'exact':r['exact_postfilter_metrics']},sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v84-validation-novelty-summary
+          path: results/v84-validation-novelty-summary.json
+          retention-days: 14

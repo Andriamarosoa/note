@@ -1,0 +1,207 @@
+name: V13 event-set failure-mode audit
+
+on:
+  push:
+    branches: [v8-anonymous-cardinality]
+    paths:
+      - 'scripts/audit_v130_event_set_failure_modes.py'
+      - 'scripts/run_v130_summary_fixed.py'
+      - '.github/workflows/v130-event-set-failure-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+  SOURCE_NESTED_RUN: '33647694565'
+  SOURCE_V130_RUN: '33721052619'
+
+jobs:
+  audit-fold:
+    name: Audit frozen V13 outer fold ${{ matrix.fold }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        fold: [0, 1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+      - name: Download GuitarSet when cache misses
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+      - name: Verify GuitarSet checksums
+        shell: bash
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Download frozen nested spectral bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: v104-nested-spectral-bundle
+          path: model/v100-spectral-cache
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download frozen V13 fold
+        uses: actions/download-artifact@v4
+        with:
+          name: v130-event-set-fold-${{ matrix.fold }}
+          path: model/v130-source-fold
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V130_RUN }}
+          github-token: ${{ github.token }}
+      - name: Compile audit
+        env:
+          PYTHONPATH: .:src
+        run: python -m py_compile scripts/audit_v130_event_set_failure_modes.py
+      - name: Audit frozen assignments and event targets
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p "model/v130-failure-audit-${{ matrix.fold }}"
+          python -B scripts/audit_v130_event_set_failure_modes.py fold \
+            --cache-dir model/v100-spectral-cache \
+            --fold-dir model/v130-source-fold \
+            --fold "${{ matrix.fold }}" \
+            --output-dir "model/v130-failure-audit-${{ matrix.fold }}" \
+            2>&1 | tee "model/v130-failure-audit-${{ matrix.fold }}/audit.log"
+      - name: Verify audit isolation
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          fold='${{ matrix.fold }}'
+          r=json.loads(Path(f'model/v130-failure-audit-{fold}/report-fold-{fold}.json').read_text())
+          p=r['protocol']
+          assert p['historical_validation_or_locked12_indexed_or_evaluated'] is False
+          assert p['outer_fold_parameters_updated'] is False
+          assert p['frozen_v130_weights_reloaded_only'] is True
+          assert p['presence_threshold_tuned'] is False
+          assert p['presence_threshold'] == 0.5
+          assert r['data']['saved_outer_rows_match_reconstruction'] is True
+          print('fold', fold, 'clusters', r['data']['outer_clusters'], 'trueK', r['data']['mean_true_count'], 'predK', r['data']['mean_predicted_count'])
+          PY
+      - name: Upload fold audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: v130-failure-audit-fold-${{ matrix.fold }}
+          path: model/v130-failure-audit-${{ matrix.fold }}
+          compression-level: 6
+          if-no-files-found: error
+          retention-days: 14
+
+  summarize:
+    name: Summarize V13 failure-mode audit
+    needs: audit-fold
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install summary dependency
+        run: python -m pip install 'numpy<2.0'
+      - name: Download original five V13 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v130-event-set-fold-*
+          path: model/v130-source-folds
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V130_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download five audit shards
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v130-failure-audit-fold-*
+          path: model/v130-audit-folds
+          merge-multiple: false
+      - name: Normalize empty strata in copied reports
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          for p in Path('model/v130-source-folds').glob('**/report-fold-*.json'):
+              r=json.loads(p.read_text())
+              r['strata']={k:(v if v is not None else {}) for k,v in r['strata'].items()}
+              p.write_text(json.dumps(r, indent=2, sort_keys=True)+'\n')
+          PY
+      - name: Recover official V13 summary without retraining
+        env:
+          PYTHONPATH: .:src
+        shell: bash
+        run: |
+          mkdir -p model/v130-summary-recovered
+          python -B scripts/run_v130_summary_fixed.py \
+            --input-dir model/v130-source-folds \
+            --output-dir model/v130-summary-recovered
+      - name: Summarize mechanistic audit
+        env:
+          PYTHONPATH: .:src
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v130-failure-audit-summary
+          python -B scripts/audit_v130_event_set_failure_modes.py summarize \
+            --fold-pred-dir model/v130-source-folds \
+            --audit-dir model/v130-audit-folds \
+            --output-dir model/v130-failure-audit-summary \
+            2>&1 | tee model/v130-failure-audit-summary/summary.log
+      - name: Verify decision-grade audit
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v130-failure-audit-summary/report.json').read_text())
+          p=r['protocol']
+          assert p['five_outer_composition_folds'] is True
+          assert p['every_train_row_audited_once_outer_clean'] is True
+          assert p['historical_validation_or_locked12_indexed_or_evaluated'] is False
+          assert p['v130_parameters_updated_during_audit'] is False
+          assert p['presence_threshold_tuned'] is False
+          assert r['data']['clusters'] == 76768
+          print('global v104', r['onset']['aggregate']['v104']['f1'])
+          print('global v130', r['onset']['aggregate']['v130']['f1'])
+          print('mean true/pred', r['data']['mean_true_k'], r['data']['mean_v130_k'])
+          print('q FP', {q:v['false_positives'] for q,v in r['queries'].items()})
+          print('event target', r['event_target_quality']['overall'])
+          PY
+      - name: Upload V13 summary and failure audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: v130-event-set-failure-mode-audit
+          path: |
+            model/v130-summary-recovered
+            model/v130-failure-audit-summary
+          compression-level: 6
+          if-no-files-found: error
+          retention-days: 14
