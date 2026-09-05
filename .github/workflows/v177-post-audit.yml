@@ -1,0 +1,79 @@
+name: V17.7 post-audit
+
+on:
+  push:
+    branches: [v177-post-audit]
+    paths:
+      - 'scripts/audit_v177_candidate_centric.py'
+      - '.github/workflows/v177-post-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  SOURCE_V177_RUN: '33893583081'
+
+jobs:
+  audit:
+    name: Audit V17.7 candidate-centric failure
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install NumPy
+        run: python -m pip install 'numpy<2.0'
+      - name: Compile audit
+        run: python -m py_compile scripts/audit_v177_candidate_centric.py
+      - name: Download all corrected V17.7 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v177-feasible-fold-*
+          path: model/v177-audit-input
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V177_RUN }}
+          github-token: ${{ github.token }}
+      - name: Run post-audit
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v177-post-audit
+          python -B scripts/audit_v177_candidate_centric.py \
+            --input-dir model/v177-audit-input \
+            --output-dir model/v177-post-audit \
+            2>&1 | tee model/v177-post-audit/audit.log
+      - name: Verify audit invariants
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v177-post-audit/report.json').read_text())
+          h=r['headline']; c=r['cardinality']; w=r['weighting']; rep=r['representation']; real=r['realization']
+          assert r['protocol']['outer_clean_rows'] == 76768
+          assert abs(h['v177_direct']['f1'] - 0.7125800234809384) < 1e-12
+          assert abs(h['v177_count_only']['f1'] - 0.7124471125091376) < 1e-12
+          assert abs(h['direct_minus_count_only_f1_pp'] - 0.013291097180079259) < 1e-9
+          assert rep['candidate_infeasible_c_lt_k_rows'] == 180
+          assert rep['c_eq_k_lt6_rows_where_legacy_null_mass_has_no_carrier'] == 522
+          assert w['6']['zero_negative_weight_rate'] == 1.0
+          assert c['per_true_k']['3']['corr_valid_count_soft_count'] > .70
+          assert c['per_true_k']['4']['corr_valid_count_soft_count'] > .78
+          assert c['per_true_k']['5']['corr_valid_count_soft_count'] > .85
+          assert c['per_true_k']['6']['corr_valid_count_soft_count'] > .92
+          assert all(x == 1.0 for x in real['candidate_top1_by_fold'])
+          assert real['time_mae_ms_mean'] < .35
+          assert c['poibin_map_exact_k'] < c['runtime_exact_k']
+          print('V17.7 post-audit verified')
+          PY
+      - name: Upload post-audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: v177-post-audit
+          path: model/v177-post-audit
+          compression-level: 6
+          retention-days: 30
