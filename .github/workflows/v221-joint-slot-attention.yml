@@ -1,0 +1,218 @@
+name: V22.1 joint slot attention
+
+on:
+  push:
+    branches: [v221-joint-slot-attention]
+    paths:
+      - 'scripts/train_v221_joint_slot_attention.py'
+      - 'scripts/summarize_v221_joint_slot_attention.py'
+      - '.github/workflows/v221-joint-slot-attention.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  SOURCE_NESTED_RUN: '33647694565'
+  SOURCE_V173_RUN: '33829092700'
+  SOURCE_V190_RUN: '33995600250'
+  CONTROL_SEED: '16061'
+
+jobs:
+  preflight:
+    name: V22.1 differentiable proposal preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Compile V22.1
+        env: {PYTHONPATH: '.:src'}
+        run: |
+          python -m py_compile scripts/train_v221_joint_slot_attention.py
+          python -m py_compile scripts/summarize_v221_joint_slot_attention.py
+      - name: Prove differentiable exchangeable treatment
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+          TF_DETERMINISTIC_OPS: '1'
+        run: |
+          python - <<'PY'
+          import random, numpy as np, tensorflow as tf
+          from scripts import train_v172_mass_preserving_exchangeable as v172
+          from scripts import train_v173_poibin_count_consistency as v173
+          from scripts import train_v221_joint_slot_attention as v221
+          random.seed(16061); np.random.seed(16061); tf.random.set_seed(16061)
+          labels=np.zeros((200,6),np.float32); labels[:100,0]=1; labels[:50,1]=1; labels[:24,2]=1; labels[:10,3]=1; labels[:4,4]=1; labels[:1,5]=1
+          spec=v172._weight_spec(labels,np.arange(len(labels)))
+          model,lw,token_shape=v221._build_model(spec)
+          assert v221.DEFAULT_SEED==16061 and v221.PRESENCE_THRESHOLD==.5 and v173.COUNT_NLL_WEIGHT==.35
+          assert lw['event_set']==1.0 and lw['event_count_norm']==0.0
+          assert 'birth_center_map' not in model.output_names and 'birth_center_heatmap' not in model.output_names
+          assert model.get_layer('v221_slot_attention') is not None
+          assert not any('top6' in l.name.lower() or 'nms' in l.name.lower() or 'top_k' in l.name.lower() for l in model.layers)
+          bad=[l.name for l in model.layers if l.trainable_weights and any(f'event_{q}' in l.name for q in range(6))]
+          assert not bad,bad
+          assert len(model.get_layer('v221_shared_local_hidden')._inbound_nodes)==6
+          rng=np.random.default_rng(221); inputs={}
+          for t in model.inputs:
+              name=t.name.split(':',1)[0]; shape=[2]+[int(x) for x in t.shape[1:]]; inputs[name]=rng.normal(size=shape).astype(np.float32)
+          cm=np.zeros_like(inputs['candidate_mask'],np.float32); cm[0,:9]=1; cm[1,:5]=1; inputs['candidate_mask']=cm
+          with tf.GradientTape(persistent=True) as tape:
+              out=model(inputs,training=True); objective=tf.reduce_sum(out['event_set'][:,:,0]) + .01*tf.reduce_sum(out['event_set'][:,:,2:])
+          conv=model.get_layer('v221_dense_conv3').kernel; slot=model.get_layer('v221_slot_attention')
+          gconv=tape.gradient(objective,conv); gslot=tape.gradient(objective,slot.trainable_weights)
+          assert gconv is not None and float(tf.reduce_sum(tf.abs(gconv)))>0
+          assert any(g is not None and float(tf.reduce_sum(tf.abs(g)))>0 for g in gslot)
+          pres=np.concatenate([np.asarray(out[f'event_present_{q}']) for q in range(6)],axis=1); cn=np.asarray(out['event_count_norm']); np.testing.assert_allclose(cn[:,0],pres.sum(1)/6.,rtol=1e-6,atol=1e-6)
+          print('params',model.count_params(),'trainable_tensors',len(model.trainable_weights),'token_shape',token_shape)
+          print('conv_eventset_grad_l1',float(tf.reduce_sum(tf.abs(gconv))))
+          print('slot_eventset_grad_nonzero',sum(g is not None and float(tf.reduce_sum(tf.abs(g)))>0 for g in gslot))
+          print('V22.1 preflight OK')
+          PY
+
+  fold:
+    name: V22.1 joint slot fold ${{ matrix.fold }}
+    needs: preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix: {fold: [0,1,2,3,4]}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Download GuitarSet annotations
+        shell: bash
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+      - name: Download GuitarSet pickup-mix audio
+        shell: bash
+        run: |
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip 'https://zenodo.org/record/3371780/files/audio_mono-pickup_mix.zip?download=1'
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Download frozen nested spectral bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: v104-nested-spectral-bundle
+          path: model/v100-spectral-cache
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download outer-clean V10 baselines
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v104-nested-eval-*
+          path: model/v104-nested-eval
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Train V22.1
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+          TF_DETERMINISTIC_OPS: '1'
+        shell: bash
+        run: |
+          set -o pipefail
+          out="model/v221-fold-${{ matrix.fold }}"; mkdir -p "$out"
+          python -B scripts/train_v221_joint_slot_attention.py data/GuitarSet \
+            --cache-dir model/v100-spectral-cache \
+            --baseline-eval-dir model/v104-nested-eval \
+            --outer-fold "${{ matrix.fold }}" --arm mass_permutation --seed "$CONTROL_SEED" --output-dir "$out" \
+            2>&1 | tee "$out/train.log"
+      - name: Verify V22.1 protocol
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          f='${{ matrix.fold }}';r=json.loads(Path(f'model/v221-fold-{f}/report-fold-{f}.json').read_text());p=r['protocol'];a=r['v221']['architecture'];g=r['strata']['aggregate']['v221_joint_slot_attention']['metrics']['global']
+          assert p['v221_joint_slot_attention'] is True
+          assert p['discrete_topk_or_nms_in_proposal_path'] is False and p['birth_center_auxiliary_head_exists'] is False
+          assert p['proposal_formation_receives_event_set_gradient'] is True
+          assert p['slot_specific_trainable_parameters'] is False
+          assert p['v173_count_nll_weight']==.35 and p['runtime_presence_threshold']==.5 and p['runtime_presence_threshold_tuned'] is False
+          assert p['historical_validation_or_locked12_indexed_or_evaluated'] is False
+          print(f,'epochs',r['data']['selected_epochs'],'f1',g['f1'],'pred_ref',g['prediction_reference_ratio'],'gini',a['outer_activity_gini'],'effective',a['outer_effective_active_slots'],'slot_cos',a['slot_attention_diagnostics']['mean_pairwise_slot_cosine'],'slot_entropy',a['slot_attention_diagnostics']['mean_cell_assignment_entropy'])
+          PY
+      - name: Upload V22.1 fold
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v221-joint-slot-fold-${{ matrix.fold }}
+          path: model/v221-fold-${{ matrix.fold }}
+          retention-days: 30
+
+  summarize:
+    name: Summarize V22.1 joint slot treatment
+    needs: fold
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install NumPy
+        run: python -m pip install 'numpy<2.0'
+      - name: Download V22.1 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v221-joint-slot-fold-*
+          path: model/v221-all
+          merge-multiple: false
+      - name: Download canonical V19 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v190-dense-fold-*
+          path: model/v190-all
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V190_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download canonical V17.3 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v173-poibin-fold-*
+          path: model/v173-all
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V173_RUN }}
+          github-token: ${{ github.token }}
+      - name: Summarize
+        env: {PYTHONPATH: '.:src'}
+        shell: bash
+        run: |
+          mkdir -p model/v221-summary
+          python -B scripts/summarize_v221_joint_slot_attention.py \
+            --input-dir model/v221-all --v190-fold-dir model/v190-all --v173-fold-dir model/v173-all --output-dir model/v221-summary
+      - name: Verify summary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v221-summary/report.json').read_text()); assert r['protocol']['outer_clean_rows']==76768 and r['protocol']['locked12_indexed_or_evaluated'] is False
+          print(json.dumps(r['comparison'],indent=2,sort_keys=True)); print(json.dumps(r['gates'],indent=2,sort_keys=True))
+          PY
+      - name: Upload summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: v221-joint-slot-summary
+          path: model/v221-summary
+          retention-days: 30
