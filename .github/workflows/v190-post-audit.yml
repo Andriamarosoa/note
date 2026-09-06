@@ -1,0 +1,104 @@
+name: V19 dense-center post-audit
+
+on:
+  push:
+    branches: [v190-post-audit]
+    paths:
+      - 'scripts/audit_v190_dense_centers_post_safe.py'
+      - '.github/workflows/v190-post-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  SOURCE_NESTED_RUN: '33647694565'
+  SOURCE_V190_RUN: '33995600250'
+
+jobs:
+  audit:
+    name: Audit learned V19 dense centers
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Compile audit
+        env:
+          PYTHONPATH: .:src
+        run: python -m py_compile scripts/audit_v190_dense_centers_post_safe.py
+      - name: Download GuitarSet annotations only
+        shell: bash
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+      - name: Build filename-only audio index archive
+        run: |
+          python - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import zipfile
+          root=Path('data/GuitarSet')
+          with zipfile.ZipFile(root/'annotation.zip','r') as src, zipfile.ZipFile(root/'audio_mono-pickup_mix.zip','w',compression=zipfile.ZIP_STORED) as dst:
+              for name in src.namelist():
+                  if name.endswith('.jams'):
+                      dst.writestr(PurePosixPath(name).name[:-5] + '_mix.wav', b'')
+          print('filename-only audio index built; waveform bytes are not read')
+          PY
+      - name: Download frozen nested spectral bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: v104-nested-spectral-bundle
+          path: model/v100-spectral-cache
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download V19 fold artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v190-dense-fold-*
+          path: model/v190-all
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V190_RUN }}
+          github-token: ${{ github.token }}
+      - name: Run post-audit
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v190-post-audit
+          python -B scripts/audit_v190_dense_centers_post_safe.py data/GuitarSet \
+            --cache-dir model/v100-spectral-cache \
+            --v190-fold-dir model/v190-all \
+            --output-dir model/v190-post-audit \
+            2>&1 | tee model/v190-post-audit/audit.log
+      - name: Verify audit protocol
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v190-post-audit/report.json').read_text()); p=r['protocol']; t=r['target_consistency']
+          assert p['v190_post_audit'] is True
+          assert p['outer_clean_rows'] == 76768
+          assert p['same_five_saved_v190_models'] is True and p['no_retraining'] is True
+          assert p['runtime_annotations_required'] is False
+          assert p['locked12_indexed_or_evaluated'] is False
+          assert t['representable_distinct_center_poly_rate'] > .99
+          print(json.dumps({'target_consistency':t,'learned_center':r['learned_center'],'raw_spectral_baselines':r['raw_spectral_baselines'],'fold_correlation_center_hit_vs_v190_f1':r['fold_correlation_center_hit_vs_v190_f1'],'structural_finding':r['structural_finding']},indent=2,sort_keys=True))
+          PY
+      - name: Upload post-audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: v190-dense-centers-post-audit
+          path: model/v190-post-audit
+          retention-days: 30
