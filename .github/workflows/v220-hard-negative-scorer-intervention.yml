@@ -34,24 +34,17 @@ jobs:
         env:
           PYTHONPATH: .:src
         run: python -m py_compile scripts/audit_v220_hard_negative_scorer_intervention.py
-      - name: Download GuitarSet annotations only
+      - name: Download GuitarSet annotations
         shell: bash
         run: |
           mkdir -p data/GuitarSet
           curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
           echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
-      - name: Build filename-only audio index archive
+      - name: Download GuitarSet pickup-mix audio
+        shell: bash
         run: |
-          python - <<'PY'
-          from pathlib import Path, PurePosixPath
-          import zipfile
-          root=Path('data/GuitarSet')
-          with zipfile.ZipFile(root/'annotation.zip','r') as src, zipfile.ZipFile(root/'audio_mono-pickup_mix.zip','w',compression=zipfile.ZIP_STORED) as dst:
-              for name in src.namelist():
-                  if name.endswith('.jams'):
-                      dst.writestr(PurePosixPath(name).name[:-5] + '_mix.wav', b'')
-          print('filename-only audio index built; waveform bytes are not read')
-          PY
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip 'https://zenodo.org/record/3371780/files/audio_mono-pickup_mix.zip?download=1'
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
       - name: Download frozen nested spectral bundle
         uses: actions/download-artifact@v4
         with:
