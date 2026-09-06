@@ -70,7 +70,6 @@ jobs:
           for s in range(6):tt[1,s,12]=1
           target,eligible,distinct=v200._multipeak_targets(cache,pitch,tt,np.asarray([3,6]))
           np.testing.assert_array_equal(eligible,np.ones(2,np.float32)); np.testing.assert_allclose(target.sum(1),[3,6],atol=1e-7); assert distinct.tolist()==[3,6]
-          # Independent peaks can all be high simultaneously; unlike a softmax their sum is not constrained to one.
           loss=v200._focal_heatmap_loss(); y=tf.constant(target[:1]); good=np.full_like(target[:1],.01); good[target[:1]>.5]=.99; bad=np.full_like(target[:1],.01)
           assert float(loss(y,tf.constant(good)).numpy()) < float(loss(y,tf.constant(bad)).numpy())
 
@@ -113,22 +112,17 @@ jobs:
           cache-dependency-path: requirements-train.txt
       - name: Install dependencies
         run: python -m pip install -r requirements-train.txt
-      - name: Download GuitarSet annotations only
+      - name: Download GuitarSet annotations
         shell: bash
         run: |
           mkdir -p data/GuitarSet
           curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
           echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
-      - name: Build filename-only audio index archive
+      - name: Download GuitarSet pickup-mix audio
+        shell: bash
         run: |
-          python - <<'PY'
-          from pathlib import Path, PurePosixPath
-          import zipfile
-          root=Path('data/GuitarSet')
-          with zipfile.ZipFile(root/'annotation.zip') as src, zipfile.ZipFile(root/'audio_mono-pickup_mix.zip','w',compression=zipfile.ZIP_STORED) as dst:
-              for name in src.namelist():
-                  if name.endswith('.jams'):dst.writestr(PurePosixPath(name).name[:-5]+'_mix.wav',b'')
-          PY
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip 'https://zenodo.org/record/3371780/files/audio_mono-pickup_mix.zip?download=1'
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
       - name: Download frozen nested spectral bundle
         uses: actions/download-artifact@v4
         with:
