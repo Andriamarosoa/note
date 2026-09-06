@@ -1,0 +1,122 @@
+name: V22.1 summary repair
+
+on:
+  push:
+    branches: [v221-joint-slot-attention]
+    paths:
+      - '.github/workflows/v221-summary-repair.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  SOURCE_V221_RUN: '34057761196'
+  SOURCE_V173_RUN: '33829092700'
+  SOURCE_V190_RUN: '33995600250'
+
+jobs:
+  summarize-repair:
+    name: Recover and summarize V22.1 completed fold artifacts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install NumPy
+        run: python -m pip install 'numpy<2.0'
+
+      - name: Wait for all five V22.1 fold artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 240); do
+            names=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${SOURCE_V221_RUN}/artifacts?per_page=100" --jq '.artifacts[].name' || true)
+            count=$(printf '%s\n' "$names" | grep -Ec '^v221-joint-slot-fold-[0-4]$' || true)
+            echo "V22.1 fold artifacts available: ${count}/5"
+            if [ "$count" -eq 5 ]; then
+              exit 0
+            fi
+            sleep 60
+          done
+          echo 'Timed out waiting for all five V22.1 fold artifacts' >&2
+          exit 1
+
+      - name: Download V22.1 fold artifacts from original run
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v221-joint-slot-fold-*
+          path: model/v221-all
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V221_RUN }}
+          github-token: ${{ github.token }}
+
+      - name: Prove all reports and predictions survived post-train reporting crash
+        shell: bash
+        run: |
+          set -euo pipefail
+          for f in 0 1 2 3 4; do
+            d="model/v221-all/v221-joint-slot-fold-${f}"
+            test -s "${d}/report-fold-${f}.json"
+            test -s "${d}/predictions-fold-${f}.npz"
+            echo "fold ${f}: report + predictions recovered"
+          done
+
+      - name: Download canonical V19 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v190-dense-fold-*
+          path: model/v190-all
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V190_RUN }}
+          github-token: ${{ github.token }}
+
+      - name: Download canonical V17.3 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v173-poibin-fold-*
+          path: model/v173-all
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V173_RUN }}
+          github-token: ${{ github.token }}
+
+      - name: Summarize recovered V22.1 folds
+        env:
+          PYTHONPATH: .:src
+        shell: bash
+        run: |
+          mkdir -p model/v221-summary-repair
+          python -B scripts/summarize_v221_joint_slot_attention.py \
+            --input-dir model/v221-all \
+            --v190-fold-dir model/v190-all \
+            --v173-fold-dir model/v173-all \
+            --output-dir model/v221-summary-repair
+
+      - name: Verify repaired summary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v221-summary-repair/report.json').read_text())
+          assert r['protocol']['outer_clean_rows']==76768
+          assert r['protocol']['locked12_indexed_or_evaluated'] is False
+          print(json.dumps(r['comparison'],indent=2,sort_keys=True))
+          print(json.dumps(r['gates'],indent=2,sort_keys=True))
+          PY
+
+      - name: Upload repaired V22.1 summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: v221-joint-slot-summary-repair
+          path: model/v221-summary-repair
+          retention-days: 30
