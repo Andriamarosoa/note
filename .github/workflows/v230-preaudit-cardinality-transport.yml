@@ -40,17 +40,42 @@ jobs:
           mkdir -p data/GuitarSet
           curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
           echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
-      - name: Build filename-only audio index archive
+      - name: Build annotation-duration silent audio archive
         run: |
           python - <<'PY'
           from pathlib import Path, PurePosixPath
+          import io
+          import json
+          import math
+          import wave
           import zipfile
-          root=Path('data/GuitarSet')
-          with zipfile.ZipFile(root/'annotation.zip','r') as src, zipfile.ZipFile(root/'audio_mono-pickup_mix.zip','w',compression=zipfile.ZIP_STORED) as dst:
+
+          root = Path('data/GuitarSet')
+          sample_rate = 44100
+          count = 0
+          total_frames = 0
+          with zipfile.ZipFile(root/'annotation.zip', 'r') as src, zipfile.ZipFile(
+              root/'audio_mono-pickup_mix.zip', 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=1
+          ) as dst:
               for name in src.namelist():
-                  if name.endswith('.jams'):
-                      dst.writestr(PurePosixPath(name).name[:-5] + '_mix.wav', b'')
-          print('filename-only audio index built; waveform bytes are not read')
+                  if not name.endswith('.jams'):
+                      continue
+                  doc = json.loads(src.read(name).decode('utf-8'))
+                  duration = float(doc.get('file_metadata', {}).get('duration') or 0.0)
+                  if not math.isfinite(duration) or duration <= 0.0:
+                      raise RuntimeError(f'missing/invalid JAMS duration for {name}: {duration!r}')
+                  frames = max(1, int(math.ceil(duration * sample_rate)))
+                  buf = io.BytesIO()
+                  with wave.open(buf, 'wb') as wav:
+                      wav.setnchannels(1)
+                      wav.setsampwidth(2)
+                      wav.setframerate(sample_rate)
+                      wav.writeframes(b'\x00\x00' * frames)
+                  member = PurePosixPath(name).name[:-5] + '_mix.wav'
+                  dst.writestr(member, buf.getvalue())
+                  count += 1
+                  total_frames += frames
+          print(f'valid silent WAV index built from JAMS durations: tracks={count} frames={total_frames}; real waveform bytes are never read')
           PY
       - name: Download frozen nested spectral bundle
         uses: actions/download-artifact@v4
