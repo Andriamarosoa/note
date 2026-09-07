@@ -103,8 +103,9 @@ jobs:
           assert np.all(np.isfinite(soft_cov))
           assert np.all(soft_cov.sum(1) > 0.99)
 
-          runtime_probe=tf.keras.Model(model.inputs,model.get_layer('transport_coverage').output)
-          runtime_cov=np.asarray(runtime_probe(inputs,training=False))
+          runtime_probe=tf.keras.Model(model.inputs,model.get_layer('v231_transport_plan').output)
+          runtime_plan=np.asarray(runtime_probe(inputs,training=False))
+          runtime_cov=v232._runtime_coverage_from_plan(runtime_plan)
           np.testing.assert_allclose(runtime_cov.sum(1),0.0,atol=1e-6)
 
           target=np.zeros_like(soft_cov); target[:,0]=1.0
