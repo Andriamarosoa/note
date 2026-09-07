@@ -54,9 +54,11 @@ jobs:
           from pathlib import Path
           r=json.loads(Path('model/v230-preaudit/report.json').read_text())
           assert r['gates']['proceed_to_v23_architecture'] is True
+          assert r['gates']['candidate_memory_injective_poly_at_least_97pct'] is True
           assert r['protocol']['locked12_indexed_or_evaluated'] is False
-          assert r['candidate_memory']['fully_injective_recoverable_poly'] >= .97
-          print('preaudit candidate recoverability',r['candidate_memory']['fully_injective_recoverable_poly'])
+          x=r['candidate_memory']['fully_injective_candidate_recoverable_poly']
+          assert x >= .97
+          print('preaudit candidate recoverability',x)
           PY
       - name: Prove categorical K is separate from candidate ranking
         env:
@@ -92,7 +94,6 @@ jobs:
           mask[:,:8]=1.0
           inputs['candidate_mask']=mask
 
-          # Force K=3 without touching candidate ranker.
           card=model.get_layer('cardinality')
           w,b=card.get_weights(); w[...] = 0.0; b[...] = -20.0; b[3] = 20.0
           card.set_weights([w,b])
@@ -108,14 +109,12 @@ jobs:
           assert np.all(np.isfinite(rank))
           np.testing.assert_allclose(rank.sum(1),1.0,atol=1e-5)
 
-          # K=0 target must be mathematically finite, unlike V23.1 transport CE.
           loss_fn=v240._candidate_subset_loss()
           zero=np.zeros((batch,48),dtype=np.float32)
           zero_loss=np.asarray(loss_fn(zero,out['candidate_subset']))
           assert np.all(np.isfinite(zero_loss))
           np.testing.assert_allclose(zero_loss,0.0,atol=1e-8)
 
-          # Positive subset supervision must reach the shared rank head.
           target=np.zeros((batch,48),dtype=np.float32)
           target[:,1]=1.0; target[:,3]=1.0; target[:,5]=1.0
           with tf.GradientTape() as tape:
