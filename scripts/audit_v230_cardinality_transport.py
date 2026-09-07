@@ -294,7 +294,7 @@ def main():
     hard = v210["pooled_outer"]["cell_birth_mean_fold_auc"]["hard"]
     conv_probe = v210["pooled_outer"]["conv_cardinality_probe"]
 
-    oracle_gain = float(true_k_oracle["f1"] - actual_v19["f1"])
+    oracle_gain = float(true_k_oracle["global"]["f1"] - actual_v19["f1"])
     dense_poly = float(resolutions["64"]["exact_injective_poly"])
     candidate_poly = float(candidate["fully_injective_candidate_recoverable_poly"])
     hard_auc = float(hard["conv_probe_auc"])
