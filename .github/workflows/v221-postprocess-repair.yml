@@ -1,0 +1,162 @@
+name: V22.1 postprocess repair
+
+on:
+  push:
+    branches: [v221-joint-slot-attention]
+    paths:
+      - '.github/workflows/v221-postprocess-repair.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  SOURCE_ORIGINAL_RUN: '34057761196'
+  SOURCE_RECOVERY_RUN: '34083632912'
+  SOURCE_NESTED_RUN: '33647694565'
+  SOURCE_V173_RUN: '33829092700'
+  SOURCE_V190_RUN: '33995600250'
+  CONTROL_SEED: '16061'
+
+jobs:
+  recover-postprocess:
+    name: Repair V22.1 postprocess fold ${{ matrix.fold }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        fold: [2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Download GuitarSet annotations
+        shell: bash
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+      - name: Download GuitarSet pickup-mix audio
+        shell: bash
+        run: |
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip 'https://zenodo.org/record/3371780/files/audio_mono-pickup_mix.zip?download=1'
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Download frozen nested spectral bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: v104-nested-spectral-bundle
+          path: model/v100-spectral-cache
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download completed raw canonical fold
+        uses: actions/download-artifact@v4
+        with:
+          name: v221-joint-slot-fold-${{ matrix.fold }}
+          path: model/v221-repaired-${{ matrix.fold }}
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_ORIGINAL_RUN }}
+          github-token: ${{ github.token }}
+      - name: Execute reporting postprocess only
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+          TF_DETERMINISTIC_OPS: '1'
+        shell: bash
+        run: |
+          python -B scripts/recover_v221_joint_slot_attention.py data/GuitarSet \
+            --cache-dir model/v100-spectral-cache \
+            --outer-fold "${{ matrix.fold }}" --output-dir "model/v221-repaired-${{ matrix.fold }}" --mode postprocess
+      - name: Verify no-retrain repair
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          f=int('${{ matrix.fold }}'); r=json.loads(Path(f'model/v221-repaired-{f}/report-fold-{f}.json').read_text())
+          q=r['protocol']['v221_recovery']
+          assert q['mode']=='postprocess_only' and q['model_retrained'] is False and q['outer_predictions_recomputed'] is False
+          assert q['scientific_configuration_changed'] is False
+          assert r['protocol']['historical_validation_or_locked12_indexed_or_evaluated'] is False
+          print('repaired',f,r['strata']['aggregate']['v221_joint_slot_attention']['metrics']['global'])
+          PY
+      - name: Upload repaired fold
+        uses: actions/upload-artifact@v4
+        with:
+          name: v221-repaired-fold-${{ matrix.fold }}
+          path: model/v221-repaired-${{ matrix.fold }}
+          retention-days: 30
+
+  summarize:
+    name: Summarize repaired V22.1 five-fold treatment
+    needs: [recover-postprocess]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install NumPy
+        run: python -m pip install 'numpy<2.0'
+      - name: Download recovered folds 0-1
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v221-recovered-fold-*
+          path: model/v221-all
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_RECOVERY_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download repaired folds 2-4
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v221-repaired-fold-*
+          path: model/v221-all
+          merge-multiple: false
+      - name: Download canonical V19 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v190-dense-fold-*
+          path: model/v190-all
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V190_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download canonical V17.3 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v173-poibin-fold-*
+          path: model/v173-all
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V173_RUN }}
+          github-token: ${{ github.token }}
+      - name: Summarize
+        env: {PYTHONPATH: '.:src'}
+        run: |
+          mkdir -p model/v221-summary
+          python -B scripts/summarize_v221_joint_slot_attention.py \
+            --input-dir model/v221-all --v190-fold-dir model/v190-all --v173-fold-dir model/v173-all --output-dir model/v221-summary
+      - name: Verify summary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v221-summary/report.json').read_text())
+          assert r['protocol']['outer_clean_rows']==76768
+          assert r['protocol']['locked12_indexed_or_evaluated'] is False
+          print(json.dumps(r['comparison'],indent=2,sort_keys=True))
+          print(json.dumps(r['gates'],indent=2,sort_keys=True))
+          PY
+      - name: Upload repaired V22.1 summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: v221-repaired-summary
+          path: model/v221-summary
+          retention-days: 30
