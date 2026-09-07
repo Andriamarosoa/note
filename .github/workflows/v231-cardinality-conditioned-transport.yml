@@ -1,0 +1,338 @@
+name: V23.1 cardinality-conditioned transport
+
+on:
+  push:
+    branches: [v231-cardinality-conditioned-transport]
+    paths:
+      - 'scripts/train_v231_cardinality_transport.py'
+      - 'scripts/run_v231_reporting_compat.py'
+      - 'scripts/summarize_v231_cardinality_transport.py'
+      - '.github/workflows/v231-cardinality-conditioned-transport.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+  SOURCE_NESTED_RUN: '33647694565'
+  SOURCE_V190_RUN: '33995600250'
+  SOURCE_PREAUDIT_RUN: '34126377071'
+  CONTROL_SEED: '16061'
+
+jobs:
+  preflight:
+    name: V23.1 structural preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Compile V23.1
+        env:
+          PYTHONPATH: .:src
+        run: |
+          python -m py_compile scripts/train_v231_cardinality_transport.py
+          python -m py_compile scripts/run_v231_reporting_compat.py
+          python -m py_compile scripts/summarize_v231_cardinality_transport.py
+      - name: Download authorized V23 preaudit
+        uses: actions/download-artifact@v4
+        with:
+          name: v230-preaudit-cardinality-transport
+          path: model/v230-preaudit
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_PREAUDIT_RUN }}
+          github-token: ${{ github.token }}
+      - name: Verify preaudit authorization
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v230-preaudit/report.json').read_text())
+          assert r['protocol']['v230_pre_audit_cardinality_transport'] is True
+          assert r['protocol']['analysis_only'] is True
+          assert r['protocol']['locked12_indexed_or_evaluated'] is False
+          assert r['gates']['proceed_to_v23_architecture'] is True
+          assert all(r['gates'][k] for k in (
+              'true_k_oracle_material_gain',
+              'dense_23x64_injective_poly_at_least_98pct',
+              'candidate_memory_injective_poly_at_least_97pct',
+              'conv3_hard_negative_auc_at_least_0_70',
+          ))
+          print('V23 preaudit authorization verified')
+          PY
+      - name: Prove V23.1 structural invariants
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+          TF_DETERMINISTIC_OPS: '1'
+        run: |
+          python - <<'PY'
+          import random
+          import numpy as np
+          import tensorflow as tf
+          from scripts import train_v231_cardinality_transport as v231
+
+          assert v231.DEFAULT_SEED == 16061
+          assert v231.EVENT_QUERIES == 6
+          assert v231.CARDINALITY_CLASSES == 7
+          assert v231.CENTER_CELLS == 23*64 == 1472
+          assert v231.CARDINALITY_WEIGHT == 1.0
+          assert v231.CENTER_MAP_WEIGHT == .15
+          assert v231.TRANSPORT_COVERAGE_WEIGHT == .35
+          assert v231.TRANSPORT_ITERS == 6
+          assert v231.TRANSPORT_TEMPERATURE == .65
+
+          tf.keras.backend.clear_session()
+          random.seed(16061); np.random.seed(16061); tf.random.set_seed(16061)
+          model,lw,token_shape=v231._build_model({})
+          assert lw['cardinality'] == 1.0
+          assert lw['birth_center_map'] == .15
+          assert lw['transport_coverage'] == .35
+          assert lw['event_count_norm'] == 0.0
+          for name in (
+              'v231_dense_conv1','v231_dense_conv2','v231_dense_conv3',
+              'cardinality','v231_soft_survival','v231_hard_k','v231_hard_active',
+              'v231_exact_k_straight_through_mass','v231_transport_plan',
+              'transport_row_mass','transport_coverage','v231_candidate_cross_attention',
+              'v231_tf_cross_attention','v231_set_self_attention',
+          ):
+              assert model.get_layer(name) is not None, name
+          assert all('shared_presence' not in layer.name for layer in model.layers)
+          assert all('presence_hidden' not in layer.name for layer in model.layers)
+          for q in range(6):
+              assert model.get_layer(f'event_present_{q}').trainable_weights == []
+
+          rng=np.random.default_rng(231)
+          batch=4
+          inputs={}
+          for t in model.inputs:
+              name=t.name.split(':',1)[0]
+              shape=[batch]+[int(x) for x in t.shape[1:]]
+              inputs[name]=rng.normal(size=shape).astype(np.float32)
+          cm=np.zeros_like(inputs['candidate_mask'],dtype=np.float32)
+          cm[0,:9]=1; cm[1,:7]=1; cm[2,:5]=1; cm[3,:3]=1
+          inputs['candidate_mask']=cm
+
+          out=model(inputs,training=False)
+          card=np.asarray(out['cardinality'])
+          np.testing.assert_allclose(card.sum(1),1.0,rtol=1e-5,atol=1e-5)
+          hard_k=np.argmax(card,axis=1).astype(np.int32)
+          runtime=np.concatenate([np.asarray(out[f'event_present_{q}']) for q in range(6)],axis=1)
+          assert set(np.unique(runtime).tolist()).issubset({0.0,1.0})
+          np.testing.assert_array_equal(runtime.sum(1).astype(np.int32),hard_k)
+          for row,k in zip(runtime,hard_k):
+              np.testing.assert_array_equal(row,(np.arange(6)<k).astype(np.float32))
+
+          mass=np.asarray(out['transport_row_mass'])
+          np.testing.assert_allclose(mass,runtime,rtol=2e-4,atol=2e-4)
+          np.testing.assert_allclose(mass.sum(1),hard_k.astype(np.float32),rtol=2e-4,atol=2e-4)
+          center=np.asarray(out['birth_center_map'])
+          np.testing.assert_allclose(center.sum(1),1.0,rtol=1e-5,atol=1e-5)
+          coverage=np.asarray(out['transport_coverage'])
+          for i,k in enumerate(hard_k):
+              expected=1.0 if k>0 else 0.0
+              np.testing.assert_allclose(coverage[i].sum(),expected,rtol=2e-4,atol=2e-4)
+
+          event_set=np.asarray(out['event_set'])
+          soft=card @ v231.SURVIVAL_MATRIX
+          np.testing.assert_allclose(event_set[:,:,0],soft,rtol=1e-5,atol=1e-5)
+
+          plan_model=tf.keras.Model(model.inputs,model.get_layer('v231_transport_plan').output)
+          plan=np.asarray(plan_model(inputs,training=False))
+          assert plan.shape == (batch,6,1472)
+          max_col=float(np.max(np.sum(plan,axis=1)))
+          assert max_col <= 1.02, max_col
+
+          mass_model=tf.keras.Model(model.inputs,model.get_layer('v231_exact_k_straight_through_mass').output)
+          card_layer=model.get_layer('cardinality')
+          with tf.GradientTape() as tape:
+              st=mass_model(inputs,training=True)
+              probe=tf.reduce_sum(st*tf.constant([1.,2.,3.,4.,5.,6.],dtype=tf.float32)[None,:])
+          grads=tape.gradient(probe,card_layer.trainable_weights)
+          gnorm=float(tf.linalg.global_norm([g for g in grads if g is not None]).numpy())
+          assert np.isfinite(gnorm) and gnorm > 1e-8, gnorm
+
+          print('params',model.count_params(),'token_shape',token_shape)
+          print('hard_k',hard_k.tolist(),'max_column_mass',max_col,'straight_through_gradient_norm',gnorm)
+          print('V23.1 structural preflight OK')
+          PY
+
+  fold:
+    name: V23.1 fold ${{ matrix.fold }}
+    needs: preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        fold: [0, 1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+      - name: Download GuitarSet when cache misses
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+      - name: Verify GuitarSet checksums
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Download frozen nested spectral bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: v104-nested-spectral-bundle
+          path: model/v100-spectral-cache
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download outer-clean V10 baselines
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v104-nested-eval-*
+          path: model/v104-nested-eval
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Train V23.1
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+          TF_DETERMINISTIC_OPS: '1'
+        shell: bash
+        run: |
+          set -o pipefail
+          out="model/v231-fold-${{ matrix.fold }}"; mkdir -p "$out"
+          python -B scripts/run_v231_reporting_compat.py \
+            --cache-dir model/v100-spectral-cache \
+            --baseline-eval-dir model/v104-nested-eval \
+            --outer-fold "${{ matrix.fold }}" \
+            --arm mass_permutation \
+            --seed "$CONTROL_SEED" \
+            --output-dir "$out" \
+            2>&1 | tee "$out/train.log"
+      - name: Verify V23.1 fold protocol
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          fold='${{ matrix.fold }}'
+          r=json.loads(Path(f'model/v231-fold-{fold}/report-fold-{fold}.json').read_text())
+          p=r['protocol']; a=r['v231']['architecture']
+          assert p['v231_cardinality_conditioned_transport'] is True
+          assert p['v231_pre_audit_run'] == 34126377071
+          assert p['v231_pre_audit_all_four_gates_passed'] is True
+          assert p['categorical_cardinality_head_exists'] is True
+          assert p['categorical_cardinality_classes'] == 7
+          assert p['six_independent_presence_bernoullis_exist'] is False
+          assert p['poisson_binomial_cardinality_objective_exists'] is False
+          assert p['runtime_cardinality_decode'] == 'argmax categorical P(K=0..6)'
+          assert p['raw_candidate_is_object_identity'] is False
+          assert p['exact_720_truth_matching_unchanged'] is True
+          assert p['historical_validation_or_locked12_indexed_or_evaluated'] is False
+          assert a['transport_mass']['exact_k_mass_decode_rate'] >= .999999
+          assert a['transport_mass']['prefix_violation_rate'] <= 1e-9
+          g=r['strata']['aggregate']['v231_cardinality_transport']['metrics']['global']
+          c=a['categorical_cardinality']; t=a['transport_coverage_diagnostics']
+          print(fold,'epochs',r['data']['selected_epochs'],'f1',g['f1'],'pred_ref',g['prediction_reference_ratio'],'k_exact',c['exact'],'k_poly',c['poly_exact'],'transport_center_exact_poly',t['top6_exact_center_coverage_poly'])
+          PY
+      - name: Upload V23.1 fold
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v231-cardinality-transport-fold-${{ matrix.fold }}
+          path: model/v231-fold-${{ matrix.fold }}
+          compression-level: 6
+          if-no-files-found: warn
+          retention-days: 30
+
+  summarize:
+    name: Summarize and audit V23.1
+    needs: fold
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install NumPy
+        run: python -m pip install 'numpy<2.0'
+      - name: Download V23.1 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v231-cardinality-transport-fold-*
+          path: model/v231-all
+          merge-multiple: false
+      - name: Download canonical V19 summary
+        uses: actions/download-artifact@v4
+        with:
+          name: v190-dense-birth-centers-summary
+          path: model/v190-summary
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V190_RUN }}
+          github-token: ${{ github.token }}
+      - name: Aggregate V23.1
+        env:
+          PYTHONPATH: .:src
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v231-summary
+          python -B scripts/summarize_v231_cardinality_transport.py \
+            --input-dir model/v231-all \
+            --v190-summary-dir model/v190-summary \
+            --output-dir model/v231-summary \
+            2>&1 | tee model/v231-summary/summary.log
+      - name: Verify aggregate protocol
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v231-summary/report.json').read_text())
+          p=r['protocol']; g=r['gates']; c=r['comparison']
+          assert p['v231_cardinality_conditioned_transport'] is True
+          assert p['mandatory_post_implementation_audit'] is True
+          assert p['outer_clean_rows'] == 76768
+          assert p['same_rows_as_canonical_v190'] is True
+          assert p['preaudit_run'] == 34126377071
+          assert p['categorical_cardinality_head_exists'] is True
+          assert p['six_independent_presence_bernoullis_exist'] is False
+          assert p['poisson_binomial_cardinality_objective_exists'] is False
+          assert p['locked12_indexed_or_evaluated'] is False
+          assert g['headline_prediction_is_categorical_k'] is True
+          assert g['transport_mass_is_exact_k'] is True
+          assert g['transport_prefix_never_violated'] is True
+          print(json.dumps(c,indent=2,sort_keys=True))
+          print(json.dumps(g,indent=2,sort_keys=True))
+          PY
+      - name: Upload V23.1 summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: v231-cardinality-transport-summary
+          path: model/v231-summary
+          retention-days: 30
