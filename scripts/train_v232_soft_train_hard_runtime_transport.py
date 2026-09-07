@@ -2,7 +2,7 @@
 
 V23.1 proved that categorical K can drive an exact-K runtime plan, but its
 coverage loss was numerically undefined whenever hard K=0 because Keras
-categorical crossentropy renormalized an all-zero prediction.  V23.2 changes
+categorical crossentropy renormalized an all-zero prediction. V23.2 changes
 only the training path: coverage supervision uses the same transport scores
 with soft categorical survival mass (plus a tiny fixed numerical floor), while
 runtime event activation and runtime transport remain hard exact-K.
@@ -38,6 +38,15 @@ SOFT_MASS_FLOOR = 1e-4
 
 class V232Error(RuntimeError):
     pass
+
+
+def _runtime_coverage_from_plan(plan):
+    z = np.asarray(plan, dtype=np.float32)
+    raw = np.sum(z, axis=1)
+    denom = np.sum(raw, axis=1, keepdims=True)
+    out = np.zeros_like(raw)
+    np.divide(raw, denom, out=out, where=denom > 0.0)
+    return out
 
 
 def _build_model(spec):
@@ -97,7 +106,7 @@ def _transport_mass_diag(row_mass, card_prob):
     pred_k = np.argmax(np.asarray(card_prob), axis=1).astype(np.int32)
     bits = (mass >= 0.5).astype(np.int8)
     decoded = np.sum(bits, axis=1).astype(np.int32)
-    # Only 0->1 is illegal.  The normal exact-K prefix transition 1->0 is valid.
+    # Only 0->1 is illegal. The normal exact-K prefix transition 1->0 is valid.
     violations = np.any(np.diff(bits, axis=1) > 0, axis=1)
     return {
         "rows": int(len(mass)),
@@ -191,10 +200,11 @@ def train_fold(args):
     outer = np.asarray(ctx["outer_idx"], dtype=np.int64)
     inputs = v102._inputs(ctx["cache"], outer)
     raw = built[-1].predict(inputs, batch_size=128, verbose=0)
-    runtime_probe = tf.keras.Model(
-        built[-1].inputs, built[-1].get_layer("transport_coverage").output
+    runtime_plan_probe = tf.keras.Model(
+        built[-1].inputs, built[-1].get_layer("v231_transport_plan").output
     )
-    raw["transport_runtime_coverage"] = runtime_probe.predict(inputs, batch_size=128, verbose=0)
+    runtime_plan = runtime_plan_probe.predict(inputs, batch_size=128, verbose=0)
+    raw["transport_runtime_coverage"] = _runtime_coverage_from_plan(runtime_plan)
 
     target = np.asarray(v231._LAST_CENTER_TARGETS)[outer]
     eligible = np.asarray(v231._LAST_CENTER_ELIGIBLE)[outer]
