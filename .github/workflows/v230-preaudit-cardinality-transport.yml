@@ -1,0 +1,113 @@
+name: V23 preaudit cardinality transport
+
+on:
+  push:
+    branches: [v230-preaudit-cardinality-transport]
+    paths:
+      - 'scripts/audit_v230_cardinality_transport.py'
+      - '.github/workflows/v230-preaudit-cardinality-transport.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  SOURCE_NESTED_RUN: '33647694565'
+  SOURCE_V190_RUN: '33995600250'
+  SOURCE_V210_RUN: '34034935120'
+
+jobs:
+  audit:
+    name: Audit V23 cardinality and dense transport
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Compile audit
+        env: {PYTHONPATH: '.:src'}
+        run: python -m py_compile scripts/audit_v230_cardinality_transport.py
+      - name: Download GuitarSet annotations only
+        shell: bash
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+      - name: Build filename-only audio index archive
+        run: |
+          python - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import zipfile
+          root=Path('data/GuitarSet')
+          with zipfile.ZipFile(root/'annotation.zip','r') as src, zipfile.ZipFile(root/'audio_mono-pickup_mix.zip','w',compression=zipfile.ZIP_STORED) as dst:
+              for name in src.namelist():
+                  if name.endswith('.jams'):
+                      dst.writestr(PurePosixPath(name).name[:-5] + '_mix.wav', b'')
+          print('filename-only audio index built; waveform bytes are not read')
+          PY
+      - name: Download frozen nested spectral bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: v104-nested-spectral-bundle
+          path: model/v100-spectral-cache
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download canonical V19 folds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v190-dense-fold-*
+          path: model/v190-all
+          merge-multiple: false
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V190_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download canonical V21 frozen-latent audit
+        uses: actions/download-artifact@v4
+        with:
+          name: v210-v190-latent-conv-audit
+          path: model/v210-audit
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V210_RUN }}
+          github-token: ${{ github.token }}
+      - name: Run V23 preaudit
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v230-preaudit
+          python -B scripts/audit_v230_cardinality_transport.py data/GuitarSet \
+            --cache-dir model/v100-spectral-cache \
+            --v190-fold-dir model/v190-all \
+            --v210-audit-dir model/v210-audit \
+            --output-dir model/v230-preaudit \
+            2>&1 | tee model/v230-preaudit/audit.log
+      - name: Verify audit protocol and gates
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v230-preaudit/report.json').read_text()); p=r['protocol']
+          assert p['v230_pre_audit_cardinality_transport'] is True
+          assert p['analysis_only'] is True and p['model_training'] is False
+          assert p['threshold_tuning'] is False and p['locked12_indexed_or_evaluated'] is False
+          assert p['outer_clean_rows'] == 76768
+          assert p['canonical_v190_run'] == 33995600250 and p['canonical_v210_run'] == 34034935120
+          print(json.dumps(r['gates'],indent=2,sort_keys=True))
+          print(json.dumps({'oracle_gain':r['cardinality']['true_k_oracle_f1_gain_over_v19'],'dense_poly':r['dense_transport']['resolution_injectivity']['64']['exact_injective_poly'],'candidate_poly':r['candidate_memory']['fully_injective_candidate_recoverable_poly'],'hard_auc':r['latent_signal']['v21_hard_negative_conv_auc']},indent=2,sort_keys=True))
+          PY
+      - name: Upload V23 preaudit
+        uses: actions/upload-artifact@v4
+        with:
+          name: v230-preaudit-cardinality-transport
+          path: model/v230-preaudit
+          retention-days: 30
