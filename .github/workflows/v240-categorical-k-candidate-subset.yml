@@ -6,6 +6,7 @@ on:
     paths:
       - 'scripts/train_v240_categorical_k_candidate_subset.py'
       - 'scripts/run_v240_reporting_compat.py'
+      - 'test/test_v240_candidate_subset.py'
       - '.github/workflows/v240-categorical-k-candidate-subset.yml'
   workflow_dispatch:
 
@@ -37,6 +38,7 @@ jobs:
         env:
           PYTHONPATH: .:src
         run: |
+          python -m unittest test.test_v240_candidate_subset -v
           python -m py_compile scripts/train_v240_categorical_k_candidate_subset.py
           python -m py_compile scripts/run_v240_reporting_compat.py
       - name: Download authorized V23 preaudit
@@ -208,6 +210,9 @@ jobs:
           r=json.loads(Path(f'model/v240-fold-{fold}/report-fold-{fold}.json').read_text())
           p=r['protocol']; a=r['v240']['architecture']; s=a['candidate_subset']
           assert p['v240_categorical_k_candidate_subset'] is True
+          assert p['candidate_target_matching'] == 'maximum-cardinality minimum-time-error injective'
+          assert p['candidate_target_tolerance_ms'] == 50.0
+          assert p['candidate_subset_supervision_requires_complete_match'] is True
           assert p['categorical_cardinality_head_exists'] is True
           assert p['six_independent_presence_bernoullis_exist'] is False
           assert p['candidate_rank_controls_count'] is False
