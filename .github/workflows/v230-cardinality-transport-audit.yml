@@ -1,0 +1,145 @@
+name: V23 pre-audit cardinality transport
+
+on:
+  push:
+    branches: [v230-cardinality-transport-audit]
+    paths:
+      - 'scripts/audit_v230_cardinality_transport.py'
+      - 'scripts/summarize_v230_cardinality_transport.py'
+      - '.github/workflows/v230-cardinality-transport-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  SOURCE_NESTED_RUN: '33647694565'
+  SOURCE_V190_RUN: '33995600250'
+
+jobs:
+  audit:
+    name: Pre-V23 audit fold ${{ matrix.fold }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      matrix:
+        fold: [0, 1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-train.txt
+      - name: Syntax preflight
+        run: python -m py_compile scripts/audit_v230_cardinality_transport.py scripts/summarize_v230_cardinality_transport.py
+      - name: Download GuitarSet annotations
+        shell: bash
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+      - name: Download GuitarSet pickup-mix audio
+        shell: bash
+        run: |
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip 'https://zenodo.org/record/3371780/files/audio_mono-pickup_mix.zip?download=1'
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Download frozen nested spectral bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: v104-nested-spectral-bundle
+          path: model/v100-spectral-cache
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download canonical V19 fold
+        uses: actions/download-artifact@v4
+        with:
+          name: v190-dense-fold-${{ matrix.fold }}
+          path: model/v190-fold-${{ matrix.fold }}
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_V190_RUN }}
+          github-token: ${{ github.token }}
+      - name: Run pre-V23 audit
+        env:
+          PYTHONPATH: .:src
+          TF_CPP_MIN_LOG_LEVEL: '2'
+          TF_DETERMINISTIC_OPS: '1'
+        shell: bash
+        run: |
+          mkdir -p model/v230-audit-${{ matrix.fold }}
+          python -B scripts/audit_v230_cardinality_transport.py data/GuitarSet \
+            --cache-dir model/v100-spectral-cache \
+            --v190-fold-dir model/v190-fold-${{ matrix.fold }} \
+            --outer-fold '${{ matrix.fold }}' \
+            --output-dir model/v230-audit-${{ matrix.fold }}
+      - name: Verify fold protocol
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          f=int('${{ matrix.fold }}')
+          r=json.loads(Path(f'model/v230-audit-{f}/report-fold-{f}.json').read_text())
+          p=r['protocol']
+          assert p['pre_v23_cardinality_transport_audit'] is True
+          assert p['audit_only_no_v23_model'] is True
+          assert p['probe_training_rows_final_fit_only'] is True
+          assert p['outer_rows_untouched_until_probe_fit'] is True
+          assert p['ridge_sweep'] is False and p['runtime_threshold_sweep'] is False
+          assert p['locked12_indexed_or_evaluated'] is False
+          assert p['rank_budgets_fixed_before_outer']==['K','2K','4K','8K','48']
+          print('fold',f,'rows',r['data']['outer_rows'],'combined',r['cardinality']['combined_probe']['exact'],'oracleF1',r['end_to_end_count_realization']['true_k_oracle_existing_candidate_ranking']['global']['f1'])
+          PY
+      - name: Upload fold audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: v230-audit-fold-${{ matrix.fold }}
+          path: model/v230-audit-${{ matrix.fold }}
+          retention-days: 30
+
+  summarize:
+    name: Summarize pre-V23 five-fold audit
+    needs: audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install NumPy
+        run: python -m pip install 'numpy<2.0'
+      - name: Download fold audits
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v230-audit-fold-*
+          path: model/v230-all
+          merge-multiple: false
+      - name: Summarize
+        env:
+          PYTHONPATH: .:src
+        run: |
+          mkdir -p model/v230-summary
+          python -B scripts/summarize_v230_cardinality_transport.py --input-dir model/v230-all --output-dir model/v230-summary
+      - name: Verify outer-clean summary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v230-summary/report.json').read_text())
+          assert r['protocol']['outer_clean_rows']==76768
+          assert r['protocol']['locked12_indexed_or_evaluated'] is False
+          assert r['protocol']['no_v23_model_trained'] is True
+          print(json.dumps(r['comparison'],indent=2,sort_keys=True))
+          print(json.dumps(r['representation'],indent=2,sort_keys=True))
+          PY
+      - name: Upload pre-V23 summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: v230-cardinality-transport-summary
+          path: model/v230-summary
+          retention-days: 30
