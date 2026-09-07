@@ -60,6 +60,8 @@ PRED_KEY = "pred240_categorical_k_candidate_subset"
 CARDINALITY_WEIGHT = 1.00
 CENTER_MAP_WEIGHT = 0.15
 CANDIDATE_SUBSET_WEIGHT = 1.00
+CANDIDATE_MATCH_TOLERANCE_MS = 50.0
+_LEGACY_EVENT_SUPERVISION = v130._ordered_event_supervision
 
 _LAST_CENTER_TARGETS = None
 _LAST_CENTER_ELIGIBLE = None
@@ -297,6 +299,83 @@ def _build_model(spec):
     return model, lw, token_shape
 
 
+def _injective_time_match(truth, candidates, tolerance):
+    """Maximize matches, then minimize total absolute timing error.
+
+    Sorted one-dimensional absolute-distance matching admits an order-preserving
+    optimum. Dynamic programming allows unmatched events and candidates; stable
+    sorting and fixed tie handling make simultaneous events deterministic.
+    Returns original candidate indices, or -1 for unmatched events.
+    """
+    truth = np.asarray(truth, dtype=np.float64)
+    candidates = np.asarray(candidates, dtype=np.float64)
+    result = np.full(len(truth), -1, dtype=np.int32)
+    ti = np.flatnonzero(np.isfinite(truth))
+    ci = np.flatnonzero(np.isfinite(candidates))
+    ti = ti[np.argsort(truth[ti], kind="stable")]
+    ci = ci[np.argsort(candidates[ci], kind="stable")]
+    n, m = len(ti), len(ci)
+    if not n or not m:
+        return result
+    # One extra match outweighs every possible change in total timing error.
+    penalty = (n + 1) * (tolerance + 1.0)
+    cost = np.zeros((n + 1, m + 1), dtype=np.float64)
+    action = np.zeros((n + 1, m + 1), dtype=np.int8)
+    cost[:, 0] = np.arange(n + 1) * penalty
+    action[1:, 0] = 1
+    for i in range(1, n + 1):
+        for j in range(1, m + 1):
+            best, step = cost[i, j - 1], 0  # skip candidate
+            skip_truth = cost[i - 1, j] + penalty
+            if skip_truth < best:
+                best, step = skip_truth, 1
+            distance = abs(truth[ti[i - 1]] - candidates[ci[j - 1]])
+            if distance <= tolerance and cost[i - 1, j - 1] + distance < best:
+                best, step = cost[i - 1, j - 1] + distance, 2
+            cost[i, j], action[i, j] = best, step
+    i, j = n, m
+    while i and j:
+        step = action[i, j]
+        if step == 2:
+            result[ti[i - 1]] = ci[j - 1]
+            i, j = i - 1, j - 1
+        elif step == 1:
+            i -= 1
+        else:
+            j -= 1
+    return result
+
+
+def _ordered_event_supervision(cache, time_mask, time_targets, time_sample, k):
+    present, times, candidates, valid, samples, diag = _LEGACY_EVENT_SUPERVISION(
+        cache, time_mask, time_targets, time_sample, k
+    )
+    candidates.fill(0.0)
+    valid.fill(0.0)
+    candidate_samples = np.asarray(cache["sequence"][:, :, -2], dtype=np.float64) * float(v130.CLUSTER_WINDOW_SAMPLES)
+    tolerance = CANDIDATE_MATCH_TOLERANCE_MS * float(v102.SAMPLE_RATE) / 1000.0
+    for row in range(len(k)):
+        events = np.flatnonzero((present[row] > 0.5) & np.isfinite(samples[row]))
+        ids = np.flatnonzero(np.asarray(cache["mask"][row]) > 0.5)
+        match = _injective_time_match(samples[row, events], candidate_samples[row, ids], tolerance)
+        for event, candidate in zip(events, match):
+            if candidate >= 0:
+                candidates[row, event, ids[candidate]] = 1.0
+                valid[row, event] = 1.0
+    counts = np.sum(present, axis=1)
+    matched = np.sum(valid, axis=1)
+    diag.update({
+        "candidate_matching": "maximum-cardinality minimum-time-error injective",
+        "candidate_match_tolerance_ms": CANDIDATE_MATCH_TOLERANCE_MS,
+        "timed_event_targets": int(np.sum(valid)),
+        "timed_target_fraction": float(np.sum(valid) / max(1.0, float(np.sum(present)))),
+        "fully_matched_positive_rows": int(np.sum((counts > 0) & (matched == counts))),
+        "incomplete_positive_rows": int(np.sum((counts > 0) & (matched < counts))),
+        "unmatched_present_events": int(np.sum(counts - matched)),
+    })
+    return present, times, candidates, valid, samples, diag
+
+
 def _targets(cache, pitch_targets, string_time_targets, k, event_present, event_time, event_candidate):
     global _LAST_CENTER_TARGETS, _LAST_CENTER_ELIGIBLE, _LAST_CANDIDATE_SUBSET
     out = v171._targets(cache, pitch_targets, string_time_targets, k, event_present, event_time, event_candidate)
@@ -319,7 +398,9 @@ def _sample_weights(cache, time_mask, k, event_present, event_valid):
     center_ok = ((kk > 0) & (timed == kk)).astype(np.float32)
     out["birth_center_map"] = center_ok
     out["cardinality"] = v102._count_weights(kk).astype(np.float32)
-    out["candidate_subset"] = (np.sum(np.asarray(event_valid, dtype=np.float32), axis=1) > 0.0).astype(np.float32)
+    # A partial target must not classify an unknown true candidate as negative.
+    matched = np.sum(np.asarray(event_valid, dtype=np.float32) > 0.5, axis=1)
+    out["candidate_subset"] = ((kk > 0) & (matched == kk)).astype(np.float32)
     return out
 
 
@@ -369,7 +450,9 @@ def _candidate_subset_diag(target, capture, true_k):
     pos = target_count > 0
     feasible = (k > 0) & (target_count == k)
     poly_feasible = (k >= 2) & (target_count == k)
-    realized_exact_k = selected_count == k
+    predicted_k = np.argmax(np.asarray(capture["cardinality"]), axis=1).astype(np.int32)
+    valid_count = np.asarray(capture["candidate_valid_count"], dtype=np.int32)
+    realized_exact_k = selected_count == predicted_k
     return {
         "rows": int(len(k)),
         "positive_rows": int(np.sum(pos)),
@@ -379,7 +462,9 @@ def _candidate_subset_diag(target, capture, true_k):
         "exact_subset_feasible_rate": float(np.mean(exact[feasible])) if np.any(feasible) else None,
         "exact_subset_poly_feasible_rate": float(np.mean(exact[poly_feasible])) if np.any(poly_feasible) else None,
         "runtime_realized_exact_categorical_k_rate": float(np.mean(realized_exact_k)),
-        "rows_candidate_count_below_predicted_k": int(np.sum(selected_count < k)),
+        "runtime_realized_exact_true_k_rate": float(np.mean(selected_count == k)),
+        "rows_candidate_count_below_predicted_k": int(np.sum(valid_count < predicted_k)),
+        "rows_emitted_count_below_predicted_k": int(np.sum(selected_count < predicted_k)),
         "selected_candidate_unique_rate": float(np.mean([len(x[x >= 0]) == len(np.unique(x[x >= 0])) for x in selected])),
     }
 
@@ -455,6 +540,9 @@ def _postprocess(args, report, ctx, capture, center_diag):
             "candidate_subset_training": "multi-positive listwise + permutation-invariant soft without-replacement slots",
             "candidate_subset_loss_weight": CANDIDATE_SUBSET_WEIGHT,
             "candidate_subset_loss_weight_tuned": False,
+            "candidate_target_matching": "maximum-cardinality minimum-time-error injective",
+            "candidate_target_tolerance_ms": CANDIDATE_MATCH_TOLERANCE_MS,
+            "candidate_subset_supervision_requires_complete_match": True,
             "dense_center_loss_weight": CENTER_MAP_WEIGHT,
             "dense_center_loss_weight_tuned": False,
             "raw_candidate_is_object_identity": True,
@@ -533,14 +621,17 @@ def train_fold(args):
         return result
 
     old_build, old_targets, old_weights, old_decode = v130._build_model, v130._targets, v130._sample_weights, v130._decode
+    old_supervision = v130._ordered_event_supervision
     try:
         v130._build_model = builder
+        v130._ordered_event_supervision = _ordered_event_supervision
         v130._targets = _targets
         v130._sample_weights = _sample_weights
         v130._decode = _decode_capture_factory(captures)
         report = v130.train_fold(args)
     finally:
         v130._build_model, v130._targets, v130._sample_weights, v130._decode = old_build, old_targets, old_weights, old_decode
+        v130._ordered_event_supervision = old_supervision
 
     if calls["count"] != 2 or len(captures) != 2 or _LAST_CENTER_TARGETS is None:
         raise V240Error("V24.0 build/target/decode capture failed")
