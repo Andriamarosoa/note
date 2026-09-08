@@ -19,7 +19,7 @@ env:
 jobs:
   preflight:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -37,6 +37,32 @@ jobs:
               const {data:r}=await github.rest.actions.getWorkflowRun({owner:context.repo.owner,repo:context.repo.repo,run_id});
               if(r.head_sha!==sha||r.conclusion!=='success') throw new Error('Invalid source run');
             }
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+      - name: Download GuitarSet when cache misses
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          mkdir -p data/GuitarSet
+          curl --silent --show-error -L --fail --connect-timeout 30 --max-time 600 --retry 8 --retry-delay 15 --retry-all-errors -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl --silent --show-error -L --fail --connect-timeout 30 --max-time 600 --retry 8 --retry-delay 15 --retry-all-errors -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+      - name: Verify GuitarSet checksums
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Share verified GuitarSet with all folds
+        uses: actions/upload-artifact@v4
+        with:
+          name: v250-verified-guitarset
+          path: |
+            data/GuitarSet/annotation.zip
+            data/GuitarSet/audio_mono-pickup_mix.zip
+          compression-level: 0
+          retention-days: 7
   fold:
     name: V25 paired fold ${{ matrix.fold }}
     needs: preflight
@@ -51,19 +77,11 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: '3.11'}
       - run: python -m pip install -r requirements-train.txt
-      - name: Restore official GuitarSet cache
-        id: guitarset-cache
-        uses: actions/cache@v4
+      - name: Download verified GuitarSet
+        uses: actions/download-artifact@v4
         with:
+          name: v250-verified-guitarset
           path: data/GuitarSet
-          key: ${{ env.GUITARSET_CACHE_KEY }}
-      - name: Download GuitarSet when cache misses
-        if: steps.guitarset-cache.outputs.cache-hit != 'true'
-        shell: bash
-        run: |
-          mkdir -p data/GuitarSet
-          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
-          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
       - name: Verify GuitarSet checksums
         run: |
           echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
