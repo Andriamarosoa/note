@@ -14,7 +14,7 @@ Unmatched events retain cardinality/presence supervision but have no identity/ti
 detail loss. A positive row contributes to the listwise subset loss only when all
 K events have matched candidates; partial targets must not label unknown true
 candidates as negative. Match completeness and unmatched-event counts are recorded
-in the inherited `data.anonymous_event_targets` report block. The V13 helper and
+in the inherited `supervision.anonymous_event_targets` report block. The V13 helper and
 other versioned experiments are unchanged.
 
 Runtime diagnostics now distinguish:

@@ -151,7 +151,7 @@ def audit(args):
                         'tolerance_diagnostics_ms': tolerance_metrics,
                         'poly_rows': int(poly.sum()), 'poly_k_correct': int(np.sum(data['categorical_k'][poly] == true_k[poly])),
                         'k_confusion': np.bincount(true_k * 7 + data['categorical_k'], minlength=49).reshape(7,7).tolist(),
-                        'source_supervision': report['data']['anonymous_event_targets']})
+                        'source_supervision': report['supervision']['anonymous_event_targets']})
         source_files.extend({'path': str(f), 'sha256': hashlib.sha256(f.read_bytes()).hexdigest()} for f in (rp,pp))
         print(json.dumps({'fold_completed': fold, 'replayed_f1': replay50['f1'], 'oracle_learned_f1': by_fold[-1]['oracle_true_k_learned_ranking']['f1']}), flush=True)
     if sorted(all_idx) != list(range(OUTER_ROWS)) or seen_members != allowed:
@@ -184,7 +184,7 @@ def audit(args):
               f"Tracks with changed direct/frozen timestamps: {output['maps_tracks_changed']}.",
               f"Polyphonic categorical K exact: {output['poly_k_exact']:.6f}."]
     (args.output_dir/'report.md').write_text('\n'.join(lines)+'\n')
-    print(json.dumps({k:v for k,v in output.items() if k not in ('folds','source_files')}, indent=2, sort_keys=True), flush=True)
+    print(json.dumps(output, indent=2, sort_keys=True), flush=True)
     return output
 
 
