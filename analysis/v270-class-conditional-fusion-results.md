@@ -29,8 +29,23 @@ Par rapport à V10.4 :
 
 Le gain d'exact-K n'est pas concentré sur un seul fold. `low_k_fusion` ne perd aucun fold en exact-K polyphonique, conformément au garde-fou structurel.
 
-## Décision
+## Décision selon le protocole V27 initial
 
 Ne promouvoir aucun bras V27 : le protocole exigeait aussi de ne pas baisser le F1 événementiel par rapport à V10.4. La fusion basse cardinalité est néanmoins validée comme direction utile, car elle améliore l'exact-K global et polyphonique sur les cinq folds avec une perte F1 limitée à 0,1946 point.
 
-La suite la plus ciblée est un veto conditionné par la confiance de V26 uniforme, calibré uniquement dans les partitions internes de chaque fold. Il doit conserver les corrections K=0/K=1 les plus fiables tout en évitant de retirer les événements V10.4 qui deviennent les 608 FN supplémentaires de `low_k_fusion`. Les mêmes folds externes ne doivent pas servir à choisir puis à présenter ce seuil comme une validation indépendante.
+Ce verdict historique est conservé : les critères avaient été fixés avant le run et ne doivent pas être réécrits après observation des résultats.
+
+## Priorité confirmée pour la suite
+
+Après le run, la priorité du projet a été précisée : **l'exact-K polyphonique est la métrique principale**. L'exact-K global et le F1 événementiel restent publiés comme métriques secondaires et compromis, mais le F1 n'est plus utilisé comme veto absolu tant qu'un seuil minimal n'a pas été fixé avant une nouvelle expérience.
+
+Avec cette hiérarchie, `low_k_fusion` est retenu comme référence de développement V27 :
+
+- exact-K polyphonique : 37,5705 %, soit +1,0637 point par rapport à V10.4 ;
+- amélioration de l'exact-K polyphonique sur chacun des cinq folds ;
+- exact-K global : +0,5614 point ;
+- F1 événementiel : -0,1946 point, compromis conservé et explicitement signalé.
+
+`null_veto` n'est pas retenu, car il n'apporte aucun gain d'exact-K polyphonique.
+
+La prochaine expérience ciblée doit tester un `poly_rescue` sélectif : lorsque V10.4 prédit K<=1, accepter une prédiction V26 K>=2 uniquement avec une confiance suffisante, calibrée dans les partitions internes. La sélection doit optimiser d'abord l'exact-K polyphonique ; les folds externes ne doivent être utilisés qu'une fois pour le rapport final.
