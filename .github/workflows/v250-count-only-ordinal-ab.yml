@@ -1,0 +1,130 @@
+name: V25 count-only categorical versus ordinal
+on:
+  push:
+    branches: [v250-count-only-ordinal-ab]
+    paths:
+      - 'scripts/train_v250_count_only.py'
+      - 'test/test_v250_count_only.py'
+      - '.github/workflows/v250-count-only-ordinal-ab.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+env:
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+  SOURCE_NESTED_RUN: '33647694565'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  TF_DETERMINISTIC_OPS: '1'
+  PYTHONPATH: '.:src'
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: python -m pip install -r requirements-train.txt
+      - name: Verify paired graphs, gradients, and partition guards
+        run: |
+          python -c 'import tensorflow; assert tensorflow.__version__ == "2.15.1"'
+          python -m unittest test.test_v250_count_only test.test_v240_selection_audit -v
+      - name: Verify canonical training and audit runs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            for(const [run_id,sha] of [[34168832668,'980a052e6cd9eee7896962ceb3a458e0ae258334'],[34182431118,'f7dee52b07ccbb74e5257598feb5f8ea6a74463d']]){
+              const {data:r}=await github.rest.actions.getWorkflowRun({owner:context.repo.owner,repo:context.repo.repo,run_id});
+              if(r.head_sha!==sha||r.conclusion!=='success') throw new Error('Invalid source run');
+            }
+  fold:
+    name: V25 paired fold ${{ matrix.fold }}
+    needs: preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix: {fold: [0,1,2,3,4]}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: python -m pip install -r requirements-train.txt
+      - name: Restore official GuitarSet cache
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+      - name: Download GuitarSet when cache misses
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+      - name: Verify GuitarSet checksums
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Download frozen nested spectral bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: v104-nested-spectral-bundle
+          path: model/v100-spectral-cache
+          repository: Andriamarosoa/note
+          run-id: ${{ env.SOURCE_NESTED_RUN }}
+          github-token: ${{ github.token }}
+      - name: Download canonical outer V24 predictions
+        uses: actions/download-artifact@v4
+        with:
+          name: v240-categorical-k-candidate-subset-fold-${{ matrix.fold }}
+          path: model/v240-source
+          repository: Andriamarosoa/note
+          run-id: 34168832668
+          github-token: ${{ github.token }}
+      - name: Train paired count estimators
+        run: |
+          set -o pipefail
+          python -m scripts.train_v250_count_only train --dataset-dir data/GuitarSet --cache-dir model/v100-spectral-cache --fold-dir model/v240-source --outer-fold ${{ matrix.fold }} --output-dir model/v250-fold-${{ matrix.fold }} | tee model/v250-fold-${{ matrix.fold }}.log
+      - name: Verify complete pair
+        run: |
+          python - <<'PYTEST'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/v250-fold-${{ matrix.fold }}/report-fold-${{ matrix.fold }}.json').read_text())
+          assert set(r['arms'])=={'categorical','conditional_ordinal'}
+          assert r['protocol']['outer_used_for_epoch_selection'] is False
+          assert r['protocol']['historical_validation_or_locked12_evaluated'] is False
+          assert r['protocol']['frozen_saved_v24_ranking'] is True
+          assert r['provenance']['source_run']==34168832668
+          PYTEST
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v250-count-pair-fold-${{ matrix.fold }}
+          path: |
+            model/v250-fold-${{ matrix.fold }}
+            model/v250-fold-${{ matrix.fold }}.log
+          retention-days: 90
+  summary:
+    needs: fold
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: python -m pip install 'numpy>=1.23.5,<2'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v250-count-pair-fold-*
+          path: model/v250-all
+      - name: Aggregate all five pairs
+        run: python -m scripts.train_v250_count_only summarize --input-dir model/v250-all --output-dir model/v250-summary
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v250-count-pair-summary
+          path: model/v250-summary
+          retention-days: 90
