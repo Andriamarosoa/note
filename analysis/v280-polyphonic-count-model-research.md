@@ -1,8 +1,10 @@
 # V28 — Recherche approfondie pour un nouveau modèle de comptage polyphonique
 
-Date de la recherche : **2026-09-09**  
-Priorité du projet : **exact-K polyphonique sur les clusters d'onsets (`K >= 2`)**  
-Référence de développement conservée : **V27.3**  
+Date de la recherche : **2026-09-09**
+
+Priorité du projet : **exact-K polyphonique sur les clusters d'onsets (`K >= 2`)**
+
+Référence de développement conservée : **V27.3**
 Statut : **recommandation d'architecture et protocole ; aucun entraînement lancé**
 
 ## Verdict
