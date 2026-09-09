@@ -18,7 +18,6 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 import hashlib
 import json
-import math
 import os
 from pathlib import Path
 import sys
@@ -61,6 +60,7 @@ DEFAULT_ROWS = 28
 DEFAULT_STEPS = 160
 MINIMUM_LOSS_REDUCTION = 0.20
 MINIMUM_CARDINALITY_ACCURACY = 0.70
+MIDI_TIE_TOLERANCE_CENTS = 1e-3
 V104_RUN_ID = cqt_mining.V104_SOURCE_RUN_ID
 V104_HEAD_SHA = cqt_mining.V104_SOURCE_HEAD_SHA
 V104_ARTIFACT = cqt_mining.V104_SOURCE_ARTIFACT
@@ -74,6 +74,12 @@ V280_CQT_HEAD_SHA = "3d2fe62b4527236ab91e86dad3cc9c5d81e67b08"
 V280_CQT_ARTIFACT = "v280-causal-cqt-outer-clean-cache"
 V280_CQT_ARTIFACT_DIGEST = (
     "sha256:2cb10b3042a0ff77ca6e7f59aacbef7a43ff04690aa6f7476a376f3c39eee2ff"
+)
+V280_CLUSTER_RUN_ID = 34_344_366_846
+V280_CLUSTER_HEAD_SHA = "c4fbfc0572cfe704afa2efde149be489fe418829"
+V280_CLUSTER_ARTIFACT = "v280-cluster-metadata"
+V280_CLUSTER_ARTIFACT_DIGEST = (
+    "sha256:22d850ee60978e31f964694859c7b12dd6547ce5115b9406e189f6c48305a8dd"
 )
 
 
@@ -495,8 +501,8 @@ def real_targets(
     midi: np.ndarray,
     midi_mask: np.ndarray,
     config: CausalCQTConfig = CausalCQTConfig(),
-) -> tuple[dict[str, np.ndarray], np.ndarray]:
-    """Build the five mutually consistent V28 training targets."""
+) -> tuple[dict[str, np.ndarray], np.ndarray, dict[str, object]]:
+    """Build discrete V28 targets from GuitarSet's continuous MIDI labels."""
     exact_array = np.asarray(exact, dtype=np.int32)
     strings = np.asarray(slot_targets, dtype=np.float32)
     midi_array = np.asarray(midi, dtype=np.float32)
@@ -509,15 +515,26 @@ def real_targets(
     if not np.array_equal(mask, strings > 0.5):
         raise V280RealSmokeError("MIDI mask must exactly equal frozen string occupancy")
 
+    raw_active = np.asarray(midi_array[mask], dtype=np.float64)
+    if not np.isfinite(raw_active).all():
+        raise V280RealSmokeError("active MIDI supervision contains a non-finite value")
+    rounded_active = np.rint(raw_active)
+    signed_cents = 100.0 * (raw_active - rounded_active)
+    absolute_cents = np.abs(signed_cents)
+    ambiguous = np.flatnonzero(absolute_cents >= 50.0 - MIDI_TIE_TOLERANCE_CENTS)
+    if len(ambiguous):
+        value = float(raw_active[int(ambiguous[0])])
+        raise V280RealSmokeError(
+            f"MIDI label {value} is ambiguous at a half-semitone quantization boundary"
+        )
+
     k = np.minimum(exact_array, SLOT_COUNT).astype(np.int32)
     fret = np.zeros((n, SLOT_COUNT, FRETS_PER_STRING), dtype=np.float32)
     pitch = np.zeros((n, guitar_pitch_count(config)), dtype=np.float32)
     pitch_low = int(round(config.input_min_midi))
     for row, slot in np.argwhere(mask):
         raw = float(midi_array[row, slot])
-        rounded = int(round(raw))
-        if not math.isclose(raw, rounded, abs_tol=1e-4):
-            raise V280RealSmokeError(f"non-semitone MIDI label {raw} at row={row} slot={slot}")
+        rounded = int(np.rint(raw))
         fret_index = rounded - int(STANDARD_TUNING_MIDI[slot])
         pitch_index = rounded - pitch_low
         if not 0 <= fret_index < FRETS_PER_STRING:
@@ -538,7 +555,28 @@ def real_targets(
         "pitch_onset": pitch,
         "poibin_cardinality": k,
     }
-    return targets, consistent
+    fractional = absolute_cents > 0.01
+    quantization: dict[str, object] = {
+        "rule": "nearest_equal_tempered_semitone",
+        "half_semitone_ties_rejected": True,
+        "label_count": int(len(raw_active)),
+        "fractional_label_count": int(np.sum(fractional)),
+        "fractional_label_fraction": (
+            float(np.mean(fractional)) if len(raw_active) else 0.0
+        ),
+        "absolute_cents_median": (
+            float(np.median(absolute_cents)) if len(absolute_cents) else None
+        ),
+        "absolute_cents_p90": (
+            float(np.percentile(absolute_cents, 90)) if len(absolute_cents) else None
+        ),
+        "absolute_cents_max": (
+            float(np.max(absolute_cents)) if len(absolute_cents) else None
+        ),
+        "signed_cents_min": float(np.min(signed_cents)) if len(signed_cents) else None,
+        "signed_cents_max": float(np.max(signed_cents)) if len(signed_cents) else None,
+    }
+    return targets, consistent, quantization
 
 
 def select_balanced_rows(k: np.ndarray, eligible: np.ndarray, rows: int) -> np.ndarray:
@@ -704,34 +742,59 @@ def bounded_real_overfit(
 
 def run(args) -> dict[str, object]:
     output_dir = Path(args.output_dir)
-    distilled_dir = Path(args.distilled_output_dir)
     if output_dir.exists():
         raise FileExistsError(f"refusing to overwrite {output_dir}")
-    if distilled_dir.exists():
-        raise FileExistsError(f"refusing to overwrite {distilled_dir}")
 
-    metadata = load_v100_cluster_metadata(Path(args.v100_cache_dir))
-    selection, membership = cqt_mining.select_outer_clean_tracks(
-        Path(args.dataset_dir), Path(args.v100_cache_dir)
+    if args.v100_cache_dir is not None:
+        if args.distilled_output_dir is None:
+            raise V280RealSmokeError(
+                "--distilled-output-dir is required with --v100-cache-dir"
+            )
+        distilled_dir = Path(args.distilled_output_dir)
+        if distilled_dir.exists():
+            raise FileExistsError(f"refusing to overwrite {distilled_dir}")
+        metadata = load_v100_cluster_metadata(Path(args.v100_cache_dir))
+        distilled_report = None
+        cluster_source_mode = "frozen_v104_shards_distilled_in_run"
+    else:
+        if args.distilled_output_dir is not None:
+            raise V280RealSmokeError(
+                "--distilled-output-dir cannot be used with --distilled-source-dir"
+            )
+        distilled_dir = Path(args.distilled_source_dir)
+        metadata = load_distilled_cluster_cache(distilled_dir)
+        distilled_report = json.loads((distilled_dir / "manifest.json").read_text())
+        cluster_source_mode = "preserved_v280_cluster_metadata"
+
+    membership = cqt_mining.V100Membership(
+        track_members=metadata.track_members,
+        shard_paths=metadata.shard_paths,
+        sha256=cqt_mining._member_digest(metadata.track_members),
     )
-    if metadata.track_members != membership.track_members:
-        raise V280RealSmokeError("loaded V10 rows and metadata-only membership differ")
+    indexed_tracks, outer_clean_tracks, historical_validation_tracks = (
+        cqt_mining._dataset_split(Path(args.dataset_dir))
+    )
+    selection = cqt_mining.validate_outer_clean_selection(
+        indexed_tracks,
+        outer_clean_tracks,
+        historical_validation_tracks,
+        membership,
+    )
+    if args.v100_cache_dir is not None:
+        distilled_report = write_distilled_cluster_cache(distilled_dir, metadata)
+        reloaded = load_distilled_cluster_cache(distilled_dir)
+        if reloaded.row_count != metadata.row_count:
+            raise V280RealSmokeError("distilled cache round-trip changed row count")
     cqt_verification = cqt_mining.verify_cache(Path(args.v280_cache_dir))
     cqt_manifest = json.loads((Path(args.v280_cache_dir) / "manifest.json").read_text())
     cqt_members = tuple(str(row["annotation_member"]) for row in cqt_manifest["cache"]["tracks"])
     if cqt_members != metadata.track_members:
         raise V280RealSmokeError("V10 rows and V28 causal CQT cache membership differ")
     historical_validation_members = {
-        track.annotation_member
-        for track in cqt_mining._dataset_split(Path(args.dataset_dir))[2]
+        track.annotation_member for track in historical_validation_tracks
     }
     if set(metadata.track_members) & historical_validation_members:
         raise V280RealSmokeError("historical validation track entered V28 metadata")
-
-    distilled_report = write_distilled_cluster_cache(distilled_dir, metadata)
-    reloaded = load_distilled_cluster_cache(distilled_dir)
-    if reloaded.row_count != metadata.row_count:
-        raise V280RealSmokeError("distilled cache round-trip changed row count")
 
     groups, group_rows = select_development_groups(metadata, group_count=args.group_count)
     development = _subset(metadata, group_rows)
@@ -756,7 +819,7 @@ def run(args) -> dict[str, object]:
         candidate_samples,
         development.slot_targets,
     )
-    targets, consistent = real_targets(
+    targets, consistent, midi_quantization = real_targets(
         development.exact,
         development.slot_targets,
         midi,
@@ -834,6 +897,7 @@ def run(args) -> dict[str, object]:
             "steps": int(args.steps),
             "minimum_loss_reduction": MINIMUM_LOSS_REDUCTION,
             "minimum_cardinality_accuracy": MINIMUM_CARDINALITY_ACCURACY,
+            "cluster_source_mode": cluster_source_mode,
         },
         "data": {
             "outer_clean_track_count": len(metadata.track_members),
@@ -854,7 +918,7 @@ def run(args) -> dict[str, object]:
             "distilled_cache": distilled_report,
         },
         "cluster_reconstruction": reconstruction,
-        "supervision": supervision,
+        "supervision": {**supervision, "midi_quantization": midi_quantization},
         "features": {"shape": list(features.shape), **feature_diag},
         "training": overfit,
         "model": {
@@ -863,6 +927,14 @@ def run(args) -> dict[str, object]:
             "weights_sha256": _sha256_file(weights_path),
         },
     }
+    if args.distilled_source_dir is not None:
+        report["sources"]["v280_cluster_metadata"] = {
+            "run_id": V280_CLUSTER_RUN_ID,
+            "head_sha": V280_CLUSTER_HEAD_SHA,
+            "artifact": V280_CLUSTER_ARTIFACT,
+            "artifact_digest": V280_CLUSTER_ARTIFACT_DIGEST,
+            "ultimate_v104_source": report["sources"]["v104_cluster_rows"],
+        }
     _atomic_json(output_dir / "report.json", report)
     print(json.dumps(report, indent=2, sort_keys=True), flush=True)
     if not overfit["passed"]:
@@ -873,9 +945,11 @@ def run(args) -> dict[str, object]:
 def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(description=__doc__)
     result.add_argument("--dataset-dir", type=Path, required=True)
-    result.add_argument("--v100-cache-dir", type=Path, required=True)
+    source = result.add_mutually_exclusive_group(required=True)
+    source.add_argument("--v100-cache-dir", type=Path)
+    source.add_argument("--distilled-source-dir", type=Path)
     result.add_argument("--v280-cache-dir", type=Path, required=True)
-    result.add_argument("--distilled-output-dir", type=Path, required=True)
+    result.add_argument("--distilled-output-dir", type=Path)
     result.add_argument("--output-dir", type=Path, required=True)
     result.add_argument("--group-count", type=int, default=DEFAULT_GROUP_COUNT)
     result.add_argument("--rows", type=int, default=DEFAULT_ROWS)

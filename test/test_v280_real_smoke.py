@@ -155,7 +155,7 @@ class RealSupervisionTests(unittest.TestCase):
         midi[0, 0] = 40
         midi[1, 0] = 45
         midi[1, 1] = 45
-        targets, consistent = smoke.real_targets(
+        targets, consistent, quantization = smoke.real_targets(
             np.asarray([1, 2]),
             slots,
             midi,
@@ -166,13 +166,31 @@ class RealSupervisionTests(unittest.TestCase):
         self.assertEqual(targets["string_fret_onset"][1, 1, 0], 1.0)
         self.assertEqual(np.sum(targets["pitch_onset"][1]), 1.0)
         np.testing.assert_array_equal(targets["poibin_cardinality"], np.asarray([1, 2]))
+        self.assertEqual(quantization["fractional_label_count"], 0)
+        self.assertEqual(quantization["absolute_cents_max"], 0.0)
 
-    def test_fractional_note_label_is_rejected(self):
+    def test_fractional_note_label_is_quantized_and_reported(self):
         slots = np.zeros((1, 6), dtype=np.float32)
         slots[0, 0] = 1
         midi = np.zeros_like(slots)
         midi[0, 0] = 40.25
-        with self.assertRaisesRegex(smoke.V280RealSmokeError, "non-semitone"):
+        targets, consistent, quantization = smoke.real_targets(
+            np.asarray([1]), slots, midi, slots
+        )
+        np.testing.assert_array_equal(consistent, np.asarray([True]))
+        self.assertEqual(targets["string_fret_onset"][0, 0, 0], 1.0)
+        self.assertEqual(targets["pitch_onset"][0, 0], 1.0)
+        self.assertEqual(quantization["fractional_label_count"], 1)
+        self.assertEqual(quantization["absolute_cents_median"], 25.0)
+        self.assertEqual(quantization["absolute_cents_p90"], 25.0)
+        self.assertEqual(quantization["absolute_cents_max"], 25.0)
+
+    def test_half_semitone_note_label_is_rejected_as_ambiguous(self):
+        slots = np.zeros((1, 6), dtype=np.float32)
+        slots[0, 0] = 1
+        midi = np.zeros_like(slots)
+        midi[0, 0] = 40.5
+        with self.assertRaisesRegex(smoke.V280RealSmokeError, "ambiguous"):
             smoke.real_targets(np.asarray([1]), slots, midi, slots)
 
     def test_balanced_rows_are_deterministic_and_eligible_only(self):
