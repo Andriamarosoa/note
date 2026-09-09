@@ -1,8 +1,10 @@
 # V28.0-A — Front-end CQT causal et tests anti-fuite
 
-Date : **2026-09-09**  
-Branche : **`v280-harmonic-pitch-count-research`**  
-Référence préservée : **V27.3, 42,6019 % exact-K polyphonique**  
+Date : **2026-09-09**
+
+Branche : **`v280-harmonic-pitch-count-research`**
+
+Référence préservée : **V27.3, 42,6019 % exact-K polyphonique**
 Statut : **front-end implémenté et vérifié ; aucun modèle entraîné**
 
 ## Résultat de cette étape
