@@ -58,7 +58,13 @@ validation indépendante. La sélection des variantes sur ce split ne devra pas
 
 Les entrées restent des cartes CQT causales `24 × 238 × 3`, configuration
 `5fae41ea91e90b5cb2a7611edb41c6dba633eaf8853341a481ea3a2c9ba1e805`.
-Le crop se termine à `cluster_start + 1764` échantillons. Les cartes sont
+Le crop se termine à `min(cluster_start + 1764, longueur_audio)` échantillons.
+À la fin d'un enregistrement, la décision est vidée sur la dernière trame
+causale disponible : aucun échantillon futur ni silence artificiel n'est
+ajouté, et la ligne conserve sa cible de comptage. Le nombre de lignes ainsi
+traitées, leurs indices dans la piste et la durée post-onset manquante sont
+enregistrés. Les crops qui disposent des 40 ms complets restent identiques.
+Les cartes sont
 matérialisées en float16 et converties en float32 par lot. Le cache préparé
 est commun aux deux variantes et vérifié par SHA-256 à chaque chargement.
 
@@ -139,3 +145,13 @@ dans cette comparaison de compteurs.
 
 Le cache préparé est conservé 7 jours, les deux entraînements et l'audit
 30 jours, la comparaison finale 90 jours dans les artefacts GitHub Actions.
+
+## Correction avant le premier entraînement
+
+Le run `34350199265` a passé les 37 tests mais s'est arrêté pendant la
+préparation de `00_BN1-147-Gb_solo.jams` : une décision demandée à 864 202
+échantillons dépassait la longueur audio de 863 725. Aucun entraînement ni
+score de validation n'avait commencé. Le traitement EOF ci-dessus est fixé
+avant relance, avec un test qui vérifie l'absence de lecture de futur et
+l'identité des crops ordinaires. Les partitions, lignes, budgets, pertes et
+règles de sélection sont inchangés.

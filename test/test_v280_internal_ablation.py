@@ -10,6 +10,7 @@ import unittest
 import numpy as np
 
 from scripts import train_v280_internal_ablation as e
+from causal_note.v280_causal_cqt import CausalCQTConfig, causal_cqt, cluster_feature_map, write_track_cache
 from test.test_v280_real_smoke import _member, _metadata, _track
 
 
@@ -75,6 +76,30 @@ class AuxiliaryTargetTests(unittest.TestCase):
         strings = np.ones((1, 6), dtype=np.float32)
         with self.assertRaisesRegex(e.AblationError, "non-finite"):
             e.training_targets(np.asarray([6]), strings, strings * np.nan, strings)
+
+
+class EndOfStreamTests(unittest.TestCase):
+    def test_tail_flush_uses_only_available_frames_and_keeps_normal_crops_identical(self):
+        config = CausalCQTConfig(sample_rate=4000, hop_length=64, bins_per_semitone=3,
+            input_min_midi=60.0, output_max_midi=72.0, max_harmonic_order=3,
+            cluster_post_samples=192, cluster_frames=8, block_frames=7)
+        track = causal_cqt(np.random.default_rng(36).normal(0, .1, 1024).astype(np.float32), config)
+        with TemporaryDirectory() as temp:
+            root = Path(temp)
+            write_track_cache(root / "track.npz", track, config)
+            # Compare against the actual float16 cache as used in training.
+            cached = e.read_track_cache(root / "track.npz", config)
+            manifest = {"cache": {"tracks": [{"annotation_member": "track", "cache_path": "track.npz"}]}}
+            features, diagnostic = e.track_features(root, manifest, "track",
+                [np.asarray([500, 520]), np.asarray([900])], config)
+            np.testing.assert_array_equal(features[0], cluster_feature_map(cached, 500, config))
+            np.testing.assert_array_equal(features[1], cluster_feature_map(cached, 900, config, decision_end=1024))
+            self.assertEqual(diagnostic["end_of_stream_clipped_rows"], 1)
+            self.assertEqual(diagnostic["end_of_stream_clipped_local_indices"], [1])
+            self.assertEqual(diagnostic["missing_post_samples_max"], 68)
+            self.assertEqual(diagnostic["decision_end_max"], 1024)
+            with self.assertRaisesRegex(e.AblationError, "outside"):
+                e.track_features(root, manifest, "track", [np.asarray([1025])], config)
 
 
 class EvaluationTests(unittest.TestCase):

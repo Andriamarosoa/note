@@ -31,7 +31,7 @@ from scripts.train_v280_harmonic_count import (
     CARDINALITY_CLASSES, FRETS_PER_STRING, LOSS_WEIGHTS, STANDARD_TUNING_MIDI,
     build_model, expected_parameter_count, guitar_pitch_count,
 )
-from causal_note.v280_causal_cqt import CausalCQTConfig
+from causal_note.v280_causal_cqt import CausalCQTConfig, cluster_feature_map, read_track_cache
 
 SCHEMA = 1
 SEED = 28035
@@ -64,6 +64,7 @@ CONTRACT = {
     "learning_rate": 2e-4, "loss_weights": LOSS_WEIGHTS,
     "reserved_fold": 0, "validation_fold": 1, "training_folds": [2, 3, 4],
     "feature_sha256": CONFIG.sha256,
+    "end_of_stream": "flush_at_last_available_causal_frame_without_future_padding",
     "sampling": "each_training_row_once_group_interleaved_with_polyphonic_anchors",
     "augmentation": "none", "early_stopping": False,
     "checkpoint_selection": "max_internal_poly_exact_then_min_poly_nll_then_earlier_epoch",
@@ -238,6 +239,40 @@ def checkpoint_key(metrics):
     return metrics["poly_correct"], -metrics["poly_nll"]
 
 
+def track_features(cache_dir, manifest, member, candidates, config=CONFIG):
+    """Keep terminal clusters by flushing the decision at the actual audio EOF."""
+    records = [record for record in manifest["cache"]["tracks"] if record["annotation_member"] == member]
+    if len(records) != 1:
+        raise AblationError(f"missing or duplicate CQT track: {member}")
+    track = read_track_cache(Path(cache_dir) / records[0]["cache_path"], config)
+    features = np.empty((len(candidates), config.cluster_frames, len(config.center_frequencies_hz), 3),
+                        dtype=np.float32)
+    starts, ends, clipped, missing = [], [], [], []
+    for row, samples in enumerate(candidates):
+        if not len(samples):
+            raise AblationError(f"empty candidate cluster for {member}")
+        start = int(np.min(samples))
+        if start < 0 or start > track.sample_count:
+            raise AblationError(f"cluster starts outside the available recording: {member}")
+        requested_end = start + config.cluster_post_samples
+        end = min(requested_end, track.sample_count)
+        if end < requested_end:
+            clipped.append(row)
+            missing.append(requested_end - end)
+        features[row] = cluster_feature_map(track, start, config, decision_end=int(end))
+        starts.append(start)
+        ends.append(end)
+    return features, {
+        "selected_track_count": 1, "cluster_start_min": min(starts), "cluster_start_max": max(starts),
+        "decision_end_min": min(ends), "decision_end_max": max(ends),
+        "audio_sample_count": int(track.sample_count),
+        "end_of_stream_clipped_rows": len(clipped), "end_of_stream_clipped_local_indices": clipped,
+        "missing_post_samples_max": max(missing, default=0),
+        "feature_min": float(np.min(features)), "feature_max": float(np.max(features)),
+        "feature_mean": float(np.mean(features)),
+    }
+
+
 def prepare(args):
     output = Path(args.output_dir)
     if output.exists():
@@ -284,9 +319,7 @@ def prepare(args):
                 weights[name] = np.empty(len(keep), dtype=np.float32)
             targets[name][rows] = values
             weights[name][rows] = local_weights[name]
-        crops, feature_diagnostics = smoke.extract_selected_features(
-            args.cqt_dir, cqt_manifest, part.members, candidates, np.arange(len(rows))
-        )
+        crops, feature_diagnostics = track_features(args.cqt_dir, cqt_manifest, member, candidates)
         features[rows] = crops
         per_track.append({"member": member, "targets": diagnostics,
                           "supervision": supervision, "features": feature_diagnostics})
