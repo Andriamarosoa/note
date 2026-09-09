@@ -1,0 +1,253 @@
+name: V28 real-data internal smoke
+
+on:
+  push:
+    branches: [v280-harmonic-pitch-count-research]
+    paths:
+      - 'scripts/train_v280_real_smoke.py'
+      - 'scripts/train_v280_harmonic_count.py'
+      - 'scripts/mine_v280_causal_cqt.py'
+      - 'src/causal_note/v280_causal_cqt.py'
+      - 'src/causal_note/guitarset_acoustics.py'
+      - 'test/test_v280_real_smoke.py'
+      - 'analysis/v280-real-data-smoke-protocol.md'
+      - '.github/workflows/v280-real-data-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: v280-real-data-smoke-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PYTHONPATH: '.:src'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  TF_DETERMINISTIC_OPS: '1'
+  V104_RUN: '33647694565'
+  V104_SHA: '345dea1e92f6281583c58590a0b1286ce4df459b'
+  V104_ARTIFACT: 'v104-nested-spectral-bundle'
+  V104_DIGEST: 'sha256:d54768cae40a9cf9b2c97a1be58fb6f52a681af3d79b79b148b5c92a427a9d99'
+  V272_RUN: '34287254337'
+  V272_SHA: 'd11f73079a9eb12b2ebce3c8d1df8209b0bd6bdf'
+  V272_ARTIFACT: 'v272-verified-guitarset'
+  V272_DIGEST: 'sha256:e90bd513877f8592c7f749410167aa581feb7a4b5d3250f12c980a3b8dc74587'
+  V280_RUN: '34323015277'
+  V280_SHA: '3d2fe62b4527236ab91e86dad3cc9c5d81e67b08'
+  V280_ARTIFACT: 'v280-causal-cqt-outer-clean-cache'
+  V280_DIGEST: 'sha256:2cb10b3042a0ff77ca6e7f59aacbef7a43ff04690aa6f7476a376f3c39eee2ff'
+  FEATURE_SHA: '5fae41ea91e90b5cb2a7611edb41c6dba633eaf8853341a481ea3a2c9ba1e805'
+
+jobs:
+  real-smoke:
+    name: Distill V10 rows and overfit a real internal mini-batch
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify immutable source runs and artifact digests
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const sources = [
+              {
+                runId: Number(process.env.V104_RUN),
+                sha: process.env.V104_SHA,
+                name: process.env.V104_ARTIFACT,
+                digest: process.env.V104_DIGEST,
+              },
+              {
+                runId: Number(process.env.V272_RUN),
+                sha: process.env.V272_SHA,
+                name: process.env.V272_ARTIFACT,
+                digest: process.env.V272_DIGEST,
+              },
+              {
+                runId: Number(process.env.V280_RUN),
+                sha: process.env.V280_SHA,
+                name: process.env.V280_ARTIFACT,
+                digest: process.env.V280_DIGEST,
+              },
+            ];
+            for (const source of sources) {
+              const {data: run} = await github.rest.actions.getWorkflowRun({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: source.runId,
+              });
+              if (run.head_sha !== source.sha || run.conclusion !== 'success') {
+                throw new Error(`invalid source run ${source.runId}`);
+              }
+              const artifacts = await github.paginate(
+                github.rest.actions.listWorkflowRunArtifacts,
+                {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  run_id: source.runId,
+                  per_page: 100,
+                },
+              );
+              const matches = artifacts.filter(a => a.name === source.name && !a.expired);
+              if (matches.length !== 1 || matches[0].digest !== source.digest) {
+                throw new Error(`missing, expired or changed source artifact ${source.name}`);
+              }
+              core.info(`${source.name}: ${matches[0].size_in_bytes} bytes, ${matches[0].digest}`);
+            }
+
+      - name: Download expiring frozen V10 source first
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.V104_ARTIFACT }}
+          path: model/v100-spectral-cache
+          repository: Andriamarosoa/note
+          run-id: ${{ env.V104_RUN }}
+          github-token: ${{ github.token }}
+
+      - name: Download verified GuitarSet
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.V272_ARTIFACT }}
+          path: data/GuitarSet
+          repository: Andriamarosoa/note
+          run-id: ${{ env.V272_RUN }}
+          github-token: ${{ github.token }}
+
+      - name: Download verified V28 causal CQT cache
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.V280_ARTIFACT }}
+          path: model
+          repository: Andriamarosoa/note
+          run-id: ${{ env.V280_RUN }}
+          github-token: ${{ github.token }}
+
+      - name: Verify source layout, GuitarSet checksums and disk headroom
+        shell: bash
+        run: |
+          set -o pipefail
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+          count=$(find model/v100-spectral-cache -name 'v100-spectral-shard-*.npz' -type f | wc -l)
+          test "$count" -eq 8
+          test -f model/v280-causal-cqt-cache/manifest.json
+          echo "v100_spectral_shards=$count"
+          du -sh data/GuitarSet model/v100-spectral-cache model/v280-causal-cqt-cache
+          df -h .
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+
+      - name: Install frozen training dependencies
+        run: python -m pip install -r requirements-train.txt
+
+      - name: Compile and run bounded V28 tests
+        run: |
+          python -c 'import tensorflow; assert tensorflow.__version__ == "2.15.1"'
+          python -m py_compile \
+            scripts/train_v280_real_smoke.py \
+            scripts/train_v280_harmonic_count.py \
+            scripts/mine_v280_causal_cqt.py
+          python -m unittest -v \
+            test.test_v280_real_smoke \
+            test.test_v280_harmonic_count \
+            test.test_v280_causal_cqt_mining
+
+      - name: Distill source rows and run fixed real mini-overfit
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p model/v280-real-smoke-logs
+          python -B scripts/train_v280_real_smoke.py \
+            --dataset-dir data/GuitarSet \
+            --v100-cache-dir model/v100-spectral-cache \
+            --v280-cache-dir model/v280-causal-cqt-cache \
+            --distilled-output-dir model/v280-cluster-metadata \
+            --output-dir model/v280-real-smoke \
+            --group-count 3 \
+            --rows 28 \
+            --steps 160 \
+            2>&1 | tee model/v280-real-smoke-logs/training.log
+
+      - name: Verify anti-leak guards and mini-overfit gates
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          distilled = json.loads(Path('model/v280-cluster-metadata/manifest.json').read_text())
+          report = json.loads(Path('model/v280-real-smoke/report.json').read_text())
+          protocol = report['protocol']
+          assert report['status'] == 'passed'
+          assert report['sources']['v104_cluster_rows']['artifact_digest'] == '${{ env.V104_DIGEST }}'
+          assert report['sources']['v272_guitarset']['artifact_digest'] == '${{ env.V272_DIGEST }}'
+          assert report['sources']['v280_causal_cqt']['artifact_digest'] == '${{ env.V280_DIGEST }}'
+          assert report['configuration']['feature_sha256'] == '${{ env.FEATURE_SHA }}'
+          assert report['data']['outer_clean_track_count'] == 240
+          assert report['data']['historical_validation_track_count'] == 60
+          assert report['data']['selected_row_count'] == 28
+          assert protocol['development_groups_selected_from_identities_only'] is True
+          assert protocol['target_values_used_to_select_groups'] is False
+          assert protocol['only_identity_selected_development_rows_used_for_training'] is True
+          assert protocol['only_selected_development_group_jams_read'] is True
+          assert protocol['historical_validation_jams_read_or_evaluated'] is False
+          assert protocol['locked12_indexed_or_evaluated'] is False
+          assert protocol['outer_fold_opened'] is False
+          assert protocol['holdout_or_generalization_metric_computed'] is False
+          assert protocol['architecture_or_hyperparameter_selected'] is False
+          assert protocol['external_checkpoint_or_teacher_loaded'] is False
+          assert report['model']['trainable_parameters'] == 110402
+          assert report['training']['passed'] is True
+          assert all(report['training']['gates'].values())
+          assert distilled['data']['track_count'] == 240
+          assert distilled['protocol']['historical_validation_rows_present'] is False
+          assert distilled['protocol']['locked12_rows_present'] is False
+          assert distilled['protocol']['outer_clean_supervision_arrays_present'] is True
+          assert distilled['protocol']['obsolete_v10_spectral_maps_copied'] is False
+          print('V28 real-data smoke verified:', report['training'])
+          PY
+
+      - name: Publish run summary
+        if: success()
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          from pathlib import Path
+
+          report = json.loads(Path('model/v280-real-smoke/report.json').read_text())
+          training = report['training']
+          print('## V28 real-data internal smoke')
+          print()
+          print(f"- Development groups: {', '.join(report['data']['development_groups'])}")
+          print(f"- Fixed mini-batch: {report['data']['selected_row_count']} rows")
+          print(f"- Initial → final exact-K fit accuracy: {training['initial_cardinality_accuracy']:.1%} → {training['final_cardinality_accuracy']:.1%}")
+          print(f"- Total loss reduction: {training['total_loss_reduction_fraction']:.1%}")
+          print(f"- Distilled V10 rows: {report['data']['distilled_cache']['file']['size_bytes'] / 2**20:.2f} MiB")
+          print('- Holdout, outer-fold, historical validation and locked12 metrics: none')
+          PY
+
+      - name: Preserve compact V28 cluster metadata
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v280-cluster-metadata
+          path: model/v280-cluster-metadata
+          if-no-files-found: warn
+          compression-level: 0
+          retention-days: 90
+
+      - name: Upload real smoke report, weights and log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v280-real-data-internal-smoke
+          path: |
+            model/v280-real-smoke
+            model/v280-real-smoke-logs
+          if-no-files-found: warn
+          retention-days: 30
