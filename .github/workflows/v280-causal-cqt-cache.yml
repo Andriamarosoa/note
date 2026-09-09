@@ -1,0 +1,238 @@
+name: V28 causal CQT outer-clean cache
+
+on:
+  push:
+    branches: [v280-harmonic-pitch-count-research]
+    paths:
+      - 'src/causal_note/v280_causal_cqt.py'
+      - 'scripts/mine_v280_causal_cqt.py'
+      - 'test/test_v280_causal_cqt.py'
+      - 'test/test_v280_causal_cqt_mining.py'
+      - 'analysis/v280-causal-cqt-cache-protocol.md'
+      - '.github/workflows/v280-causal-cqt-cache.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: v280-causal-cqt-cache-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PYTHONPATH: '.:src'
+  V104_RUN: '33647694565'
+  V104_SHA: '345dea1e92f6281583c58590a0b1286ce4df459b'
+  V104_ARTIFACT: 'v104-nested-spectral-bundle'
+  V104_DIGEST: 'sha256:d54768cae40a9cf9b2c97a1be58fb6f52a681af3d79b79b148b5c92a427a9d99'
+  V272_RUN: '34287254337'
+  V272_SHA: 'd11f73079a9eb12b2ebce3c8d1df8209b0bd6bdf'
+  V272_ARTIFACT: 'v272-verified-guitarset'
+  V272_DIGEST: 'sha256:e90bd513877f8592c7f749410167aa581feb7a4b5d3250f12c980a3b8dc74587'
+  FEATURE_SHA: '5fae41ea91e90b5cb2a7611edb41c6dba633eaf8853341a481ea3a2c9ba1e805'
+
+jobs:
+  mine-cache:
+    name: Label-free 240-track causal CQT mining
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install acoustic-only dependency
+        run: python -m pip install 'numpy>=1.23.5,<2.0'
+
+      - name: Compile and run bounded label-free tests
+        run: |
+          python -m py_compile \
+            src/causal_note/v280_causal_cqt.py \
+            scripts/mine_v280_causal_cqt.py
+          python -m unittest -v \
+            test.test_v280_causal_cqt \
+            test.test_v280_causal_cqt_mining
+
+      - name: Verify immutable source runs and artifact digests
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const sources = [
+              {
+                runId: Number(process.env.V104_RUN),
+                sha: process.env.V104_SHA,
+                name: process.env.V104_ARTIFACT,
+                digest: process.env.V104_DIGEST,
+              },
+              {
+                runId: Number(process.env.V272_RUN),
+                sha: process.env.V272_SHA,
+                name: process.env.V272_ARTIFACT,
+                digest: process.env.V272_DIGEST,
+              },
+            ];
+            for (const source of sources) {
+              const {data: run} = await github.rest.actions.getWorkflowRun({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: source.runId,
+              });
+              if (run.head_sha !== source.sha || run.conclusion !== 'success') {
+                throw new Error(`invalid source run ${source.runId}`);
+              }
+              const artifacts = await github.paginate(
+                github.rest.actions.listWorkflowRunArtifacts,
+                {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  run_id: source.runId,
+                  per_page: 100,
+                },
+              );
+              const matches = artifacts.filter(a => a.name === source.name && !a.expired);
+              if (matches.length !== 1 || matches[0].digest !== source.digest) {
+                throw new Error(`missing or changed source artifact ${source.name}`);
+              }
+              core.info(`${source.name}: ${matches[0].size_in_bytes} bytes, ${matches[0].digest}`);
+            }
+
+      - name: Download verified GuitarSet
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.V272_ARTIFACT }}
+          path: data/GuitarSet
+          repository: Andriamarosoa/note
+          run-id: ${{ env.V272_RUN }}
+          github-token: ${{ github.token }}
+
+      - name: Verify canonical GuitarSet checksums
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+
+      - name: Download frozen V10 spectral membership source
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.V104_ARTIFACT }}
+          path: model/v100-spectral-cache
+          repository: Andriamarosoa/note
+          run-id: ${{ env.V104_RUN }}
+          github-token: ${{ github.token }}
+
+      - name: Verify source shard count and disk headroom
+        shell: bash
+        run: |
+          set -o pipefail
+          count=$(find model/v100-spectral-cache -name 'v100-spectral-shard-*.npz' -type f | wc -l)
+          test "$count" -eq 8
+          echo "v100_spectral_shards=$count"
+          du -sh data/GuitarSet model/v100-spectral-cache
+          df -h .
+
+      - name: Run real identity-only preflight
+        run: |
+          mkdir -p model/v280-causal-cqt-reports
+          python -B scripts/mine_v280_causal_cqt.py preflight \
+            --dataset-dir data/GuitarSet \
+            --v100-cache-dir model/v100-spectral-cache \
+            --report model/v280-causal-cqt-reports/preflight.json
+
+      - name: Restore a validated partial cache from an earlier attempt
+        id: restore-partial
+        uses: actions/cache/restore@v4
+        with:
+          path: model/v280-causal-cqt-cache
+          key: v280-cqt-${{ runner.os }}-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            v280-cqt-${{ runner.os }}-${{ github.sha }}-${{ github.run_id }}-
+
+      - name: Mine all 240 outer-clean tracks in one CPU worker
+        shell: bash
+        run: |
+          set -o pipefail
+          resume_flag=""
+          if [[ -f model/v280-causal-cqt-cache/progress.json ]]; then
+            resume_flag="--resume"
+          fi
+          python -B scripts/mine_v280_causal_cqt.py mine \
+            --dataset-dir data/GuitarSet \
+            --v100-cache-dir model/v100-spectral-cache \
+            --output-dir model/v280-causal-cqt-cache \
+            $resume_flag \
+            2>&1 | tee model/v280-causal-cqt-reports/mining.log
+
+      - name: Verify every cache and frozen protocol flag
+        run: |
+          python -B scripts/mine_v280_causal_cqt.py verify \
+            --output-dir model/v280-causal-cqt-cache \
+            --expected-track-count 240 \
+            --report model/v280-causal-cqt-reports/verification.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report = json.loads(Path('model/v280-causal-cqt-cache/manifest.json').read_text())
+          protocol = report['protocol']
+          assert report['formal'] is True
+          assert report['configuration']['feature_sha256'] == '${{ env.FEATURE_SHA }}'
+          assert report['data']['indexed_track_count'] == 300
+          assert report['data']['outer_clean_track_count'] == 240
+          assert report['data']['historical_validation_track_count'] == 60
+          assert report['data']['mined_track_count'] == 240
+          assert report['data']['composition_group_leakage'] is False
+          assert protocol['v100_arrays_deserialized'] == ['schema_version', 'track_members']
+          assert protocol['v100_supervision_arrays_deserialized'] is False
+          assert protocol['jams_payloads_read'] is False
+          assert protocol['historical_validation_audio_decoded'] is False
+          assert protocol['historical_validation_labels_read_or_evaluated'] is False
+          assert protocol['locked12_indexed_or_evaluated'] is False
+          assert protocol['outer_fold_trained_or_evaluated'] is False
+          assert protocol['training_started'] is False
+          assert protocol['external_checkpoint_loaded'] is False
+          print('formal V28 cache verified:', report['cache']['cache_set_sha256'])
+          PY
+
+      - name: Publish cache summary
+        shell: bash
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          from pathlib import Path
+
+          report = json.loads(Path('model/v280-causal-cqt-cache/manifest.json').read_text())
+          cache = report['cache']
+          print('## V28 causal CQT cache')
+          print()
+          print(f"- Tracks: {cache['track_count']} / 240 outer-clean")
+          print(f"- Audio: {cache['total_audio_seconds'] / 3600.0:.3f} h")
+          print(f"- Frames: {cache['total_frames']:,}")
+          print(f"- Cache: {cache['total_cache_bytes'] / 2**20:.2f} MiB")
+          factor = cache['measured_realtime_factor']
+          print(f"- CPU throughput: {factor:.2f}x realtime" if factor is not None else '- CPU throughput: resumed')
+          print(f"- Cache-set SHA-256: `{cache['cache_set_sha256']}`")
+          print('- Labels/checkpoints/training/evaluation: none')
+          PY
+          du -sh model/v280-causal-cqt-cache
+
+      - name: Save partial cache for a safe rerun
+        if: failure() && hashFiles('model/v280-causal-cqt-cache/progress.json') != ''
+        uses: actions/cache/save@v4
+        with:
+          path: model/v280-causal-cqt-cache
+          key: v280-cqt-${{ runner.os }}-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Upload cache, manifest, verification and log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v280-causal-cqt-outer-clean-cache
+          path: |
+            model/v280-causal-cqt-cache
+            model/v280-causal-cqt-reports
+          if-no-files-found: warn
+          compression-level: 0
+          retention-days: 30
