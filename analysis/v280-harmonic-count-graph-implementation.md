@@ -5,7 +5,8 @@ Date : **2026-09-09**
 Branche : **`v280-harmonic-pitch-count-research`**
 
 Référence préservée : **V27.3, 42,6019 % exact-K polyphonique**
-Statut : **graphe et mathématiques implémentés ; smoke TensorFlow à exécuter**
+
+Statut : **graphe, tests TensorFlow et mini-overfit synthétique validés**
 
 ## Architecture figée pour le smoke
 
@@ -72,10 +73,9 @@ Les **8 tests indépendants de TensorFlow** passent. Ils vérifient :
 - la cohérence des cibles synthétiques ;
 - les erreurs de forme, de domaine et le budget exact de paramètres.
 
-Deux tests de graphe TensorFlow sont présents mais correctement ignorés sur la
-machine de travail actuelle, où TensorFlow n'est pas installé. Ils devront
-passer dans l'environnement Python 3.11 / TensorFlow 2.15.1 avant tout accès aux
-données :
+Deux tests de graphe TensorFlow sont correctement ignorés sur la machine de
+travail locale, où TensorFlow n'est pas installé. Ils ont ensuite été exécutés
+avec succès sous Python 3.11 / TensorFlow 2.15.1 :
 
 - formes exactes des cinq sorties, budget et présence/absence du bloc harmonique ;
 - probabilités finies, somme à un, identité initiale `P=P_PB` et premier pas de
@@ -83,9 +83,11 @@ données :
 
 Régression actuelle, sans TensorFlow : **326 tests passés, 15 ignorés**.
 
-## Smoke autorisé suivant
+## Smoke TensorFlow exécuté
 
-Le premier smoke reste totalement synthétique :
+Le workflow [GitHub Actions 34320127174](https://github.com/Andriamarosoa/note/actions/runs/34320127174)
+a terminé avec succès sur le commit `5fabe20802647777bea3aff62f1cbf2e50094d60`.
+Il reste totalement synthétique :
 
 ```bash
 python -m unittest -v \
@@ -93,13 +95,27 @@ python -m unittest -v \
   test.test_v280_harmonic_count
 
 python scripts/train_v280_harmonic_count.py smoke \
-  --output-dir artifacts/v280-chec-synthetic-smoke \
-  --steps 32 \
+  --output-dir model/v280-chec-smoke/model \
+  --steps 64 \
   --rows 14
 ```
 
-Le script refuse un dossier de sortie existant, borne `steps<=200` et
-`rows<=128`, enregistre les poids et un rapport JSON, et affirme explicitement :
+Résultats du run :
+
+| Vérification | Résultat |
+|---|---:|
+| Tests V28 avec TensorFlow | **23/23 passés, aucun skip** |
+| Paramètres entraînables | **110 402** |
+| Loss totale initiale → finale | **6,2779 → 0,3408** |
+| Loss cardinalité initiale → finale | **5,2692 → 0,0875** |
+| Front-end CPU distant | **10,86× temps réel** |
+| Artifact | `v280-chec-synthetic-smoke` |
+| SHA-256 de l'archive | `c66b4507070626d969e5897486469d5d2ec5b2ce338bebcb68d3665e3b743511` |
+
+La chute de 94,6 % de la loss totale confirme que le graphe est différentiable
+et peut surapprendre le mini-lot borné. Elle ne mesure pas la généralisation.
+
+Le rapport du smoke affirme explicitement :
 
 - aucun dataset indexé ;
 - aucun fold outer ouvert ;
@@ -114,7 +130,7 @@ Le script refuse un dossier de sortie existant, borne `steps<=200` et
 - aucune fusion avec V27.3 ;
 - aucun téléchargement du teacher GAPS.
 
-Après réussite du smoke TensorFlow, la prochaine modification sera le mineur de
-caches par piste et la dérivation des labels corde/case sur les partitions
-internes uniquement. Le protocole outer restera fermé jusqu'à réussite d'un
-mini-overfit interne et de l'ablation harmonique.
+La prochaine modification est maintenant le mineur de caches par piste et la
+dérivation des labels corde/case sur les partitions internes uniquement. Le
+protocole outer restera fermé jusqu'à réussite d'un mini-overfit sur données
+internes et de l'ablation harmonique.
