@@ -5,7 +5,7 @@ Date : **2026-09-09**
 Branche : **`v280-harmonic-pitch-count-research`**
 
 Référence préservée : **V27.3, 42,6019 % exact-K polyphonique**
-Statut : **front-end implémenté et vérifié ; aucun modèle entraîné**
+Statut : **front-end implémenté et vérifié ; aucun entraînement sur données réelles**
 
 ## Résultat de cette étape
 
