@@ -1,0 +1,97 @@
+name: V28 CHEC synthetic smoke
+
+on:
+  push:
+    branches: [v280-harmonic-pitch-count-research]
+    paths:
+      - 'src/causal_note/v280_causal_cqt.py'
+      - 'scripts/benchmark_v280_causal_features.py'
+      - 'scripts/train_v280_harmonic_count.py'
+      - 'test/test_v280_causal_cqt.py'
+      - 'test/test_v280_harmonic_count.py'
+      - '.github/workflows/v280-chec-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONPATH: '.:src'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  TF_DETERMINISTIC_OPS: '1'
+
+jobs:
+  synthetic-smoke:
+    name: Causality, graph and bounded mini-overfit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+
+      - name: Install frozen training dependencies
+        run: python -m pip install -r requirements-train.txt
+
+      - name: Verify TensorFlow and compile V28
+        run: |
+          python -c 'import tensorflow; assert tensorflow.__version__ == "2.15.1"'
+          python -m py_compile \
+            src/causal_note/v280_causal_cqt.py \
+            scripts/benchmark_v280_causal_features.py \
+            scripts/train_v280_harmonic_count.py
+
+      - name: Run V28 causal and graph tests
+        run: |
+          python -m unittest -v \
+            test.test_v280_causal_cqt \
+            test.test_v280_harmonic_count
+
+      - name: Run bounded CPU feature benchmark
+        run: |
+          python scripts/benchmark_v280_causal_features.py \
+            --seconds 3 \
+            --repeats 2 \
+            --output model/v280-chec-smoke/feature-benchmark.json
+
+      - name: Run dataset-free mini-overfit
+        run: |
+          python scripts/train_v280_harmonic_count.py smoke \
+            --output-dir model/v280-chec-smoke/model \
+            --steps 64 \
+            --rows 14
+
+      - name: Verify smoke guards and gates
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path('model/v280-chec-smoke')
+          feature = json.loads((root / 'feature-benchmark.json').read_text())
+          report = json.loads((root / 'model' / 'report.json').read_text())
+          assert feature['dataset_indexed'] is False
+          assert feature['training_started'] is False
+          assert feature['future_samples_used'] is False
+          assert feature['finite'] is True
+          assert report['dataset_indexed'] is False
+          assert report['outer_fold_opened'] is False
+          assert report['historical_validation_or_locked12_evaluated'] is False
+          assert report['external_checkpoint_loaded'] is False
+          assert report['parameter_gate_under_300k'] is True
+          assert report['trainable_parameters'] == 110402
+          assert report['finite'] is True
+          assert report['final_losses']['loss'] < report['initial_losses']['loss']
+          print('V28 synthetic smoke verified:', report['trainable_parameters'], 'parameters')
+          PY
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v280-chec-synthetic-smoke
+          path: model/v280-chec-smoke
+          retention-days: 30
