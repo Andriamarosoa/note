@@ -5,7 +5,7 @@ Date de la recherche : **2026-09-09**
 Priorité du projet : **exact-K polyphonique sur les clusters d'onsets (`K >= 2`)**
 
 Référence de développement conservée : **V27.3**
-Statut : **recommandation d'architecture et protocole ; aucun entraînement lancé**
+Statut : **V28.0-A/B et smoke synthétique validés ; aucun entraînement GuitarSet/outer lancé**
 
 ## Verdict
 
@@ -38,6 +38,12 @@ Cette piste est **prometteuse**, mais aucun résultat publié ne permet de prome
 80 % d'exact-K selon notre définition. Les articles publient surtout du F1 de
 notes ou de trames, métriques qui ne demandent pas que toutes les notes d'un
 cluster aient simultanément le bon compte.
+
+Mise à jour d'implémentation : le [front-end causal](./v280-causal-features-implementation.md)
+et le [graphe du compteur](./v280-harmonic-count-graph-implementation.md) sont
+implémentés. Le smoke TensorFlow synthétique a réussi avec 110 402 paramètres et
+une loss totale passée de 6,2779 à 0,3408. Aucun dataset ou checkpoint externe
+n'a été ouvert par ce smoke.
 
 ## 1. Point de départ vérifié dans le dépôt
 
