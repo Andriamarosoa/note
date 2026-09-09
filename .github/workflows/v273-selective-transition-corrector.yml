@@ -1,0 +1,281 @@
+name: V27.3 selective transition corrector
+
+on:
+  push:
+    branches: [v273-selective-transition-corrector]
+    paths:
+      - 'scripts/train_v273_selective_transition_corrector.py'
+      - 'test/test_v273_selective_transition_corrector.py'
+      - 'analysis/v273-selective-transition-corrector-protocol.md'
+      - '.github/workflows/v273-selective-transition-corrector.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  TF_DETERMINISTIC_OPS: '1'
+  PYTHONPATH: '.:src'
+  V104_NESTED_RUN: '33647694565'
+  V260_RUN: '34201830555'
+  V272_RUN: '34287254337'
+
+jobs:
+  preflight:
+    name: Protocol and source preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+
+      - run: python -m pip install -r requirements-train.txt
+
+      - name: Compile and test frozen V27.3 rules
+        run: |
+          python -c 'import tensorflow; assert tensorflow.__version__ == "2.15.1"'
+          python -m py_compile scripts/train_v273_selective_transition_corrector.py
+          python -m unittest test.test_v273_selective_transition_corrector test.test_v272_poly_conditional_count test.test_v271_poly_rescue -v
+
+      - name: Verify immutable source runs and artifacts
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const sources = [
+              [Number(process.env.V104_NESTED_RUN), '345dea1e92f6281583c58590a0b1286ce4df459b'],
+              [Number(process.env.V260_RUN), '5f41972a6e2f081d6f2ad652beae31dfff9f0076'],
+              [Number(process.env.V272_RUN), 'd11f73079a9eb12b2ebce3c8d1df8209b0bd6bdf'],
+            ];
+            for (const [run_id, sha] of sources) {
+              const {data: run} = await github.rest.actions.getWorkflowRun({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id,
+              });
+              if (run.head_sha !== sha || run.conclusion !== 'success') {
+                throw new Error(`invalid source run ${run_id}`);
+              }
+            }
+            const v104 = await github.paginate(github.rest.actions.listWorkflowRunArtifacts, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: Number(process.env.V104_NESTED_RUN),
+              per_page: 100,
+            });
+            const inner = v104.filter(a => a.name.startsWith('v104-nested-inner-') && !a.expired);
+            if (inner.length !== 20 || !v104.some(a => a.name === 'v104-nested-spectral-bundle' && !a.expired)) {
+              throw new Error('required V10.4 nested artifacts are unavailable');
+            }
+            const v260 = await github.paginate(github.rest.actions.listWorkflowRunArtifacts, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: Number(process.env.V260_RUN),
+              per_page: 100,
+            });
+            const v260Folds = v260.filter(a => /^v260-count-pair-fold-[0-4]$/.test(a.name) && !a.expired);
+            if (v260Folds.length !== 5) {
+              throw new Error('required V26 fold artifacts are unavailable');
+            }
+            const v272 = await github.paginate(github.rest.actions.listWorkflowRunArtifacts, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: Number(process.env.V272_RUN),
+              per_page: 100,
+            });
+            const folds = v272.filter(a => /^v272-poly-conditional-fold-[0-4]$/.test(a.name) && !a.expired);
+            if (folds.length !== 5 || !v272.some(a => a.name === 'v272-verified-guitarset' && !a.expired)) {
+              throw new Error('required V27.2 artifacts are unavailable');
+            }
+
+      - name: Download verified GuitarSet
+        uses: actions/download-artifact@v4
+        with:
+          name: v272-verified-guitarset
+          path: data/GuitarSet
+          repository: Andriamarosoa/note
+          run-id: ${{ env.V272_RUN }}
+          github-token: ${{ github.token }}
+
+      - name: Verify GuitarSet checksums
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+
+      - name: Share verified GuitarSet with fold jobs
+        uses: actions/upload-artifact@v4
+        with:
+          name: v273-verified-guitarset
+          path: |
+            data/GuitarSet/annotation.zip
+            data/GuitarSet/audio_mono-pickup_mix.zip
+          compression-level: 0
+          retention-days: 7
+
+  fold:
+    name: Selective transition fold ${{ matrix.fold }}
+    needs: preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        fold: [0, 1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+
+      - run: python -m pip install -r requirements-train.txt
+
+      - name: Download verified GuitarSet
+        uses: actions/download-artifact@v4
+        with:
+          name: v273-verified-guitarset
+          path: data/GuitarSet
+
+      - name: Verify GuitarSet checksums
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+
+      - name: Download frozen nested spectral cache
+        uses: actions/download-artifact@v4
+        with:
+          name: v104-nested-spectral-bundle
+          path: model/v100-spectral-cache
+          repository: Andriamarosoa/note
+          run-id: ${{ env.V104_NESTED_RUN }}
+          github-token: ${{ github.token }}
+
+      - name: Download strict V10.4 inner shards
+        uses: actions/download-artifact@v4
+        with:
+          pattern: v104-nested-inner-*
+          path: model/v104-inner
+          merge-multiple: true
+          repository: Andriamarosoa/note
+          run-id: ${{ env.V104_NESTED_RUN }}
+          github-token: ${{ github.token }}
+
+      - name: Download frozen V26 fold
+        uses: actions/download-artifact@v4
+        with:
+          name: v260-count-pair-fold-${{ matrix.fold }}
+          path: model/v260-source
+          repository: Andriamarosoa/note
+          run-id: ${{ env.V260_RUN }}
+          github-token: ${{ github.token }}
+
+      - name: Download frozen V27.2 fold
+        uses: actions/download-artifact@v4
+        with:
+          name: v272-poly-conditional-fold-${{ matrix.fold }}
+          path: model/v272-source
+          repository: Andriamarosoa/note
+          run-id: ${{ env.V272_RUN }}
+          github-token: ${{ github.token }}
+
+      - name: Replay inner calibration and evaluate untouched outer fold
+        shell: bash
+        run: |
+          set -o pipefail
+          python -B scripts/train_v273_selective_transition_corrector.py fold \
+            --dataset-dir data/GuitarSet \
+            --cache-dir model/v100-spectral-cache \
+            --v104-inner-dir model/v104-inner \
+            --v260-dir model/v260-source \
+            --v272-dir model/v272-source \
+            --outer-fold ${{ matrix.fold }} \
+            --output-dir model/v273-fold-${{ matrix.fold }} \
+            2>&1 | tee model/v273-fold-${{ matrix.fold }}.log
+
+      - name: Verify fold guards
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          fold = ${{ matrix.fold }}
+          report = json.loads(Path(f'model/v273-fold-{fold}/report-fold-{fold}.json').read_text())
+          p = report['protocol']
+          assert p['experiment'] == 'v273_selective_transition_corrector'
+          assert p['thresholds_selected_inner_only'] is True
+          assert p['outer_labels_used_for_threshold_selection'] is False
+          assert p['event_f1_used_for_threshold_selection'] is False
+          assert p['historical_validation_or_locked12_indexed_or_evaluated'] is False
+          before = report['outer']['v271']
+          after = report['outer']['v273']
+          assert (after['correct'] - before['correct']) == (after['poly_correct'] - before['poly_correct'])
+          print('fold', fold, 'thresholds', report['inner']['transition_calibration']['thresholds'],
+                'v271 poly', before['poly_exact'], 'v273 poly', after['poly_exact'])
+          PY
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-selective-transition-fold-${{ matrix.fold }}
+          path: |
+            model/v273-fold-${{ matrix.fold }}
+            model/v273-fold-${{ matrix.fold }}.log
+          retention-days: 90
+
+  summary:
+    name: Final frozen outer summary
+    needs: fold
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: python -m pip install 'numpy>=1.23.5,<2'
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v273-selective-transition-fold-*
+          path: model/v273-all
+
+      - name: Aggregate and reproduce V27.1 reference
+        shell: bash
+        run: |
+          set -o pipefail
+          python -B scripts/train_v273_selective_transition_corrector.py summarize \
+            --input-dir model/v273-all \
+            --output-dir model/v273-summary \
+            2>&1 | tee model/v273-summary.log
+
+      - name: Print final decision
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r = json.loads(Path('model/v273-summary/report.json').read_text())
+          print('reference poly exact-K:', r['reference']['cardinality']['poly_exact'])
+          print('selective transition poly exact-K:', r['selective_transition']['cardinality']['poly_exact'])
+          print('delta poly pp:', r['delta']['poly_exact_k_percentage_points_vs_v271'])
+          print('delta global exact pp:', r['delta']['exact_k_percentage_points_vs_v271'])
+          print('delta F1 pp:', r['delta']['event_f1_percentage_points_vs_v271'])
+          print('promote:', r['decision']['promote_selective_transition'])
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-selective-transition-summary
+          path: |
+            model/v273-summary
+            model/v273-summary.log
+          retention-days: 90
