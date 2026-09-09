@@ -211,6 +211,7 @@ jobs:
           p = report['protocol']
           assert p['experiment'] == 'v273_selective_transition_corrector'
           assert p['thresholds_selected_inner_only'] is True
+          assert p['hardware_sensitive_early_stopping_replay_required'] is False
           assert p['outer_labels_used_for_threshold_selection'] is False
           assert p['event_f1_used_for_threshold_selection'] is False
           assert p['historical_validation_or_locked12_indexed_or_evaluated'] is False

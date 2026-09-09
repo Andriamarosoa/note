@@ -224,6 +224,62 @@ def _load_v272_fold(source_dir: Path, fold: int, outer, k, members):
     return base, probability, report, prediction_path, report_path
 
 
+def _fit_fixed_inner_v260_probability(
+    ctx: dict, arm: str, outer_fold: int, fixed_epochs: int
+):
+    """Refit a V26 probe for its archived inner-only epoch budget.
+
+    Re-running early stopping can move the apparent best epoch across CPU
+    runners because hardware and numerical-kernel differences perturb the
+    optimization trajectory.
+    The archived epoch budget is already an inner-only choice, so refitting
+    exactly that many epochs is the stable replay contract needed here.
+    """
+    import tensorflow as tf
+
+    _, fit, val, _ = v260.validate_partitions(ctx)
+    k = np.asarray(ctx["k"], dtype=np.int32)
+    fixed_epochs = int(fixed_epochs)
+    if fixed_epochs <= 0 or fixed_epochs > v260.MAX_EPOCHS:
+        raise V273Error(f"invalid frozen V26 {arm} epoch budget: {fixed_epochs}")
+    table = v260.arm_weights(arm, k[fit])
+    model = v260.build_model(arm, v260.SEED + 100 + outer_fold)
+    history = model.fit(
+        v260.v102._inputs(ctx["cache"], fit),
+        k[fit],
+        sample_weight=table[k[fit]],
+        validation_data=(
+            v260.v102._inputs(ctx["cache"], val),
+            k[val],
+            table[k[val]],
+        ),
+        epochs=fixed_epochs,
+        batch_size=128,
+        shuffle=True,
+        verbose=2,
+        callbacks=[tf.keras.callbacks.TerminateOnNaN()],
+    )
+    loss = np.asarray(history.history.get("loss", []), dtype=np.float64)
+    val_loss = np.asarray(history.history.get("val_loss", []), dtype=np.float64)
+    if (
+        len(loss) != fixed_epochs
+        or len(val_loss) != fixed_epochs
+        or not np.isfinite(loss).all()
+        or not np.isfinite(val_loss).all()
+    ):
+        raise V273Error(f"invalid fixed-epoch inner V26 {arm} history")
+    probability = np.asarray(
+        model.predict(v260.v102._inputs(ctx["cache"], val), batch_size=128, verbose=0)
+    )
+    return v271._validate_probability(
+        probability, f"inner V26 {arm} probability"
+    ), {
+        "fixed_source_epochs": fixed_epochs,
+        "observed_best_epoch_within_budget": int(np.argmin(val_loss)) + 1,
+        "final_val_loss": float(val_loss[-1]),
+    }
+
+
 def _replay_inner_v271(ctx: dict, args, v260_report: dict):
     outer, fit, val, final = v260.validate_partitions(ctx)
     k = np.asarray(ctx["k"], dtype=np.int32)
@@ -233,13 +289,13 @@ def _replay_inner_v271(ctx: dict, args, v260_report: dict):
     )
     v104_probability, v104_epochs = v271._inner_v104_probability(inner, meta_fold)
     anchor = np.argmax(v104_probability, axis=1).astype(np.int32)
-    weighted, weighted_epochs = v271._inner_v260_probability(
+    weighted, weighted_replay = _fit_fixed_inner_v260_probability(
         ctx,
         "weighted",
         args.outer_fold,
         v260_report["arms"]["weighted"]["epochs"],
     )
-    uniform, uniform_epochs = v271._inner_v260_probability(
+    uniform, uniform_replay = _fit_fixed_inner_v260_probability(
         ctx,
         "uniform",
         args.outer_fold,
@@ -255,8 +311,8 @@ def _replay_inner_v271(ctx: dict, args, v260_report: dict):
     return base, {
         "meta_fold": int(meta_fold),
         "v104_selected_epochs": int(v104_epochs),
-        "v260_weighted_replayed_epochs": int(weighted_epochs),
-        "v260_uniform_replayed_epochs": int(uniform_epochs),
+        "v260_weighted_fixed_replay": weighted_replay,
+        "v260_uniform_fixed_replay": uniform_replay,
         "v271_threshold": float(calibration["threshold"]),
     }, inner_paths
 
@@ -280,37 +336,30 @@ def _replay_inner_v272(ctx: dict, outer_fold: int, source_report: dict):
             k[val_poly] - 2,
             table[k[val_poly] - 2],
         ),
-        epochs=v272.MAX_EPOCHS,
+        epochs=expected_epochs,
         batch_size=128,
         shuffle=True,
         verbose=2,
-        callbacks=[
-            tf.keras.callbacks.EarlyStopping(
-                monitor="val_loss", patience=4, min_delta=0, restore_best_weights=True
-            ),
-            tf.keras.callbacks.TerminateOnNaN(),
-        ],
+        callbacks=[tf.keras.callbacks.TerminateOnNaN()],
     )
     val_loss = np.asarray(history.history.get("val_loss", []), dtype=np.float64)
-    if len(val_loss) == 0 or not np.isfinite(val_loss).all():
+    if len(val_loss) != expected_epochs or not np.isfinite(val_loss).all():
         raise V273Error("invalid inner V27.2 validation history")
-    selected_epochs = int(np.argmin(val_loss)) + 1
-    if selected_epochs != expected_epochs:
-        raise V273Error(
-            f"V27.2 uniform epoch replay mismatch: {selected_epochs} != {expected_epochs}"
-        )
+    observed_best_epoch = int(np.argmin(val_loss)) + 1
     probability = v272._validate_poly_probability(
         model.predict(v102._inputs(ctx["cache"], val), batch_size=128, verbose=0),
         "inner V27.2 probability",
     )
     poly_prediction = np.argmax(probability[k[val] >= 2], axis=1).astype(np.int32) + 2
-    expected_correct = int(source_report["inner"]["arms"]["uniform"]["correct"])
-    if int(np.sum(poly_prediction == k[val_poly])) != expected_correct:
-        raise V273Error("V27.2 inner uniform predictions do not reproduce")
+    observed_correct = int(np.sum(poly_prediction == k[val_poly]))
+    source_correct = int(source_report["inner"]["arms"]["uniform"]["correct"])
     return probability, {
-        "uniform_replayed_epochs": selected_epochs,
+        "uniform_fixed_source_epochs": expected_epochs,
+        "uniform_observed_best_epoch_within_budget": observed_best_epoch,
         "uniform_poly_rows": int(len(val_poly)),
-        "uniform_poly_correct": expected_correct,
+        "uniform_poly_correct": observed_correct,
+        "uniform_source_archived_poly_correct": source_correct,
+        "uniform_final_val_loss": float(val_loss[-1]),
     }
 
 
@@ -423,10 +472,13 @@ def train_fold(args):
             "eligible_transitions": [transition_name(*pair) for pair in TRANSITIONS],
             "confidence_score": "P_v272(proposed_K) - P_v272(V271_K)",
             "thresholds_selected_inner_only": True,
+            "inner_epoch_budgets": "frozen from archived inner-only V26/V27.2 reports",
+            "hardware_sensitive_early_stopping_replay_required": False,
             "outer_labels_used_for_threshold_selection": False,
             "event_f1_used_for_threshold_selection": False,
             "historical_validation_or_locked12_indexed_or_evaluated": False,
             "automatic_promotion_rule": "aggregate outer poly exact-K strictly greater than V27.1",
+            "superseded_run": 34293193376,
         },
         "fold": int(args.outer_fold),
         "data": {

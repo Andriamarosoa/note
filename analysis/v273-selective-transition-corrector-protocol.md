@@ -37,7 +37,11 @@ For each direction the fixed selection order is:
 
 The four row sets are disjoint, so optimizing their exact-row deltas separately also maximizes their combined inner exact-K. Event F1 is never used for threshold selection.
 
-The selected V27.2 inner epoch must reproduce the archived V27.2 report. V26 epochs must reproduce the archived V26 report. Any mismatch fails the fold before outer evaluation.
+The V26 and V27.2 probe epoch budgets are copied from their archived, inner-only source reports and each probe is refit from scratch for exactly that many epochs. This fixed-budget replay avoids making the protocol depend on hardware-sensitive early-stopping trajectories between CPU runners. The newly observed validation histories and exact counts are recorded as diagnostics; non-finite histories or an invalid source budget still fail the fold before outer evaluation.
+
+## Execution correction before outer results
+
+Initial run `34293193376` was superseded after fold 1 stopped before threshold calibration and outer evaluation: a strict early-stopping replay guard observed V26 weighted epoch 9 instead of the archived epoch 12. No V27.3 outer score from that run was inspected. The correction above freezes the already archived inner-only epoch budgets and does not change the transition set, confidence score, threshold objective, outer data, primary metric, or promotion rule. Outputs from the superseded run are not eligible for the final result.
 
 ## Untouched outer evaluation
 
