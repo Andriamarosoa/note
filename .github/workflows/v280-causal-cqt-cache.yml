@@ -44,6 +44,7 @@ jobs:
         with:
           python-version: '3.11'
           cache: pip
+          cache-dependency-path: requirements-train.txt
 
       - name: Install acoustic-only dependency
         run: python -m pip install 'numpy>=1.23.5,<2.0'
