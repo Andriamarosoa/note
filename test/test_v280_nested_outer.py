@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import copy
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from types import SimpleNamespace
@@ -58,6 +59,51 @@ class NestedPartitionTests(unittest.TestCase):
 
 
 class AuditTests(unittest.TestCase):
+    def test_float_reduction_roundoff_is_accepted_but_count_changes_are_rejected(self):
+        actual = f.e.count_metrics(np.asarray([0, 2, 3]), np.eye(7)[[0, 2, 2]] * .93 + .01)
+        recorded = copy.deepcopy(actual)
+        for key in ("nll", "poly_nll", "brier"):
+            recorded[key] = float(np.nextafter(recorded[key], np.inf))
+        self.assertTrue(f.same_count_metrics(actual, recorded))
+        for key in ("correct", "poly_correct", "rows", "poly_rows", "exact_k", "poly_exact_k"):
+            changed = copy.deepcopy(recorded)
+            changed[key] += 1 if isinstance(changed[key], int) else 1e-15
+            self.assertFalse(f.same_count_metrics(actual, changed), key)
+        changed = copy.deepcopy(recorded)
+        changed["confusion_matrix_true_by_predicted"][0][0] += 1
+        self.assertFalse(f.same_count_metrics(actual, changed))
+
+    def test_metric_tolerance_does_not_hide_real_float_differences_or_nonfinite_values(self):
+        actual = f.e.count_metrics(np.asarray([2]), np.eye(7)[[2]] * .93 + .01)
+        for key in ("nll", "poly_nll", "brier"):
+            for value in (actual[key] + 1e-8, float("nan"), float("inf")):
+                changed = {**actual, key: value}
+                self.assertFalse(f.same_count_metrics(actual, changed))
+        missing = dict(actual)
+        missing.pop("brier")
+        self.assertFalse(f.same_count_metrics(actual, missing))
+
+    def test_recovery_requires_explicit_scope_and_the_exact_frozen_payload(self):
+        with TemporaryDirectory() as temp:
+            path = Path(temp) / "state.json"
+            state = {"source_head_sha": f.RECOVERY_SOURCE["head_sha"],
+                     "source_run_id": str(f.RECOVERY_SOURCE["run_id"])}
+            f.e.smoke._atomic_json(path, state)
+            digest = f.e.smoke._sha256_file(path)
+            arguments = {"fold": 0, "phase": "probe",
+                         "prepared_sha": f.RECOVERY_SOURCE["prepared_manifest_sha256"]}
+            with patch.dict(f.RECOVERY_SOURCE["state_sha256"], {"probe": digest}):
+                with self.assertRaisesRegex(f.OuterError, "producer"):
+                    f.validate_state_origin(state, path, **arguments)
+                f.validate_state_origin(state, path, **arguments, allow_recovery=True)
+                for changed in ({**arguments, "fold": 1}, {**arguments, "phase": "refit"},
+                                {**arguments, "prepared_sha": "wrong-data"}):
+                    with self.assertRaisesRegex(f.OuterError, "producer"):
+                        f.validate_state_origin(state, path, **changed, allow_recovery=True)
+                path.write_text(path.read_text() + " ")
+                with self.assertRaisesRegex(f.OuterError, "producer"):
+                    f.validate_state_origin(state, path, **arguments, allow_recovery=True)
+
     def test_oof_coverage_rejects_duplicates_changed_targets_and_missing_folds(self):
         a = synthetic_arrays()
         parts = []

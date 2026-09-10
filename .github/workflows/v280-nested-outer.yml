@@ -1,4 +1,4 @@
-name: V28 nested five-fold outer training
+name: V28 resume fold 0 evaluation and remaining folds
 
 on:
   push:
@@ -30,7 +30,7 @@ env:
 
 jobs:
   prepare:
-    name: Verify provenance, resume tests and five-fold data
+    name: Verify the correction and preserve completed fold 0 training
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
@@ -41,31 +41,40 @@ jobs:
           cache: pip
           cache-dependency-path: requirements-train.txt
       - run: python -m pip install -r requirements-train.txt
-      - name: Verify immutable data, internal selection and V27.3 reference sources
+      - name: Verify the exact failed attempt and immutable saved artifacts
         uses: actions/github-script@v7
         with:
           script: |
             const {execFileSync} = require('child_process');
-            const sources = JSON.parse(execFileSync('python', ['-c',
-              'import json; from scripts.train_v280_nested_outer import SOURCES; print(json.dumps(SOURCES))'
+            const source = JSON.parse(execFileSync('python', ['-c',
+              'import json; from scripts.train_v280_nested_outer import RECOVERY_SOURCE; print(json.dumps(RECOVERY_SOURCE))'
             ], {encoding: 'utf8'}));
-            for (const source of Object.values(sources)) {
-              const {data: run} = await github.rest.actions.getWorkflowRun({
-                owner: context.repo.owner, repo: context.repo.repo, run_id: source.run_id,
-              });
-              if (run.head_sha !== source.head_sha || run.conclusion !== 'success') {
-                throw new Error(`source run changed or incomplete: ${source.run_id}`);
-              }
-              const artifacts = await github.paginate(github.rest.actions.listWorkflowRunArtifacts, {
-                owner: context.repo.owner, repo: context.repo.repo, run_id: source.run_id, per_page: 100,
-              });
-              const matches = artifacts.filter(a => a.name === source.artifact && !a.expired);
-              if (matches.length !== 1 || matches[0].digest !== source.digest) {
-                throw new Error(`missing or changed source artifact: ${source.artifact}`);
-              }
-              core.info(`${source.artifact}: immutable digest verified`);
+            const repo = {owner: context.repo.owner, repo: context.repo.repo};
+            const {data: run} = await github.rest.actions.getWorkflowRun({...repo, run_id: source.run_id});
+            if (run.head_sha !== source.head_sha || run.status !== 'completed'
+                || run.conclusion !== 'failure' || run.run_attempt !== source.run_attempt) {
+              throw new Error('The frozen failed attempt changed; refusing automatic recovery');
             }
-      - name: Test Adam resume, nested exclusion, complete refit and V28 regressions
+            const {data: job} = await github.request('GET /repos/{owner}/{repo}/actions/jobs/{job_id}',
+              {...repo, job_id: source.failed_job_id});
+            if (job.run_id !== source.run_id || job.conclusion !== 'failure'
+                || !job.steps.some(s => s.name === 'Verify the nested refit and predict the held fold once'
+                  && s.conclusion === 'failure')) {
+              throw new Error('The frozen pre-inference audit failure does not match');
+            }
+            const artifacts = await github.paginate(github.rest.actions.listWorkflowRunArtifacts,
+              {...repo, run_id: source.run_id, per_page: 100});
+            if (artifacts.some(a => a.name === 'v280-f-fold-0')) {
+              throw new Error('An outer fold-0 result already exists in the source attempt');
+            }
+            for (const [name, expected] of Object.entries(source.artifacts)) {
+              const matches = artifacts.filter(a => a.name === name && !a.expired);
+              if (matches.length !== 1 || matches[0].id !== expected.id || matches[0].digest !== expected.digest) {
+                throw new Error('Missing or changed recovery artifact: ' + name);
+              }
+              core.info(name + ': original ID and digest verified');
+            }
+      - name: Run roundoff, provenance, Adam resume and V28 regression tests
         run: |
           python -m py_compile scripts/train_v280_nested_outer.py
           python -m unittest -v \
@@ -76,48 +85,50 @@ jobs:
             test.test_v280_causal_cqt_mining
       - uses: actions/download-artifact@v4
         with:
-          name: v280-cluster-metadata
-          path: model/v280-cluster-metadata
+          name: v280-f-prepared-all
+          path: model/v280-f-prepared
           repository: Andriamarosoa/note
-          run-id: '34346175521'
+          run-id: '34437608635'
           github-token: ${{ github.token }}
       - uses: actions/download-artifact@v4
         with:
-          name: v272-verified-guitarset
-          path: data/GuitarSet
+          name: v280-f-fold-0-probe-2
+          path: model/v280-f-probe-2
           repository: Andriamarosoa/note
-          run-id: '34287254337'
+          run-id: '34437608635'
           github-token: ${{ github.token }}
       - uses: actions/download-artifact@v4
         with:
-          name: v280-causal-cqt-outer-clean-cache
-          path: model
+          name: v280-f-fold-0-refit-2
+          path: model/v280-f-refit-2
           repository: Andriamarosoa/note
-          run-id: '34323015277'
+          run-id: '34437608635'
           github-token: ${{ github.token }}
-      - uses: actions/download-artifact@v4
-        with:
-          name: v280-e-internal-comparison
-          path: model/v280-e-selection
-          repository: Andriamarosoa/note
-          run-id: '34351021229'
-          github-token: ${{ github.token }}
-      - name: Verify GuitarSet checksums
+      - name: Reproduce the saved inner selection and verify all preserved files
         run: |
-          echo 'b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip' | md5sum -c -
-          echo 'aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip' | md5sum -c -
-          df -h .
-      - name: Prepare the canonical 240 tracks and nested partitions
-        shell: bash
-        run: |
-          set -o pipefail
-          python -B scripts/train_v280_nested_outer.py prepare \
-            --dataset-dir data/GuitarSet \
-            --cluster-dir model/v280-cluster-metadata \
-            --cqt-dir model/v280-causal-cqt-cache \
-            --selection-dir model/v280-e-selection \
-            --output-dir model/v280-f-prepared \
-            2>&1 | tee "$RUNNER_TEMP/v280-f-preparation.log"
+          python - <<'PY'
+          from pathlib import Path
+          from scripts import train_v280_nested_outer as f
+          prepared = Path('model/v280-f-prepared')
+          _, arrays, _ = f.load_prepared(prepared)
+          prepared_sha = f.e.smoke._sha256_file(prepared / 'manifest.json')
+          assert prepared_sha == f.RECOVERY_SOURCE['prepared_manifest_sha256']
+          states = {}
+          for phase in ('probe', 'refit'):
+              root = Path('model/v280-f-' + phase + '-2')
+              state = f.load_state(root, fold=0, phase=phase, prepared_sha=prepared_sha, allow_recovery=True)
+              f.validate_training_history(state, arrays)
+              assert state['chunk'] == 2 and state['epochs_completed'] == state['epoch_budget']
+              states[phase] = state
+          best = f.verify_probe_predictions(states['probe'],
+              f.read_npz(Path('model/v280-f-probe-2/validation-predictions.npz')), arrays)
+          assert states['refit']['selection'] == {
+              'epoch': best['epoch'], 'validation': best['validation'],
+              'probe_state_sha256': f.RECOVERY_SOURCE['state_sha256']['probe']}
+          assert states['refit']['epoch_budget'] == best['epoch']
+          f.e.emit('fold0_recovery_verified', selected_epoch=best['epoch'],
+              refit_updates=states['refit']['optimizer_updates'], fold0_retraining_required=False)
+          PY
       - uses: actions/upload-artifact@v4
         with:
           name: v280-f-prepared-all
@@ -136,19 +147,59 @@ jobs:
           if-no-files-found: error
           retention-days: 90
       - uses: actions/upload-artifact@v4
-        if: always()
         with:
-          name: v280-f-preparation-log
-          path: ${{ runner.temp }}/v280-f-preparation.log
-          if-no-files-found: warn
-          retention-days: 30
+          name: v280-f-fold-0-probe-2
+          path: model/v280-f-probe-2
+          if-no-files-found: error
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v280-f-fold-0-refit-2
+          path: model/v280-f-refit-2
+          if-no-files-found: error
+          retention-days: 90
 
   fold_0:
-    name: Outer fold 0
+    name: Evaluate the saved fold 0 model without retraining
     needs: prepare
-    uses: ./.github/workflows/v280-outer-fold-worker.yml
-    with:
-      fold: 0
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - run: python -m pip install -r requirements-train.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: v280-f-prepared-all
+          path: model/v280-f-prepared
+      - uses: actions/download-artifact@v4
+        with:
+          name: v280-f-fold-0-probe-2
+          path: model/v280-f-probe-2
+      - uses: actions/download-artifact@v4
+        with:
+          name: v280-f-fold-0-refit-2
+          path: model/v280-f-refit-2
+      - name: Apply the numeric audit correction and predict fold 0 once
+        run: |
+          python -B scripts/train_v280_nested_outer.py evaluate \
+            --recover-fold0 \
+            --prepared-dir model/v280-f-prepared \
+            --fold 0 \
+            --probe-dir model/v280-f-probe-2 \
+            --refit-dir model/v280-f-refit-2 \
+            --output-dir model/v280-f-fold-0
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v280-f-fold-0
+          path: model/v280-f-fold-0
+          if-no-files-found: error
+          retention-days: 90
+
   fold_1:
     name: Outer fold 1
     needs: fold_0
@@ -204,6 +255,7 @@ jobs:
       - name: Recompute every score and verify paired coverage before any decision
         run: |
           python -B scripts/train_v280_nested_outer.py aggregate \
+            --recover-fold0 \
             --prepared-dir model/v280-f-prepared \
             --input-dir model/v280-f-results \
             --reference-dir model/v273-reference \

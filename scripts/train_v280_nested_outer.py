@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 from pathlib import Path
 import resource
@@ -38,6 +39,27 @@ TOLERANCES_MS = (5, 10, 20, 50)
 SELECTION_SHA = "7f40e09cd67ba0c49cfead12384603e9069e8c978e294ef260c4550b376d76aa"
 REFERENCE_PREDICTIONS_SHA = "a353887c6ef1b60d5f6a3854627e99a5cf110e0cb7db0ed4ec50643b26bf805b"
 REFERENCE_REPORT_SHA = "53a59f53910484bf86858390c33d53359a72eaa9004275e3ec7f0f0814925564"
+FLOAT_METRIC_ABS_TOLERANCE = 1e-12
+RECOVERY_SOURCE = {
+    "run_id": 34437608635,
+    "head_sha": "a203e1afa95264c14d3eef5bf0e63eafcec2eb4e",
+    "run_attempt": 1, "failed_job_id": 102795200081,
+    "prepared_manifest_sha256": "e43567e3bd0945911915b4b11d88f960e4d95c0519809045dc9c7b056f0e5226",
+    "state_sha256": {
+        "probe": "67c7bf41c3a7db72f85e35c8007462b7e9483dce4f34379eaeb8bf9878c89138",
+        "refit": "4ae51101b5e43209ee763353e86f1e4e9cdbd874951fb08788df9bfc191aa2e0",
+    },
+    "artifacts": {
+        "v280-f-prepared-all": {"id": 10136891720,
+            "digest": "sha256:e4c7187d29c68747f3c53712f52d705c06b15cc98b1873083b295b963de52be6"},
+        "v280-f-preparation-audit": {"id": 10136892010,
+            "digest": "sha256:626b0fd97e516d21d4a2469e762ad0050f8a4dd20c6a2a8a45b934f1dbdf9d81"},
+        "v280-f-fold-0-probe-2": {"id": 10141403654,
+            "digest": "sha256:e9e239c579ff53bc905606307b5e2a17f5a0d4081067ed1cdab228de6b19b2c0"},
+        "v280-f-fold-0-refit-2": {"id": 10142571624,
+            "digest": "sha256:b240e5e790f6726ec206d7263ba632d1d09e7413c2b651ce84e113731440c041"},
+    },
+}
 SOURCES = {
     **e.SOURCES,
     "internal_selection": {
@@ -92,6 +114,35 @@ def read_json(path):
 def provenance():
     return {"source_head_sha": os.environ.get("GITHUB_SHA"),
             "source_run_id": os.environ.get("GITHUB_RUN_ID")}
+
+
+def same_count_metrics(actual, recorded):
+    """Keep all discrete metrics exact; allow only float64 reduction noise."""
+    if actual.keys() != recorded.keys():
+        return False
+    for key, value in actual.items():
+        expected = recorded[key]
+        if key in ("nll", "poly_nll", "brier"):
+            if (not math.isfinite(value) or not math.isfinite(expected)
+                    or not math.isclose(value, expected, rel_tol=0.0,
+                                        abs_tol=FLOAT_METRIC_ABS_TOLERANCE)):
+                return False
+        elif value != expected:
+            return False
+    return True
+
+
+def validate_state_origin(state, path, *, fold, phase, prepared_sha, allow_recovery=False):
+    if all(state.get(key) == value for key, value in provenance().items()):
+        return
+    source = RECOVERY_SOURCE
+    if (allow_recovery and fold == 0 and phase in ("probe", "refit")
+            and state.get("source_head_sha") == source["head_sha"]
+            and str(state.get("source_run_id")) == str(source["run_id"])
+            and prepared_sha == source["prepared_manifest_sha256"]
+            and e.smoke._sha256_file(path) == source["state_sha256"][phase]):
+        return
+    raise OuterError("training state producer differs from the current run or frozen fold-0 recovery")
 
 
 def file_records(root, names):
@@ -285,13 +336,15 @@ def restore_training_state(model, directory, specification):
             variable.assign(value)
 
 
-def load_state(directory, *, fold, phase, prepared_sha):
+def load_state(directory, *, fold, phase, prepared_sha, allow_recovery=False):
     state = read_json(directory / "state.json")
     for name, expected in {"status": "complete", "contract": CONTRACT, "fold": fold,
-                           "phase": phase, "prepared_manifest_sha256": prepared_sha,
-                           **provenance()}.items():
+                           "sources": SOURCES, "phase": phase,
+                           "prepared_manifest_sha256": prepared_sha}.items():
         if state.get(name) != expected:
             raise OuterError(f"training state mismatch: {name}")
+    validate_state_origin(state, directory / "state.json", fold=fold, phase=phase,
+                          prepared_sha=prepared_sha, allow_recovery=allow_recovery)
     verify_files(directory, state["files"])
     if len(state["history"]) != state["epochs_completed"]:
         raise OuterError("incomplete epoch history")
@@ -451,7 +504,7 @@ def verify_probe_predictions(probe, prediction, arrays):
                           "member": arrays["member"][val], "k": arrays["target_cardinality"][val]}.items():
         if not np.array_equal(prediction[key], expected):
             raise OuterError("inner validation prediction identities mismatch")
-    if e.count_metrics(prediction["k"], prediction["probability"]) != best["validation"]:
+    if not same_count_metrics(e.count_metrics(prediction["k"], prediction["probability"]), best["validation"]):
         raise OuterError("inner-selected checkpoint metrics do not reproduce")
     return best
 
@@ -467,10 +520,15 @@ def evaluate(args):
     tf.config.threading.set_intra_op_parallelism_threads(4)
     if args.output_dir.exists():
         raise FileExistsError(args.output_dir)
+    recover = getattr(args, "recover_fold0", False)
+    if recover and args.fold != 0:
+        raise OuterError("saved-run recovery is limited to fold 0")
     features, arrays, _ = load_prepared(args.prepared_dir)
     prepared_sha = e.smoke._sha256_file(args.prepared_dir / "manifest.json")
-    probe = load_state(args.probe_dir, fold=args.fold, phase="probe", prepared_sha=prepared_sha)
-    refit = load_state(args.refit_dir, fold=args.fold, phase="refit", prepared_sha=prepared_sha)
+    probe = load_state(args.probe_dir, fold=args.fold, phase="probe", prepared_sha=prepared_sha,
+                       allow_recovery=recover)
+    refit = load_state(args.refit_dir, fold=args.fold, phase="refit", prepared_sha=prepared_sha,
+                       allow_recovery=recover)
     for state in (probe, refit):
         validate_training_history(state, arrays)
         if state["chunk"] != 2 or state["epochs_completed"] != state["epoch_budget"]:
@@ -510,6 +568,8 @@ def evaluate(args):
                          (args.refit_dir / "last.weights.h5", "outer.weights.h5")):
         shutil.copy2(source, output / name)
     report = {"status": "complete", "contract": CONTRACT, "sources": SOURCES, **provenance(),
+              "recovery_source": RECOVERY_SOURCE if recover else None,
+              "float_metric_abs_tolerance": FLOAT_METRIC_ABS_TOLERANCE,
               "fold": args.fold, "selection": selection, "outer": metrics,
               "prepared_manifest_sha256": prepared_sha,
               "outer_inference_passes": 1, "parameters": model.count_params(),
@@ -621,10 +681,12 @@ def aggregate(args):
         for state, phase in ((probe, "probe"), (refit, "refit")):
             if (state["status"] != "complete" or state["sources"] != SOURCES
                     or state["prepared_manifest_sha256"] != prepared_sha
-                    or any(state.get(key) != value for key, value in provenance().items())
                     or state["fold"] != fold or state["phase"] != phase or state["contract"] != CONTRACT
                     or state["chunk"] != 2 or state["epochs_completed"] != state["epoch_budget"]):
                 raise OuterError("incomplete or mismatched nested phase")
+            validate_state_origin(state, root / f"{phase}-state.json", fold=fold, phase=phase,
+                                  prepared_sha=prepared_sha,
+                                  allow_recovery=getattr(args, "recover_fold0", False))
             validate_training_history(state, arrays)
         best = verify_probe_predictions(probe, read_npz(root / "probe-validation.npz"), arrays)
         selection = {"epoch": best["epoch"], "validation": best["validation"],
@@ -635,7 +697,7 @@ def aggregate(args):
                 or e.smoke._sha256_file(root / "probe-validation.npz") != probe["files"]["validation-predictions.npz"]["sha256"]):
             raise OuterError("evaluated weights or selected validation predictions changed")
         part = read_npz(root / "predictions.npz")
-        if e.count_metrics(part["k"], part["probability"]) != report["outer"]:
+        if not same_count_metrics(e.count_metrics(part["k"], part["probability"]), report["outer"]):
             raise OuterError("outer metrics fail independent recomputation")
         reports.append(report)
         parts.append(part)
@@ -674,6 +736,8 @@ def aggregate(args):
     gates = {"gain_at_least_5pp": delta_pp >= 5.0, "at_least_four_positive_folds": positive_folds >= 4,
              "bootstrap_lower_above_zero": bootstrap["lower_95_pp"] > 0.0}
     result = {"status": "complete", "contract": CONTRACT, "sources": SOURCES, **provenance(),
+              "recovery_source": RECOVERY_SOURCE if getattr(args, "recover_fold0", False) else None,
+              "float_metric_abs_tolerance": FLOAT_METRIC_ABS_TOLERANCE,
               "reference": baseline, "v280": current, "per_fold": per_fold,
               "delta_poly_pp": delta_pp, "delta_poly_correct_rows": current["poly_correct"] - baseline["poly_correct"],
               "track_bootstrap": bootstrap, "event_metrics": events,
@@ -726,10 +790,12 @@ def main(argv=None):
     for name in ("prepared-dir", "probe-dir", "refit-dir", "output-dir"):
         evaluation.add_argument("--" + name, type=Path, required=True)
     evaluation.add_argument("--fold", type=int, choices=range(FOLD_COUNT), required=True)
+    evaluation.add_argument("--recover-fold0", action="store_true")
     evaluation.set_defaults(func=evaluate)
     summary = commands.add_parser("aggregate")
     for name in ("prepared-dir", "input-dir", "reference-dir", "output-dir"):
         summary.add_argument("--" + name, type=Path, required=True)
+    summary.add_argument("--recover-fold0", action="store_true")
     summary.set_defaults(func=aggregate)
     args = parser.parse_args(argv)
     args.func(args)

@@ -147,3 +147,49 @@ Artefacts GitHub : cache complet 7 jours, états de reprise 14 jours,
 résultats par fold et comparaison finale 90 jours. La synthèse contient les
 prédictions OOF appariées, les métriques recalculées et tous les échecs éventuels
 aux critères de gain matériel. V27.3 reste la référence à l'issue du workflow.
+
+## Correction numérique et reprise du fold 0
+
+Le run `34437608635`, commit `a203e1afa95264c14d3eef5bf0e63eafcec2eb4e`,
+a terminé les 12 époques internes du fold 0, sélectionné l'époque 2, puis
+réentraîné le modèle depuis zéro sur 60 922 lignes pendant 2 époques
+(3 808 mises à jour). Il s'est arrêté dans le job `102795200081`, pendant
+la vérification interne qui précède la première inférence externe.
+
+Les identités, cibles, fichiers et comptages entiers se reproduisent exactement.
+L'égalité de dictionnaires était néanmoins trop stricte pour les réductions
+en float64 :
+
+| Métrique | Valeur archivée | Valeur recalculée | Écart absolu |
+|---|---:|---:|---:|
+| NLL polyphonique | 1,6137330602900395 | 1,61373306029004 | 4,44 × 10⁻¹⁶ |
+| Brier | 0,29868634306026526 | 0,2986863430602653 | 5,55 × 10⁻¹⁷ |
+
+La correction accepte une tolérance **absolue de 10⁻¹²**, sans tolérance
+relative, uniquement pour `nll`, `poly_nll` et `brier`. Toute valeur non finie
+reste rejetée. Exact-K, nombres de lignes, nombres de corrects, confusion,
+identités, cibles, ordres de lots et SHA-256 restent comparés exactement.
+Les règles de sélection et les métriques archivées ne sont pas modifiées.
+
+Le workflow reprend directement à l'évaluation du fold 0, puis entraîne les
+folds 1 à 4 selon le protocole initial. Il réutilise le cache et les deux états
+complets du premier run, sans rejouer l'entraînement du fold 0. La reprise
+exige le commit, la première tentative échouée, le job d'échec et les IDs et
+digests ZIP exacts fixés dans `RECOVERY_SOURCE`. Un résultat externe déjà
+présent dans le run source interdit cette reprise automatique.
+
+Les champs de provenance du premier run restent intacts. L'option explicite
+`--recover-fold0` autorise uniquement ces deux états archivés, uniquement pour
+le fold 0, et impose leurs SHA-256 de contenu :
+
+- manifeste préparé : `e43567e3bd0945911915b4b11d88f960e4d95c0519809045dc9c7b056f0e5226` ;
+- état du probe : `67c7bf41c3a7db72f85e35c8007462b7e9483dce4f34379eaeb8bf9878c89138` ;
+- état du refit : `4ae51101b5e43209ee763353e86f1e4e9cdbd874951fb08788df9bfc191aa2e0` ;
+- poids finaux du fold 0 : `d7ac0bf51eaeb40432e8c2aff0a8d54fe0ccff65a35819ce587b7a9765d5b4c2`.
+
+Les folds suivants produisent des états propres au nouveau run. L'agrégateur
+conserve la trace de cette reprise et vérifie les deux provenances. Les tests
+acceptent les écarts d'un ULP, mais rejettent une différence de comptage, une
+différence flottante de 10⁻⁸, une valeur non finie, un autre fold, un autre
+cache ou un payload d'état modifié. Aucun score externe V28 n'avait été
+calculé ou consulté avant cette correction.
