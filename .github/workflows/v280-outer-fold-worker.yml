@@ -1,0 +1,239 @@
+name: V28 nested outer fold worker
+
+on:
+  workflow_call:
+    inputs:
+      fold:
+        required: true
+        type: number
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  TF_DETERMINISTIC_OPS: '1'
+  TF_NUM_INTRAOP_THREADS: '4'
+  TF_NUM_INTEROP_THREADS: '1'
+
+jobs:
+  probe_1:
+    name: Fold ${{ inputs.fold }} probe block 1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - run: python -m pip install -r requirements-train.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: v280-f-prepared-all
+          path: model/v280-f-prepared
+      - name: Train real GuitarSet rows with nested composition guards
+        shell: bash
+        run: |
+          set -o pipefail
+          python -B scripts/train_v280_nested_outer.py train-chunk \
+            --prepared-dir model/v280-f-prepared \
+            --fold '${{ inputs.fold }}' --phase probe --chunk 1 \
+            --output-dir model/v280-f-probe-1 \
+            2>&1 | tee "$RUNNER_TEMP/v280-f-training.log"
+      - name: Preserve the training log
+        if: always()
+        run: |
+          if test -f "$RUNNER_TEMP/v280-f-training.log"; then
+            mkdir -p model/v280-f-probe-1
+            cp "$RUNNER_TEMP/v280-f-training.log" model/v280-f-probe-1/training.log
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v280-f-fold-${{ inputs.fold }}-probe-1
+          path: model/v280-f-probe-1
+          if-no-files-found: error
+          retention-days: 14
+
+  probe_2:
+    name: Fold ${{ inputs.fold }} probe block 2
+    needs: probe_1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - run: python -m pip install -r requirements-train.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: v280-f-prepared-all
+          path: model/v280-f-prepared
+      - uses: actions/download-artifact@v4
+        with:
+          name: v280-f-fold-${{ inputs.fold }}-probe-1
+          path: model/v280-f-probe-1
+      - name: Train real GuitarSet rows with nested composition guards
+        shell: bash
+        run: |
+          set -o pipefail
+          python -B scripts/train_v280_nested_outer.py train-chunk \
+            --prepared-dir model/v280-f-prepared \
+            --fold '${{ inputs.fold }}' --phase probe --chunk 2 \
+            --previous-dir model/v280-f-probe-1 \
+            --output-dir model/v280-f-probe-2 \
+            2>&1 | tee "$RUNNER_TEMP/v280-f-training.log"
+      - name: Preserve the training log
+        if: always()
+        run: |
+          if test -f "$RUNNER_TEMP/v280-f-training.log"; then
+            mkdir -p model/v280-f-probe-2
+            cp "$RUNNER_TEMP/v280-f-training.log" model/v280-f-probe-2/training.log
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v280-f-fold-${{ inputs.fold }}-probe-2
+          path: model/v280-f-probe-2
+          if-no-files-found: error
+          retention-days: 14
+
+  refit_1:
+    name: Fold ${{ inputs.fold }} refit block 1
+    needs: probe_2
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - run: python -m pip install -r requirements-train.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: v280-f-prepared-all
+          path: model/v280-f-prepared
+      - uses: actions/download-artifact@v4
+        with:
+          name: v280-f-fold-${{ inputs.fold }}-probe-2
+          path: model/v280-f-probe-2
+      - name: Train real GuitarSet rows with nested composition guards
+        shell: bash
+        run: |
+          set -o pipefail
+          python -B scripts/train_v280_nested_outer.py train-chunk \
+            --prepared-dir model/v280-f-prepared \
+            --fold '${{ inputs.fold }}' --phase refit --chunk 1 \
+            --probe-dir model/v280-f-probe-2 \
+            --output-dir model/v280-f-refit-1 \
+            2>&1 | tee "$RUNNER_TEMP/v280-f-training.log"
+      - name: Preserve the training log
+        if: always()
+        run: |
+          if test -f "$RUNNER_TEMP/v280-f-training.log"; then
+            mkdir -p model/v280-f-refit-1
+            cp "$RUNNER_TEMP/v280-f-training.log" model/v280-f-refit-1/training.log
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v280-f-fold-${{ inputs.fold }}-refit-1
+          path: model/v280-f-refit-1
+          if-no-files-found: error
+          retention-days: 14
+
+  refit_2:
+    name: Fold ${{ inputs.fold }} refit block 2
+    needs: refit_1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - run: python -m pip install -r requirements-train.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: v280-f-prepared-all
+          path: model/v280-f-prepared
+      - uses: actions/download-artifact@v4
+        with:
+          name: v280-f-fold-${{ inputs.fold }}-refit-1
+          path: model/v280-f-refit-1
+      - name: Train real GuitarSet rows with nested composition guards
+        shell: bash
+        run: |
+          set -o pipefail
+          python -B scripts/train_v280_nested_outer.py train-chunk \
+            --prepared-dir model/v280-f-prepared \
+            --fold '${{ inputs.fold }}' --phase refit --chunk 2 \
+            --previous-dir model/v280-f-refit-1 \
+            --output-dir model/v280-f-refit-2 \
+            2>&1 | tee "$RUNNER_TEMP/v280-f-training.log"
+      - name: Preserve the training log
+        if: always()
+        run: |
+          if test -f "$RUNNER_TEMP/v280-f-training.log"; then
+            mkdir -p model/v280-f-refit-2
+            cp "$RUNNER_TEMP/v280-f-training.log" model/v280-f-refit-2/training.log
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v280-f-fold-${{ inputs.fold }}-refit-2
+          path: model/v280-f-refit-2
+          if-no-files-found: error
+          retention-days: 14
+
+  evaluate:
+    name: Fold ${{ inputs.fold }} single outer inference
+    needs: refit_2
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - run: python -m pip install -r requirements-train.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: v280-f-prepared-all
+          path: model/v280-f-prepared
+      - uses: actions/download-artifact@v4
+        with:
+          name: v280-f-fold-${{ inputs.fold }}-probe-2
+          path: model/v280-f-probe-2
+      - uses: actions/download-artifact@v4
+        with:
+          name: v280-f-fold-${{ inputs.fold }}-refit-2
+          path: model/v280-f-refit-2
+      - name: Verify the nested refit and predict the held fold once
+        run: |
+          python -B scripts/train_v280_nested_outer.py evaluate \
+            --prepared-dir model/v280-f-prepared \
+            --fold '${{ inputs.fold }}' \
+            --probe-dir model/v280-f-probe-2 \
+            --refit-dir model/v280-f-refit-2 \
+            --output-dir model/v280-f-fold-${{ inputs.fold }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v280-f-fold-${{ inputs.fold }}
+          path: model/v280-f-fold-${{ inputs.fold }}
+          if-no-files-found: error
+          retention-days: 90
