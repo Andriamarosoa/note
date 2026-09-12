@@ -1,0 +1,64 @@
+name: V28 fixed epoch prior fusion training worker
+
+on:
+  workflow_call:
+    inputs:
+      arm:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  TF_DETERMINISTIC_OPS: '1'
+  TF_NUM_INTRAOP_THREADS: '4'
+  TF_NUM_INTEROP_THREADS: '1'
+
+jobs:
+  train:
+    name: ${{ inputs.arm }} real training, 2 fixed epochs
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - run: python -m pip install -r requirements-train.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: v280-f-prepared-all
+          repository: Andriamarosoa/note
+          run-id: '34462604665'
+          github-token: ${{ github.token }}
+          path: model/v280-h-prepared
+      - name: Train real GuitarSet fit rows without validation inference
+        shell: bash
+        run: |
+          set -o pipefail
+          python -B scripts/train_v280_prior_fusion.py train \
+            --prepared-dir model/v280-h-prepared \
+            --arm '${{ inputs.arm }}' \
+            --output-dir model/v280-h-training \
+            2>&1 | tee "$RUNNER_TEMP/v280-h-training.log"
+      - name: Preserve training log
+        if: always()
+        run: |
+          if test -f "$RUNNER_TEMP/v280-h-training.log"; then
+            mkdir -p model/v280-h-training
+            cp "$RUNNER_TEMP/v280-h-training.log" model/v280-h-training/training.log
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v280-h-${{ inputs.arm }}
+          path: model/v280-h-training
+          if-no-files-found: error
+          retention-days: 90
