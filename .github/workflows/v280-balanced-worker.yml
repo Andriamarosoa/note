@@ -1,0 +1,79 @@
+name: V28 balanced internal chunk worker
+
+on:
+  workflow_call:
+    inputs:
+      arm:
+        required: true
+        type: string
+      chunk:
+        required: true
+        type: number
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  TF_DETERMINISTIC_OPS: '1'
+  TF_NUM_INTRAOP_THREADS: '4'
+  TF_NUM_INTEROP_THREADS: '1'
+
+jobs:
+  train:
+    name: ${{ inputs.arm }} epochs block ${{ inputs.chunk }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - run: python -m pip install -r requirements-train.txt
+      - name: Download the frozen F data cache
+        uses: actions/download-artifact@v4
+        with:
+          name: v280-f-prepared-all
+          repository: Andriamarosoa/note
+          run-id: '34462604665'
+          github-token: ${{ github.token }}
+          path: model/v280-g-prepared
+      - name: Download this arm's completed first chunk
+        if: inputs.chunk == 2
+        uses: actions/download-artifact@v4
+        with:
+          name: v280-g-${{ inputs.arm }}-1
+          path: model/v280-g-previous
+      - name: Train real GuitarSet rows with the frozen internal weighting
+        shell: bash
+        run: |
+          set -o pipefail
+          previous=()
+          if test '${{ inputs.chunk }}' = '2'; then
+            previous=(--previous-dir model/v280-g-previous)
+          fi
+          python -B scripts/train_v280_balanced_internal.py train-chunk \
+            --prepared-dir model/v280-g-prepared \
+            --arm '${{ inputs.arm }}' --chunk '${{ inputs.chunk }}' \
+            "${previous[@]}" \
+            --output-dir model/v280-g-training \
+            2>&1 | tee "$RUNNER_TEMP/v280-g-training.log"
+      - name: Preserve the training log
+        if: always()
+        run: |
+          if test -f "$RUNNER_TEMP/v280-g-training.log"; then
+            mkdir -p model/v280-g-training
+            cp "$RUNNER_TEMP/v280-g-training.log" model/v280-g-training/training.log
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v280-g-${{ inputs.arm }}-${{ inputs.chunk }}
+          path: model/v280-g-training
+          if-no-files-found: error
+          retention-days: 90

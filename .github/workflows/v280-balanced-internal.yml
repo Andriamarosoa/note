@@ -1,0 +1,159 @@
+name: V28 internal uniform versus balanced loss training
+
+on:
+  push:
+    branches: [v280-harmonic-pitch-count-research]
+    paths:
+      - 'scripts/train_v280_balanced_internal.py'
+      - 'test/test_v280_balanced_internal.py'
+      - 'analysis/v280-balanced-internal-protocol.md'
+      - '.github/workflows/v280-balanced-internal.yml'
+      - '.github/workflows/v280-balanced-worker.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: v280-nested-outer-training
+  cancel-in-progress: false
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  TF_DETERMINISTIC_OPS: '1'
+  TF_NUM_INTRAOP_THREADS: '4'
+  TF_NUM_INTEROP_THREADS: '1'
+
+jobs:
+  prepare:
+    name: Verify weighting, paired initialization, Adam resume and data
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - run: python -m pip install -r requirements-train.txt
+      - name: Verify the exact completed F source and data artifact
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const {execFileSync} = require('child_process');
+            const source = JSON.parse(execFileSync('python', ['-c',
+              'import json; from scripts.train_v280_balanced_internal import SOURCE; print(json.dumps(SOURCE))'
+            ], {encoding: 'utf8'}));
+            const repo = {owner: context.repo.owner, repo: context.repo.repo};
+            const {data: run} = await github.rest.actions.getWorkflowRun({...repo, run_id: source.run_id});
+            if (run.head_sha !== source.head_sha || run.conclusion !== 'success'
+                || run.status !== 'completed' || run.run_attempt !== source.run_attempt) {
+              throw new Error('Frozen F source run changed or incomplete');
+            }
+            const artifacts = await github.paginate(github.rest.actions.listWorkflowRunArtifacts,
+              {...repo, run_id: source.run_id, per_page: 100});
+            const matches = artifacts.filter(a => a.name === source.artifact && !a.expired);
+            if (matches.length !== 1 || matches[0].id !== source.artifact_id || matches[0].digest !== source.digest) {
+              throw new Error('Missing or changed prepared F artifact');
+            }
+            core.info('Prepared F artifact ID and digest verified');
+      - name: Test real weighted gradients, paired training, exclusion and resume
+        run: |
+          python -m py_compile scripts/train_v280_balanced_internal.py
+          python -m unittest -v \
+            test.test_v280_balanced_internal \
+            test.test_v280_nested_outer \
+            test.test_v280_internal_ablation \
+            test.test_v280_real_smoke \
+            test.test_v280_harmonic_count \
+            test.test_v280_causal_cqt_mining
+      - uses: actions/download-artifact@v4
+        with:
+          name: v280-f-prepared-all
+          repository: Andriamarosoa/note
+          run-id: '34462604665'
+          github-token: ${{ github.token }}
+          path: model/v280-g-prepared
+      - name: Verify all cached files and freeze training-only weights
+        run: |
+          python -B scripts/train_v280_balanced_internal.py preflight \
+            --prepared-dir model/v280-g-prepared \
+            --output model/v280-g-prepared/g-preflight.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v280-g-preparation-audit
+          path: |
+            model/v280-g-prepared/g-preflight.json
+            model/v280-g-prepared/manifest.json
+            model/v280-g-prepared/labels.npz
+            model/v280-g-prepared/split.json
+            model/v280-g-prepared/evaluation.npz
+          if-no-files-found: error
+          retention-days: 90
+
+  control_1:
+    name: Uniform control block 1
+    needs: prepare
+    uses: ./.github/workflows/v280-balanced-worker.yml
+    with:
+      arm: control
+      chunk: 1
+  control_2:
+    name: Uniform control block 2
+    needs: control_1
+    uses: ./.github/workflows/v280-balanced-worker.yml
+    with:
+      arm: control
+      chunk: 2
+  balanced_1:
+    name: Balanced loss block 1
+    needs: control_2
+    uses: ./.github/workflows/v280-balanced-worker.yml
+    with:
+      arm: balanced
+      chunk: 1
+  balanced_2:
+    name: Balanced loss block 2
+    needs: balanced_1
+    uses: ./.github/workflows/v280-balanced-worker.yml
+    with:
+      arm: balanced
+      chunk: 2
+
+  compare:
+    name: Audit both completed arms and compare internal predictions
+    needs: balanced_2
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install 'numpy>=1.23.5,<2.0'
+      - uses: actions/download-artifact@v4
+        with:
+          name: v280-g-preparation-audit
+          path: model/v280-g-prepared
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v280-g-*-2
+          path: model/v280-g-results
+          merge-multiple: false
+      - name: Recompute unweighted metrics and verify the paired experiment
+        run: |
+          python -B scripts/train_v280_balanced_internal.py compare \
+            --prepared-dir model/v280-g-prepared \
+            --input-dir model/v280-g-results \
+            --output-dir model/v280-g-comparison
+          cat model/v280-g-comparison/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v280-g-internal-comparison
+          path: model/v280-g-comparison
+          if-no-files-found: error
+          retention-days: 90
