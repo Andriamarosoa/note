@@ -1,13 +1,8 @@
 name: Direct K count with and without decay
 
+# A single bounded diagnostic. Keep historical replay explicit after the
+# initial run; routine source or report edits must not retrain these models.
 on:
-  push:
-    branches: [v280-harmonic-pitch-count-research]
-    paths:
-      - 'scripts/test_decay_direct_count.py'
-      - 'test/test_decay_direct_count.py'
-      - 'analysis/decay-direct-count-protocol.md'
-      - '.github/workflows/decay-direct-count.yml'
   workflow_dispatch:
 
 permissions:

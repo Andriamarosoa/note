@@ -1,0 +1,43 @@
+{
+  "automatic_promotion": false,
+  "decay_minus_control_poly_pp": 2.7027027027027035,
+  "decision": "no_material_gain_in_this_diagnostic_keep_v273",
+  "experiment": "direct_k_decay_ablation_v1",
+  "fitted_models_replayed": 8,
+  "independent_validation_claim": false,
+  "metrics": {
+    "control": {
+      "correct": 10367,
+      "exact_k_pct": 74.04471109206486,
+      "false_poly": 542,
+      "poly_correct": 263,
+      "poly_exact_k_pct": 14.808558558558557,
+      "poly_rows": 1776,
+      "rows": 14001
+    },
+    "decay": {
+      "correct": 10337,
+      "exact_k_pct": 73.83044068280837,
+      "false_poly": 617,
+      "poly_correct": 311,
+      "poly_exact_k_pct": 17.51126126126126,
+      "poly_rows": 1776,
+      "rows": 14001
+    },
+    "reference": {
+      "correct": 11251,
+      "exact_k_pct": 80.35854581815585,
+      "false_poly": 851,
+      "poly_correct": 796,
+      "poly_exact_k_pct": 44.81981981981982,
+      "poly_rows": 1776,
+      "rows": 14001
+    }
+  },
+  "official_reference": "V27.3",
+  "passed": false,
+  "positive_compositions_vs_control": 4,
+  "post_prediction_corrector": false,
+  "reference_predictions_as_inputs": false,
+  "status": "complete"
+}
