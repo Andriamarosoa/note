@@ -87,7 +87,11 @@ def _symmetric_class_weights(event_present: np.ndarray, idx: np.ndarray) -> dict
 def _fold_context(args):
     cache = _load_spectral_caches(args.cache_dir)
     _, train_split, validation = _dataset_split(args.dataset_dir)
-    assignment, groups_per_fold, _, _ = oofmod._balanced_group_folds(cache, train_split)
+    if getattr(args, 'fold_manifest', None):
+        from scripts.v273_native_protocol import frozen_group_folds
+        assignment, groups_per_fold, _, _ = frozen_group_folds(cache, train_split, args.fold_manifest)
+    else:
+        assignment, groups_per_fold, _, _ = oofmod._balanced_group_folds(cache, train_split)
     by_member = {t.annotation_member: t for t in train_split}
     members = np.asarray([str(x) for x in cache["members"]], dtype="U96")
     row_fold = np.asarray([assignment[group_stem(by_member[m])] for m in members], dtype=np.int16)

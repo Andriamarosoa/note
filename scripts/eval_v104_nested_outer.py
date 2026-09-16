@@ -88,7 +88,11 @@ def evaluate(args):
     if train_members & validation_members:
         raise RuntimeError("train/validation leakage")
 
-    assignment, groups_per_fold, _, _ = oofmod._balanced_group_folds(cache, train_split)
+    if getattr(args, 'fold_manifest', None):
+        from scripts.v273_native_protocol import frozen_group_folds
+        assignment, groups_per_fold, _, _ = frozen_group_folds(cache, train_split, args.fold_manifest)
+    else:
+        assignment, groups_per_fold, _, _ = oofmod._balanced_group_folds(cache, train_split)
     by_member = {t.annotation_member: t for t in train_split}
     row_fold = np.asarray(
         [assignment[group_stem(by_member[str(m)])] for m in cache["members"]], dtype=np.int16
@@ -269,6 +273,9 @@ def evaluate(args):
     }
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
+    if getattr(args, 'save_weights', False):
+        fusion.save_weights(args.output_dir / 'v104-fusion.weights.h5')
+        np.savez_compressed(args.output_dir / 'v104-standardization.npz', mean=mean, std=std)
     report_path = args.output_dir / f"v104-nested-eval-{args.outer_fold}.json"
     report_path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
     np.savez_compressed(
@@ -302,6 +309,8 @@ def parser():
     p.add_argument("--outer-fold", type=int, required=True)
     p.add_argument("--output-dir", type=Path, required=True)
     p.add_argument("--seed", type=int, default=10521)
+    p.add_argument("--fold-manifest", type=Path)
+    p.add_argument("--save-weights", action="store_true")
     return p
 
 

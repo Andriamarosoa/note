@@ -2,8 +2,13 @@
 
 ## État réel
 
-**Entraînement GuitarSet non lancé : les sources originales nécessaires ont
-expiré. Aucun résultat V27.3 + décroissance native n'existe à ce stade.**
+Les sources originales ont expiré. Leur reconstruction a maintenant réussi
+dans le [run 35086829802](https://github.com/Andriamarosoa/note/actions/runs/35086829802) :
+74 588 nouveaux clusters, dont 9 354 polyphoniques, sur 240 pistes.
+Le [protocole apparié](v273-native-paired-protocol.md) et le workflow
+`v273-native-paired.yml` reconstruisent l'ancre interne puis entraînent les
+deux bras sur ces données communes. Aucun résultat V27.3 + décroissance native
+n'est encore disponible au moment de cette publication.
 
 Le diagnostic avec correcteur ajouté et le classifieur logistique indépendant
 précédents ne constituent pas cette expérience. Leurs résultats ne permettent
@@ -11,8 +16,8 @@ pas de conclure sur l'ajout de décroissance dans V27.3.
 
 Cette livraison fournit le calcul de l'indice sur les entrées natives, son
 intégration dans les trois réseaux de comptage et les vérifications de parité.
-Elle ne fournit pas encore un entraînement apparié complet ni son résultat.
-Le workflow `v273-decay-native-preflight.yml` exécute uniquement ces
+L'entraînement apparié est désormais fourni par `train_v273_native_paired.py` ;
+il est distinct du premier preflight. Le workflow `v273-decay-native-preflight.yml` exécute uniquement ces
 vérifications et constate l'état des archives. Une étape d'optimisation sur
 des tenseurs synthétiques vérifie la branche ; ce n'est pas un entraînement
 sur GuitarSet.

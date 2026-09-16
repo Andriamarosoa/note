@@ -1,5 +1,12 @@
 # Reconstruction des sources V27.3
 
+**Reconstruction terminée avec succès :**
+[run 35086829802](https://github.com/Andriamarosoa/note/actions/runs/35086829802),
+huit lots et audit final réussis. Les données reconstruites comportent
+74 588 clusters, dont 9 354 polyphoniques, sur 240 pistes. Elles diffèrent de
+l'archive historique. La suite est définie dans
+[le protocole natif apparié](v273-native-paired-protocol.md).
+
 Cette publication conserve les éléments nécessaires à la reprise des
 expériences. **Elle ne remplace pas la référence officielle V27.3 et ne
 contient aucun verdict sur l'ajout de décroissance dans ses entrées.**

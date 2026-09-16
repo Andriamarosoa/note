@@ -102,7 +102,11 @@ def run(args):
     if train_members & validation_members:
         raise RuntimeError("train/validation leakage")
 
-    assignment, groups_per_fold, loads, _ = oofmod._balanced_group_folds(cache, train_split)
+    if getattr(args, 'fold_manifest', None):
+        from scripts.v273_native_protocol import frozen_group_folds
+        assignment, groups_per_fold, loads, _ = frozen_group_folds(cache, train_split, args.fold_manifest)
+    else:
+        assignment, groups_per_fold, loads, _ = oofmod._balanced_group_folds(cache, train_split)
     by_member = {t.annotation_member: t for t in train_split}
     row_fold = np.asarray(
         [assignment[group_stem(by_member[str(m)])] for m in cache["members"]], dtype=np.int16
@@ -150,9 +154,13 @@ def run(args):
     model101 = oofmod._train_v101(
         cache, fit_idx, pitch_targets, pitch_mask, k, epochs101, args.seed + 101
     )
+    if getattr(args, 'save_weights', False):
+        model101.save_weights(args.output_dir / 'v101.weights.h5')
     model102 = oofmod._train_v102(
         cache, fit_idx, pitch_targets, time_mask, time_targets, k, epochs102, args.seed + 202
     )
+    if getattr(args, 'save_weights', False):
+        model102.save_weights(args.output_dir / 'v102.weights.h5')
 
     held_pack = _predict_pack(model101, model102, cache, hold_idx, mode101, mode102)
     tag = (
@@ -230,6 +238,8 @@ def parser():
     p.add_argument("--inner-fold", type=int)
     p.add_argument("--output-dir", type=Path, required=True)
     p.add_argument("--seed", type=int, default=10491)
+    p.add_argument("--fold-manifest", type=Path)
+    p.add_argument("--save-weights", action="store_true")
     return p
 
 
