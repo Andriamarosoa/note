@@ -1,0 +1,110 @@
+name: V27.3 native decay integration checks (no GuitarSet training)
+
+on:
+  push:
+    branches: [v280-harmonic-pitch-count-research]
+    paths:
+      - 'scripts/v273_decay_native_inputs.py'
+      - 'test/test_v273_decay_native_inputs.py'
+      - 'analysis/v273-decay-native-sources.json'
+      - '.github/workflows/v273-decay-native-preflight.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  TF_DETERMINISTIC_OPS: '1'
+  TF_NUM_INTRAOP_THREADS: '2'
+  TF_NUM_INTEROP_THREADS: '2'
+  OPENBLAS_NUM_THREADS: '2'
+  OMP_NUM_THREADS: '2'
+
+jobs:
+  integration:
+    name: Native heads, zero-input parity and synthetic gradient checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - run: python -m pip install -r requirements-train.txt
+      - name: Check original TensorFlow version and all three count components
+        run: |
+          python -c 'import tensorflow as tf; assert tf.__version__ == "2.15.1"'
+          python -m unittest -v \
+            test.test_v273_decay_native_inputs \
+            test.test_v273_selective_transition_corrector \
+            test.test_v272_poly_conditional_count \
+            test.test_v260_count_weighting
+
+  sources:
+    name: Original training sources (blocked if archives expired)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit pinned original archives without downloading substitutes
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const pinned = JSON.parse(fs.readFileSync('analysis/v273-decay-native-sources.json', 'utf8'));
+            const repo = {owner:context.repo.owner, repo:context.repo.repo};
+            if (`${repo.owner}/${repo.repo}` !== pinned.repository)
+              throw new Error('Unexpected source repository');
+            const missing = [];
+            const invalid = [];
+            const checked = [];
+            for (const source of pinned.sources) {
+              const {data:run} = await github.rest.actions.getWorkflowRun({...repo,run_id:source.run_id});
+              if (run.head_sha !== source.head_sha || run.status !== 'completed' || run.conclusion !== 'success')
+                invalid.push(`source run ${source.run_id}`);
+              const artifacts = await github.paginate(github.rest.actions.listWorkflowRunArtifacts,
+                {...repo,run_id:source.run_id,per_page:100});
+              for (const expected of source.artifacts) {
+                const matches = artifacts.filter(a => a.name === expected.name);
+                let state;
+                if (matches.length === 0) state = 'missing';
+                else if (matches.length !== 1 || matches[0].id !== expected.id || matches[0].digest !== expected.digest)
+                  state = 'identity_mismatch';
+                else state = matches[0].expired ? 'expired' : 'available';
+                checked.push({run_id:source.run_id,name:expected.name,id:expected.id,state});
+                if (state === 'expired' || state === 'missing') missing.push(expected.name);
+                if (state === 'identity_mismatch') invalid.push(expected.name);
+              }
+            }
+            const report = {
+              checked_at_utc:new Date().toISOString(),
+              source_code_sha:context.sha,
+              status:invalid.length ? 'invalid_source_identity' : missing.length
+                ? 'blocked_missing_original_inputs' : 'archives_available_additional_preflight_required',
+              native_guitarset_training_started:false,
+              missing_or_expired:missing,
+              invalid_identity:invalid,
+              checked,
+            };
+            fs.mkdirSync('native-source-audit', {recursive:true});
+            fs.writeFileSync('native-source-audit/status.json', JSON.stringify(report,null,2)+'\n');
+            await core.summary.addHeading('V27.3 native decay — source availability')
+              .addRaw(`Status: ${report.status}. GuitarSet training started: false.\n\n`)
+              .addRaw(`${missing.length} required archives missing or expired; ${invalid.length} identity mismatches.\n\n`)
+              .addRaw('This workflow checks native integration and source availability. It does not run the paired GuitarSet experiment.\n')
+              .write();
+            if (invalid.length) throw new Error('Original source identity check failed');
+            if (missing.length) throw new Error('Native training blocked: original spectral bundle and/or strict inner partitions unavailable');
+      - name: Preserve source availability report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v273-native-decay-source-availability
+          path: native-source-audit/status.json
+          if-no-files-found: error
+          retention-days: 90
