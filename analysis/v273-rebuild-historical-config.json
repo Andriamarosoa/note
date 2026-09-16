@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "reference_v273": {
+    "run_id": 34297767492,
+    "head_sha": "dd43b4f92b234dc7c84377e18389fd34350cd1b4",
+    "poly_correct": 4005,
+    "poly_rows": 9401
+  },
+  "archived_sources": [
+    {
+      "run_id": 33618443266,
+      "head_sha": "d73f51fa4ba45732890f0d7f0dcaad2dd9b8976a",
+      "name": "v101-string-query-attention",
+      "id": 9842799517,
+      "digest": "sha256:a8e8e9a7ad487c1c1d77226dbd9b968b11b14e84ef1f00c33ac7934da60ceeeb",
+      "role": "Original full V10.1 weights and historical training report"
+    },
+    {
+      "run_id": 33625061774,
+      "head_sha": "21fa92a952c6e805214e24117f293fd81f539847",
+      "name": "v102-source-time-assignment",
+      "id": 9845793222,
+      "digest": "sha256:3db8ad08fd50d320c5bed6141e01848e489202b371a86f08fd6f48eee370e29a",
+      "role": "Original full V10.2 weights and historical training report"
+    },
+    {
+      "run_id": 33647694565,
+      "head_sha": "345dea1e92f6281583c58590a0b1286ce4df459b",
+      "name": "v104-nested-deployment-audit",
+      "id": 9857270332,
+      "digest": "sha256:63c09c700a2aaeb28cb1a8f19915f1b981bd18e14156834757c6e93e9d786807",
+      "role": "Original nested aggregate report"
+    },
+    {
+      "run_id": 34346175521,
+      "head_sha": "97c158e8c8b110b85eeac80a336a06768a95b936",
+      "name": "v280-cluster-metadata",
+      "id": 10101948765,
+      "digest": "sha256:dccf400794cd8d50a9aab8b13a1292a1d6e97696315a96ba21beb5ec8e423d8c",
+      "role": "Surviving historical cluster arrays from a successful preserved copy; excludes stats and spectral"
+    }
+  ],
+  "strict_inner_expert_configuration": {
+    "v101": {
+      "epochs_ran": 13,
+      "decode_mode": "ordinal_cumulative_050",
+      "decode_mode_selected_on_locked_validation": false,
+      "source_artifact_id": 9842799517
+    },
+    "v102": {
+      "epochs_ran": 17,
+      "decode_mode": "structured_pb_argmax",
+      "decode_mode_selected_on_locked_validation": false,
+      "source_artifact_id": 9845793222
+    }
+  },
+  "upstream_rebuild": {
+    "programs_unchanged_from_v273_reference_commit": true,
+    "v81": {
+      "epochs": 3,
+      "train_examples": 800,
+      "validation_examples": 200,
+      "filters": 32,
+      "learning_rate": 0.001,
+      "seed": 1337
+    },
+    "v84": {
+      "epochs": 1,
+      "original_selected_checkpoint": "control.epoch-01.keras",
+      "train_examples": 800,
+      "validation_examples": 200,
+      "learning_rate": 0.0001,
+      "seed": 1337
+    },
+    "v86": {
+      "maximum_epochs": 20,
+      "train_members": 30
+    },
+    "v87": {
+      "maximum_epochs": 20,
+      "train_members": 30
+    },
+    "v88": {
+      "maximum_epochs": 20,
+      "train_members": 30
+    }
+  },
+  "status": "reconstruction_prepared_no_claim_of_historical_weight_identity"
+}
