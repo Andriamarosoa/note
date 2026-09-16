@@ -1,0 +1,84 @@
+name: V27.3 frozen control with learned ln branch - fold 3 only
+
+on:
+  push:
+    branches: [v280-harmonic-pitch-count-research]
+    paths: ['analysis/v273-frozen-ln-launch.json']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v273-frozen-ln-fold3
+  cancel-in-progress: false
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  TF_DETERMINISTIC_OPS: '1'
+  OMP_NUM_THREADS: '2'
+  OPENBLAS_NUM_THREADS: '2'
+  TF_NUM_INTRAOP_THREADS: '2'
+  TF_NUM_INTEROP_THREADS: '2'
+  RESULT_TAG: v273-frozen-ln-${{ github.run_id }}
+
+jobs:
+  repair:
+    name: Train ln branch with frozen control and evaluate fold 3
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - run: python -m pip install -r requirements-train.txt numpy==1.26.4
+      - name: Prove zero-input parity and frozen weights after training and reload
+        run: |
+          python -c 'import tensorflow; assert tensorflow.__version__ == "2.15.1"'
+          python -m unittest -v test.test_v273_frozen_ln
+      - name: Restore immutable common acoustic inputs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -B scripts/prepare_v273_native_experiment.py \
+            --config analysis/v273-native-paired-config.json --output-dir model/native-cache
+      - name: Restore the saved fold 3 control
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download v273-native-decay-35099819151 --repo "$GITHUB_REPOSITORY" \
+            --pattern v273-native-paired-fold-3.zip --dir model/download
+          python - <<'PY'
+          from scripts.restore_v273_original_backup import extract_verified
+          extract_verified('model/download/v273-native-paired-fold-3.zip', 'model/fold-3',
+                           '67f59e33943e95b5e4ad54dfdec1dc597b4c56d8caaebbdd8b5eff22a743995d')
+          PY
+      - name: Fit the input branch, select internally, then evaluate only outer fold 3
+        run: |
+          python -B scripts/train_v273_frozen_ln.py --fold 3 \
+            --cache-dir model/native-cache --fold-dir model/fold-3 --output-dir model/frozen-ln
+          cat model/frozen-ln/report.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve the trained models and decision
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$RESULT_TAG" --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" --prerelease --title "V27.3 frozen ln correction - fold 3" \
+            --notes-file model/frozen-ln/report.md
+          python -B scripts/archive_v273_native_stage.py --root model/frozen-ln \
+            --name v273-frozen-ln-fold3 --tag "$RESULT_TAG"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-frozen-ln-fold3
+          path: model/frozen-ln
+          compression-level: 1
+          retention-days: 90
+          if-no-files-found: warn

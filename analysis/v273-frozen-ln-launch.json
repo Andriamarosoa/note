@@ -1,0 +1,13 @@
+{
+  "request": "implement_and_test_the_correction_until_a_concrete_decision",
+  "outer_fold": 3,
+  "source_run_id": 35099819151,
+  "source_fold_release_archive_sha256": "67f59e33943e95b5e4ad54dfdec1dc597b4c56d8caaebbdd8b5eff22a743995d",
+  "freeze_control_weights": true,
+  "freeze_control_thresholds": true,
+  "train_only_native_ln_projection": true,
+  "teacher_weights": [0, 1],
+  "projection_strengths": [0.25, 0.5, 1],
+  "selection": "internal_validation_only",
+  "automatic_promotion": false
+}
