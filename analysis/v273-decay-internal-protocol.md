@@ -61,7 +61,7 @@ d'apprentissage seulement. Aucun seuil ni hyperparamètre n'est choisi à partir
 de la composition exclue. Aucun résultat historique/Locked12 n'est ouvert.
 
 Le contrôle et la variante utilisent la même régression logistique multinomiale
-L2, `C=1`, solveur `lbfgs`, maximum 1 000 itérations, tolérance `1e-6`, seed
+L2, `C=1`, solveur `lbfgs`, maximum 10 000 itérations, tolérance `1e-6`, seed
 27341, sans rééquilibrage. Un échec de convergence est un échec technique,
 pas un verdict scientifique. Il n'y a aucun balayage de réglages.
 
@@ -140,3 +140,17 @@ coefficients, partitions, probabilités, prédictions appariées, empreintes,
 versions des dépendances, rapport JSON et synthèse Markdown. Les tests couvrent
 une décroissance pure, une attaque masquée sans hausse totale, l'absence de
 futur, le silence, les partitions et la comparaison appariée complète.
+
+## Correction technique avant tout résultat réel
+
+Le run `35064823827` (commit `570de36db1ed5592b6a8c822091b35e1e252e5af`)
+a passé les 24 tests et vérifié les données, puis son tout premier ajustement
+témoin a atteint le plafond initial de 1 000 itérations. Le programme a échoué
+sur `ConvergenceWarning` dans `model.fit`, avant `predict_proba` et avant toute
+mesure de performance sur les compositions exclues. Aucun résultat de ce run
+n'est admissible comme verdict.
+
+Le plafond est porté à 10 000 pour les deux variantes. L'objectif L2 (`C=1`),
+le solveur, la tolérance, les caractéristiques, les partitions, les actions et
+tous les critères de décision restent identiques. C'est une correction du
+budget numérique de convergence, pas une sélection à partir des scores.
