@@ -3,14 +3,49 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+import zipfile
 
 import numpy as np
 
 from scripts import rebuild_v273_sources as v
 from scripts import summarize_v273_rebuilt_cache as summary
+from scripts import restore_v273_original_backup as backup
 
 
 class RecoverySourceTests(unittest.TestCase):
+    def test_preserved_backup_verifies_both_archive_and_file_checksums(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            model = root/'checkpoint'
+            model.write_bytes(b'checkpoint')
+            archive = root/'backup.zip'
+            with zipfile.ZipFile(archive, 'w') as z:
+                z.write(model, 'weights/checkpoint')
+                z.writestr('file-sha256.json', json.dumps({'weights/checkpoint': backup.sha256(model)}))
+            backup.extract_verified(archive, root/'good', backup.sha256(archive))
+            self.assertEqual((root/'good/weights/checkpoint').read_bytes(), b'checkpoint')
+            with self.assertRaisesRegex(RuntimeError, 'archive checksum mismatch'):
+                backup.extract_verified(archive, root/'bad', '0'*64)
+            self.assertFalse((root/'bad').exists())
+            bad_manifest = root/'bad-manifest.zip'
+            with zipfile.ZipFile(bad_manifest, 'w') as z:
+                z.write(model, 'weights/checkpoint')
+                z.writestr('file-sha256.json', json.dumps({'weights/checkpoint': '0'*64}))
+            with self.assertRaisesRegex(RuntimeError, 'source file changed'):
+                backup.extract_verified(bad_manifest, root/'bad-file', backup.sha256(bad_manifest))
+            self.assertFalse((root/'bad-file').exists())
+
+    def test_backup_cannot_extract_outside_its_directory(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            archive = root/'traversal.zip'
+            with zipfile.ZipFile(archive, 'w') as z:
+                z.writestr('../outside', b'unsafe')
+                z.writestr('file-sha256.json', '{}')
+            with self.assertRaisesRegex(RuntimeError, 'unsafe backup path'):
+                backup.extract_verified(archive, root/'output', backup.sha256(archive))
+            self.assertFalse((root/'output').exists())
+
     def test_historical_programs_accept_every_stage_command(self):
         for stage in v.STAGES:
             command, outputs = v.stage_spec(stage, Path('/data/GuitarSet'), Path('/output'))

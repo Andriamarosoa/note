@@ -4,6 +4,16 @@ Cette publication conserve les éléments nécessaires à la reprise des
 expériences. **Elle ne remplace pas la référence officielle V27.3 et ne
 contient aucun verdict sur l'ajout de décroissance dans ses entrées.**
 
+Relance effective : [run 35084258528](https://github.com/Andriamarosoa/note/actions/runs/35084258528),
+commit `4a7985df684187c668b36be83dbf7ca6d52938ab`.
+La première étape a réussi : les sources encore accessibles sont sauvegardées
+dans la [release de recherche](https://github.com/Andriamarosoa/note/releases/tag/v273-source-recovery-35084258528).
+L'archive `v273-preserved-original-sources.zip` a pour SHA-256
+`fd3cf8c57d671cc2e9b7af026c6cb361a16712dfb2841cef60c07a65b23ba7e0`.
+Les prochaines relances peuvent vérifier et utiliser cette sauvegarde même
+après expiration des artefacts originaux. Cela ne restaure pas les caches
+et poids qui avaient déjà expiré avant cette sauvegarde.
+
 Les caches spectraux historiques et les partitions internes V10.4 ont expiré.
 L'utilisateur n'en a pas de sauvegarde. Les anciens poids V8.1/V8.4/V8.6/V8.7/
 V8.8 nécessaires pour les recalculer ont également expiré. Il faut réentraîner
