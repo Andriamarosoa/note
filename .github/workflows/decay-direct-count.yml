@@ -1,0 +1,81 @@
+name: Direct K count with and without decay
+
+on:
+  push:
+    branches: [v280-harmonic-pitch-count-research]
+    paths:
+      - 'scripts/test_decay_direct_count.py'
+      - 'test/test_decay_direct_count.py'
+      - 'analysis/decay-direct-count-protocol.md'
+      - '.github/workflows/decay-direct-count.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: decay-direct-count-diagnostic
+  cancel-in-progress: false
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '2'
+  OMP_NUM_THREADS: '2'
+  MKL_NUM_THREADS: '2'
+
+jobs:
+  diagnostic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-decay.txt
+      - run: python -m pip install -r requirements-decay.txt
+      - name: Test direct seven-way prediction and excluded compositions
+        run: python -m unittest -v test.test_decay_direct_count
+      - name: Verify frozen acoustic source
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const {execFileSync} = require('child_process');
+            const source = JSON.parse(execFileSync('python', ['-c',
+              'import json; from scripts.test_decay_direct_count import SOURCE; print(json.dumps(SOURCE))'
+            ], {encoding:'utf8'}));
+            const repo = {owner:context.repo.owner,repo:context.repo.repo};
+            const {data:run} = await github.rest.actions.getWorkflowRun({...repo,run_id:source.run_id});
+            if (run.status !== 'completed' || run.conclusion !== 'success' ||
+                run.head_sha !== source.head_sha || run.run_attempt !== source.run_attempt)
+              throw new Error('Source producer changed');
+            const all = await github.paginate(github.rest.actions.listWorkflowRunArtifacts,
+              {...repo,run_id:source.run_id,per_page:100});
+            const found = all.filter(a => a.name === source.artifact_name && !a.expired);
+            if (found.length !== 1 || found[0].id !== source.artifact_id || found[0].digest !== source.digest)
+              throw new Error('Source artifact changed or expired');
+      - uses: actions/download-artifact@v4
+        with:
+          name: v273-decay-internal-diagnostic
+          repository: Andriamarosoa/note
+          run-id: '35065190353'
+          github-token: ${{ github.token }}
+          path: model/direct-count-source
+      - name: Train direct count models and apply the frozen comparison
+        run: |
+          set -euo pipefail
+          python -B scripts/test_decay_direct_count.py \
+            --source-dir model/direct-count-source \
+            --output-dir model/decay-direct-count
+          cat model/decay-direct-count/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: decay-direct-count-aggregate-summary
+          path: |
+            model/decay-direct-count/summary.json
+            model/decay-direct-count/summary.md
+          if-no-files-found: error
+          retention-days: 90
