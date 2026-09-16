@@ -16,6 +16,16 @@ Le présent workflow reconstruit les experts internes, entraîne les deux bras
 de comptage et agrège les cinq folds. Sa publication n'est pas un résultat
 d'entraînement ; le résultat ne sera disponible qu'après la fin des jobs.
 
+Exécution lancée : [run 35099819151](https://github.com/Andriamarosoa/note/actions/runs/35099819151),
+commit `a192bb3137304b5206fdd45a837995c95f80fcbb`. Le preflight a réussi :
+**36 tests, aucun ignoré**, sous TensorFlow 2.15.1 ; huit archives vérifiées
+et compositions historiques confirmées sur les données reconstruites.
+L'audit acoustique trouve 35 301 clusters avec au moins une bande de
+décroissance fiable et 34 627 avec un indice non nul. Ces nombres décrivent
+la disponibilité de l'indice, pas un gain de précision. Les poids et scores
+de la comparaison restent attendus. Les sauvegardes de cette exécution sont
+dans la [préversion dédiée](https://github.com/Andriamarosoa/note/releases/tag/v273-native-decay-35099819151).
+
 ## Question expérimentale
 
 Sur une même reconstruction de la chaîne V27.3, l'indice de décroissance
