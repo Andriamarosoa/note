@@ -1,5 +1,11 @@
 # Où se produit la régression avec l'indice de décroissance ?
 
+**Complément ultérieur, limité au fold 3 :** l'[audit à poids fixes](v273-fold3-ln-audit.md)
+montre que 32 des 35 nouveaux surcomptages ont une entrée ln entièrement
+nulle, y compris la ligne 50105 citée plus bas. La non-spécificité acoustique
+du signal synthétique ne démontre donc pas la cause dominante de ces erreurs.
+Le retrait direct de ln corrige seulement les trois autres nouveaux surcomptages.
+
 Diagnostic du 16 septembre 2026 sur les folds **2, 3 et 4** terminés du
 [run 35099819151](https://github.com/Andriamarosoa/note/actions/runs/35099819151).
 Il complète l'[audit initial de deux folds](v273-native-paired-audit.md).
@@ -143,8 +149,9 @@ PYTHONPATH=.:src python -B scripts/probe_v273_decay_specificity.py \
 
 Les variantes croisées sont des **diagnostics après observation des résultats**.
 Elles ne sont ni sélectionnées pour déploiement ni présentées comme une
-nouvelle validation indépendante. Les seuils du run restent inchangés,
-les deux autres folds continuent et V27.3 reste la référence.
+nouvelle validation indépendante. À la date de ce diagnostic, les seuils
+du run étaient inchangés, les deux autres folds continuaient et V27.3
+restait la référence.
 
 Reproduction :
 
