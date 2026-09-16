@@ -1,15 +1,9 @@
-name: V27.3 causal decay paired diagnostic
+name: V27.3 causal decay paired diagnostic (archived, manual replay)
 
+# Closed after the negative paired diagnostic. V27.3 remains the research
+# reference without either additional acoustic corrector. Historical replay
+# is explicit; edits to the experiment must not start another training run.
 on:
-  push:
-    branches: [v280-harmonic-pitch-count-research]
-    paths:
-      - 'src/causal_note/decay_novelty.py'
-      - 'scripts/test_v273_decay_internal.py'
-      - 'test/test_v273_decay_internal.py'
-      - 'requirements-decay.txt'
-      - 'analysis/v273-decay-internal-protocol.md'
-      - '.github/workflows/v273-decay-internal.yml'
   workflow_dispatch:
 
 permissions:

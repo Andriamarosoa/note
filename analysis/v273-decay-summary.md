@@ -2,6 +2,18 @@
 
 **Résultat : conserver V27.3. La variante testée ne montre aucun gain.**
 
+**Décision confirmée le 16 septembre 2026 : poursuivre avec V27.3 seule,
+sans le correcteur acoustique additionnel.** Le témoin et la variante de
+décroissance sont écartés du chemin de recherche retenu. V27.3 désigne la
+[référence historique figée](v273-selective-transition-corrector-results.md),
+avec ses composants d'origine et son score agrégé de 42,6019 %.
+
+Le workflow de ce diagnostic est archivé en mode de réexécution manuelle :
+les modifications de fichiers ne relancent plus son entraînement. Les sources
+et les résultats historiques restent disponibles pour la reproductibilité.
+Cette clôture porte sur le diagnostic de décroissance ; elle ne constitue
+ni un nouvel entraînement ni un déploiement live de V27.3.
+
 Ces scores agrégés proviennent de l'[exécution GitHub terminée](https://github.com/Andriamarosoa/note/actions/runs/35065190353).
 Le diagnostic porte sur 14 001 exemples, dont 1 776 polyphoniques, répartis
 en quatre compositions de développement. Le correcteur apprend sur trois
