@@ -16,6 +16,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 STAGES = ("v81", "audit", "v84", "v86", "v87", "v88")
+SOURCE_TRAIN_MEMBERS = 30
 DATA_MD5 = {
     "annotation.zip": "b39b78e63d3446f2e54ddb7a54df9b10",
     "audio_mono-pickup_mix.zip": "aecce79f425a44e2055e46f680e10f6a",
@@ -57,7 +58,7 @@ def source_args(source_dir):
 
 
 def stage_spec(stage, dataset_dir, output_dir):
-    """Exact historical settings; stop V8.4 after the checkpoint actually used."""
+    """Historical programs; the audit must cover the downstream source count."""
     if stage not in STAGES:
         raise ValueError(stage)
     root, dataset = Path(output_dir), str(dataset_dir)
@@ -73,7 +74,8 @@ def stage_spec(stage, dataset_dir, output_dir):
     elif stage == "audit":
         script = "audit_v81_train_fp_harmonics.py"
         args = [dataset, "--model", stream, "--threshold", "0.40", "--target-fp", "4000",
-                "--min-tracks", "24", "--max-tracks", "64", "--control-stride", "256",
+                "--min-tracks", str(SOURCE_TRAIN_MEMBERS), "--max-tracks", "64",
+                "--control-stride", "256",
                 "--max-control-rms-delta-db", "3.0", "--output", audit]
         outputs = ["audit/report.json"]
     elif stage == "v84":
@@ -91,7 +93,7 @@ def stage_spec(stage, dataset_dir, output_dir):
             "v88": "train_v88_regime_moe.py",
         }[stage]
         args = [dataset, "--base-model", base, "--train-audit", audit,
-                "--train-members", "30", "--epochs", "20",
+                "--train-members", str(SOURCE_TRAIN_MEMBERS), "--epochs", "20",
                 "--output-dir", str(root / stage)]
         for previous, weights in (
             ("v86", "v86-state-transition-refiner.weights.h5"),
@@ -166,8 +168,8 @@ def run_stage(args):
         record["outputs"] = [{"path": p, "sha256": digest(root / p)} for p in outputs]
         if args.stage == "audit":
             audit = json.loads((root / "audit/report.json").read_text())
-            if len(audit["scope"]["members"]) < 30:
-                raise RuntimeError("historical audit settings yielded fewer than 30 source tracks")
+            if len(set(audit["scope"]["members"])) < SOURCE_TRAIN_MEMBERS:
+                raise RuntimeError("audit has too few distinct downstream source tracks")
         record.update(status="completed", completed_at_utc=now())
     except BaseException:
         record.update(status="failed", finished_at_utc=now())

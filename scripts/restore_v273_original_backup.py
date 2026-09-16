@@ -19,7 +19,17 @@ def sha256(path):
     return h.hexdigest()
 
 
-def extract_verified(archive, output_dir, expected_sha256):
+def validate_original_inventory(root):
+    expected = json.loads((root/'file-sha256.json').read_text())
+    files = {p.relative_to(root).as_posix() for p in root.rglob('*') if p.is_file()}
+    if files != set(expected) | {'file-sha256.json'}:
+        raise RuntimeError('preserved source file inventory mismatch')
+    for name, digest in expected.items():
+        if sha256(root/name) != digest:
+            raise RuntimeError(f'preserved source file changed: {name}')
+
+
+def extract_verified(archive, output_dir, expected_sha256, validate=validate_original_inventory):
     archive, output_dir = Path(archive), Path(output_dir)
     if output_dir.exists():
         raise FileExistsError(output_dir)
@@ -38,13 +48,7 @@ def extract_verified(archive, output_dir, expected_sha256):
                 if p.is_absolute() or '..' in p.parts or stat.S_ISLNK(info.external_attr >> 16):
                     raise RuntimeError('unsafe backup path')
             z.extractall(root)
-        expected = json.loads((root/'file-sha256.json').read_text())
-        files = {p.relative_to(root).as_posix() for p in root.rglob('*') if p.is_file()}
-        if files != set(expected) | {'file-sha256.json'}:
-            raise RuntimeError('preserved source file inventory mismatch')
-        for name, digest in expected.items():
-            if sha256(root/name) != digest:
-                raise RuntimeError(f'preserved source file changed: {name}')
+        validate(root)
         root.rename(output_dir)
 
 

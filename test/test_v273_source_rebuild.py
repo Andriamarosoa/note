@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 import zipfile
 
 import numpy as np
@@ -10,6 +11,7 @@ import numpy as np
 from scripts import rebuild_v273_sources as v
 from scripts import summarize_v273_rebuilt_cache as summary
 from scripts import restore_v273_original_backup as backup
+from scripts import restore_v273_rebuild_checkpoint as resume
 
 
 class RecoverySourceTests(unittest.TestCase):
@@ -59,6 +61,74 @@ class RecoverySourceTests(unittest.TestCase):
             if stage == 'v84':
                 self.assertEqual(parsed.epochs, 1)
                 self.assertEqual(parsed.source_model.name, 'stream.epoch-03.keras')
+            if stage == 'audit':
+                # The FP target can be met early. The stop floor must still
+                # satisfy all three downstream programs' source-track contract.
+                for downstream in ('v86', 'v87', 'v88'):
+                    cmd, _ = v.stage_spec(downstream, Path('/data/GuitarSet'), Path('/output'))
+                    module = importlib.import_module('scripts.' + Path(cmd[2]).stem)
+                    need = module.create_argument_parser().parse_args(cmd[3:]).train_members
+                    self.assertGreaterEqual(parsed.min_tracks, need)
+
+    def checkpoint_archive(self, root):
+        weights = root/'checkpoint.keras'
+        weights.write_bytes(b'completed epoch three')
+        producer = 'a'*40
+        state = {'source_kind': v.SOURCE_KIND, 'source_code_sha': producer,
+                 'dataset_md5': v.DATA_MD5, 'stages': {
+                     'v81': {'status': 'completed', 'outputs': [
+                         {'path': 'v81/stream.epoch-03.keras', 'sha256': v.digest(weights)}]},
+                     'audit': {'status': 'failed'}}}
+        archive = root/'checkpoint.zip'
+        with zipfile.ZipFile(archive, 'w') as z:
+            z.write(weights, 'v81/stream.epoch-03.keras')
+            z.writestr('rebuild-state.json', json.dumps(state))
+            z.writestr('audit/report.json', json.dumps({'scope': {'members': list(range(24))}}))
+        source = {'run_id': 123, 'producer_commit': producer,
+                  'checkpoint_sha256': v.digest(weights), 'sha256': v.digest(archive)}
+        return archive, source
+
+    def test_resume_keeps_weights_and_failed_audit_then_runs_fixed_audit(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            archive, source = self.checkpoint_archive(root)
+            output = root/'resumed'
+            resume.restore_archive(archive, output, source)
+            state = v.validate_sources(output, ('v81',))
+            self.assertEqual(set(state['stages']), {'v81'})
+            self.assertEqual(state['stages']['v81']['reused_from_run_id'], 123)
+            self.assertEqual(v.digest(output/'v81/stream.epoch-03.keras'), source['checkpoint_sha256'])
+            self.assertTrue((output/'history/run-123/audit/report.json').exists())
+            self.assertEqual(json.loads((output/'history/run-123/rebuild-state.json').read_text())
+                             ['stages']['audit']['status'], 'failed')
+            self.assertFalse((output/'audit').exists())
+            with self.assertRaises(FileExistsError):
+                resume.restore_archive(archive, output, source)
+
+            def fake_audit(command, **kwargs):
+                self.assertTrue(command[2].endswith('audit_v81_train_fp_harmonics.py'))
+                module = importlib.import_module('scripts.audit_v81_train_fp_harmonics')
+                args = module.create_argument_parser().parse_args(command[3:])
+                # Simulate reaching 4,000 FPs before the minimum track count.
+                v.write_json(args.output, {'scope': {'members': list(range(args.min_tracks))}})
+
+            args = type('Args', (), {'stage': 'audit', 'dataset_dir': root/'dataset',
+                                    'output_dir': output})()
+            with mock.patch.object(v, 'verify_dataset'), mock.patch.object(v.subprocess, 'run', fake_audit):
+                v.run_stage(args)
+            state = v.validate_sources(output, ('v81', 'audit'))
+            self.assertEqual(state['stages']['audit']['status'], 'completed')
+            self.assertEqual(v.digest(output/'v81/stream.epoch-03.keras'), source['checkpoint_sha256'])
+
+    def test_resume_rejects_wrong_producer_or_checkpoint_without_partial_output(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            archive, source = self.checkpoint_archive(root)
+            for key in ('producer_commit', 'checkpoint_sha256', 'sha256'):
+                with self.subTest(key=key):
+                    with self.assertRaises(RuntimeError):
+                        resume.restore_archive(archive, root/key, {**source, key: '0'*64})
+                    self.assertFalse((root/key).exists())
 
     def test_altered_completed_output_is_rejected(self):
         with tempfile.TemporaryDirectory() as temp:

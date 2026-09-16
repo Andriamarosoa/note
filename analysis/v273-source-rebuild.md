@@ -14,6 +14,27 @@ Les prochaines relances peuvent vérifier et utiliser cette sauvegarde même
 après expiration des artefacts originaux. Cela ne restaure pas les caches
 et poids qui avaient déjà expiré avant cette sauvegarde.
 
+### Reprise après l'erreur d'audit
+
+Le run ci-dessus a terminé les trois époques V8.1, puis s'est arrêté :
+l'audit avait atteint sa cible de 4 000 faux positifs sur 24 pistes, mais
+V8.6/V8.7/V8.8 en exigent 30. Le seuil minimal de l'audit passe donc de
+24 à 30 pistes d'apprentissage. Il s'agit d'une correction explicite de
+la reconstruction ; les nouveaux résultats ne sont pas déclarés identiques
+à ceux de la chaîne historique.
+
+La reprise réutilise `v81/stream.epoch-03.keras`, SHA-256
+`16db642e76add6ea5e8ec02ff7b30c2491e22020378e6d372d002478dc92978b`,
+depuis `v273-rebuilt-proposal-sources.zip` dans la même release. Cette archive
+a pour SHA-256 `e4a602295b0456a94e78b8ebee1cb2255e74f3f1847766c504a8f286fe942b24`.
+L'archive, le producteur, le jeu de données, l'état terminé de V8.1 et le
+checkpoint sont contrôlés avant toute réutilisation. L'ancien état et l'audit
+échoué sont conservés sous `history/run-35084258528/`. L'audit à 30 pistes
+est recalculé ; V8.1 n'est pas réentraîné.
+
+GuitarSet est également mis en cache immédiatement après vérification des
+empreintes, pour conserver ce téléchargement même si une étape suivante échoue.
+
 Les caches spectraux historiques et les partitions internes V10.4 ont expiré.
 L'utilisateur n'en a pas de sauvegarde. Les anciens poids V8.1/V8.4/V8.6/V8.7/
 V8.8 nécessaires pour les recalculer ont également expiré. Il faut réentraîner
@@ -36,9 +57,10 @@ ayant participé à leur entraînement contaminerait la comparaison.
 ## Reconstruction lancée par ce workflow
 
 1. Sauvegarder les éléments originaux encore disponibles.
-2. Réentraîner V8.1 sur GuitarSet avec ses paramètres historiques : trois
-   époques, 800 exemples d'entraînement et 200 de validation par époque.
-3. Refaire l'audit des faux positifs sur l'apprentissage puis V8.4 jusqu'au
+2. Réutiliser V8.1 terminé : trois époques, 800 exemples d'entraînement et
+   200 de validation par époque, avec contrôle du checkpoint sauvegardé.
+3. Refaire l'audit des faux positifs sur au moins 30 pistes d'apprentissage,
+   puis V8.4 jusqu'au
    checkpoint `control.epoch-01.keras` effectivement utilisé par la chaîne.
    Les époques V8.4 2 et 3 n'étaient pas les sources de V27.3.
 4. Réentraîner V8.6, V8.7 et V8.8 avec les programmes historiques, 30 pistes

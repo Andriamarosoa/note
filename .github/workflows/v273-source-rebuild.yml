@@ -143,7 +143,7 @@ jobs:
           retention-days: 90
 
   rebuild:
-    name: Retrain missing proposal sources V8.1 through V8.8
+    name: Resume verified V8.1 and rebuild V8.4 through V8.8
     needs: preserve
     runs-on: ubuntu-24.04
     timeout-minutes: 300
@@ -160,7 +160,7 @@ jobs:
       - run: python -m pip install -r requirements-train.txt
       - name: Check reconstruction commands and checkpoint integrity guards
         run: python -m unittest -v test.test_v273_source_rebuild
-      - uses: actions/cache@v4
+      - uses: actions/cache/restore@v4
         id: guitarset
         with:
           path: data/GuitarSet
@@ -171,9 +171,21 @@ jobs:
           mkdir -p data/GuitarSet
           curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
           curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
-      - name: Rebuild V8.1 — three real training epochs
-        run: python -B scripts/rebuild_v273_sources.py stage --stage v81 --dataset-dir data/GuitarSet --output-dir model/v273-rebuild
-      - name: Rebuild the original train-only false-positive audit
+      - name: Verify official GuitarSet before saving its cache
+        run: python -c "from scripts.rebuild_v273_sources import verify_dataset; verify_dataset('data/GuitarSet')"
+      - uses: actions/cache/save@v4
+        if: steps.guitarset.outputs.cache-hit != 'true'
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+      - name: Reuse verified V8.1 epoch-03 checkpoint
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -B scripts/restore_v273_rebuild_checkpoint.py \
+            --config analysis/v273-rebuild-historical-config.json \
+            --output-dir model/v273-rebuild
+      - name: Rebuild the train-only audit with at least 30 source tracks
         run: python -B scripts/rebuild_v273_sources.py stage --stage audit --dataset-dir data/GuitarSet --output-dir model/v273-rebuild
       - name: Rebuild selected V8.4 epoch-01 control
         run: python -B scripts/rebuild_v273_sources.py stage --stage v84 --dataset-dir data/GuitarSet --output-dir model/v273-rebuild

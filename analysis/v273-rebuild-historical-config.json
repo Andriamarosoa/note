@@ -90,7 +90,23 @@
     "v88": {
       "maximum_epochs": 20,
       "train_members": 30
+    },
+    "audit": {
+      "original_min_tracks": 24,
+      "min_tracks": 30,
+      "target_fp": 4000,
+      "max_tracks": 64,
+      "reason": "The new V8.1 reached the FP target at 24 tracks; V8.6/V8.7/V8.8 require 30 train tracks."
     }
   },
-  "status": "reconstruction_prepared_no_claim_of_historical_weight_identity"
+  "status": "resuming_completed_v81_after_audit_track_floor_fix",
+  "rebuilt_v81_backup": {
+    "repository": "Andriamarosoa/note",
+    "tag": "v273-source-recovery-35084258528",
+    "asset_name": "v273-rebuilt-proposal-sources.zip",
+    "sha256": "e4a602295b0456a94e78b8ebee1cb2255e74f3f1847766c504a8f286fe942b24",
+    "run_id": 35084258528,
+    "producer_commit": "4a7985df684187c668b36be83dbf7ca6d52938ab",
+    "checkpoint_sha256": "16db642e76add6ea5e8ec02ff7b30c2491e22020378e6d372d002478dc92978b"
+  }
 }
