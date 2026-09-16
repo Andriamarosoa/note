@@ -1,0 +1,357 @@
+{
+  "aggregate": {
+    "poly_rows": 5481,
+    "probabilities_x_calibration": {
+      "control/control": 2210,
+      "control/decay": 2197,
+      "decay/control": 2196,
+      "decay/decay": 2170
+    },
+    "raw_v272_poly_correct": {
+      "control": 2893,
+      "decay": 2868
+    },
+    "rows": 44768,
+    "stages": {
+      "control/final_v273": 2210,
+      "control/low_k_fusion": 2081,
+      "control/poly_rescue": 2189,
+      "decay/final_v273": 2170,
+      "decay/low_k_fusion": 2078,
+      "decay/poly_rescue": 2188
+    },
+    "transition_effects": {
+      "control/2_to_3/activated_all_rows": 70,
+      "control/2_to_3/corrected_poly": 26,
+      "control/2_to_3/net_poly": 8,
+      "control/2_to_3/regressed_poly": 18,
+      "control/3_to_2/activated_all_rows": 82,
+      "control/3_to_2/corrected_poly": 28,
+      "control/3_to_2/net_poly": 1,
+      "control/3_to_2/regressed_poly": 27,
+      "control/3_to_4/activated_all_rows": 137,
+      "control/3_to_4/corrected_poly": 50,
+      "control/3_to_4/net_poly": 7,
+      "control/3_to_4/regressed_poly": 43,
+      "control/4_to_3/activated_all_rows": 19,
+      "control/4_to_3/corrected_poly": 9,
+      "control/4_to_3/net_poly": 5,
+      "control/4_to_3/regressed_poly": 4,
+      "decay/2_to_3/activated_all_rows": 90,
+      "decay/2_to_3/corrected_poly": 28,
+      "decay/2_to_3/net_poly": -8,
+      "decay/2_to_3/regressed_poly": 36,
+      "decay/3_to_2/activated_all_rows": 90,
+      "decay/3_to_2/corrected_poly": 26,
+      "decay/3_to_2/net_poly": -4,
+      "decay/3_to_2/regressed_poly": 30,
+      "decay/3_to_4/activated_all_rows": 188,
+      "decay/3_to_4/corrected_poly": 64,
+      "decay/3_to_4/net_poly": -7,
+      "decay/3_to_4/regressed_poly": 71,
+      "decay/4_to_3/activated_all_rows": 6,
+      "decay/4_to_3/corrected_poly": 2,
+      "decay/4_to_3/net_poly": 1,
+      "decay/4_to_3/regressed_poly": 1
+    }
+  },
+  "automatic_promotion": false,
+  "counts_are_polyphonic_correct_rows": true,
+  "created_at_utc": "2026-09-16T21:01:17.054229+00:00",
+  "crossed_key_order": "network probabilities / frozen calibration",
+  "folds": [
+    2,
+    3,
+    4
+  ],
+  "per_fold": [
+    {
+      "archive_sha256": "1765a218ce0bf5627e90b5c8e1fd57535462ce5e07ca8d404d1c860d7ce4e34b",
+      "fold": 2,
+      "inner_calibration_counts": {
+        "control": {
+          "after_transitions": 766,
+          "before_transitions": 745,
+          "poly_rows": 2111
+        },
+        "decay": {
+          "after_transitions": 786,
+          "before_transitions": 766,
+          "poly_rows": 2111
+        }
+      },
+      "poly_rows": 1661,
+      "predictions_sha256": "18225c31da3d7bb329c638dc9e7dd1be70c100314ba5fdeded56a0725344af8d",
+      "probabilities_x_calibration": {
+        "control/control": 606,
+        "control/decay": 601,
+        "decay/control": 613,
+        "decay/decay": 604
+      },
+      "raw_v272_poly_correct": {
+        "control": 863,
+        "decay": 850
+      },
+      "rows": 14665,
+      "stages": {
+        "control": {
+          "final_v273": 606,
+          "low_k_fusion": 569,
+          "poly_rescue": 601
+        },
+        "decay": {
+          "final_v273": 604,
+          "low_k_fusion": 567,
+          "poly_rescue": 611
+        }
+      },
+      "transition_effects": {
+        "control": {
+          "2_to_3": {
+            "activated_all_rows": 35,
+            "corrected_poly": 11,
+            "net_poly": 2,
+            "regressed_poly": 9
+          },
+          "3_to_2": {
+            "activated_all_rows": 1,
+            "corrected_poly": 0,
+            "net_poly": -1,
+            "regressed_poly": 1
+          },
+          "3_to_4": {
+            "activated_all_rows": 4,
+            "corrected_poly": 1,
+            "net_poly": 0,
+            "regressed_poly": 1
+          },
+          "4_to_3": {
+            "activated_all_rows": 18,
+            "corrected_poly": 8,
+            "net_poly": 4,
+            "regressed_poly": 4
+          }
+        },
+        "decay": {
+          "2_to_3": {
+            "activated_all_rows": 28,
+            "corrected_poly": 10,
+            "net_poly": 0,
+            "regressed_poly": 10
+          },
+          "3_to_2": {
+            "activated_all_rows": 4,
+            "corrected_poly": 0,
+            "net_poly": -2,
+            "regressed_poly": 2
+          },
+          "3_to_4": {
+            "activated_all_rows": 20,
+            "corrected_poly": 3,
+            "net_poly": -5,
+            "regressed_poly": 8
+          },
+          "4_to_3": {
+            "activated_all_rows": 5,
+            "corrected_poly": 1,
+            "net_poly": 0,
+            "regressed_poly": 1
+          }
+        }
+      }
+    },
+    {
+      "archive_sha256": "6e05f2d80a106ffcb02134dbe8678c415cc193f2c4a0223a528173eb4e557e58",
+      "fold": 3,
+      "inner_calibration_counts": {
+        "control": {
+          "after_transitions": 858,
+          "before_transitions": 828,
+          "poly_rows": 2111
+        },
+        "decay": {
+          "after_transitions": 867,
+          "before_transitions": 831,
+          "poly_rows": 2111
+        }
+      },
+      "poly_rows": 1969,
+      "predictions_sha256": "5ccfa0c88a10ea467a953958b6564d7b9d71fb327f4648f557ce08460fba1e00",
+      "probabilities_x_calibration": {
+        "control/control": 836,
+        "control/decay": 831,
+        "decay/control": 820,
+        "decay/decay": 810
+      },
+      "raw_v272_poly_correct": {
+        "control": 1036,
+        "decay": 1028
+      },
+      "rows": 15279,
+      "stages": {
+        "control": {
+          "final_v273": 836,
+          "low_k_fusion": 790,
+          "poly_rescue": 829
+        },
+        "decay": {
+          "final_v273": 810,
+          "low_k_fusion": 791,
+          "poly_rescue": 822
+        }
+      },
+      "transition_effects": {
+        "control": {
+          "2_to_3": {
+            "activated_all_rows": 32,
+            "corrected_poly": 13,
+            "net_poly": 4,
+            "regressed_poly": 9
+          },
+          "3_to_2": {
+            "activated_all_rows": 26,
+            "corrected_poly": 7,
+            "net_poly": -4,
+            "regressed_poly": 11
+          },
+          "3_to_4": {
+            "activated_all_rows": 133,
+            "corrected_poly": 49,
+            "net_poly": 7,
+            "regressed_poly": 42
+          },
+          "4_to_3": {
+            "activated_all_rows": 0,
+            "corrected_poly": 0,
+            "net_poly": 0,
+            "regressed_poly": 0
+          }
+        },
+        "decay": {
+          "2_to_3": {
+            "activated_all_rows": 59,
+            "corrected_poly": 18,
+            "net_poly": -6,
+            "regressed_poly": 24
+          },
+          "3_to_2": {
+            "activated_all_rows": 53,
+            "corrected_poly": 13,
+            "net_poly": -5,
+            "regressed_poly": 18
+          },
+          "3_to_4": {
+            "activated_all_rows": 151,
+            "corrected_poly": 54,
+            "net_poly": -1,
+            "regressed_poly": 55
+          },
+          "4_to_3": {
+            "activated_all_rows": 0,
+            "corrected_poly": 0,
+            "net_poly": 0,
+            "regressed_poly": 0
+          }
+        }
+      }
+    },
+    {
+      "archive_sha256": "3e984f79eb0e0b1a96150a14c8deaa9c30b7108bf8653b0f6c6d9bcb865e8ae3",
+      "fold": 4,
+      "inner_calibration_counts": {
+        "control": {
+          "after_transitions": 793,
+          "before_transitions": 769,
+          "poly_rows": 2111
+        },
+        "decay": {
+          "after_transitions": 797,
+          "before_transitions": 773,
+          "poly_rows": 2111
+        }
+      },
+      "poly_rows": 1851,
+      "predictions_sha256": "0acc614b698988e668a2095a427df8c6c849a3b0954bd4edc26a38abb55c58c2",
+      "probabilities_x_calibration": {
+        "control/control": 768,
+        "control/decay": 765,
+        "decay/control": 763,
+        "decay/decay": 756
+      },
+      "raw_v272_poly_correct": {
+        "control": 994,
+        "decay": 990
+      },
+      "rows": 14824,
+      "stages": {
+        "control": {
+          "final_v273": 768,
+          "low_k_fusion": 722,
+          "poly_rescue": 759
+        },
+        "decay": {
+          "final_v273": 756,
+          "low_k_fusion": 720,
+          "poly_rescue": 755
+        }
+      },
+      "transition_effects": {
+        "control": {
+          "2_to_3": {
+            "activated_all_rows": 3,
+            "corrected_poly": 2,
+            "net_poly": 2,
+            "regressed_poly": 0
+          },
+          "3_to_2": {
+            "activated_all_rows": 55,
+            "corrected_poly": 21,
+            "net_poly": 6,
+            "regressed_poly": 15
+          },
+          "3_to_4": {
+            "activated_all_rows": 0,
+            "corrected_poly": 0,
+            "net_poly": 0,
+            "regressed_poly": 0
+          },
+          "4_to_3": {
+            "activated_all_rows": 1,
+            "corrected_poly": 1,
+            "net_poly": 1,
+            "regressed_poly": 0
+          }
+        },
+        "decay": {
+          "2_to_3": {
+            "activated_all_rows": 3,
+            "corrected_poly": 0,
+            "net_poly": -2,
+            "regressed_poly": 2
+          },
+          "3_to_2": {
+            "activated_all_rows": 33,
+            "corrected_poly": 13,
+            "net_poly": 3,
+            "regressed_poly": 10
+          },
+          "3_to_4": {
+            "activated_all_rows": 17,
+            "corrected_poly": 7,
+            "net_poly": -1,
+            "regressed_poly": 8
+          },
+          "4_to_3": {
+            "activated_all_rows": 1,
+            "corrected_poly": 1,
+            "net_poly": 1,
+            "regressed_poly": 0
+          }
+        }
+      }
+    }
+  ],
+  "post_hoc_diagnostic_only": true,
+  "producer_commit": "a192bb3137304b5206fdd45a837995c95f80fcbb",
+  "run_id": 35099819151
+}
