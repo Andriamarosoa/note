@@ -96,6 +96,51 @@ ni que les résonances sont responsables, ni que tous les indices temporels
 sont inutiles. Les limites de sources reconstruites, de validation de la
 chaîne complète et de graines restent celles de l'audit initial.
 
+### Complément : un indice positif n'implique pas une nouvelle note
+
+Un contrôle acoustique ultérieur a utilisé le véritable prétraitement V100,
+sa quantification float16 et `native_decay_features`, avec des sinusoïdes
+continues à fréquences et amplitudes constantes, et phases initiales fixées. Les
+fenêtres sont des extraits de ces sons tenus, sans démarrage de note.
+
+| Signal continu, aucune nouvelle attaque | Maximum de l'indice |
+|---|---:|
+| Une sinusoïde à 220 Hz | environ 0,000001 |
+| Deux sinusoïdes à 220 et 233,08188 Hz | 2,8814 |
+| Deux sinusoïdes à 110 et 116,54094 Hz | 2,4499 |
+| Une fondamentale à 110 Hz et ses sept harmoniques | 0,9930 |
+
+Pour les signaux complexes, 64 configurations de phases initiales
+ont été examinées. Ces valeurs sont celles de l'indice, **pas des nombres de
+notes prédites**. Les amplitudes 0,1 et 0,5 du rapport machine sont des repères
+descriptifs et ne sont pas les seuils de décision du réseau.
+
+Le mécanisme est concret : les composantes présentes dans une même bande
+spectrale interfèrent. Sa puissance peut décroître puis remonter alors que
+les sons restent continus. Une pente estimée sur les neuf premières fenêtres
+peut passer le filtre de fiabilité, puis sous-estimer la puissance suivante.
+L'excès positif constitue alors un indice de nouveauté sans nouvelle attaque.
+Les caractéristiques fournissent donc au réseau un signal acoustiquement
+ambigu pour le comptage des nouveaux événements.
+
+Le [résultat reproductible](v273-native-decay-specificity.json) démontre cette
+absence de spécificité de l'indice. Il ne démontre pas encore que les
+interférences expliquent chaque erreur de GuitarSet ; le réseau complet n'a
+pas été appliqué à ces sons synthétiques.
+
+Un cas réel illustre séparément la décision erronée : fold 3, ligne globale
+50105, vrai K=2 et compte avant correction égal à 2 dans les deux bras.
+Sans indice, P(2)=0,4574 et P(3)=0,4889 : marge 0,0315, inférieure au seuil
+0,1633 ; le compte reste 2. Avec indice, P(2)=0,3831 et P(3)=0,5375 : marge
+0,1544, supérieure au seuil 0,1069 ; le compte devient 3 à tort. Cela prouve
+le mécanisme de décision sur cette ligne, sans identifier à lui seul sa
+cause acoustique.
+
+```sh
+PYTHONPATH=.:src python -B scripts/probe_v273_decay_specificity.py \
+  --output /chemin/specificite.json
+```
+
 Les variantes croisées sont des **diagnostics après observation des résultats**.
 Elles ne sont ni sélectionnées pour déploiement ni présentées comme une
 nouvelle validation indépendante. Les seuils du run restent inchangés,

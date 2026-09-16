@@ -1,0 +1,94 @@
+{
+  "cases": [
+    {
+      "amplitudes": [
+        0.2
+      ],
+      "example_phase_index": 0,
+      "example_relative_phase_radians": 0.0,
+      "frequencies_hz": [
+        220
+      ],
+      "max_feature": 1.1138045010739006e-06,
+      "max_feature_above_0_1": 0,
+      "max_feature_above_0_5": 0,
+      "new_onsets_in_each_crop": 0,
+      "phase_settings": 1,
+      "reliable_bands_in_example": 1,
+      "signal": "single_220"
+    },
+    {
+      "amplitudes": [
+        0.2,
+        0.1
+      ],
+      "example_phase_index": 18,
+      "example_relative_phase_radians": 1.7671458676442586,
+      "frequencies_hz": [
+        220,
+        233.08188
+      ],
+      "max_feature": 2.8813841342926025,
+      "max_feature_above_0_1": 26,
+      "max_feature_above_0_5": 24,
+      "new_onsets_in_each_crop": 0,
+      "phase_settings": 64,
+      "reliable_bands_in_example": 27,
+      "signal": "steady_220_233"
+    },
+    {
+      "amplitudes": [
+        0.2,
+        0.1
+      ],
+      "example_phase_index": 25,
+      "example_relative_phase_radians": 2.454369260617026,
+      "frequencies_hz": [
+        110,
+        116.54094
+      ],
+      "max_feature": 2.4498705863952637,
+      "max_feature_above_0_1": 37,
+      "max_feature_above_0_5": 15,
+      "new_onsets_in_each_crop": 0,
+      "phase_settings": 64,
+      "reliable_bands_in_example": 22,
+      "signal": "steady_110_116"
+    },
+    {
+      "amplitudes": [
+        0.2,
+        0.1,
+        0.06666666666666667,
+        0.05,
+        0.04,
+        0.03333333333333333,
+        0.028571428571428574,
+        0.025
+      ],
+      "example_phase_index": 19,
+      "example_relative_phase_radians": 1.8653206380689396,
+      "frequencies_hz": [
+        110,
+        220,
+        330,
+        440,
+        550,
+        660,
+        770,
+        880
+      ],
+      "max_feature": 0.9930175542831421,
+      "max_feature_above_0_1": 11,
+      "max_feature_above_0_5": 11,
+      "new_onsets_in_each_crop": 0,
+      "phase_settings": 64,
+      "reliable_bands_in_example": 4,
+      "signal": "single_110_harmonics"
+    }
+  ],
+  "count_network_inference_performed": false,
+  "cutoffs_are_descriptive_not_model_decision_thresholds": true,
+  "method": "actual V100 preprocessing then float16 then native_decay_features",
+  "no_new_attack_by_construction": true
+}
