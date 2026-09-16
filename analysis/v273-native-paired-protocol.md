@@ -22,8 +22,11 @@ commit `a192bb3137304b5206fdd45a837995c95f80fcbb`. Le preflight a réussi :
 et compositions historiques confirmées sur les données reconstruites.
 L'audit acoustique trouve 35 301 clusters avec au moins une bande de
 décroissance fiable et 34 627 avec un indice non nul. Ces nombres décrivent
-la disponibilité de l'indice, pas un gain de précision. Les poids et scores
-de la comparaison restent attendus. Les sauvegardes de cette exécution sont
+la disponibilité de l'indice, pas un gain de précision. Les folds 3 et 4 ont
+depuis terminé : leur [audit du 16 septembre](v273-native-paired-audit.md)
+reproduit les décisions et constate −38 bonnes réponses polyphoniques avec
+l'indice sur 3 820 exemples. Le résultat des cinq folds reste attendu.
+Les sauvegardes de cette exécution sont
 dans la [préversion dédiée](https://github.com/Andriamarosoa/note/releases/tag/v273-native-decay-35099819151).
 
 ## Question expérimentale

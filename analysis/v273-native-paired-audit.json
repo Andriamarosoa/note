@@ -1,0 +1,282 @@
+{
+  "audit_passed": true,
+  "audit_scope": {
+    "actual_minibatch_access_trace_recorded": false,
+    "count_scores_independently_recomputed": true,
+    "event_f1_recomputed_from_audio": false,
+    "frozen_thresholds_reselected_from_inner_labels": true,
+    "outer_decisions_replayed_without_labels": true,
+    "tensorflow_inference_rerun": false,
+    "weight_files_checksum_verified": true
+  },
+  "audited_at_utc": "2026-09-16T19:35:48.189375+00:00",
+  "audited_compositions": 10,
+  "automatic_promotion": false,
+  "available_fold_aggregate": {
+    "control": {
+      "correct": 24799,
+      "exact": 0.8238049363850779,
+      "poly_correct": 1604,
+      "poly_exact": 0.4198952879581152,
+      "poly_rows": 3820,
+      "rows": 30103
+    },
+    "decay": {
+      "correct": 24805,
+      "exact": 0.8240042520679002,
+      "poly_correct": 1566,
+      "poly_exact": 0.4099476439790576,
+      "poly_rows": 3820,
+      "rows": 30103
+    }
+  },
+  "complete_five_fold_result": false,
+  "completed_folds_audited": [
+    3,
+    4
+  ],
+  "config_sha256": "7c27989eb3fe330fdff203e388e76ae4c64d8b8e4838cab4d7c4622b4104451a",
+  "historical_mapping_and_budgets": {
+    "archives_verified": 5,
+    "compositions": 24,
+    "tracks": 240
+  },
+  "paired_poly_delta_pp": -0.9947643979057619,
+  "per_fold": [
+    {
+      "by_k_net_correct": {
+        "0": -7,
+        "1": 22,
+        "2": -14,
+        "3": -17,
+        "4": 5,
+        "5": 0,
+        "6": 0
+      },
+      "cardinality": {
+        "control": {
+          "correct": 12705,
+          "exact": 0.8315334773218143,
+          "poly_correct": 836,
+          "poly_exact": 0.4245810055865922,
+          "poly_rows": 1969,
+          "rows": 15279
+        },
+        "decay": {
+          "correct": 12694,
+          "exact": 0.8308135349172067,
+          "poly_correct": 810,
+          "poly_exact": 0.41137633316404265,
+          "poly_rows": 1969,
+          "rows": 15279
+        }
+      },
+      "fold": 3,
+      "poly_corrected": 39,
+      "poly_regressed": 65,
+      "predictions_sha256": "5ccfa0c88a10ea467a953958b6564d7b9d71fb327f4648f557ce08460fba1e00",
+      "replayed_stages": {
+        "control": {
+          "final_v273": {
+            "correct": 12705,
+            "exact": 0.8315334773218143,
+            "poly_correct": 836,
+            "poly_exact": 0.4245810055865922,
+            "poly_rows": 1969,
+            "rows": 15279
+          },
+          "low_k_fusion": {
+            "correct": 12747,
+            "exact": 0.8342823483212252,
+            "poly_correct": 790,
+            "poly_exact": 0.4012188928390046,
+            "poly_rows": 1969,
+            "rows": 15279
+          },
+          "poly_rescue": {
+            "correct": 12698,
+            "exact": 0.8310753321552458,
+            "poly_correct": 829,
+            "poly_exact": 0.42102590147282887,
+            "poly_rows": 1969,
+            "rows": 15279
+          }
+        },
+        "decay": {
+          "final_v273": {
+            "correct": 12694,
+            "exact": 0.8308135349172067,
+            "poly_correct": 810,
+            "poly_exact": 0.41137633316404265,
+            "poly_rows": 1969,
+            "rows": 15279
+          },
+          "low_k_fusion": {
+            "correct": 12743,
+            "exact": 0.8340205510831861,
+            "poly_correct": 791,
+            "poly_exact": 0.4017267648552565,
+            "poly_rows": 1969,
+            "rows": 15279
+          },
+          "poly_rescue": {
+            "correct": 12706,
+            "exact": 0.8315989266313241,
+            "poly_correct": 822,
+            "poly_exact": 0.4174707973590655,
+            "poly_rows": 1969,
+            "rows": 15279
+          }
+        }
+      },
+      "report_sha256": "f1b26a1a11f90e84d67c8f0789b5c3d270d4775c229f45918f4228c3a7b7dec2",
+      "verified_count_models": 12,
+      "verified_files": 45
+    },
+    {
+      "by_k_net_correct": {
+        "0": 29,
+        "1": 0,
+        "2": -14,
+        "3": -5,
+        "4": 7,
+        "5": 0,
+        "6": 0
+      },
+      "cardinality": {
+        "control": {
+          "correct": 12094,
+          "exact": 0.8158391797085807,
+          "poly_correct": 768,
+          "poly_exact": 0.41491085899513774,
+          "poly_rows": 1851,
+          "rows": 14824
+        },
+        "decay": {
+          "correct": 12111,
+          "exact": 0.8169859686994063,
+          "poly_correct": 756,
+          "poly_exact": 0.40842787682333875,
+          "poly_rows": 1851,
+          "rows": 14824
+        }
+      },
+      "fold": 4,
+      "poly_corrected": 22,
+      "poly_regressed": 34,
+      "predictions_sha256": "0acc614b698988e668a2095a427df8c6c849a3b0954bd4edc26a38abb55c58c2",
+      "replayed_stages": {
+        "control": {
+          "final_v273": {
+            "correct": 12094,
+            "exact": 0.8158391797085807,
+            "poly_correct": 768,
+            "poly_exact": 0.41491085899513774,
+            "poly_rows": 1851,
+            "rows": 14824
+          },
+          "low_k_fusion": {
+            "correct": 12157,
+            "exact": 0.8200890447922288,
+            "poly_correct": 722,
+            "poly_exact": 0.39005942733657484,
+            "poly_rows": 1851,
+            "rows": 14824
+          },
+          "poly_rescue": {
+            "correct": 12085,
+            "exact": 0.8152320561252023,
+            "poly_correct": 759,
+            "poly_exact": 0.4100486223662885,
+            "poly_rows": 1851,
+            "rows": 14824
+          }
+        },
+        "decay": {
+          "final_v273": {
+            "correct": 12111,
+            "exact": 0.8169859686994063,
+            "poly_correct": 756,
+            "poly_exact": 0.40842787682333875,
+            "poly_rows": 1851,
+            "rows": 14824
+          },
+          "low_k_fusion": {
+            "correct": 12190,
+            "exact": 0.8223151645979493,
+            "poly_correct": 720,
+            "poly_exact": 0.3889789303079417,
+            "poly_rows": 1851,
+            "rows": 14824
+          },
+          "poly_rescue": {
+            "correct": 12110,
+            "exact": 0.8169185105234754,
+            "poly_correct": 755,
+            "poly_exact": 0.40788762830902214,
+            "poly_rows": 1851,
+            "rows": 14824
+          }
+        }
+      },
+      "report_sha256": "571659066a759643a1b205459ee09c8e650b494f8cdf3850ba55215273006923",
+      "verified_count_models": 12,
+      "verified_files": 45
+    }
+  ],
+  "poly_corrected": 61,
+  "poly_regressed": 99,
+  "shared_truth_poly_rows_verified": 9354,
+  "shared_truth_rows_verified": 74588,
+  "sources": {
+    "artifacts": [
+      {
+        "artifact_id": 10460956578,
+        "name": "v273-native-paired-fold-3",
+        "path": "fold-3.zip",
+        "sha256": "6e05f2d80a106ffcb02134dbe8678c415cc193f2c4a0223a528173eb4e557e58",
+        "size": 41007775
+      },
+      {
+        "artifact_id": 10464930124,
+        "name": "v273-native-paired-fold-4",
+        "path": "fold-4.zip",
+        "sha256": "3e984f79eb0e0b1a96150a14c8deaa9c30b7108bf8653b0f6c6d9bcb865e8ae3",
+        "size": 40965383
+      },
+      {
+        "artifact_id": 10450815802,
+        "name": "v273-native-expert-3-0",
+        "path": "experts/v273-native-expert-3-0.zip",
+        "sha256": "65507d7cd15fdc3bf1fdfb6058f9bf63ef2e02589f2bb8d01f2fd76f78969498",
+        "size": 26858566
+      },
+      {
+        "artifact_id": 10450754089,
+        "name": "v273-native-expert-3-1",
+        "path": "experts/v273-native-expert-3-1.zip",
+        "sha256": "7a63ab9fb90c77d7c234ff03b46e724feff7af72ac4e81b3e8003ad91287a8a7",
+        "size": 26133584
+      },
+      {
+        "artifact_id": 10450789948,
+        "name": "v273-native-expert-3-2",
+        "path": "experts/v273-native-expert-3-2.zip",
+        "sha256": "d08ef8c7aaeaa890f050f699c614b9e7c84fdba11c05a6c8149ffdcb64643313",
+        "size": 26160178
+      },
+      {
+        "artifact_id": 10452765061,
+        "name": "v273-native-expert-3-4",
+        "path": "experts/v273-native-expert-3-4.zip",
+        "sha256": "789a85a5faf78ceaf2a1ea8317150f55dd40177aa33dbeebd7900d78880cb919",
+        "size": 26487942
+      }
+    ],
+    "producer_commit": "a192bb3137304b5206fdd45a837995c95f80fcbb",
+    "repository": "Andriamarosoa/note",
+    "run_id": 35099819151
+  },
+  "verified_count_models": 24,
+  "verified_files": 110
+}
