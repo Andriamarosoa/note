@@ -17,6 +17,21 @@ vérifications et constate l'état des archives. Une étape d'optimisation sur
 des tenseurs synthétiques vérifie la branche ; ce n'est pas un entraînement
 sur GuitarSet.
 
+Vérification exécutée dans le
+[run 35081573223](https://github.com/Andriamarosoa/note/actions/runs/35081573223),
+sur le commit `21d2304ad82241c48ae54cea04d8b6bb61e683ef` :
+
+- **29 tests réussis, aucun ignoré**, sous TensorFlow 2.15.1, dont la parité
+  et le gradient des trois réseaux natifs.
+- L'étape des sources s'arrête sur les archives originales expirées.
+  L'échec global du workflow signale ce blocage, pas un score d'entraînement
+  ni un échec des tests d'intégration.
+- Rapport d'état conservé dans l'artefact
+  `v273-native-decay-source-availability`, ID `10440417659` ; SHA-256 du ZIP :
+  `25e9ef12defce87421462ab2931f0a62a70690ad2556c80bf17d8652671e57fa`.
+
+**Aucun score GuitarSet supplémentaire n'a été produit.**
+
 ## Intégration préparée
 
 V27.3 assemble plusieurs composants. L'extension de
