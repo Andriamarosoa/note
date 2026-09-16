@@ -1,0 +1,66 @@
+name: Verify exported V27.3 count runtime - fold 3 only
+
+on:
+  push:
+    branches: [v280-harmonic-pitch-count-research]
+    paths: ['analysis/v273-frozen-ln-runtime-launch.json']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  TF_DETERMINISTIC_OPS: '1'
+  OMP_NUM_THREADS: '2'
+  OPENBLAS_NUM_THREADS: '2'
+  TF_NUM_INTRAOP_THREADS: '2'
+  TF_NUM_INTEROP_THREADS: '2'
+
+jobs:
+  runtime:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - run: python -m pip install -r requirements-train.txt numpy==1.26.4
+      - name: Restore verified inputs and the exported selected model
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -B scripts/prepare_v273_native_experiment.py \
+            --config analysis/v273-native-paired-config.json --output-dir model/native-cache
+          gh release download v273-frozen-ln-35159220367 --repo "$GITHUB_REPOSITORY" \
+            --pattern v273-frozen-ln-fold3.zip --dir model/download
+          python - <<'PY'
+          from scripts.restore_v273_original_backup import extract_verified
+          extract_verified('model/download/v273-frozen-ln-fold3.zip', 'model/selected',
+                           'ae39ffac9b99450d9517233c3bb5b7845abb27e5d4b5222e80f17d760e232c37')
+          PY
+      - name: Recompute every fold 3 decision through the exported runtime
+        run: |
+          python -B scripts/predict_v273_frozen_ln.py --bundle-dir model/selected \
+            --cache-dir model/native-cache --output-dir model/runtime-check
+      - name: Preserve runtime verification with the selected bundle
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -B scripts/archive_v273_native_stage.py --root model/runtime-check \
+            --name v273-frozen-ln-runtime-${{ github.run_id }} --tag v273-frozen-ln-35159220367
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-frozen-ln-runtime
+          path: model/runtime-check
+          compression-level: 1
+          retention-days: 90
+          if-no-files-found: warn
