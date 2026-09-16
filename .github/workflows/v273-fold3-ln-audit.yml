@@ -1,0 +1,82 @@
+name: V27.3 fixed-weight ln audit - outer fold 3 only
+
+on:
+  push:
+    branches: [v280-harmonic-pitch-count-research]
+    paths: ['analysis/v273-fold3-ln-audit-launch.json']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v273-fold3-ln-audit
+  cancel-in-progress: false
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  TF_DETERMINISTIC_OPS: '1'
+  OMP_NUM_THREADS: '2'
+  OPENBLAS_NUM_THREADS: '2'
+  TF_NUM_INTRAOP_THREADS: '2'
+  TF_NUM_INTEROP_THREADS: '2'
+  AUDIT_TAG: v273-fold3-ln-audit-${{ github.run_id }}
+
+jobs:
+  audit:
+    name: Replay and ablate saved fold 3 models only
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - run: python -m pip install -r requirements-train.txt numpy==1.26.4
+      - name: Verify single-fold selection and intervention accounting
+        run: python -m unittest -v test.test_v273_fold3_ablation
+      - name: Restore immutable common acoustic inputs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -B scripts/prepare_v273_native_experiment.py \
+            --config analysis/v273-native-paired-config.json --output-dir model/native-cache
+      - name: Restore saved weights and probabilities for fold 3 only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download v273-native-decay-35099819151 --repo "$GITHUB_REPOSITORY" \
+            --pattern v273-native-paired-fold-3.zip --dir model/download
+          python - <<'PY'
+          from scripts.restore_v273_original_backup import extract_verified
+          extract_verified('model/download/v273-native-paired-fold-3.zip', 'model/fold-3',
+                           '67f59e33943e95b5e4ad54dfdec1dc597b4c56d8caaebbdd8b5eff22a743995d')
+          PY
+      - name: Reproduce saved inference and remove ln at fixed weights and thresholds
+        run: |
+          python -B scripts/audit_v273_fold3_ablation.py --fold 3 \
+            --cache-dir model/native-cache --fold-dir model/fold-3 --output-dir model/audit
+          cat model/audit/audit.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve the completed single-fold diagnostic
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$AUDIT_TAG" --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" --prerelease --title "V27.3 ln audit - fold 3 only" \
+            --notes-file model/audit/audit.md
+          python -B scripts/archive_v273_native_stage.py --root model/audit \
+            --name v273-fold3-ln-audit --tag "$AUDIT_TAG"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-fold3-ln-audit
+          path: model/audit
+          compression-level: 1
+          retention-days: 90
+          if-no-files-found: warn
