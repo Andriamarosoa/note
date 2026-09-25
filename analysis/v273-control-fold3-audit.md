@@ -1,5 +1,7 @@
 # Audit des erreurs du contrôle V27.3 — fold 3
 
+Suite vérifiée : [correction native des positions et audit des limites restantes](v273-exact-timing-results.md).
+
 **L'audit a identifié un défaut concret de reconstruction temporelle dans les
 données, des décisions correctes bloquées par le routage, et des erreurs propres
 aux propositions des réseaux. Aucun de ces constats ne suffit à expliquer seul
