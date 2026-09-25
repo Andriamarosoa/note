@@ -48,3 +48,17 @@ regression test ensures that one track cannot overwrite another track’s rows.
 6. Publish the report and exact caches with hashes. A passed preparation audit
    establishes input/target consistency, not an improvement in Exact K. A new
    controlled training comparison remains necessary to measure that effect.
+
+## Follow-up for issues found by regeneration
+
+Run 36122007201 passed the five data-preparation audit jobs. Re-mining also
+changed some floating proposal features, so equality of all historical cache
+bytes is explicitly false. A separate audit reads the preserved caches, verifies
+all 50 tracks, and checks retained time geometry, masks, group sizes and widths,
+top anchors and K labels before mapping original row IDs. It quantifies floating
+changes without calling them harmless or claiming an established numerical cause.
+
+The follow-up independently reassigns the original annotations against complete
+candidate groups and records every assigned onset outside the fixed spectral
+window. This tests a remaining input coverage limitation without changing any
+window size, target rule, trained model or score.

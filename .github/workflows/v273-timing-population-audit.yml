@@ -1,0 +1,66 @@
+name: Audit numeric drift after V27.3 timing correction - fold 3
+
+on:
+  push:
+    branches: [v280-harmonic-pitch-count-research]
+    paths: ['analysis/v273-timing-population-launch.json']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Restore both pinned audit datasets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+          from scripts.restore_v273_original_backup import extract_verified
+          cfg=json.loads(Path('analysis/v273-timing-population-launch.json').read_text())
+          for key in ('corrected', 'previous'):
+              item=cfg[key]
+              download=Path('model/download')/key
+              download.mkdir(parents=True)
+              subprocess.run(['gh','release','download',item['tag'],'--repo','Andriamarosoa/note',
+                              '--pattern',item['asset'],'--dir',str(download)],check=True)
+              extract_verified(download/item['asset'],Path('model')/key,item['sha256'])
+          PY
+      - name: Audit all retained geometry, targets and floating feature differences
+        run: |
+          mkdir -p model/report
+          curl -L --fail --retry 3 -o model/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          python -B scripts/audit_v273_timing_population.py --root model/corrected \
+            --metadata model/previous/inputs/outer-candidate-metadata.npz \
+            --config analysis/v273-native-paired-config.json --output model/report/population-audit.json \
+            --annotation-zip model/annotation.zip
+      - name: Preserve follow-up evidence with the exact timing release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp model/report/population-audit.json model/report/population-audit-${{ github.run_id }}.json
+          gh release upload v273-exact-timing-36122007201 \
+            model/report/population-audit-${{ github.run_id }}.json --repo "$GITHUB_REPOSITORY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-timing-population-report
+          path: model/report/population-audit.json
+          if-no-files-found: warn
+          retention-days: 90
