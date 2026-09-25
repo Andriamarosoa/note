@@ -147,7 +147,8 @@ def _pitch_events(track) -> Tuple[Tuple[int, int, float], ...]:
 def _derive_pitch_targets(cache, dataset_dir: Path):
     indexed = tuple(t for t in index_guitarset(dataset_dir) if t.player_id in ALLOWED_PLAYERS)
     by_member = {t.annotation_member: t for t in indexed}
-    candidate_samples, reconstruction = _reconstruct_candidates(cache)
+    from scripts.train_v92_string_factorized_cardinality import _supervision_candidates
+    candidate_samples, reconstruction = _supervision_candidates(cache)
     pitch = np.zeros((len(cache["target"]), SLOT_COUNT), dtype=np.float32)
     mask = np.zeros_like(pitch)
     by_member_rows: Dict[str, List[int]] = defaultdict(list)
@@ -162,7 +163,6 @@ def _derive_pitch_targets(cache, dataset_dir: Path):
         track = by_member.get(member)
         if track is None:
             raise V101Error(f"cache member missing from GuitarSet index: {member}")
-        by_local = {cid: local for local, cid in enumerate(ids)}
         for slot, onset, midi in _pitch_events(track):
             choices = []
             for cid in ids:
@@ -176,11 +176,11 @@ def _derive_pitch_targets(cache, dataset_dir: Path):
                 unassigned += 1
                 continue
             _, cid = min(choices)
-            local = by_local[cid]
-            if mask[local, slot] > 0.5:
+            # cid indexes the merged cache, not a per-track output array.
+            if mask[cid, slot] > 0.5:
                 collisions += 1
-            pitch[local, slot] = float(midi / PITCH_SCALE)
-            mask[local, slot] = 1.0
+            pitch[cid, slot] = float(midi / PITCH_SCALE)
+            mask[cid, slot] = 1.0
             values.append(float(midi))
             assigned += 1
 

@@ -25,7 +25,8 @@ from scripts import train_v101_string_query_attention as v
 def _derive_pitch_targets_fixed(cache, dataset_dir: Path):
     indexed = tuple(t for t in v.index_guitarset(dataset_dir) if t.player_id in v.ALLOWED_PLAYERS)
     by_member = {t.annotation_member: t for t in indexed}
-    candidate_samples, reconstruction = v._reconstruct_candidates(cache)
+    from scripts.train_v92_string_factorized_cardinality import _supervision_candidates
+    candidate_samples, reconstruction = _supervision_candidates(cache)
     pitch = np.zeros((len(cache["target"]), v.SLOT_COUNT), dtype=np.float32)
     mask = np.zeros_like(pitch)
     by_member_rows: Dict[str, List[int]] = defaultdict(list)

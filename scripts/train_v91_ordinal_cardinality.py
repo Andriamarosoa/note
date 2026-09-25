@@ -74,7 +74,9 @@ DEFAULT_SEED_V91 = 9131
 INTERNAL_HOLDOUT_FRACTION = 0.20
 ORDINAL_STAGES = 6
 DEFAULT_SHARD_COUNT = 8
-CACHE_SCHEMA_VERSION = 1
+CACHE_SCHEMA_VERSION = 2
+
+from scripts.candidate_timing import capture_timing, timing_fields, merge_timing, check_schema
 DECODE_MODES = (
     "conditional_040",
     "conditional_045",
@@ -127,9 +129,11 @@ def _top_samples(clusters, records, fused_scores) -> np.ndarray:
     return result
 
 
-def _save_cache(path: Path, *, sequence, mask, stats, target, exact, truncated, members, top_samples, track_members):
+def _save_cache(path: Path, *, sequence, mask, stats, target, exact, truncated, members, top_samples, track_members, timing):
+    timing = timing_fields({**timing, "sequence": sequence, "mask": mask, "truncated": truncated}, required=True)
     np.savez_compressed(
         path,
+        **timing,
         schema_version=np.asarray([CACHE_SCHEMA_VERSION], dtype=np.int16),
         sequence=np.asarray(sequence, dtype=np.float16),
         mask=np.asarray(mask, dtype=np.uint8),
@@ -190,6 +194,7 @@ def mine(args) -> dict:
         members=members,
         top_samples=top_samples,
         track_members=[t.annotation_member for t in tracks],
+        timing=capture_timing(clusters, records, fused, MAX_CANDIDATES),
     )
     report = {
         "schema_version": 1,
@@ -237,11 +242,12 @@ def _load_caches(cache_dir: Path):
         raise V91Error(f"no V9.1 cache shards under {cache_dir}")
     arrays = defaultdict(list)
     seen_tracks: List[str] = []
+    timing_shards = []
     for path in paths:
         with np.load(path, allow_pickle=False) as data:
             version = int(data["schema_version"][0])
-            if version != CACHE_SCHEMA_VERSION:
-                raise V91Error(f"unsupported cache schema {version} in {path}")
+            check_schema(data, version)
+            timing_shards.append({**timing_fields(data), "mask": np.asarray(data["mask"])})
             for key in ("sequence", "mask", "stats", "target", "exact", "truncated", "members", "top_samples"):
                 arrays[key].append(np.asarray(data[key]))
             seen_tracks.extend(str(x) for x in data["track_members"])
@@ -257,6 +263,7 @@ def _load_caches(cache_dir: Path):
         "track_members": tuple(sorted(seen_tracks)),
         "shard_paths": [str(p) for p in paths],
     }
+    merged.update(merge_timing(timing_shards))
     n = len(merged["target"])
     for key in ("sequence", "mask", "stats", "exact", "truncated", "members", "top_samples"):
         if len(merged[key]) != n:

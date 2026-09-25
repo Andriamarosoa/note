@@ -398,7 +398,7 @@ def _postprocess(args, report, ctx):
         members,
         candidate_samples,
         args.dataset_dir,
-        expected_slot_targets=cache["slot_targets"],
+        assignment_cache=cache, expected_slot_targets=cache["slot_targets"],
     )
     event_present, event_time, event_candidate, event_valid, _, _ = v130._ordered_event_supervision(
         cache, time_mask, string_time_targets, time_sample, ctx["k"]

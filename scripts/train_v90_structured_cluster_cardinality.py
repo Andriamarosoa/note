@@ -116,6 +116,9 @@ def _extended_candidate_features(x88: np.ndarray, out88: dict) -> Tuple[np.ndarr
     return features, fused.reshape(-1)
 
 
+from scripts.candidate_timing import retained_indices
+
+
 def _cluster_arrays(clusters, assigned, records, candidate_features, out88, fused_scores):
     n = len(clusters)
     sequence = np.zeros((n, MAX_CANDIDATES, SET_CANDIDATE_DIM), dtype=np.float32)
@@ -128,12 +131,9 @@ def _cluster_arrays(clusters, assigned, records, candidate_features, out88, fuse
     router = np.asarray(out88["cluster_router"], dtype=np.float32).reshape(-1)
 
     for cid, cluster in enumerate(clusters):
-        indices = list(cluster["indices"])
-        total_candidates = len(indices)
-        if total_candidates > MAX_CANDIDATES:
-            ranked = sorted(indices, key=lambda i: (-float(fused_scores[i]), int(records[i]["sample"]), i))[:MAX_CANDIDATES]
-            indices = sorted(ranked, key=lambda i: (int(records[i]["sample"]), i))
-            truncated[cid] = total_candidates - MAX_CANDIDATES
+        indices = retained_indices(cluster, records, fused_scores, MAX_CANDIDATES)
+        total_candidates = len(cluster["indices"])
+        truncated[cid] = total_candidates - len(indices)
         samples = [int(records[i]["sample"]) for i in cluster["indices"]]
         start = min(samples)
         end = max(samples)

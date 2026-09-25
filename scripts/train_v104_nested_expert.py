@@ -143,7 +143,7 @@ def run(args):
     candidate_samples, reconstruction = v102._reconstruct_candidates(cache)
     pitch_targets, time_mask, time_targets, _, time_diag = v102._derive_supervision(
         [str(x) for x in cache["members"]], candidate_samples, args.dataset_dir,
-        expected_slot_targets=cache["slot_targets"],
+        assignment_cache=cache, expected_slot_targets=cache["slot_targets"],
     )
     pitch_mask = np.asarray(time_mask, dtype=np.float32)
 

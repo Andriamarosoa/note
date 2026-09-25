@@ -6,7 +6,6 @@ import unittest
 import numpy as np
 
 from scripts.audit_v273_fold3_ablation import effect, load_fold_cache, metrics
-from scripts.train_v100_spectral_string_slots import CACHE_SCHEMA_VERSION
 
 
 class Fold3AuditTests(unittest.TestCase):
@@ -17,7 +16,7 @@ class Fold3AuditTests(unittest.TestCase):
                     (['a', 'b', 'a'], [10, 11, 12]), (['b', 'a'], [13, 14])]):
                 arrays = {key: np.array(values) for key in ('spectral', 'sequence', 'mask', 'stats', 'exact')}
                 np.savez(root/f'v100-spectral-shard-{shard:02d}.npz',
-                         schema_version=[CACHE_SCHEMA_VERSION], members=members, **arrays)
+                         schema_version=[1], members=members, **arrays)
             cache, indices, total = load_fold_cache(root, {'a': 3, 'b': 1})
             self.assertEqual(total, 5)
             np.testing.assert_array_equal(indices, [0, 2, 4])

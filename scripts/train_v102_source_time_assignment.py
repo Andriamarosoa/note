@@ -142,8 +142,18 @@ def _derive_supervision(
     dataset_dir: Path,
     *,
     expected_slot_targets: Optional[np.ndarray] = None,
+    assignment_cache=None,
 ):
-    """Assign GuitarSet note events to candidate clusters and build targets."""
+    """Assign events using full groups, keeping retained candidate IDs separate.
+
+    Cache-backed callers must pass assignment_cache; runtime callers already
+    provide the original, untruncated groups directly.
+    """
+    if assignment_cache is not None:
+        from scripts.train_v92_string_factorized_cardinality import _supervision_candidates
+        if not np.array_equal(np.asarray(members).astype(str), np.asarray(assignment_cache["members"]).astype(str)):
+            raise V102Error("supervision/cache member alignment mismatch")
+        candidate_samples, _ = _supervision_candidates(assignment_cache)
     if len(members) != len(candidate_samples):
         raise V102Error("members/candidate_samples length mismatch")
     indexed = tuple(t for t in index_guitarset(dataset_dir) if t.player_id in ALLOWED_PLAYERS)
@@ -157,6 +167,7 @@ def _derive_supervision(
     mask = np.zeros((n, SLOT_COUNT), dtype=np.float32)
     time_targets = np.zeros((n, SLOT_COUNT, TIME_FRAMES), dtype=np.float32)
     time_sample = np.full((n, SLOT_COUNT), np.nan, dtype=np.float32)
+    nearest_distance = np.full((n, SLOT_COUNT), np.inf, dtype=np.float64)
 
     assigned = 0
     unassigned = 0
@@ -199,8 +210,7 @@ def _derive_supervision(
                 collisions += 1
                 # Same-string double births inside 40 ms are not representable by
                 # the six-slot factorization. Keep the closest-to-candidate event.
-                old_dist = abs(float(time_sample[cid, slot]) - float(starts[cid]))
-                if dist >= old_dist:
+                if dist >= nearest_distance[cid, slot]:
                     continue
             relative = float(onset - starts[cid])
             if relative < FRAME_CENTER_SAMPLES[0] or relative > FRAME_CENTER_SAMPLES[-1]:
@@ -209,6 +219,7 @@ def _derive_supervision(
             mask[cid, slot] = 1.0
             time_targets[cid, slot] = _time_distribution(relative)
             time_sample[cid, slot] = float(relative)
+            nearest_distance[cid, slot] = dist
             assigned += 1
             distances.append(int(dist))
             relative_samples.append(relative)
@@ -590,7 +601,7 @@ def train_eval(args):
         [str(x) for x in cache["members"]],
         candidate_samples,
         args.dataset_dir,
-        expected_slot_targets=cache["slot_targets"],
+        assignment_cache=cache, expected_slot_targets=cache["slot_targets"],
     )
     supervision_diag["cluster_reconstruction"] = reconstruction
 

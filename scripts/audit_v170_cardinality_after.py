@@ -90,7 +90,7 @@ def _recoverability(cache, idx, k, dataset_dir):
     members_all = np.asarray([str(x) for x in cache["members"]])
     candidate_samples, reconstruction = v102._reconstruct_candidates(cache)
     _, time_mask, time_targets, time_sample, supervision = v102._derive_supervision(
-        members_all, candidate_samples, dataset_dir, expected_slot_targets=cache["slot_targets"]
+        members_all, candidate_samples, dataset_dir, assignment_cache=cache, expected_slot_targets=cache["slot_targets"]
     )
     _, _, event_candidate, event_valid, true_sample, ordered_diag = v130._ordered_event_supervision(
         cache, time_mask, time_targets, time_sample,

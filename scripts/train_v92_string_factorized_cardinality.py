@@ -114,8 +114,8 @@ def _recover_cluster_start(sequence_row, mask_row, top_samples_row) -> Tuple[int
         raise V92Error("cannot reconstruct cluster without candidates/top sample")
 
     # Any top sample must equal start + one valid relative candidate position.
-    # Float16 relative storage can move reconstruction by a sample, so score all
-    # candidate starts and choose the one explaining the most cached top samples.
+    # Historical compatibility only: several origins can explain every top
+    # sample. Schema 2 bypasses this ambiguous heuristic using stored integers.
     best = None
     relative_unique = np.unique(relative)
     for sample in top:
@@ -137,7 +137,23 @@ def _recover_cluster_start(sequence_row, mask_row, top_samples_row) -> Tuple[int
     return start, int(best[0][0])
 
 
+from scripts.candidate_timing import timing_fields, full_samples
+
+
 def _reconstruct_candidates(cache) -> Tuple[List[np.ndarray], dict]:
+    """Retained model candidates only, in their model-row order."""
+    timing = timing_fields(cache)
+    if timing:
+        samples = [row[np.asarray(mask) > 0] for row, mask in
+                   zip(timing["candidate_samples"], cache["mask"])]
+        errors = [int(np.min(np.abs(values - int(top))))
+                  for values, tops in zip(samples, cache["top_samples"])
+                  for top in tops if top >= 0]
+        return samples, {
+            "timing_source": "stored_exact_retained_candidates",
+            "top_sample_match_fraction": float(np.mean(np.asarray(errors) <= RECONSTRUCT_TOLERANCE_SAMPLES)) if errors else None,
+            "top_sample_count": len(errors), "max_top_sample_error": max(errors, default=0),
+        }
     reconstructed: List[np.ndarray] = []
     full_top_matches = 0
     total_top = 0
@@ -154,10 +170,18 @@ def _reconstruct_candidates(cache) -> Tuple[List[np.ndarray], dict]:
             if dist <= RECONSTRUCT_TOLERANCE_SAMPLES:
                 full_top_matches += 1
     return reconstructed, {
+        "timing_source": "legacy_ambiguous_reconstruction",
         "top_sample_match_fraction": full_top_matches / total_top if total_top else None,
         "top_sample_count": total_top,
         "max_top_sample_error": max_top_error,
     }
+
+
+def _supervision_candidates(cache):
+    retained, diagnostic = _reconstruct_candidates(cache)
+    if timing_fields(cache):
+        return full_samples(cache), {**diagnostic, "assignment_source": "stored_full_pretruncation_candidates"}
+    return retained, {**diagnostic, "assignment_source": "legacy_retained_candidates"}
 
 
 def _slot_targets_for_member_clusters(track, cluster_ids, candidate_samples, *, exact_reference_count=None):
@@ -199,7 +223,7 @@ def _slot_targets_for_member_clusters(track, cluster_ids, candidate_samples, *, 
 def _derive_cache_slot_targets(cache, dataset_dir: Path):
     indexed = tuple(t for t in index_guitarset(dataset_dir) if t.player_id in ALLOWED_PLAYERS)
     by_member = {t.annotation_member: t for t in indexed}
-    candidate_samples, reconstruction = _reconstruct_candidates(cache)
+    candidate_samples, reconstruction = _supervision_candidates(cache)
     targets = np.zeros((len(cache["target"]), SLOT_COUNT), dtype=np.float32)
     diagnostics = defaultdict(int)
     by_member_rows: Dict[str, List[int]] = defaultdict(list)

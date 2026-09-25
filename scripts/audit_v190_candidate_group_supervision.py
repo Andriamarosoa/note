@@ -69,7 +69,7 @@ def main():
     members = np.asarray([str(x) for x in cache["members"]], dtype="U96")
     candidate_samples, reconstruction = v102._reconstruct_candidates(cache)
     pitch_targets, time_mask, string_time_targets, time_sample, supervision = v102._derive_supervision(
-        members, candidate_samples, args.dataset_dir, expected_slot_targets=cache["slot_targets"]
+        members, candidate_samples, args.dataset_dir, assignment_cache=cache, expected_slot_targets=cache["slot_targets"]
     )
     k = np.minimum(np.asarray(cache["exact"], dtype=np.int32), EVENT_QUERIES)
     present, event_time, event_candidate, event_valid, true_sample, event_diag = v130._ordered_event_supervision(

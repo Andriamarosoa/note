@@ -272,7 +272,7 @@ def main():
     _, train_split, _ = _dataset_split(args.dataset_dir)
     candidates, candidate_reconstruction = v102._reconstruct_candidates(cache)
     pitch, time_mask, time_targets, time_sample, supervision = v102._derive_supervision(
-        members, candidates, args.dataset_dir, expected_slot_targets=cache["slot_targets"]
+        members, candidates, args.dataset_dir, assignment_cache=cache, expected_slot_targets=cache["slot_targets"]
     )
     target, center_eligible, center_distinct = v190._birth_center_targets(cache, pitch, time_targets, k_all)
     ep, et, ec, ev, true_sample, ordered_diag = v130._ordered_event_supervision(

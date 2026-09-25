@@ -75,7 +75,9 @@ from scripts.train_v92_string_factorized_cardinality import (
 )
 
 DEFAULT_SEED_V100 = 10031
-CACHE_SCHEMA_VERSION = 1
+CACHE_SCHEMA_VERSION = 2
+
+from scripts.candidate_timing import timing_fields, merge_timing, check_schema
 PRE_SAMPLES = 1308
 POST_SAMPLES = CLUSTER_WINDOW_SAMPLES  # 1764 ~= 40 ms
 SEGMENT_SAMPLES = PRE_SAMPLES + POST_SAMPLES  # 3072
@@ -146,6 +148,7 @@ def _spectral_maps_for_cache(cache, dataset_dir: Path):
     indexed = tuple(t for t in index_guitarset(dataset_dir) if t.player_id in ALLOWED_PLAYERS)
     by_member = {t.annotation_member: t for t in indexed}
     candidate_samples, reconstruction = _reconstruct_candidates(cache)
+    timing = timing_fields(cache)
     maps = np.zeros((len(cache["target"]), TIME_FRAMES, SPECTRAL_BANDS, SPECTRAL_CHANNELS), dtype=np.float16)
     by_member_rows: Dict[str, List[int]] = defaultdict(list)
     for i, member in enumerate(cache["members"]):
@@ -160,7 +163,7 @@ def _spectral_maps_for_cache(cache, dataset_dir: Path):
             candidates = candidate_samples[idx]
             if not len(candidates):
                 raise V100Error("empty reconstructed candidate cluster")
-            cluster_start = int(np.min(candidates))
+            cluster_start = int(timing["cluster_start_samples"][idx]) if timing else int(np.min(candidates))
             segment = _pcm_window(samples, cluster_start - PRE_SAMPLES, SEGMENT_SAMPLES)
             maps[idx] = _spectral_map_from_segment(segment).astype(np.float16)
         print(f"spectral {ordinal}/{len(by_member_rows)}: {member} clusters={len(ids)}")
@@ -186,8 +189,11 @@ def _spectral_maps_for_runtime(tracks, clusters, records):
 
 
 def _save_spectral_cache(path: Path, cache, spectral, slots):
+    timing = timing_fields(cache, required=True)
     np.savez(
         path,
+        **timing,
+        truncated=np.diff(timing["full_candidate_offsets"]) - np.sum(cache["mask"], axis=1).astype(np.int64),
         schema_version=np.asarray([CACHE_SCHEMA_VERSION], dtype=np.int16),
         spectral=np.asarray(spectral, dtype=np.float16),
         sequence=np.asarray(cache["sequence"], dtype=np.float16),
@@ -207,6 +213,7 @@ def mine(args):
         raise FileExistsError(f"refusing to overwrite {args.output_dir}")
     args.output_dir.mkdir(parents=True)
     cache = _load_caches(args.cache_dir)
+    timing_fields(cache, required=True)
     slots, _, slot_diag = _derive_cache_slot_targets(cache, args.dataset_dir)
     if slot_diag["top_sample_match_fraction"] < 0.999:
         raise V100Error(f"weak cluster reconstruction {slot_diag}")
@@ -251,14 +258,20 @@ def _load_spectral_caches(cache_dir: Path):
         raise V100Error(f"no spectral caches under {cache_dir}")
     arrays = defaultdict(list)
     track_members = []
+    timing_shards = []
     for path in paths:
         with np.load(path, allow_pickle=False) as data:
-            if int(data["schema_version"][0]) != CACHE_SCHEMA_VERSION:
-                raise V100Error(f"bad cache schema in {path}")
+            version = int(data["schema_version"][0])
+            check_schema(data, version)
+            timing_shards.append({**timing_fields(data), "mask": np.asarray(data["mask"])})
+            if version == 2:
+                arrays["truncated"].append(np.asarray(data["truncated"]))
             for key in ("spectral", "sequence", "mask", "stats", "target", "exact", "members", "top_samples", "slot_targets"):
                 arrays[key].append(np.asarray(data[key]))
             track_members.extend(str(x) for x in data["track_members"])
+    timing = merge_timing(timing_shards)
     merged = {key: np.concatenate(values, axis=0) for key, values in arrays.items()}
+    merged.update(timing)
     merged["members"] = merged["members"].astype(str)
     merged["target"] = merged["target"].astype(np.int32)
     merged["exact"] = merged["exact"].astype(np.int32)

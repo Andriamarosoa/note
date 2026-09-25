@@ -163,7 +163,7 @@ def run_fold(args):
         [str(x) for x in cache["members"]],
         candidate_samples,
         args.dataset_dir,
-        expected_slot_targets=cache["slot_targets"],
+        assignment_cache=cache, expected_slot_targets=cache["slot_targets"],
     )
     time_diag["cluster_reconstruction"] = reconstruction
     pitch_mask = np.asarray(time_mask, dtype=np.float32)

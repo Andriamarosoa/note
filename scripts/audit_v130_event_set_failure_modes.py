@@ -111,7 +111,7 @@ def audit_fold(args):
     # Reconstruct training-only anonymous event targets for proper time/candidate diagnostics.
     candidate_samples, reconstruction = v102._reconstruct_candidates(cache)
     _, time_mask, string_time_targets, time_sample, supervision = v102._derive_supervision(
-        members, candidate_samples, args.dataset_dir, expected_slot_targets=cache["slot_targets"]
+        members, candidate_samples, args.dataset_dir, assignment_cache=cache, expected_slot_targets=cache["slot_targets"]
     )
     event_present, _, event_candidate_target, event_valid, true_sample, event_diag = v130._ordered_event_supervision(
         cache, time_mask, string_time_targets, time_sample, k_all

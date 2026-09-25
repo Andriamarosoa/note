@@ -1,0 +1,122 @@
+name: V27.3 exact candidate timing audit - fold 3 only
+
+on:
+  push:
+    branches: [v280-harmonic-pitch-count-research]
+    paths: ['analysis/v273-exact-timing-audit-launch.json']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v273-exact-timing-fold3
+  cancel-in-progress: false
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  TF_NUM_INTRAOP_THREADS: '2'
+  TF_NUM_INTEROP_THREADS: '2'
+  OMP_NUM_THREADS: '2'
+  AUDIT_TAG: v273-exact-timing-${{ github.run_id }}
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [0, 1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - run: python -m pip install -r requirements-train.txt numpy==1.26.4
+      - name: Regression tests before frozen inference
+        run: python -m unittest -v test.test_candidate_timing test.test_v273_control_audit test.test_v273_fold3_ablation
+      - uses: actions/cache@v4
+        id: guitarset
+        with:
+          path: data/GuitarSet
+          key: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+      - name: Download original GuitarSet if needed
+        if: steps.guitarset.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+      - name: Restore pinned frozen proposal sources and previous fold 3 audit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/download
+          gh release download v273-source-recovery-35086829802 --repo "$GITHUB_REPOSITORY" \
+            --pattern v273-rebuilt-proposal-sources.zip --dir model/download
+          gh release download v273-control-fold3-audit-36106051196 --repo "$GITHUB_REPOSITORY" \
+            --pattern v273-control-fold3-audit.zip --dir model/download
+          python - <<'PY'
+          from scripts.restore_v273_original_backup import extract_verified
+          from scripts.rebuild_v273_sources import validate_sources
+          extract_verified('model/download/v273-rebuilt-proposal-sources.zip', 'model/sources',
+                           'fb6bb1049b87c0517936f4f40e5bc1442722fc20b9eba5045a62bb0a12cf2994',
+                           validate=validate_sources)
+          extract_verified('model/download/v273-control-fold3-audit.zip', 'model/previous-audit',
+                           '60d547ef141f13915c48a7e34e04ee2a4c6ae278377a0230cd434a74a6387e8f')
+          PY
+      - name: Re-mine only the 50 fold 3 tracks and compare caches to runtime
+        run: |
+          python -B scripts/audit_v273_exact_timing.py --source-dir model/sources \
+            --dataset-dir data/GuitarSet --config analysis/v273-native-paired-config.json \
+            --previous-metadata model/previous-audit/inputs/outer-candidate-metadata.npz \
+            --part ${{ matrix.part }} --output-dir model/exact-timing-audit/part-${{ matrix.part }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-exact-timing-part-${{ matrix.part }}
+          path: model/exact-timing-audit
+          compression-level: 1
+          if-no-files-found: warn
+          retention-days: 90
+
+  publish:
+    needs: audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v273-exact-timing-part-*
+          path: model/exact-timing-audit
+          merge-multiple: true
+      - name: Verify all 50 tracks and merge audit reports
+        run: |
+          python -B scripts/summarize_v273_exact_timing.py --root model/exact-timing-audit \
+            --config analysis/v273-native-paired-config.json
+      - name: Preserve verified exact caches and audit evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$AUDIT_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title 'V27.3 exact timing data audit - fold 3 only' \
+            --notes-file analysis/v273-exact-timing-audit-protocol.md
+          python -B scripts/archive_v273_native_stage.py --root model/exact-timing-audit \
+            --name v273-exact-timing-fold3 --tag "$AUDIT_TAG"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-exact-timing-report
+          path: model/exact-timing-audit/report.json
+          if-no-files-found: warn
+          retention-days: 90

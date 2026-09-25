@@ -363,7 +363,7 @@ def _postprocess(args, report, ctx):
     cache = ctx["cache"]
     members = ctx["members"]
     candidate_samples, _ = v102._reconstruct_candidates(cache)
-    pitch_targets, time_mask, string_time_targets, time_sample, _ = v102._derive_supervision(members, candidate_samples, args.dataset_dir, expected_slot_targets=cache["slot_targets"])
+    pitch_targets, time_mask, string_time_targets, time_sample, _ = v102._derive_supervision(members, candidate_samples, args.dataset_dir, assignment_cache=cache, expected_slot_targets=cache["slot_targets"])
     event_present, event_time, event_candidate, event_valid, _, _ = v130._ordered_event_supervision(cache, time_mask, string_time_targets, time_sample, ctx["k"])
     all_targets = _targets(cache, pitch_targets, string_time_targets, ctx["k"], event_present, event_time, event_candidate)
     outer_idx = ctx["outer_idx"]

@@ -279,7 +279,7 @@ def audit(args):
 
     candidate_samples, reconstruction = v102._reconstruct_candidates(cache)
     _, time_mask, time_targets, time_sample, supervision = v102._derive_supervision(
-        members_all, candidate_samples, args.dataset_dir, expected_slot_targets=cache["slot_targets"])
+        members_all, candidate_samples, args.dataset_dir, assignment_cache=cache, expected_slot_targets=cache["slot_targets"])
     ep, et, ec, ev, ts, ordered_diag = v130._ordered_event_supervision(
         cache, time_mask, time_targets, time_sample, k_all)
     event_overall, event_per_k, recoverable, complete = _correct_event_diag(

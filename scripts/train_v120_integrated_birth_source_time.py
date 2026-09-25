@@ -355,7 +355,7 @@ def train_fold(args):
         members,
         candidate_samples,
         args.dataset_dir,
-        expected_slot_targets=cache["slot_targets"],
+        assignment_cache=cache, expected_slot_targets=cache["slot_targets"],
     )
 
     tf.keras.backend.clear_session()

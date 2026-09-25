@@ -37,7 +37,7 @@ def load_fold_cache(directory, member_folds):
     indices, offset = [], 0
     for path in sorted(Path(directory).rglob('v100-spectral-shard-*.npz')):
         with np.load(path, allow_pickle=False) as z:
-            require(int(z['schema_version'][0]) == v100.CACHE_SCHEMA_VERSION, 'cache schema changed')
+            require(int(z['schema_version'][0]) == 1, 'cache schema changed')
             members = z['members'].astype(str)
             selected = np.flatnonzero([member_folds[m] == FOLD for m in members])
             indices.append(offset + selected)
