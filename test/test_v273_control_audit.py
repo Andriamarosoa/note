@@ -4,6 +4,8 @@ import numpy as np
 from scripts.audit_v273_control_fold3 import scalar_decode, effect, classify_errors, PAIRS
 from scripts.audit_v273_control_inputs import nearest_assignment
 from scripts.train_v273_native_paired import decode
+from scripts.audit_v273_candidate_alignment import possible_origins
+from scripts.train_v92_string_factorized_cardinality import _recover_cluster_start
 
 
 class ControlAuditTests(unittest.TestCase):
@@ -52,6 +54,22 @@ class ControlAuditTests(unittest.TestCase):
         self.assertEqual(nearest_assignment(2000, samples, rows), (2, 0))
         self.assertEqual(nearest_assignment(4882, samples, rows), (4, 882))
         self.assertIsNone(nearest_assignment(4883, samples, rows))
+
+    def test_legacy_origin_bug_and_rank_ambiguity(self):
+        seq = np.zeros((2, 5), np.float16)
+        seq[:, -2] = [0, 200 / 1764]
+        seq[:, -3] = [.9, .8]
+        mask, top = np.ones(2), np.array([1000] * 6)
+        # The real first/highest-score candidate is at 1000; the next is at 1200.
+        self.assertEqual(_recover_cluster_start(seq, mask, top), (800, 6))
+        self.assertEqual(possible_origins(seq, mask, top), ([800, 1000], [1000]))
+        seq[:, -3] = .9
+        self.assertEqual(possible_origins(seq, mask, top), ([800, 1000], [800, 1000]))
+
+    def test_all_integer_relative_times_survive_float16(self):
+        expected = np.arange(1765)
+        stored = (expected.astype(np.float32) / 1764).astype(np.float16)
+        np.testing.assert_array_equal(np.rint(stored.astype(np.float64) * 1764), expected)
 
 
 if __name__ == '__main__':

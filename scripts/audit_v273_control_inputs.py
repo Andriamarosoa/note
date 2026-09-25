@@ -34,7 +34,7 @@ def nearest_assignment(onset, samples, row_ids, radius=882):
 
 def load_outer_metadata(directory, cfg):
     keys = ('sequence', 'mask', 'stats', 'exact', 'members', 'top_samples', 'slot_targets')
-    parts = {key: [] for key in keys}
+    parts = {key: [] for key in (*keys, 'truncated')}
     indices, offset = [], 0
     hist = {'inner_fit': np.zeros(7, np.int64), 'inner_validation': np.zeros(7, np.int64),
             'final_fit': np.zeros(7, np.int64)}
@@ -57,6 +57,12 @@ def load_outer_metadata(directory, cfg):
                 parts[key].append(value)
                 if key in ('sequence', 'stats'):
                     checks['finite_model_inputs'] &= bool(np.isfinite(value).all())
+            cluster_file = path.parent.parent / 'clusters' / path.name.replace('v100-spectral', 'v91-cache')
+            with np.load(cluster_file, allow_pickle=False) as original:
+                for key in ('sequence', 'mask', 'exact', 'members', 'top_samples'):
+                    require(np.array_equal(z[key][take], original[key][take]),
+                            'cluster/spectral metadata differ: ' + key)
+                parts['truncated'].append(original['truncated'][take])
             mask = z['mask'][take]
             checks['nonempty_candidate_masks'] &= bool(np.all(mask.sum(1) > 0))
             maps = z['spectral'][take]
@@ -183,6 +189,10 @@ def run(args):
     np.savez_compressed(args.output_dir / 'onset-assignments.npz',
                         columns=np.asarray(['outer_row', 'string', 'onset_sample', 'distance_sample',
                                             'relative_sample', 'outside_spectral_window']), values=events)
+    # Small, exact inputs for the follow-up audit of timestamp reconstruction.
+    # No audio or spectral tensor needs to be exported again.
+    np.savez_compressed(args.output_dir / 'outer-candidate-metadata.npz',
+                        global_index=index, **cache)
     print({name: entry['present'] for name, entry in report['associations_not_causal_proof'].items()}, flush=True)
     return report
 

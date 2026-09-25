@@ -70,3 +70,26 @@ son statut : mécanisme vérifié, association observée, ou cause encore inconn
 Les corrections du modèle nécessiteront une validation interne indépendante
 du diagnostic externe ; les explications factuellement erronées peuvent être
 corrigées immédiatement.
+
+## Suivi ciblé après le premier audit
+
+L'exécution `36105248716` a trouvé 16 divergences de comptes, réparties
+en huit paires voisines. Le total des débuts de notes est conservé. Les
+positions reconstruites présentent aussi des espacements incompatibles
+avec la construction des groupes. Un cas synthétique reproduit un défaut
+de `_recover_cluster_start` : plusieurs origines expliquent exactement les
+mêmes meilleurs candidats, et le dernier critère choisit la plus proche de
+zéro, sans preuve que ce soit l'origine réelle.
+
+Le suivi ajoute une contrainte provenant des scores fusionnés sauvegardés :
+le premier `top_sample` doit correspondre à un candidat dont le score float16
+est maximal. Une origine diagnostique n'est changée que si cette contrainte
+et les positions conservées n'admettent qu'une solution. Les annotations
+ne participent jamais au choix de cette origine. Les ambiguïtés restantes
+sont rapportées et conservées ; aucun spectrogramme ni modèle n'est remplacé.
+
+Les contrôles portent sur la cohérence avec le cache V91 avant génération
+spectrale, la réversibilité des 1 765 positions relatives entières à travers
+float16, l'espacement des groupes non tronqués et l'accord avec les comptes
+originaux après attribution indépendante des annotations. Le score du modèle
+n'est pas recalculé sur des données modifiées et aucun gain n'est annoncé.

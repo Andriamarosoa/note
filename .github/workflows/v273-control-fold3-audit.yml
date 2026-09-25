@@ -65,6 +65,11 @@ jobs:
           python -B scripts/audit_v273_control_inputs.py --cache-dir model/native-cache \
             --annotation-zip model/annotation.zip --decision-dir model/control-audit/decisions \
             --output-dir model/control-audit/inputs
+      - name: Follow up timestamp ambiguity found by the input audit
+        run: |
+          python -B scripts/audit_v273_candidate_alignment.py \
+            --input-dir model/control-audit/inputs --decision-dir model/control-audit/decisions \
+            --annotation-zip model/annotation.zip --output-dir model/control-audit/alignment
       - name: Preserve completed audit
         env:
           GH_TOKEN: ${{ github.token }}
