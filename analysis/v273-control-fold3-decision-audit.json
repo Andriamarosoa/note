@@ -1,0 +1,729 @@
+{
+  "by_composition": {
+    "BN1-147-Gb": {
+      "correct": 1787,
+      "over": 138,
+      "poly_correct": 94,
+      "poly_over": 17,
+      "poly_rows": 223,
+      "poly_under": 112,
+      "rows": 2119,
+      "under": 194
+    },
+    "Funk3-98-A": {
+      "correct": 2774,
+      "over": 279,
+      "poly_correct": 229,
+      "poly_over": 85,
+      "poly_rows": 515,
+      "poly_under": 201,
+      "rows": 3370,
+      "under": 317
+    },
+    "Jazz2-187-F#": {
+      "correct": 1619,
+      "over": 127,
+      "poly_correct": 96,
+      "poly_over": 33,
+      "poly_rows": 231,
+      "poly_under": 102,
+      "rows": 1911,
+      "under": 165
+    },
+    "Rock3-117-Bb": {
+      "correct": 2593,
+      "over": 228,
+      "poly_correct": 253,
+      "poly_over": 75,
+      "poly_rows": 648,
+      "poly_under": 320,
+      "rows": 3282,
+      "under": 461
+    },
+    "SS2-88-F": {
+      "correct": 3932,
+      "over": 392,
+      "poly_correct": 164,
+      "poly_over": 65,
+      "poly_rows": 352,
+      "poly_under": 123,
+      "rows": 4597,
+      "under": 273
+    }
+  },
+  "by_true_k": {
+    "0": {
+      "correct": 9863,
+      "over": 422,
+      "poly_correct": 0,
+      "poly_over": 0,
+      "poly_rows": 0,
+      "poly_under": 0,
+      "rows": 10285,
+      "under": 0
+    },
+    "1": {
+      "correct": 2006,
+      "over": 467,
+      "poly_correct": 0,
+      "poly_over": 0,
+      "poly_rows": 0,
+      "poly_under": 0,
+      "rows": 3025,
+      "under": 552
+    },
+    "2": {
+      "correct": 355,
+      "over": 184,
+      "poly_correct": 355,
+      "poly_over": 184,
+      "poly_rows": 806,
+      "poly_under": 267,
+      "rows": 806,
+      "under": 267
+    },
+    "3": {
+      "correct": 310,
+      "over": 79,
+      "poly_correct": 310,
+      "poly_over": 79,
+      "poly_rows": 628,
+      "poly_under": 239,
+      "rows": 628,
+      "under": 239
+    },
+    "4": {
+      "correct": 162,
+      "over": 12,
+      "poly_correct": 162,
+      "poly_over": 12,
+      "poly_rows": 405,
+      "poly_under": 231,
+      "rows": 405,
+      "under": 231
+    },
+    "5": {
+      "correct": 9,
+      "over": 0,
+      "poly_correct": 9,
+      "poly_over": 0,
+      "poly_rows": 109,
+      "poly_under": 100,
+      "rows": 109,
+      "under": 100
+    },
+    "6": {
+      "correct": 0,
+      "over": 0,
+      "poly_correct": 0,
+      "poly_over": 0,
+      "poly_rows": 21,
+      "poly_under": 21,
+      "rows": 21,
+      "under": 21
+    }
+  },
+  "calibration_rescue_inner_effect": {
+    "changed_by_true_k": {
+      "0": 133,
+      "1": 134,
+      "2": 90,
+      "3": 30,
+      "4": 10,
+      "5": 1,
+      "6": 1
+    },
+    "changed_rows": 399,
+    "corrected_rows": 92,
+    "net_correct_rows": -78,
+    "regressed_rows": 170
+  },
+  "confusion_true_by_predicted": [
+    [
+      9863,
+      260,
+      135,
+      27,
+      0,
+      0,
+      0
+    ],
+    [
+      552,
+      2006,
+      386,
+      71,
+      10,
+      0,
+      0
+    ],
+    [
+      124,
+      143,
+      355,
+      159,
+      25,
+      0,
+      0
+    ],
+    [
+      31,
+      27,
+      181,
+      310,
+      76,
+      3,
+      0
+    ],
+    [
+      2,
+      4,
+      55,
+      170,
+      162,
+      11,
+      1
+    ],
+    [
+      2,
+      0,
+      11,
+      42,
+      45,
+      9,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      9,
+      8,
+      4,
+      0
+    ]
+  ],
+  "diagnostic_ablations_not_model_selection": {
+    "conditional_head_on_all_base_ge2": {
+      "effect_vs_control": {
+        "broken": 177,
+        "changed": 466,
+        "fixed": 111,
+        "net_correct": -66,
+        "new_over": 68,
+        "new_under": 113,
+        "removed_over": 74,
+        "removed_under": 41,
+        "rows": 15279
+      },
+      "metrics": {
+        "correct": 12639,
+        "over": 1158,
+        "poly_correct": 770,
+        "poly_over": 269,
+        "poly_rows": 1969,
+        "poly_under": 930,
+        "rows": 15279,
+        "under": 1482
+      }
+    },
+    "conditional_head_on_every_row_INVALID_FOR_K0_K1": {
+      "effect_vs_control": {
+        "broken": 12046,
+        "changed": 13480,
+        "fixed": 377,
+        "net_correct": -11669,
+        "new_over": 12491,
+        "new_under": 113,
+        "removed_over": 74,
+        "removed_under": 861,
+        "rows": 15279
+      },
+      "metrics": {
+        "correct": 1036,
+        "over": 13581,
+        "poly_correct": 1036,
+        "poly_over": 271,
+        "poly_rows": 1969,
+        "poly_under": 662,
+        "rows": 15279,
+        "under": 662
+      }
+    },
+    "disable_2_to_3": {
+      "effect_vs_control": {
+        "broken": 13,
+        "changed": 32,
+        "fixed": 9,
+        "net_correct": -4,
+        "new_over": 0,
+        "new_under": 13,
+        "removed_over": 9,
+        "removed_under": 0,
+        "rows": 15279
+      },
+      "metrics": {
+        "correct": 12701,
+        "over": 1155,
+        "poly_correct": 832,
+        "poly_over": 266,
+        "poly_rows": 1969,
+        "poly_under": 871,
+        "rows": 15279,
+        "under": 1423
+      }
+    },
+    "disable_3_to_2": {
+      "effect_vs_control": {
+        "broken": 7,
+        "changed": 26,
+        "fixed": 11,
+        "net_correct": 4,
+        "new_over": 7,
+        "new_under": 0,
+        "removed_over": 0,
+        "removed_under": 11,
+        "rows": 15279
+      },
+      "metrics": {
+        "correct": 12709,
+        "over": 1171,
+        "poly_correct": 840,
+        "poly_over": 282,
+        "poly_rows": 1969,
+        "poly_under": 847,
+        "rows": 15279,
+        "under": 1399
+      }
+    },
+    "disable_3_to_4": {
+      "effect_vs_control": {
+        "broken": 49,
+        "changed": 133,
+        "fixed": 42,
+        "net_correct": -7,
+        "new_over": 0,
+        "new_under": 49,
+        "removed_over": 42,
+        "removed_under": 0,
+        "rows": 15279
+      },
+      "metrics": {
+        "correct": 12698,
+        "over": 1122,
+        "poly_correct": 829,
+        "poly_over": 233,
+        "poly_rows": 1969,
+        "poly_under": 907,
+        "rows": 15279,
+        "under": 1459
+      }
+    },
+    "disable_4_to_3": {
+      "effect_vs_control": {
+        "broken": 0,
+        "changed": 0,
+        "fixed": 0,
+        "net_correct": 0,
+        "new_over": 0,
+        "new_under": 0,
+        "removed_over": 0,
+        "removed_under": 0,
+        "rows": 15279
+      },
+      "metrics": {
+        "correct": 12705,
+        "over": 1164,
+        "poly_correct": 836,
+        "poly_over": 275,
+        "poly_rows": 1969,
+        "poly_under": 858,
+        "rows": 15279,
+        "under": 1410
+      }
+    },
+    "no_poly_rescue": {
+      "effect_vs_control": {
+        "broken": 36,
+        "changed": 197,
+        "fixed": 88,
+        "net_correct": 52,
+        "new_over": 0,
+        "new_under": 52,
+        "removed_over": 104,
+        "removed_under": 0,
+        "rows": 15279
+      },
+      "metrics": {
+        "correct": 12757,
+        "over": 1060,
+        "poly_correct": 800,
+        "poly_over": 268,
+        "poly_rows": 1969,
+        "poly_under": 901,
+        "rows": 15279,
+        "under": 1462
+      }
+    },
+    "no_selective_transitions": {
+      "effect_vs_control": {
+        "broken": 69,
+        "changed": 191,
+        "fixed": 62,
+        "net_correct": -7,
+        "new_over": 7,
+        "new_under": 62,
+        "removed_over": 51,
+        "removed_under": 11,
+        "rows": 15279
+      },
+      "metrics": {
+        "correct": 12698,
+        "over": 1120,
+        "poly_correct": 829,
+        "poly_over": 231,
+        "poly_rows": 1969,
+        "poly_under": 909,
+        "rows": 15279,
+        "under": 1461
+      }
+    }
+  },
+  "errors_disjoint": {
+    "all_three_count_heads_wrong": {
+      "correct": 0,
+      "over": 161,
+      "poly_correct": 0,
+      "poly_over": 161,
+      "poly_rows": 635,
+      "poly_under": 474,
+      "rows": 635,
+      "under": 474
+    },
+    "correct_specialist_blocked_base_0_or_1": {
+      "correct": 0,
+      "over": 0,
+      "poly_correct": 0,
+      "poly_over": 0,
+      "poly_rows": 266,
+      "poly_under": 266,
+      "rows": 266,
+      "under": 266
+    },
+    "correct_specialist_blocked_margin": {
+      "correct": 0,
+      "over": 62,
+      "poly_correct": 0,
+      "poly_over": 62,
+      "poly_rows": 99,
+      "poly_under": 37,
+      "rows": 99,
+      "under": 37
+    },
+    "correct_specialist_blocked_unsupported_transition": {
+      "correct": 0,
+      "over": 10,
+      "poly_correct": 0,
+      "poly_over": 10,
+      "poly_rows": 12,
+      "poly_under": 2,
+      "rows": 12,
+      "under": 2
+    },
+    "only_full_range_head_correct": {
+      "correct": 0,
+      "over": 42,
+      "poly_correct": 0,
+      "poly_over": 42,
+      "poly_rows": 121,
+      "poly_under": 79,
+      "rows": 121,
+      "under": 79
+    }
+  },
+  "head_diagnostics": {
+    "specialist": {
+      "correct": 1036,
+      "over": 13581,
+      "poly_correct": 1036,
+      "poly_over": 271,
+      "poly_rows": 1969,
+      "poly_under": 662,
+      "rows": 15279,
+      "under": 662
+    },
+    "uniform": {
+      "correct": 12745,
+      "over": 809,
+      "poly_correct": 497,
+      "poly_over": 323,
+      "poly_rows": 1969,
+      "poly_under": 1149,
+      "rows": 15279,
+      "under": 1725
+    },
+    "weighted": {
+      "correct": 12477,
+      "over": 1443,
+      "poly_correct": 696,
+      "poly_over": 358,
+      "poly_rows": 1969,
+      "poly_under": 915,
+      "rows": 15279,
+      "under": 1359
+    }
+  },
+  "remaining_network_evidence": {
+    "final_under_and_all_three_heads_under": 463,
+    "k5_k6": {
+      "correct": 9,
+      "over": 0,
+      "poly_correct": 9,
+      "poly_over": 0,
+      "poly_rows": 130,
+      "poly_under": 121,
+      "rows": 130,
+      "under": 121
+    },
+    "note": "Wrong head outputs locate a remaining failure; they do not establish an acoustic or annotation cause.",
+    "poly_final_0_or_1": 333
+  },
+  "scope": {
+    "development_diagnostic": true,
+    "model_modified": false,
+    "new_corrector": false,
+    "other_outer_folds_evaluated": false,
+    "outer_fold": 3,
+    "threshold_selection": false,
+    "training": false
+  },
+  "stage_effects": {
+    "low_fusion": {
+      "global": {
+        "broken": 199,
+        "changed": 543,
+        "fixed": 269,
+        "net_correct": 70,
+        "new_over": 68,
+        "new_under": 132,
+        "removed_over": 230,
+        "removed_under": 40,
+        "rows": 15279
+      },
+      "poly": {
+        "broken": 0,
+        "changed": 73,
+        "fixed": 1,
+        "net_correct": 1,
+        "new_over": 1,
+        "new_under": 0,
+        "removed_over": 0,
+        "removed_under": 2,
+        "rows": 1969
+      }
+    },
+    "poly_rescue": {
+      "global": {
+        "broken": 88,
+        "changed": 197,
+        "fixed": 39,
+        "net_correct": -49,
+        "new_over": 103,
+        "new_under": 0,
+        "removed_over": 0,
+        "removed_under": 54,
+        "rows": 15279
+      },
+      "poly": {
+        "broken": 0,
+        "changed": 71,
+        "fixed": 39,
+        "net_correct": 39,
+        "new_over": 6,
+        "new_under": 0,
+        "removed_over": 0,
+        "removed_under": 45,
+        "rows": 1969
+      }
+    },
+    "selective_transitions": {
+      "global": {
+        "broken": 62,
+        "changed": 191,
+        "fixed": 69,
+        "net_correct": 7,
+        "new_over": 51,
+        "new_under": 11,
+        "removed_over": 7,
+        "removed_under": 62,
+        "rows": 15279
+      },
+      "poly": {
+        "broken": 62,
+        "changed": 174,
+        "fixed": 69,
+        "net_correct": 7,
+        "new_over": 51,
+        "new_under": 11,
+        "removed_over": 7,
+        "removed_under": 62,
+        "rows": 1969
+      }
+    }
+  },
+  "stages": {
+    "anchor": {
+      "correct": 12677,
+      "over": 1179,
+      "poly_correct": 789,
+      "poly_over": 224,
+      "poly_rows": 1969,
+      "poly_under": 956,
+      "rows": 15279,
+      "under": 1423
+    },
+    "final": {
+      "correct": 12705,
+      "over": 1164,
+      "poly_correct": 836,
+      "poly_over": 275,
+      "poly_rows": 1969,
+      "poly_under": 858,
+      "rows": 15279,
+      "under": 1410
+    },
+    "low_fusion": {
+      "correct": 12747,
+      "over": 1017,
+      "poly_correct": 790,
+      "poly_over": 225,
+      "poly_rows": 1969,
+      "poly_under": 954,
+      "rows": 15279,
+      "under": 1515
+    },
+    "poly_rescue": {
+      "correct": 12698,
+      "over": 1120,
+      "poly_correct": 829,
+      "poly_over": 231,
+      "poly_rows": 1969,
+      "poly_under": 909,
+      "rows": 15279,
+      "under": 1461
+    }
+  },
+  "target_definition": "min(6, number of annotated note onsets assigned to a 40 ms candidate group within 20 ms of a candidate); not simultaneous sustained pitches",
+  "transition_effects": {
+    "2_to_3": {
+      "inner_selection": {
+        "activated_rows": 13,
+        "candidate_thresholds_evaluated": 60,
+        "corrected_rows": 5,
+        "eligible_rows": 59,
+        "net_correct_rows": 2,
+        "neutral_rows": 5,
+        "regressed_rows": 3,
+        "threshold": 0.16326257586479187
+      },
+      "outer_activated": 32,
+      "outer_effect": {
+        "broken": 9,
+        "changed": 32,
+        "fixed": 13,
+        "net_correct": 4,
+        "new_over": 9,
+        "new_under": 0,
+        "removed_over": 0,
+        "removed_under": 13,
+        "rows": 32
+      },
+      "outer_eligible": 119
+    },
+    "3_to_2": {
+      "inner_selection": {
+        "activated_rows": 98,
+        "candidate_thresholds_evaluated": 374,
+        "corrected_rows": 41,
+        "eligible_rows": 373,
+        "net_correct_rows": 22,
+        "neutral_rows": 38,
+        "regressed_rows": 19,
+        "threshold": 0.3886432945728302
+      },
+      "outer_activated": 26,
+      "outer_effect": {
+        "broken": 11,
+        "changed": 26,
+        "fixed": 7,
+        "net_correct": -4,
+        "new_over": 0,
+        "new_under": 11,
+        "removed_over": 7,
+        "removed_under": 0,
+        "rows": 26
+      },
+      "outer_eligible": 245
+    },
+    "3_to_4": {
+      "inner_selection": {
+        "activated_rows": 13,
+        "candidate_thresholds_evaluated": 33,
+        "corrected_rows": 7,
+        "eligible_rows": 32,
+        "net_correct_rows": 3,
+        "neutral_rows": 2,
+        "regressed_rows": 4,
+        "threshold": 0.06107482314109802
+      },
+      "outer_activated": 133,
+      "outer_effect": {
+        "broken": 42,
+        "changed": 133,
+        "fixed": 49,
+        "net_correct": 7,
+        "new_over": 42,
+        "new_under": 0,
+        "removed_over": 0,
+        "removed_under": 49,
+        "rows": 133
+      },
+      "outer_eligible": 207
+    },
+    "4_to_3": {
+      "inner_selection": {
+        "activated_rows": 5,
+        "candidate_thresholds_evaluated": 172,
+        "corrected_rows": 4,
+        "eligible_rows": 171,
+        "net_correct_rows": 3,
+        "neutral_rows": 0,
+        "regressed_rows": 1,
+        "threshold": 0.45425647497177124
+      },
+      "outer_activated": 0,
+      "outer_effect": {
+        "broken": 0,
+        "changed": 0,
+        "fixed": 0,
+        "net_correct": 0,
+        "new_over": 0,
+        "new_under": 0,
+        "removed_over": 0,
+        "removed_under": 0,
+        "rows": 0
+      },
+      "outer_eligible": 30
+    }
+  },
+  "verification": {
+    "aligned_rows": 15279,
+    "calibration_sha256": "ee5395443bd561bb520f83894e4dc0fe5d526c632748fbe9b4d9d3ce6e328438",
+    "config_sha256": "7c27989eb3fe330fdff203e388e76ae4c64d8b8e4838cab4d7c4622b4104451a",
+    "exported_runtime_replay_equal": true,
+    "independent_scalar_replay_equal": true,
+    "inventory_files_verified": 81,
+    "production_replay_equal": true,
+    "source_prediction_sha256": "5ccfa0c88a10ea467a953958b6564d7b9d71fb327f4648f557ce08460fba1e00"
+  }
+}

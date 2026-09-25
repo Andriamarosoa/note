@@ -93,3 +93,18 @@ spectrale, la réversibilité des 1 765 positions relatives entières à travers
 float16, l'espacement des groupes non tronqués et l'accord avec les comptes
 originaux après attribution indépendante des annotations. Le score du modèle
 n'est pas recalculé sur des données modifiées et aucun gain n'est annoncé.
+
+Le suivi `36106051196` ramène les divergences de 16 à 2. La vérification locale
+suivante utilise les 8 812 événements déjà attribués de son archive et la largeur
+des groupes sauvegardée avant troncature. Les positions initiale et finale d'un
+groupe proviennent uniquement du cache ; les annotations servent ensuite à
+vérifier les comptes. Elle contrôle les 15 279 groupes, le rejeu exact des deux
+attributions précédentes et l'absence de nouvelle divergence. Les 454 événements
+initialement non attribués sont explicitement hors de cette dernière vérification.
+
+Reproduction de ce dernier contrôle après extraction de la release de suivi :
+
+```bash
+PYTHONPATH=.:src python -B scripts/audit_v273_alignment_residual.py \
+  --audit-dir archive_extraite --output-dir audit_residuel
+```

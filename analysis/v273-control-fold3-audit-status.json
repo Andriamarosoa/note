@@ -1,0 +1,90 @@
+{
+  "scope": "rebuilt V27.3 control; outer fold 3 only",
+  "model_modified": false,
+  "training_started": false,
+  "thresholds_changed": false,
+  "additional_corrector": false,
+  "code_commit": "9fc51b83fff71bae4574b6de3d3d3afa92f3926b",
+  "first_run": 36105248716,
+  "followup_run": 36106051196,
+  "followup_job": 107978699007,
+  "tests_passed": 6,
+  "tests_skipped": 0,
+  "artifact_id": 10851455314,
+  "artifact_sha256": "fae9f6299144437ab34172b6fd5407d04a3fe4f30ca5ab7c116c2f2da9012bf9",
+  "archive_release": "https://github.com/Andriamarosoa/note/releases/tag/v273-control-fold3-audit-36106051196",
+  "producer_code_exactly_verified": [
+    "scripts/train_v91_ordinal_cardinality.py",
+    "scripts/train_v92_string_factorized_cardinality.py",
+    "scripts/train_v100_spectral_string_slots.py"
+  ],
+  "producer_commit": "8aba7737d4112671beeaedac92329d533fcfc316",
+  "local_residual_audit": {
+    "status": "completed",
+    "assigned_onsets": 8812,
+    "unassigned_onsets_not_rechecked": 454,
+    "count_disagreements_remaining": 0,
+    "new_count_disagreements": 0
+  },
+  "issues": [
+    {
+      "id": "K-definition",
+      "status": "explanation_corrected",
+      "finding": "K counts assigned onsets, not sustained simultaneous pitches"
+    },
+    {
+      "id": "timestamp-origin",
+      "status": "confirmed_and_followup_audited",
+      "ambiguous_rows": 187,
+      "wrong_origins_by_saved_score": 80,
+      "spacing_violations_before": 62,
+      "spacing_violations_after": 0,
+      "production_fix_applied": false
+    },
+    {
+      "id": "truncated-candidate-supervision",
+      "status": "confirmed_and_residual_audited",
+      "global_indices": [
+        58991,
+        58992
+      ],
+      "original_candidates": 57,
+      "retained_candidates": 48,
+      "diagnostic_disagreements_after": 0,
+      "production_fix_applied": false
+    },
+    {
+      "id": "routing",
+      "status": "mechanism_and_adverse_effects_audited",
+      "errors_with_one_correct_count_head": 498,
+      "errors_with_all_three_count_heads_wrong": 635
+    },
+    {
+      "id": "selection-objective",
+      "status": "tradeoff_verified",
+      "outer_rescue_poly_fixed": 39,
+      "outer_rescue_nonpoly_broken": 88
+    },
+    {
+      "id": "acoustic-window",
+      "status": "association_only",
+      "poly_rows": 43,
+      "poly_errors": 33
+    },
+    {
+      "id": "remaining-network-error",
+      "status": "root_acoustic_or_learning_cause_unresolved",
+      "all_three_count_heads_wrong_rows": 635
+    }
+  ],
+  "next_required_gate": "Preserve original absolute group and candidate times; audit regenerated targets and spectral windows before any internally selected retraining.",
+  "source_file_sha256": {
+    "v273-control-fold3-decision-audit.json": "ef89f1cc762f38503145afa709be71e213228da2537105a9080527a5206b1161",
+    "v273-control-fold3-input-audit.json": "763de79bb12d9275b89db3e69778b9f9106b523b10f3b13846755ee7260530e4",
+    "v273-control-fold3-alignment-audit.json": "9c456a3115d9aaf1392d9f23dce4a7facc2b65eb9ff6979798fda28920c7ac3f",
+    "v273-control-fold3-alignment-residual-audit.json": "7f5c9ec53ddef9010a9089f3b1717f7748ca86ce99357684118d08b332ba655c"
+  },
+  "release_asset": "v273-control-fold3-audit.zip",
+  "release_zip_sha256": "60d547ef141f13915c48a7e34e04ee2a4c6ae278377a0230cd434a74a6387e8f",
+  "release_zip_bytes": 32070151
+}

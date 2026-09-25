@@ -1,5 +1,10 @@
 # Décision et correction livrée — fold 3 uniquement
 
+**Audit ultérieur :** le [bilan des erreurs du contrôle](v273-control-fold3-audit.md)
+identifie une ambiguïté dans la reconstruction temporelle du cache et une
+divergence de supervision liée à la troncature des candidats. Ces défauts ont
+été audités ; les poids et données de la présente expérience restent immuables.
+
 **La branche ln est rejetée par la validation interne. Le paquet retenu
 revient aux poids et aux seuils du contrôle V27.3 de cette expérience.**
 Les fichiers de poids exportés sont identiques, par SHA-256, aux trois

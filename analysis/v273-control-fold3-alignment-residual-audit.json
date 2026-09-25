@@ -1,0 +1,83 @@
+{
+  "count_disagreements_after_rank_constraint": 2,
+  "count_disagreements_after_restoring_known_endpoints": 0,
+  "count_disagreements_before": 16,
+  "interpretation": "The remaining pair loses a candidate near the last onset when 57 candidates are reduced to 48; slot-label reconstruction assigns that onset to the next group. Original group extent supplies an annotation-free endpoint check.",
+  "legacy_event_replay_equal": true,
+  "new_count_disagreements_from_endpoint_check": 0,
+  "not_claimed": "This is an input/supervision audit, not a retrained model or an exact-K score improvement.",
+  "onset_total_preserved": 8812,
+  "rank_event_replay_equal": true,
+  "residual_rows": [
+    {
+      "events_after_endpoint_check": [
+        [
+          11442,
+          2,
+          806204,
+          11442,
+          60
+        ],
+        [
+          11442,
+          3,
+          806396,
+          11442,
+          2
+        ],
+        [
+          11442,
+          4,
+          806947,
+          11442,
+          43
+        ],
+        [
+          11443,
+          5,
+          807819,
+          11442,
+          1
+        ]
+      ],
+      "global_index": 58991,
+      "member": "01_Jazz2-187-F#_comp.jams",
+      "original_count": 4,
+      "original_end_sample_from_stats": 807820,
+      "rank_reconstructed_count": 3,
+      "retained_last_sample": 807500,
+      "truncated_candidates": 9,
+      "with_original_endpoints_count": 4
+    },
+    {
+      "events_after_endpoint_check": [
+        [
+          11443,
+          5,
+          807819,
+          11442,
+          1
+        ]
+      ],
+      "global_index": 58992,
+      "member": "01_Jazz2-187-F#_comp.jams",
+      "original_count": 0,
+      "original_end_sample_from_stats": 809230,
+      "rank_reconstructed_count": 1,
+      "retained_last_sample": 809230,
+      "truncated_candidates": 0,
+      "with_original_endpoints_count": 0
+    }
+  ],
+  "safe_source_fix": "Preserve original integer group starts and complete untruncated candidate times for supervision; keep retained candidate times separately for model inputs. Use the original group start for the spectral window.",
+  "scope": {
+    "annotations_used_to_choose_origins_or_endpoints": false,
+    "assigned_onsets_replayed": 8812,
+    "model_or_spectra_modified": false,
+    "outer_fold": 3,
+    "rows": 15279,
+    "unassigned_onsets_not_rechecked": 454
+  },
+  "source_inventory_sha256": "39da421f9090194e661d5cef073410fedcfec578647e637ec1d02b927b6f786f",
+  "verified_source_files": 9
+}
