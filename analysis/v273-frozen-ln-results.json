@@ -1,0 +1,69 @@
+{
+  "automatic_promotion": false,
+  "created_at_utc": "2026-09-16T22:49:49.795345+00:00",
+  "focus": [
+    {
+      "control": 2,
+      "global_index": 50105,
+      "previous_ln": 3,
+      "selected": 2,
+      "truth": 2
+    },
+    {
+      "control": 3,
+      "global_index": 42907,
+      "previous_ln": 4,
+      "selected": 3,
+      "truth": 3
+    }
+  ],
+  "limits": [
+    "Single previously audited outer fold; development result.",
+    "Shared upstream sources retain the limitations of the rebuilt paired experiment.",
+    "Frozen adaptation repairs zero-input drift; it does not guarantee improvement on nonzero inputs."
+  ],
+  "metrics": {
+    "control": {
+      "correct": 12705,
+      "over": 1164,
+      "poly_correct": 836,
+      "poly_over": 275,
+      "poly_rows": 1969,
+      "poly_under": 858,
+      "rows": 15279,
+      "under": 1410
+    },
+    "previous_full_retraining_ln": {
+      "correct": 12694,
+      "over": 1178,
+      "poly_correct": 810,
+      "poly_over": 298,
+      "poly_rows": 1969,
+      "poly_under": 861,
+      "rows": 15279,
+      "under": 1407
+    },
+    "selected_frozen_model": {
+      "correct": 12705,
+      "over": 1164,
+      "poly_correct": 836,
+      "poly_over": 275,
+      "poly_rows": 1969,
+      "poly_under": 858,
+      "rows": 15279,
+      "under": 1410
+    }
+  },
+  "new_poly_overcounts_vs_control": 0,
+  "outer_folds_evaluated": [
+    3
+  ],
+  "previous_35_new_overcounts_corrected": 35,
+  "previous_35_new_overcounts_still_over": 0,
+  "selected_before_outer_evaluation": "control",
+  "selection_sha256": "1c294cbcd267935a1e3ef5d8c411050e092409c5adfaf543e024e3ba9cd15f40",
+  "vs_control_poly_corrected": 0,
+  "vs_control_poly_regressed": 0,
+  "zero_evidence_decision_changes": 0,
+  "zero_evidence_rows": 8120
+}

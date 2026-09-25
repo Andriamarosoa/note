@@ -1,0 +1,121 @@
+{
+  "calibration_sha256": "d0837503acb23cd8b248071d5ef0411fcf903ec865c716572c3b796efcbbbc62",
+  "candidates": {
+    "control": {
+      "archived_metrics": {
+        "correct": 12900,
+        "over": 1440,
+        "poly_correct": 858,
+        "poly_over": 322,
+        "poly_rows": 2111,
+        "poly_under": 931,
+        "rows": 15952,
+        "under": 1612
+      },
+      "metrics": {
+        "correct": 12897,
+        "over": 1441,
+        "poly_correct": 855,
+        "poly_over": 323,
+        "poly_rows": 2111,
+        "poly_under": 933,
+        "rows": 15952,
+        "under": 1614
+      },
+      "strength": 0.0,
+      "teacher_weight": null
+    },
+    "teacher0_strength0.25": {
+      "metrics": {
+        "correct": 12897,
+        "over": 1442,
+        "poly_correct": 853,
+        "poly_over": 324,
+        "poly_rows": 2111,
+        "poly_under": 934,
+        "rows": 15952,
+        "under": 1613
+      },
+      "strength": 0.25,
+      "teacher_weight": 0.0
+    },
+    "teacher0_strength0.5": {
+      "metrics": {
+        "correct": 12900,
+        "over": 1441,
+        "poly_correct": 852,
+        "poly_over": 325,
+        "poly_rows": 2111,
+        "poly_under": 934,
+        "rows": 15952,
+        "under": 1611
+      },
+      "strength": 0.5,
+      "teacher_weight": 0.0
+    },
+    "teacher0_strength1": {
+      "metrics": {
+        "correct": 12897,
+        "over": 1442,
+        "poly_correct": 850,
+        "poly_over": 325,
+        "poly_rows": 2111,
+        "poly_under": 936,
+        "rows": 15952,
+        "under": 1613
+      },
+      "strength": 1.0,
+      "teacher_weight": 0.0
+    },
+    "teacher1_strength0.25": {
+      "metrics": {
+        "correct": 12896,
+        "over": 1442,
+        "poly_correct": 853,
+        "poly_over": 324,
+        "poly_rows": 2111,
+        "poly_under": 934,
+        "rows": 15952,
+        "under": 1614
+      },
+      "strength": 0.25,
+      "teacher_weight": 1.0
+    },
+    "teacher1_strength0.5": {
+      "metrics": {
+        "correct": 12898,
+        "over": 1443,
+        "poly_correct": 853,
+        "poly_over": 324,
+        "poly_rows": 2111,
+        "poly_under": 934,
+        "rows": 15952,
+        "under": 1611
+      },
+      "strength": 0.5,
+      "teacher_weight": 1.0
+    },
+    "teacher1_strength1": {
+      "metrics": {
+        "correct": 12898,
+        "over": 1442,
+        "poly_correct": 852,
+        "poly_over": 325,
+        "poly_rows": 2111,
+        "poly_under": 934,
+        "rows": 15952,
+        "under": 1612
+      },
+      "strength": 1.0,
+      "teacher_weight": 1.0
+    }
+  },
+  "inner_control_numerical_decision_changes": [
+    3814,
+    13790,
+    57261
+  ],
+  "outer_labels_used": false,
+  "rule": "strictly improve inner poly_correct over both live and archived control; do not reduce global correct or increase global/poly overcounts; tie by smaller strength",
+  "selected": "control"
+}

@@ -1,0 +1,49 @@
+{
+  "loaded": {
+    "calibration_sha256": "ee5395443bd561bb520f83894e4dc0fe5d526c632748fbe9b4d9d3ce6e328438",
+    "selected": "control",
+    "weights_sha256": {
+      "v260_uniform": "05ba7e2b5f1f44704c5c16331befa48932fc435f48aa8fb5b279f1ffb46788ea",
+      "v260_weighted": "75d556e7e3f84a4e46e7b199fa0df5933bfdb8ec4966b8ea7590d5c6f6a5841a",
+      "v272_uniform": "ad179cdfeee84c36978df2bdb16cc0d8dc48a68b2c0ec9e91fa9582dc496701c"
+    }
+  },
+  "maximum_probability_difference": {
+    "v260_uniform": 1.0132789611816406e-06,
+    "v260_weighted": 8.940696716308594e-07,
+    "v272_uniform": 5.960464477539062e-07
+  },
+  "metrics": {
+    "correct": 12705,
+    "over": 1164,
+    "poly_correct": 836,
+    "poly_over": 275,
+    "poly_rows": 1969,
+    "poly_under": 858,
+    "rows": 15279,
+    "under": 1410
+  },
+  "native_input_provenance": {
+    "poly_rows": 9354,
+    "rows": 74588,
+    "sha256": {
+      "v100-spectral-shard-00.npz": "0d060c6be98b731a5ae64c9bae5e7f09d8de65b6014911e5a577da6aee6b8f00",
+      "v100-spectral-shard-01.npz": "f83ec8f4b98a3358ff23ae41499f614e82b1dbf2562d13e3cd481b56e84a4222",
+      "v100-spectral-shard-02.npz": "258caec7a03575762d293328d6f36c114f2d4ac3eabb85da6ad99c7d0045c368",
+      "v100-spectral-shard-03.npz": "c085598d0ef54408135bd8a815a23caa41a72393989f28a9669af0c1255a3696",
+      "v100-spectral-shard-04.npz": "f1c541215f716fa0171037c45051a874ec31066278b46270d630f4c4cb9a655a",
+      "v100-spectral-shard-05.npz": "fff0fe1450f4a7de3d7056b56d989fa080fd9b8019bf3b5618e7ab0cfe2488d7",
+      "v100-spectral-shard-06.npz": "fddb319abd960b0f9df478e9e8b2d30f724c9ae1437036d7f9f6420d77896732",
+      "v100-spectral-shard-07.npz": "fc2fe38098f0f20a4c1b1b49c385f44059b382396cbac1810a6e5eaa75508985"
+    },
+    "tracks": 240
+  },
+  "outer_folds_verified": [
+    3
+  ],
+  "rows": 15279,
+  "runtime_contains_label_input": false,
+  "saved_decisions_exactly_reproduced": true,
+  "source_config_sha256": "7c27989eb3fe330fdff203e388e76ae4c64d8b8e4838cab4d7c4622b4104451a",
+  "weights_reloaded": true
+}

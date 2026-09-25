@@ -1,5 +1,11 @@
 # Audit du surcomptage — fold 3 uniquement
 
+**Suite exécutée :** la [correction et la décision livrées](v273-frozen-ln-results.md)
+testent l'apprentissage de la branche seule avec contrôle figé. Les six
+candidats sont rejetés en validation interne ; le paquet final et son
+chargeur rétablissent les poids et seuils du contrôle, avec suppression
+des 35 nouveaux surcomptages de cette piste sur le fold 3.
+
 **Le mécanisme dominant sur ce fold est le changement des poids appris et
 leur interaction avec les seuils. Dans 32 des 35 nouveaux surcomptages,
 l'entrée ln est exactement nulle. Une fausse activation de cette entrée
