@@ -36,6 +36,14 @@ zero padding must be reported separately from observed audio.
 - Synthetic inference/gradient checks cover the native full-count and poly-count
   models. Defaults stay at 23 frames. Extended V240 scaffolds are count-only;
   historical event-set training losses have not been migrated to 31 frames.
+  Check the transitive mass-aware V102 constructor as well, and require identical
+  seeded initial count-model weights at 23/31 frames before any training.
+
+First attempt `36139128485` passed 23 data regressions but stopped before audio
+audit: a transitive import replaced V102's constructor with the mass-aware
+wrapper, which had not yet accepted `time_frames`. Attempt 2 extends that
+existing wrapper and adds an import-path regression. No data result from the
+failed first attempt is presented as completed.
 
 ## Interpretation
 

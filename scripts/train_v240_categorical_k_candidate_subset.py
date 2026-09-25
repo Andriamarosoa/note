@@ -164,9 +164,6 @@ def _build_model(spec, *, time_frames=v100.TIME_FRAMES, count_only=False):
     card_h = keras.layers.Dense(96, activation="relu", name="v240_cardinality_hidden2")(card_h)
     cardinality = keras.layers.Dense(CARDINALITY_CLASSES, activation="softmax", name="cardinality")(card_h)
 
-    if count_only and time_frames != v100.TIME_FRAMES:
-        return keras.Model(base.inputs, {"cardinality": cardinality}), {"cardinality": 1.0}, token_shape
-
     surv_const = tf.constant(SURVIVAL_MATRIX, dtype=tf.float32)
     soft_active = keras.layers.Lambda(lambda p: tf.linalg.matmul(p, surv_const), name="v240_soft_survival")(cardinality)
     hard_k = keras.layers.Lambda(lambda p: tf.argmax(p, axis=-1, output_type=tf.int32), name="v240_hard_k")(cardinality)
@@ -282,6 +279,10 @@ def _build_model(spec, *, time_frames=v100.TIME_FRAMES, count_only=False):
     outputs["candidate_selected_ids"] = top_ids
     outputs["candidate_selected_scores"] = top_scores
     outputs["candidate_runtime_active"] = runtime_active
+
+    # Keep layer construction order (and seeded count initialization) identical.
+    if count_only and time_frames != v100.TIME_FRAMES:
+        return keras.Model(base.inputs, {"cardinality": cardinality}), {"cardinality": 1.0}, token_shape
 
     loss = {f"string_{s}": "binary_crossentropy" for s in range(SLOT_COUNT)}
     loss.update({f"pitch_{s}": "mse" for s in range(SLOT_COUNT)})

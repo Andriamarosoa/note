@@ -36,7 +36,7 @@ def _poisson_binomial_tensor_fixed(p):
     return dist
 
 
-def _build_model_mass_aware():
+def _build_model_mass_aware(*, time_frames=v.TIME_FRAMES):
     try:
         import tensorflow as tf
         from tensorflow import keras
@@ -47,22 +47,22 @@ def _build_model_mass_aware():
     candidate_hidden = scaffold.get_layer("cluster_hidden2").output
     candidate_context = keras.layers.Dense(v.TOKEN_DIM, activation="relu", name="candidate_context")(candidate_hidden)
 
-    spectral = keras.Input((v.TIME_FRAMES, v.SPECTRAL_BANDS, v.SPECTRAL_CHANNELS), name="spectral_map")
+    spectral = keras.Input((time_frames, v.SPECTRAL_BANDS, v.SPECTRAL_CHANNELS), name="spectral_map")
     x = keras.layers.LayerNormalization(axis=-1, name="spectral_channel_norm")(spectral)
 
-    time_coord = np.linspace(-1.0, 1.0, v.TIME_FRAMES, dtype=np.float32)[:, None]
+    time_coord = v.time_coordinates(time_frames)[:, None]
     freq_coord = np.linspace(-1.0, 1.0, v.SPECTRAL_BANDS, dtype=np.float32)[None, :]
     coord_grid = np.stack(
         (
-            np.broadcast_to(time_coord, (v.TIME_FRAMES, v.SPECTRAL_BANDS)),
-            np.broadcast_to(freq_coord, (v.TIME_FRAMES, v.SPECTRAL_BANDS)),
+            np.broadcast_to(time_coord, (time_frames, v.SPECTRAL_BANDS)),
+            np.broadcast_to(freq_coord, (time_frames, v.SPECTRAL_BANDS)),
         ),
         axis=-1,
     ).astype(np.float32)
     coord_const = tf.constant(coord_grid, dtype=tf.float32)
     coords = keras.layers.Lambda(
         lambda t: tf.tile(coord_const[None, :, :, :], [tf.shape(t)[0], 1, 1, 1]),
-        output_shape=(v.TIME_FRAMES, v.SPECTRAL_BANDS, 2),
+        output_shape=(time_frames, v.SPECTRAL_BANDS, 2),
         name="absolute_tf_coordinates",
     )(spectral)
     x = keras.layers.Concatenate(axis=-1, name="spectral_plus_coordinates")([x, coords])
@@ -70,7 +70,7 @@ def _build_model_mass_aware():
     x = keras.layers.Conv2D(64, (3, 3), strides=(1, 2), padding="same", activation="relu", name="st_conv2")(x)
     x = keras.layers.Conv2D(v.TOKEN_DIM, (3, 3), strides=(1, 2), padding="same", activation="relu", name="st_conv3")(x)
     token_freq = int(math.ceil(math.ceil(math.ceil(v.SPECTRAL_BANDS / 2.0) / 2.0) / 2.0))
-    token_count = v.TIME_FRAMES * token_freq
+    token_count = time_frames * token_freq
     tokens = keras.layers.Reshape((token_count, v.TOKEN_DIM), name="tf_tokens")(x)
     tokens = keras.layers.LayerNormalization(name="tf_token_norm")(tokens)
     tokens = keras.layers.Dense(v.TOKEN_DIM, activation="relu", name="tf_token_projection")(tokens)
@@ -89,7 +89,7 @@ def _build_model_mass_aware():
     score_stack = keras.layers.Lambda(lambda z: tf.stack(z, axis=-1), name="source_score_stack")(source_scores)
     assignment = keras.layers.Softmax(axis=-1, name="competitive_source_assignment")(score_stack)
     assignment_grid = keras.layers.Reshape(
-        (v.TIME_FRAMES, token_freq, v.SOURCE_COUNT),
+        (time_frames, token_freq, v.SOURCE_COUNT),
         name="source_assignment_grid",
     )(assignment)
 
@@ -188,7 +188,7 @@ def _build_model_mass_aware():
         name="v102_competitive_source_time_assignment_mass_aware",
     )
     model.compile(optimizer=keras.optimizers.Adam(learning_rate=2e-4), loss=loss, loss_weights=loss_weights)
-    return model, loss_weights, (v.TIME_FRAMES, token_freq, token_count)
+    return model, loss_weights, (time_frames, token_freq, token_count)
 
 
 v._poisson_binomial_tensor = _poisson_binomial_tensor_fixed

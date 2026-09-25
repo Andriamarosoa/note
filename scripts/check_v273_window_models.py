@@ -17,9 +17,13 @@ def check(output):
                   for t in default.inputs}
         inputs['candidate_mask'][:] = 1
         reference = np.asarray(default(inputs, training=False))
+        reference_weights = default.get_weights()
         explicit = builder('uniform', 273, time_frames=23)
         np.testing.assert_array_equal(reference, np.asarray(explicit(inputs, training=False)))
         model = builder('uniform', 273, time_frames=31)
+        assert len(model.get_weights()) == len(reference_weights)
+        for a, b in zip(reference_weights, model.get_weights()):
+            np.testing.assert_array_equal(a, b)
         x = dict(inputs)
         x['spectral_map'] = rng.normal(size=(2, 31, 64, 3)).astype(np.float32)
         p = np.asarray(model(x, training=False))
@@ -34,7 +38,7 @@ def check(output):
         model.optimizer.apply_gradients(zip(gradients, model.trainable_variables))
         assert any(not np.array_equal(a, b.numpy()) for a, b in zip(before, model.trainable_variables))
         reports.append(dict(component=name, output_classes=classes, covered_frames=31,
-                            historical_default_identical=True, probabilities_normalized=True,
+                            historical_default_identical=True, initial_weights_23_and_31_identical=True, probabilities_normalized=True,
                             finite_gradient_and_update=True, synthetic_loss=float(loss)))
     result = dict(status='passed', examples='random synthetic only', outer_examples_used=0,
                   actual_training_run=False, models=reports)

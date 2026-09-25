@@ -95,6 +95,15 @@ class SpectralWindowTests(unittest.TestCase):
         np.testing.assert_array_equal(time_coordinates(23), old)
         np.testing.assert_array_equal(time_coordinates(31)[:23], old)
 
+    def test_transitive_mass_aware_builder_preserves_window_argument(self):
+        import inspect
+        from scripts import train_v260_count_weighting
+        from scripts import train_v272_poly_conditional_count
+        from scripts import train_v240_categorical_k_candidate_subset as v240
+        self.assertIn('time_frames', inspect.signature(v240.v102._build_model).parameters)
+        with self.assertRaisesRegex(v240.V240Error, 'count_only'):
+            v240._build_model({}, time_frames=31)
+
 
 if __name__ == '__main__':
     unittest.main()
