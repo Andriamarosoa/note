@@ -1,0 +1,84 @@
+name: Audit V27.3 control decisions and inputs - fold 3 only
+
+on:
+  push:
+    branches: [v280-harmonic-pitch-count-research]
+    paths: ['analysis/v273-control-fold3-audit-launch.json']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v273-control-fold3-audit
+  cancel-in-progress: false
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  AUDIT_TAG: v273-control-fold3-audit-${{ github.run_id }}
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Audit tests
+        run: python -m unittest -v test.test_v273_control_audit
+      - name: Restore verified control and exported bundle
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/download
+          gh release download v273-native-decay-35099819151 --repo "$GITHUB_REPOSITORY" \
+            --pattern v273-native-paired-fold-3.zip --dir model/download
+          gh release download v273-frozen-ln-35159220367 --repo "$GITHUB_REPOSITORY" \
+            --pattern v273-frozen-ln-fold3.zip --dir model/download
+          python - <<'PY'
+          from scripts.restore_v273_original_backup import extract_verified
+          extract_verified('model/download/v273-native-paired-fold-3.zip', 'model/fold-3',
+                           '67f59e33943e95b5e4ad54dfdec1dc597b4c56d8caaebbdd8b5eff22a743995d')
+          extract_verified('model/download/v273-frozen-ln-fold3.zip', 'model/selected',
+                           'ae39ffac9b99450d9517233c3bb5b7845abb27e5d4b5222e80f17d760e232c37')
+          PY
+      - name: Independent replay and bounded decision ablations
+        run: |
+          python -B scripts/audit_v273_control_fold3.py --fold-dir model/fold-3 \
+            --bundle-dir model/selected --output-dir model/control-audit/decisions
+      - name: Restore original input cache and annotations
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -B scripts/prepare_v273_native_experiment.py \
+            --config analysis/v273-native-paired-config.json --output-dir model/native-cache
+          curl -L --fail --retry 3 -o model/annotation.zip \
+            https://zenodo.org/records/3371780/files/annotation.zip
+      - name: Audit labels and timing coverage of fold 3 inputs
+        run: |
+          python -B scripts/audit_v273_control_inputs.py --cache-dir model/native-cache \
+            --annotation-zip model/annotation.zip --decision-dir model/control-audit/decisions \
+            --output-dir model/control-audit/inputs
+      - name: Preserve completed audit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$AUDIT_TAG" --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" --prerelease --title "V27.3 control audit - fold 3 only" \
+            --notes-file analysis/v273-control-fold3-audit-protocol.md
+          python -B scripts/archive_v273_native_stage.py --root model/control-audit \
+            --name v273-control-fold3-audit --tag "$AUDIT_TAG"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-control-fold3-audit
+          path: model/control-audit
+          compression-level: 1
+          retention-days: 90
+          if-no-files-found: warn
