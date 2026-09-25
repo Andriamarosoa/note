@@ -79,6 +79,7 @@ from scripts.train_v100_spectral_string_slots import (
     _spectral_maps_for_runtime,
 )
 from scripts import train_v101_string_query_attention as v101
+from scripts.spectral_window import LEGACY, cache_window, time_coordinates
 
 
 DEFAULT_SEED_V102 = 10231
@@ -127,8 +128,8 @@ def _nearest_cluster_for_event(
     return best_dist, best_cid
 
 
-def _time_distribution(relative_sample: float) -> np.ndarray:
-    distance_frames = (FRAME_CENTER_SAMPLES - float(relative_sample)) / float(FRAME_STEP)
+def _time_distribution(relative_sample: float, *, window=LEGACY) -> np.ndarray:
+    distance_frames = (window.centers - float(relative_sample)) / float(FRAME_STEP)
     weights = np.exp(-0.5 * (distance_frames / TIME_TARGET_SIGMA_FRAMES) ** 2)
     total = float(np.sum(weights))
     if not math.isfinite(total) or total <= 0.0:
@@ -143,12 +144,17 @@ def _derive_supervision(
     *,
     expected_slot_targets: Optional[np.ndarray] = None,
     assignment_cache=None,
+    window=None,
 ):
     """Assign events using full groups, keeping retained candidate IDs separate.
 
     Cache-backed callers must pass assignment_cache; runtime callers already
     provide the original, untruncated groups directly.
     """
+    if window is None:
+        window = cache_window(assignment_cache) if assignment_cache is not None else LEGACY
+    elif assignment_cache is not None and window != cache_window(assignment_cache):
+        raise V102Error("supervision window/cache mismatch")
     if assignment_cache is not None:
         from scripts.train_v92_string_factorized_cardinality import _supervision_candidates
         if not np.array_equal(np.asarray(members).astype(str), np.asarray(assignment_cache["members"]).astype(str)):
@@ -165,7 +171,7 @@ def _derive_supervision(
     n = len(members)
     pitch = np.zeros((n, SLOT_COUNT), dtype=np.float32)
     mask = np.zeros((n, SLOT_COUNT), dtype=np.float32)
-    time_targets = np.zeros((n, SLOT_COUNT, TIME_FRAMES), dtype=np.float32)
+    time_targets = np.zeros((n, SLOT_COUNT, window.time_frames), dtype=np.float32)
     time_sample = np.full((n, SLOT_COUNT), np.nan, dtype=np.float32)
     nearest_distance = np.full((n, SLOT_COUNT), np.inf, dtype=np.float64)
 
@@ -213,11 +219,11 @@ def _derive_supervision(
                 if dist >= nearest_distance[cid, slot]:
                     continue
             relative = float(onset - starts[cid])
-            if relative < FRAME_CENTER_SAMPLES[0] or relative > FRAME_CENTER_SAMPLES[-1]:
+            if relative < window.centers[0] or relative > window.centers[-1]:
                 outside_frame_centers += 1
             pitch[cid, slot] = float(midi / v101.PITCH_SCALE)
             mask[cid, slot] = 1.0
-            time_targets[cid, slot] = _time_distribution(relative)
+            time_targets[cid, slot] = _time_distribution(relative, window=window)
             time_sample[cid, slot] = float(relative)
             nearest_distance[cid, slot] = dist
             assigned += 1
@@ -241,7 +247,7 @@ def _derive_supervision(
         "midi_max": max(midi_values) if midi_values else None,
         "midi_mean": float(np.mean(midi_values)) if midi_values else None,
         "time_target_sigma_frames": TIME_TARGET_SIGMA_FRAMES,
-        "frame_center_ms": [float(x) for x in FRAME_CENTER_MS],
+        "frame_center_ms": [float(x) for x in (window.centers * 1000.0 / SAMPLE_RATE)],
         "indexing": "global_cluster_row",
     }
 
@@ -276,7 +282,7 @@ def _poisson_binomial_tensor(p):
     return dist
 
 
-def _build_model():
+def _build_model(*, time_frames=TIME_FRAMES):
     try:
         import tensorflow as tf
         from tensorflow import keras
@@ -287,32 +293,32 @@ def _build_model():
     candidate_hidden = scaffold.get_layer("cluster_hidden2").output
     candidate_context = keras.layers.Dense(TOKEN_DIM, activation="relu", name="candidate_context")(candidate_hidden)
 
-    spectral = keras.Input((TIME_FRAMES, SPECTRAL_BANDS, SPECTRAL_CHANNELS), name="spectral_map")
+    spectral = keras.Input((time_frames, SPECTRAL_BANDS, SPECTRAL_CHANNELS), name="spectral_map")
     x = keras.layers.LayerNormalization(axis=-1, name="spectral_channel_norm")(spectral)
 
-    time_coord = np.linspace(-1.0, 1.0, TIME_FRAMES, dtype=np.float32)[:, None]
+    time_coord = time_coordinates(time_frames)[:, None]
     freq_coord = np.linspace(-1.0, 1.0, SPECTRAL_BANDS, dtype=np.float32)[None, :]
     coord_grid = np.stack(
         (
-            np.broadcast_to(time_coord, (TIME_FRAMES, SPECTRAL_BANDS)),
-            np.broadcast_to(freq_coord, (TIME_FRAMES, SPECTRAL_BANDS)),
+            np.broadcast_to(time_coord, (time_frames, SPECTRAL_BANDS)),
+            np.broadcast_to(freq_coord, (time_frames, SPECTRAL_BANDS)),
         ),
         axis=-1,
     ).astype(np.float32)
     coord_const = tf.constant(coord_grid, dtype=tf.float32)
     coords = keras.layers.Lambda(
         lambda t: tf.tile(coord_const[None, :, :, :], [tf.shape(t)[0], 1, 1, 1]),
-        output_shape=(TIME_FRAMES, SPECTRAL_BANDS, 2),
+        output_shape=(time_frames, SPECTRAL_BANDS, 2),
         name="absolute_tf_coordinates",
     )(spectral)
     x = keras.layers.Concatenate(axis=-1, name="spectral_plus_coordinates")([x, coords])
 
-    # Preserve all 23 time frames. Only the frequency axis is compressed.
+    # Preserve every time frame. Only the frequency axis is compressed.
     x = keras.layers.Conv2D(32, (3, 5), strides=(1, 2), padding="same", activation="relu", name="st_conv1")(x)
     x = keras.layers.Conv2D(64, (3, 3), strides=(1, 2), padding="same", activation="relu", name="st_conv2")(x)
     x = keras.layers.Conv2D(TOKEN_DIM, (3, 3), strides=(1, 2), padding="same", activation="relu", name="st_conv3")(x)
     token_freq = int(math.ceil(math.ceil(math.ceil(SPECTRAL_BANDS / 2.0) / 2.0) / 2.0))
-    token_count = TIME_FRAMES * token_freq
+    token_count = time_frames * token_freq
     tokens = keras.layers.Reshape((token_count, TOKEN_DIM), name="tf_tokens")(x)
     tokens = keras.layers.LayerNormalization(name="tf_token_norm")(tokens)
     tokens = keras.layers.Dense(TOKEN_DIM, activation="relu", name="tf_token_projection")(tokens)
@@ -330,7 +336,7 @@ def _build_model():
         source_scores.append(score)
     score_stack = keras.layers.Lambda(lambda z: tf.stack(z, axis=-1), name="source_score_stack")(source_scores)
     assignment = keras.layers.Softmax(axis=-1, name="competitive_source_assignment")(score_stack)
-    assignment_grid = keras.layers.Reshape((TIME_FRAMES, token_freq, SOURCE_COUNT), name="source_assignment_grid")(assignment)
+    assignment_grid = keras.layers.Reshape((time_frames, token_freq, SOURCE_COUNT), name="source_assignment_grid")(assignment)
 
     slot_features = []
     string_outputs = []
@@ -422,7 +428,7 @@ def _build_model():
         name="v102_competitive_source_time_assignment",
     )
     model.compile(optimizer=keras.optimizers.Adam(learning_rate=2e-4), loss=loss, loss_weights=loss_weights)
-    return model, loss_weights, (TIME_FRAMES, token_freq, token_count)
+    return model, loss_weights, (time_frames, token_freq, token_count)
 
 
 def _count_weights(k: np.ndarray) -> np.ndarray:

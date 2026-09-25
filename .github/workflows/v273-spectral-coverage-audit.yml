@@ -1,0 +1,95 @@
+name: V27.3 native spectral coverage audit - fold 3 only
+
+on:
+  push:
+    branches: [v280-harmonic-pitch-count-research]
+    paths: ['analysis/v273-spectral-coverage-launch.json']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v273-spectral-coverage-fold3
+  cancel-in-progress: false
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  TF_NUM_INTRAOP_THREADS: '2'
+  TF_NUM_INTEROP_THREADS: '2'
+  OMP_NUM_THREADS: '2'
+  AUDIT_TAG: v273-spectral-coverage-${{ github.run_id }}
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - run: python -m pip install -r requirements-train.txt numpy==1.26.4
+      - name: Regression tests and synthetic native count model checks
+        run: |
+          mkdir -p model/checks
+          python -m unittest -v test.test_spectral_window test.test_candidate_timing test.test_v273_control_audit test.test_v273_fold3_ablation
+          python -B scripts/check_v273_window_models.py --output model/checks/model-checks.json
+      - uses: actions/cache@v4
+        id: guitarset
+        with:
+          path: data/GuitarSet
+          key: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+      - name: Download GuitarSet if needed
+        if: steps.guitarset.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+      - name: Restore identical saved candidates without re-mining
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+          from scripts.restore_v273_original_backup import extract_verified
+          cfg=json.loads(Path('analysis/v273-spectral-coverage-launch.json').read_text())
+          item=cfg['source']
+          download=Path('model/download')
+          download.mkdir(parents=True)
+          subprocess.run(['gh','release','download',item['tag'],'--repo','Andriamarosoa/note',
+                          '--pattern',item['asset'],'--dir',str(download)],check=True)
+          extract_verified(download/item['asset'],Path('model/exact'),item['sha256'])
+          PY
+      - name: Extend native window and audit all 50 fold 3 tracks
+        run: |
+          python -B scripts/audit_v273_spectral_coverage.py --root model/exact \
+            --dataset-dir data/GuitarSet --config analysis/v273-native-paired-config.json \
+            --output-dir model/covered
+          cp model/checks/model-checks.json model/covered/model-checks.json
+      - name: Preserve verified native caches and audit evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$AUDIT_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title 'V27.3 native spectral coverage - fold 3 audit' \
+            --notes-file analysis/v273-spectral-coverage-protocol.md
+          python -B scripts/archive_v273_native_stage.py --root model/covered \
+            --name v273-spectral-coverage-fold3 --tag "$AUDIT_TAG"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-spectral-coverage-report
+          path: |
+            model/covered/report.json
+            model/covered/progress.json
+            model/checks/model-checks.json
+          if-no-files-found: warn
+          retention-days: 90

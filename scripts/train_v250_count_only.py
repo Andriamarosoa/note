@@ -52,13 +52,13 @@ def ordinal_probabilities(tf, logits):
     return tf.concat([1. - survival[:, :1], survival[:, :-1] - survival[:, 1:], survival[:, -1:]], axis=1)
 
 
-def build_model(arm, seed):
+def build_model(arm, seed, *, time_frames=23):
     import tensorflow as tf
     if arm not in ARMS:
         raise ValueError(arm)
     tf.keras.backend.clear_session()
     tf.keras.utils.set_random_seed(seed)
-    scaffold, _, _ = v240._build_model({})
+    scaffold, _, _ = v240._build_model({}, time_frames=time_frames, count_only=True)
     hidden = scaffold.get_layer('v240_cardinality_hidden2').output
     if arm == 'categorical':
         out = scaffold.get_layer('cardinality').output

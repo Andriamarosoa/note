@@ -86,14 +86,14 @@ def poly_class_weights(fit_k, arm: str) -> np.ndarray:
     return table.astype(np.float32)
 
 
-def build_model(arm: str, seed: int):
+def build_model(arm: str, seed: int, *, time_frames=23):
     import tensorflow as tf
 
     if arm not in ARMS:
         raise V272Error(f"invalid arm {arm!r}")
     tf.keras.backend.clear_session()
     tf.keras.utils.set_random_seed(seed)
-    scaffold, _, _ = v240._build_model({})
+    scaffold, _, _ = v240._build_model({}, time_frames=time_frames, count_only=True)
     hidden = scaffold.get_layer("v240_cardinality_hidden2").output
     out = tf.keras.layers.Dense(5, activation="softmax", name="v272_poly_cardinality")(hidden)
     model = tf.keras.Model(scaffold.inputs, out, name=f"v272_poly_{arm}")

@@ -78,6 +78,7 @@ DEFAULT_SEED_V100 = 10031
 CACHE_SCHEMA_VERSION = 2
 
 from scripts.candidate_timing import timing_fields, merge_timing, check_schema
+from scripts.spectral_window import LEGACY, cache_window, window_metadata
 PRE_SAMPLES = 1308
 POST_SAMPLES = CLUSTER_WINDOW_SAMPLES  # 1764 ~= 40 ms
 SEGMENT_SAMPLES = PRE_SAMPLES + POST_SAMPLES  # 3072
@@ -117,22 +118,22 @@ def _pcm_window(samples: np.ndarray, start: int, length: int) -> np.ndarray:
     return out
 
 
-def _spectral_map_from_segment(segment: np.ndarray) -> np.ndarray:
-    if segment.shape != (SEGMENT_SAMPLES,):
+def _spectral_map_from_segment(segment: np.ndarray, *, window=LEGACY) -> np.ndarray:
+    if segment.shape != (window.segment_samples,):
         raise V100Error(f"unexpected segment shape {segment.shape}")
     taper = np.hanning(FRAME_LENGTH).astype(np.float32)
     freqs = np.fft.rfftfreq(FFT_SIZE, d=1.0 / SAMPLE_RATE)
     targets = np.geomspace(MIN_HZ, MAX_HZ, SPECTRAL_BANDS)
     power_rows = []
-    for start in range(0, SEGMENT_SAMPLES - FRAME_LENGTH + 1, FRAME_STEP):
+    for start in range(0, window.segment_samples - FRAME_LENGTH + 1, FRAME_STEP):
         frame = segment[start:start + FRAME_LENGTH] * taper
         power = np.abs(np.fft.rfft(frame, n=FFT_SIZE)) ** 2
         power_rows.append(np.interp(targets, freqs, power))
     power = np.asarray(power_rows, dtype=np.float64)
-    if power.shape != (TIME_FRAMES, SPECTRAL_BANDS):
+    if power.shape != (window.time_frames, SPECTRAL_BANDS):
         raise V100Error(f"unexpected spectral map base shape {power.shape}")
     eps = 1e-10
-    pre_frame_count = max(2, PRE_SAMPLES // FRAME_STEP - 1)
+    pre_frame_count = max(2, window.pre_samples // FRAME_STEP - 1)
     pre = power[:pre_frame_count]
     scalar = float(np.median(np.mean(pre, axis=1))) + eps
     pre_band = np.mean(pre, axis=0) + eps
@@ -144,12 +145,12 @@ def _spectral_map_from_segment(segment: np.ndarray) -> np.ndarray:
     return result
 
 
-def _spectral_maps_for_cache(cache, dataset_dir: Path):
+def _spectral_maps_for_cache(cache, dataset_dir: Path, *, window=LEGACY):
     indexed = tuple(t for t in index_guitarset(dataset_dir) if t.player_id in ALLOWED_PLAYERS)
     by_member = {t.annotation_member: t for t in indexed}
     candidate_samples, reconstruction = _reconstruct_candidates(cache)
     timing = timing_fields(cache)
-    maps = np.zeros((len(cache["target"]), TIME_FRAMES, SPECTRAL_BANDS, SPECTRAL_CHANNELS), dtype=np.float16)
+    maps = np.zeros((len(cache["target"]), window.time_frames, SPECTRAL_BANDS, SPECTRAL_CHANNELS), dtype=np.float16)
     by_member_rows: Dict[str, List[int]] = defaultdict(list)
     for i, member in enumerate(cache["members"]):
         by_member_rows[str(member)].append(i)
@@ -164,14 +165,14 @@ def _spectral_maps_for_cache(cache, dataset_dir: Path):
             if not len(candidates):
                 raise V100Error("empty reconstructed candidate cluster")
             cluster_start = int(timing["cluster_start_samples"][idx]) if timing else int(np.min(candidates))
-            segment = _pcm_window(samples, cluster_start - PRE_SAMPLES, SEGMENT_SAMPLES)
-            maps[idx] = _spectral_map_from_segment(segment).astype(np.float16)
+            segment = _pcm_window(samples, cluster_start - window.pre_samples, window.segment_samples)
+            maps[idx] = _spectral_map_from_segment(segment, window=window).astype(np.float16)
         print(f"spectral {ordinal}/{len(by_member_rows)}: {member} clusters={len(ids)}")
     return maps, reconstruction
 
 
-def _spectral_maps_for_runtime(tracks, clusters, records):
-    maps = np.zeros((len(clusters), TIME_FRAMES, SPECTRAL_BANDS, SPECTRAL_CHANNELS), dtype=np.float32)
+def _spectral_maps_for_runtime(tracks, clusters, records, *, window=LEGACY):
+    maps = np.zeros((len(clusters), window.time_frames, SPECTRAL_BANDS, SPECTRAL_CHANNELS), dtype=np.float32)
     by_member_ids: Dict[str, List[int]] = defaultdict(list)
     for cid, cluster in enumerate(clusters):
         by_member_ids[cluster["member"]].append(cid)
@@ -183,18 +184,21 @@ def _spectral_maps_for_runtime(tracks, clusters, records):
         for cid in ids:
             cluster = clusters[cid]
             cluster_start = min(int(records[i]["sample"]) for i in cluster["indices"])
-            segment = _pcm_window(samples, cluster_start - PRE_SAMPLES, SEGMENT_SAMPLES)
-            maps[cid] = _spectral_map_from_segment(segment)
+            segment = _pcm_window(samples, cluster_start - window.pre_samples, window.segment_samples)
+            maps[cid] = _spectral_map_from_segment(segment, window=window)
     return maps
 
 
-def _save_spectral_cache(path: Path, cache, spectral, slots):
+def _save_spectral_cache(path: Path, cache, spectral, slots, *, window=LEGACY):
     timing = timing_fields(cache, required=True)
+    metadata = window_metadata(window) if window != LEGACY else {}
+    cache_window({"target": cache["target"], "spectral": spectral, **metadata})
     np.savez(
         path,
         **timing,
+        **metadata,
         truncated=np.diff(timing["full_candidate_offsets"]) - np.sum(cache["mask"], axis=1).astype(np.int64),
-        schema_version=np.asarray([CACHE_SCHEMA_VERSION], dtype=np.int16),
+        schema_version=np.asarray([3 if window != LEGACY else CACHE_SCHEMA_VERSION], dtype=np.int16),
         spectral=np.asarray(spectral, dtype=np.float16),
         sequence=np.asarray(cache["sequence"], dtype=np.float16),
         mask=np.asarray(cache["mask"], dtype=np.uint8),
@@ -259,12 +263,18 @@ def _load_spectral_caches(cache_dir: Path):
     arrays = defaultdict(list)
     track_members = []
     timing_shards = []
+    windows = []
     for path in paths:
         with np.load(path, allow_pickle=False) as data:
             version = int(data["schema_version"][0])
-            check_schema(data, version)
+            if version not in (1, 2, 3):
+                raise V100Error(f"unsupported spectral cache schema {version}")
+            check_schema(data, 2 if version == 3 else version)
+            windows.append(cache_window(data, version=version))
+            if windows[-1] != windows[0]:
+                raise V100Error("cannot mix spectral windows")
             timing_shards.append({**timing_fields(data), "mask": np.asarray(data["mask"])})
-            if version == 2:
+            if version >= 2:
                 arrays["truncated"].append(np.asarray(data["truncated"]))
             for key in ("spectral", "sequence", "mask", "stats", "target", "exact", "members", "top_samples", "slot_targets"):
                 arrays[key].append(np.asarray(data[key]))
@@ -272,6 +282,8 @@ def _load_spectral_caches(cache_dir: Path):
     timing = merge_timing(timing_shards)
     merged = {key: np.concatenate(values, axis=0) for key, values in arrays.items()}
     merged.update(timing)
+    if windows[0] != LEGACY:
+        merged.update(window_metadata(windows[0]))
     merged["members"] = merged["members"].astype(str)
     merged["target"] = merged["target"].astype(np.int32)
     merged["exact"] = merged["exact"].astype(np.int32)

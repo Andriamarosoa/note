@@ -113,14 +113,18 @@ def _candidate_subset_loss():
     return CandidateSubsetLoss()
 
 
-def _build_model(spec):
+def _build_model(spec, *, time_frames=v100.TIME_FRAMES, count_only=False):
+    # The historical event-set loss still packs a 23-frame target. Extended
+    # windows are supported only by the pruned native count models below.
+    if time_frames != v100.TIME_FRAMES and not count_only:
+        raise V240Error("extended spectral windows require count_only=True")
     try:
         import tensorflow as tf
         from tensorflow import keras
     except ImportError as exc:
         raise RuntimeError("TensorFlow is required") from exc
 
-    base, _, token_shape = v102._build_model()
+    base, _, token_shape = v102._build_model(time_frames=time_frames)
     candidate_context = base.get_layer("candidate_context").output
     tf_tokens = base.get_layer("tf_tokens").output
     candidate_set = _input_by_name(base, "candidate_set")
@@ -128,12 +132,12 @@ def _build_model(spec):
     spectral = _input_by_name(base, "spectral_map")
 
     # Preserve the V23 dense evidence + explicit categorical K treatment.
-    tc = np.linspace(-1.0, 1.0, v100.TIME_FRAMES, dtype=np.float32)[:, None]
+    tc = v102.time_coordinates(time_frames)[:, None]
     fc = np.linspace(-1.0, 1.0, v100.SPECTRAL_BANDS, dtype=np.float32)[None, :]
     coord = np.stack(
         [
-            np.broadcast_to(tc, (v100.TIME_FRAMES, v100.SPECTRAL_BANDS)),
-            np.broadcast_to(fc, (v100.TIME_FRAMES, v100.SPECTRAL_BANDS)),
+            np.broadcast_to(tc, (time_frames, v100.SPECTRAL_BANDS)),
+            np.broadcast_to(fc, (time_frames, v100.SPECTRAL_BANDS)),
         ],
         axis=-1,
     ).astype(np.float32)
@@ -149,7 +153,7 @@ def _build_model(spec):
     dense_features = keras.layers.Conv2D(QUERY_DIM, (3, 3), padding="same", activation="relu", name="v240_dense_conv3")(dense)
 
     center4 = keras.layers.Conv2D(1, (1, 1), padding="same", name="v240_birth_center_logits")(dense_features)
-    center_logits = keras.layers.Reshape((v100.TIME_FRAMES * v100.SPECTRAL_BANDS,), name="v240_birth_center_logits_flat")(center4)
+    center_logits = keras.layers.Reshape((time_frames * v100.SPECTRAL_BANDS,), name="v240_birth_center_logits_flat")(center4)
     center_map = keras.layers.Softmax(name="birth_center_map")(center_logits)
 
     avg = keras.layers.GlobalAveragePooling2D(name="v240_dense_global_average")(dense_features)
@@ -159,6 +163,9 @@ def _build_model(spec):
     card_h = keras.layers.Dropout(0.08, name="v240_cardinality_dropout")(card_h)
     card_h = keras.layers.Dense(96, activation="relu", name="v240_cardinality_hidden2")(card_h)
     cardinality = keras.layers.Dense(CARDINALITY_CLASSES, activation="softmax", name="cardinality")(card_h)
+
+    if count_only and time_frames != v100.TIME_FRAMES:
+        return keras.Model(base.inputs, {"cardinality": cardinality}), {"cardinality": 1.0}, token_shape
 
     surv_const = tf.constant(SURVIVAL_MATRIX, dtype=tf.float32)
     soft_active = keras.layers.Lambda(lambda p: tf.linalg.matmul(p, surv_const), name="v240_soft_survival")(cardinality)
@@ -220,7 +227,7 @@ def _build_model(spec):
         name="v240_candidate_tf_time_scores",
     )([time_q, time_k])
     token_freq = int(token_shape[1])
-    time_grid = keras.layers.Reshape((MAX_CANDIDATES, v100.TIME_FRAMES, token_freq), name="v240_candidate_time_grid")(time_scores)
+    time_grid = keras.layers.Reshape((MAX_CANDIDATES, time_frames, token_freq), name="v240_candidate_time_grid")(time_scores)
     time_mass = keras.layers.Lambda(lambda x: tf.reduce_logsumexp(x, axis=3), name="v240_candidate_time_mass")(time_grid)
     candidate_time = keras.layers.Softmax(axis=2, name="v240_candidate_time_distribution")(time_mass)
     soft_slot_time = keras.layers.Lambda(
