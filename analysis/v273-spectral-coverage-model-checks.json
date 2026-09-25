@@ -1,0 +1,28 @@
+{
+  "actual_training_run": false,
+  "examples": "random synthetic only",
+  "models": [
+    {
+      "component": "full_count",
+      "covered_frames": 31,
+      "finite_gradient_and_update": true,
+      "historical_default_identical": true,
+      "initial_weights_23_and_31_identical": true,
+      "output_classes": 7,
+      "probabilities_normalized": true,
+      "synthetic_loss": 1.774719476699829
+    },
+    {
+      "component": "poly_count",
+      "covered_frames": 31,
+      "finite_gradient_and_update": true,
+      "historical_default_identical": true,
+      "initial_weights_23_and_31_identical": true,
+      "output_classes": 5,
+      "probabilities_normalized": true,
+      "synthetic_loss": 1.667215347290039
+    }
+  ],
+  "outer_examples_used": 0,
+  "status": "passed"
+}

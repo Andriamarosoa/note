@@ -149,7 +149,7 @@ def _spectral_maps_for_cache(cache, dataset_dir: Path, *, window=LEGACY):
     indexed = tuple(t for t in index_guitarset(dataset_dir) if t.player_id in ALLOWED_PLAYERS)
     by_member = {t.annotation_member: t for t in indexed}
     candidate_samples, reconstruction = _reconstruct_candidates(cache)
-    timing = timing_fields(cache)
+    timing = timing_fields(cache, required=window != LEGACY)
     maps = np.zeros((len(cache["target"]), window.time_frames, SPECTRAL_BANDS, SPECTRAL_CHANNELS), dtype=np.float16)
     by_member_rows: Dict[str, List[int]] = defaultdict(list)
     for i, member in enumerate(cache["members"]):

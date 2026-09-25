@@ -62,6 +62,14 @@ class SpectralWindowTests(unittest.TestCase):
             with self.subTest(version=version), self.assertRaises(ValueError):
                 cache_window(data, version=version)
 
+    def test_extended_cache_refuses_ambiguous_legacy_timestamps(self):
+        from scripts.candidate_timing import TIMING_KEYS
+        cache, _, _ = fixture([[1000, 1200]])
+        legacy = {key: value for key, value in cache.items() if key not in TIMING_KEYS}
+        with patch.object(v100, 'index_guitarset', return_value=[]), \
+             self.assertRaisesRegex(ValueError, 'exact timing missing'):
+            v100._spectral_maps_for_cache(legacy, Path('.'), window=COVERED)
+
     def test_supervision_extends_time_axis_without_changing_assignment(self):
         cache, _, _ = fixture([[1000, 2764]])
         new_cache = {**cache, **window_metadata(COVERED)}

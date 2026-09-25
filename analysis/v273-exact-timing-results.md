@@ -1,5 +1,9 @@
 # V27.3 — correction native des positions et audit du fold 3
 
+**Suite vérifiée :** le [correctif de couverture à 31 trames](v273-spectral-coverage-results.md)
+résout les 96 attaques hors fenêtre décrites ci-dessous, sur les mêmes candidats
+enregistrés. Ce rapport conserve les résultats historiques de l’étape précédente.
+
 Verdict du 25 septembre 2026 : **les défauts de préparation identifiés sont
 corrigés et la cohérence des nouveaux caches avec les données produites
 directement à partir de l’audio est vérifiée. Aucun gain d’Exact K n’est encore
