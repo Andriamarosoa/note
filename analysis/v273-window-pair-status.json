@@ -1,13 +1,13 @@
 {
-  "status": "running_data_preparation",
-  "checked_at_utc": "2026-09-27T21:16:52.200379+00:00",
+  "status": "training_in_progress_one_variant_completed",
+  "checked_at_utc": "2026-09-27T22:23:21.137254+00:00",
   "run_id": 36351028493,
   "run_url": "https://github.com/Andriamarosoa/note/actions/runs/36351028493",
   "source_commit": "cdb11b6cfe50beac86194fc6a2ddca06149e8467",
   "outer_fold": 3,
   "preflight": "passed",
   "preparation_parts": 10,
-  "training_epochs_started": false,
+  "training_epochs_started": true,
   "training_jobs_scheduled": 4,
   "frames": [
     23,
@@ -28,5 +28,26 @@
   "automatic_post_training_audit": true,
   "results_available": false,
   "protocol": "analysis/v273-window-pair-protocol.md",
-  "release": "https://github.com/Andriamarosoa/note/releases/tag/v273-window-pair-36351028493"
+  "release": "https://github.com/Andriamarosoa/note/releases/tag/v273-window-pair-36351028493",
+  "preparation_parts_completed": 10,
+  "bundle": "verified",
+  "training_jobs_completed": [
+    "frames-31-uniform"
+  ],
+  "training_jobs_running": [
+    "frames-23-uniform",
+    "frames-23-weighted",
+    "frames-31-weighted"
+  ],
+  "completed_variant_checks": {
+    "variant": "frames-31-uniform",
+    "inner_epochs": 8,
+    "final_epochs": 8,
+    "outer_rows": 15279,
+    "outer_poly_rows": 1969,
+    "archive_sha256": "56a282d299e13dbf14021076b5dcdbff3aa774197562a4233b1dad4f8fea5ac6",
+    "file_inventory_verified": true,
+    "scalar_decoder_verified": true
+  },
+  "paired_results_available": false
 }
