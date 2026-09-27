@@ -1,0 +1,20 @@
+{
+  "experiment": "native_count_window_23_vs_31",
+  "attempt": 1,
+  "outer_fold": 3,
+  "frames": [23, 31],
+  "weightings": ["uniform", "weighted"],
+  "primary": "uniform",
+  "epochs_per_phase": 8,
+  "proposal_source": {
+    "tag": "v273-source-recovery-35086829802",
+    "asset": "v273-rebuilt-proposal-sources.zip",
+    "sha256": "fb6bb1049b87c0517936f4f40e5bc1442722fc20b9eba5045a62bb0a12cf2994"
+  },
+  "outer_source": {
+    "tag": "v273-spectral-coverage-36139446276",
+    "asset": "v273-spectral-coverage-fold3.zip",
+    "sha256": "e885a2e100296e2ce257690b704432097869c2c7883654214bd4f9859ede4742"
+  },
+  "automatic_promotion": false
+}
