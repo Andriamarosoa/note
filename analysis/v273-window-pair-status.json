@@ -1,0 +1,32 @@
+{
+  "status": "running_data_preparation",
+  "checked_at_utc": "2026-09-27T21:16:52.200379+00:00",
+  "run_id": 36351028493,
+  "run_url": "https://github.com/Andriamarosoa/note/actions/runs/36351028493",
+  "source_commit": "cdb11b6cfe50beac86194fc6a2ddca06149e8467",
+  "outer_fold": 3,
+  "preflight": "passed",
+  "preparation_parts": 10,
+  "training_epochs_started": false,
+  "training_jobs_scheduled": 4,
+  "frames": [
+    23,
+    31
+  ],
+  "weightings": [
+    "uniform",
+    "weighted"
+  ],
+  "epochs_per_phase": 8,
+  "phases": [
+    "inner",
+    "final"
+  ],
+  "model_scope": "native seven-class count component used in V27.3; not the complete V27.3 pipeline",
+  "primary_comparison": "uniform: 31 versus 23 frames",
+  "output_corrector_added": false,
+  "automatic_post_training_audit": true,
+  "results_available": false,
+  "protocol": "analysis/v273-window-pair-protocol.md",
+  "release": "https://github.com/Andriamarosoa/note/releases/tag/v273-window-pair-36351028493"
+}
