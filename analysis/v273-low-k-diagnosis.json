@@ -1,0 +1,532 @@
+{
+  "all_saved_probe_counts_recomputed": true,
+  "example_selection": "Highest confidence per named stratum; illustrative, not a representative sample.",
+  "examples": [
+    {
+      "carried_notes_at_start": 2,
+      "eligible_rows": 3,
+      "foreign_births_31": 1,
+      "foreign_births_added_tail": 1,
+      "global_index": 30533,
+      "member": "01_SS2-88-F_comp.jams",
+      "overlapping_notes_31": 3,
+      "predictions": {
+        "frames-23-uniform": 0,
+        "frames-23-weighted": 0,
+        "frames-31-uniform": 0,
+        "frames-31-weighted": 1
+      },
+      "probability": [
+        0.32239431142807007,
+        0.42683878540992737,
+        0.2081187218427658,
+        0.034113988280296326,
+        0.007165038026869297,
+        0.0012201176723465323,
+        0.000148989463923499
+      ],
+      "probe_predictions": {
+        "baseline": 1,
+        "head_zero": 1,
+        "tail_hold": 0,
+        "tail_zero": 0,
+        "zero_candidate_context": 1,
+        "zero_spectral_context": 0
+      },
+      "start_seconds": 4.986780045351474,
+      "stratum": "new_over_tail_specific_foreign",
+      "track_row": 50,
+      "true_k": 0
+    },
+    {
+      "carried_notes_at_start": 1,
+      "eligible_rows": 224,
+      "foreign_births_31": 1,
+      "foreign_births_added_tail": 0,
+      "global_index": 23053,
+      "member": "01_Jazz2-187-F#_solo.jams",
+      "overlapping_notes_31": 1,
+      "predictions": {
+        "frames-23-uniform": 1,
+        "frames-23-weighted": 1,
+        "frames-31-uniform": 1,
+        "frames-31-weighted": 1
+      },
+      "probability": [
+        0.018864965066313744,
+        0.9631372690200806,
+        0.017579134553670883,
+        0.0003997005114797503,
+        1.774534939613659e-05,
+        1.0767620324259042e-06,
+        8.097879344859393e-08
+      ],
+      "probe_predictions": {
+        "baseline": 1,
+        "head_zero": 1,
+        "tail_hold": 1,
+        "tail_zero": 0,
+        "zero_candidate_context": 2,
+        "zero_spectral_context": 1
+      },
+      "start_seconds": 18.78092970521542,
+      "stratum": "k0_with_foreign_birth",
+      "track_row": 178,
+      "true_k": 0
+    },
+    {
+      "carried_notes_at_start": 1,
+      "eligible_rows": 189,
+      "foreign_births_31": 0,
+      "foreign_births_added_tail": 0,
+      "global_index": 31298,
+      "member": "01_SS2-88-F_solo.jams",
+      "overlapping_notes_31": 1,
+      "predictions": {
+        "frames-23-uniform": 1,
+        "frames-23-weighted": 1,
+        "frames-31-uniform": 1,
+        "frames-31-weighted": 1
+      },
+      "probability": [
+        0.010468617081642151,
+        0.978734016418457,
+        0.010549400001764297,
+        0.00024119793670251966,
+        6.5067820287367795e-06,
+        1.8339301277592313e-07,
+        1.1189841053749205e-08
+      ],
+      "probe_predictions": {
+        "baseline": 1,
+        "head_zero": 1,
+        "tail_hold": 1,
+        "tail_zero": 1,
+        "zero_candidate_context": 2,
+        "zero_spectral_context": 1
+      },
+      "start_seconds": 32.75124716553288,
+      "stratum": "k0_carried_without_foreign_birth",
+      "track_row": 216,
+      "true_k": 0
+    },
+    {
+      "carried_notes_at_start": 0,
+      "eligible_rows": 85,
+      "foreign_births_31": 0,
+      "foreign_births_added_tail": 0,
+      "global_index": 51287,
+      "member": "03_Funk3-98-A_solo.jams",
+      "overlapping_notes_31": 0,
+      "predictions": {
+        "frames-23-uniform": 1,
+        "frames-23-weighted": 1,
+        "frames-31-uniform": 1,
+        "frames-31-weighted": 1
+      },
+      "probability": [
+        0.00517168827354908,
+        0.9868853688240051,
+        0.007792556658387184,
+        0.00014631680096499622,
+        3.986348019680008e-06,
+        9.450378257724878e-08,
+        4.9167891980061995e-09
+      ],
+      "probe_predictions": {
+        "baseline": 1,
+        "head_zero": 1,
+        "tail_hold": 1,
+        "tail_zero": 1,
+        "zero_candidate_context": 2,
+        "zero_spectral_context": 1
+      },
+      "start_seconds": 14.993401360544217,
+      "stratum": "k0_no_annotated_note_overlap",
+      "track_row": 82,
+      "true_k": 0
+    },
+    {
+      "carried_notes_at_start": 0,
+      "eligible_rows": 116,
+      "foreign_births_31": 0,
+      "foreign_births_added_tail": 0,
+      "global_index": 66510,
+      "member": "04_Jazz2-187-F#_comp.jams",
+      "overlapping_notes_31": 3,
+      "predictions": {
+        "frames-23-uniform": 3,
+        "frames-23-weighted": 4,
+        "frames-31-uniform": 3,
+        "frames-31-weighted": 4
+      },
+      "probability": [
+        0.003197375452145934,
+        0.013221490196883678,
+        0.10922151803970337,
+        0.2129088044166565,
+        0.6113995313644409,
+        0.043053239583969116,
+        0.006998021155595779
+      ],
+      "probe_predictions": {
+        "baseline": 4,
+        "head_zero": 4,
+        "tail_hold": 4,
+        "tail_zero": 2,
+        "zero_candidate_context": 1,
+        "zero_spectral_context": 4
+      },
+      "start_seconds": 12.0497052154195,
+      "stratum": "k3_to4_created_by_weighting",
+      "track_row": 143,
+      "true_k": 3
+    }
+  ],
+  "report_sha256": "5bf07b46bec5911d5e6b77bd3ee41f927e54a509c9b1a2400244240d858afcfe",
+  "row_context_sha256": "394f997a4fe129e662b8d801009c7777972d0b23b62a2cd929f88804590ecc4e",
+  "variants": {
+    "frames-23-uniform": {
+      "by_true_k": {
+        "0": {
+          "context_of_overcounts": {
+            "carried_notes_at_start": 251,
+            "foreign_births_31": 140,
+            "foreign_births_added_tail": 47,
+            "no_annotation_overlap": 55
+          },
+          "over": 333,
+          "rows": 10285
+        },
+        "1": {
+          "context_of_overcounts": {
+            "carried_notes_at_start": 156,
+            "foreign_births_31": 81,
+            "foreign_births_added_tail": 43,
+            "no_annotation_overlap": 0
+          },
+          "over": 262,
+          "rows": 3025
+        },
+        "2": {
+          "context_of_overcounts": {
+            "carried_notes_at_start": 100,
+            "foreign_births_31": 58,
+            "foreign_births_added_tail": 38,
+            "no_annotation_overlap": 0
+          },
+          "over": 197,
+          "rows": 806
+        },
+        "3": {
+          "context_of_overcounts": {
+            "carried_notes_at_start": 33,
+            "foreign_births_31": 9,
+            "foreign_births_added_tail": 7,
+            "no_annotation_overlap": 0
+          },
+          "over": 82,
+          "rows": 628
+        }
+      },
+      "context_of_overcounts": {
+        "carried_notes_at_start": 540,
+        "foreign_births_31": 288,
+        "foreign_births_added_tail": 135,
+        "no_annotation_overlap": 55
+      },
+      "over_low": 874,
+      "probes": {
+        "zero_candidate_context": {
+          "after_over": 3178,
+          "before_over": 874,
+          "correct_to_over": 2510,
+          "over_to_correct": 207,
+          "over_to_under": 71,
+          "under_to_over": 72
+        },
+        "zero_spectral_context": {
+          "after_over": 570,
+          "before_over": 874,
+          "correct_to_over": 101,
+          "over_to_correct": 315,
+          "over_to_under": 101,
+          "under_to_over": 11
+        }
+      }
+    },
+    "frames-23-weighted": {
+      "by_true_k": {
+        "0": {
+          "context_of_overcounts": {
+            "carried_notes_at_start": 341,
+            "foreign_births_31": 182,
+            "foreign_births_added_tail": 59,
+            "no_annotation_overlap": 79
+          },
+          "over": 457,
+          "rows": 10285
+        },
+        "1": {
+          "context_of_overcounts": {
+            "carried_notes_at_start": 291,
+            "foreign_births_31": 133,
+            "foreign_births_added_tail": 68,
+            "no_annotation_overlap": 0
+          },
+          "over": 460,
+          "rows": 3025
+        },
+        "2": {
+          "context_of_overcounts": {
+            "carried_notes_at_start": 115,
+            "foreign_births_31": 73,
+            "foreign_births_added_tail": 44,
+            "no_annotation_overlap": 0
+          },
+          "over": 214,
+          "rows": 806
+        },
+        "3": {
+          "context_of_overcounts": {
+            "carried_notes_at_start": 74,
+            "foreign_births_31": 17,
+            "foreign_births_added_tail": 12,
+            "no_annotation_overlap": 0
+          },
+          "over": 152,
+          "rows": 628
+        }
+      },
+      "context_of_overcounts": {
+        "carried_notes_at_start": 821,
+        "foreign_births_31": 405,
+        "foreign_births_added_tail": 183,
+        "no_annotation_overlap": 79
+      },
+      "over_low": 1283,
+      "probes": {
+        "zero_candidate_context": {
+          "after_over": 6044,
+          "before_over": 1283,
+          "correct_to_over": 4565,
+          "over_to_correct": 127,
+          "over_to_under": 11,
+          "under_to_over": 334
+        },
+        "zero_spectral_context": {
+          "after_over": 707,
+          "before_over": 1283,
+          "correct_to_over": 87,
+          "over_to_correct": 465,
+          "over_to_under": 206,
+          "under_to_over": 8
+        }
+      }
+    },
+    "frames-31-uniform": {
+      "by_true_k": {
+        "0": {
+          "context_of_overcounts": {
+            "carried_notes_at_start": 241,
+            "foreign_births_31": 146,
+            "foreign_births_added_tail": 44,
+            "no_annotation_overlap": 48
+          },
+          "over": 315,
+          "rows": 10285
+        },
+        "1": {
+          "context_of_overcounts": {
+            "carried_notes_at_start": 193,
+            "foreign_births_31": 88,
+            "foreign_births_added_tail": 47,
+            "no_annotation_overlap": 0
+          },
+          "over": 292,
+          "rows": 3025
+        },
+        "2": {
+          "context_of_overcounts": {
+            "carried_notes_at_start": 108,
+            "foreign_births_31": 62,
+            "foreign_births_added_tail": 43,
+            "no_annotation_overlap": 0
+          },
+          "over": 201,
+          "rows": 806
+        },
+        "3": {
+          "context_of_overcounts": {
+            "carried_notes_at_start": 29,
+            "foreign_births_31": 6,
+            "foreign_births_added_tail": 4,
+            "no_annotation_overlap": 0
+          },
+          "over": 66,
+          "rows": 628
+        }
+      },
+      "context_of_overcounts": {
+        "carried_notes_at_start": 571,
+        "foreign_births_31": 302,
+        "foreign_births_added_tail": 138,
+        "no_annotation_overlap": 48
+      },
+      "over_low": 874,
+      "probes": {
+        "head_zero": {
+          "after_over": 1374,
+          "before_over": 874,
+          "correct_to_over": 502,
+          "over_to_correct": 31,
+          "over_to_under": 0,
+          "under_to_over": 29
+        },
+        "tail_hold": {
+          "after_over": 1074,
+          "before_over": 874,
+          "correct_to_over": 254,
+          "over_to_correct": 61,
+          "over_to_under": 1,
+          "under_to_over": 8
+        },
+        "tail_zero": {
+          "after_over": 47,
+          "before_over": 874,
+          "correct_to_over": 0,
+          "over_to_correct": 382,
+          "over_to_under": 445,
+          "under_to_over": 0
+        },
+        "zero_candidate_context": {
+          "after_over": 4101,
+          "before_over": 874,
+          "correct_to_over": 3404,
+          "over_to_correct": 220,
+          "over_to_under": 38,
+          "under_to_over": 81
+        },
+        "zero_spectral_context": {
+          "after_over": 442,
+          "before_over": 874,
+          "correct_to_over": 65,
+          "over_to_correct": 351,
+          "over_to_under": 151,
+          "under_to_over": 5
+        }
+      },
+      "tail_both_correct_by_true_k": {
+        "0": 17,
+        "1": 5,
+        "2": 0,
+        "3": 1
+      },
+      "tail_both_correct_head_control_still_over": 23,
+      "tail_both_correct_on_new_overcounts": 18,
+      "tail_both_correct_with_foreign_added_tail": 4
+    },
+    "frames-31-weighted": {
+      "by_true_k": {
+        "0": {
+          "context_of_overcounts": {
+            "carried_notes_at_start": 400,
+            "foreign_births_31": 224,
+            "foreign_births_added_tail": 64,
+            "no_annotation_overlap": 85
+          },
+          "over": 525,
+          "rows": 10285
+        },
+        "1": {
+          "context_of_overcounts": {
+            "carried_notes_at_start": 316,
+            "foreign_births_31": 130,
+            "foreign_births_added_tail": 59,
+            "no_annotation_overlap": 0
+          },
+          "over": 480,
+          "rows": 3025
+        },
+        "2": {
+          "context_of_overcounts": {
+            "carried_notes_at_start": 127,
+            "foreign_births_31": 75,
+            "foreign_births_added_tail": 48,
+            "no_annotation_overlap": 0
+          },
+          "over": 235,
+          "rows": 806
+        },
+        "3": {
+          "context_of_overcounts": {
+            "carried_notes_at_start": 102,
+            "foreign_births_31": 31,
+            "foreign_births_added_tail": 25,
+            "no_annotation_overlap": 0
+          },
+          "over": 194,
+          "rows": 628
+        }
+      },
+      "context_of_overcounts": {
+        "carried_notes_at_start": 945,
+        "foreign_births_31": 460,
+        "foreign_births_added_tail": 196,
+        "no_annotation_overlap": 85
+      },
+      "over_low": 1434,
+      "probes": {
+        "head_zero": {
+          "after_over": 2558,
+          "before_over": 1434,
+          "correct_to_over": 1135,
+          "over_to_correct": 70,
+          "over_to_under": 4,
+          "under_to_over": 63
+        },
+        "tail_hold": {
+          "after_over": 1714,
+          "before_over": 1434,
+          "correct_to_over": 336,
+          "over_to_correct": 77,
+          "over_to_under": 6,
+          "under_to_over": 27
+        },
+        "tail_zero": {
+          "after_over": 286,
+          "before_over": 1434,
+          "correct_to_over": 0,
+          "over_to_correct": 762,
+          "over_to_under": 386,
+          "under_to_over": 0
+        },
+        "zero_candidate_context": {
+          "after_over": 5812,
+          "before_over": 1434,
+          "correct_to_over": 4342,
+          "over_to_correct": 177,
+          "over_to_under": 31,
+          "under_to_over": 244
+        },
+        "zero_spectral_context": {
+          "after_over": 817,
+          "before_over": 1434,
+          "correct_to_over": 95,
+          "over_to_correct": 524,
+          "over_to_under": 193,
+          "under_to_over": 5
+        }
+      },
+      "tail_both_correct_by_true_k": {
+        "0": 13,
+        "1": 6,
+        "2": 3,
+        "3": 3
+      },
+      "tail_both_correct_head_control_still_over": 25,
+      "tail_both_correct_on_new_overcounts": 17,
+      "tail_both_correct_with_foreign_added_tail": 3
+    }
+  }
+}
