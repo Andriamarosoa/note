@@ -1,0 +1,43 @@
+{
+  "audit": "overcount_true_k_below_4",
+  "attempt": 1,
+  "outer_fold": 3,
+  "source_run": 36351028493,
+  "source_commit": "cdb11b6cfe50beac86194fc6a2ddca06149e8467",
+  "assets": [
+    {
+      "tag": "v273-spectral-coverage-36139446276",
+      "asset": "v273-spectral-coverage-fold3.zip",
+      "sha256": "e885a2e100296e2ce257690b704432097869c2c7883654214bd4f9859ede4742",
+      "destination": "outer"
+    },
+    {
+      "asset": "frames-23-uniform.zip",
+      "sha256": "b76b51c6010436d32ca26e59b417e1af3a56bba9932a64c2cf8293356af4ced9",
+      "destination": "results/frames-23-uniform",
+      "tag": "v273-window-pair-36351028493"
+    },
+    {
+      "asset": "frames-31-uniform.zip",
+      "sha256": "c153480377167ad9e84275c2b2e188f3dd69ebf3720ab38745a2c022cbd20bc0",
+      "destination": "results/frames-31-uniform",
+      "tag": "v273-window-pair-36351028493"
+    },
+    {
+      "asset": "frames-23-weighted.zip",
+      "sha256": "a0ebc599acb16bdc2307315b19ea4d5f90dcdc47563307554a9608ea9a5b0c64",
+      "destination": "results/frames-23-weighted",
+      "tag": "v273-window-pair-36351028493"
+    },
+    {
+      "asset": "frames-31-weighted.zip",
+      "sha256": "1185fb6b06670cc449e5f1ef84496a9c0cc6e6d7b13b74dd4b49a87411612932",
+      "destination": "results/frames-31-weighted",
+      "tag": "v273-window-pair-36351028493"
+    }
+  ],
+  "annotation_md5": "b39b78e63d3446f2e54ddb7a54df9b10",
+  "model_training": false,
+  "output_correction": false,
+  "model_promotion": false
+}
