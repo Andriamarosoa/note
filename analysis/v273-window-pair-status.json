@@ -1,6 +1,6 @@
 {
-  "status": "training_in_progress_one_variant_completed",
-  "checked_at_utc": "2026-09-27T22:23:21.137254+00:00",
+  "status": "primary_audited_secondary_training",
+  "checked_at_utc": "2026-09-27T22:56:00.199619+00:00",
   "run_id": 36351028493,
   "run_url": "https://github.com/Andriamarosoa/note/actions/runs/36351028493",
   "source_commit": "cdb11b6cfe50beac86194fc6a2ddca06149e8467",
@@ -26,17 +26,17 @@
   "primary_comparison": "uniform: 31 versus 23 frames",
   "output_corrector_added": false,
   "automatic_post_training_audit": true,
-  "results_available": false,
+  "results_available": true,
   "protocol": "analysis/v273-window-pair-protocol.md",
   "release": "https://github.com/Andriamarosoa/note/releases/tag/v273-window-pair-36351028493",
   "preparation_parts_completed": 10,
   "bundle": "verified",
   "training_jobs_completed": [
-    "frames-31-uniform"
+    "frames-23-uniform",
+    "frames-31-uniform",
+    "frames-23-weighted"
   ],
   "training_jobs_running": [
-    "frames-23-uniform",
-    "frames-23-weighted",
     "frames-31-weighted"
   ],
   "completed_variant_checks": {
@@ -49,5 +49,14 @@
     "file_inventory_verified": true,
     "scalar_decoder_verified": true
   },
-  "paired_results_available": false
+  "paired_results_available": true,
+  "full_audit_completed": false,
+  "primary_audit": "analysis/v273-window-pair-primary-audit.json",
+  "result_summary": "analysis/v273-window-pair-primary-results.md",
+  "primary_poly_before_correct": 636,
+  "primary_poly_after_correct": 670,
+  "primary_poly_rows": 1969,
+  "primary_poly_gain_percentage_points": 1.7267648552564754,
+  "secondary_status": "incomplete: 31-frame weighted training in progress",
+  "models_promoted": false
 }
