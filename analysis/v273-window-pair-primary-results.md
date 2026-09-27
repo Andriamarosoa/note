@@ -1,5 +1,9 @@
 # Résultat principal : fenêtre de 23 contre 31 trames, fold 3
 
+**Mise à jour : les quatre entraînements et l'audit complet sont terminés.**
+Voir le [bilan complet](v273-window-pair-results.md). Le texte ci-dessous
+conserve l'état intermédiaire publié après la comparaison principale.
+
 La comparaison principale, sans pondération des classes, est terminée et
 auditée. Le modèle à 31 trames obtient **34,0274 % d'Exact K polyphonique**,
 contre **32,3007 %** à 23 trames : **+1,7268 point**, soit 34 groupes

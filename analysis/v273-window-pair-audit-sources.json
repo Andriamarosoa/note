@@ -1,44 +1,18 @@
 {
-  "status": "completed_and_audited",
   "checked_at_utc": "2026-09-27T23:14:20.030853+00:00",
   "run_id": 36351028493,
   "run_url": "https://github.com/Andriamarosoa/note/actions/runs/36351028493",
   "source_commit": "cdb11b6cfe50beac86194fc6a2ddca06149e8467",
+  "run_status": "completed",
+  "run_conclusion": "success",
   "outer_fold": 3,
-  "preflight": "passed",
-  "preparation_parts": 10,
-  "training_epochs_started": true,
-  "training_jobs_scheduled": 4,
-  "frames": [
-    23,
-    31
-  ],
-  "weightings": [
-    "uniform",
-    "weighted"
-  ],
-  "epochs_per_phase": 8,
-  "phases": [
-    "inner",
-    "final"
-  ],
-  "model_scope": "native seven-class count component used in V27.3; not the complete V27.3 pipeline",
-  "primary_comparison": "uniform: 31 versus 23 frames",
-  "output_corrector_added": false,
-  "automatic_post_training_audit": true,
-  "results_available": true,
-  "protocol": "analysis/v273-window-pair-protocol.md",
-  "release": "https://github.com/Andriamarosoa/note/releases/tag/v273-window-pair-36351028493",
-  "preparation_parts_completed": 10,
-  "bundle": "verified",
-  "training_jobs_completed": [
-    "frames-23-uniform",
-    "frames-31-uniform",
-    "frames-23-weighted",
-    "frames-31-weighted"
-  ],
-  "training_jobs_running": [],
-  "completed_variant_checks": [
+  "audit_artifact": {
+    "id": 10944254324,
+    "name": "native-window-final-audit",
+    "archive_sha256": "122fed2802efe4f2d0a8de775d1f7bf0835bdcf5da5dac61e62e7a184daf2fa7",
+    "report_sha256": "a4734db5da0f13981dd879aedfb50dc91a56c5f221aff03c73b6f704dc767266"
+  },
+  "completed_variants": [
     {
       "variant": "frames-23-uniform",
       "artifact_id": 10944153198,
@@ -112,22 +86,19 @@
       }
     }
   ],
-  "paired_results_available": true,
-  "full_audit_completed": true,
-  "primary_audit": "analysis/v273-window-pair-primary-audit.json",
-  "result_summary": "analysis/v273-window-pair-results.md",
-  "primary_poly_before_correct": 636,
-  "primary_poly_after_correct": 670,
-  "primary_poly_rows": 1969,
-  "primary_poly_gain_percentage_points": 1.7267648552564754,
-  "secondary_status": "completed_and_audited",
-  "models_promoted": false,
-  "full_audit": "analysis/v273-window-pair-audit.json",
-  "audit_sources": "analysis/v273-window-pair-audit-sources.json",
-  "secondary_poly_before_correct": 728,
-  "secondary_poly_after_correct": 766,
-  "secondary_poly_rows": 1969,
-  "secondary_poly_gain_percentage_points": 1.9299136617572372,
-  "workflow_conclusion": "success",
-  "full_v273_reproduced": false
+  "verification": {
+    "github_actions_zip_digests": true,
+    "file_inventories": true,
+    "all_phases_eight_epochs": true,
+    "paired_protocol_initial_weights_batch_order_and_labels": true,
+    "probability_argmax_replay": true,
+    "saved_metrics_recomputed": true,
+    "local_full_audit_identical_to_ci_report_bytes": true,
+    "tensorflow_inference_replayed_locally": false
+  },
+  "release": "https://github.com/Andriamarosoa/note/releases/tag/v273-window-pair-36351028493",
+  "config_sha256": "7c27989eb3fe330fdff203e388e76ae4c64d8b8e4838cab4d7c4622b4104451a",
+  "coverage_sha256": "b36871b8c30739caa18136c8e41c87d91dae4cd409b288c74fafe3c8b4fc6d21",
+  "full_v273_reproduced": false,
+  "models_promoted": false
 }
