@@ -1,0 +1,203 @@
+{
+  "all_error_traces_cross_checked": true,
+  "all_report_statistics_recomputed": true,
+  "audit_report_sha256": "38a828f58ccc06c1f79ff2be432c184f4c3b102a312793323c97d6141a0a0421",
+  "by_true_k": {
+    "0": {
+      "competing_eligibility": {
+        "absent": {
+          "over": 199,
+          "rate": 0.021342771342771343,
+          "rows": 9324
+        },
+        "present": {
+          "over": 116,
+          "rate": 0.12070759625390219,
+          "rows": 961
+        }
+      },
+      "correct": 9970,
+      "foreign_birth": {
+        "absent": {
+          "over": 169,
+          "rate": 0.02022014836085188,
+          "rows": 8358
+        },
+        "present": {
+          "over": 146,
+          "rate": 0.07576543850544888,
+          "rows": 1927
+        }
+      },
+      "no_foreign_annotation_over": 48,
+      "over": 315,
+      "over_predictions": [
+        0,
+        241,
+        56,
+        15,
+        2,
+        1,
+        0
+      ],
+      "predicted_exceeds_max_active_over": 65,
+      "rows": 10285,
+      "under": 0
+    },
+    "1": {
+      "competing_eligibility": {
+        "absent": {
+          "over": 209,
+          "rate": 0.07536963577353047,
+          "rows": 2773
+        },
+        "present": {
+          "over": 83,
+          "rate": 0.32936507936507936,
+          "rows": 252
+        }
+      },
+      "correct": 2128,
+      "foreign_birth": {
+        "absent": {
+          "over": 204,
+          "rate": 0.07666290868094701,
+          "rows": 2661
+        },
+        "present": {
+          "over": 88,
+          "rate": 0.24175824175824176,
+          "rows": 364
+        }
+      },
+      "no_foreign_annotation_over": 65,
+      "over": 292,
+      "over_predictions": [
+        0,
+        0,
+        216,
+        65,
+        11,
+        0,
+        0
+      ],
+      "predicted_exceeds_max_active_over": 104,
+      "rows": 3025,
+      "under": 605
+    },
+    "2": {
+      "competing_eligibility": {
+        "absent": {
+          "over": 144,
+          "rate": 0.2304,
+          "rows": 625
+        },
+        "present": {
+          "over": 57,
+          "rate": 0.3149171270718232,
+          "rows": 181
+        }
+      },
+      "correct": 243,
+      "foreign_birth": {
+        "absent": {
+          "over": 139,
+          "rate": 0.24131944444444445,
+          "rows": 576
+        },
+        "present": {
+          "over": 62,
+          "rate": 0.26956521739130435,
+          "rows": 230
+        }
+      },
+      "no_foreign_annotation_over": 58,
+      "over": 201,
+      "over_predictions": [
+        0,
+        0,
+        0,
+        190,
+        11,
+        0,
+        0
+      ],
+      "predicted_exceeds_max_active_over": 90,
+      "rows": 806,
+      "under": 362
+    },
+    "3": {
+      "competing_eligibility": {
+        "absent": {
+          "over": 60,
+          "rate": 0.11235955056179775,
+          "rows": 534
+        },
+        "present": {
+          "over": 6,
+          "rate": 0.06382978723404255,
+          "rows": 94
+        }
+      },
+      "correct": 312,
+      "foreign_birth": {
+        "absent": {
+          "over": 60,
+          "rate": 0.11627906976744186,
+          "rows": 516
+        },
+        "present": {
+          "over": 6,
+          "rate": 0.05357142857142857,
+          "rows": 112
+        }
+      },
+      "no_foreign_annotation_over": 26,
+      "over": 66,
+      "over_predictions": [
+        0,
+        0,
+        0,
+        0,
+        62,
+        4,
+        0
+      ],
+      "predicted_exceeds_max_active_over": 50,
+      "rows": 628,
+      "under": 250
+    }
+  },
+  "categories": {
+    "active_note_count_equals_prediction": 211,
+    "foreign_birth_visible": 302,
+    "local_competition_present": 262,
+    "local_eligible_equals_prediction": 140,
+    "no_note_annotation_overlap": 48
+  },
+  "category_counts_overlap": true,
+  "causal_status": "descriptive residual audit; not a validated correction",
+  "correct": 12653,
+  "illustrative_clip_metrics_verified": true,
+  "low_k_rows": 14744,
+  "no_foreign_annotation_over": 197,
+  "no_foreign_annotation_positive_k_over": 149,
+  "no_model_training": true,
+  "no_output_correction": true,
+  "no_relabelled_score": true,
+  "outer_fold": 3,
+  "over": 874,
+  "predicted_exceeds_all_overlapping_annotations": 227,
+  "predicted_exceeds_max_active": 309,
+  "prediction_and_row_source_verified": true,
+  "previous_context_sha256": "394f997a4fe129e662b8d801009c7777972d0b23b62a2cd929f88804590ecc4e",
+  "previous_probabilities_sha256": "e2e9c7a65c86f869499254acbdb190ac9eb4804b63dd661a3260a082fcda7653",
+  "raw_cache_replay_location": "GitHub Actions run 36373588730; all 874 errors and 667 correct controls",
+  "rows": 15279,
+  "rows_sha256": "d7c74bd45b937a0106eea8fa5475fcf0087a4b31ea1a9f0a31ce5f353ac12b6c",
+  "status": "completed_and_cross_checked",
+  "summarizer_sha256": "afdf6e0e1cf5c797c80299cbc3541ad549f0ff0ef9f987515be9249a77f60585",
+  "traces_sha256": "4bfbc4d3df02d53891e8a0cc4b960c4df57638a21f250ef76f77950f0b068176",
+  "under": 1217,
+  "variant": "frames-31-uniform"
+}

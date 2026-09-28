@@ -1,5 +1,10 @@
 # Audit des surcomptages à vrai K < 4 — fold 3
 
+Complément terminé : [audit de l'audio original et de l'attribution des
+attaques](v273-acoustic-residual.md) sur les 874 surcomptages sans pondération.
+Il vérifie 1 541 spectres depuis l'audio et distingue les cas de concurrence
+entre groupes des erreurs sans annotation étrangère.
+
 **Audit terminé. La pondération des classes est une cause démontrée de
 l'aggravation du surcomptage dans cette expérience. Elle n'explique pas à
 elle seule les erreurs déjà présentes sans pondération.** La fenêtre élargie
