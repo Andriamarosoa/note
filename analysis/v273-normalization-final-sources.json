@@ -1,0 +1,48 @@
+{
+  "repository": "Andriamarosoa/note",
+  "branch": "v280-harmonic-pitch-count-research",
+  "source_commit": "a029f553fbd70e703ccce89ccfc6c5e4ba403842",
+  "run_id": 36490993251,
+  "run_conclusion": "success",
+  "run_completed_at_utc": "2026-09-28T23:24:56Z",
+  "release_tag": "v273-normalization-36490993251",
+  "artifacts": [
+    {
+      "name": "norm-channel_norm",
+      "id": 11002946100,
+      "archive_sha256": "3cc292c9a5250815e44a09ca60906b45505a5773ae87ab392cdaa9794fa081b5",
+      "inventory_sha256": "806d6a93881e50c4037edef07284483e22cc51011556137aee9ff25b1f9d153c"
+    },
+    {
+      "name": "norm-fixed_scale",
+      "id": 11004181211,
+      "archive_sha256": "e5dc8b00013352c9deed1e49c238ac7fc74c5f5cefc4c93eaeed4aea7c389a2e",
+      "inventory_sha256": "8191682ba15d407d4c952955626a1ec1fe495962481c46c3c0f296734a98acbd"
+    },
+    {
+      "name": "norm-verdict",
+      "id": 11003434869,
+      "archive_sha256": "67f92500ab57c796634088b868fa3e6f93dfe60e33222b19ef889a0d3a88f8c9",
+      "inventory_sha256": "c657f7c63382d7d1528f77e91fb44a4655f12f85890dbcb9b6001669fcfd53c9"
+    },
+    {
+      "name": "norm-preflight",
+      "id": 11000558784,
+      "archive_sha256": "9412c7ce340142a523e15340d73df7f5fe130774fb1804ea1b989e27840c9f7c",
+      "inventory_sha256": "77cf06b1c6ff0c2d4898fb4764e59959826a97681b5e306f2f0a481db1d17b79"
+    }
+  ],
+  "verification": {
+    "archive_sha256_and_complete_inventories": true,
+    "raw_prediction_rows_recomputed": 355854,
+    "diagnosis_exactly_matches_CI": true,
+    "report_exactly_matches_CI": true,
+    "shared_initial_weights_orders_partitions_iterations_and_metrics_verified": true,
+    "config_sha256": "7c27989eb3fe330fdff203e388e76ae4c64d8b8e4838cab4d7c4622b4104451a",
+    "main_auditor_sha256": "762528535580bfa524952e69f5a916ef7646d197c993859880c11f403471bc91",
+    "main_diagnosis_sha256": "2440874222d13e2a9fef482a1c89dc7433a107d9fc929bc5e34ae5da8aebc8f3",
+    "supplemental_transition_rule": "For each true K, count predicted_before by predicted_after in the two epoch-12-validation.npz files, after asserting identical global_index/member/k. Corrected: before != K and after == K. Regressed: before == K and after != K.",
+    "outer_rows_evaluated": 0,
+    "automatic_promotion": false
+  }
+}

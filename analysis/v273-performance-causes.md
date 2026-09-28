@@ -19,6 +19,15 @@ régressent après le point intermédiaire à 12 sur la validation polyphonique
 alors que l’apprentissage progresse. Les mesures figées ci-dessous restent
 celles à huit époques.
 
+**Test suivant terminé :** le [remplacement de la normalisation spectrale
+par une échelle fixe](v273-normalization-final.md), comparé à entraînement
+identique de 12 époques, gagne 47 comptes polyphoniques internes
+(26,53 % → 28,75 %), mais perd 95 comptes K=1. Le solde global est −11 ;
+celui des K=0 à 3 est −35. Les scores polyphoniques d’apprentissage restent
+presque identiques (39,86 % et 39,80 %). Le changement ne satisfait pas le
+critère de non-régression sur les petits K et ne résout pas la difficulté
+générale du comptage. Les nouvelles erreurs K=1 sont auditées dans ce rapport.
+
 ## 1. Le comptage est faible même sur les exemples déjà vus
 
 Les mêmes checkpoints finaux ont été rejoués en mode inférence, sans dropout,
