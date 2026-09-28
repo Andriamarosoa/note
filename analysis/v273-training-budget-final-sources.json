@@ -1,0 +1,75 @@
+{
+  "repository": "Andriamarosoa/note",
+  "training_run": 36379790003,
+  "source_sha": "ec6d3aa94e7eb3583019e89950cce9e9f82116e1",
+  "audit_date_utc": "2026-09-28",
+  "actions_artifacts": [
+    {
+      "id": 10953587016,
+      "name": "budget-weighted",
+      "size_bytes": 16058035,
+      "sha256": "df7f284ea33235dda3bbab2fd85358094fd5638c8cbbbd22cb0500e02e26f48b"
+    },
+    {
+      "id": 10953408541,
+      "name": "budget-verdict",
+      "size_bytes": 18723,
+      "sha256": "0778001cd17ff0603283a99369e30a9ff14167d1a47041c46a5f701945626641"
+    },
+    {
+      "id": 10952853675,
+      "name": "budget-uniform",
+      "size_bytes": 16061430,
+      "sha256": "b1d8f9b09dd7ebdaeb68ae0c9c01829dc3e3fbf5cf3f79325af9cf5e2cdd72f5"
+    }
+  ],
+  "release_tag": "v273-training-budget-36379790003",
+  "release_archives": [
+    {
+      "name": "budget-uniform-epoch12.zip",
+      "size_bytes": 11680663,
+      "sha256": "e0ae6fd64d92e9c7479b2239ff2cfe9b3cf0d0a2a9c55ae92f353be92c582e56"
+    },
+    {
+      "name": "budget-uniform.zip",
+      "size_bytes": 16122604,
+      "sha256": "2d92a94e4d294e4e161de3658e2f54c82e4bbd95bbf2ae54e09773cfe1c24d16"
+    },
+    {
+      "name": "budget-verdict.zip",
+      "size_bytes": 23363,
+      "sha256": "877f0af06acaac8591a8fd82759ff629d0a92e62d200bb72c4ee1ab0dc1ed9a4"
+    },
+    {
+      "name": "budget-weighted-epoch12.zip",
+      "size_bytes": 11676657,
+      "sha256": "4a4860d68b5f14ed1a81150a8323a665059d91c7868375ab1087eb048f33cf82"
+    },
+    {
+      "name": "budget-weighted.zip",
+      "size_bytes": 16117712,
+      "sha256": "f74e15d3a996fda7e9f4bad7cf9e5636947374c61aee8762fbd56023bbd9b14a"
+    }
+  ],
+  "checks": {
+    "all_jobs_successful": true,
+    "archive_and_file_inventory_verified": true,
+    "raw_probability_rows_rescored": 355854,
+    "all_epoch8_12_16_metrics_recomputed": true,
+    "local_diagnosis_and_report_match_ci_exactly": true,
+    "primary_comparison": "16 versus 8",
+    "outer_rows_evaluated": 0,
+    "late_regression_comparison": "12 versus 16",
+    "new_training_started_during_final_audit": false,
+    "model_promoted": false
+  },
+  "hashes": {
+    "published_ci_diagnosis_sha256": "1f0d97f6460fc751f4a964f7950c0ac7fbbe6cbe3580709f3883d72bced4a2f7",
+    "published_ci_report_sha256": "5267b340dcf3eb8d53e7bb500da9a1bcb87056c7cc139660281a96cc6d598a8f",
+    "local_recomputed_diagnosis_sha256": "1f0d97f6460fc751f4a964f7950c0ac7fbbe6cbe3580709f3883d72bced4a2f7",
+    "local_recomputed_report_sha256": "5267b340dcf3eb8d53e7bb500da9a1bcb87056c7cc139660281a96cc6d598a8f",
+    "summary_script_sha256": "4e783d548316d13f0c925b6dceff135020d2f3f4aada721f23075c01e4199848",
+    "training_script_sha256": "4e4385580fb06b212d8319422ef9dc6ce4383a8fb97537cab651dad80f6ac4cd",
+    "config_sha256": "7c27989eb3fe330fdff203e388e76ae4c64d8b8e4838cab4d7c4622b4104451a"
+  }
+}

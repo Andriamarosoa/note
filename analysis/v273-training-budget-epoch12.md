@@ -1,5 +1,10 @@
 # Budget d’entraînement : point intermédiaire vérifié à 12 époques
 
+**Mise à jour :** le [verdict final à 16 époques](v273-training-budget-final.md)
+est disponible. Le gain à 12 se réduit ensuite dans les deux variantes ;
+la version pondérée termine à 30,41 %, contre 30,65 % à huit époques.
+Ce document conserve le constat intermédiaire tel qu’il avait été audité.
+
 **Les deux objectifs progressent entre 8 et 12 époques sur le comptage polyphonique interne.** Le gain est visible sur les données vues et sur la validation. Le résultat principal, fixé à 16 époques, reste en cours ; ce point intermédiaire ne le remplace pas.
 
 | Objectif | Apprentissage : 8 → 12 | Validation : 8 → 12 | Gain validation |

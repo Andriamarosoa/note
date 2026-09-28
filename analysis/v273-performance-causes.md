@@ -12,10 +12,12 @@ est le **fold 3**. Leurs versions internes sont également évaluées sur leurs
 propres partitions d'apprentissage et de validation initiales. Les poids et
 les huit époques déjà terminées sont inchangés.
 
-**Prolongement expérimental :** le [point intermédiaire à 12 époques](v273-training-budget-epoch12.md)
-montre un gain polyphonique interne pour les deux objectifs après reprise,
-avec des régressions sur K=1 et K=4. La comparaison principale à 16 époques
-reste en cours. Les mesures figées ci-dessous restent celles à huit époques.
+**Prolongement terminé et audité :** le [verdict à 16 époques](v273-training-budget-final.md)
+confirme un gain polyphonique interne de 5,87 points sans pondération,
+mais aucun gain net avec pondération (−0,24 point). Les deux modèles
+régressent après le point intermédiaire à 12 sur la validation polyphonique
+alors que l’apprentissage progresse. Les mesures figées ci-dessous restent
+celles à huit époques.
 
 ## 1. Le comptage est faible même sur les exemples déjà vus
 
@@ -174,18 +176,18 @@ avec un suivi explicite des erreurs par K. Augmenter une classe au détriment
 d'une autre ou retirer des sorties trop hautes ne démontre pas un meilleur
 comptage.
 
-Le test causal suivant doit isoler le budget d'apprentissage et la formulation
-de la représentation sur les partitions internes : vérifier d'abord que le
-réseau peut apprendre un sous-ensemble stratifié, puis mesurer les courbes
-par K sur l'apprentissage complet et la validation. Un allongement de budget
-doit conserver les autres paramètres ; une modification de représentation
-doit avoir son propre témoin. Les pertes auxiliaires de localisation ou
-d'appartenance au groupe sont des pistes natives à comparer, sans correcteur.
+Le [test contrôlé du budget](v273-training-budget-final.md) est maintenant
+terminé. Il montre une marge d’amélioration par prolongation, surtout sans
+pondération, puis une divergence entre progrès sur les exemples vus et
+recul polyphonique interne entre 12 et 16. Augmenter le budget seul n’est
+donc pas une correction générale démontrée.
 
-Cet audit **ne prétend pas encore départager** un budget insuffisant d'une
-représentation ou d'une supervision inadéquate. Il établit le défaut
-d'apprentissage, localise les deux obstacles dans les décisions et démontre
-le compromis induit par la pondération. Aucun nouveau modèle n'est promu.
+La suite doit isoler une modification native de représentation, supervision
+ou régularisation, avec son propre témoin et des courbes par K. Les pertes
+auxiliaires de localisation ou d’appartenance au groupe restent des pistes
+à tester. Les audits ne départagent pas encore ces mécanismes. Aucun nouveau
+modèle n’est promu ; le détail des confusions et leurs régressions est
+maintenant documenté au-delà du point à huit époques.
 
 ## Vérifications et sources
 
