@@ -1,0 +1,53 @@
+{
+  "status": "completed_and_cross_checked",
+  "checked_at_utc": "2026-09-28T04:08:30.154251+00:00",
+  "run_id": 36375624830,
+  "source_commit": "6f6117bbeff66a0ce705f2227180b652176bcad0",
+  "workflow_conclusion": "success",
+  "source_training_run": 36351028493,
+  "outer_fold": 3,
+  "frames": 31,
+  "training_performed": false,
+  "output_corrector": false,
+  "model_promoted": false,
+  "fit_inferences": 205332,
+  "heldout_inferences": 62462,
+  "total_inferences": 267794,
+  "heldout_probabilities_replayed_identically": true,
+  "heldout_max_probability_difference": 0.0,
+  "weights_unchanged": true,
+  "artifacts": {
+    "uniform": {
+      "artifact_id": 10950089469,
+      "artifact_sha256": "b43ae403e7134a0d11c039134b2450aa061c482b3ac1839064f56c55c12eb0c0",
+      "release_asset_sha256": "287bb26195aa1a654310cb63012ed9628408f0839a6c169926544f362ad73661",
+      "file_inventory": {
+        "final-fit.npz": "7869ccc73d19460eb94e7f54baee0f52d61083bff79da16a0835bf5277f690e4",
+        "final-heldout.npz": "4f330a154f4db47d0d8fe7007f1790f885a5c6396784e9520226b071e98fdcb9",
+        "inner-fit.npz": "5fa3964aab0ede97898d45ea8342d91e1c8aced4f21e19a3c8c99873ca93fc0d",
+        "inner-heldout.npz": "a1f568a99afdcfd102c1dab3626cd18e076b8f27e2b0ff9ccd3a3a1d6039f7d6",
+        "progress.json": "c2140b33ede189589c114a7f309017a714f99b288f7f3ed2d4d2d6c367a89463",
+        "report.json": "0055f4019f9bae21adc62ce5cb6c77af58ca8c89a86340bc4ba6a017e26d9487"
+      }
+    },
+    "weighted": {
+      "artifact_id": 10950559435,
+      "artifact_sha256": "b4fcfda48e8ef77d8fd125967bf5ec8f1297f33a188c7c2177d5b5ebbbd12103",
+      "release_asset_sha256": "a3af5932c4dc276b438cfa3e1ddd45e15743e096fb9410146a816620c7949df3",
+      "file_inventory": {
+        "final-fit.npz": "7911539d0832c6e0fa12fa2759818cef1b507e0b9bd0ba600bb7bbf257c0c6b6",
+        "final-heldout.npz": "05250cab905db3ed4b1f400b01360f80ccec0e9404217926e8f5dac1fb97c9df",
+        "inner-fit.npz": "eb8cb43be332f90e9be5161044c4b591a327e91cc046a9dc381db2509ac50909",
+        "inner-heldout.npz": "49d75e45f98ecaa50bccf9ac7957b641fd752da6602159777a92f0f9a5c27016",
+        "progress.json": "c2140b33ede189589c114a7f309017a714f99b288f7f3ed2d4d2d6c367a89463",
+        "report.json": "10bac46831b18de2014f92bceec18f991b920f6b1049529928281d9c57abd896"
+      }
+    }
+  },
+  "release": "https://github.com/Andriamarosoa/note/releases/tag/v273-learning-bottleneck-36375624830",
+  "run_url": "https://github.com/Andriamarosoa/note/actions/runs/36375624830",
+  "diagnosis": "analysis/v273-performance-causes-diagnosis.json",
+  "summary": "analysis/v273-performance-causes.md",
+  "diagnosis_sha256": "b8389d31e981684dc2d6b1f5a047d9b169598a693caa91e4a96c9d106e3bff91",
+  "summarizer_sha256": "8ccbd170af6ea1ede0b929caa6fd25beefbd54b68498fd5db0b321954e04ec97"
+}

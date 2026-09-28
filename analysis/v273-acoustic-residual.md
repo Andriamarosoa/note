@@ -1,5 +1,10 @@
 # Surcomptages K < 4 : audit de l'audio et de l'attribution des attaques
 
+Audit élargi à la cause des faibles performances : [apprentissage, objectif
+et distinction entre K](v273-performance-causes.md). Il compare maintenant
+les modèles sur leurs exemples vus et non vus ; le présent document reste
+l'analyse acoustique ciblée des surcomptages.
+
 **Audit terminé, uniquement sur le fold 3. La pondération explique
 l'aggravation mesurée précédemment. Les 874 surcomptages qui subsistent sans
 pondération ont plusieurs formes : concurrence entre groupes, comptes trop

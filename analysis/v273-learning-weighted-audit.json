@@ -1,0 +1,860 @@
+{
+  "bundle_sha256": "72b8fd7445934b9f88486c87e49d5d3e2f37a6427802023685149c539a210651",
+  "frames": 31,
+  "interpretation_limits": [
+    "Fit-set inference measures learning of seen rows; it is not generalization.",
+    "Training-loop loss includes dropout and changing weights; compare frozen inference losses instead.",
+    "Truth-conditioned rankings diagnose class competition and cannot be deployed as reported scores.",
+    "A fit/heldout gap locates generalization loss but does not distinguish every physical cause.",
+    "This count component is not the full V27.3 pipeline; no official score replacement."
+  ],
+  "model_promoted": false,
+  "only_original_fit_and_heldout_partitions": true,
+  "outer_fold": 3,
+  "output_corrector": false,
+  "phases": {
+    "final": {
+      "frozen_training": {
+        "batch_size": 128,
+        "class_weights": [
+          0.6330614686012268,
+          1.1379436254501343,
+          2.1477503776550293,
+          2.634847640991211,
+          3.6284804344177246,
+          5.47806453704834,
+          5.47806453704834
+        ],
+        "epoch_order_sha256": "8bc3ad4f7bfdf2d7b6bd41fb74240022faa7bccfde0ba00fe45531c987c7e995",
+        "epochs": 8,
+        "final_checkpoint_selected": true,
+        "fit_indices_sha256": "7a8ebbdf993d715353782041570baf8e7d7f85538ac612c40dae5dbcccabe537",
+        "fit_rows": 59309,
+        "history": [
+          {
+            "epoch": 1,
+            "loss": 1.0256800651550293
+          },
+          {
+            "epoch": 2,
+            "loss": 0.9133166670799255
+          },
+          {
+            "epoch": 3,
+            "loss": 0.8749387860298157
+          },
+          {
+            "epoch": 4,
+            "loss": 0.8507110476493835
+          },
+          {
+            "epoch": 5,
+            "loss": 0.8296292424201965
+          },
+          {
+            "epoch": 6,
+            "loss": 0.8103573322296143
+          },
+          {
+            "epoch": 7,
+            "loss": 0.7979938387870789
+          },
+          {
+            "epoch": 8,
+            "loss": 0.7806244492530823
+          }
+        ],
+        "initial_weights_sha256": "7ebb9edec5437b856f3a7b2a1515468a368df64397a5298f73fa5fc953e388e0",
+        "observed_epoch_order_sha256": [
+          "f5517d9cd2c8f23473516b315ba580d51f84e4dba75bb9f079af3d11c3e3cd42",
+          "2b28c37e08ba5d422d12e0a390eb1fee612460e70938d80f82c648b773f58778",
+          "198a947a6ef4c1bc33ac0bf7841e27079cbd8daa0a05663161a1224374b464a5",
+          "44bd2cca3508cdebb17645b1be649d9cc7e01ec6458e70e143a091bdb3222818",
+          "84d255806be2071afd57beab45ed218eb4985dc56cbe567b90e5d59b2ce98506",
+          "0c58410e35107a280279aecd4c072acd0b51023471245ebcd70e7d6435cd3a4c",
+          "7d26a533443d5bbb116393384f5884d4b21712717cb010ae111950d6752d6176",
+          "e02610bae059f0795cd196fec5260c2679e6314a014ded5449e171651b1c5c03"
+        ],
+        "predict_indices_sha256": "eb796cac3bacb0ff1dc211ea2d6cba99b67ef80cbce4d49715c857c43da0f04f",
+        "predict_rows": 15279,
+        "seed": 17064,
+        "status": "trained",
+        "weights_sha256": "34494f9b32abc45da25b84ce931c7b41511655825d8471cf263fa26e0a86837e"
+      },
+      "heldout_replay_max_abs_difference": 0.0,
+      "splits": {
+        "fit": {
+          "by_true_k": {
+            "0": {
+              "correct": 37663,
+              "exact": 0.9498385957833149,
+              "mean_true_class_probability": 0.8529865294201173,
+              "nll": 0.23481340981768553,
+              "over": 1989,
+              "predicted_as_class": 40798,
+              "rows": 39652,
+              "sample_weight_total": 25102.153352975845,
+              "under": 0,
+              "weighted_loss_total": 5894.322222578707
+            },
+            "1": {
+              "correct": 7922,
+              "exact": 0.6455345501955672,
+              "mean_true_class_probability": 0.6129977888366356,
+              "nll": 0.787162140050057,
+              "over": 1854,
+              "predicted_as_class": 9731,
+              "rows": 12272,
+              "sample_weight_total": 13964.844171524048,
+              "under": 2496,
+              "weighted_loss_total": 10992.596623522437
+            },
+            "2": {
+              "correct": 1469,
+              "exact": 0.42641509433962266,
+              "mean_true_class_probability": 0.29631527843472855,
+              "nll": 1.4246485760990757,
+              "over": 980,
+              "predicted_as_class": 4271,
+              "rows": 3445,
+              "sample_weight_total": 7399.000051021576,
+              "under": 996,
+              "weighted_loss_total": 10540.974887244876
+            },
+            "3": {
+              "correct": 851,
+              "exact": 0.3717780690257754,
+              "mean_true_class_probability": 0.31148665094343153,
+              "nll": 1.3391777085002872,
+              "over": 689,
+              "predicted_as_class": 2041,
+              "rows": 2289,
+              "sample_weight_total": 6031.166250228882,
+              "under": 749,
+              "weighted_loss_total": 8076.803398565784
+            },
+            "4": {
+              "correct": 761,
+              "exact": 0.6304888152444076,
+              "mean_true_class_probability": 0.39495827284431884,
+              "nll": 1.106633299618006,
+              "over": 106,
+              "predicted_as_class": 2088,
+              "rows": 1207,
+              "sample_weight_total": 4379.575884342194,
+              "under": 340,
+              "weighted_loss_total": 4846.584511817049
+            },
+            "5": {
+              "correct": 139,
+              "exact": 0.39154929577464787,
+              "mean_true_class_probability": 0.28573075373670165,
+              "nll": 1.4121645183536087,
+              "over": 0,
+              "predicted_as_class": 380,
+              "rows": 355,
+              "sample_weight_total": 1944.7129106521606,
+              "under": 216,
+              "weighted_loss_total": 2746.2545708071525
+            },
+            "6": {
+              "correct": 0,
+              "exact": 0.0,
+              "mean_true_class_probability": 0.10608106136866165,
+              "nll": 2.4083750414644274,
+              "over": 0,
+              "predicted_as_class": 0,
+              "rows": 89,
+              "sample_weight_total": 487.54774379730225,
+              "under": 89,
+              "weighted_loss_total": 1174.1978176837158
+            }
+          },
+          "confusion_true_by_predicted": [
+            [
+              37663,
+              1203,
+              651,
+              101,
+              34,
+              0,
+              0
+            ],
+            [
+              2496,
+              7922,
+              1475,
+              253,
+              115,
+              11,
+              0
+            ],
+            [
+              471,
+              525,
+              1469,
+              598,
+              366,
+              16,
+              0
+            ],
+            [
+              140,
+              71,
+              538,
+              851,
+              625,
+              64,
+              0
+            ],
+            [
+              25,
+              10,
+              114,
+              191,
+              761,
+              106,
+              0
+            ],
+            [
+              3,
+              0,
+              21,
+              43,
+              149,
+              139,
+              0
+            ],
+            [
+              0,
+              0,
+              3,
+              4,
+              38,
+              44,
+              0
+            ]
+          ],
+          "correct": 48805,
+          "exact": 0.822893658635283,
+          "nll": 0.4888893322016632,
+          "oracle_not_a_valid_model_score": true,
+          "oracle_uses_truth": true,
+          "over": 5618,
+          "poly_correct": 3220,
+          "poly_correct_if_true_poly_known": 4217,
+          "poly_exact": 0.43601895734597157,
+          "poly_over": 1775,
+          "poly_predicted_nonpoly": 1245,
+          "poly_rows": 7385,
+          "poly_top2_correct": 5300,
+          "poly_under": 2390,
+          "rows": 59309,
+          "under": 4886,
+          "weighted_nll": 0.7464589528101928
+        },
+        "heldout": {
+          "by_true_k": {
+            "0": {
+              "correct": 9760,
+              "exact": 0.948954788526981,
+              "mean_true_class_probability": 0.8618526137481769,
+              "nll": 0.22241570493106802,
+              "over": 525,
+              "predicted_as_class": 10412,
+              "rows": 10285,
+              "sample_weight_total": 6511.037204563618,
+              "under": 0,
+              "weighted_loss_total": 1448.1569296854277
+            },
+            "1": {
+              "correct": 2032,
+              "exact": 0.6717355371900826,
+              "mean_true_class_probability": 0.6308824655454421,
+              "nll": 0.7566775409974763,
+              "over": 480,
+              "predicted_as_class": 2561,
+              "rows": 3025,
+              "sample_weight_total": 3442.279466986656,
+              "under": 513,
+              "weighted_loss_total": 2604.695562505566
+            },
+            "2": {
+              "correct": 311,
+              "exact": 0.3858560794044665,
+              "mean_true_class_probability": 0.29188486612461123,
+              "nll": 1.4925303588465397,
+              "over": 235,
+              "predicted_as_class": 1064,
+              "rows": 806,
+              "sample_weight_total": 1731.0868043899536,
+              "under": 260,
+              "weighted_loss_total": 2583.699609350647
+            },
+            "3": {
+              "correct": 216,
+              "exact": 0.34394904458598724,
+              "mean_true_class_probability": 0.30371400708489116,
+              "nll": 1.3860845036147644,
+              "over": 194,
+              "predicted_as_class": 597,
+              "rows": 628,
+              "sample_weight_total": 1654.6843185424805,
+              "under": 218,
+              "weighted_loss_total": 2293.5322923060885
+            },
+            "4": {
+              "correct": 217,
+              "exact": 0.5358024691358024,
+              "mean_true_class_probability": 0.3561510416900417,
+              "nll": 1.2263350177244723,
+              "over": 31,
+              "predicted_as_class": 557,
+              "rows": 405,
+              "sample_weight_total": 1469.5345759391785,
+              "under": 157,
+              "weighted_loss_total": 1802.141710231097
+            },
+            "5": {
+              "correct": 22,
+              "exact": 0.2018348623853211,
+              "mean_true_class_probability": 0.20886566631021747,
+              "nll": 2.0600519723174973,
+              "over": 0,
+              "predicted_as_class": 88,
+              "rows": 109,
+              "sample_weight_total": 597.109034538269,
+              "under": 87,
+              "weighted_loss_total": 1230.0756442891577
+            },
+            "6": {
+              "correct": 0,
+              "exact": 0.0,
+              "mean_true_class_probability": 0.06433536325736593,
+              "nll": 3.0642968675642583,
+              "over": 0,
+              "predicted_as_class": 0,
+              "rows": 21,
+              "sample_weight_total": 115.03935527801514,
+              "under": 21,
+              "weighted_loss_total": 352.5147360250335
+            }
+          },
+          "confusion_true_by_predicted": [
+            [
+              9760,
+              330,
+              168,
+              21,
+              6,
+              0,
+              0
+            ],
+            [
+              513,
+              2032,
+              371,
+              72,
+              31,
+              6,
+              0
+            ],
+            [
+              102,
+              158,
+              311,
+              169,
+              60,
+              6,
+              0
+            ],
+            [
+              34,
+              34,
+              150,
+              216,
+              180,
+              14,
+              0
+            ],
+            [
+              2,
+              6,
+              52,
+              97,
+              217,
+              31,
+              0
+            ],
+            [
+              1,
+              1,
+              11,
+              20,
+              54,
+              22,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              2,
+              9,
+              9,
+              0
+            ]
+          ],
+          "correct": 12558,
+          "exact": 0.8219124288238759,
+          "nll": 0.4866481579693469,
+          "oracle_not_a_valid_model_score": true,
+          "oracle_uses_truth": true,
+          "over": 1465,
+          "poly_correct": 766,
+          "poly_correct_if_true_poly_known": 1026,
+          "poly_exact": 0.3890299644489589,
+          "poly_over": 460,
+          "poly_predicted_nonpoly": 338,
+          "poly_rows": 1969,
+          "poly_top2_correct": 1354,
+          "poly_under": 743,
+          "rows": 15279,
+          "under": 1256,
+          "weighted_nll": 0.8059962356432371
+        }
+      },
+      "weights_sha256": "34494f9b32abc45da25b84ce931c7b41511655825d8471cf263fa26e0a86837e",
+      "weights_unchanged": true
+    },
+    "inner": {
+      "frozen_training": {
+        "batch_size": 128,
+        "class_weights": [
+          0.637174129486084,
+          1.1294633150100708,
+          2.187077283859253,
+          2.630507469177246,
+          3.7523374557495117,
+          5.504321098327637,
+          5.504321098327637
+        ],
+        "epoch_order_sha256": "cefe2aad742f687458d5fd81aac7969dd1236e6f67253e78f95e3f47614498b7",
+        "epochs": 8,
+        "final_checkpoint_selected": true,
+        "fit_indices_sha256": "5f4252f41a99cc88140b575966bfda91988ed9a5b5a8e46d96e7e1e5ff6aed58",
+        "fit_rows": 43357,
+        "history": [
+          {
+            "epoch": 1,
+            "loss": 1.0386912822723389,
+            "val_loss": 1.0221282243728638
+          },
+          {
+            "epoch": 2,
+            "loss": 0.9038286209106445,
+            "val_loss": 0.9918187260627747
+          },
+          {
+            "epoch": 3,
+            "loss": 0.8648850321769714,
+            "val_loss": 0.9699636101722717
+          },
+          {
+            "epoch": 4,
+            "loss": 0.8371255993843079,
+            "val_loss": 1.0141125917434692
+          },
+          {
+            "epoch": 5,
+            "loss": 0.8192599415779114,
+            "val_loss": 0.9654256701469421
+          },
+          {
+            "epoch": 6,
+            "loss": 0.7951427698135376,
+            "val_loss": 0.9716938138008118
+          },
+          {
+            "epoch": 7,
+            "loss": 0.7791801691055298,
+            "val_loss": 0.9478727579116821
+          },
+          {
+            "epoch": 8,
+            "loss": 0.765005350112915,
+            "val_loss": 0.9811239242553711
+          }
+        ],
+        "initial_weights_sha256": "e3d36af85c33601c4e3183633e688f335d031e31006d6875857bb4cb22a05b5d",
+        "observed_epoch_order_sha256": [
+          "c0857e9ca3b941a54bdc306d415290ec1da9870fe30ed2dbabc1c351e269a7e9",
+          "4caa589c0f8cc6d2309a4aec11ea841a39c7283897ed6d220b9130f2ba68310a",
+          "5f4777f0d1c1ec7baa4ee4afbe69b7f1191fc9da71fe2b2ce9256dc31711a20e",
+          "bb96735832923507c32fa9621cdd9efe5a76a51631f2a97af9013de13d82a10e",
+          "2b561721b0a4f73513d3d3a9927aea903df0ea7c0fca8984d3e0b7ba3c89fb36",
+          "63bd5930b71ea81ef7c5462bf61a89c33e21c929b927b4284386264079a5fa1a",
+          "66e380a9cc8b089c4a5f79d071762a26f5b99e36fd7337b0be119aa8ebbeb182",
+          "89f9e9a9f388e34b1713204472f21e142d2663677bf9a8c52924cdd95338fadc"
+        ],
+        "predict_indices_sha256": "9561cbcaa529d50ac39d9004eb37bbec8337eeab8b8d932cbc2df95ca8424397",
+        "predict_rows": 15952,
+        "seed": 16164,
+        "status": "trained",
+        "weights_sha256": "a6977a5a998a64e857d04606d54baa1fdf4fcb37d386835d9c106a48c8b2ae25"
+      },
+      "heldout_replay_max_abs_difference": 0.0,
+      "splits": {
+        "fit": {
+          "by_true_k": {
+            "0": {
+              "correct": 27207,
+              "exact": 0.941777147010973,
+              "mean_true_class_probability": 0.8526393497120477,
+              "nll": 0.24066239071290152,
+              "over": 1682,
+              "predicted_as_class": 29233,
+              "rows": 28889,
+              "sample_weight_total": 18407.32342672348,
+              "under": 0,
+              "weighted_loss_total": 4429.950462500872
+            },
+            "1": {
+              "correct": 6589,
+              "exact": 0.7166630411137699,
+              "mean_true_class_probability": 0.6609383079880041,
+              "nll": 0.6528936951750105,
+              "over": 948,
+              "predicted_as_class": 8721,
+              "rows": 9194,
+              "sample_weight_total": 10384.285718202591,
+              "under": 1657,
+              "weighted_loss_total": 6779.834674310378
+            },
+            "2": {
+              "correct": 929,
+              "exact": 0.37887438825448616,
+              "mean_true_class_probability": 0.2910230079891584,
+              "nll": 1.4411215688750747,
+              "over": 613,
+              "predicted_as_class": 2425,
+              "rows": 2452,
+              "sample_weight_total": 5362.713500022888,
+              "under": 910,
+              "weighted_loss_total": 7728.322092580527
+            },
+            "3": {
+              "correct": 622,
+              "exact": 0.36696165191740415,
+              "mean_true_class_probability": 0.3155882047608791,
+              "nll": 1.3140508733245742,
+              "over": 471,
+              "predicted_as_class": 1340,
+              "rows": 1695,
+              "sample_weight_total": 4458.710160255432,
+              "under": 602,
+              "weighted_loss_total": 5858.971979984804
+            },
+            "4": {
+              "correct": 587,
+              "exact": 0.7046818727490997,
+              "mean_true_class_probability": 0.4323181488530516,
+              "nll": 1.0299599286299792,
+              "over": 3,
+              "predicted_as_class": 1601,
+              "rows": 833,
+              "sample_weight_total": 3125.6971006393433,
+              "under": 243,
+              "weighted_loss_total": 3219.342762693431
+            },
+            "5": {
+              "correct": 25,
+              "exact": 0.10416666666666667,
+              "mean_true_class_probability": 0.17160109159206816,
+              "nll": 2.0975614282470336,
+              "over": 0,
+              "predicted_as_class": 37,
+              "rows": 240,
+              "sample_weight_total": 1321.0370635986328,
+              "under": 215,
+              "weighted_loss_total": 2770.956389889216
+            },
+            "6": {
+              "correct": 0,
+              "exact": 0.0,
+              "mean_true_class_probability": 0.05412460684224411,
+              "nll": 3.102998624879677,
+              "over": 0,
+              "predicted_as_class": 0,
+              "rows": 54,
+              "sample_weight_total": 297.2333393096924,
+              "under": 54,
+              "weighted_loss_total": 922.3146431463698
+            }
+          },
+          "confusion_true_by_predicted": [
+            [
+              27207,
+              1330,
+              274,
+              50,
+              28,
+              0,
+              0
+            ],
+            [
+              1657,
+              6589,
+              764,
+              120,
+              64,
+              0,
+              0
+            ],
+            [
+              268,
+              642,
+              929,
+              385,
+              228,
+              0,
+              0
+            ],
+            [
+              84,
+              137,
+              381,
+              622,
+              469,
+              2,
+              0
+            ],
+            [
+              15,
+              22,
+              69,
+              137,
+              587,
+              3,
+              0
+            ],
+            [
+              2,
+              1,
+              5,
+              20,
+              187,
+              25,
+              0
+            ],
+            [
+              0,
+              0,
+              3,
+              6,
+              38,
+              7,
+              0
+            ]
+          ],
+          "correct": 35959,
+          "exact": 0.8293701132458426,
+          "nll": 0.4669391342801038,
+          "oracle_not_a_valid_model_score": true,
+          "oracle_uses_truth": true,
+          "over": 3717,
+          "poly_correct": 2163,
+          "poly_correct_if_true_poly_known": 3082,
+          "poly_exact": 0.4101251422070535,
+          "poly_over": 1087,
+          "poly_predicted_nonpoly": 1171,
+          "poly_rows": 5274,
+          "poly_top2_correct": 3830,
+          "poly_under": 2024,
+          "rows": 43357,
+          "under": 3681,
+          "weighted_nll": 0.7313627097148234
+        },
+        "heldout": {
+          "by_true_k": {
+            "0": {
+              "correct": 10157,
+              "exact": 0.9436959955402768,
+              "mean_true_class_probability": 0.8476842112734326,
+              "nll": 0.24125471542605031,
+              "over": 606,
+              "predicted_as_class": 11075,
+              "rows": 10763,
+              "sample_weight_total": 6857.905155658722,
+              "under": 0,
+              "weighted_loss_total": 1654.5019567472882
+            },
+            "1": {
+              "correct": 2060,
+              "exact": 0.6692657569850552,
+              "mean_true_class_probability": 0.6172308601152916,
+              "nll": 0.7877761950959947,
+              "over": 374,
+              "predicted_as_class": 2913,
+              "rows": 3078,
+              "sample_weight_total": 3476.488083600998,
+              "under": 644,
+              "weighted_loss_total": 2738.6945547957607
+            },
+            "2": {
+              "correct": 323,
+              "exact": 0.3252769385699899,
+              "mean_true_class_probability": 0.26299274641615294,
+              "nll": 1.6422407972829185,
+              "over": 208,
+              "predicted_as_class": 977,
+              "rows": 993,
+              "sample_weight_total": 2171.767742872238,
+              "under": 462,
+              "weighted_loss_total": 3566.5655895678283
+            },
+            "3": {
+              "correct": 150,
+              "exact": 0.25252525252525254,
+              "mean_true_class_probability": 0.26348689662655955,
+              "nll": 1.6530624658886401,
+              "over": 139,
+              "predicted_as_class": 464,
+              "rows": 594,
+              "sample_weight_total": 1562.5214366912842,
+              "under": 305,
+              "weighted_loss_total": 2582.9455391407546
+            },
+            "4": {
+              "correct": 174,
+              "exact": 0.46524064171123,
+              "mean_true_class_probability": 0.32268937671106346,
+              "nll": 1.5253866117480637,
+              "over": 1,
+              "predicted_as_class": 520,
+              "rows": 374,
+              "sample_weight_total": 1403.3742084503174,
+              "under": 199,
+              "weighted_loss_total": 2140.6882288426505
+            },
+            "5": {
+              "correct": 0,
+              "exact": 0.0,
+              "mean_true_class_probability": 0.06997700945990484,
+              "nll": 3.542751944439869,
+              "over": 0,
+              "predicted_as_class": 3,
+              "rows": 115,
+              "sample_weight_total": 632.9969263076782,
+              "under": 115,
+              "weighted_loss_total": 2242.5510915009877
+            },
+            "6": {
+              "correct": 0,
+              "exact": 0.0,
+              "mean_true_class_probability": 0.034952689407093986,
+              "nll": 3.7630042274979285,
+              "over": 0,
+              "predicted_as_class": 0,
+              "rows": 35,
+              "sample_weight_total": 192.65123844146729,
+              "under": 35,
+              "weighted_loss_total": 724.9474246879527
+            }
+          },
+          "confusion_true_by_predicted": [
+            [
+              10157,
+              485,
+              108,
+              10,
+              3,
+              0,
+              0
+            ],
+            [
+              644,
+              2060,
+              288,
+              44,
+              41,
+              1,
+              0
+            ],
+            [
+              193,
+              269,
+              323,
+              125,
+              83,
+              0,
+              0
+            ],
+            [
+              59,
+              74,
+              172,
+              150,
+              138,
+              1,
+              0
+            ],
+            [
+              16,
+              21,
+              59,
+              103,
+              174,
+              1,
+              0
+            ],
+            [
+              6,
+              2,
+              26,
+              24,
+              57,
+              0,
+              0
+            ],
+            [
+              0,
+              2,
+              1,
+              8,
+              24,
+              0,
+              0
+            ]
+          ],
+          "correct": 12864,
+          "exact": 0.8064192577733199,
+          "nll": 0.5481243769710775,
+          "oracle_not_a_valid_model_score": true,
+          "oracle_uses_truth": true,
+          "over": 1328,
+          "poly_correct": 647,
+          "poly_correct_if_true_poly_known": 1111,
+          "poly_exact": 0.3064898152534344,
+          "poly_over": 348,
+          "poly_predicted_nonpoly": 642,
+          "poly_rows": 2111,
+          "poly_top2_correct": 1266,
+          "poly_under": 1116,
+          "rows": 15952,
+          "under": 1760,
+          "weighted_nll": 0.9811242718958891
+        }
+      },
+      "weights_sha256": "a6977a5a998a64e857d04606d54baa1fdf4fcb37d386835d9c106a48c8b2ae25",
+      "weights_unchanged": true
+    }
+  },
+  "protocol_sha256": "c6e640555a93c30bce69cda30fce655e130cd773c26d538acd8f0a149002e198",
+  "script_sha256": "42e18591b3b639f515a042e476a6dcd493a60cb94baa5174b13a7f9df7577edc",
+  "source_training_run": 36351028493,
+  "status": "completed",
+  "tensorflow": "2.15.1",
+  "training_performed": false,
+  "weighting": "weighted"
+}

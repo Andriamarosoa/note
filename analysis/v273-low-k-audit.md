@@ -1,5 +1,9 @@
 # Audit des surcomptages à vrai K < 4 — fold 3
 
+Pour expliquer le score médiocre dans son ensemble, voir le [diagnostic
+d'apprentissage et de performances](v273-performance-causes.md), qui inclut
+les sous-comptages, les données vues/non vues et le compromis entre classes.
+
 Complément terminé : [audit de l'audio original et de l'attribution des
 attaques](v273-acoustic-residual.md) sur les 874 surcomptages sans pondération.
 Il vérifie 1 541 spectres depuis l'audio et distingue les cas de concurrence
