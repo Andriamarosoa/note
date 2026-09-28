@@ -1,0 +1,24 @@
+{
+  "audit": "native_unweighted_low_k_acoustic_residual",
+  "attempt": 1,
+  "outer_fold": 3,
+  "variant": "frames-31-uniform",
+  "expected_overcounts": 874,
+  "assets": [
+    {
+      "tag": "v273-spectral-coverage-36139446276",
+      "asset": "v273-spectral-coverage-fold3.zip",
+      "sha256": "e885a2e100296e2ce257690b704432097869c2c7883654214bd4f9859ede4742",
+      "destination": "outer"
+    },
+    {
+      "tag": "v273-low-k-audit-36358846720",
+      "asset": "low-k-audit.zip",
+      "sha256": "4b2facca611329b1ce271cf3a34088d3bb05755569a0f7269ebb1cbb33205cba",
+      "destination": "previous"
+    }
+  ],
+  "training": false,
+  "output_corrector": false,
+  "relabelled_score": false
+}
