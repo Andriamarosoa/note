@@ -1,0 +1,2030 @@
+{
+  "arms": {
+    "uniform": {
+      "archive": "budget-uniform-epoch12.zip",
+      "archive_sha256": "e0ae6fd64d92e9c7479b2239ff2cfe9b3cf0d0a2a9c55ae92f353be92c582e56",
+      "baseline_replayed": true,
+      "checkpoint_sha256": "f921c13ab0c2cf870c0cc8cc3577f989fe5739d3824175b84d79b861e6ba4983",
+      "optimizer_iterations": 4068,
+      "optimizer_restored_exactly": true,
+      "paired_changes": {
+        "fit": {
+          "all": {
+            "after_correct": 36845,
+            "before_correct": 36388,
+            "corrected": 1224,
+            "delta": 457,
+            "regressed": 767,
+            "rows": 43357
+          },
+          "by_k": {
+            "0": {
+              "after_correct": 28053,
+              "before_correct": 27888,
+              "corrected": 261,
+              "delta": 165,
+              "regressed": 96,
+              "rows": 28889
+            },
+            "1": {
+              "after_correct": 6698,
+              "before_correct": 6969,
+              "corrected": 195,
+              "delta": -271,
+              "regressed": 466,
+              "rows": 9194
+            },
+            "2": {
+              "after_correct": 993,
+              "before_correct": 638,
+              "corrected": 436,
+              "delta": 355,
+              "regressed": 81,
+              "rows": 2452
+            },
+            "3": {
+              "after_correct": 932,
+              "before_correct": 677,
+              "corrected": 267,
+              "delta": 255,
+              "regressed": 12,
+              "rows": 1695
+            },
+            "4": {
+              "after_correct": 116,
+              "before_correct": 216,
+              "corrected": 12,
+              "delta": -100,
+              "regressed": 112,
+              "rows": 833
+            },
+            "5": {
+              "after_correct": 53,
+              "before_correct": 0,
+              "corrected": 53,
+              "delta": 53,
+              "regressed": 0,
+              "rows": 240
+            },
+            "6": {
+              "after_correct": 0,
+              "before_correct": 0,
+              "corrected": 0,
+              "delta": 0,
+              "regressed": 0,
+              "rows": 54
+            }
+          },
+          "poly": {
+            "after_correct": 2094,
+            "before_correct": 1531,
+            "corrected": 768,
+            "delta": 563,
+            "regressed": 205,
+            "rows": 5274
+          },
+          "poly_by_composition": {
+            "BN3-154-E": {
+              "after_correct": 94,
+              "before_correct": 62,
+              "corrected": 43,
+              "delta": 32,
+              "regressed": 11,
+              "rows": 266
+            },
+            "Funk1-114-Ab": {
+              "after_correct": 156,
+              "before_correct": 124,
+              "corrected": 41,
+              "delta": 32,
+              "regressed": 9,
+              "rows": 349
+            },
+            "Funk2-108-Eb": {
+              "after_correct": 190,
+              "before_correct": 147,
+              "corrected": 55,
+              "delta": 43,
+              "regressed": 12,
+              "rows": 507
+            },
+            "Funk2-119-G": {
+              "after_correct": 193,
+              "before_correct": 163,
+              "corrected": 55,
+              "delta": 30,
+              "regressed": 25,
+              "rows": 462
+            },
+            "Funk3-112-C#": {
+              "after_correct": 245,
+              "before_correct": 189,
+              "corrected": 77,
+              "delta": 56,
+              "regressed": 21,
+              "rows": 555
+            },
+            "Jazz1-130-D": {
+              "after_correct": 91,
+              "before_correct": 66,
+              "corrected": 33,
+              "delta": 25,
+              "regressed": 8,
+              "rows": 226
+            },
+            "Jazz1-200-B": {
+              "after_correct": 61,
+              "before_correct": 38,
+              "corrected": 29,
+              "delta": 23,
+              "regressed": 6,
+              "rows": 220
+            },
+            "Jazz2-110-Bb": {
+              "after_correct": 106,
+              "before_correct": 93,
+              "corrected": 30,
+              "delta": 13,
+              "regressed": 17,
+              "rows": 273
+            },
+            "Jazz3-137-Eb": {
+              "after_correct": 125,
+              "before_correct": 102,
+              "corrected": 37,
+              "delta": 23,
+              "regressed": 14,
+              "rows": 268
+            },
+            "Rock1-130-A": {
+              "after_correct": 132,
+              "before_correct": 85,
+              "corrected": 55,
+              "delta": 47,
+              "regressed": 8,
+              "rows": 344
+            },
+            "Rock1-90-C#": {
+              "after_correct": 163,
+              "before_correct": 109,
+              "corrected": 68,
+              "delta": 54,
+              "regressed": 14,
+              "rows": 494
+            },
+            "Rock2-85-F": {
+              "after_correct": 165,
+              "before_correct": 113,
+              "corrected": 77,
+              "delta": 52,
+              "regressed": 25,
+              "rows": 475
+            },
+            "SS2-107-Ab": {
+              "after_correct": 166,
+              "before_correct": 118,
+              "corrected": 63,
+              "delta": 48,
+              "regressed": 15,
+              "rows": 356
+            },
+            "SS3-98-C": {
+              "after_correct": 207,
+              "before_correct": 122,
+              "corrected": 105,
+              "delta": 85,
+              "regressed": 20,
+              "rows": 479
+            }
+          }
+        },
+        "validation": {
+          "all": {
+            "after_correct": 12975,
+            "before_correct": 12948,
+            "corrected": 383,
+            "delta": 27,
+            "regressed": 356,
+            "rows": 15952
+          },
+          "by_k": {
+            "0": {
+              "after_correct": 10387,
+              "before_correct": 10374,
+              "corrected": 73,
+              "delta": 13,
+              "regressed": 60,
+              "rows": 10763
+            },
+            "1": {
+              "after_correct": 2019,
+              "before_correct": 2171,
+              "corrected": 54,
+              "delta": -152,
+              "regressed": 206,
+              "rows": 3078
+            },
+            "2": {
+              "after_correct": 321,
+              "before_correct": 194,
+              "corrected": 176,
+              "delta": 127,
+              "regressed": 49,
+              "rows": 993
+            },
+            "3": {
+              "after_correct": 221,
+              "before_correct": 154,
+              "corrected": 71,
+              "delta": 67,
+              "regressed": 4,
+              "rows": 594
+            },
+            "4": {
+              "after_correct": 21,
+              "before_correct": 55,
+              "corrected": 3,
+              "delta": -34,
+              "regressed": 37,
+              "rows": 374
+            },
+            "5": {
+              "after_correct": 6,
+              "before_correct": 0,
+              "corrected": 6,
+              "delta": 6,
+              "regressed": 0,
+              "rows": 115
+            },
+            "6": {
+              "after_correct": 0,
+              "before_correct": 0,
+              "corrected": 0,
+              "delta": 0,
+              "regressed": 0,
+              "rows": 35
+            }
+          },
+          "poly": {
+            "after_correct": 569,
+            "before_correct": 403,
+            "corrected": 256,
+            "delta": 166,
+            "regressed": 90,
+            "rows": 2111
+          },
+          "poly_by_composition": {
+            "BN2-166-Ab": {
+              "after_correct": 83,
+              "before_correct": 65,
+              "corrected": 34,
+              "delta": 18,
+              "regressed": 16,
+              "rows": 300
+            },
+            "Jazz3-150-C": {
+              "after_correct": 102,
+              "before_correct": 78,
+              "corrected": 37,
+              "delta": 24,
+              "regressed": 13,
+              "rows": 300
+            },
+            "Rock2-142-D": {
+              "after_correct": 121,
+              "before_correct": 87,
+              "corrected": 57,
+              "delta": 34,
+              "regressed": 23,
+              "rows": 479
+            },
+            "Rock3-148-C": {
+              "after_correct": 136,
+              "before_correct": 100,
+              "corrected": 59,
+              "delta": 36,
+              "regressed": 23,
+              "rows": 607
+            },
+            "SS1-68-E": {
+              "after_correct": 127,
+              "before_correct": 73,
+              "corrected": 69,
+              "delta": 54,
+              "regressed": 15,
+              "rows": 425
+            }
+          }
+        }
+      },
+      "report_sha256": "8a1f8a4629d72b801ba83364a4290e068480b2e13a59a19bf69348758333116c",
+      "scores": {
+        "12": {
+          "fit": {
+            "by_true_k": {
+              "0": {
+                "correct": 28053,
+                "exact": 0.9710616497628856,
+                "mean_true_class_probability": 0.9249234686579939,
+                "nll": 0.11326444128306937,
+                "over": 836,
+                "predicted_as_class": 30465,
+                "rows": 28889,
+                "sample_weight_total": 28889.0,
+                "under": 0,
+                "weighted_loss_total": 3272.096444226591
+              },
+              "1": {
+                "correct": 6698,
+                "exact": 0.7285185990863606,
+                "mean_true_class_probability": 0.6527801790272122,
+                "nll": 0.6876276548680899,
+                "over": 575,
+                "predicted_as_class": 8273,
+                "rows": 9194,
+                "sample_weight_total": 9194.0,
+                "under": 1921,
+                "weighted_loss_total": 6322.0486588572185
+              },
+              "2": {
+                "correct": 993,
+                "exact": 0.4049755301794454,
+                "mean_true_class_probability": 0.31316561702221346,
+                "nll": 1.422789609214511,
+                "over": 411,
+                "predicted_as_class": 2233,
+                "rows": 2452,
+                "sample_weight_total": 2452.0,
+                "under": 1048,
+                "weighted_loss_total": 3488.6801217939806
+              },
+              "3": {
+                "correct": 932,
+                "exact": 0.5498525073746313,
+                "mean_true_class_probability": 0.3676569259834747,
+                "nll": 1.2352382021377621,
+                "over": 29,
+                "predicted_as_class": 2107,
+                "rows": 1695,
+                "sample_weight_total": 1695.0,
+                "under": 734,
+                "weighted_loss_total": 2093.728752623507
+              },
+              "4": {
+                "correct": 116,
+                "exact": 0.13925570228091236,
+                "mean_true_class_probability": 0.2164451057876827,
+                "nll": 1.8327824570115325,
+                "over": 21,
+                "predicted_as_class": 185,
+                "rows": 833,
+                "sample_weight_total": 833.0,
+                "under": 696,
+                "weighted_loss_total": 1526.7077866906066
+              },
+              "5": {
+                "correct": 53,
+                "exact": 0.22083333333333333,
+                "mean_true_class_probability": 0.181550579170289,
+                "nll": 2.0677274139037114,
+                "over": 0,
+                "predicted_as_class": 94,
+                "rows": 240,
+                "sample_weight_total": 240.0,
+                "under": 187,
+                "weighted_loss_total": 496.2545793368907
+              },
+              "6": {
+                "correct": 0,
+                "exact": 0.0,
+                "mean_true_class_probability": 0.03779386460384423,
+                "nll": 3.4631662647887413,
+                "over": 0,
+                "predicted_as_class": 0,
+                "rows": 54,
+                "sample_weight_total": 54.0,
+                "under": 54,
+                "weighted_loss_total": 187.01097829859202
+              }
+            },
+            "confusion_true_by_predicted": [
+              [
+                28053,
+                705,
+                107,
+                21,
+                3,
+                0,
+                0
+              ],
+              [
+                1921,
+                6698,
+                514,
+                60,
+                1,
+                0,
+                0
+              ],
+              [
+                352,
+                696,
+                993,
+                397,
+                12,
+                2,
+                0
+              ],
+              [
+                116,
+                147,
+                471,
+                932,
+                21,
+                8,
+                0
+              ],
+              [
+                21,
+                25,
+                115,
+                535,
+                116,
+                21,
+                0
+              ],
+              [
+                2,
+                1,
+                26,
+                135,
+                23,
+                53,
+                0
+              ],
+              [
+                0,
+                1,
+                7,
+                27,
+                9,
+                10,
+                0
+              ]
+            ],
+            "correct": 36845,
+            "exact": 0.8498051064418664,
+            "nll": 0.40100854122350227,
+            "oracle_not_a_valid_model_score": true,
+            "oracle_uses_truth": true,
+            "over": 1872,
+            "poly_correct": 2094,
+            "poly_correct_if_true_poly_known": 3149,
+            "poly_exact": 0.3970420932878271,
+            "poly_over": 461,
+            "poly_predicted_nonpoly": 1361,
+            "poly_rows": 5274,
+            "poly_top2_correct": 3628,
+            "poly_under": 2719,
+            "rows": 43357,
+            "under": 4640,
+            "weighted_nll": 0.40100854122350227
+          },
+          "validation": {
+            "by_true_k": {
+              "0": {
+                "correct": 10387,
+                "exact": 0.9650655021834061,
+                "mean_true_class_probability": 0.9140754163929703,
+                "nll": 0.13323029982213008,
+                "over": 376,
+                "predicted_as_class": 11489,
+                "rows": 10763,
+                "sample_weight_total": 10763.0,
+                "under": 0,
+                "weighted_loss_total": 1433.957716985586
+              },
+              "1": {
+                "correct": 2019,
+                "exact": 0.6559454191033138,
+                "mean_true_class_probability": 0.5985514482051646,
+                "nll": 0.9145074908296635,
+                "over": 297,
+                "predicted_as_class": 2782,
+                "rows": 3078,
+                "sample_weight_total": 3078.0,
+                "under": 762,
+                "weighted_loss_total": 2814.8540567737045
+              },
+              "2": {
+                "correct": 321,
+                "exact": 0.32326283987915405,
+                "mean_true_class_probability": 0.26208861381853804,
+                "nll": 1.812215322035663,
+                "over": 147,
+                "predicted_as_class": 920,
+                "rows": 993,
+                "sample_weight_total": 993.0,
+                "under": 525,
+                "weighted_loss_total": 1799.5298147814133
+              },
+              "3": {
+                "correct": 221,
+                "exact": 0.3720538720538721,
+                "mean_true_class_probability": 0.28163631502232445,
+                "nll": 1.7710297718868453,
+                "over": 11,
+                "predicted_as_class": 694,
+                "rows": 594,
+                "sample_weight_total": 594.0,
+                "under": 362,
+                "weighted_loss_total": 1051.991684500786
+              },
+              "4": {
+                "correct": 21,
+                "exact": 0.05614973262032086,
+                "mean_true_class_probability": 0.1457536083688607,
+                "nll": 2.447955985921577,
+                "over": 7,
+                "predicted_as_class": 48,
+                "rows": 374,
+                "sample_weight_total": 374.0,
+                "under": 346,
+                "weighted_loss_total": 915.5355387346698
+              },
+              "5": {
+                "correct": 6,
+                "exact": 0.05217391304347826,
+                "mean_true_class_probability": 0.07868271015841342,
+                "nll": 3.5917373934235814,
+                "over": 0,
+                "predicted_as_class": 19,
+                "rows": 115,
+                "sample_weight_total": 115.0,
+                "under": 109,
+                "weighted_loss_total": 413.04980024371184
+              },
+              "6": {
+                "correct": 0,
+                "exact": 0.0,
+                "mean_true_class_probability": 0.025100658538784567,
+                "nll": 4.06058647028884,
+                "over": 0,
+                "predicted_as_class": 0,
+                "rows": 35,
+                "sample_weight_total": 35.0,
+                "under": 35,
+                "weighted_loss_total": 142.12052646010937
+              }
+            },
+            "confusion_true_by_predicted": [
+              [
+                10387,
+                331,
+                39,
+                4,
+                2,
+                0,
+                0
+              ],
+              [
+                762,
+                2019,
+                249,
+                46,
+                1,
+                1,
+                0
+              ],
+              [
+                228,
+                297,
+                321,
+                143,
+                4,
+                0,
+                0
+              ],
+              [
+                83,
+                100,
+                179,
+                221,
+                9,
+                2,
+                0
+              ],
+              [
+                22,
+                26,
+                94,
+                204,
+                21,
+                7,
+                0
+              ],
+              [
+                7,
+                7,
+                36,
+                53,
+                6,
+                6,
+                0
+              ],
+              [
+                0,
+                2,
+                2,
+                23,
+                5,
+                3,
+                0
+              ]
+            ],
+            "correct": 12975,
+            "exact": 0.8133776328986961,
+            "nll": 0.5373018517101291,
+            "oracle_not_a_valid_model_score": true,
+            "oracle_uses_truth": true,
+            "over": 838,
+            "poly_correct": 569,
+            "poly_correct_if_true_poly_known": 1094,
+            "poly_exact": 0.2695405021316911,
+            "poly_over": 165,
+            "poly_predicted_nonpoly": 772,
+            "poly_rows": 2111,
+            "poly_top2_correct": 1084,
+            "poly_under": 1377,
+            "rows": 15952,
+            "under": 2139,
+            "weighted_nll": 0.5373018517101291
+          }
+        },
+        "8": {
+          "fit": {
+            "by_true_k": {
+              "0": {
+                "correct": 27888,
+                "exact": 0.9653501332687182,
+                "mean_true_class_probability": 0.9041368392559165,
+                "nll": 0.1390576266662371,
+                "over": 1001,
+                "predicted_as_class": 30405,
+                "rows": 28889,
+                "sample_weight_total": 28889.0,
+                "under": 0,
+                "weighted_loss_total": 4017.235776760924
+              },
+              "1": {
+                "correct": 6969,
+                "exact": 0.757994344137481,
+                "mean_true_class_probability": 0.6872744051753273,
+                "nll": 0.6052825111576345,
+                "over": 272,
+                "predicted_as_class": 9422,
+                "rows": 9194,
+                "sample_weight_total": 9194.0,
+                "under": 1953,
+                "weighted_loss_total": 5564.967407583292
+              },
+              "2": {
+                "correct": 638,
+                "exact": 0.2601957585644372,
+                "mean_true_class_probability": 0.24054823496767705,
+                "nll": 1.7424955516783305,
+                "over": 333,
+                "predicted_as_class": 1553,
+                "rows": 2452,
+                "sample_weight_total": 2452.0,
+                "under": 1481,
+                "weighted_loss_total": 4272.599092715266
+              },
+              "3": {
+                "correct": 677,
+                "exact": 0.39941002949852505,
+                "mean_true_class_probability": 0.28768175878325253,
+                "nll": 1.5665511906992555,
+                "over": 95,
+                "predicted_as_class": 1513,
+                "rows": 1695,
+                "sample_weight_total": 1695.0,
+                "under": 923,
+                "weighted_loss_total": 2655.304268235238
+              },
+              "4": {
+                "correct": 216,
+                "exact": 0.25930372148859543,
+                "mean_true_class_probability": 0.24716821311536077,
+                "nll": 1.739807420878834,
+                "over": 0,
+                "predicted_as_class": 464,
+                "rows": 833,
+                "sample_weight_total": 833.0,
+                "under": 617,
+                "weighted_loss_total": 1449.2595815920688
+              },
+              "5": {
+                "correct": 0,
+                "exact": 0.0,
+                "mean_true_class_probability": 0.08032419258621909,
+                "nll": 2.815081707780784,
+                "over": 0,
+                "predicted_as_class": 0,
+                "rows": 240,
+                "sample_weight_total": 240.0,
+                "under": 240,
+                "weighted_loss_total": 675.6196098673881
+              },
+              "6": {
+                "correct": 0,
+                "exact": 0.0,
+                "mean_true_class_probability": 0.020572264833996694,
+                "nll": 4.028908875293591,
+                "over": 0,
+                "predicted_as_class": 0,
+                "rows": 54,
+                "sample_weight_total": 54.0,
+                "under": 54,
+                "weighted_loss_total": 217.5610792658539
+              }
+            },
+            "confusion_true_by_predicted": [
+              [
+                27888,
+                924,
+                63,
+                12,
+                2,
+                0,
+                0
+              ],
+              [
+                1953,
+                6969,
+                231,
+                38,
+                3,
+                0,
+                0
+              ],
+              [
+                410,
+                1071,
+                638,
+                290,
+                43,
+                0,
+                0
+              ],
+              [
+                122,
+                357,
+                444,
+                677,
+                95,
+                0,
+                0
+              ],
+              [
+                29,
+                86,
+                126,
+                376,
+                216,
+                0,
+                0
+              ],
+              [
+                3,
+                11,
+                44,
+                100,
+                82,
+                0,
+                0
+              ],
+              [
+                0,
+                4,
+                7,
+                20,
+                23,
+                0,
+                0
+              ]
+            ],
+            "correct": 36388,
+            "exact": 0.8392647092741656,
+            "nll": 0.4348212933556296,
+            "oracle_not_a_valid_model_score": true,
+            "oracle_uses_truth": true,
+            "over": 1701,
+            "poly_correct": 1531,
+            "poly_correct_if_true_poly_known": 3016,
+            "poly_exact": 0.29029199848312476,
+            "poly_over": 428,
+            "poly_predicted_nonpoly": 2093,
+            "poly_rows": 5274,
+            "poly_top2_correct": 3136,
+            "poly_under": 3315,
+            "rows": 43357,
+            "under": 5268,
+            "weighted_nll": 0.4348212933556296
+          },
+          "validation": {
+            "by_true_k": {
+              "0": {
+                "correct": 10374,
+                "exact": 0.963857660503577,
+                "mean_true_class_probability": 0.8999926807815047,
+                "nll": 0.14514962585946828,
+                "over": 389,
+                "predicted_as_class": 11508,
+                "rows": 10763,
+                "sample_weight_total": 10763.0,
+                "under": 0,
+                "weighted_loss_total": 1562.2454231254571
+              },
+              "1": {
+                "correct": 2171,
+                "exact": 0.7053281351526965,
+                "mean_true_class_probability": 0.6417044416469987,
+                "nll": 0.7633881634376408,
+                "over": 141,
+                "predicted_as_class": 3229,
+                "rows": 3078,
+                "sample_weight_total": 3078.0,
+                "under": 766,
+                "weighted_loss_total": 2349.7087670610586
+              },
+              "2": {
+                "correct": 194,
+                "exact": 0.19536757301107754,
+                "mean_true_class_probability": 0.2071711543996932,
+                "nll": 2.045312867024133,
+                "over": 94,
+                "predicted_as_class": 631,
+                "rows": 993,
+                "sample_weight_total": 993.0,
+                "under": 705,
+                "weighted_loss_total": 2030.995676954964
+              },
+              "3": {
+                "correct": 154,
+                "exact": 0.25925925925925924,
+                "mean_true_class_probability": 0.22275247012889435,
+                "nll": 2.0711989557208494,
+                "over": 38,
+                "predicted_as_class": 447,
+                "rows": 594,
+                "sample_weight_total": 594.0,
+                "under": 402,
+                "weighted_loss_total": 1230.2921796981846
+              },
+              "4": {
+                "correct": 55,
+                "exact": 0.14705882352941177,
+                "mean_true_class_probability": 0.1828690030230589,
+                "nll": 2.2464038518466243,
+                "over": 0,
+                "predicted_as_class": 137,
+                "rows": 374,
+                "sample_weight_total": 374.0,
+                "under": 319,
+                "weighted_loss_total": 840.1550405906374
+              },
+              "5": {
+                "correct": 0,
+                "exact": 0.0,
+                "mean_true_class_probability": 0.04584364194053468,
+                "nll": 3.7910396835435343,
+                "over": 0,
+                "predicted_as_class": 0,
+                "rows": 115,
+                "sample_weight_total": 115.0,
+                "under": 115,
+                "weighted_loss_total": 435.9695636075064
+              },
+              "6": {
+                "correct": 0,
+                "exact": 0.0,
+                "mean_true_class_probability": 0.017643697949409086,
+                "nll": 4.3081126827759215,
+                "over": 0,
+                "predicted_as_class": 0,
+                "rows": 35,
+                "sample_weight_total": 35.0,
+                "under": 35,
+                "weighted_loss_total": 150.78394389715726
+              }
+            },
+            "confusion_true_by_predicted": [
+              [
+                10374,
+                367,
+                18,
+                2,
+                2,
+                0,
+                0
+              ],
+              [
+                766,
+                2171,
+                119,
+                19,
+                3,
+                0,
+                0
+              ],
+              [
+                244,
+                461,
+                194,
+                80,
+                14,
+                0,
+                0
+              ],
+              [
+                96,
+                150,
+                156,
+                154,
+                38,
+                0,
+                0
+              ],
+              [
+                21,
+                61,
+                100,
+                137,
+                55,
+                0,
+                0
+              ],
+              [
+                7,
+                16,
+                36,
+                40,
+                16,
+                0,
+                0
+              ],
+              [
+                0,
+                3,
+                8,
+                15,
+                9,
+                0,
+                0
+              ]
+            ],
+            "correct": 12948,
+            "exact": 0.8116850551654965,
+            "nll": 0.5391267925611186,
+            "oracle_not_a_valid_model_score": true,
+            "oracle_uses_truth": true,
+            "over": 662,
+            "poly_correct": 403,
+            "poly_correct_if_true_poly_known": 1110,
+            "poly_exact": 0.19090478446234013,
+            "poly_over": 132,
+            "poly_predicted_nonpoly": 1059,
+            "poly_rows": 2111,
+            "poly_top2_correct": 990,
+            "poly_under": 1576,
+            "rows": 15952,
+            "under": 2342,
+            "weighted_nll": 0.5391267925611186
+          }
+        }
+      }
+    },
+    "weighted": {
+      "archive": "budget-weighted-epoch12.zip",
+      "archive_sha256": "4a4860d68b5f14ed1a81150a8323a665059d91c7868375ab1087eb048f33cf82",
+      "baseline_replayed": true,
+      "checkpoint_sha256": "c56ae456c68505d9ccb38f7452a007422378dfe81b2314f9585d8937575e9db4",
+      "optimizer_iterations": 4068,
+      "optimizer_restored_exactly": true,
+      "paired_changes": {
+        "fit": {
+          "all": {
+            "after_correct": 36364,
+            "before_correct": 35959,
+            "corrected": 1552,
+            "delta": 405,
+            "regressed": 1147,
+            "rows": 43357
+          },
+          "by_k": {
+            "0": {
+              "after_correct": 27427,
+              "before_correct": 27207,
+              "corrected": 363,
+              "delta": 220,
+              "regressed": 143,
+              "rows": 28889
+            },
+            "1": {
+              "after_correct": 6192,
+              "before_correct": 6589,
+              "corrected": 148,
+              "delta": -397,
+              "regressed": 545,
+              "rows": 9194
+            },
+            "2": {
+              "after_correct": 1241,
+              "before_correct": 929,
+              "corrected": 417,
+              "delta": 312,
+              "regressed": 105,
+              "rows": 2452
+            },
+            "3": {
+              "after_correct": 986,
+              "before_correct": 622,
+              "corrected": 415,
+              "delta": 364,
+              "regressed": 51,
+              "rows": 1695
+            },
+            "4": {
+              "after_correct": 306,
+              "before_correct": 587,
+              "corrected": 22,
+              "delta": -281,
+              "regressed": 303,
+              "rows": 833
+            },
+            "5": {
+              "after_correct": 212,
+              "before_correct": 25,
+              "corrected": 187,
+              "delta": 187,
+              "regressed": 0,
+              "rows": 240
+            },
+            "6": {
+              "after_correct": 0,
+              "before_correct": 0,
+              "corrected": 0,
+              "delta": 0,
+              "regressed": 0,
+              "rows": 54
+            }
+          },
+          "poly": {
+            "after_correct": 2745,
+            "before_correct": 2163,
+            "corrected": 1041,
+            "delta": 582,
+            "regressed": 459,
+            "rows": 5274
+          },
+          "poly_by_composition": {
+            "BN3-154-E": {
+              "after_correct": 127,
+              "before_correct": 113,
+              "corrected": 34,
+              "delta": 14,
+              "regressed": 20,
+              "rows": 266
+            },
+            "Funk1-114-Ab": {
+              "after_correct": 193,
+              "before_correct": 150,
+              "corrected": 72,
+              "delta": 43,
+              "regressed": 29,
+              "rows": 349
+            },
+            "Funk2-108-Eb": {
+              "after_correct": 246,
+              "before_correct": 212,
+              "corrected": 101,
+              "delta": 34,
+              "regressed": 67,
+              "rows": 507
+            },
+            "Funk2-119-G": {
+              "after_correct": 231,
+              "before_correct": 183,
+              "corrected": 92,
+              "delta": 48,
+              "regressed": 44,
+              "rows": 462
+            },
+            "Funk3-112-C#": {
+              "after_correct": 309,
+              "before_correct": 219,
+              "corrected": 139,
+              "delta": 90,
+              "regressed": 49,
+              "rows": 555
+            },
+            "Jazz1-130-D": {
+              "after_correct": 126,
+              "before_correct": 116,
+              "corrected": 30,
+              "delta": 10,
+              "regressed": 20,
+              "rows": 226
+            },
+            "Jazz1-200-B": {
+              "after_correct": 105,
+              "before_correct": 72,
+              "corrected": 44,
+              "delta": 33,
+              "regressed": 11,
+              "rows": 220
+            },
+            "Jazz2-110-Bb": {
+              "after_correct": 139,
+              "before_correct": 131,
+              "corrected": 44,
+              "delta": 8,
+              "regressed": 36,
+              "rows": 273
+            },
+            "Jazz3-137-Eb": {
+              "after_correct": 168,
+              "before_correct": 139,
+              "corrected": 46,
+              "delta": 29,
+              "regressed": 17,
+              "rows": 268
+            },
+            "Rock1-130-A": {
+              "after_correct": 171,
+              "before_correct": 127,
+              "corrected": 78,
+              "delta": 44,
+              "regressed": 34,
+              "rows": 344
+            },
+            "Rock1-90-C#": {
+              "after_correct": 241,
+              "before_correct": 180,
+              "corrected": 102,
+              "delta": 61,
+              "regressed": 41,
+              "rows": 494
+            },
+            "Rock2-85-F": {
+              "after_correct": 238,
+              "before_correct": 163,
+              "corrected": 111,
+              "delta": 75,
+              "regressed": 36,
+              "rows": 475
+            },
+            "SS2-107-Ab": {
+              "after_correct": 191,
+              "before_correct": 138,
+              "corrected": 74,
+              "delta": 53,
+              "regressed": 21,
+              "rows": 356
+            },
+            "SS3-98-C": {
+              "after_correct": 260,
+              "before_correct": 220,
+              "corrected": 74,
+              "delta": 40,
+              "regressed": 34,
+              "rows": 479
+            }
+          }
+        },
+        "validation": {
+          "all": {
+            "after_correct": 12831,
+            "before_correct": 12864,
+            "corrected": 422,
+            "delta": -33,
+            "regressed": 455,
+            "rows": 15952
+          },
+          "by_k": {
+            "0": {
+              "after_correct": 10174,
+              "before_correct": 10157,
+              "corrected": 96,
+              "delta": 17,
+              "regressed": 79,
+              "rows": 10763
+            },
+            "1": {
+              "after_correct": 1903,
+              "before_correct": 2060,
+              "corrected": 41,
+              "delta": -157,
+              "regressed": 198,
+              "rows": 3078
+            },
+            "2": {
+              "after_correct": 416,
+              "before_correct": 323,
+              "corrected": 138,
+              "delta": 93,
+              "regressed": 45,
+              "rows": 993
+            },
+            "3": {
+              "after_correct": 233,
+              "before_correct": 150,
+              "corrected": 107,
+              "delta": 83,
+              "regressed": 24,
+              "rows": 594
+            },
+            "4": {
+              "after_correct": 66,
+              "before_correct": 174,
+              "corrected": 1,
+              "delta": -108,
+              "regressed": 109,
+              "rows": 374
+            },
+            "5": {
+              "after_correct": 39,
+              "before_correct": 0,
+              "corrected": 39,
+              "delta": 39,
+              "regressed": 0,
+              "rows": 115
+            },
+            "6": {
+              "after_correct": 0,
+              "before_correct": 0,
+              "corrected": 0,
+              "delta": 0,
+              "regressed": 0,
+              "rows": 35
+            }
+          },
+          "poly": {
+            "after_correct": 754,
+            "before_correct": 647,
+            "corrected": 285,
+            "delta": 107,
+            "regressed": 178,
+            "rows": 2111
+          },
+          "poly_by_composition": {
+            "BN2-166-Ab": {
+              "after_correct": 113,
+              "before_correct": 114,
+              "corrected": 35,
+              "delta": -1,
+              "regressed": 36,
+              "rows": 300
+            },
+            "Jazz3-150-C": {
+              "after_correct": 110,
+              "before_correct": 96,
+              "corrected": 35,
+              "delta": 14,
+              "regressed": 21,
+              "rows": 300
+            },
+            "Rock2-142-D": {
+              "after_correct": 152,
+              "before_correct": 134,
+              "corrected": 63,
+              "delta": 18,
+              "regressed": 45,
+              "rows": 479
+            },
+            "Rock3-148-C": {
+              "after_correct": 223,
+              "before_correct": 184,
+              "corrected": 89,
+              "delta": 39,
+              "regressed": 50,
+              "rows": 607
+            },
+            "SS1-68-E": {
+              "after_correct": 156,
+              "before_correct": 119,
+              "corrected": 63,
+              "delta": 37,
+              "regressed": 26,
+              "rows": 425
+            }
+          }
+        }
+      },
+      "report_sha256": "02c11ddd092c0b6442da2d1852928cad7bd76069a6a8a1411379235683c94783",
+      "scores": {
+        "12": {
+          "fit": {
+            "by_true_k": {
+              "0": {
+                "correct": 27427,
+                "exact": 0.9493925023365295,
+                "mean_true_class_probability": 0.8714125083866079,
+                "nll": 0.2131374693268769,
+                "over": 1462,
+                "predicted_as_class": 29389,
+                "rows": 28889,
+                "sample_weight_total": 18407.32342672348,
+                "under": 0,
+                "weighted_loss_total": 3923.2903322531783
+              },
+              "1": {
+                "correct": 6192,
+                "exact": 0.6734827061126822,
+                "mean_true_class_probability": 0.6201723022316663,
+                "nll": 0.7463171576319608,
+                "over": 1344,
+                "predicted_as_class": 7600,
+                "rows": 9194,
+                "sample_weight_total": 10384.285718202591,
+                "under": 1658,
+                "weighted_loss_total": 7749.970601247123
+              },
+              "2": {
+                "correct": 1241,
+                "exact": 0.5061174551386624,
+                "mean_true_class_probability": 0.3639591979760922,
+                "nll": 1.1819309259630528,
+                "over": 618,
+                "predicted_as_class": 3095,
+                "rows": 2452,
+                "sample_weight_total": 5362.713500022888,
+                "under": 593,
+                "weighted_loss_total": 6338.3569327566165
+              },
+              "3": {
+                "correct": 986,
+                "exact": 0.5817109144542773,
+                "mean_true_class_probability": 0.38231309298161487,
+                "nll": 1.0999244187846067,
+                "over": 234,
+                "predicted_as_class": 2128,
+                "rows": 1695,
+                "sample_weight_total": 4458.710160255432,
+                "under": 475,
+                "weighted_loss_total": 4904.244181547978
+              },
+              "4": {
+                "correct": 306,
+                "exact": 0.3673469387755102,
+                "mean_true_class_probability": 0.3163711786308434,
+                "nll": 1.3206827357094457,
+                "over": 189,
+                "predicted_as_class": 543,
+                "rows": 833,
+                "sample_weight_total": 3125.6971006393433,
+                "under": 338,
+                "weighted_loss_total": 4128.054197871451
+              },
+              "5": {
+                "correct": 212,
+                "exact": 0.8833333333333333,
+                "mean_true_class_probability": 0.5667570853062595,
+                "nll": 0.6598773569752915,
+                "over": 0,
+                "predicted_as_class": 602,
+                "rows": 240,
+                "sample_weight_total": 1321.0370635986328,
+                "under": 28,
+                "weighted_loss_total": 871.7224459938659
+              },
+              "6": {
+                "correct": 0,
+                "exact": 0.0,
+                "mean_true_class_probability": 0.11915840398244283,
+                "nll": 2.1740045827819645,
+                "over": 0,
+                "predicted_as_class": 0,
+                "rows": 54,
+                "sample_weight_total": 297.2333393096924,
+                "under": 54,
+                "weighted_loss_total": 646.1866418148579
+              }
+            },
+            "confusion_true_by_predicted": [
+              [
+                27427,
+                990,
+                366,
+                94,
+                9,
+                3,
+                0
+              ],
+              [
+                1658,
+                6192,
+                1087,
+                215,
+                32,
+                10,
+                0
+              ],
+              [
+                231,
+                362,
+                1241,
+                534,
+                52,
+                32,
+                0
+              ],
+              [
+                64,
+                50,
+                361,
+                986,
+                124,
+                110,
+                0
+              ],
+              [
+                8,
+                6,
+                40,
+                284,
+                306,
+                189,
+                0
+              ],
+              [
+                1,
+                0,
+                0,
+                11,
+                16,
+                212,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                4,
+                4,
+                46,
+                0
+              ]
+            ],
+            "correct": 36364,
+            "exact": 0.8387111654404134,
+            "nll": 0.4418509202883957,
+            "oracle_not_a_valid_model_score": true,
+            "oracle_uses_truth": true,
+            "over": 3847,
+            "poly_correct": 2745,
+            "poly_correct_if_true_poly_known": 3343,
+            "poly_exact": 0.5204778156996587,
+            "poly_over": 1041,
+            "poly_predicted_nonpoly": 722,
+            "poly_rows": 5274,
+            "poly_top2_correct": 4279,
+            "poly_under": 1488,
+            "rows": 43357,
+            "under": 3146,
+            "weighted_nll": 0.658759262252579
+          },
+          "validation": {
+            "by_true_k": {
+              "0": {
+                "correct": 10174,
+                "exact": 0.9452754808138994,
+                "mean_true_class_probability": 0.858113416040456,
+                "nll": 0.23483029603431635,
+                "over": 589,
+                "predicted_as_class": 11061,
+                "rows": 10763,
+                "sample_weight_total": 6857.905155658722,
+                "under": 0,
+                "weighted_loss_total": 1610.4438978786018
+              },
+              "1": {
+                "correct": 1903,
+                "exact": 0.6182586094866797,
+                "mean_true_class_probability": 0.575809161568256,
+                "nll": 0.9209747699209717,
+                "over": 542,
+                "predicted_as_class": 2501,
+                "rows": 3078,
+                "sample_weight_total": 3476.488083600998,
+                "under": 633,
+                "weighted_loss_total": 3201.757812927429
+              },
+              "2": {
+                "correct": 416,
+                "exact": 0.418932527693857,
+                "mean_true_class_probability": 0.31029032493675596,
+                "nll": 1.501679435683137,
+                "over": 229,
+                "predicted_as_class": 1261,
+                "rows": 993,
+                "sample_weight_total": 2171.767742872238,
+                "under": 348,
+                "weighted_loss_total": 3261.298958551223
+              },
+              "3": {
+                "correct": 233,
+                "exact": 0.39225589225589225,
+                "mean_true_class_probability": 0.30609361611074226,
+                "nll": 1.4930485202938666,
+                "over": 101,
+                "predicted_as_class": 751,
+                "rows": 594,
+                "sample_weight_total": 1562.5214366912842,
+                "under": 260,
+                "weighted_loss_total": 2332.920318979368
+              },
+              "4": {
+                "correct": 66,
+                "exact": 0.17647058823529413,
+                "mean_true_class_probability": 0.2150073418048843,
+                "nll": 1.9917552786743398,
+                "over": 55,
+                "predicted_as_class": 190,
+                "rows": 374,
+                "sample_weight_total": 1403.3742084503174,
+                "under": 253,
+                "weighted_loss_total": 2795.1779876363426
+              },
+              "5": {
+                "correct": 39,
+                "exact": 0.3391304347826087,
+                "mean_true_class_probability": 0.22709296775068177,
+                "nll": 2.694112009325645,
+                "over": 0,
+                "predicted_as_class": 188,
+                "rows": 115,
+                "sample_weight_total": 632.9969263076782,
+                "under": 76,
+                "weighted_loss_total": 1705.3646210317365
+              },
+              "6": {
+                "correct": 0,
+                "exact": 0.0,
+                "mean_true_class_probability": 0.07816974104082744,
+                "nll": 2.981967152380047,
+                "over": 0,
+                "predicted_as_class": 0,
+                "rows": 35,
+                "sample_weight_total": 192.65123844146729,
+                "under": 35,
+                "weighted_loss_total": 574.4796648977916
+              }
+            },
+            "confusion_true_by_predicted": [
+              [
+                10174,
+                376,
+                179,
+                31,
+                2,
+                1,
+                0
+              ],
+              [
+                633,
+                1903,
+                418,
+                97,
+                15,
+                12,
+                0
+              ],
+              [
+                175,
+                173,
+                416,
+                176,
+                31,
+                22,
+                0
+              ],
+              [
+                58,
+                37,
+                165,
+                233,
+                60,
+                41,
+                0
+              ],
+              [
+                17,
+                10,
+                64,
+                162,
+                66,
+                55,
+                0
+              ],
+              [
+                4,
+                2,
+                17,
+                42,
+                11,
+                39,
+                0
+              ],
+              [
+                0,
+                0,
+                2,
+                10,
+                5,
+                18,
+                0
+              ]
+            ],
+            "correct": 12831,
+            "exact": 0.8043505516549649,
+            "nll": 0.557885251025073,
+            "oracle_not_a_valid_model_score": true,
+            "oracle_uses_truth": true,
+            "over": 1516,
+            "poly_correct": 754,
+            "poly_correct_if_true_poly_known": 1101,
+            "poly_exact": 0.3571766935101848,
+            "poly_over": 385,
+            "poly_predicted_nonpoly": 476,
+            "poly_rows": 2111,
+            "poly_top2_correct": 1330,
+            "poly_under": 972,
+            "rows": 15952,
+            "under": 1605,
+            "weighted_nll": 0.9705017089958934
+          }
+        },
+        "8": {
+          "fit": {
+            "by_true_k": {
+              "0": {
+                "correct": 27207,
+                "exact": 0.941777147010973,
+                "mean_true_class_probability": 0.8526393497120477,
+                "nll": 0.24066239071290152,
+                "over": 1682,
+                "predicted_as_class": 29233,
+                "rows": 28889,
+                "sample_weight_total": 18407.32342672348,
+                "under": 0,
+                "weighted_loss_total": 4429.950462500871
+              },
+              "1": {
+                "correct": 6589,
+                "exact": 0.7166630411137699,
+                "mean_true_class_probability": 0.6609383079880041,
+                "nll": 0.6528936951750105,
+                "over": 948,
+                "predicted_as_class": 8721,
+                "rows": 9194,
+                "sample_weight_total": 10384.285718202591,
+                "under": 1657,
+                "weighted_loss_total": 6779.834674310378
+              },
+              "2": {
+                "correct": 929,
+                "exact": 0.37887438825448616,
+                "mean_true_class_probability": 0.2910230079891584,
+                "nll": 1.4411215688750747,
+                "over": 613,
+                "predicted_as_class": 2425,
+                "rows": 2452,
+                "sample_weight_total": 5362.713500022888,
+                "under": 910,
+                "weighted_loss_total": 7728.322092580527
+              },
+              "3": {
+                "correct": 622,
+                "exact": 0.36696165191740415,
+                "mean_true_class_probability": 0.3155882047608791,
+                "nll": 1.3140508733245742,
+                "over": 471,
+                "predicted_as_class": 1340,
+                "rows": 1695,
+                "sample_weight_total": 4458.710160255432,
+                "under": 602,
+                "weighted_loss_total": 5858.971979984804
+              },
+              "4": {
+                "correct": 587,
+                "exact": 0.7046818727490997,
+                "mean_true_class_probability": 0.4323181488530516,
+                "nll": 1.0299599286299792,
+                "over": 3,
+                "predicted_as_class": 1601,
+                "rows": 833,
+                "sample_weight_total": 3125.6971006393433,
+                "under": 243,
+                "weighted_loss_total": 3219.342762693431
+              },
+              "5": {
+                "correct": 25,
+                "exact": 0.10416666666666667,
+                "mean_true_class_probability": 0.17160109159206816,
+                "nll": 2.0975614282470336,
+                "over": 0,
+                "predicted_as_class": 37,
+                "rows": 240,
+                "sample_weight_total": 1321.0370635986328,
+                "under": 215,
+                "weighted_loss_total": 2770.956389889216
+              },
+              "6": {
+                "correct": 0,
+                "exact": 0.0,
+                "mean_true_class_probability": 0.05412460684224411,
+                "nll": 3.102998624879677,
+                "over": 0,
+                "predicted_as_class": 0,
+                "rows": 54,
+                "sample_weight_total": 297.2333393096924,
+                "under": 54,
+                "weighted_loss_total": 922.3146431463698
+              }
+            },
+            "confusion_true_by_predicted": [
+              [
+                27207,
+                1330,
+                274,
+                50,
+                28,
+                0,
+                0
+              ],
+              [
+                1657,
+                6589,
+                764,
+                120,
+                64,
+                0,
+                0
+              ],
+              [
+                268,
+                642,
+                929,
+                385,
+                228,
+                0,
+                0
+              ],
+              [
+                84,
+                137,
+                381,
+                622,
+                469,
+                2,
+                0
+              ],
+              [
+                15,
+                22,
+                69,
+                137,
+                587,
+                3,
+                0
+              ],
+              [
+                2,
+                1,
+                5,
+                20,
+                187,
+                25,
+                0
+              ],
+              [
+                0,
+                0,
+                3,
+                6,
+                38,
+                7,
+                0
+              ]
+            ],
+            "correct": 35959,
+            "exact": 0.8293701132458426,
+            "nll": 0.4669391342801038,
+            "oracle_not_a_valid_model_score": true,
+            "oracle_uses_truth": true,
+            "over": 3717,
+            "poly_correct": 2163,
+            "poly_correct_if_true_poly_known": 3082,
+            "poly_exact": 0.4101251422070535,
+            "poly_over": 1087,
+            "poly_predicted_nonpoly": 1171,
+            "poly_rows": 5274,
+            "poly_top2_correct": 3830,
+            "poly_under": 2024,
+            "rows": 43357,
+            "under": 3681,
+            "weighted_nll": 0.7313627097148234
+          },
+          "validation": {
+            "by_true_k": {
+              "0": {
+                "correct": 10157,
+                "exact": 0.9436959955402768,
+                "mean_true_class_probability": 0.8476842112734326,
+                "nll": 0.24125471542605031,
+                "over": 606,
+                "predicted_as_class": 11075,
+                "rows": 10763,
+                "sample_weight_total": 6857.905155658722,
+                "under": 0,
+                "weighted_loss_total": 1654.5019567472882
+              },
+              "1": {
+                "correct": 2060,
+                "exact": 0.6692657569850552,
+                "mean_true_class_probability": 0.6172308601152916,
+                "nll": 0.7877761950959947,
+                "over": 374,
+                "predicted_as_class": 2913,
+                "rows": 3078,
+                "sample_weight_total": 3476.488083600998,
+                "under": 644,
+                "weighted_loss_total": 2738.6945547957607
+              },
+              "2": {
+                "correct": 323,
+                "exact": 0.3252769385699899,
+                "mean_true_class_probability": 0.26299274641615294,
+                "nll": 1.6422407972829185,
+                "over": 208,
+                "predicted_as_class": 977,
+                "rows": 993,
+                "sample_weight_total": 2171.767742872238,
+                "under": 462,
+                "weighted_loss_total": 3566.5655895678283
+              },
+              "3": {
+                "correct": 150,
+                "exact": 0.25252525252525254,
+                "mean_true_class_probability": 0.26348689662655955,
+                "nll": 1.6530624658886401,
+                "over": 139,
+                "predicted_as_class": 464,
+                "rows": 594,
+                "sample_weight_total": 1562.5214366912842,
+                "under": 305,
+                "weighted_loss_total": 2582.9455391407546
+              },
+              "4": {
+                "correct": 174,
+                "exact": 0.46524064171123,
+                "mean_true_class_probability": 0.32268937671106346,
+                "nll": 1.5253866117480637,
+                "over": 1,
+                "predicted_as_class": 520,
+                "rows": 374,
+                "sample_weight_total": 1403.3742084503174,
+                "under": 199,
+                "weighted_loss_total": 2140.6882288426505
+              },
+              "5": {
+                "correct": 0,
+                "exact": 0.0,
+                "mean_true_class_probability": 0.06997700945990484,
+                "nll": 3.542751944439869,
+                "over": 0,
+                "predicted_as_class": 3,
+                "rows": 115,
+                "sample_weight_total": 632.9969263076782,
+                "under": 115,
+                "weighted_loss_total": 2242.5510915009877
+              },
+              "6": {
+                "correct": 0,
+                "exact": 0.0,
+                "mean_true_class_probability": 0.034952689407093986,
+                "nll": 3.7630042274979285,
+                "over": 0,
+                "predicted_as_class": 0,
+                "rows": 35,
+                "sample_weight_total": 192.65123844146729,
+                "under": 35,
+                "weighted_loss_total": 724.9474246879527
+              }
+            },
+            "confusion_true_by_predicted": [
+              [
+                10157,
+                485,
+                108,
+                10,
+                3,
+                0,
+                0
+              ],
+              [
+                644,
+                2060,
+                288,
+                44,
+                41,
+                1,
+                0
+              ],
+              [
+                193,
+                269,
+                323,
+                125,
+                83,
+                0,
+                0
+              ],
+              [
+                59,
+                74,
+                172,
+                150,
+                138,
+                1,
+                0
+              ],
+              [
+                16,
+                21,
+                59,
+                103,
+                174,
+                1,
+                0
+              ],
+              [
+                6,
+                2,
+                26,
+                24,
+                57,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                1,
+                8,
+                24,
+                0,
+                0
+              ]
+            ],
+            "correct": 12864,
+            "exact": 0.8064192577733199,
+            "nll": 0.5481243769710775,
+            "oracle_not_a_valid_model_score": true,
+            "oracle_uses_truth": true,
+            "over": 1328,
+            "poly_correct": 647,
+            "poly_correct_if_true_poly_known": 1111,
+            "poly_exact": 0.3064898152534344,
+            "poly_over": 348,
+            "poly_predicted_nonpoly": 642,
+            "poly_rows": 2111,
+            "poly_top2_correct": 1266,
+            "poly_under": 1116,
+            "rows": 15952,
+            "under": 1760,
+            "weighted_nll": 0.9811242718958891
+          }
+        }
+      }
+    }
+  },
+  "checkpoint": 12,
+  "checks": [
+    "archive and file SHA256 verified",
+    "all saved predictions and metrics recalculated",
+    "epoch-8 predictions matched prior frozen audit",
+    "same populations and epoch orders verified",
+    "optimizer checkpoint identities verified",
+    "only original fit and internal validation folds used"
+  ],
+  "outer_rows_evaluated": 0,
+  "primary_checkpoint": 16,
+  "primary_verdict_pending": true,
+  "release": "v273-training-budget-36379790003",
+  "source_sha": "ec6d3aa94e7eb3583019e89950cce9e9f82116e1",
+  "status": "verified_intermediate",
+  "training_run": 36379790003
+}

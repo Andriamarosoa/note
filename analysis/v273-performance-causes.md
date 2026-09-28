@@ -12,6 +12,11 @@ est le **fold 3**. Leurs versions internes sont également évaluées sur leurs
 propres partitions d'apprentissage et de validation initiales. Les poids et
 les huit époques déjà terminées sont inchangés.
 
+**Prolongement expérimental :** le [point intermédiaire à 12 époques](v273-training-budget-epoch12.md)
+montre un gain polyphonique interne pour les deux objectifs après reprise,
+avec des régressions sur K=1 et K=4. La comparaison principale à 16 époques
+reste en cours. Les mesures figées ci-dessous restent celles à huit époques.
+
 ## 1. Le comptage est faible même sur les exemples déjà vus
 
 Les mêmes checkpoints finaux ont été rejoués en mode inférence, sans dropout,
