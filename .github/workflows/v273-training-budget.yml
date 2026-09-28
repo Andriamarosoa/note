@@ -1,0 +1,136 @@
+name: Test native count training budget - internal split of fold 3
+
+on:
+  push:
+    branches: [v280-harmonic-pitch-count-research]
+    paths: ['analysis/v273-training-budget-launch.json']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v273-training-budget-fold3
+  cancel-in-progress: false
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  TF_NUM_INTRAOP_THREADS: '2'
+  TF_NUM_INTEROP_THREADS: '2'
+  OMP_NUM_THREADS: '2'
+  AUDIT_TAG: v273-training-budget-${{ github.run_id }}
+
+jobs:
+  protocol:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - run: python -B -m unittest -v test.test_v273_training_budget
+      - name: Preserve preregistered protocol
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$AUDIT_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title 'Native count training budget - internal split of fold 3' \
+            --notes-file analysis/v273-training-budget-protocol.md
+
+  train:
+    needs: protocol
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        weighting: [uniform, weighted]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - run: python -m pip install -r requirements-train.txt numpy==1.26.4
+      - name: Restore exact epoch-8 inputs, model and baseline audit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          AUDIT_WEIGHTING: ${{ matrix.weighting }}
+        run: |
+          python - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          from scripts.restore_v273_original_backup import extract_verified
+          cfg=json.loads(Path('analysis/v273-training-budget-launch.json').read_text())
+          arm=os.environ['AUDIT_WEIGHTING']
+          Path('model/download').mkdir(parents=True)
+          for asset in cfg['assets']:
+              if asset['destination'] not in ('bundle',arm,'baseline-'+arm):
+                  continue
+              subprocess.run(['gh','release','download',asset['release'],'--repo','Andriamarosoa/note',
+                              '--pattern',asset['asset'],'--dir','model/download'],check=True)
+              extract_verified(Path('model/download')/asset['asset'],Path('model')/asset['destination'],asset['sha256'])
+          PY
+      - name: Continue audited inner model through epoch 16
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -B scripts/test_v273_training_budget.py --model model/${{ matrix.weighting }} \
+            --bundle model/bundle --baseline model/baseline-${{ matrix.weighting }} \
+            --config analysis/v273-native-paired-config.json --weighting ${{ matrix.weighting }} \
+            --output model/budget-${{ matrix.weighting }} --release-tag "$AUDIT_TAG"
+      - name: Preserve complete or partial training evidence
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -B scripts/archive_v273_native_stage.py --root model/budget-${{ matrix.weighting }} \
+            --name budget-${{ matrix.weighting }} --tag "$AUDIT_TAG"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: budget-${{ matrix.weighting }}
+          path: model/budget-${{ matrix.weighting }}
+          if-no-files-found: warn
+          retention-days: 90
+
+  verdict:
+    needs: train
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: budget-*
+          path: model/results
+      - name: Audit raw predictions and publish the bounded verdict
+        run: |
+          python -B scripts/summarize_v273_training_budget.py --root model/results \
+            --config analysis/v273-native-paired-config.json --output model/budget-verdict
+          cat model/budget-verdict/report.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve final report and update release notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -B scripts/archive_v273_native_stage.py --root model/budget-verdict \
+            --name budget-verdict --tag "$AUDIT_TAG"
+          gh release edit "$AUDIT_TAG" --repo "$GITHUB_REPOSITORY" --notes-file model/budget-verdict/report.md
+      - uses: actions/upload-artifact@v4
+        with:
+          name: budget-verdict
+          path: model/budget-verdict
+          retention-days: 90

@@ -1,0 +1,40 @@
+{
+  "experiment": "inner_training_budget_8_12_16",
+  "attempt": 1,
+  "outer_fold": 3,
+  "outer_rows_evaluated": 0,
+  "frames": 31,
+  "primary_comparison": [8, 16],
+  "assets": [
+    {
+      "release": "v273-window-pair-36351028493",
+      "asset": "native-window-bundle.zip",
+      "destination": "bundle",
+      "sha256": "4901e90d094aac04eda125c31f4546203ef33be448d35d328787882ce433006f"
+    },
+    {
+      "release": "v273-window-pair-36351028493",
+      "asset": "frames-31-uniform.zip",
+      "destination": "uniform",
+      "sha256": "c153480377167ad9e84275c2b2e188f3dd69ebf3720ab38745a2c022cbd20bc0"
+    },
+    {
+      "release": "v273-window-pair-36351028493",
+      "asset": "frames-31-weighted.zip",
+      "destination": "weighted",
+      "sha256": "1185fb6b06670cc449e5f1ef84496a9c0cc6e6d7b13b74dd4b49a87411612932"
+    },
+    {
+      "release": "v273-learning-bottleneck-36375624830",
+      "asset": "learning-uniform.zip",
+      "destination": "baseline-uniform",
+      "sha256": "287bb26195aa1a654310cb63012ed9628408f0839a6c169926544f362ad73661"
+    },
+    {
+      "release": "v273-learning-bottleneck-36375624830",
+      "asset": "learning-weighted.zip",
+      "destination": "baseline-weighted",
+      "sha256": "a3af5932c4dc276b438cfa3e1ddd45e15743e096fb9410146a816620c7949df3"
+    }
+  ]
+}
