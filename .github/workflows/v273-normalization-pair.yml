@@ -1,0 +1,152 @@
+name: Test native spectral normalization - internal split of fold 3
+
+on:
+  push:
+    branches: [v280-harmonic-pitch-count-research]
+    paths: ['analysis/v273-normalization-launch.json']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v273-normalization-pair-fold3
+  cancel-in-progress: false
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  TF_NUM_INTRAOP_THREADS: '2'
+  TF_NUM_INTEROP_THREADS: '2'
+  OMP_NUM_THREADS: '2'
+  AUDIT_TAG: v273-normalization-${{ github.run_id }}
+
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - run: python -m pip install -r requirements-train.txt numpy==1.26.4
+      - run: python -B -m unittest -v test.test_v273_normalization_pair test.test_v273_training_budget
+      - name: Verify identical shared initialization and synthetic training
+        run: python -B scripts/v273_spectral_normalization.py --output model/norm-preflight
+      - name: Preserve the protocol and model gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$AUDIT_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title 'Native spectral normalization comparison - internal split of fold 3' \
+            --notes-file analysis/v273-normalization-protocol.md
+          python -B scripts/archive_v273_native_stage.py --root model/norm-preflight \
+            --name norm-preflight --tag "$AUDIT_TAG"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: norm-preflight
+          path: model/norm-preflight
+          if-no-files-found: warn
+          retention-days: 90
+
+  train:
+    needs: preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        arm: [channel_norm, fixed_scale]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - run: python -m pip install -r requirements-train.txt numpy==1.26.4
+      - uses: actions/download-artifact@v4
+        with:
+          name: norm-preflight
+          path: model/preflight
+      - name: Restore checksum-pinned native input bundle
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json,subprocess
+          from pathlib import Path
+          from scripts.rebuild_v273_sources import digest
+          from scripts.restore_v273_original_backup import extract_verified
+          cfg=json.loads(Path('analysis/v273-normalization-launch.json').read_text())
+          assert digest('analysis/v273-native-paired-config.json')==cfg['config_sha256']
+          Path('model/download').mkdir(parents=True)
+          subprocess.run(['gh','release','download',cfg['source_release'],'--repo','Andriamarosoa/note',
+                          '--pattern',cfg['bundle_asset'],'--dir','model/download'],check=True)
+          extract_verified(Path('model/download')/cfg['bundle_asset'],Path('model/bundle'),cfg['bundle_archive_sha256'])
+          PY
+      - name: Train native count with the fixed normalization treatment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -B scripts/train_v273_normalization_pair.py --arm ${{ matrix.arm }} \
+            --bundle model/bundle --preflight model/preflight \
+            --config analysis/v273-native-paired-config.json --output model/norm-${{ matrix.arm }} \
+            --release-tag "$AUDIT_TAG"
+      - name: Preserve complete or partial training evidence
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -B scripts/archive_v273_native_stage.py --root model/norm-${{ matrix.arm }} \
+            --name norm-${{ matrix.arm }} --tag "$AUDIT_TAG"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: norm-${{ matrix.arm }}
+          path: model/norm-${{ matrix.arm }}
+          if-no-files-found: warn
+          retention-days: 90
+
+  verdict:
+    needs: train
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: norm-*
+          path: model/results
+      - name: Audit every checkpoint and the fixed endpoint
+        run: |
+          python -B scripts/audit_v273_normalization_pair.py --root model/results \
+            --preflight model/results/norm-preflight --config analysis/v273-native-paired-config.json \
+            --output model/norm-verdict
+          cat model/norm-verdict/report.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Publish the verified verdict
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -B scripts/archive_v273_native_stage.py --root model/norm-verdict \
+            --name norm-verdict --tag "$AUDIT_TAG"
+          gh release edit "$AUDIT_TAG" --repo "$GITHUB_REPOSITORY" --notes-file model/norm-verdict/report.md
+      - uses: actions/upload-artifact@v4
+        with:
+          name: norm-verdict
+          path: model/norm-verdict
+          retention-days: 90

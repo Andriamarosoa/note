@@ -1,0 +1,18 @@
+{
+  "experiment": "native_spectral_normalization",
+  "attempt": 1,
+  "outer_fold": 3,
+  "inner_validation_fold": 0,
+  "outer_rows_evaluated": 0,
+  "arms": ["channel_norm", "fixed_scale"],
+  "primary_epoch": 12,
+  "snapshots": [4, 8, 12],
+  "weighting": "uniform",
+  "initialization_seed": 16164,
+  "dropout_seed": 46164,
+  "historical_initial_hash": "e3d36af85c33601c4e3183633e688f335d031e31006d6875857bb4cb22a05b5d",
+  "source_release": "v273-window-pair-36351028493",
+  "bundle_asset": "native-window-bundle.zip",
+  "bundle_archive_sha256": "4901e90d094aac04eda125c31f4546203ef33be448d35d328787882ce433006f",
+  "config_sha256": "7c27989eb3fe330fdff203e388e76ae4c64d8b8e4838cab4d7c4622b4104451a"
+}

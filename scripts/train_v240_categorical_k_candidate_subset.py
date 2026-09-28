@@ -113,11 +113,16 @@ def _candidate_subset_loss():
     return CandidateSubsetLoss()
 
 
-def _build_model(spec, *, time_frames=v100.TIME_FRAMES, count_only=False):
+def _build_model(spec, *, time_frames=v100.TIME_FRAMES, count_only=False,
+                 spectral_normalization="channel_norm", count_dropout_seed=None):
     # The historical event-set loss still packs a 23-frame target. Extended
     # windows are supported only by the pruned native count models below.
     if time_frames != v100.TIME_FRAMES and not count_only:
         raise V240Error("extended spectral windows require count_only=True")
+    if spectral_normalization not in ("channel_norm", "fixed_scale"):
+        raise V240Error("unknown spectral normalization")
+    if spectral_normalization != "channel_norm" and not count_only:
+        raise V240Error("normalization experiment requires count_only=True")
     try:
         import tensorflow as tf
         from tensorflow import keras
@@ -146,7 +151,12 @@ def _build_model(spec, *, time_frames=v100.TIME_FRAMES, count_only=False):
         lambda s: tf.tile(coord_const[None, :, :, :], [tf.shape(s)[0], 1, 1, 1]),
         name="v240_dense_coordinates",
     )(spectral)
-    dense = keras.layers.LayerNormalization(axis=-1, name="v240_dense_channel_norm")(spectral)
+    if spectral_normalization == "channel_norm":
+        dense = keras.layers.LayerNormalization(axis=-1, name="v240_dense_channel_norm")(spectral)
+    else:
+        # The three cached channels already lie in [0, 12]. Preserve their
+        # values with a fixed invertible scale; do not estimate new statistics.
+        dense = keras.layers.Rescaling(1.0 / 12.0, name="v240_dense_channel_norm")(spectral)
     dense = keras.layers.Concatenate(axis=-1, name="v240_dense_plus_coordinates")([dense, coords])
     dense = keras.layers.Conv2D(32, (3, 3), padding="same", activation="relu", name="v240_dense_conv1")(dense)
     dense = keras.layers.Conv2D(64, (3, 3), padding="same", activation="relu", name="v240_dense_conv2")(dense)
@@ -160,7 +170,7 @@ def _build_model(spec, *, time_frames=v100.TIME_FRAMES, count_only=False):
     mx = keras.layers.GlobalMaxPooling2D(name="v240_dense_global_max")(dense_features)
     card_h = keras.layers.Concatenate(name="v240_cardinality_context")([avg, mx, candidate_context])
     card_h = keras.layers.Dense(192, activation="relu", name="v240_cardinality_hidden1")(card_h)
-    card_h = keras.layers.Dropout(0.08, name="v240_cardinality_dropout")(card_h)
+    card_h = keras.layers.Dropout(0.08, seed=count_dropout_seed, name="v240_cardinality_dropout")(card_h)
     card_h = keras.layers.Dense(96, activation="relu", name="v240_cardinality_hidden2")(card_h)
     cardinality = keras.layers.Dense(CARDINALITY_CLASSES, activation="softmax", name="cardinality")(card_h)
 
