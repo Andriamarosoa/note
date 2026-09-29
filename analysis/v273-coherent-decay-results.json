@@ -1,0 +1,240 @@
+{
+  "automatic_promotion": false,
+  "case_count": 1944,
+  "cases_file": "v273-coherent-decay-results-cases.csv",
+  "cases_sha256": "6cc3e91823310ba7316b822e7a7e236818c8cb27011d7c76c56d84f1c048e88c",
+  "families": {
+    "harmonics_110": [
+      110,
+      220,
+      330,
+      440,
+      550,
+      660,
+      770,
+      880
+    ],
+    "inharmonic_137": [
+      137.01369931506846,
+      274.1095780887636,
+      411.3697336946412,
+      548.8760996800644,
+      686.7103647098971,
+      824.9538925297584,
+      963.6876432745207,
+      1102.992096435872
+    ],
+    "pair_110_116": [
+      110,
+      116.54094
+    ],
+    "pair_173_184": [
+      173.2,
+      184.7
+    ],
+    "pair_220_233": [
+      220,
+      233.08188
+    ],
+    "single_220": [
+      220
+    ]
+  },
+  "forecast_samples": 1764,
+  "full_v273_score": false,
+  "limitations": [
+    "Exploratory benchmark: configurations were developed on related synthetic oscillators; no independent validation.",
+    "Waveform methods receive phase information absent from the old spectral features.",
+    "The long wider model changes history, recurrence order, and lag; intermediate controls isolate only history.",
+    "Scores measure innovation, never number of distinct notes or ownership of those notes.",
+    "Ongoing pitch changes and nonmusical transients can also be unpredictable.",
+    "No amplitude/phase estimator supplied from known generator parameters; fitting only past PCM.",
+    "No runtime latency measurement; equal future sample support does not establish real-time performance."
+  ],
+  "numpy": "2.3.5",
+  "parameters": {
+    "wave_long_same_recurrence": {
+      "history": 8820,
+      "lag": 32,
+      "order": 16
+    },
+    "wave_long_wider_recurrence": {
+      "history": 8820,
+      "lag": 64,
+      "order": 32
+    },
+    "wave_short": {
+      "history": 1308,
+      "lag": 32,
+      "order": 16
+    }
+  },
+  "protocol": "analysis/v273-coherent-decay-protocol.md",
+  "protocol_sha256": "96cf3dd3432ec491f2f36582f707da71548f215e66b9a4c17fe19766bd24907b",
+  "raw_pcm_available_to_wave_predictors": true,
+  "rcond": 1e-07,
+  "sample_rate": 44100,
+  "scope": "synthetic development probe; no GuitarSet or K-network inference",
+  "scores_have_different_units": true,
+  "script_sha256": "45b60612fe6acaa10eda2dc7fceffabd7ca2c053da9e09d0a25b3fabc4c7bed0",
+  "spectral_phase_available_to_legacy": false,
+  "status": "completed",
+  "summary": {
+    "20": {
+      "attacks": 384,
+      "held_sounds": 192,
+      "methods": {
+        "legacy_log_power": {
+          "attack_median": 0.0,
+          "attack_min": 0.0,
+          "development_auc": 0.5056423611111112,
+          "development_auc_including_stress": 0.5083944917929293,
+          "held_sound_max": 2.9385221004486084,
+          "held_sound_median": 0.0010572073369985446,
+          "stress_no_new_note_max": 2.7559595108032227,
+          "stress_no_new_note_median": 0.0,
+          "zero_scores_on_attacks": 216
+        },
+        "wave_long_same_recurrence": {
+          "attack_median": 0.6276551064556373,
+          "attack_min": 0.20952289485633663,
+          "development_auc": 0.9183485243055556,
+          "development_auc_including_stress": 0.7940044981060606,
+          "held_sound_max": 0.6167441544930974,
+          "held_sound_median": 0.231891809150144,
+          "stress_no_new_note_max": 2.070114685007438,
+          "stress_no_new_note_median": 0.800566410793986,
+          "zero_scores_on_attacks": 0
+        },
+        "wave_long_wider_recurrence": {
+          "attack_median": 0.5548306561867484,
+          "attack_min": 0.1718625472452405,
+          "development_auc": 0.9997829861111112,
+          "development_auc_including_stress": 0.8482579703282829,
+          "held_sound_max": 0.17555041072911995,
+          "held_sound_median": 0.11844728454720102,
+          "stress_no_new_note_max": 1.903812103902507,
+          "stress_no_new_note_median": 0.7308889586859284,
+          "zero_scores_on_attacks": 0
+        },
+        "wave_short": {
+          "attack_median": 0.7257072417462663,
+          "attack_min": 0.21041086044568658,
+          "development_auc": 0.7493896484375,
+          "development_auc_including_stress": 0.6954505997474747,
+          "held_sound_max": 1.6475134270655272,
+          "held_sound_median": 0.28025528413396605,
+          "stress_no_new_note_max": 2.3255173651005165,
+          "stress_no_new_note_median": 0.7525241009327761,
+          "zero_scores_on_attacks": 0
+        }
+      },
+      "stress_no_new_note": 72
+    },
+    "40": {
+      "attacks": 384,
+      "held_sounds": 192,
+      "methods": {
+        "legacy_log_power": {
+          "attack_median": 0.1110152155160904,
+          "attack_min": 0.0,
+          "development_auc": 0.5825127495659722,
+          "development_auc_including_stress": 0.5804283065025253,
+          "held_sound_max": 2.9081366062164307,
+          "held_sound_median": 0.002242575865238905,
+          "stress_no_new_note_max": 2.998894214630127,
+          "stress_no_new_note_median": 0.0142208639299497,
+          "zero_scores_on_attacks": 93
+        },
+        "wave_long_same_recurrence": {
+          "attack_median": 0.5740781531824022,
+          "attack_min": 0.13219068149321248,
+          "development_auc": 0.9786919487847222,
+          "development_auc_including_stress": 0.8426945233585859,
+          "held_sound_max": 0.25796108585571154,
+          "held_sound_median": 0.03071710178527474,
+          "stress_no_new_note_max": 1.7902095265421383,
+          "stress_no_new_note_median": 0.7639652257528509,
+          "zero_scores_on_attacks": 0
+        },
+        "wave_long_wider_recurrence": {
+          "attack_median": 0.5349968265140611,
+          "attack_min": 0.12687541442634945,
+          "development_auc": 1.0,
+          "development_auc_including_stress": 0.87173492739899,
+          "held_sound_max": 0.03035945775464684,
+          "held_sound_median": 0.011883164710837465,
+          "stress_no_new_note_max": 1.649435688922347,
+          "stress_no_new_note_median": 0.5453656851455636,
+          "zero_scores_on_attacks": 0
+        },
+        "wave_short": {
+          "attack_median": 0.5763678668514185,
+          "attack_min": 0.14521718905526965,
+          "development_auc": 0.9750840928819444,
+          "development_auc_including_stress": 0.8888395675505051,
+          "held_sound_max": 0.2573736108735379,
+          "held_sound_median": 0.084208806839108,
+          "stress_no_new_note_max": 1.6514313211413316,
+          "stress_no_new_note_median": 0.2818874065064729,
+          "zero_scores_on_attacks": 0
+        }
+      },
+      "stress_no_new_note": 72
+    },
+    "clean": {
+      "attacks": 384,
+      "held_sounds": 192,
+      "methods": {
+        "legacy_log_power": {
+          "attack_median": 0.06638599187135696,
+          "attack_min": 0.0,
+          "development_auc": 0.5500352647569444,
+          "development_auc_including_stress": 0.5452720565025253,
+          "held_sound_max": 2.9073588848114014,
+          "held_sound_median": 0.001983960624784231,
+          "stress_no_new_note_max": 2.8616220951080322,
+          "stress_no_new_note_median": 0.03800248820334673,
+          "zero_scores_on_attacks": 117
+        },
+        "wave_long_same_recurrence": {
+          "attack_median": 0.534229143314702,
+          "attack_min": 0.12588294050443216,
+          "development_auc": 1.0,
+          "development_auc_including_stress": 0.8966323390151515,
+          "held_sound_max": 1.3244822897058462e-05,
+          "held_sound_median": 8.298916090649823e-08,
+          "stress_no_new_note_max": 1.6656575857870561,
+          "stress_no_new_note_median": 0.31458316717658075,
+          "zero_scores_on_attacks": 0
+        },
+        "wave_long_wider_recurrence": {
+          "attack_median": 0.5342291470364844,
+          "attack_min": 0.12588294070733957,
+          "development_auc": 1.0,
+          "development_auc_including_stress": 0.9124842171717171,
+          "held_sound_max": 6.462533685944117e-07,
+          "held_sound_median": 2.957663804212087e-08,
+          "stress_no_new_note_max": 1.6656575864481515,
+          "stress_no_new_note_median": 0.06123453085461146,
+          "zero_scores_on_attacks": 0
+        },
+        "wave_short": {
+          "attack_median": 0.5342291408494161,
+          "attack_min": 0.12588293801123807,
+          "development_auc": 1.0,
+          "development_auc_including_stress": 0.9173078440656566,
+          "held_sound_max": 1.4148366668955948e-05,
+          "held_sound_median": 1.455375160468611e-07,
+          "stress_no_new_note_max": 1.6656575879222475,
+          "stress_no_new_note_median": 0.1600667486785068,
+          "zero_scores_on_attacks": 0
+        }
+      },
+      "stress_no_new_note": 72
+    }
+  },
+  "training_launched": false,
+  "uses_future_to_fit": false,
+  "uses_known_frequencies_to_predict": false
+}
