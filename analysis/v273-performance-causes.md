@@ -1,5 +1,12 @@
 # Pourquoi les résultats d'Exact K restent faibles
 
+**Audit de conception suivant :** un [contrat entrée/cible incomplet](v273-design-contract.md)
+est démontré par un contre-exemple reproductible : les quatre mêmes entrées
+locales peuvent recevoir K=0 ou K=1 selon une proposition du groupe suivant
+non transmise au modèle. La géométrie d’appartenance et sa disponibilité
+temporelle doivent être ajoutées explicitement. Un composant et sept tests
+sont préparés ; leur intégration et le gain d’Exact K restent à mesurer.
+
 **Le défaut principal constaté est un comptage polyphonique insuffisamment
 appris, déjà visible sur les données d'apprentissage.** Il s'accompagne d'une
 compétition avec les classes 0/1 et d'un compromis d'objectif qui favorise

@@ -1,0 +1,139 @@
+{
+  "status": "verified",
+  "counterexample": {
+    "proof_scope": "frozen-proposal input contract; not a real-data collision search",
+    "current_candidates_relative_samples": [
+      0,
+      1764
+    ],
+    "onset_relative_sample": 2600,
+    "current_audio_end_relative_sample": 2788,
+    "sufficient_proposal_watermark_relative_sample": 3528,
+    "configurations": [
+      {
+        "neighbor_relative_sample": 3300,
+        "current_candidate_distance": 836,
+        "neighbor_candidate_distance": 700,
+        "target_k": 0,
+        "owner_group": 1,
+        "new_owned_input": false
+      },
+      {
+        "neighbor_relative_sample": 3500,
+        "current_candidate_distance": 836,
+        "neighbor_candidate_distance": 900,
+        "target_k": 1,
+        "owner_group": 0,
+        "new_owned_input": true
+      }
+    ],
+    "native_inputs_identical": true,
+    "current_past_candidate_history_identical": true,
+    "per_input_sha256": {
+      "candidate_set": "96b3a3839854af343049d09d323b7811bdec2ba72cc9d7429a7355aa56679cbe",
+      "candidate_mask": "681f80d3b0617fbb99cf28e1880183f4a02755250ae5be28d3cd3888d270a2bf",
+      "cluster_stats": "51059e0ca910093b92e7420ff9f889bf4f1de737ec9b7e5e33ca30742be23d8e",
+      "spectral_map": "0aacfae71a127fbe482f2bf637ce00a0d689144c389422e4bb75b514696cb63f"
+    },
+    "proposed_geometry_distinguishes_targets": true,
+    "incomplete_context_rejected": true
+  },
+  "frozen_evidence": {
+    "source_run": 36373588730,
+    "source_training_run": 36351028493,
+    "outer_fold": 3,
+    "inference_performed": false,
+    "error_rows": 874,
+    "contested_error_rows": 262,
+    "future_group_error_rows": 139,
+    "previous_group_error_rows": 126,
+    "both_directions_rows": 3,
+    "error_rows_without_contested_birth": 612,
+    "local_eligible_count_equals_prediction_rows": 140,
+    "example": {
+      "audio": {
+        "digitally_silent": false,
+        "late_rms_dbfs": -22.80645588149988,
+        "peak_absolute": 0.189544677734375,
+        "post_minus_pre_db": 10.986827684405142,
+        "post_rms_dbfs": -25.134442904319172,
+        "pre_rms_dbfs": -36.121270588724315,
+        "rms_dbfs": -26.645738536514337,
+        "spectral_flatness": 0.010305799532929231
+      },
+      "contested_births": 1,
+      "events": [
+        {
+          "distance_to_current_candidate": 26396,
+          "offset_sample": 466414,
+          "onset_sample": 432110,
+          "own": false,
+          "owner_track_row": 151,
+          "string": 0
+        },
+        {
+          "distance_to_current_candidate": 1038,
+          "offset_sample": 475614,
+          "onset_sample": 461278,
+          "own": false,
+          "owner_track_row": 163,
+          "string": 2
+        },
+        {
+          "distance_to_current_candidate": 299,
+          "offset_sample": 496123,
+          "onset_sample": 460539,
+          "own": false,
+          "owner_track_row": 163,
+          "string": 3
+        },
+        {
+          "distance_to_current_candidate": 3,
+          "offset_sample": 486683,
+          "onset_sample": 460059,
+          "own": true,
+          "owner_track_row": 162,
+          "string": 4
+        }
+      ],
+      "global_index": 17020,
+      "local_eligible_births": 2,
+      "member": "01_BN1-147-Gb_comp.jams",
+      "predicted_k": 2,
+      "probability": [
+        0.02886585146188736,
+        0.1794695109128952,
+        0.30607160925865173,
+        0.27965736389160156,
+        0.14605475962162018,
+        0.04997771978378296,
+        0.00990318600088358
+      ],
+      "start_sample": 458506,
+      "track_row": 162,
+      "true_k": 1
+    },
+    "archive_file_inventory": {
+      "illustrative-clips.npz": "91689dfe6c51492e2d6e6ccdb1b3a10c8b9693efe4075e77e8b38baa8f285fc1",
+      "overcount-traces.json": "4bfbc4d3df02d53891e8a0cc4b960c4df57638a21f250ef76f77950f0b068176",
+      "progress.json": "8432544d7260ede9df058797f5bb6de36380467a20a62b2c258e39fd1a8c7d5d",
+      "report.json": "38a828f58ccc06c1f79ff2be432c184f4c3b102a312793323c97d6141a0a0421",
+      "rows.npz": "d7c74bd45b937a0106eea8fa5475fcf0087a4b31ea1a9f0a31ce5f353ac12b6c"
+    },
+    "warning": "Observed association is not an attributable error fraction or a measured gain."
+  },
+  "source_files_sha256": {
+    "scripts/evaluate_v90_cluster_oracles.py": "11f966cb6814be18b6ac8f415ba609bf57768b43e04a77ebabb7e02e7f7accb5",
+    "scripts/train_v90_structured_cluster_cardinality.py": "5c510c222190c9c2144be7507655751a6a67893c8ea996da1472e1b0171914a1",
+    "scripts/train_v87_causal_candidate_memory.py": "118e673323f8860e52e1da98af73c93dc9bc65b7a2f725592840b134ed5c25e2",
+    "scripts/train_v250_count_only.py": "6c41d44d706cbeaecec89b2d92b3264d5c230a40823ce57dcc65b383d48b0eb7",
+    "scripts/v273_window_experiment.py": "af80aaa620a18b23af28706debe0de83d8a7c3e74c7f8f31eac6e63224b5ca6a",
+    "scripts/v273_ownership_context.py": "59986f60e12a0068eb7ffa835035f0b64ae406b9ad0317615384b7772a0bdfff",
+    "scripts/audit_v273_design_contract.py": "a9d149d216f6d8c58feab40638e906f44ef3bf62c7e0af780a791b5f72c73c38"
+  },
+  "no_training": true,
+  "no_output_corrector": true,
+  "model_integration_performed": false,
+  "no_model_promotion": true,
+  "measured_exact_k_gain": false
+}
