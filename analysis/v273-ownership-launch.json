@@ -1,0 +1,73 @@
+{
+  "source_release": "v273-window-pair-36351028493",
+  "bundle_asset": "native-window-bundle.zip",
+  "bundle_archive_sha256": "4901e90d094aac04eda125c31f4546203ef33be448d35d328787882ce433006f",
+  "config_sha256": "7c27989eb3fe330fdff203e388e76ae4c64d8b8e4838cab4d7c4622b4104451a",
+  "historical_initial_hash": "e3d36af85c33601c4e3183633e688f335d031e31006d6875857bb4cb22a05b5d",
+  "experiment": "native_ownership_context",
+  "attempt": 1,
+  "outer_fold": 3,
+  "inner_validation_fold": 0,
+  "outer_rows_evaluated": 0,
+  "arms": [
+    "local_only",
+    "with_neighbors"
+  ],
+  "epochs": 12,
+  "primary_epoch": 12,
+  "snapshots": [
+    4,
+    8,
+    12
+  ],
+  "weighting": "uniform",
+  "seed": 16164,
+  "dropout_seed": 46164,
+  "decision": "poly gain at epoch 12 without regression on K1, K2, K3; all K and K0 also reported",
+  "geometry": "fraction of 256 samples in each of 31 acoustic frames, hop 128",
+  "labels_changed": false,
+  "output_corrector": false,
+  "automatic_promotion": false,
+  "training_archives": [
+    {
+      "name": "training-part-0.zip",
+      "sha256": "e8a43e7f97e8c8c8aaccb9443cdac23bd08b9c3956cb971cee1a4ed339cb1e0b"
+    },
+    {
+      "name": "training-part-1.zip",
+      "sha256": "3d4aa6d83c0686df06a395e318ce4b103dc25d6a2de32224049001a8a5000398"
+    },
+    {
+      "name": "training-part-2.zip",
+      "sha256": "9dc353e9ddb2555aa252324afefa9d6cd5d5831c847f6d2aa9a8c6b06be932ab"
+    },
+    {
+      "name": "training-part-3.zip",
+      "sha256": "3a18282b9adf4d71ed7401a00482be578b2d3ac3fb4aaccfce82351d735f9b17"
+    },
+    {
+      "name": "training-part-4.zip",
+      "sha256": "c65a3b6e8938b210aa1fa21fa259b128a6baaa1b37c35ebb6521a24b439b6307"
+    },
+    {
+      "name": "training-part-5.zip",
+      "sha256": "64baea1cbf5c27a8888d8920b33e4212b126747473d1188e27079634118a7d15"
+    },
+    {
+      "name": "training-part-6.zip",
+      "sha256": "dd62313fcec10c9ab677f68c23436bcd6165d2f143568d1ccc1bab5074e7ef8a"
+    },
+    {
+      "name": "training-part-7.zip",
+      "sha256": "96374b9e7f540e41a260c3e787212cf37867e03cbecd50137277edc18ca44984"
+    },
+    {
+      "name": "training-part-8.zip",
+      "sha256": "081364fe472e6876ca27e59d775549723d73cd0a28f454a02fdabd3de53df36d"
+    },
+    {
+      "name": "training-part-9.zip",
+      "sha256": "e319a1e3f0cdcc168f2b1e7a4467875ab389033359f94a0fff1e894c31194a6d"
+    }
+  ]
+}

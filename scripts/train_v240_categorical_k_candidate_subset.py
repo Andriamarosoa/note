@@ -114,7 +114,8 @@ def _candidate_subset_loss():
 
 
 def _build_model(spec, *, time_frames=v100.TIME_FRAMES, count_only=False,
-                 spectral_normalization="channel_norm", count_dropout_seed=None):
+                 spectral_normalization="channel_norm", count_dropout_seed=None,
+                 ownership_context=False):
     # The historical event-set loss still packs a 23-frame target. Extended
     # windows are supported only by the pruned native count models below.
     if time_frames != v100.TIME_FRAMES and not count_only:
@@ -123,6 +124,8 @@ def _build_model(spec, *, time_frames=v100.TIME_FRAMES, count_only=False,
         raise V240Error("unknown spectral normalization")
     if spectral_normalization != "channel_norm" and not count_only:
         raise V240Error("normalization experiment requires count_only=True")
+    if ownership_context and not count_only:
+        raise V240Error("ownership context currently supports count_only=True")
     try:
         import tensorflow as tf
         from tensorflow import keras
@@ -135,6 +138,7 @@ def _build_model(spec, *, time_frames=v100.TIME_FRAMES, count_only=False,
     candidate_set = _input_by_name(base, "candidate_set")
     candidate_mask = _input_by_name(base, "candidate_mask")
     spectral = _input_by_name(base, "spectral_map")
+    model_inputs = list(base.inputs)
 
     # Preserve the V23 dense evidence + explicit categorical K treatment.
     tc = v102.time_coordinates(time_frames)[:, None]
@@ -157,7 +161,15 @@ def _build_model(spec, *, time_frames=v100.TIME_FRAMES, count_only=False,
         # The three cached channels already lie in [0, 12]. Preserve their
         # values with a fixed invertible scale; do not estimate new statistics.
         dense = keras.layers.Rescaling(1.0 / 12.0, name="v240_dense_channel_norm")(spectral)
-    dense = keras.layers.Concatenate(axis=-1, name="v240_dense_plus_coordinates")([dense, coords])
+    spatial_inputs = [dense, coords]
+    if ownership_context:
+        ownership = keras.Input((time_frames, 1), name="ownership_map")
+        model_inputs.append(ownership)
+        geometry = keras.layers.Lambda(
+            lambda x: tf.tile(x[:, :, None, :], [1, 1, v100.SPECTRAL_BANDS, 1]),
+            name="v273_ownership_frequency_broadcast")(ownership)
+        spatial_inputs.append(geometry)
+    dense = keras.layers.Concatenate(axis=-1, name="v240_dense_plus_coordinates")(spatial_inputs)
     dense = keras.layers.Conv2D(32, (3, 3), padding="same", activation="relu", name="v240_dense_conv1")(dense)
     dense = keras.layers.Conv2D(64, (3, 3), padding="same", activation="relu", name="v240_dense_conv2")(dense)
     dense_features = keras.layers.Conv2D(QUERY_DIM, (3, 3), padding="same", activation="relu", name="v240_dense_conv3")(dense)
@@ -292,7 +304,7 @@ def _build_model(spec, *, time_frames=v100.TIME_FRAMES, count_only=False,
 
     # Keep layer construction order (and seeded count initialization) identical.
     if count_only and time_frames != v100.TIME_FRAMES:
-        return keras.Model(base.inputs, {"cardinality": cardinality}), {"cardinality": 1.0}, token_shape
+        return keras.Model(model_inputs, {"cardinality": cardinality}), {"cardinality": 1.0}, token_shape
 
     loss = {f"string_{s}": "binary_crossentropy" for s in range(SLOT_COUNT)}
     loss.update({f"pitch_{s}": "mse" for s in range(SLOT_COUNT)})
@@ -312,7 +324,7 @@ def _build_model(spec, *, time_frames=v100.TIME_FRAMES, count_only=False,
     lw["cardinality"] = CARDINALITY_WEIGHT
     lw["candidate_subset"] = CANDIDATE_SUBSET_WEIGHT
 
-    model = keras.Model(base.inputs, outputs, name="v240_categorical_k_candidate_subset")
+    model = keras.Model(model_inputs, outputs, name="v240_categorical_k_candidate_subset")
     model.compile(optimizer=keras.optimizers.Adam(learning_rate=2e-4), loss=loss, loss_weights=lw)
     return model, lw, token_shape
 
