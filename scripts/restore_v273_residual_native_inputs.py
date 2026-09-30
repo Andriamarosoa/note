@@ -9,11 +9,12 @@ from scripts.rebuild_v273_sources import digest,verify_dataset
 from scripts.restore_v273_original_backup import extract_verified,validate_original_inventory
 
 
-def restore(root, with_audio):
-    launch=json.loads(Path('analysis/v273-residual-native-launch.json').read_text())
+def restore(root, with_audio, launch_path=Path('analysis/v273-residual-native-launch.json')):
+    launch=json.loads(launch_path.read_text())
     sources=json.loads(Path('analysis/v273-stable-prediction-sources.json').read_text())['files']
-    selected=[r for r in sources if r['name']=='ownership-inputs.zip' or
-              (with_audio and r['name'] in ('annotation.zip','audio_mono-pickup_mix.zip'))]
+    selected=[r for r in sources if with_audio and r['name'] in ('annotation.zip','audio_mono-pickup_mix.zip')]
+    selected.append(dict(name=launch['geometry_asset'],sha256=launch['geometry_archive_sha256'],
+        url='https://github.com/Andriamarosoa/note/releases/download/'+launch['geometry_release']+'/'+launch['geometry_asset']))
     selected.append(dict(name=launch['bundle_asset'],sha256=launch['bundle_archive_sha256'],
         url='https://github.com/Andriamarosoa/note/releases/download/'+launch['source_release']+'/'+launch['bundle_asset']))
     def get(item):
@@ -44,4 +45,5 @@ if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--root',type=Path,required=True)
     p.add_argument('--with-audio',action='store_true')
-    args=p.parse_args();restore(args.root,args.with_audio)
+    p.add_argument('--launch',type=Path,default=Path('analysis/v273-residual-native-launch.json'))
+    args=p.parse_args();restore(args.root,args.with_audio,args.launch)
