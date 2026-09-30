@@ -1,0 +1,119 @@
+{
+  "annotation_sha256": "8daa02e6417ccca1685feb44b135e95928ad7037e5032ecb326b5791856fda99",
+  "audio_sha256": "8cd6af47282b15e51d82fc9657adb3d585defb55ebc473958c145ccec3907336",
+  "config_sha256": "7c27989eb3fe330fdff203e388e76ae4c64d8b8e4838cab4d7c4622b4104451a",
+  "fit_indices_sha256": "5f4252f41a99cc88140b575966bfda91988ed9a5b5a8e46d96e7e1e5ff6aed58",
+  "geometry_report_sha256": "da7343b8d0f4350a1787faefbb5816555f3c5ba6bb1421673a261c5770771e3c",
+  "limitations": [
+    "candidate-conditioned population may contain little or no silence",
+    "operational dBFS limits are not a universal audibility threshold",
+    "annotation overlap only constructs targets, never model inputs",
+    "padding-only or incomplete quiet windows are excluded, not relabelled silence"
+  ],
+  "model_training_performed": false,
+  "original_clock": true,
+  "outer_rows_evaluated": 0,
+  "output_corrector": false,
+  "policy": {
+    "allow_zero_padding_as_silence": false,
+    "annotation_overlap_veto": true,
+    "automatic_training": false,
+    "output_corrector": false,
+    "policy": {
+      "after_samples": 2788,
+      "before_samples": 3100,
+      "frame_samples": 256,
+      "max_frame_rms_dbfs": -60.0,
+      "max_peak_dbfs": -50.0
+    },
+    "sample_rate": 44100,
+    "schema": "onset-count-with-silence-v1",
+    "state_order": [
+      -1,
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "threshold_status": "conservative operational definition chosen before population audit; not optimized for Exact K"
+  },
+  "policy_sha256": "064b6d9c8f7cfa10653b8d074d06852a97e02643f76f8a574af450f4ec23d761",
+  "schema": "onset-count-with-silence-v1",
+  "script_sha256": "9bf25ef0dcb6ed93621b642fbb16b965e78d9242d23a21a3cb248f4df64bff1e",
+  "state_builder_sha256": "a5f4c3ebc276671c342e29a6b0f5117586ea8613508f0a52a62be21315bb05af",
+  "state_order": [
+    -1,
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "status": "prepared",
+  "summary": {
+    "fit": {
+      "excluded_unknown": 26,
+      "k0_without_annotation_but_audible": 763,
+      "minimum_rms_no_note": 0.008862688206136227,
+      "old_k_histogram": [
+        28889,
+        9194,
+        2452,
+        1695,
+        833,
+        240,
+        54
+      ],
+      "quiet_but_annotated": 0,
+      "rows": 43357,
+      "state_histogram": {
+        "-1": 0,
+        "0": 28863,
+        "1": 9194,
+        "2": 2452,
+        "3": 1695,
+        "4": 833,
+        "5": 240,
+        "6": 54
+      },
+      "trainable": 43331
+    },
+    "validation": {
+      "excluded_unknown": 10,
+      "k0_without_annotation_but_audible": 142,
+      "minimum_rms_no_note": 0.012779087759554386,
+      "old_k_histogram": [
+        10763,
+        3078,
+        993,
+        594,
+        374,
+        115,
+        35
+      ],
+      "quiet_but_annotated": 0,
+      "rows": 15952,
+      "state_histogram": {
+        "-1": 0,
+        "0": 10753,
+        "1": 3078,
+        "2": 993,
+        "3": 594,
+        "4": 374,
+        "5": 115,
+        "6": 35
+      },
+      "trainable": 15942
+    }
+  },
+  "target_sha256": "5862113145eb30561b73172c8203cde0c8139807688513f0c26ba57c29921b28",
+  "thresholds_tuned_on_validation": false,
+  "training_population_ready": false,
+  "unassigned_annotations": 1788,
+  "val_indices_sha256": "9561cbcaa529d50ac39d9004eb37bbec8337eeab8b8d932cbc2df95ca8424397"
+}
