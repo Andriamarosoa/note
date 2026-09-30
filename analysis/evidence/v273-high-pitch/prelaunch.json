@@ -1,0 +1,79 @@
+{
+  "status": "passed",
+  "scope": "local prelaunch verification; no high-pitch training result",
+  "base_commit": "e7e925778b85dfbb6c808f194e3394962494bc1b",
+  "feature_builder_sha256": "9e33221a07bd3494c247be546ad609667b5c87c394eb16d18fa6b27e5a140976",
+  "register_builder_sha256": "2636f20a31796a80a4b54993bf404136c871b491b8515216088aa5d2ac121600",
+  "launch_sha256": "f381db1d1a0401363971b80e2d0390d5167e798281e0eb5d225349b96bc892fd",
+  "protocol_sha256": "18f308fbd1de4204c42cdda6631670e09d5c3daa86fd5ca85cce603e3ec806ce",
+  "tensorflow": "2.15.1",
+  "numpy": "1.26.4",
+  "unit_tests_passed": 24,
+  "paired_preflight": {
+    "observed_only": {
+      "all_initial_dropout_masks_identical": true,
+      "high_pitch_gradient_nonzero": true,
+      "initial_sha256": "54134d9c7dc035da7628134e94dbee24cdd301324a571f41b32ee228d37e645d",
+      "ownership_gradient_nonzero": true,
+      "parameters": 249282,
+      "synthetic_update_passed": true
+    },
+    "with_high_pitch": {
+      "all_initial_dropout_masks_identical": true,
+      "high_pitch_gradient_nonzero": true,
+      "initial_sha256": "54134d9c7dc035da7628134e94dbee24cdd301324a571f41b32ee228d37e645d",
+      "ownership_gradient_nonzero": true,
+      "parameters": 249282,
+      "synthetic_update_passed": true
+    }
+  },
+  "same_input_same_prediction": true,
+  "historical_default_unchanged": true,
+  "validation_annotations": {
+    "path": "high-pitch-local-registers.npz",
+    "sha256": "1e8fcdad4cc50aa9b4feff41bbf5014573481d367233260a185df9c5e7e2cd47",
+    "rows": 15952,
+    "tracks": 50,
+    "notes": 9127,
+    "midi_min": 40,
+    "midi_max": 80,
+    "note_register_counts": {
+      "bass": 1434,
+      "mid": 7427,
+      "high": 266
+    },
+    "annotated_events": 9542,
+    "unassigned_annotations": 415,
+    "k_histogram": [
+      10763,
+      3078,
+      993,
+      594,
+      374,
+      115,
+      35
+    ],
+    "labels_recomputed": true,
+    "evaluation_only": true,
+    "annotation_sha256": "8daa02e6417ccca1685feb44b135e95928ad7037e5032ecb326b5791856fda99",
+    "meaning": "assigned new note attacks, not all sounding notes; nearest MIDI semitone; bass<C3, high>=C5"
+  },
+  "feature_runtime": {
+    "observed_only": {
+      "p50_ms": 0.9915230002661701,
+      "p95_ms": 1.4256320999493255,
+      "repeats": 30
+    },
+    "with_high_pitch": {
+      "p50_ms": 3.557838000006086,
+      "p95_ms": 4.842779750060799,
+      "repeats": 30
+    }
+  },
+  "inference_single_group": {
+    "p50_ms": 3.6734335001256113,
+    "p95_ms": 5.666665000126155,
+    "repeats": 30
+  },
+  "latency_scope": "warm synthetic CPU timings; no end-to-end real-time speedup claimed; unchanged audio lookahead"
+}
