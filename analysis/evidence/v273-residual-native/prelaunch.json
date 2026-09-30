@@ -1,0 +1,127 @@
+{
+  "base_commit": "2ca6f9900cb61e121e7cd9089a6c770903fb38c1",
+  "complete_training_performed": false,
+  "created_at_utc": "2026-09-30T08:17:42.976282+00:00",
+  "exact_k_gain_measured": false,
+  "preflight": {
+    "arms": {
+      "observed_only": {
+        "all_initial_dropout_masks_identical": true,
+        "initial_sha256": "54134d9c7dc035da7628134e94dbee24cdd301324a571f41b32ee228d37e645d",
+        "ownership_gradient_nonzero": true,
+        "parameters": 249282,
+        "residual_gradient_nonzero": true,
+        "synthetic_update_passed": true
+      },
+      "with_residual": {
+        "all_initial_dropout_masks_identical": true,
+        "initial_sha256": "54134d9c7dc035da7628134e94dbee24cdd301324a571f41b32ee228d37e645d",
+        "ownership_gradient_nonzero": true,
+        "parameters": 249282,
+        "residual_gradient_nonzero": true,
+        "synthetic_update_passed": true
+      }
+    },
+    "benchmark_batch128_seconds": 0.798919594999461,
+    "checkpoints": [
+      4,
+      8,
+      12
+    ],
+    "config_sha256": "7c27989eb3fe330fdff203e388e76ae4c64d8b8e4838cab4d7c4622b4104451a",
+    "epoch_budget": 12,
+    "feature_builder_sha256": "2e1cc98f1bc47d370d10a02d3e945a1504b05c54234ecd28538a0c986f1f6673",
+    "historical_default_unchanged": true,
+    "launch_sha256": "86082012611fb6777d619c4639157dd6a1f7fca5c355f2ad89f3e8ee2a2f6fec",
+    "numpy": "1.26.4",
+    "output_corrector": false,
+    "protocol_sha256": "e9bdb18a3c24ab80f6d89e292296f7840921a13eec76d3295037c00bb37f36ca",
+    "same_input_same_prediction": true,
+    "script_sha256": "cea920f596e9e3bcd98b73d41706da669e7df9bace649c4537543460b7495912",
+    "source_sha": "2ca6f9900cb61e121e7cd9089a6c770903fb38c1",
+    "stable_estimator_sha256": "968e43634606883b3fcf0131834ed792c53ad19f53a04c2c4ff7c6446a82d5bb",
+    "status": "passed",
+    "tensorflow": "2.15.1",
+    "training_performed": false
+  },
+  "preparation": {
+    "annotations_consumed": false,
+    "bundle_sha256": "72b8fd7445934b9f88486c87e49d5d3e2f37a6427802023685149c539a210651",
+    "config_sha256": "7c27989eb3fe330fdff203e388e76ae4c64d8b8e4838cab4d7c4622b4104451a",
+    "elapsed_seconds": 364.09184726400053,
+    "feature_builder_sha256": "2e1cc98f1bc47d370d10a02d3e945a1504b05c54234ecd28538a0c986f1f6673",
+    "fit_indices_sha256": "5f4252f41a99cc88140b575966bfda91988ed9a5b5a8e46d96e7e1e5ff6aed58",
+    "fit_rows": 43357,
+    "geometry_report_sha256": "da7343b8d0f4350a1787faefbb5816555f3c5ba6bb1421673a261c5770771e3c",
+    "launch_sha256": "86082012611fb6777d619c4639157dd6a1f7fca5c355f2ad89f3e8ee2a2f6fec",
+    "maps_dtype": "float16",
+    "maps_sha256": "47c00998310665cb9b17a11cc117cd093273cba2baf46a5daa4869de38fed778",
+    "maps_shape": [
+      74588,
+      31,
+      64,
+      4
+    ],
+    "max_pole_radius": 0.9999993003320659,
+    "numpy": "2.3.5",
+    "outer_rows_evaluated": 0,
+    "output_corrector": false,
+    "ownership_sha256": "c559ff4174a518eebe6394a914541decbfeeac664ffc70b297137555c58e85dc",
+    "protocol_sha256": "e9bdb18a3c24ab80f6d89e292296f7840921a13eec76d3295037c00bb37f36ca",
+    "reused_validation_tracks": 50,
+    "rows": 59309,
+    "script_sha256": "f20f99ec198934fc167a31745a2cc7839686be19d8b5997f8639fdfb88f5f6c4",
+    "source_sha": "2ca6f9900cb61e121e7cd9089a6c770903fb38c1",
+    "stable_estimator_sha256": "968e43634606883b3fcf0131834ed792c53ad19f53a04c2c4ff7c6446a82d5bb",
+    "status": "prepared",
+    "tracks": 190,
+    "training_performed": false,
+    "val_indices_sha256": "9561cbcaa529d50ac39d9004eb37bbec8337eeab8b8d932cbc2df95ca8424397",
+    "validation_rows": 15952
+  },
+  "real_batch_smoke": {
+    "arms": {
+      "observed_only": {
+        "elapsed_seconds": 3.4645990960016206,
+        "finite_real_training_update": true,
+        "inference_rows": 256,
+        "optimizer_updates": 1
+      },
+      "with_residual": {
+        "elapsed_seconds": 2.8012927290001244,
+        "finite_real_training_update": true,
+        "inference_rows": 256,
+        "optimizer_updates": 1
+      }
+    },
+    "fit_rows_only": true,
+    "maps_sha256": "47c00998310665cb9b17a11cc117cd093273cba2baf46a5daa4869de38fed778",
+    "numpy": "1.26.4",
+    "purpose": "integration smoke only; these weights are discarded",
+    "status": "passed",
+    "tensorflow": "2.15.1",
+    "validation_rows_consumed": 0
+  },
+  "source_files_sha256": {
+    ".github/workflows/v273-residual-native.yml": "61acf63f51be7f9dc2b205d5fdc97fcac289fe1d35a59bd4f3677d2b1f73fd89",
+    "analysis/v273-residual-native-launch.json": "86082012611fb6777d619c4639157dd6a1f7fca5c355f2ad89f3e8ee2a2f6fec",
+    "analysis/v273-residual-native-protocol.md": "e9bdb18a3c24ab80f6d89e292296f7840921a13eec76d3295037c00bb37f36ca",
+    "scripts/audit_v273_residual_native.py": "da06e660c054e62b6fa35e66d5c61153a6ecc134d01813999b47ac53ec14ac1b",
+    "scripts/prepare_v273_residual_native.py": "f20f99ec198934fc167a31745a2cc7839686be19d8b5997f8639fdfb88f5f6c4",
+    "scripts/restore_v273_residual_native_inputs.py": "caf3a5fa36abd9d8476603ae9bde66c3b29210ed37d8c166d8d5d2f50e1aa931",
+    "scripts/run_v102_competitive_mass.py": "fdd18e34de095622e0bb9f3ac27d998c2759689054bcdfff721ab779f114085d",
+    "scripts/train_v102_source_time_assignment.py": "99cf5a9843aa5f2c0eca7abda572052b5b2f7382f9c03c42d90950716e937bec",
+    "scripts/train_v240_categorical_k_candidate_subset.py": "5628ebb9b1de4e2d016d82a9eea7c80623b9c5575c0cdfdda2d2adbfff1afbc8",
+    "scripts/train_v250_count_only.py": "231cfa6f9adf09c6a53d7b9ab477b86096b2f4e7a071c174b3fc3b75fea6c365",
+    "scripts/train_v273_residual_native.py": "2bd9f5a7afb49b82a53e296370a7dde7adb8cb26946227b0d5cfe2e96fc5cccc",
+    "scripts/v273_residual_native.py": "cea920f596e9e3bcd98b73d41706da669e7df9bace649c4537543460b7495912",
+    "test/test_v273_residual_native.py": "fc0430df42931ec3ec981702e45755ecac981f398f696242c4a943ecfc1fea3a"
+  },
+  "source_kind": "local working-tree changes tested before publication; exact file hashes below",
+  "status": "passed_local_prelaunch",
+  "unit_test_environment": {
+    "numpy": "1.26.4",
+    "tensorflow": "2.15.1"
+  },
+  "unit_tests_passed": 21
+}

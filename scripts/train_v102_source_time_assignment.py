@@ -282,7 +282,7 @@ def _poisson_binomial_tensor(p):
     return dist
 
 
-def _build_model(*, time_frames=TIME_FRAMES):
+def _build_model(*, time_frames=TIME_FRAMES, spectral_channels=SPECTRAL_CHANNELS):
     try:
         import tensorflow as tf
         from tensorflow import keras
@@ -293,7 +293,9 @@ def _build_model(*, time_frames=TIME_FRAMES):
     candidate_hidden = scaffold.get_layer("cluster_hidden2").output
     candidate_context = keras.layers.Dense(TOKEN_DIM, activation="relu", name="candidate_context")(candidate_hidden)
 
-    spectral = keras.Input((time_frames, SPECTRAL_BANDS, SPECTRAL_CHANNELS), name="spectral_map")
+    if spectral_channels not in (SPECTRAL_CHANNELS, 4):
+        raise V102Error("unsupported spectral channel count")
+    spectral = keras.Input((time_frames, SPECTRAL_BANDS, spectral_channels), name="spectral_map")
     x = keras.layers.LayerNormalization(axis=-1, name="spectral_channel_norm")(spectral)
 
     time_coord = time_coordinates(time_frames)[:, None]

@@ -1,0 +1,33 @@
+{
+  "arms": [
+    "observed_only",
+    "with_residual"
+  ],
+  "attempt": 1,
+  "automatic_promotion": false,
+  "bundle_archive_sha256": "4901e90d094aac04eda125c31f4546203ef33be448d35d328787882ce433006f",
+  "bundle_asset": "native-window-bundle.zip",
+  "config_sha256": "7c27989eb3fe330fdff203e388e76ae4c64d8b8e4838cab4d7c4622b4104451a",
+  "decision": "poly_exact increases; global and K1/K2/K3 do not regress; fewer overcounts K<4; replication only",
+  "dropout_seed": 46164,
+  "epochs": 12,
+  "experiment": "native_residual_map_pair",
+  "feature_builder_sha256": "2e1cc98f1bc47d370d10a02d3e945a1504b05c54234ecd28538a0c986f1f6673",
+  "geometry_archive_sha256": "7b46630d67a471b74511efc052b295e0b2b0e14099d878cc11d00cfe8dd947f5",
+  "geometry_asset": "ownership-inputs.zip",
+  "geometry_release": "v273-ownership-36519613364",
+  "inner_validation_fold": 0,
+  "outer_fold": 3,
+  "outer_rows_evaluated": 0,
+  "output_corrector": false,
+  "primary_epoch": 12,
+  "seed": 16164,
+  "snapshots": [
+    4,
+    8,
+    12
+  ],
+  "source_release": "v273-window-pair-36351028493",
+  "stable_estimator_sha256": "968e43634606883b3fcf0131834ed792c53ad19f53a04c2c4ff7c6446a82d5bb",
+  "weighting": "uniform"
+}

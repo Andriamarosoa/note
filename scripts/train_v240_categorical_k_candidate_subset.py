@@ -115,7 +115,7 @@ def _candidate_subset_loss():
 
 def _build_model(spec, *, time_frames=v100.TIME_FRAMES, count_only=False,
                  spectral_normalization="channel_norm", count_dropout_seed=None,
-                 ownership_context=False):
+                 ownership_context=False, spectral_channels=v100.SPECTRAL_CHANNELS):
     # The historical event-set loss still packs a 23-frame target. Extended
     # windows are supported only by the pruned native count models below.
     if time_frames != v100.TIME_FRAMES and not count_only:
@@ -126,13 +126,15 @@ def _build_model(spec, *, time_frames=v100.TIME_FRAMES, count_only=False,
         raise V240Error("normalization experiment requires count_only=True")
     if ownership_context and not count_only:
         raise V240Error("ownership context currently supports count_only=True")
+    if spectral_channels != v100.SPECTRAL_CHANNELS and not count_only:
+        raise V240Error("experimental spectral channels require count_only=True")
     try:
         import tensorflow as tf
         from tensorflow import keras
     except ImportError as exc:
         raise RuntimeError("TensorFlow is required") from exc
 
-    base, _, token_shape = v102._build_model(time_frames=time_frames)
+    base, _, token_shape = v102._build_model(time_frames=time_frames, spectral_channels=spectral_channels)
     candidate_context = base.get_layer("candidate_context").output
     tf_tokens = base.get_layer("tf_tokens").output
     candidate_set = _input_by_name(base, "candidate_set")

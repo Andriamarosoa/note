@@ -36,7 +36,7 @@ def _poisson_binomial_tensor_fixed(p):
     return dist
 
 
-def _build_model_mass_aware(*, time_frames=v.TIME_FRAMES):
+def _build_model_mass_aware(*, time_frames=v.TIME_FRAMES, spectral_channels=v.SPECTRAL_CHANNELS):
     try:
         import tensorflow as tf
         from tensorflow import keras
@@ -47,7 +47,9 @@ def _build_model_mass_aware(*, time_frames=v.TIME_FRAMES):
     candidate_hidden = scaffold.get_layer("cluster_hidden2").output
     candidate_context = keras.layers.Dense(v.TOKEN_DIM, activation="relu", name="candidate_context")(candidate_hidden)
 
-    spectral = keras.Input((time_frames, v.SPECTRAL_BANDS, v.SPECTRAL_CHANNELS), name="spectral_map")
+    if spectral_channels not in (v.SPECTRAL_CHANNELS, 4):
+        raise v.V102Error("unsupported spectral channel count")
+    spectral = keras.Input((time_frames, v.SPECTRAL_BANDS, spectral_channels), name="spectral_map")
     x = keras.layers.LayerNormalization(axis=-1, name="spectral_channel_norm")(spectral)
 
     time_coord = v.time_coordinates(time_frames)[:, None]
