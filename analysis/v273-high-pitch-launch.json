@@ -1,0 +1,35 @@
+{
+  "arms": [
+    "observed_only",
+    "with_high_pitch"
+  ],
+  "attempt": 1,
+  "automatic_promotion": false,
+  "bundle_archive_sha256": "4901e90d094aac04eda125c31f4546203ef33be448d35d328787882ce433006f",
+  "bundle_asset": "native-window-bundle.zip",
+  "config_sha256": "7c27989eb3fe330fdff203e388e76ae4c64d8b8e4838cab4d7c4622b4104451a",
+  "decision": "poly_exact and K3-with-bass improve; global, K1/K2/K3 and any-high do not regress; fewer overcounts K<4; replication only",
+  "dropout_seed": 46164,
+  "epochs": 12,
+  "experiment": "native_high_pitch_pair",
+  "feature_builder_sha256": "9e33221a07bd3494c247be546ad609667b5c87c394eb16d18fa6b27e5a140976",
+  "geometry_archive_sha256": "7b46630d67a471b74511efc052b295e0b2b0e14099d878cc11d00cfe8dd947f5",
+  "geometry_asset": "ownership-inputs.zip",
+  "geometry_release": "v273-ownership-36519613364",
+  "inner_validation_fold": 0,
+  "outer_fold": 3,
+  "outer_rows_evaluated": 0,
+  "output_corrector": false,
+  "primary_epoch": 12,
+  "seed": 16164,
+  "snapshots": [
+    4,
+    8,
+    12
+  ],
+  "source_release": "v273-window-pair-36351028493",
+  "weighting": "uniform",
+  "register_builder_sha256": "2636f20a31796a80a4b54993bf404136c871b491b8515216088aa5d2ac121600",
+  "semitones": 12,
+  "source_support_unchanged": true
+}
