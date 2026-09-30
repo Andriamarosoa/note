@@ -1,10 +1,21 @@
 import unittest
+import hashlib
+import tempfile
+from pathlib import Path
 import numpy as np
-from scripts.audit_v273_coherent_real import auc, measure, event_context
+from scripts.audit_v273_coherent_real import auc, measure, event_context, npy_hash
 from scripts.probe_v273_coherent_decay import evidence, make_wave
 
 
 class RealCoherentTest(unittest.TestCase):
+    def test_bundle_digest_is_npy_file_digest(self):
+        with tempfile.TemporaryDirectory() as directory:
+            for values in (np.arange(7, dtype=np.int64), np.array(['track-a', 'track-b'], dtype='<U96')):
+                path = Path(directory)/'field.npy'
+                a = np.lib.format.open_memmap(path, mode='w+', dtype=values.dtype, shape=values.shape)
+                a[:] = values; a.flush()
+                self.assertEqual(npy_hash(values), hashlib.sha256(path.read_bytes()).hexdigest())
+
     def test_auc_ties_and_composition_weights(self):
         score = np.array([0., 1., 1., 2., 3.])
         label = np.array([0, 1, 0, 1, 0], bool)

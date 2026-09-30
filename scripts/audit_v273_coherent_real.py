@@ -6,6 +6,8 @@ train a network, change a count, or read outer-fold audio.
 import argparse
 from concurrent.futures import ProcessPoolExecutor, as_completed
 import csv
+import hashlib
+import io
 import json
 import os
 from pathlib import Path
@@ -23,11 +25,18 @@ from scripts.train_v100_spectral_string_slots import (
     decode_pcm16_mono_wav)
 from scripts.v273_decay_native_inputs import native_decay_features
 from scripts.v273_native_protocol import load_config
-from scripts.v273_window_experiment import array_hash, partitions, require
+from scripts.v273_window_experiment import partitions, require
 
 METHODS = ['legacy_log_power', 'spectral_flux', 'zero_wave', *CONFIGS]
 PROTOCOL = Path('analysis/v273-coherent-real-protocol.md')
 SOURCE = '8f77db192b6274587965de54cac9bf1a1a84ac25'
+
+
+def npy_hash(array):
+    # Bundle field digests include the .npy header; they are not array_hash.
+    buffer = io.BytesIO()
+    np.save(buffer, array, allow_pickle=False)
+    return hashlib.sha256(buffer.getvalue()).hexdigest()
 
 
 def measure(wave):
@@ -238,7 +247,7 @@ def run(args):
         members = z['member']; starts = z['start']
     geometry_report = json.loads((args.geometry/'report.json').read_text())
     for key, array in (('members', members), ('cluster_start_samples', starts)):
-        require(array_hash(array) == geometry_report['bundle_fields'][key]['sha256'], 'row identity changed')
+        require(npy_hash(array) == geometry_report['bundle_fields'][key]['sha256'], 'row identity changed')
     ids = partitions(members, cfg)['inner_val']
     require(len(ids) == 15952, 'wrong internal validation row count')
     saved = []; sources = {}
