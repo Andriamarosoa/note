@@ -1,0 +1,766 @@
+{
+  "baseline_rows_sha256": "42110bc6e5a04fc7f5d253876bb5c543cd96a23d0e8bd9a86617b8fa7096738e",
+  "by_true_k": {
+    "0": {
+      "median_long_residual_to_observed_bandpower": 0.06637659448912539,
+      "median_short_residual_to_observed_bandpower": 0.06036782542696709,
+      "rows": 10763
+    },
+    "1": {
+      "median_long_residual_to_observed_bandpower": 0.3130090164654067,
+      "median_short_residual_to_observed_bandpower": 0.26831925689773856,
+      "rows": 3078
+    },
+    "2": {
+      "median_long_residual_to_observed_bandpower": 0.3994978893407592,
+      "median_short_residual_to_observed_bandpower": 0.3817350554094956,
+      "rows": 993
+    },
+    "3": {
+      "median_long_residual_to_observed_bandpower": 0.4831624073484101,
+      "median_short_residual_to_observed_bandpower": 0.4446574710385048,
+      "rows": 594
+    },
+    "4": {
+      "median_long_residual_to_observed_bandpower": 0.5593081571208347,
+      "median_short_residual_to_observed_bandpower": 0.512953101284909,
+      "rows": 374
+    },
+    "5": {
+      "median_long_residual_to_observed_bandpower": 0.5498180555502762,
+      "median_short_residual_to_observed_bandpower": 0.5185000832155916,
+      "rows": 115
+    },
+    "6": {
+      "median_long_residual_to_observed_bandpower": 0.5828096470160636,
+      "median_short_residual_to_observed_bandpower": 0.5485003983846128,
+      "rows": 35
+    }
+  },
+  "cached_bytes": 230332296,
+  "config_sha256": "7c27989eb3fe330fdff203e388e76ae4c64d8b8e4838cab4d7c4622b4104451a",
+  "coverage": {
+    "assigned_onsets": 9127,
+    "covered_onsets": 9127,
+    "extra_decision_samples": 0,
+    "map_audio_padded": 114,
+    "newly_covered_onsets": 2591,
+    "owned_after": 177,
+    "owned_before": 2414,
+    "owned_future": 6536,
+    "owned_mask_onsets": 9127,
+    "predictor_initialization_padded": 169
+  },
+  "dataset_md5": {
+    "annotation.zip": "b39b78e63d3446f2e54ddb7a54df9b10",
+    "audio_mono-pickup_mix.zip": "aecce79f425a44e2055e46f680e10f6a"
+  },
+  "descriptive_statistics": {
+    "decision_delay_ms": {
+      "failed": 0,
+      "maximum": 80.11337868480726,
+      "median": 72.58503401360544,
+      "q10": 63.21995464852608,
+      "q90": 79.04535147392289,
+      "rows": 15952
+    },
+    "float16_max_abs_error": {
+      "failed": 0,
+      "maximum": 0.00390625,
+      "median": 0.0038709640502929688,
+      "q10": 0.0019512176513671875,
+      "q90": 0.0039043426513671875,
+      "rows": 15952
+    },
+    "float16_mean_abs_error": {
+      "failed": 0,
+      "maximum": 0.0010468828259035945,
+      "median": 0.0004043981316499412,
+      "q10": 0.00023161517892731354,
+      "q90": 0.0006202077143825591,
+      "rows": 15952
+    },
+    "map_max": {
+      "failed": 0,
+      "maximum": 12.382143020629883,
+      "median": 8.684309482574463,
+      "q10": 6.815585374832153,
+      "q90": 10.035244369506836,
+      "rows": 15952
+    },
+    "map_min": {
+      "failed": 0,
+      "maximum": 0.018285438418388367,
+      "median": 1.2535555811155064e-06,
+      "q10": 1.3916254886225944e-07,
+      "q90": 2.7533208776731037e-05,
+      "rows": 15952
+    },
+    "residual_frequency_variance": {
+      "failed": 0,
+      "maximum": 7.65304708480835,
+      "median": 1.77452152967453,
+      "q10": 0.41360892355442047,
+      "q90": 3.774484634399414,
+      "rows": 15952
+    },
+    "residual_spatial_std": {
+      "failed": 0,
+      "maximum": 3.286271333694458,
+      "median": 1.6903061866760254,
+      "q10": 0.8044486999511719,
+      "q90": 2.3705486059188843,
+      "rows": 15952
+    },
+    "residual_time_variance": {
+      "failed": 0,
+      "maximum": 7.956408500671387,
+      "median": 0.8490757346153259,
+      "q10": 0.22404648512601852,
+      "q90": 2.1855889558792114,
+      "rows": 15952
+    },
+    "residual_to_observed_long_bandpower": {
+      "failed": 0,
+      "maximum": 8.721907438763402,
+      "median": 0.14406767497244755,
+      "q10": 0.010881173947244197,
+      "q90": 0.6137102148047234,
+      "rows": 15952
+    },
+    "residual_to_observed_short_bandpower": {
+      "failed": 0,
+      "maximum": 6.052122473109225,
+      "median": 0.13041231508139492,
+      "q10": 0.01113542936195566,
+      "q90": 0.5853444145893009,
+      "rows": 15952
+    },
+    "rows": 15952
+  },
+  "elapsed_seconds": 131.54522526300025,
+  "estimator_sha256": "968e43634606883b3fcf0131834ed792c53ad19f53a04c2c4ff7c6446a82d5bb",
+  "exact_k_improvement_measured": false,
+  "feature_builder_sha256": "2e1cc98f1bc47d370d10a02d3e945a1504b05c54234ecd28538a0c986f1f6673",
+  "feature_failures": 0,
+  "full_report_sha256": "9d6d875a9188cd18ef4bd15004ed24f8cdb3a95e0a1ee14825725a0cbda4bc2b",
+  "geometry_inventory_sha256": "394a42719eaedaa0e03e293223020ddac12dc9ebc271007ec85e463f061c1359",
+  "geometry_report_sha256": "da7343b8d0f4350a1787faefbb5816555f3c5ba6bb1421673a261c5770771e3c",
+  "map_array_bytes": 253190144,
+  "max_abs_reflection": 0.9977986513231051,
+  "max_pole_radius": 0.9999984948449163,
+  "nonfinite_maps": 0,
+  "numpy": "2.3.5",
+  "outer_rows_evaluated": 0,
+  "output_corrector": false,
+  "ownership_array_bytes": 12123520,
+  "parameters": {
+    "block": 128,
+    "channels": [
+      "observed_256",
+      "residual_256",
+      "observed_2048",
+      "residual_2048"
+    ],
+    "clip_applied": false,
+    "fft_size": 2048,
+    "forecast_kind": "past-only Burg; block length 128; fixed absolute sample grid",
+    "frame_ends": [
+      -1052,
+      -924,
+      -796,
+      -668,
+      -540,
+      -412,
+      -284,
+      -156,
+      -28,
+      100,
+      228,
+      356,
+      484,
+      612,
+      740,
+      868,
+      996,
+      1124,
+      1252,
+      1380,
+      1508,
+      1636,
+      1764,
+      1892,
+      2020,
+      2148,
+      2276,
+      2404,
+      2532,
+      2660,
+      2788
+    ],
+    "frequencies_hz": [
+      55.0,
+      59.25275386448887,
+      63.83434255501277,
+      68.77019250024797,
+      74.08769617146751,
+      79.81636410245451,
+      85.98798866402117,
+      92.636820502031,
+      99.79975861810324,
+      107.5165551478886,
+      115.83003597337441,
+      124.7863383935499,
+      134.43516717243324,
+      144.83007038544727,
+      156.02873659500918,
+      168.09331500456827,
+      181.09076036784867,
+      195.0932045674413,
+      210.17835692489044,
+      226.42993546387675,
+      243.93813151987638,
+      262.8001102747372,
+      283.1205499939916,
+      305.01222295950356,
+      328.5966213214557,
+      354.0046313429616,
+      381.37725977915676,
+      410.86641642195644,
+      442.63575715335946,
+      476.8615921859941,
+      513.7338645313637,
+      553.4572041259919,
+      596.2520634655558,
+      642.3559410494213,
+      692.0246994253359,
+      745.5339851490247,
+      803.1807585390302,
+      865.2849417164839,
+      932.1911940759167,
+      1004.2708250404411,
+      1081.9238547165176,
+      1165.581233884306,
+      1255.7072356438912,
+      1352.8020319902762,
+      1457.4044696163678,
+      1570.095060348812,
+      1691.49920281269,
+      1822.2906532043537,
+      1963.1952644341147,
+      2114.995014389902,
+      2278.532345677565,
+      2454.714840921986,
+      2644.5202595756064,
+      2849.0019641870504,
+      3069.294766244008,
+      3306.6212240330956,
+      3562.29842746778,
+      3837.7453075382564,
+      4134.490510948393,
+      4454.180883641631,
+      4798.5906102968975,
+      5169.631060515809,
+      5569.361396344722,
+      6000.0
+    ],
+    "history": 8820,
+    "lag": 64,
+    "map_shape": [
+      31,
+      64,
+      4
+    ],
+    "order": 32,
+    "ownership_samples": 4096,
+    "power_unit": 1e-06,
+    "windows": [
+      256,
+      2048
+    ]
+  },
+  "prefix_checks": [
+    {
+      "chunk_samples": 65537,
+      "global_index": 704,
+      "input_stop_exclusive": 518780,
+      "max_abs_difference": 0.0,
+      "passed": true,
+      "prefix_samples": 518780
+    },
+    {
+      "chunk_samples": 65537,
+      "global_index": 7567,
+      "input_stop_exclusive": 564044,
+      "max_abs_difference": 0.0,
+      "passed": true,
+      "prefix_samples": 564044
+    },
+    {
+      "chunk_samples": 65537,
+      "global_index": 9885,
+      "input_stop_exclusive": 614857,
+      "max_abs_difference": 0.0,
+      "passed": true,
+      "prefix_samples": 614857
+    },
+    {
+      "chunk_samples": 65537,
+      "global_index": 12532,
+      "input_stop_exclusive": 573250,
+      "max_abs_difference": 0.0,
+      "passed": true,
+      "prefix_samples": 573250
+    },
+    {
+      "chunk_samples": 65537,
+      "global_index": 13271,
+      "input_stop_exclusive": 972594,
+      "max_abs_difference": 0.0,
+      "passed": true,
+      "prefix_samples": 972594
+    }
+  ],
+  "protocol_sha256": "01498d557f9e5f98cc21e65e0ad41575e0bb222cc86c63bea2a5166734b622c1",
+  "publication": {
+    "maps_included": false,
+    "regenerable_from_checksum_pinned_sources": true,
+    "rows_csv_included": false
+  },
+  "python": "3.12.14",
+  "representation_gate": {
+    "implies_exact_k_gain": false,
+    "passed": true,
+    "prepares_native_ablation_only": true
+  },
+  "rows": 15952,
+  "rows_sha256": "4207bd88fe464787514475691ba5d6e2ddbadd546e9f263a6d0ffec14360d84d",
+  "scope": "all 15952 inner-validation rows; composition fold 0 of outer fold 3",
+  "script_sha256": "1b16ffa7163f88fe1df888dd14a6c2a67d0185444ddb09ff59f693d91857ecae",
+  "source_archives": {
+    "local_only": {
+      "prediction_sha256": "8a1fd85f07293a7c3e68238803e3048732ef4ad9b7d4eaa922da921c1ba543eb",
+      "report_sha256": "2b83747dee52f0fc7474ed317db4b224147d3da76481e2b6ae8d9f21946c57c3"
+    },
+    "with_neighbors": {
+      "prediction_sha256": "609f4e9e7042c170a227bad6b0184d1148ddda5bf09578642ac5bb8274147274",
+      "report_sha256": "3474998417d30707cc22a83090d2119445bc1cdff2e9a2dcfccee3c03f2e7474"
+    }
+  },
+  "status": "completed",
+  "stream_blocks": 496350,
+  "track_cache_manifest": [
+    {
+      "map_file": "maps/track-000.npz",
+      "map_sha256": "3b750422ffee58e9db4e7cbb46b15e8b68ca27f32dfae85517dfa49788ca289a",
+      "member": "00_BN2-166-Ab_comp.jams",
+      "residual_sha256": "948cefb1f04569607eb23ac38552c0272887409e06ea345e5793dd92d4e6bb12",
+      "rows": 257,
+      "timing_sha256": "0900c41adee5bfa5bf300dc8ba28f027ffa09c62038cef4ece72dec481d3430a"
+    },
+    {
+      "map_file": "maps/track-019.npz",
+      "map_sha256": "293f687fc923553086ad3e8c0e9871073559cf9ad6ad43ac780fda53ac0f2854",
+      "member": "00_BN2-166-Ab_solo.jams",
+      "residual_sha256": "f181559cd6cd994e7964f216c5ecb6fbec4a391b70162cb22d553d2c6092164c",
+      "rows": 149,
+      "timing_sha256": "3719a7235791e1e17699085699332ed9d33f46a057517594f942b9fb87f50964"
+    },
+    {
+      "map_file": "maps/track-002.npz",
+      "map_sha256": "b34002f807df1243fc15dc7b31235a6c6a8fcde4c96a0496f4a6fff7a2cf935b",
+      "member": "00_Jazz3-150-C_comp.jams",
+      "residual_sha256": "bb4759238a40e65cf34a64fb08cce903317e98f425b4238aa4b7151edd3c35b8",
+      "rows": 372,
+      "timing_sha256": "0fb73369e5e41af104bada25523d46e5a009525eb11b3c97e0ee2085147d2730"
+    },
+    {
+      "map_file": "maps/track-021.npz",
+      "map_sha256": "fc0f7e1610e6f2d48f02026bae4a3a4b02e120a2db8a249874ffd267de36b1c4",
+      "member": "00_Jazz3-150-C_solo.jams",
+      "residual_sha256": "4481b7a8e8137d20c057fac9e5f8aff53dfd295be198ff23aa277fc301821aa1",
+      "rows": 281,
+      "timing_sha256": "00657901eedb4fd83779ed8a9c036b08f83d63c4cce9a297b8b465fcf4695c07"
+    },
+    {
+      "map_file": "maps/track-116.npz",
+      "map_sha256": "04794a6b5ea041679723abf3b1fa8ee29b5130535927465dece5f1c65287eb94",
+      "member": "00_Rock2-142-D_comp.jams",
+      "residual_sha256": "68cf5a3dbe181f4260ff44aabe78b7f4f4760ea7876279b945426a2e1b3bc5e6",
+      "rows": 502,
+      "timing_sha256": "a062d4701b0681d2510f79a91ed515ede121db29b37b8d31c610201865965914"
+    },
+    {
+      "map_file": "maps/track-135.npz",
+      "map_sha256": "fb20c71972af4f5f600a53c72059f61d4282258c4973b96f41f2cb00f6c977a1",
+      "member": "00_Rock2-142-D_solo.jams",
+      "residual_sha256": "842ef73703cfb109152e9312b6ab627a4d2cbedc457ceab8e6914ca9b81ff8c4",
+      "rows": 253,
+      "timing_sha256": "8f4ef959af31b6d5215bdc404d74e76b913d89addc2eea5bdd93f59a552e79e9"
+    },
+    {
+      "map_file": "maps/track-003.npz",
+      "map_sha256": "6cb083eb4721ace6beab646b0a2afab1621aa8ada9286d461aab4b2528a37418",
+      "member": "00_Rock3-148-C_comp.jams",
+      "residual_sha256": "24bd2e6ff36df352a5a1357af57f75321803730a7c2e7e6918008c47bba33399",
+      "rows": 515,
+      "timing_sha256": "e4e1f4a1625eeb831a02e5ba241cc771bd90127c2bc71d8e49a76f177894e2a8"
+    },
+    {
+      "map_file": "maps/track-022.npz",
+      "map_sha256": "ce4e9d7bad5f7623ddfaaaaf0464c58dc3719410f09914ec8c806ca0de15f3b4",
+      "member": "00_Rock3-148-C_solo.jams",
+      "residual_sha256": "5b266a4f2688042ae1998b8b694ae7f0b9e68dc66fbbf68681f5da9dd9c82832",
+      "rows": 181,
+      "timing_sha256": "4770da026d870c904fbeebc88d1251c1f54868aea9fe329cc70fe674c38d6392"
+    },
+    {
+      "map_file": "maps/track-041.npz",
+      "map_sha256": "8a079f356dde47b6833187eed01b0b8e994155e5885b0d3904fca72917f6a006",
+      "member": "00_SS1-68-E_comp.jams",
+      "residual_sha256": "c58df2bda26d9968dd63d6a75e13a353ac844eb21ed46a04b92971a10ca09a8b",
+      "rows": 601,
+      "timing_sha256": "5613c74868cc7e3e09a6a63b17a17fb2cc0c96afeca39156e94b6292132810e9"
+    },
+    {
+      "map_file": "maps/track-060.npz",
+      "map_sha256": "e2e4865f42913f5a999d46a28faf11a0fa35c58fd17e625120928b0d65f3ffe8",
+      "member": "00_SS1-68-E_solo.jams",
+      "residual_sha256": "f414051b771899620723a59a9c29f35a9f43c4ab54375aca48730790e22498a9",
+      "rows": 527,
+      "timing_sha256": "12f47e94f5aa412c1cc2c6367bd05eedb97cf6b91cd3cf83a0e2cded8cb5db2e"
+    },
+    {
+      "map_file": "maps/track-155.npz",
+      "map_sha256": "40bb8d482b064435670773af89e39d50383e74677a278ae9f25ec514c6162e89",
+      "member": "01_BN2-166-Ab_comp.jams",
+      "residual_sha256": "d590ce6881d4faa7c6c5aa9d6bd5f0f63bfda511923b94c7fd54e8266cb79a34",
+      "rows": 318,
+      "timing_sha256": "96142de2d65e05b72de78906ccfaec0f701f8bac66a53b65842da926d7929528"
+    },
+    {
+      "map_file": "maps/track-174.npz",
+      "map_sha256": "7b0ec480a6ce79ca57f5ff5437a57cca1f7971edb914d5bccdee3182afb692b7",
+      "member": "01_BN2-166-Ab_solo.jams",
+      "residual_sha256": "75d0301beeb017d1ba97859fe6cab16329bc6e0813381ea70d600f82a3f21ad7",
+      "rows": 169,
+      "timing_sha256": "a759b66889148339ea2a8ebc3af3034e6e86743534ab05c041f875429a721fc7"
+    },
+    {
+      "map_file": "maps/track-157.npz",
+      "map_sha256": "ab365d4c569e72b41b0c03d9bf26e9c8077d35b1629d4bb1d03cb76c0c98c835",
+      "member": "01_Jazz3-150-C_comp.jams",
+      "residual_sha256": "b4bd70910b5ab367b6929284c9e295b816af70d65173b862020dd5c68e776b5e",
+      "rows": 193,
+      "timing_sha256": "39b86c50ce4aac3aa8093edac5f42d50973366cdab7dd47acd572f4a24d7dca1"
+    },
+    {
+      "map_file": "maps/track-176.npz",
+      "map_sha256": "cde47538589168813b2096575c5643027f3ce9b35ef04711e4b869bb9f3b1f62",
+      "member": "01_Jazz3-150-C_solo.jams",
+      "residual_sha256": "496a1d5c3befd378ae55d274ac3dffeb949efec0de538e26ee317a80ba850a3b",
+      "rows": 161,
+      "timing_sha256": "71a19af16e659eb8a6400dcada2f16fcb42ccfbce849d02c1eb42a79c94622dc"
+    },
+    {
+      "map_file": "maps/track-082.npz",
+      "map_sha256": "6b813481326c581fbf6ee7a74491331b1f0ddb527401486452af4227a6062c79",
+      "member": "01_Rock2-142-D_comp.jams",
+      "residual_sha256": "d8380fc10f70dd17353fc809513325e61be8b155d88510f36378ed45c894e1b5",
+      "rows": 517,
+      "timing_sha256": "e9cfe73f0d299f55cbcfc6f48b9cb2ff9aa27829b10fe14ddfe4f80c55f6ace6"
+    },
+    {
+      "map_file": "maps/track-101.npz",
+      "map_sha256": "de99592c9a2a77da78ac8ad44370939d423b78ca1a16b222511a63a72eaa2df3",
+      "member": "01_Rock2-142-D_solo.jams",
+      "residual_sha256": "5600d331ade2273512b26ec54b435fb688dc27e3e45b77dba5ef7c5ac52a15fb",
+      "rows": 286,
+      "timing_sha256": "665e43fefee35aaeae8825b2322d7239010c343351fc5cc1b6258851a3e27650"
+    },
+    {
+      "map_file": "maps/track-158.npz",
+      "map_sha256": "907f41a230d84eb98b9ade2ef8c4f0d81324890d84d66fb4318946f2f71671e8",
+      "member": "01_Rock3-148-C_comp.jams",
+      "residual_sha256": "9e0fce4df299ba48607398278450e0c10b8eeb294a63d6b7e8ce25540c26ac6f",
+      "rows": 393,
+      "timing_sha256": "ee272b7692001cc16dbf021d6ee46169ddfed9d6adbe8940af532920c6efdf69"
+    },
+    {
+      "map_file": "maps/track-177.npz",
+      "map_sha256": "ea2015b47b54890735da2b9758b7b5cc48be047a86d42ab6c0e462be5f1ba32e",
+      "member": "01_Rock3-148-C_solo.jams",
+      "residual_sha256": "920625b8e5cdd7e0ca60def429f5fb9f3bc29cec75f22c9c6d4a7aa1b6bfb3b2",
+      "rows": 205,
+      "timing_sha256": "1d43b298c31e2a018a815ced3c98b85be3b7d88fb545b99168e334970cc0547e"
+    },
+    {
+      "map_file": "maps/track-007.npz",
+      "map_sha256": "40ce8db1970ebfea78dd34672c8385d56aa333f8481769fed99f03ef497631a5",
+      "member": "01_SS1-68-E_comp.jams",
+      "residual_sha256": "808a45527b339d92a607d5df580bb1f6d993b3ddb060597e19deb958ccfbb307",
+      "rows": 756,
+      "timing_sha256": "6aba4ae10c335997cd6c114e0e22093631f89e22705ab270a2f85fec6828d0b6"
+    },
+    {
+      "map_file": "maps/track-026.npz",
+      "map_sha256": "ac9fe485ed1d1500c9583c5b7fee0b735833652fcadacd7dc47b6c4721d94019",
+      "member": "01_SS1-68-E_solo.jams",
+      "residual_sha256": "477170f7de16ae97ab739070d8ebeb95420a1505fc8d6ea0018d92a83ae11c54",
+      "rows": 235,
+      "timing_sha256": "9111db09487bffa026f52dff538dcc3fddb492f3fe255fc57a52fc8bb868427f"
+    },
+    {
+      "map_file": "maps/track-121.npz",
+      "map_sha256": "cca4020b54773b997420a219477d1af1ff1e90b92afe70761caeff8a91c7d8e2",
+      "member": "02_BN2-166-Ab_comp.jams",
+      "residual_sha256": "7df9700bbcbe787ec5dc78abd8108093964e22baf34d5689b276b115ebceb30c",
+      "rows": 276,
+      "timing_sha256": "43028afaa4a47c93b9517378d981d87d2a915df84eca66f8e199ee79a7cd96fe"
+    },
+    {
+      "map_file": "maps/track-140.npz",
+      "map_sha256": "e0fb3d1dbb6c0fd6aa25281cd99cfe596ef4b704e1b5d481c97bb9368153d18f",
+      "member": "02_BN2-166-Ab_solo.jams",
+      "residual_sha256": "49137d4fd3a9b0d46b474053ea6fd719ef425472f9a4e2141072c5bce92f2a0e",
+      "rows": 84,
+      "timing_sha256": "3687718ab16b78d7535af95c38c54f6dfa8994d6d6f21a803a3ea50e4c304b2e"
+    },
+    {
+      "map_file": "maps/track-123.npz",
+      "map_sha256": "43ba4d868b3e724eff5f32b10e42c1269f1b81fef8e1425d05443da424705a0d",
+      "member": "02_Jazz3-150-C_comp.jams",
+      "residual_sha256": "b8b326c5224b43a28800f47ed8520dff0b5e0dac65b696c9fb414cfa69728311",
+      "rows": 472,
+      "timing_sha256": "430eaf2b91097e480e8552404cc04690179567f18c3e42bffa6d2197232e5300"
+    },
+    {
+      "map_file": "maps/track-142.npz",
+      "map_sha256": "96761b33412fce97640526f4b857fe2dcdca1d672acf140711e9b37601492bac",
+      "member": "02_Jazz3-150-C_solo.jams",
+      "residual_sha256": "23557f0317868a0bf9398bf7563485f0a979fe26ad7c15e8815013f42ea03afe",
+      "rows": 253,
+      "timing_sha256": "d1b6ffa3007ac0ae25a12da508f61055ccdcfc6edaae101695f7d1c5984c6d39"
+    },
+    {
+      "map_file": "maps/track-048.npz",
+      "map_sha256": "6b9d3756c1655b52612376df1bb38bb6d2375475a299c81edfca51dd93f28409",
+      "member": "02_Rock2-142-D_comp.jams",
+      "residual_sha256": "59813541f1a61c2cfdcfc19234073475be89df8466a76a97be2b545bc158276b",
+      "rows": 427,
+      "timing_sha256": "251e1a66ece2bfa5e0872055ae2a8f59629514e6bbc3c76770b4159f7486a7d6"
+    },
+    {
+      "map_file": "maps/track-067.npz",
+      "map_sha256": "ad9dd1800ba66b042eb4fa73240f7debd1d2aa0ed80131aa1ac60c1257a2a51c",
+      "member": "02_Rock2-142-D_solo.jams",
+      "residual_sha256": "d855c6af766867d3bb2cde0fba98fee50e100263c4a3e58bce3c2be5d2444df3",
+      "rows": 119,
+      "timing_sha256": "8dcd443c0ea569daa96fb04b63b463d6009c8898bfed9f6633a3748012af59db"
+    },
+    {
+      "map_file": "maps/track-124.npz",
+      "map_sha256": "652144924a5f34ffdb709201a4c73db04dc22ff8cde13926a13c3d273f655a23",
+      "member": "02_Rock3-148-C_comp.jams",
+      "residual_sha256": "133ef775aae006f99f142d60a0b8494fa97852530ebdaa4106cda27f2ed8af9e",
+      "rows": 503,
+      "timing_sha256": "3cfd9c4c865b795d0fd44ecf1ad0546cf19712ff990edd4c63a1b78d7b0703c5"
+    },
+    {
+      "map_file": "maps/track-143.npz",
+      "map_sha256": "66c8786864ae8edfad5c8909a97e9c8668cb42e516d966b1841abe96d32e89f9",
+      "member": "02_Rock3-148-C_solo.jams",
+      "residual_sha256": "ba4c3da4383437b175d1ea3cf0fc3a0f07525171d3af22d6d7574e0f8f2e67f8",
+      "rows": 150,
+      "timing_sha256": "be8e0cb3eff5f4a736a7ba9dee135ee2c0e46513a7165b0d3402117d7575044c"
+    },
+    {
+      "map_file": "maps/track-162.npz",
+      "map_sha256": "d7e05cf8c715a9c576e8543a8522d1a0d9675013705fd5b26aa369b0a833f31e",
+      "member": "02_SS1-68-E_comp.jams",
+      "residual_sha256": "0a4dbc288c9e1b95a9ceece1ae65c87b26dbe6d4ef4afdb8e8a0c2c715e59dca",
+      "rows": 688,
+      "timing_sha256": "8b52492264dc430ea3fafd1ff2ed122ae26ba6823f57b1039a776a70f4902ac7"
+    },
+    {
+      "map_file": "maps/track-181.npz",
+      "map_sha256": "ad4d7cb3c26e77ff7b276d35277e005eaf2bec2d48a16d176ae7fde43dc109ac",
+      "member": "02_SS1-68-E_solo.jams",
+      "residual_sha256": "1f3ebdd08605663821c877affd17488df0205473feb13798566a9e38ad2d6813",
+      "rows": 374,
+      "timing_sha256": "17a0154496d127d563762257bc2c3fa22fa0f1194446d3fff027b3baa6ef0232"
+    },
+    {
+      "map_file": "maps/track-087.npz",
+      "map_sha256": "35d6e2daf8d97ca55fe56a3aeeb8bd727e199e5bf71d83038193a45aba2c8c6e",
+      "member": "03_BN2-166-Ab_comp.jams",
+      "residual_sha256": "c5918b0a0fc95d47ccd0fd95acf34f90912ec2589d32f366caa7db0d50ad7f1e",
+      "rows": 254,
+      "timing_sha256": "666a3b37e43f18152ec9b82853a50f1d12a23751c85bee2ff209b99517b86d72"
+    },
+    {
+      "map_file": "maps/track-106.npz",
+      "map_sha256": "1efb1876e0e01857ec01c4cfa7c9f58a97cabf051e3064c2f6d0a8f4348c238e",
+      "member": "03_BN2-166-Ab_solo.jams",
+      "residual_sha256": "e9efdc6051c723e9b0310cc8c3d1b1345c3d3b74413bfcae9c109389627bcf95",
+      "rows": 147,
+      "timing_sha256": "4776f6a0b328d9c4fbf6c6736004477836a1a234e9b209793a2de960d9c5168f"
+    },
+    {
+      "map_file": "maps/track-089.npz",
+      "map_sha256": "aa4648ff76ed4fdf2d7eb31a9e3f9ea741d6167e7147b86ebfd9818861448599",
+      "member": "03_Jazz3-150-C_comp.jams",
+      "residual_sha256": "51b832d55bbc696adbac656244797abd7e64c846357656ea754df284d0fe39c0",
+      "rows": 251,
+      "timing_sha256": "15de78b90c059b209533eddf63ad89e2553da9ed96660d1299658579275ee801"
+    },
+    {
+      "map_file": "maps/track-108.npz",
+      "map_sha256": "0b58529a528701462c6128825b69dc4574b90a10aa8c6b8c290828d3ddd832d1",
+      "member": "03_Jazz3-150-C_solo.jams",
+      "residual_sha256": "52ba3938229a2902494a5f73a60b80d88de9fe41812c5870e8889988f323ce49",
+      "rows": 135,
+      "timing_sha256": "414d643ea2eb0ae2360ed64f2c42ab202f41810b4029a638c10da47653cc0799"
+    },
+    {
+      "map_file": "maps/track-014.npz",
+      "map_sha256": "d8be1e6fdd03991ab148b4e7dcec92962df87318558762cf2ce600e1ba421ac4",
+      "member": "03_Rock2-142-D_comp.jams",
+      "residual_sha256": "0caa9b8b832692516dae02b5996e7ed9ae4fcc34e619841e81dca86072fa46be",
+      "rows": 428,
+      "timing_sha256": "7f4efbbda61a65e86f51769602ec79e97a4670f8b6b5f2ac2b7a1169f7ad2323"
+    },
+    {
+      "map_file": "maps/track-033.npz",
+      "map_sha256": "713fd4836a1b9b04804a6e86a78a4bddeaffb57f5aadf724ad906416ba9724f3",
+      "member": "03_Rock2-142-D_solo.jams",
+      "residual_sha256": "7c8444ded2eebea12f5c5c0d2bc8b442889fc4c1dc7d8e9e25bcd37f27a43857",
+      "rows": 120,
+      "timing_sha256": "c7a51bbac57f7711da63f70c5fab39d261552fd2db0c5b551218d14229d96853"
+    },
+    {
+      "map_file": "maps/track-090.npz",
+      "map_sha256": "49bdd83a8509a2b9d89b9062d2e24f87a3099d795b555683b03f10829f2fb103",
+      "member": "03_Rock3-148-C_comp.jams",
+      "residual_sha256": "0efb5824f258befa9ca01d699352461a7152c11c6edc904b81eb40004471b98f",
+      "rows": 487,
+      "timing_sha256": "c27e824c7654e35e5592d43fbf217075e405675bfc647288a03b7500d1016b89"
+    },
+    {
+      "map_file": "maps/track-109.npz",
+      "map_sha256": "557848555c5453cb3c8e2d2820c13c041bb09f58ecf4519e7087829e42c7a66a",
+      "member": "03_Rock3-148-C_solo.jams",
+      "residual_sha256": "3189a9d95bdb449d6ca7f92d61c0805a04f792c1c09fa58cf13f153db50e002d",
+      "rows": 94,
+      "timing_sha256": "3b5c5e966c8007b5d554a2e7be01f28a11b2f56ddffaa94413f80981cb36363e"
+    },
+    {
+      "map_file": "maps/track-128.npz",
+      "map_sha256": "b360565287227bf4b581bb30d4b145be3345e20de32b524628fe97a4bb8e5a4e",
+      "member": "03_SS1-68-E_comp.jams",
+      "residual_sha256": "6d05a55b0fe235d19161dae5ad3c1acc6f99f44076458f1f3bc340d5512dd8f3",
+      "rows": 730,
+      "timing_sha256": "11d50c9a4e538ab8f9921eb80e97092f5c2b52c0ca4fdbece1229986b6021ae8"
+    },
+    {
+      "map_file": "maps/track-147.npz",
+      "map_sha256": "02d9a3f308eddafb88cd77d0cb9c5846c649168c39e81c8c5de878904d32eaa6",
+      "member": "03_SS1-68-E_solo.jams",
+      "residual_sha256": "c36fd72fa7128ceb844dfbbbaf797b5ee9085b7c2880eeef36d327457ebadafc",
+      "rows": 176,
+      "timing_sha256": "236debff4c95cd3e2cd1ea001ad8f6c7a8b4bbb89b8a91b7333d7b6959b270c0"
+    },
+    {
+      "map_file": "maps/track-053.npz",
+      "map_sha256": "2c937ccbca9f96117e23a7a160ebc274787d5b810d5d75e58220c77e27f68f12",
+      "member": "04_BN2-166-Ab_comp.jams",
+      "residual_sha256": "7b24d0b39342a210448e73c6c43786742bfc152af58ecf9040925f9f8995b3a6",
+      "rows": 286,
+      "timing_sha256": "ceb9333b5ceca6f033f1e7d26bb7e41bbb368a80f05ed76326ba15db803565d6"
+    },
+    {
+      "map_file": "maps/track-072.npz",
+      "map_sha256": "3191be9553b3875c46c8a176895c1d31b4b1bfbccff7aeaa579aa76fcb0cfc27",
+      "member": "04_BN2-166-Ab_solo.jams",
+      "residual_sha256": "03c8e2019c002f797a1cfd7d82ddc60fbd2c6ad34986291dfbd502eed2731864",
+      "rows": 116,
+      "timing_sha256": "ac040ca446b99e1979406c34066d50214441f7067c3cd4e58fb9b3bd7b1f1eb6"
+    },
+    {
+      "map_file": "maps/track-055.npz",
+      "map_sha256": "0c1c6744e1280025598d37361757398d668ca1e5660ee81d5aa1111fa0d0eccf",
+      "member": "04_Jazz3-150-C_comp.jams",
+      "residual_sha256": "84c70eded012b28d1f9d01b3e3e60b7ea5657e473d3a83526bbcb639a3a3f453",
+      "rows": 331,
+      "timing_sha256": "849b7dcabdc52eb43b17ac56723409722454907d28ac9c09592b247b598df4f8"
+    },
+    {
+      "map_file": "maps/track-074.npz",
+      "map_sha256": "dfd96ca0019b6db6da2eb74f665b6d5d00e5a5c9c72d44723b51070b6ca56abf",
+      "member": "04_Jazz3-150-C_solo.jams",
+      "residual_sha256": "f597f64a06210e822730ada5609e3aff950f002ce0fedc8688088785117c1272",
+      "rows": 156,
+      "timing_sha256": "7a9c770940b5fc9d5c11e0e2a877a07907e08335396fef424ef43563a69e39a9"
+    },
+    {
+      "map_file": "maps/track-169.npz",
+      "map_sha256": "d846a48252589c80d3ffcb764b27dd565ede1aa3c00959d74438252bbacfb18a",
+      "member": "04_Rock2-142-D_comp.jams",
+      "residual_sha256": "d738a97f23e67cf8ad215c190d65a1cb23fe833927b8f415823c5a48550a4051",
+      "rows": 461,
+      "timing_sha256": "5d839fcdb3b3d35cb273b6972116941e40a75091a12b262a1e7af79d21273f9c"
+    },
+    {
+      "map_file": "maps/track-188.npz",
+      "map_sha256": "7e2899b6bee2e4fd532fa8a95647f59b5af7e7f7e260d0b9afbfa4e79441059c",
+      "member": "04_Rock2-142-D_solo.jams",
+      "residual_sha256": "10fa0efdc5abc69b8627ecf2f719f367148840693d3bd71b07bb62f84252e1f2",
+      "rows": 97,
+      "timing_sha256": "24b6cf415c11f700f4428afdabb701f5cced378cce3c20ead73b92cb707ec9d6"
+    },
+    {
+      "map_file": "maps/track-056.npz",
+      "map_sha256": "b52f2bfdf1562b5eb8e0a11f31e61e5d62564686333073b145447dbf4f9c995f",
+      "member": "04_Rock3-148-C_comp.jams",
+      "residual_sha256": "057113b74da120f5756254ae8a0234e8232619c90c098f70e5e8d4caf7f2ee63",
+      "rows": 433,
+      "timing_sha256": "45277681b08935fe181d66f028cd6b90d7afbfe21bf8b052f84643f9e1303484"
+    },
+    {
+      "map_file": "maps/track-075.npz",
+      "map_sha256": "48613812057f18d755cb0f20657837e7ed3ecd3c3ea565e6ccdea637e060225d",
+      "member": "04_Rock3-148-C_solo.jams",
+      "residual_sha256": "85693d15b92797d2de27f181f6bd9ff23096e1c2466e2259de469e7d24f43cd0",
+      "rows": 82,
+      "timing_sha256": "cca9b16433994c685bd386765c58bfda46e92d10384ecff1702a913ce1bdbcb0"
+    },
+    {
+      "map_file": "maps/track-094.npz",
+      "map_sha256": "84701071309d56f358ab5476a9396a181c3d2ed059f606567097535f83b6e567",
+      "member": "04_SS1-68-E_comp.jams",
+      "residual_sha256": "fa06dd9699691add27912719a793de3bb06aa831f41baf12d08c22a12c99a6f9",
+      "rows": 805,
+      "timing_sha256": "30cb2c16f4caeebe1c3bab4d2564bfd2dd172db8be86179e338cc995e74103f4"
+    },
+    {
+      "map_file": "maps/track-113.npz",
+      "map_sha256": "cd0706969b01fdf590a95df620992dd8280cf3480f741ab38da0681f1ea1ab2f",
+      "member": "04_SS1-68-E_solo.jams",
+      "residual_sha256": "203229a1de9be17c4cdc0f1ee57d9ff28f6a35429d5df4a5e328fd9dd9cb9630",
+      "rows": 146,
+      "timing_sha256": "142239ac8dbc59f20683d9b57e2c1bfb8637806bdc269aa44a9cf511bcae7d10"
+    }
+  ],
+  "tracks": 50,
+  "training_launched": false,
+  "unit_tests": {
+    "modules": [
+      "test.test_v273_residual_map",
+      "test.test_v273_stable_prediction"
+    ],
+    "passed": 15
+  },
+  "unstable_blocks": 0,
+  "verification_sha256": "4e301deba799e85ef49b2f45778b755892f888468d2be4237866a4e6ac996902",
+  "workers": 6
+}
