@@ -1,0 +1,703 @@
+{
+  "run_id": 36688979041,
+  "source_commit": "e7e925778b85dfbb6c808f194e3394962494bc1b",
+  "validation_labels_recomputed": true,
+  "pitch_definition": "Nearest MIDI semitone to note_midi value; counted only when onset assigned to the evaluated group; assignments within 882 samples with original tie rule.",
+  "validation": {
+    "groups": 15952,
+    "k_histogram": [
+      10763,
+      3078,
+      993,
+      594,
+      374,
+      115,
+      35
+    ],
+    "raw_k_above6": 0,
+    "tracks": 50,
+    "compositions": [
+      "BN2-166-Ab",
+      "Jazz3-150-C",
+      "Rock2-142-D",
+      "Rock3-148-C",
+      "SS1-68-E"
+    ],
+    "players": [
+      "00",
+      "01",
+      "02",
+      "03",
+      "04"
+    ],
+    "arrangements": {
+      "comp": 25,
+      "solo": 25
+    },
+    "assigned_notes": 9127,
+    "midi_range": [
+      40,
+      80
+    ],
+    "note_range": [
+      "E2",
+      "G#5"
+    ],
+    "pitch_histogram": {
+      "40": 293,
+      "41": 150,
+      "42": 27,
+      "43": 179,
+      "44": 66,
+      "45": 261,
+      "46": 94,
+      "47": 364,
+      "48": 327,
+      "49": 67,
+      "50": 349,
+      "51": 92,
+      "52": 579,
+      "53": 287,
+      "54": 148,
+      "55": 551,
+      "56": 354,
+      "57": 464,
+      "58": 233,
+      "59": 678,
+      "60": 482,
+      "61": 231,
+      "62": 428,
+      "63": 162,
+      "64": 730,
+      "65": 288,
+      "66": 117,
+      "67": 353,
+      "68": 123,
+      "69": 233,
+      "70": 53,
+      "71": 98,
+      "72": 129,
+      "73": 26,
+      "74": 37,
+      "75": 19,
+      "76": 31,
+      "77": 18,
+      "78": 4,
+      "80": 2
+    },
+    "octave_histogram": {
+      "2": 1434,
+      "3": 4129,
+      "4": 3298,
+      "5": 266
+    },
+    "duration_seconds_quantiles": [
+      0.029024943310657598,
+      0.11029478458049886,
+      0.2089795918367347,
+      0.5688888888888889,
+      3.9996371882086166
+    ],
+    "unique_note_multisets": 623,
+    "k0_with_overlapping_annotated_notes": 10547,
+    "k0_with_carried_notes": 10458
+  },
+  "training": {
+    "groups": 43357,
+    "k_histogram": [
+      28889,
+      9194,
+      2452,
+      1695,
+      833,
+      240,
+      54
+    ],
+    "raw_k_above6": 0,
+    "tracks": 140,
+    "compositions": [
+      "BN3-154-E",
+      "Funk1-114-Ab",
+      "Funk2-108-Eb",
+      "Funk2-119-G",
+      "Funk3-112-C#",
+      "Jazz1-130-D",
+      "Jazz1-200-B",
+      "Jazz2-110-Bb",
+      "Jazz3-137-Eb",
+      "Rock1-130-A",
+      "Rock1-90-C#",
+      "Rock2-85-F",
+      "SS2-107-Ab",
+      "SS3-98-C"
+    ],
+    "players": [
+      "00",
+      "01",
+      "02",
+      "03",
+      "04"
+    ],
+    "arrangements": {
+      "comp": 70,
+      "solo": 70
+    },
+    "assigned_notes": 24039,
+    "midi_range": [
+      40,
+      80
+    ],
+    "note_range": [
+      "E2",
+      "G#5"
+    ],
+    "pitch_histogram": {
+      "40": 173,
+      "41": 164,
+      "42": 201,
+      "43": 204,
+      "44": 399,
+      "45": 482,
+      "46": 322,
+      "47": 419,
+      "48": 396,
+      "49": 871,
+      "50": 552,
+      "51": 721,
+      "52": 701,
+      "53": 905,
+      "54": 798,
+      "55": 746,
+      "56": 1528,
+      "57": 830,
+      "58": 1230,
+      "59": 1084,
+      "60": 1196,
+      "61": 1599,
+      "62": 818,
+      "63": 1505,
+      "64": 731,
+      "65": 1162,
+      "66": 789,
+      "67": 612,
+      "68": 986,
+      "69": 325,
+      "70": 597,
+      "71": 211,
+      "72": 337,
+      "73": 199,
+      "74": 89,
+      "75": 78,
+      "76": 38,
+      "77": 28,
+      "78": 4,
+      "79": 2,
+      "80": 7
+    },
+    "octave_histogram": {
+      "2": 2364,
+      "3": 10362,
+      "4": 10531,
+      "5": 782
+    },
+    "duration_seconds_quantiles": [
+      0.046439909297052155,
+      0.11609977324263039,
+      0.22058956916099773,
+      0.5746938775510204,
+      3.9996371882086166
+    ],
+    "unique_note_multisets": 1143,
+    "k0_with_overlapping_annotated_notes": 27704,
+    "k0_with_carried_notes": 27304
+  },
+  "annotation_totals": {
+    "fit": 25412,
+    "val": 9542
+  },
+  "unassigned_annotation_events": {
+    "fit": 1373,
+    "val": 415
+  },
+  "composition_overlap": [],
+  "track_overlap": [],
+  "by_composition": {
+    "BN2-166-Ab": {
+      "groups": 2056,
+      "k_histogram": [
+        1287,
+        469,
+        101,
+        98,
+        96,
+        5,
+        0
+      ],
+      "global_exact": {
+        "rows": 2056,
+        "observed_correct": 1695,
+        "residual_correct": 1707,
+        "observed_exact": 0.8244163424124513,
+        "residual_exact": 0.8302529182879378,
+        "corrected": 53,
+        "regressed": 41
+      },
+      "poly": {
+        "rows": 300,
+        "observed_correct": 83,
+        "residual_correct": 81,
+        "observed_exact": 0.27666666666666667,
+        "residual_exact": 0.27,
+        "corrected": 22,
+        "regressed": 24
+      },
+      "k3": {
+        "rows": 98,
+        "observed_correct": 25,
+        "residual_correct": 31,
+        "observed_exact": 0.25510204081632654,
+        "residual_exact": 0.3163265306122449,
+        "corrected": 10,
+        "regressed": 4
+      }
+    },
+    "Jazz3-150-C": {
+      "groups": 2605,
+      "k_histogram": [
+        1797,
+        508,
+        128,
+        114,
+        48,
+        8,
+        2
+      ],
+      "global_exact": {
+        "rows": 2605,
+        "observed_correct": 2272,
+        "residual_correct": 2286,
+        "observed_exact": 0.872168905950096,
+        "residual_exact": 0.8775431861804223,
+        "corrected": 55,
+        "regressed": 41
+      },
+      "poly": {
+        "rows": 300,
+        "observed_correct": 111,
+        "residual_correct": 111,
+        "observed_exact": 0.37,
+        "residual_exact": 0.37,
+        "corrected": 20,
+        "regressed": 20
+      },
+      "k3": {
+        "rows": 114,
+        "observed_correct": 54,
+        "residual_correct": 53,
+        "observed_exact": 0.47368421052631576,
+        "residual_exact": 0.4649122807017544,
+        "corrected": 7,
+        "regressed": 8
+      }
+    },
+    "Rock2-142-D": {
+      "groups": 3210,
+      "k_histogram": [
+        2102,
+        629,
+        217,
+        131,
+        77,
+        40,
+        14
+      ],
+      "global_exact": {
+        "rows": 3210,
+        "observed_correct": 2573,
+        "residual_correct": 2595,
+        "observed_exact": 0.8015576323987539,
+        "residual_exact": 0.8084112149532711,
+        "corrected": 113,
+        "regressed": 91
+      },
+      "poly": {
+        "rows": 479,
+        "observed_correct": 139,
+        "residual_correct": 143,
+        "observed_exact": 0.29018789144050106,
+        "residual_exact": 0.2985386221294363,
+        "corrected": 48,
+        "regressed": 44
+      },
+      "k3": {
+        "rows": 131,
+        "observed_correct": 46,
+        "residual_correct": 41,
+        "observed_exact": 0.3511450381679389,
+        "residual_exact": 0.31297709923664124,
+        "corrected": 15,
+        "regressed": 20
+      }
+    },
+    "Rock3-148-C": {
+      "groups": 3043,
+      "k_histogram": [
+        1807,
+        629,
+        304,
+        143,
+        105,
+        44,
+        11
+      ],
+      "global_exact": {
+        "rows": 3043,
+        "observed_correct": 2259,
+        "residual_correct": 2288,
+        "observed_exact": 0.7423595136378573,
+        "residual_exact": 0.751889582648702,
+        "corrected": 127,
+        "regressed": 98
+      },
+      "poly": {
+        "rows": 607,
+        "observed_correct": 155,
+        "residual_correct": 160,
+        "observed_exact": 0.2553542009884679,
+        "residual_exact": 0.26359143327841844,
+        "corrected": 49,
+        "regressed": 44
+      },
+      "k3": {
+        "rows": 143,
+        "observed_correct": 37,
+        "residual_correct": 29,
+        "observed_exact": 0.25874125874125875,
+        "residual_exact": 0.20279720279720279,
+        "corrected": 6,
+        "regressed": 14
+      }
+    },
+    "SS1-68-E": {
+      "groups": 5038,
+      "k_histogram": [
+        3770,
+        843,
+        243,
+        108,
+        48,
+        18,
+        8
+      ],
+      "global_exact": {
+        "rows": 5038,
+        "observed_correct": 4238,
+        "residual_correct": 4295,
+        "observed_exact": 0.8412068281063915,
+        "residual_exact": 0.852520841603811,
+        "corrected": 173,
+        "regressed": 116
+      },
+      "poly": {
+        "rows": 425,
+        "observed_correct": 134,
+        "residual_correct": 148,
+        "observed_exact": 0.31529411764705884,
+        "residual_exact": 0.34823529411764703,
+        "corrected": 41,
+        "regressed": 27
+      },
+      "k3": {
+        "rows": 108,
+        "observed_correct": 28,
+        "residual_correct": 22,
+        "observed_exact": 0.25925925925925924,
+        "residual_exact": 0.2037037037037037,
+        "corrected": 6,
+        "regressed": 12
+      }
+    }
+  },
+  "by_arrangement": {
+    "comp": {
+      "groups": {
+        "rows": 11256,
+        "observed_correct": 8688,
+        "residual_correct": 8787,
+        "observed_exact": 0.7718550106609808,
+        "residual_exact": 0.7806503198294243,
+        "corrected": 440,
+        "regressed": 341
+      },
+      "poly": {
+        "rows": 1959,
+        "observed_correct": 543,
+        "residual_correct": 558,
+        "observed_exact": 0.2771822358346095,
+        "residual_exact": 0.28483920367534454,
+        "corrected": 168,
+        "regressed": 153
+      }
+    },
+    "solo": {
+      "groups": {
+        "rows": 4696,
+        "observed_correct": 4349,
+        "residual_correct": 4384,
+        "observed_exact": 0.926107325383305,
+        "residual_exact": 0.9335604770017035,
+        "corrected": 81,
+        "regressed": 46
+      },
+      "poly": {
+        "rows": 152,
+        "observed_correct": 79,
+        "residual_correct": 85,
+        "observed_exact": 0.5197368421052632,
+        "residual_exact": 0.5592105263157895,
+        "corrected": 12,
+        "regressed": 6
+      }
+    }
+  },
+  "note_strata": {
+    "any_below_C3": {
+      "positive": {
+        "rows": 1241,
+        "observed_correct": 309,
+        "residual_correct": 354,
+        "observed_exact": 0.24899274778404512,
+        "residual_exact": 0.2852538275584206,
+        "corrected": 135,
+        "regressed": 90
+      },
+      "poly": {
+        "rows": 797,
+        "observed_correct": 187,
+        "residual_correct": 192,
+        "observed_exact": 0.23462986198243413,
+        "residual_exact": 0.24090338770388958,
+        "corrected": 66,
+        "regressed": 61
+      },
+      "k3": {
+        "rows": 187,
+        "observed_correct": 47,
+        "residual_correct": 32,
+        "observed_exact": 0.25133689839572193,
+        "residual_exact": 0.1711229946524064,
+        "corrected": 7,
+        "regressed": 22
+      }
+    },
+    "any_C5_or_above": {
+      "positive": {
+        "rows": 263,
+        "observed_correct": 208,
+        "residual_correct": 213,
+        "observed_exact": 0.7908745247148289,
+        "residual_exact": 0.8098859315589354,
+        "corrected": 8,
+        "regressed": 3
+      },
+      "poly": {
+        "rows": 74,
+        "observed_correct": 31,
+        "residual_correct": 35,
+        "observed_exact": 0.4189189189189189,
+        "residual_exact": 0.47297297297297297,
+        "corrected": 4,
+        "regressed": 0
+      },
+      "k3": {
+        "rows": 11,
+        "observed_correct": 5,
+        "residual_correct": 6,
+        "observed_exact": 0.45454545454545453,
+        "residual_exact": 0.5454545454545454,
+        "corrected": 1,
+        "regressed": 0
+      }
+    },
+    "any_unison": {
+      "positive": {
+        "rows": 32,
+        "observed_correct": 5,
+        "residual_correct": 2,
+        "observed_exact": 0.15625,
+        "residual_exact": 0.0625,
+        "corrected": 0,
+        "regressed": 3
+      },
+      "poly": {
+        "rows": 32,
+        "observed_correct": 5,
+        "residual_correct": 2,
+        "observed_exact": 0.15625,
+        "residual_exact": 0.0625,
+        "corrected": 0,
+        "regressed": 3
+      },
+      "k3": {
+        "rows": 8,
+        "observed_correct": 1,
+        "residual_correct": 0,
+        "observed_exact": 0.125,
+        "residual_exact": 0.0,
+        "corrected": 0,
+        "regressed": 1
+      }
+    },
+    "any_octave_pair": {
+      "positive": {
+        "rows": 663,
+        "observed_correct": 114,
+        "residual_correct": 103,
+        "observed_exact": 0.17194570135746606,
+        "residual_exact": 0.15535444947209653,
+        "corrected": 34,
+        "regressed": 45
+      },
+      "poly": {
+        "rows": 663,
+        "observed_correct": 114,
+        "residual_correct": 103,
+        "observed_exact": 0.17194570135746606,
+        "residual_exact": 0.15535444947209653,
+        "corrected": 34,
+        "regressed": 45
+      },
+      "k3": {
+        "rows": 171,
+        "observed_correct": 44,
+        "residual_correct": 33,
+        "observed_exact": 0.2573099415204678,
+        "residual_exact": 0.19298245614035087,
+        "corrected": 7,
+        "regressed": 18
+      }
+    },
+    "any_1_or_2_semitone_pair": {
+      "positive": {
+        "rows": 98,
+        "observed_correct": 25,
+        "residual_correct": 25,
+        "observed_exact": 0.25510204081632654,
+        "residual_exact": 0.25510204081632654,
+        "corrected": 7,
+        "regressed": 7
+      },
+      "poly": {
+        "rows": 98,
+        "observed_correct": 25,
+        "residual_correct": 25,
+        "observed_exact": 0.25510204081632654,
+        "residual_exact": 0.25510204081632654,
+        "corrected": 7,
+        "regressed": 7
+      },
+      "k3": {
+        "rows": 34,
+        "observed_correct": 7,
+        "residual_correct": 10,
+        "observed_exact": 0.20588235294117646,
+        "residual_exact": 0.29411764705882354,
+        "corrected": 4,
+        "regressed": 1
+      }
+    },
+    "span_over_octave": {
+      "positive": {
+        "rows": 511,
+        "observed_correct": 86,
+        "residual_correct": 82,
+        "observed_exact": 0.16829745596868884,
+        "residual_exact": 0.16046966731898238,
+        "corrected": 22,
+        "regressed": 26
+      },
+      "poly": {
+        "rows": 511,
+        "observed_correct": 86,
+        "residual_correct": 82,
+        "observed_exact": 0.16829745596868884,
+        "residual_exact": 0.16046966731898238,
+        "corrected": 22,
+        "regressed": 26
+      },
+      "k3": {
+        "rows": 81,
+        "observed_correct": 22,
+        "residual_correct": 17,
+        "observed_exact": 0.2716049382716049,
+        "residual_exact": 0.20987654320987653,
+        "corrected": 3,
+        "regressed": 8
+      }
+    },
+    "unseen_exact_notes": {
+      "positive": {
+        "rows": 542,
+        "observed_correct": 113,
+        "residual_correct": 108,
+        "observed_exact": 0.20848708487084872,
+        "residual_exact": 0.1992619926199262,
+        "corrected": 25,
+        "regressed": 30
+      },
+      "poly": {
+        "rows": 542,
+        "observed_correct": 113,
+        "residual_correct": 108,
+        "observed_exact": 0.20848708487084872,
+        "residual_exact": 0.1992619926199262,
+        "corrected": 25,
+        "regressed": 30
+      },
+      "k3": {
+        "rows": 160,
+        "observed_correct": 48,
+        "residual_correct": 41,
+        "observed_exact": 0.3,
+        "residual_exact": 0.25625,
+        "corrected": 7,
+        "regressed": 14
+      }
+    },
+    "unseen_intervals": {
+      "positive": {
+        "rows": 109,
+        "observed_correct": 8,
+        "residual_correct": 6,
+        "observed_exact": 0.07339449541284404,
+        "residual_exact": 0.05504587155963303,
+        "corrected": 3,
+        "regressed": 5
+      },
+      "poly": {
+        "rows": 109,
+        "observed_correct": 8,
+        "residual_correct": 6,
+        "observed_exact": 0.07339449541284404,
+        "residual_exact": 0.05504587155963303,
+        "corrected": 3,
+        "regressed": 5
+      },
+      "k3": {
+        "rows": 26,
+        "observed_correct": 5,
+        "residual_correct": 2,
+        "observed_exact": 0.19230769230769232,
+        "residual_exact": 0.07692307692307693,
+        "corrected": 1,
+        "regressed": 4
+      }
+    }
+  },
+  "unmatched_validation_pitches": [],
+  "pitch_rounding_abs_error_max": {
+    "fit": 0.4999484725328287,
+    "val": 0.49933643847860054
+  },
+  "scope": "Prior residual experiment, run 36688979041; not a high-pitch rescue result"
+}
