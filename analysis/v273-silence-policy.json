@@ -1,0 +1,17 @@
+{
+  "schema": "onset-count-with-silence-v1",
+  "state_order": [-1, 0, 1, 2, 3, 4, 5, 6],
+  "sample_rate": 44100,
+  "policy": {
+    "max_frame_rms_dbfs": -60.0,
+    "max_peak_dbfs": -50.0,
+    "before_samples": 3100,
+    "after_samples": 2788,
+    "frame_samples": 256
+  },
+  "annotation_overlap_veto": true,
+  "allow_zero_padding_as_silence": false,
+  "threshold_status": "conservative operational definition chosen before population audit; not optimized for Exact K",
+  "output_corrector": false,
+  "automatic_training": false
+}
