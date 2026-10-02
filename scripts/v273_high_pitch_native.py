@@ -358,6 +358,24 @@ def preflight(output):
         repeats=30,
     )
 
+    sample_model = build("with_high_pitch")
+    sample_x = dict(base_x)
+    sample_x["rescue_map"] = rescue_value.copy()
+    single = {key: value[:1] for key, value in sample_x.items()}
+    infer = tf.function(lambda values: sample_model(values, training=False))
+    for _ in range(3):
+        infer(single).numpy()
+    inference_elapsed = []
+    for _ in range(30):
+        start = time.perf_counter()
+        infer(single).numpy()
+        inference_elapsed.append((time.perf_counter()-start)*1000)
+    inference = dict(
+        p50_ms=float(np.median(inference_elapsed)),
+        p95_ms=float(np.quantile(inference_elapsed, .95)),
+        repeats=30,
+    )
+
     output.mkdir(parents=True)
     report = dict(
         status="passed",
