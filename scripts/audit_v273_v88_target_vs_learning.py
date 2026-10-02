@@ -5,7 +5,7 @@ from pathlib import Path
 from collections import defaultdict
 import numpy as np
 
-from causal_note.guitarset import index_guitarset, load_boundary_slots
+from causal_note.guitarset import load_boundary_slots
 from scripts.train_v88_regime_moe import FEATURE_DIM as V88_FEATURE_DIM, LOCAL_CLUSTER_SAMPLES
 from scripts.train_v90_structured_cluster_cardinality import FROZEN_CANDIDATE_DIM
 
@@ -44,12 +44,12 @@ def load_outer(root):
 
 def references(dataset,members):
     wanted=set(map(str,members))
-    indexed={t.annotation_member:t for t in index_guitarset(dataset) if t.annotation_member in wanted}
-    if set(indexed)!=wanted:
-        raise RuntimeError("dataset members incomplete")
+    annotation_zip=Path(dataset)/"annotation.zip"
+    if not annotation_zip.exists():
+        raise RuntimeError("annotation.zip missing")
     result={}
-    for member,track in indexed.items():
-        refs=[b.onset_sample for slot in load_boundary_slots(track.annotation_zip,member) for b in slot]
+    for member in wanted:
+        refs=[b.onset_sample for slot in load_boundary_slots(annotation_zip,member) for b in slot]
         result[member]=np.asarray(sorted(refs),np.int64)
     return result
 
