@@ -30,7 +30,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          mkdir -p inputs/low-k inputs/acoustic
+          mkdir -p inputs/low-k inputs/acoustic inputs/outer data/GuitarSet
           gh release download v273-low-k-audit-36358846720 \
             --repo ${{ github.repository }} \
             --pattern low-k-audit.zip \
@@ -41,7 +41,24 @@ jobs:
             --dir inputs
           unzip -q inputs/low-k-audit.zip -d inputs/low-k
           unzip -q inputs/acoustic-audit.zip -d inputs/acoustic
+          gh release download v273-spectral-coverage-36139446276 \
+            --repo ${{ github.repository }} \
+            --pattern v273-spectral-coverage-fold3.zip \
+            --dir inputs
+          unzip -q inputs/v273-spectral-coverage-fold3.zip -d inputs/outer
           find inputs -maxdepth 3 -type f | sort
+
+      - uses: actions/cache/restore@v4
+        id: guitarset
+        with:
+          path: data/GuitarSet
+          key: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+
+      - name: Download GuitarSet if needed
+        if: steps.guitarset.outputs.cache-hit != 'true'
+        run: |
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
 
       - name: Cluster pre-HPR Exact-K failures
         run: |
@@ -69,6 +86,17 @@ jobs:
             --output output
           cat output/v273-local-evidence-chain.md
 
+      - name: Audit V8.8 target mismatch vs learning failure
+        run: |
+          PYTHONPATH=.:src python -B scripts/audit_v273_v88_target_vs_learning.py \
+            --low-k inputs/low-k \
+            --acoustic inputs/acoustic \
+            --clustering output \
+            --outer inputs/outer \
+            --dataset data/GuitarSet \
+            --output output
+          cat output/v273-v88-target-vs-learning.md
+
       - name: Publish diagnostic release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -77,7 +105,7 @@ jobs:
           gh release create "$tag" output/* \
             --repo ${{ github.repository }} \
             --title "V27.3 pre-HPR K2/K3/K4 failure clustering" \
-            --notes-file output/v273-local-evidence-chain.md \
+            --notes-file output/v273-v88-target-vs-learning.md \
             --prerelease
 
       - uses: actions/upload-artifact@v4
