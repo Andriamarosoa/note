@@ -51,6 +51,15 @@ jobs:
             --output output
           cat output/v273-failure-clustering.md
 
+      - name: Deep-audit low-evidence cluster A
+        run: |
+          python -B scripts/analyze_v273_cluster_a.py \
+            --low-k inputs/low-k \
+            --acoustic inputs/acoustic \
+            --clustering output \
+            --output output
+          cat output/v273-cluster-a-analysis.md
+
       - name: Publish diagnostic release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -59,7 +68,7 @@ jobs:
           gh release create "$tag" output/* \
             --repo ${{ github.repository }} \
             --title "V27.3 pre-HPR K2/K3/K4 failure clustering" \
-            --notes-file output/v273-failure-clustering.md \
+            --notes-file output/v273-cluster-a-analysis.md \
             --prerelease
 
       - uses: actions/upload-artifact@v4
