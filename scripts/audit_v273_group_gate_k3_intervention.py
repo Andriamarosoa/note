@@ -163,6 +163,7 @@ def main():
     for v in (0.25,0.50,0.75,1.00):
         interventions[f"both_fixed_{v:.2f}"]=(v,v)
 
+    prediction_bank={"always_on":always,"actual_gate":actual_pred}
     result={
         "status":"completed",
         "training":False,
@@ -196,6 +197,7 @@ def main():
     for name,(rg,cg) in interventions.items():
         prob=actual_prob if name=="actual_gate" else predict_nested(base,cache,outer,rg,cg)
         pred=prob.argmax(1).astype(np.int32)
+        prediction_bank[name]=pred
         result["interventions"][name]={
             "all":metric(k,pred,np.ones(len(k),bool)),
             "K2":metric(k,pred,k==2),
@@ -206,6 +208,52 @@ def main():
             "K3_vs_always_on":transition(k,always,pred,K3),
         }
 
+    # Exact case-level attribution for the 48 K3 regressions caused by learned gating.
+    reg = K3 & (always == 3) & (actual_pred != 3)
+    card_on = prediction_bank["router_actual_card_on"]
+    router_on = prediction_bank["router_on_card_actual"]
+    both_on = prediction_bank["both_fixed_1.00"]
+
+    card_rec = reg & (card_on == 3)
+    router_rec = reg & (router_on == 3)
+    both_rec = reg & (both_on == 3)
+
+    attribution = {
+        "regressed_rows": int(reg.sum()),
+        "actual_under": int(np.sum(reg & (actual_pred < 3))),
+        "actual_over": int(np.sum(reg & (actual_pred > 3))),
+        "cardinality_on_recovers": int(card_rec.sum()),
+        "router_on_recovers": int(router_rec.sum()),
+        "both_on_recovers": int(both_rec.sum()),
+        "cardinality_only_sufficient": int(np.sum(card_rec & ~router_rec)),
+        "router_only_sufficient": int(np.sum(router_rec & ~card_rec)),
+        "either_single_sufficient_both": int(np.sum(card_rec & router_rec)),
+        "neither_single_but_both_on_recovers": int(np.sum(~card_rec & ~router_rec & both_rec)),
+        "not_recovered_even_both_on": int(np.sum(reg & ~both_rec)),
+        "by_actual_direction": {}
+    }
+    for label, direction in (("under", actual_pred < 3), ("over", actual_pred > 3)):
+        rr = reg & direction
+        attribution["by_actual_direction"][label] = {
+            "rows": int(rr.sum()),
+            "cardinality_on_recovers": int(np.sum(rr & (card_on == 3))),
+            "router_on_recovers": int(np.sum(rr & (router_on == 3))),
+            "both_on_recovers": int(np.sum(rr & (both_on == 3))),
+        }
+
+    # Also record whether the same interventions damage the 29 K3 rows that learned gating corrected.
+    corr = K3 & (always != 3) & (actual_pred == 3)
+    attribution["learned_gate_corrected_rows"] = int(corr.sum())
+    attribution["corrected_rows_broken_by_cardinality_on"] = int(np.sum(corr & (card_on != 3)))
+    attribution["corrected_rows_broken_by_router_on"] = int(np.sum(corr & (router_on != 3)))
+    attribution["corrected_rows_broken_by_both_on"] = int(np.sum(corr & (both_on != 3)))
+
+    result["k3_case_attribution"] = attribution
+    np.savez_compressed(
+        a.output/"intervention-predictions.npz",
+        global_index=outer,k=k,actual_gate_value=actual_gate,
+        **{name:pred for name,pred in prediction_bank.items()}
+    )
     (a.output/"report.json").write_text(json.dumps(result,indent=2,sort_keys=True)+"\n")
 
     t=result["k3_transition_from_always_on"]; gs=result["k3_gate_by_transition"]
@@ -227,6 +275,17 @@ def main():
         f"- Gate moyen K3 regressés: {gs['regressed']['mean']:.3f}",
         f"- Gate moyen K3 corrects dans les deux: {gs['correct_both']['mean']:.3f}",
         f"- Gate moyen K3 faux dans les deux: {gs['wrong_both']['mean']:.3f}",
+        "",
+        "## Attribution exacte des 48 regressions K3",
+        "",
+        f"- local_cardinality remis a 100% recupere: {attribution['cardinality_on_recovers']}/48",
+        f"- router remis a 100% recupere: {attribution['router_on_recovers']}/48",
+        f"- les deux remis a 100% recuperent: {attribution['both_on_recovers']}/48",
+        f"- cardinality seule suffisante: {attribution['cardinality_only_sufficient']}",
+        f"- router seul suffisant: {attribution['router_only_sufficient']}",
+        f"- les deux interventions individuelles recuperent le meme cas: {attribution['either_single_sufficient_both']}",
+        f"- aucune intervention seule mais les deux ensemble recuperent: {attribution['neither_single_but_both_on_recovers']}",
+        f"- non recuperes meme avec les deux a 100%: {attribution['not_recovered_even_both_on']}",
         "",
         "## Interventions",
         "",
