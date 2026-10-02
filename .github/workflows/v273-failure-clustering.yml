@@ -48,17 +48,9 @@ jobs:
           unzip -q inputs/v273-spectral-coverage-fold3.zip -d inputs/outer
           find inputs -maxdepth 3 -type f | sort
 
-      - uses: actions/cache/restore@v4
-        id: guitarset
-        with:
-          path: data/GuitarSet
-          key: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
-
-      - name: Download GuitarSet if needed
-        if: steps.guitarset.outputs.cache-hit != 'true'
+      - name: Download GuitarSet annotations
         run: |
           curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
-          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
 
       - name: Cluster pre-HPR Exact-K failures
         run: |
