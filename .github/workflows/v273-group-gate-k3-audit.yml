@@ -43,7 +43,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          mkdir -p model/download model/bundle model/gate model/cluster output
+          mkdir -p model/download model/bundle model/gate model/cluster
 
           gh release download v273-window-pair-36351028493             --repo "${{ github.repository }}"             --pattern native-window-bundle.zip             --dir model/download
           unzip -q model/download/native-window-bundle.zip -d model/bundle
