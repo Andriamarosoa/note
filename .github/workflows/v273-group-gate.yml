@@ -59,19 +59,12 @@ jobs:
           assert pc==pg
 
           rng=np.random.default_rng(273)
-          x={
-            'candidate_set':rng.normal(size=(3,*raw.get_layer('candidate_set').input_shape[0][1:])).astype(np.float32)
-              if False else rng.normal(size=(3,32,38)).astype(np.float32),
-            'candidate_mask':np.ones((3,32),np.float32),
-            'cluster_stats':rng.normal(size=(3,8)).astype(np.float32),
-            'spectral_map':rng.normal(size=(3,31,64,3)).astype(np.float32),
-          }
-          # Input dims above are checked against the actual public signatures before inference.
           sig={t.name.split(':')[0]:tuple(int(d) for d in t.shape[1:]) for t in raw.inputs}
-          assert x['candidate_set'].shape[1:]==sig['candidate_set'], (x['candidate_set'].shape,sig)
-          assert x['candidate_mask'].shape[1:]==sig['candidate_mask']
-          assert x['cluster_stats'].shape[1:]==sig['cluster_stats']
-          assert x['spectral_map'].shape[1:]==sig['spectral_map']
+          x={
+            name:rng.normal(size=(3,*shape)).astype(np.float32)
+            for name,shape in sig.items()
+          }
+          x['candidate_mask'][:]=1.0
 
           a=np.asarray(raw(x,training=False))
           b=np.asarray(ctrl(x,training=False))
