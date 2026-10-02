@@ -1,0 +1,18 @@
+{
+  "experiment": "v273-group-gate-layer-transplant-audit",
+  "source_run": 37019193261,
+  "training": false,
+  "target_population": "48 K3 rows correct in always_on and wrong in learned_gate",
+  "interventions": [
+    "candidate",
+    "spectral",
+    "head",
+    "candidate_head",
+    "spectral_head",
+    "candidate_spectral",
+    "all_three",
+    "all_base"
+  ],
+  "purpose": "localize treatment-induced K3 regressions to trained weight groups before any architecture change",
+  "automatic_promotion": false
+}
