@@ -1,0 +1,14 @@
+{
+  "experiment": "v273-group-gate-head-components-audit",
+  "source_run": 37019193261,
+  "training": false,
+  "target": "48 K3 regressions and collateral on 293 learned-correct K3 rows",
+  "components": [
+    "hidden1 full/kernel/bias",
+    "hidden2 full/kernel/bias",
+    "cardinality output full/kernel/bias",
+    "layer combinations"
+  ],
+  "purpose": "identify which trained head weights cause K3 recovery/regression before any model change",
+  "automatic_promotion": false
+}
