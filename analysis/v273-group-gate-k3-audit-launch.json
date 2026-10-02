@@ -1,0 +1,21 @@
+{
+  "experiment": "v273-group-gate-k3-intervention-audit",
+  "source_run": 37019193261,
+  "source_release": "v273-group-gate-37019193261",
+  "source_model": "learned_gate",
+  "training": false,
+  "interventions": [
+    "actual_gate",
+    "router_actual_card_on",
+    "router_on_card_actual",
+    "router_off_card_on",
+    "router_on_card_off",
+    "both_off",
+    "both_fixed_0.25",
+    "both_fixed_0.50",
+    "both_fixed_0.75",
+    "both_fixed_1.00"
+  ],
+  "target": "K3 regression audit before any architectural change",
+  "automatic_promotion": false
+}
