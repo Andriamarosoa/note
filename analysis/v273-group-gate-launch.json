@@ -1,0 +1,39 @@
+{
+  "experiment": "v273-group-gate-ab",
+  "attempt": 1,
+  "branch": "codex/v273-failure-clustering",
+  "control": "always_on_v88_pseudocount",
+  "treatment": "learned_scalar_trust_gate",
+  "gate_inputs": [
+    "candidate_count_log",
+    "group_width",
+    "fused_mean",
+    "fused_max"
+  ],
+  "gated_signals": [
+    "cluster_router",
+    "local_cardinality_0_3",
+    "router_mean",
+    "local_count_mean_norm",
+    "local_count_weighted_norm",
+    "local_nonzero_max"
+  ],
+  "preserved": [
+    "x88",
+    "isolated_birth",
+    "cluster_birth",
+    "fused_birth",
+    "candidate_timing",
+    "spectral_map"
+  ],
+  "outer_fold": 3,
+  "frames": 31,
+  "weighting": "uniform",
+  "epochs": 8,
+  "batch_size": 128,
+  "seed": 17064,
+  "fixed_endpoint_epoch": 8,
+  "cluster_a_source": "v273-failure-clustering-36999901054",
+  "shared_bundle_source": "v273-window-pair-36351028493/native-window-bundle.zip",
+  "automatic_promotion": false
+}
