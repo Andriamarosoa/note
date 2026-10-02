@@ -42,7 +42,7 @@ def train(args):
     require(prepared['fit_indices_sha256']==array_hash(fit) and
             prepared['val_indices_sha256']==array_hash(val),'wrong row order')
     k=np.minimum(np.asarray(cache['exact'],np.int32),6)
-    model=build();initial=weight_hash(model)
+    model=build(args.arm);initial=weight_hash(model)
     require(initial==gate['arms'][args.arm]['initial_sha256'],'preflight initialization differs')
     compile_metrics(model)
     require(int(model.optimizer.iterations.numpy())==0,'optimizer not fresh')
