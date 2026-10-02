@@ -1,0 +1,17 @@
+{
+  "experiment": "v273-group-debiased-ab",
+  "attempt": 1,
+  "branch": "codex/v273-failure-clustering",
+  "treatment": "remove_v88_router_and_local_cardinality_pseudocount_interface",
+  "control": "native_frames31_uniform_baseline",
+  "outer_fold": 3,
+  "frames": 31,
+  "weighting": "uniform",
+  "epochs": 8,
+  "batch_size": 128,
+  "seed": 17064,
+  "fixed_endpoint_epoch": 8,
+  "cluster_a_source": "v273-failure-clustering-36999901054",
+  "shared_bundle_source": "v273-window-pair-36351028493/native-window-bundle.zip",
+  "automatic_promotion": false
+}
