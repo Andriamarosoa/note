@@ -157,10 +157,15 @@ def main():
     ap.add_argument("--output",type=Path,required=True)
     a=ap.parse_args();a.output.mkdir(parents=True,exist_ok=True)
 
-    pred_path=find_one(a.model_root,"predictions.npz")
-    weights=find_one(a.model_root,"latest.weights.h5")
-    report=find_one(a.model_root,"report.json")
-    training=find_one(a.model_root,"training.json")
+    reports=list(Path(a.model_root).rglob("report.json"))
+    roots=[p.parent for p in reports if (p.parent/"final"/"predictions.npz").exists() and (p.parent/"final"/"latest.weights.h5").exists()]
+    if len(roots)!=1:
+        raise RuntimeError(f"expected one model root, found {len(roots)}")
+    model_root=roots[0]
+    pred_path=model_root/"final"/"predictions.npz"
+    weights=model_root/"final"/"latest.weights.h5"
+    report=model_root/"report.json"
+    training=model_root/"final"/"training.json"
     with np.load(pred_path,allow_pickle=False) as z:
         saved={k:np.asarray(z[k]) for k in z.files}
     train=json.loads(training.read_text())
