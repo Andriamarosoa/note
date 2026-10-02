@@ -1,0 +1,13 @@
+{
+  "experiment": "v273-group-gate-factorial-audit",
+  "source_run": 37019193261,
+  "training": false,
+  "cells": {
+    "A": "always-on trained weights + gate=1",
+    "B": "always-on trained weights + learned gate values",
+    "C": "learned-gate trained weights + gate=1",
+    "D": "learned-gate trained weights + learned gate values"
+  },
+  "purpose": "separate inference gating from training-induced weight shift before any architecture change",
+  "automatic_promotion": false
+}
