@@ -118,6 +118,22 @@ def run(args):
             np.testing.assert_array_equal(z[key],saved[ARMS[0]][key])
         pitches=z['pitches_midi']
     strata,compositions,selections=stratify(k,pitches,member,a,b)
+    sentinel_ids=np.array([40904,48187,67182,67297,67316,67320],np.int64)
+    global_index=saved[ARMS[0]]['global_index']
+    sentinel_rows={}
+    for gid in sentinel_ids:
+        hit=np.flatnonzero(global_index==gid)
+        require(len(hit)==1,'missing sentinel '+str(int(gid)))
+        j=int(hit[0])
+        sentinel_rows[str(int(gid))]=dict(
+            true_k=int(k[j]),
+            observed_only=int(a[j]),
+            with_high_pitch=int(b[j]),
+            observed_p_k3=float(saved[ARMS[0]]['probability'][j,3]),
+            observed_p_k4=float(saved[ARMS[0]]['probability'][j,4]),
+            rescue_p_k3=float(saved[ARMS[1]]['probability'][j,3]),
+            rescue_p_k4=float(saved[ARMS[1]]['probability'][j,4]),
+        )
     require(selections['k3_bass'].sum()==187 and selections['any_high'].sum()==263,'frozen register population changed')
     gate=dict(poly_gain=treatment['poly_exact']>control['poly_exact'],
         global_no_regression=treatment['exact']>=control['exact'],
@@ -138,6 +154,7 @@ def run(args):
                        poly_exact=bootstrap(k,member,a,b,k>=2),
                        k3_bass=bootstrap(k,member,a,b,selections['k3_bass']),
                        any_high=bootstrap(k,member,a,b,selections['any_high'])),
+        sentinels=sentinel_rows,
         source_reports={arm:digest(args.root/('high-pitch-'+arm)/'report.json') for arm in ARMS},
         common_conditions={key:source[ARMS[0]][key] for key in identity},
         audit_sha256=digest(__file__),limitations=[
@@ -169,6 +186,10 @@ def run(args):
         right='n/a' if t['exact'] is None else f"{100*t['exact']:.4f} %"
         lines.append(f"| {labels[name]} | {c['rows']} | {left} | {right} |")
     lines+=['','Les strates se chevauchent ; elles ne doivent pas être additionnées. K=0 ne signifie pas silence.']
+    lines+=['','| Sentinelle K=3 | Contrôle | HPR-v2 | P3 HPR-v2 | P4 HPR-v2 |','|---:|---:|---:|---:|---:|']
+    for gid in sentinel_ids:
+        s=sentinel_rows[str(int(gid))]
+        lines.append(f"| {int(gid)} | {s['observed_only']} | {s['with_high_pitch']} | {s['rescue_p_k3']:.4f} | {s['rescue_p_k4']:.4f} |")
     lines+=['','| Construction des vues sur CPU, mesure descriptive | p50 ms/groupe | p95 ms/groupe |','|---|---:|---:|']
     for arm,timing in preflight['feature_runtime'].items():
         lines.append(f"| {arm} | {timing['p50_ms']:.3f} | {timing['p95_ms']:.3f} |")
