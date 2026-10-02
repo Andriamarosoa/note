@@ -5,9 +5,7 @@ from pathlib import Path
 from collections import defaultdict
 import numpy as np
 
-from causal_note.guitarset import index_guitarset
-from scripts.train_boundaries import decode_pcm16_mono_wav
-from scripts.evaluate_v8_boundaries import _reference_positions
+from causal_note.guitarset import index_guitarset, load_boundary_slots
 from scripts.train_v88_regime_moe import FEATURE_DIM as V88_FEATURE_DIM, LOCAL_CLUSTER_SAMPLES
 from scripts.train_v90_structured_cluster_cardinality import FROZEN_CANDIDATE_DIM
 
@@ -51,9 +49,8 @@ def references(dataset,members):
         raise RuntimeError("dataset members incomplete")
     result={}
     for member,track in indexed.items():
-        audio=decode_pcm16_mono_wav(track.audio_zip,track.audio_member)
-        refs,_=_reference_positions(track,audio.frame_count)
-        result[member]=np.asarray(refs,np.int64)
+        refs=[b.onset_sample for slot in load_boundary_slots(track.annotation_zip,member) for b in slot]
+        result[member]=np.asarray(sorted(refs),np.int64)
     return result
 
 def rate(x):
