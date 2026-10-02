@@ -1,0 +1,96 @@
+name: V27.3 local repair counterfactual
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - 'scripts/audit_v273_local_repair_counterfactual.py'
+      - '.github/workflows/v273-local-repair-counterfactual.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: v273-local-repair-counterfactual
+  cancel-in-progress: true
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  TF_NUM_INTRAOP_THREADS: '2'
+  TF_NUM_INTEROP_THREADS: '2'
+  OMP_NUM_THREADS: '2'
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+
+      - name: Install pinned runtime
+        run: python -m pip install -r requirements-train.txt numpy==1.26.4
+
+      - name: Restore frozen model, outer cache, and Cluster A rows
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p inputs/model inputs/outer inputs/cluster data/GuitarSet
+          gh release download v273-window-pair-36351028493 \
+            --repo ${{ github.repository }} \
+            --pattern frames-31-uniform.zip \
+            --dir inputs
+          unzip -q inputs/frames-31-uniform.zip -d inputs/model
+
+          gh release download v273-spectral-coverage-36139446276 \
+            --repo ${{ github.repository }} \
+            --pattern v273-spectral-coverage-fold3.zip \
+            --dir inputs
+          unzip -q inputs/v273-spectral-coverage-fold3.zip -d inputs/outer
+
+          gh release download v273-failure-clustering-36999901054 \
+            --repo ${{ github.repository }} \
+            --pattern v273-failure-clustering-rows.csv \
+            --dir inputs/cluster
+
+          find inputs/model -maxdepth 3 -type f | sort | sed -n '1,80p'
+
+      - name: Download GuitarSet annotations
+        run: |
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip \
+            https://zenodo.org/records/3371780/files/annotation.zip
+
+      - name: Run frozen-model counterfactual audit
+        run: |
+          python -B scripts/audit_v273_local_repair_counterfactual.py \
+            --model-root inputs/model \
+            --outer inputs/outer \
+            --annotations data/GuitarSet/annotation.zip \
+            --cluster-rows inputs/cluster/v273-failure-clustering-rows.csv \
+            --output output
+          cat output/v273-local-repair-counterfactual.md
+
+      - name: Publish diagnostic release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="v273-local-repair-counterfactual-${GITHUB_RUN_ID}"
+          gh release create "$tag" output/* \
+            --repo ${{ github.repository }} \
+            --target ${{ github.sha }} \
+            --prerelease \
+            --title "V27.3 Exact-K local-count repair counterfactual" \
+            --notes-file output/v273-local-repair-counterfactual.md
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-local-repair-counterfactual
+          path: output/
