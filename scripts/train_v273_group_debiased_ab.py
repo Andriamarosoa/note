@@ -14,6 +14,7 @@ candidate timing/geometry and candidate-count/group-width stats are preserved.
 from __future__ import annotations
 
 import argparse
+import csv
 import hashlib
 import json
 from pathlib import Path
@@ -140,6 +141,24 @@ def metrics(k, pred):
     return result
 
 
+def load_cluster_a_mask(path, global_index):
+    if path is None:
+        return None, None
+    rows = list(csv.DictReader(open(path, newline="")))
+    by = {}
+    for r in rows:
+        cid = int(r["cluster"])
+        y = int(r["true_k"])
+        p = int(r["predicted_k"])
+        d = by.setdefault(cid, {"n": 0, "under": 0})
+        d["n"] += 1
+        d["under"] += p < y
+    cid = max(by, key=lambda x: (by[x]["under"] / by[x]["n"], by[x]["n"]))
+    ids = {int(r["global_index"]) for r in rows if int(r["cluster"]) == cid}
+    mask = np.isin(np.asarray(global_index, np.int64), list(ids))
+    return cid, mask
+
+
 def transitions(k, a, b):
     k = np.asarray(k)
     a = np.asarray(a)
@@ -218,7 +237,18 @@ def train(args):
     }
     write_json(args.output / "protocol.json", protocol)
 
-    report = {"status": "training", "protocol": protocol, "initial": initial, "arms": {}}
+    cluster_a_id, cluster_a_mask = load_cluster_a_mask(args.cluster_rows, outer)
+    if cluster_a_mask is not None:
+        require(int(cluster_a_mask.sum()) == 499, "Cluster A population changed")
+
+    report = {
+        "status": "training",
+        "protocol": protocol,
+        "initial": initial,
+        "arms": {},
+        "cluster_A_id": cluster_a_id,
+        "cluster_A_rows": int(cluster_a_mask.sum()) if cluster_a_mask is not None else None,
+    }
     predictions = {
         "global_index": np.asarray(outer, np.int64),
         "member": np.asarray(cache["members"][outer]),
@@ -276,12 +306,15 @@ def train(args):
         m = metrics(k[outer], pred)
 
         model.save_weights(args.output / f"{arm}.weights.h5")
-        report["arms"][arm] = {
+        arm_record = {
             "metrics": m,
             "history": history_rows,
             "observed_epoch_order_sha256": observed,
             "final_weights_sha256": digest(args.output / f"{arm}.weights.h5"),
         }
+        if cluster_a_mask is not None:
+            arm_record["cluster_A_metrics"] = metrics(k[outer][cluster_a_mask], pred[cluster_a_mask])
+        report["arms"][arm] = arm_record
         predictions[f"{arm}_probability"] = probability
         predictions[f"{arm}_predicted"] = pred
         write_json(args.output / "report.json", report)
@@ -297,6 +330,10 @@ def train(args):
         "all": transitions(k[outer], a, b),
         "poly": transitions(k[outer][k[outer] >= 2], a[k[outer] >= 2], b[k[outer] >= 2]),
     }
+    if cluster_a_mask is not None:
+        report["paired"]["cluster_A"] = transitions(
+            k[outer][cluster_a_mask], a[cluster_a_mask], b[cluster_a_mask]
+        )
     write_json(args.output / "report.json", report)
 
     lines = [
@@ -322,10 +359,22 @@ def train(args):
     p = report["paired"]["all"]
     lines += [
         "",
-        f"Paired: corrigés **{p['corrected']}**, régressions **{p['regressed']}**, net **{p['net_correct']:+d}**.",
-        "",
-        "Aucune promotion automatique.",
+        f"Paired global: corrigés **{p['corrected']}**, régressions **{p['regressed']}**, net **{p['net_correct']:+d}**.",
     ]
+    if cluster_a_mask is not None:
+        ba = report["arms"]["baseline"]["cluster_A_metrics"]
+        da = report["arms"]["group_debiased"]["cluster_A_metrics"]
+        pa = report["paired"]["cluster_A"]
+        lines += [
+            "",
+            "## Cluster A",
+            "",
+            f"- Exact: {100*ba['exact']:.2f}% → {100*da['exact']:.2f}%.",
+            f"- Sous-comptages: {ba['under']} → {da['under']}.",
+            f"- Surcomptages: {ba['over']} → {da['over']}.",
+            f"- Corrigés {pa['corrected']}, régressions {pa['regressed']}, net {pa['net_correct']:+d}.",
+        ]
+    lines += ["", "Aucune promotion automatique."]
     (args.output / "report.md").write_text("\n".join(lines) + "\n")
     print("\n".join(lines), flush=True)
 
@@ -335,4 +384,5 @@ if __name__ == "__main__":
     p.add_argument("--bundle", type=Path, required=True)
     p.add_argument("--config", type=Path, required=True)
     p.add_argument("--output", type=Path, required=True)
+    p.add_argument("--cluster-rows", type=Path)
     train(p.parse_args())
