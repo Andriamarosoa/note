@@ -1,0 +1,68 @@
+name: V27.3 failure clustering
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: v273-failure-clustering
+  cancel-in-progress: true
+
+jobs:
+  cluster:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install analysis dependencies
+        run: python -m pip install numpy==1.26.4 scikit-learn==1.4.2
+
+      - name: Restore frozen audit sources
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p inputs/low-k inputs/acoustic
+          gh release download v273-low-k-audit-36358846720 \
+            --repo ${{ github.repository }} \
+            --pattern low-k-audit.zip \
+            --dir inputs
+          gh release download v273-acoustic-residual-36373588730 \
+            --repo ${{ github.repository }} \
+            --pattern acoustic-audit.zip \
+            --dir inputs
+          unzip -q inputs/low-k-audit.zip -d inputs/low-k
+          unzip -q inputs/acoustic-audit.zip -d inputs/acoustic
+          find inputs -maxdepth 3 -type f | sort
+
+      - name: Cluster pre-HPR Exact-K failures
+        run: |
+          python -B scripts/cluster_v273_failures.py \
+            --low-k inputs/low-k \
+            --acoustic inputs/acoustic \
+            --output output
+          cat output/v273-failure-clustering.md
+
+      - name: Publish diagnostic release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="v273-failure-clustering-${GITHUB_RUN_ID}"
+          gh release create "$tag" output/* \
+            --repo ${{ github.repository }} \
+            --title "V27.3 pre-HPR K2/K3/K4 failure clustering" \
+            --notes-file output/v273-failure-clustering.md \
+            --prerelease
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-failure-clustering
+          path: output/
