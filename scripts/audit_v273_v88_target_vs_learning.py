@@ -163,6 +163,18 @@ def main():
     ass=load_csv(a.clustering/"v273-failure-clustering-rows.csv")
     outer=load_outer(a.outer)
 
+    # The preserved spectral archive is shard-ordered; the low-K audit is
+    # member-sorted. Align by the immutable (member, cluster_start_sample) key.
+    outer_keys=[(str(m),int(s)) for m,s in zip(outer["members"],outer["cluster_start_samples"])]
+    context_keys=[(str(m),int(s)) for m,s in zip(context["member"],context["cluster_start_samples"])]
+    if len(set(outer_keys)) != len(outer_keys) or len(set(context_keys)) != len(context_keys):
+        raise RuntimeError("non-unique member/start alignment key")
+    lookup={key:i for i,key in enumerate(outer_keys)}
+    if set(lookup) != set(context_keys):
+        raise RuntimeError("outer/context key populations differ")
+    order=np.asarray([lookup[key] for key in context_keys],np.int64)
+    outer={k:v[order] for k,v in outer.items()}
+
     np.testing.assert_array_equal(context["k"],outer["exact"])
     np.testing.assert_array_equal(context["member"].astype(str),outer["members"])
     np.testing.assert_array_equal(context["cluster_start_samples"],outer["cluster_start_samples"])
