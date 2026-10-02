@@ -2,7 +2,7 @@ name: Compare native K with high pitch rescue
 
 'on':
   push:
-    branches: [codex/v273-high-pitch-rescue]
+    branches: [codex/v273-high-pitch-rescue-v2]
     paths: ['analysis/v273-high-pitch-launch.json']
   workflow_dispatch:
 
@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: v273-high-pitch-fold3
+  group: v273-high-pitch-v2-fold3
   cancel-in-progress: false
 
 env:
@@ -21,7 +21,7 @@ env:
   TF_NUM_INTEROP_THREADS: '2'
   OMP_NUM_THREADS: '2'
   OPENBLAS_NUM_THREADS: '1'
-  AUDIT_TAG: v273-high-pitch-${{ github.run_id }}
+  AUDIT_TAG: v273-high-pitch-v2-${{ github.run_id }}
 
 jobs:
   preflight:
@@ -45,7 +45,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "$AUDIT_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
-            --prerelease --title 'High pitch rescue comparison - internal fold 3' \
+            --prerelease --title 'High pitch rescue v2 comparison - internal fold 3' \
             --notes-file analysis/v273-high-pitch-protocol.md
           python -B scripts/archive_v273_native_stage.py --root model/high-pitch-preflight \
             --name high-pitch-preflight --tag "$AUDIT_TAG"
