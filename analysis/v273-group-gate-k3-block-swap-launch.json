@@ -1,0 +1,17 @@
+{
+  "experiment": "v273-group-gate-k3-block-swap-audit",
+  "source_run": 37019193261,
+  "source_release": "v273-group-gate-37019193261",
+  "previous_intervention_run": 37073991923,
+  "training": false,
+  "target": "attribute persistent K3 regressions to learned parameter blocks",
+  "persistent_k3_regressions_after_gate1": 34,
+  "blocks": [
+    "candidate_set_encoder",
+    "candidate_context",
+    "spectral_encoder",
+    "cardinality_head"
+  ],
+  "reciprocal_swaps": true,
+  "automatic_promotion": false
+}
