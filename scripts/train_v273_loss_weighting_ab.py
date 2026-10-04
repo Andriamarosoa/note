@@ -3,6 +3,7 @@
 No architecture change. The only intervention is the training loss sample weight:
 - uniform: weight 1 for every training row.
 - sqrt_balanced: inverse-square-root class-frequency weights derived only from final_fit.
+- targeted_k2k4: keep uniform weights except K2/K4, which reuse their sqrt-balanced weights.
 
 Each arm is trained independently with identical initialization, seed, fold3 split,
 epoch order, 31 frames and 8 epochs. Outer fold is evaluation-only.
@@ -23,7 +24,7 @@ from scripts.v273_window_experiment import (
     load_bundle, batch_inputs, epoch_order, array_hash, require
 )
 
-ARMS=("uniform","sqrt_balanced")
+ARMS=("uniform","sqrt_balanced","targeted_k2k4")
 
 
 def class_weight_table(arm, fit_k):
@@ -31,6 +32,12 @@ def class_weight_table(arm, fit_k):
         return np.ones(7,np.float32)
     if arm=="sqrt_balanced":
         return v260.class_weights(np.asarray(fit_k,np.int32))
+    if arm=="targeted_k2k4":
+        balanced=v260.class_weights(np.asarray(fit_k,np.int32))
+        out=np.ones(7,np.float32)
+        out[2]=balanced[2]
+        out[4]=balanced[4]
+        return out
     raise ValueError(arm)
 
 
