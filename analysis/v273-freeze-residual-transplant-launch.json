@@ -1,0 +1,27 @@
+{
+  "experiment": "v273-freeze-residual-transplant-audit",
+  "training": false,
+  "uniform_reference_run": 37208199201,
+  "freeze_reference_run": 37233793945,
+  "freeze_arm": "freeze_local_combo",
+  "observed_paired": {
+    "uniform_correct": 12773,
+    "freeze_correct": 12749,
+    "net": -24,
+    "corrections": 320,
+    "regressions": 344,
+    "poly_net": 100,
+    "low_k01_net": -124,
+    "per_true_k_net": {
+      "K0": -61,
+      "K1": -63,
+      "K2": 65,
+      "K3": 17,
+      "K4": 30,
+      "K5": -12,
+      "K6": 0
+    }
+  },
+  "audit_goal": "Identify remaining trainable layer(s) that recover K0/K1 regressions while preserving the +100 true-poly correct rows.",
+  "automatic_promotion": false
+}
