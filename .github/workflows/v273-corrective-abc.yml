@@ -1,0 +1,141 @@
+name: V27.3 Trained Corrective A/B/C
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - 'analysis/v273-corrective-abc-launch.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: v273-corrective-abc-fold3
+  cancel-in-progress: false
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  TF_NUM_INTRAOP_THREADS: '2'
+  TF_NUM_INTEROP_THREADS: '2'
+  OMP_NUM_THREADS: '2'
+  TAG: v273-corrective-abc-${{ github.run_id }}
+
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+
+      - name: Install pinned runtime
+        run: python -m pip install -r requirements-train.txt numpy==1.26.4
+
+      - name: Validate matched corrective contract
+        run: |
+          python -m py_compile scripts/train_v273_corrective_abc.py
+          python - <<'PY'
+          import numpy as np
+          import tensorflow as tf
+          from scripts.train_v273_corrective_abc import ARMS, build_model, weight_hash, corrective_summary
+          from scripts.train_v273_group_gate_ab import build_model as historical
+
+          seed=16061+1003
+          models=[]
+          hashes=[]
+          params=[]
+          for arm in ARMS:
+              m=build_model(arm,seed)
+              models.append(m)
+              hashes.append(weight_hash(m))
+              params.append(sum(int(np.prod(v.shape)) for v in m.trainable_variables))
+              print(arm, corrective_summary(m))
+          assert len(set(hashes))==1, hashes
+          assert len(set(params))==1, params
+
+          ctrl=models[0]
+          sig={t.name.split(':')[0]:tuple(int(d) for d in t.shape[1:]) for t in ctrl.inputs}
+          rng=np.random.default_rng(273)
+          x={name:rng.normal(size=(3,*shape)).astype(np.float32) for name,shape in sig.items()}
+          x['candidate_mask'][:]=1.0
+
+          y=[np.asarray(m(x,training=False)) for m in models]
+          np.testing.assert_allclose(y[0],y[1],rtol=0,atol=1e-7)
+          np.testing.assert_allclose(y[0],y[2],rtol=0,atol=1e-7)
+
+          old=historical('learned_gate',seed)
+          yo=np.asarray(old(x,training=False))
+          err=float(np.max(np.abs(y[0]-yo)))
+          assert err < 2e-5, err
+          print({'matched_hash':hashes[0],'trainable_params':params[0],
+                 'initial_arm_parity_max_abs':float(max(np.max(np.abs(y[0]-z)) for z in y[1:])),
+                 'historical_learned_gate_parity_max_abs':err})
+          PY
+
+      - name: Create prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$TAG"             --repo "${{ github.repository }}"             --target "${{ github.sha }}"             --prerelease             --title "V27.3 trained corrective A/B/C"             --notes "Matched fold3 trained corrective experiment. Control is learned-gate. Treatment A adds five identity-initialized pooling scales before cluster_norm. Treatment B adds the same pooling calibration plus a zero-initialized residual restricted to log_power/positive_pre -> conv1 filter 27. Same parameter count, seed, 31-frame uniform protocol, 8 epochs. No automatic promotion."
+
+  train:
+    needs: preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 420
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+
+      - name: Install pinned runtime
+        run: python -m pip install -r requirements-train.txt numpy==1.26.4
+
+      - name: Restore frozen bundle and Cluster A
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/download model/bundle model/cluster
+          gh release download v273-window-pair-36351028493             --repo "${{ github.repository }}"             --pattern native-window-bundle.zip             --dir model/download
+          unzip -q model/download/native-window-bundle.zip -d model/bundle
+
+          gh release download v273-failure-clustering-36999901054             --repo "${{ github.repository }}"             --pattern v273-failure-clustering-rows.csv             --dir model/cluster
+
+          test -f model/bundle/bundle.json
+          test -f model/cluster/v273-failure-clustering-rows.csv
+
+      - name: Train matched corrective arms
+        run: |
+          python -B scripts/train_v273_corrective_abc.py             --bundle model/bundle             --config analysis/v273-native-paired-config.json             --cluster-rows model/cluster/v273-failure-clustering-rows.csv             --output model/result
+
+      - name: Publish result
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -d model/result ]; then
+            tar -czf model/v273-corrective-abc-result.tgz -C model/result .
+            gh release upload "$TAG" model/v273-corrective-abc-result.tgz               --repo "${{ github.repository }}" --clobber || true
+            if [ -f model/result/report.md ]; then
+              gh release edit "$TAG"                 --repo "${{ github.repository }}"                 --notes-file model/result/report.md || true
+            fi
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-corrective-abc-result
+          path: model/result/
+          if-no-files-found: warn
+          retention-days: 90
