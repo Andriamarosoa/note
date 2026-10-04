@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 from scripts.train_v273_group_gate_ab import transitions
 
-ARMS=("uniform","targeted_k234_half")
+ARMS=("uniform","targeted_k23_half_k4_quarter")
 
 def main(args):
     reports={}
@@ -16,7 +16,7 @@ def main(args):
         with np.load(d/"predictions.npz",allow_pickle=False) as z:
             preds[arm]={k:np.asarray(z[k]) for k in z.files}
 
-    a=preds["uniform"]; b=preds["targeted_k234_half"]
+    a=preds["uniform"]; b=preds["targeted_k23_half_k4_quarter"]
     if not np.array_equal(a["global_index"],b["global_index"]) or not np.array_equal(a["k"],b["k"]):
         raise RuntimeError("population mismatch")
     k=a["k"]; pa=a["predicted"]; pb=b["predicted"]
@@ -30,10 +30,10 @@ def main(args):
     args.output.mkdir(parents=True,exist_ok=True)
     (args.output/"report.json").write_text(json.dumps(out,indent=2,sort_keys=True)+"\n")
 
-    u=reports["uniform"]["metrics"]; w=reports["targeted_k234_half"]["metrics"]
+    u=reports["uniform"]["metrics"]; w=reports["targeted_k23_half_k4_quarter"]["metrics"]
     lines=[
-        "# V27.3 learned_gate half-strength K2/K3/K4 weighting A/B","",
-        "| Mesure | Uniform | half K2/K3/K4 | Delta |",
+        "# V27.3 learned_gate K2/K3 half + K4 quarter weighting A/B","",
+        "| Mesure | Uniform | K2/K3 half + K4 quarter | Delta |",
         "|---|---:|---:|---:|",
         f"| exact global | {100*u['exact']:.3f}% | {100*w['exact']:.3f}% | {100*(w['exact']-u['exact']):+.3f} pt |",
         f"| exact poly | {100*u['poly_exact']:.3f}% | {100*w['poly_exact']:.3f}% | {100*(w['poly_exact']-u['poly_exact']):+.3f} pt |",
