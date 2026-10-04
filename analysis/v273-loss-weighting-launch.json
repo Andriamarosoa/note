@@ -1,5 +1,5 @@
 {
-  "experiment": "v273-learned-gate-k23-half-k4-quarter-weighting-ab",
+  "experiment": "v273-k1-k5-protection-isolation",
   "source_learned_gate_run": 37019193261,
   "source_corrective_run": 37184047178,
   "architecture": "learned_gate unchanged",
@@ -7,8 +7,9 @@
   "frames": 31,
   "epochs": 8,
   "arms": {
-    "uniform": "frozen control from run 37208199201; sample_weight = 1",
-    "targeted_k23_half_k4_quarter": "K2/K3 halfway from 1.0 toward sqrt-balanced; K4 one quarter toward sqrt-balanced; K0/K1/K5/K6 = 1"
+    "uniform": "frozen control from run 37208199201; not retrained",
+    "protect_k1": "base K2/K3-half + K4-quarter profile, plus K1 at its sqrt-balanced weight",
+    "protect_k5_tenth": "base K2/K3-half + K4-quarter profile, plus K5 one tenth toward sqrt-balanced"
   },
   "matched": {
     "same_initialization": true,
@@ -16,11 +17,18 @@
     "same_epoch_order": true,
     "same_architecture": true,
     "frozen_uniform_control": true,
-    "retrain_uniform": false
+    "parallel_experimental_arms": true
   },
   "automatic_promotion": false,
   "source_previous_weighting_run": 37202122022,
   "source_uniform_run": 37208199201,
   "source_previous_targeted_k2k4_run": 37208199201,
-  "source_previous_half_run": 37214231666
+  "source_previous_half_run": 37214231666,
+  "source_previous_best_run": 37217693737,
+  "audit": {
+    "k1_uniform_correct_lost_to_k2": 115,
+    "k5_uniform_correct_lost_total": 14,
+    "k5_lost_to_k3": 7,
+    "k5_lost_to_k4": 7
+  }
 }
