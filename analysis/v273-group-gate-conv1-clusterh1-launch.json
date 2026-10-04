@@ -1,0 +1,39 @@
+{
+  "experiment": "v273-group-gate-conv1-clusterh1-formation-audit",
+  "source_run": 37019193261,
+  "previous_deeper_upstream_run": 37179388447,
+  "training": false,
+  "spectral": {
+    "factors": [
+      "dense_plus_coordinates source",
+      "conv1 kernel",
+      "conv1 bias"
+    ],
+    "downstream": "conv2/conv3/cardinality held learned-gate",
+    "focused_hidden1_units": [
+      23,
+      158,
+      135
+    ]
+  },
+  "candidate": {
+    "factors": [
+      "cluster_norm source",
+      "cluster_hidden1 kernel",
+      "cluster_hidden1 bias"
+    ],
+    "downstream": "cluster_hidden2/candidate_context/cardinality held learned-gate",
+    "focused_hidden1_units": [
+      73,
+      104,
+      109
+    ]
+  },
+  "populations": {
+    "k3_regressions": 48,
+    "k3_corrections": 29,
+    "learned_correct_k3": 293
+  },
+  "target_hidden2_neuron": 37,
+  "automatic_promotion": false
+}
