@@ -1,0 +1,14 @@
+{
+  "experiment": "v273-group-gate-h2-activation-logit-audit",
+  "source_run": 37019193261,
+  "source_release": "v273-group-gate-37019193261",
+  "previous_neuron_audit_run": 37172371813,
+  "training": false,
+  "target_layer": "v240_cardinality_hidden2",
+  "questions": [
+    "how hidden2 activations differ on K3 regressed/corrected cases",
+    "how each hidden2 neuron contributes to K3-vs-K2 and K3-vs-K4 margins",
+    "whether high-impact intervention neurons are activation-driven, output-weight-driven, or both"
+  ],
+  "automatic_promotion": false
+}
