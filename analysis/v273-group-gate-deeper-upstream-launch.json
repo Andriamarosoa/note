@@ -1,0 +1,43 @@
+{
+  "experiment": "v273-group-gate-deeper-upstream-attribution",
+  "source_run": 37019193261,
+  "previous_upstream_run": 37179113094,
+  "training": false,
+  "spectral": {
+    "factors": [
+      "conv1 representation",
+      "conv2 kernel",
+      "conv2 bias",
+      "conv3 kernel"
+    ],
+    "conv3_bias": "held learned after prior near-zero effect",
+    "changed_branch": "spectral_max only",
+    "focused_hidden1_units": [
+      23,
+      158,
+      135
+    ]
+  },
+  "candidate": {
+    "factors": [
+      "cluster_hidden1 representation",
+      "cluster_hidden2 kernel",
+      "cluster_hidden2 bias"
+    ],
+    "candidate_context_dense": "held learned",
+    "changed_branch": "candidate_context only",
+    "focused_hidden1_units": [
+      73,
+      104,
+      109
+    ]
+  },
+  "downstream": "cardinality hidden1/hidden2/output held learned-gate",
+  "target_hidden2_neuron": 37,
+  "populations": {
+    "k3_regressions": 48,
+    "k3_corrections": 29,
+    "learned_correct_k3": 293
+  },
+  "automatic_promotion": false
+}
