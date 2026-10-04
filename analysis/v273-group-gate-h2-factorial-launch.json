@@ -1,0 +1,22 @@
+{
+  "experiment": "v273-group-gate-h2-factorial-audit",
+  "source_run": 37019193261,
+  "source_release": "v273-group-gate-37019193261",
+  "previous_activation_logit_run": 37176725529,
+  "training": false,
+  "design": "2x2 hidden2 representation source x final cardinality output-weight source, plus per-neuron activation-only/output-row-only/both interventions",
+  "populations": {
+    "k3_regressions": 48,
+    "k3_corrections": 29,
+    "learned_correct_k3": 293
+  },
+  "evaluate": [
+    "K2",
+    "K3",
+    "K4",
+    "Cluster A",
+    "48 regressions",
+    "29 corrections"
+  ],
+  "automatic_promotion": false
+}
