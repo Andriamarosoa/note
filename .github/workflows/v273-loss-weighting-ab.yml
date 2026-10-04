@@ -1,4 +1,4 @@
-name: V27.3 Learned Gate Loss Weighting A/B
+name: V27.3 Learned Gate Targeted K2/K4 Weighting A/B
 
 on:
   push:
@@ -58,24 +58,28 @@ jobs:
           toy=np.array([0,0,0,1,1,2,2,3,4,5,6],dtype=np.int32)
           u=class_weight_table('uniform',toy)
           w=class_weight_table('sqrt_balanced',toy)
+          t=class_weight_table('targeted_k2k4',toy)
           assert np.allclose(u,1.0)
           assert np.isfinite(w).all() and np.all(w>0)
+          assert np.allclose(t[[0,1,3,5,6]],1.0)
+          assert np.isclose(t[2],w[2]) and np.isclose(t[4],w[4])
           print({'initial_hash':weight_hash(a),'trainable_params':pa,
-                 'uniform':u.tolist(),'sqrt_balanced_example':w.tolist()})
+                 'uniform':u.tolist(),'sqrt_balanced_example':w.tolist(),
+                 'targeted_k2k4_example':t.tolist()})
           PY
 
       - name: Create prerelease
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$TAG"             --repo "${{ github.repository }}"             --target "${{ github.sha }}"             --prerelease             --title "V27.3 learned_gate loss weighting A/B"             --notes "Matched fold3 A/B on the learned_gate architecture. Only intervention: uniform sample weights versus inverse-square-root class-frequency weights derived from final_fit labels. Same initialization, seed, epoch order, 31 frames and 8 epochs. Arms train in parallel. No automatic promotion."
+          gh release create "$TAG"             --repo "${{ github.repository }}"             --target "${{ github.sha }}"             --prerelease             --title "V27.3 learned_gate targeted K2/K4 weighting A/B"             --notes "Matched fold3 A/B on the learned_gate architecture. Only intervention: uniform sample weights versus targeted K2/K4 weights, where K2 and K4 reuse their inverse-square-root class-frequency weights and all other K stay at 1. Same initialization, seed, epoch order, 31 frames and 8 epochs. Arms train in parallel. No automatic promotion."
 
   train:
     needs: preflight
     strategy:
       fail-fast: false
       matrix:
-        arm: [uniform, sqrt_balanced]
+        arm: [uniform, targeted_k2k4]
     runs-on: ubuntu-24.04
     timeout-minutes: 300
     steps:
@@ -133,6 +137,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install summary runtime
+        run: python -m pip install numpy==1.26.4
+
       - uses: actions/download-artifact@v4
         with:
           pattern: v273-loss-weighting-*
@@ -141,9 +152,9 @@ jobs:
 
       - name: Normalize arm directories
         run: |
-          mkdir -p model/input/uniform model/input/sqrt_balanced
+          mkdir -p model/input/uniform model/input/targeted_k2k4
           cp -a model/arms/v273-loss-weighting-uniform/. model/input/uniform/
-          cp -a model/arms/v273-loss-weighting-sqrt_balanced/. model/input/sqrt_balanced/
+          cp -a model/arms/v273-loss-weighting-targeted_k2k4/. model/input/targeted_k2k4/
 
       - name: Summarize matched A/B
         run: |
