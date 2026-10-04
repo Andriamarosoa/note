@@ -1,0 +1,21 @@
+{
+  "experiment": "v273-learned-gate-loss-weighting-ab",
+  "source_learned_gate_run": 37019193261,
+  "source_corrective_run": 37184047178,
+  "architecture": "learned_gate unchanged",
+  "fold": 3,
+  "frames": 31,
+  "epochs": 8,
+  "arms": {
+    "uniform": "sample_weight = 1",
+    "sqrt_balanced": "inverse-square-root class-frequency weights derived from final_fit only"
+  },
+  "matched": {
+    "same_initialization": true,
+    "same_seed": true,
+    "same_epoch_order": true,
+    "same_architecture": true,
+    "parallel_jobs": true
+  },
+  "automatic_promotion": false
+}
