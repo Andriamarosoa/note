@@ -1,0 +1,34 @@
+{
+  "experiment": "v273-group-gate-conv1-slices-clusternorm-audit",
+  "source_run": 37019193261,
+  "previous_conv1_clusterh1_run": 37179910641,
+  "training": false,
+  "spectral": {
+    "intervention": "single conv1 kernel input-channel slice and single output-filter slice swaps from always_on into learned",
+    "downstream": "conv1 bias + conv2/conv3 + cardinality all learned",
+    "focused_hidden1_units": [
+      23,
+      158,
+      135
+    ]
+  },
+  "candidate": {
+    "factors": [
+      "collective_cluster_representation source",
+      "cluster_norm gamma",
+      "cluster_norm beta"
+    ],
+    "downstream": "cluster_hidden1/2 + candidate_context + cardinality all learned",
+    "focused_hidden1_units": [
+      73,
+      104,
+      109
+    ]
+  },
+  "populations": {
+    "k3_regressions": 48,
+    "k3_corrections": 29,
+    "learned_correct_k3": 293
+  },
+  "automatic_promotion": false
+}
