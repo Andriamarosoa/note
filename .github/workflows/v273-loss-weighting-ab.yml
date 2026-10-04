@@ -1,4 +1,4 @@
-name: V27.3 Learned Gate Half K2/K3/K4 Weighting A/B
+name: V27.3 Learned Gate K2/K3 Half K4 Quarter A/B
 
 on:
   push:
@@ -59,29 +59,30 @@ jobs:
           toy=np.array([0,0,0,1,1,2,2,3,4,5,6],dtype=np.int32)
           u=class_weight_table('uniform',toy)
           w=class_weight_table('sqrt_balanced',toy)
-          t=class_weight_table('targeted_k234_half',toy)
+          t=class_weight_table('targeted_k23_half_k4_quarter',toy)
           assert np.allclose(u,1.0)
           assert np.isfinite(w).all() and np.all(w>0)
           assert np.allclose(t[[0,1,5,6]],1.0)
-          for cls in (2,3,4):
-              assert np.isclose(t[cls],1.0+0.5*(w[cls]-1.0))
+          assert np.isclose(t[2],1.0+0.5*(w[2]-1.0))
+          assert np.isclose(t[3],1.0+0.5*(w[3]-1.0))
+          assert np.isclose(t[4],1.0+0.25*(w[4]-1.0))
           print({'initial_hash':weight_hash(a),'trainable_params':pa,
                  'uniform':u.tolist(),'sqrt_balanced_example':w.tolist(),
-                 'targeted_k234_half_example':t.tolist()})
+                 'targeted_k23_half_k4_quarter_example':t.tolist()})
           PY
 
       - name: Create prerelease
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$TAG"             --repo "${{ github.repository }}"             --target "${{ github.sha }}"             --prerelease             --title "V27.3 learned_gate half K2/K3/K4 weighting A/B"             --notes "Matched fold3 comparison on the learned_gate architecture. The uniform control is frozen from run 37208199201 and is not retrained. Experimental arm: K2/K3/K4 weights are halfway from uniform to their sqrt-balanced values; K0/K1/K5/K6 remain 1. No automatic promotion."
+          gh release create "$TAG"             --repo "${{ github.repository }}"             --target "${{ github.sha }}"             --prerelease             --title "V27.3 learned_gate K2/K3 half + K4 quarter A/B"             --notes "Matched fold3 comparison on the learned_gate architecture. The uniform control is frozen from run 37208199201 and is not retrained. Experimental arm: K2/K3 are halfway from uniform to sqrt-balanced, K4 is only one quarter toward sqrt-balanced, and K0/K1/K5/K6 remain 1. No automatic promotion."
 
   train:
     needs: preflight
     strategy:
       fail-fast: false
       matrix:
-        arm: [targeted_k234_half]
+        arm: [targeted_k23_half_k4_quarter]
     runs-on: ubuntu-24.04
     timeout-minutes: 300
     steps:
@@ -148,14 +149,14 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: v273-loss-weighting-targeted_k234_half
-          path: model/arms/v273-loss-weighting-targeted_k234_half
+          name: v273-loss-weighting-targeted_k23_half_k4_quarter
+          path: model/arms/v273-loss-weighting-targeted_k23_half_k4_quarter
 
       - name: Restore validated frozen uniform control
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          mkdir -p model/reference-uniform model/input/uniform model/input/targeted_k234_half
+          mkdir -p model/reference-uniform model/input/uniform model/input/targeted_k23_half_k4_quarter
           gh release download "$UNIFORM_REFERENCE_TAG"             --repo "${{ github.repository }}"             --pattern v273-loss-weighting-uniform.tgz             --dir model/reference-uniform
           tar -xzf model/reference-uniform/v273-loss-weighting-uniform.tgz -C model/input/uniform
           test -f model/input/uniform/report.json
@@ -163,9 +164,9 @@ jobs:
 
       - name: Normalize experimental arm directory
         run: |
-          cp -a model/arms/v273-loss-weighting-targeted_k234_half/. model/input/targeted_k234_half/
-          test -f model/input/targeted_k234_half/report.json
-          test -f model/input/targeted_k234_half/predictions.npz
+          cp -a model/arms/v273-loss-weighting-targeted_k23_half_k4_quarter/. model/input/targeted_k23_half_k4_quarter/
+          test -f model/input/targeted_k23_half_k4_quarter/report.json
+          test -f model/input/targeted_k23_half_k4_quarter/predictions.npz
 
       - name: Summarize matched A/B
         run: |
