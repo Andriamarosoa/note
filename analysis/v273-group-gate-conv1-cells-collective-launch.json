@@ -1,0 +1,44 @@
+{
+  "experiment": "v273-group-gate-conv1-cells-collective-audit",
+  "source_run": 37019193261,
+  "previous_slice_norm_run": 37180560272,
+  "training": false,
+  "spectral": {
+    "channel_semantics": {
+      "0": "log_power",
+      "1": "positive_pre",
+      "2": "flux",
+      "3": "time_coord",
+      "4": "frequency_coord"
+    },
+    "intervention": "for channels 0 and 1, replace one conv1 kernel cell slice [:,:,channel,filter] at a time for all 32 output filters",
+    "downstream": "conv1 bias + conv2/conv3 + cardinality held learned-gate",
+    "focused_hidden1_units": [
+      23,
+      158,
+      135
+    ]
+  },
+  "candidate": {
+    "components": [
+      "mean_pool",
+      "max_pool",
+      "attention_pool",
+      "scaled_sum_pool",
+      "cluster_stats"
+    ],
+    "intervention": "all 2^5 learned/control source combinations before learned cluster_norm",
+    "downstream": "cluster_norm gamma/beta + cluster_hidden1/2 + candidate_context + cardinality held learned-gate",
+    "focused_hidden1_units": [
+      73,
+      104,
+      109
+    ]
+  },
+  "populations": {
+    "k3_regressions": 48,
+    "k3_corrections": 29,
+    "learned_correct_k3": 293
+  },
+  "automatic_promotion": false
+}
