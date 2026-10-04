@@ -1,0 +1,20 @@
+{
+  "experiment": "v273-group-gate-h2-neuron-audit",
+  "source_run": 37019193261,
+  "source_release": "v273-group-gate-37019193261",
+  "previous_head_component_run": 37076113134,
+  "training": false,
+  "target_layer": "v240_cardinality_hidden2",
+  "target_component": "kernel",
+  "intervention": "replace one output-neuron column at a time from always_on into learned_gate",
+  "cumulative_order": "control-vs-learned weight-delta norm only",
+  "evaluate": [
+    "K2",
+    "K3",
+    "K4",
+    "Cluster A",
+    "48 K3 regressions",
+    "293 learned K3 correct"
+  ],
+  "automatic_promotion": false
+}
