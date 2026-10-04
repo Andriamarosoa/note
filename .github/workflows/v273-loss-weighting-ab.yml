@@ -22,6 +22,7 @@ env:
   TF_NUM_INTEROP_THREADS: '2'
   OMP_NUM_THREADS: '2'
   TAG: v273-loss-weighting-${{ github.run_id }}
+  UNIFORM_REFERENCE_TAG: v273-loss-weighting-37208199201
 
 jobs:
   preflight:
@@ -72,14 +73,14 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$TAG"             --repo "${{ github.repository }}"             --target "${{ github.sha }}"             --prerelease             --title "V27.3 learned_gate targeted K2/K4 weighting A/B"             --notes "Matched fold3 A/B on the learned_gate architecture. Only intervention: uniform sample weights versus targeted K2/K4 weights, where K2 and K4 reuse their inverse-square-root class-frequency weights and all other K stay at 1. Same initialization, seed, epoch order, 31 frames and 8 epochs. Arms train in parallel. No automatic promotion."
+          gh release create "$TAG"             --repo "${{ github.repository }}"             --target "${{ github.sha }}"             --prerelease             --title "V27.3 learned_gate targeted K2/K4 weighting A/B"             --notes "Matched fold3 comparison on the learned_gate architecture. The uniform control is frozen from run 37208199201 (tag v273-loss-weighting-37208199201) and is not retrained. Only the experimental arm is trained. No automatic promotion."
 
   train:
     needs: preflight
     strategy:
       fail-fast: false
       matrix:
-        arm: [uniform, targeted_k2k4]
+        arm: [targeted_k2k4]
     runs-on: ubuntu-24.04
     timeout-minutes: 300
     steps:
@@ -146,15 +147,24 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          pattern: v273-loss-weighting-*
-          path: model/arms
-          merge-multiple: false
+          name: v273-loss-weighting-targeted_k2k4
+          path: model/arms/v273-loss-weighting-targeted_k2k4
 
-      - name: Normalize arm directories
+      - name: Restore validated frozen uniform control
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          mkdir -p model/input/uniform model/input/targeted_k2k4
-          cp -a model/arms/v273-loss-weighting-uniform/. model/input/uniform/
+          mkdir -p model/reference-uniform model/input/uniform model/input/targeted_k2k4
+          gh release download "$UNIFORM_REFERENCE_TAG"             --repo "${{ github.repository }}"             --pattern v273-loss-weighting-uniform.tgz             --dir model/reference-uniform
+          tar -xzf model/reference-uniform/v273-loss-weighting-uniform.tgz -C model/input/uniform
+          test -f model/input/uniform/report.json
+          test -f model/input/uniform/predictions.npz
+
+      - name: Normalize experimental arm directory
+        run: |
           cp -a model/arms/v273-loss-weighting-targeted_k2k4/. model/input/targeted_k2k4/
+          test -f model/input/targeted_k2k4/report.json
+          test -f model/input/targeted_k2k4/predictions.npz
 
       - name: Summarize matched A/B
         run: |
