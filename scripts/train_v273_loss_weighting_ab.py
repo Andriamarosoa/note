@@ -5,6 +5,7 @@ No architecture change. The only intervention is the training loss sample weight
 - sqrt_balanced: inverse-square-root class-frequency weights derived only from final_fit.
 - targeted_k2k4: keep uniform weights except K2/K4, which reuse their sqrt-balanced weights.
 - targeted_k234_half: K2/K3/K4 move halfway from uniform (1.0) toward sqrt-balanced weights.
+- targeted_k23_half_k4_quarter: K2/K3 move halfway, K4 only one quarter toward sqrt-balanced.
 
 Each arm is trained independently with identical initialization, seed, fold3 split,
 epoch order, 31 frames and 8 epochs. Outer fold is evaluation-only.
@@ -25,7 +26,7 @@ from scripts.v273_window_experiment import (
     load_bundle, batch_inputs, epoch_order, array_hash, require
 )
 
-ARMS=("uniform","sqrt_balanced","targeted_k2k4","targeted_k234_half")
+ARMS=("uniform","sqrt_balanced","targeted_k2k4","targeted_k234_half","targeted_k23_half_k4_quarter")
 
 
 def class_weight_table(arm, fit_k):
@@ -44,6 +45,13 @@ def class_weight_table(arm, fit_k):
         out=np.ones(7,np.float32)
         for cls in (2,3,4):
             out[cls]=1.0+0.5*(balanced[cls]-1.0)
+        return out
+    if arm=="targeted_k23_half_k4_quarter":
+        balanced=v260.class_weights(np.asarray(fit_k,np.int32))
+        out=np.ones(7,np.float32)
+        out[2]=1.0+0.5*(balanced[2]-1.0)
+        out[3]=1.0+0.5*(balanced[3]-1.0)
+        out[4]=1.0+0.25*(balanced[4]-1.0)
         return out
     raise ValueError(arm)
 
