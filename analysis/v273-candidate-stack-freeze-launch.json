@@ -1,0 +1,32 @@
+{
+  "experiment": "v273-candidate-stack-freeze",
+  "evidence": {
+    "residual_transplant_run": 37245028798,
+    "candidate_hidden1_transplant": {
+      "global_exact": 0.8367,
+      "poly_exact": 0.40223,
+      "low_net_vs_current": 23,
+      "poly_net_vs_current": 12,
+      "total_net_vs_current": 35
+    }
+  },
+  "anchor_run": 37208199201,
+  "current_reference_run": 37233793945,
+  "weighting": "targeted_k23_half_k4_quarter",
+  "frozen_layers": [
+    "candidate_norm",
+    "candidate_hidden1",
+    "candidate_hidden2",
+    "cardinality"
+  ],
+  "rationale": "candidate_hidden1 is the strongest residual causal layer; restoring it to uniform improved both low-K and poly correctness in the no-training audit while the adjacent candidate_norm and candidate_hidden2 were already frozen.",
+  "matched": {
+    "same_uniform_anchor": true,
+    "same_seed": true,
+    "same_epoch_order": true,
+    "same_weighting": true,
+    "same_epochs": 8,
+    "outer_evaluation_only": true
+  },
+  "automatic_promotion": false
+}
