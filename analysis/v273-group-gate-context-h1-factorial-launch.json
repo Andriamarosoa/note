@@ -1,0 +1,24 @@
+{
+  "experiment": "v273-group-gate-context-h1-factorial-audit",
+  "source_run": 37019193261,
+  "source_release": "v273-group-gate-37019193261",
+  "previous_h1_h2_factorial_run": 37178189640,
+  "training": false,
+  "design": "2x2x2 cardinality_context source x hidden1 kernel source x hidden1 bias source; downstream hidden2/output held learned-gate",
+  "target_hidden2_neuron": 37,
+  "populations": {
+    "k3_regressions": 48,
+    "k3_corrections": 29,
+    "learned_correct_k3": 293
+  },
+  "evaluate": [
+    "K2",
+    "K3",
+    "K4",
+    "Cluster A",
+    "48 regressions",
+    "29 corrections",
+    "hidden2 neuron 37 activation"
+  ],
+  "automatic_promotion": false
+}
