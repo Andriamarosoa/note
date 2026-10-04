@@ -1,4 +1,4 @@
-name: V27.3 Learned Gate K2/K3 Half K4 Quarter A/B
+name: V27.3 Learned Gate K1/K5 Protection Isolation
 
 on:
   push:
@@ -59,30 +59,33 @@ jobs:
           toy=np.array([0,0,0,1,1,2,2,3,4,5,6],dtype=np.int32)
           u=class_weight_table('uniform',toy)
           w=class_weight_table('sqrt_balanced',toy)
-          t=class_weight_table('targeted_k23_half_k4_quarter',toy)
+          k1=class_weight_table('protect_k1',toy)
+          k5=class_weight_table('protect_k5_tenth',toy)
           assert np.allclose(u,1.0)
           assert np.isfinite(w).all() and np.all(w>0)
-          assert np.allclose(t[[0,1,5,6]],1.0)
-          assert np.isclose(t[2],1.0+0.5*(w[2]-1.0))
-          assert np.isclose(t[3],1.0+0.5*(w[3]-1.0))
-          assert np.isclose(t[4],1.0+0.25*(w[4]-1.0))
+          for t in (k1,k5):
+              assert np.isclose(t[2],1.0+0.5*(w[2]-1.0))
+              assert np.isclose(t[3],1.0+0.5*(w[3]-1.0))
+              assert np.isclose(t[4],1.0+0.25*(w[4]-1.0))
+          assert np.isclose(k1[1],w[1]) and np.isclose(k1[5],1.0)
+          assert np.isclose(k5[1],1.0) and np.isclose(k5[5],1.0+0.10*(w[5]-1.0))
           print({'initial_hash':weight_hash(a),'trainable_params':pa,
                  'uniform':u.tolist(),'sqrt_balanced_example':w.tolist(),
-                 'targeted_k23_half_k4_quarter_example':t.tolist()})
+                 'protect_k1_example':k1.tolist(),'protect_k5_tenth_example':k5.tolist()})
           PY
 
       - name: Create prerelease
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$TAG"             --repo "${{ github.repository }}"             --target "${{ github.sha }}"             --prerelease             --title "V27.3 learned_gate K2/K3 half + K4 quarter A/B"             --notes "Matched fold3 comparison on the learned_gate architecture. The uniform control is frozen from run 37208199201 and is not retrained. Experimental arm: K2/K3 are halfway from uniform to sqrt-balanced, K4 is only one quarter toward sqrt-balanced, and K0/K1/K5/K6 remain 1. No automatic promotion."
+          gh release create "$TAG"             --repo "${{ github.repository }}"             --target "${{ github.sha }}"             --prerelease             --title "V27.3 learned_gate K1/K5 protection isolation"             --notes "Uniform is frozen from run 37208199201. Two experimental arms run in parallel on top of the best K2/K3-half + K4-quarter profile: protect_k1 raises only K1 to its sqrt-balanced weight; protect_k5_tenth raises only K5 by one tenth of the way toward sqrt-balanced. No automatic promotion."
 
   train:
     needs: preflight
     strategy:
       fail-fast: false
       matrix:
-        arm: [targeted_k23_half_k4_quarter]
+        arm: [protect_k1, protect_k5_tenth]
     runs-on: ubuntu-24.04
     timeout-minutes: 300
     steps:
@@ -149,24 +152,28 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: v273-loss-weighting-targeted_k23_half_k4_quarter
-          path: model/arms/v273-loss-weighting-targeted_k23_half_k4_quarter
+          pattern: v273-loss-weighting-protect_*
+          path: model/arms
+          merge-multiple: false
 
       - name: Restore validated frozen uniform control
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          mkdir -p model/reference-uniform model/input/uniform model/input/targeted_k23_half_k4_quarter
+          mkdir -p model/reference-uniform model/input/uniform model/input/protect_k1 model/input/protect_k5_tenth
           gh release download "$UNIFORM_REFERENCE_TAG"             --repo "${{ github.repository }}"             --pattern v273-loss-weighting-uniform.tgz             --dir model/reference-uniform
           tar -xzf model/reference-uniform/v273-loss-weighting-uniform.tgz -C model/input/uniform
           test -f model/input/uniform/report.json
           test -f model/input/uniform/predictions.npz
 
-      - name: Normalize experimental arm directory
+      - name: Normalize experimental arm directories
         run: |
-          cp -a model/arms/v273-loss-weighting-targeted_k23_half_k4_quarter/. model/input/targeted_k23_half_k4_quarter/
-          test -f model/input/targeted_k23_half_k4_quarter/report.json
-          test -f model/input/targeted_k23_half_k4_quarter/predictions.npz
+          cp -a model/arms/v273-loss-weighting-protect_k1/. model/input/protect_k1/
+          cp -a model/arms/v273-loss-weighting-protect_k5_tenth/. model/input/protect_k5_tenth/
+          test -f model/input/protect_k1/report.json
+          test -f model/input/protect_k1/predictions.npz
+          test -f model/input/protect_k5_tenth/report.json
+          test -f model/input/protect_k5_tenth/predictions.npz
 
       - name: Summarize matched A/B
         run: |
