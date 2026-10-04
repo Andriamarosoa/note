@@ -1,0 +1,41 @@
+{
+  "experiment": "v273-group-gate-upstream-branch-attribution",
+  "source_run": 37019193261,
+  "source_release": "v273-group-gate-37019193261",
+  "previous_context_branch_run": 37178833782,
+  "training": false,
+  "spectral_path": {
+    "factors": [
+      "conv2 representation",
+      "conv3 kernel",
+      "conv3 bias"
+    ],
+    "changed_branch": "spectral_max only",
+    "focused_hidden1_units": [
+      23,
+      158,
+      135
+    ]
+  },
+  "candidate_path": {
+    "factors": [
+      "cluster_hidden2 representation",
+      "candidate_context kernel",
+      "candidate_context bias"
+    ],
+    "changed_branch": "candidate_context only",
+    "focused_hidden1_units": [
+      73,
+      104,
+      109
+    ]
+  },
+  "downstream": "hidden1, hidden2, final K0-K6 all held learned-gate",
+  "target_hidden2_neuron": 37,
+  "populations": {
+    "k3_regressions": 48,
+    "k3_corrections": 29,
+    "learned_correct_k3": 293
+  },
+  "automatic_promotion": false
+}
