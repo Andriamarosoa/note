@@ -1,0 +1,18 @@
+{
+  "experiment": "v273-current-weighted-transplant-audit",
+  "training": false,
+  "uniform_reference_run": 37208199201,
+  "weighted_reference_run": 37217693737,
+  "weighted_arm": "targeted_k23_half_k4_quarter",
+  "audit_scope": [
+    "whole causal layer groups",
+    "every individual weight-bearing layer",
+    "358 uniform-only regressions",
+    "279 weighted-only corrections",
+    "K0/K1/K2/K3/K4/K5/K6",
+    "old failure clusters A/B"
+  ],
+  "decision_rule": "Do not start a new training run until the audit identifies a localized parameter group that recovers regressions while preserving most weighted-only corrections and polyphonic gains.",
+  "outer_used_for_training": false,
+  "automatic_promotion": false
+}
