@@ -1,0 +1,21 @@
+{
+  "experiment": "v273-class-bias-calibration",
+  "base_outer_run": 37217693737,
+  "uniform_reference_run": 37208199201,
+  "base_arm": "targeted_k23_half_k4_quarter",
+  "calibrator": {
+    "type": "bias-only multiclass maximum likelihood",
+    "free_parameters": 6,
+    "identification": "b0 fixed during fit; centered after fit",
+    "training_folds": [
+      1,
+      2,
+      4
+    ],
+    "validation_fold": 0,
+    "outer_fold": 3,
+    "objective": "minimum NLL on fold 0 only"
+  },
+  "outer_used_for_selection": false,
+  "automatic_promotion": false
+}
