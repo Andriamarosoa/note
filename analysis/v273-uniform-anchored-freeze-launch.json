@@ -1,0 +1,38 @@
+{
+  "experiment": "v273-uniform-anchored-selective-freeze",
+  "evidence": {
+    "full_transplant_audit_run": 37231335252,
+    "targeted_combination_audit_run": 37232493222,
+    "best_localized_combination": [
+      "candidate_hidden2",
+      "cardinality",
+      "candidate_norm"
+    ],
+    "observed_transplant": {
+      "global_exact": 0.833431507297598,
+      "poly_exact": 0.3712544438801422,
+      "K0_exact": 0.9727758872143899,
+      "K1_exact": 0.660495867768595,
+      "K2_exact": 0.3213399503722084,
+      "K3_exact": 0.4442675159235669,
+      "K4_exact": 0.4765432098765432,
+      "net_vs_weighted": 40
+    }
+  },
+  "anchor_run": 37208199201,
+  "weighting": "targeted_k23_half_k4_quarter",
+  "arms": {
+    "all_trainable": "uniform anchor + weighted fine-tune, no frozen base layers",
+    "freeze_candidate_hidden2": "uniform anchor + weighted fine-tune, candidate_hidden2 frozen",
+    "freeze_local_combo": "uniform anchor + weighted fine-tune, candidate_norm + candidate_hidden2 + cardinality frozen"
+  },
+  "matched": {
+    "same_anchor_checkpoint": true,
+    "same_weighting": true,
+    "same_seed": true,
+    "same_epoch_order": true,
+    "same_epochs": 8,
+    "outer_evaluation_only": true
+  },
+  "automatic_promotion": false
+}
