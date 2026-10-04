@@ -1,55 +1,65 @@
-"""Summarize matched V27.3 learned_gate loss-weighting A/B."""
+"""Summarize K1/K5 protection experiments against the frozen V27.3 uniform control."""
 from __future__ import annotations
 import argparse, json
 from pathlib import Path
 import numpy as np
 from scripts.train_v273_group_gate_ab import transitions
 
-ARMS=("uniform","targeted_k23_half_k4_quarter")
+CONTROL="uniform"
+ARMS=("protect_k1","protect_k5_tenth")
+
+def load_arm(root, arm):
+    d=root/arm
+    report=json.loads((d/"report.json").read_text())
+    with np.load(d/"predictions.npz",allow_pickle=False) as z:
+        pred={k:np.asarray(z[k]) for k in z.files}
+    return report,pred
 
 def main(args):
     reports={}
     preds={}
+    reports[CONTROL],preds[CONTROL]=load_arm(args.input,CONTROL)
     for arm in ARMS:
-        d=args.input/arm
-        reports[arm]=json.loads((d/"report.json").read_text())
-        with np.load(d/"predictions.npz",allow_pickle=False) as z:
-            preds[arm]={k:np.asarray(z[k]) for k in z.files}
+        reports[arm],preds[arm]=load_arm(args.input,arm)
 
-    a=preds["uniform"]; b=preds["targeted_k23_half_k4_quarter"]
-    if not np.array_equal(a["global_index"],b["global_index"]) or not np.array_equal(a["k"],b["k"]):
-        raise RuntimeError("population mismatch")
-    k=a["k"]; pa=a["predicted"]; pb=b["predicted"]
+    base=preds[CONTROL]
+    k=base["k"]
     poly=k>=2
+    paired={}
+    for arm in ARMS:
+        p=preds[arm]
+        if not np.array_equal(base["global_index"],p["global_index"]) or not np.array_equal(k,p["k"]):
+            raise RuntimeError(f"population mismatch: {arm}")
+        paired[arm]={
+            "all":transitions(k,base["predicted"],p["predicted"]),
+            "poly":transitions(k[poly],base["predicted"][poly],p["predicted"][poly]),
+        }
 
-    paired={
-        "all":transitions(k,pa,pb),
-        "poly":transitions(k[poly],pa[poly],pb[poly]),
-    }
-    out={"experiment":"v273_learned_gate_loss_weighting_ab","reports":reports,"paired":paired}
+    out={"experiment":"v273_k1_k5_protection_isolation","reports":reports,"paired":paired}
     args.output.mkdir(parents=True,exist_ok=True)
     (args.output/"report.json").write_text(json.dumps(out,indent=2,sort_keys=True)+"\n")
 
-    u=reports["uniform"]["metrics"]; w=reports["targeted_k23_half_k4_quarter"]["metrics"]
+    u=reports[CONTROL]["metrics"]
     lines=[
-        "# V27.3 learned_gate K2/K3 half + K4 quarter weighting A/B","",
-        "| Mesure | Uniform | K2/K3 half + K4 quarter | Delta |",
-        "|---|---:|---:|---:|",
-        f"| exact global | {100*u['exact']:.3f}% | {100*w['exact']:.3f}% | {100*(w['exact']-u['exact']):+.3f} pt |",
-        f"| exact poly | {100*u['poly_exact']:.3f}% | {100*w['poly_exact']:.3f}% | {100*(w['poly_exact']-u['poly_exact']):+.3f} pt |",
+        "# V27.3 K1/K5 protection isolation","",
+        "| Arm | Global | Δ global | Poly | Δ poly | K1 | K2 | K3 | K4 | K5 | Under | Over |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
     ]
-    for v in (2,3,4):
-        x=u["by_k"][str(v)]["exact"]; y=w["by_k"][str(v)]["exact"]
-        lines.append(f"| K{v} exact | {100*x:.3f}% | {100*y:.3f}% | {100*(y-x):+.3f} pt |")
-    lines += [
-        f"| under | {u['under']} | {w['under']} | {w['under']-u['under']:+d} |",
-        f"| over | {u['over']} | {w['over']} | {w['over']-u['over']:+d} |",
-        "",
-        f"Paired global net: {paired['all']['net_correct']:+d}.",
-        f"Paired poly net: {paired['poly']['net_correct']:+d}.",
-        "",
-        "Aucune promotion automatique.",
-    ]
+    for arm in ARMS:
+        m=reports[arm]["metrics"]
+        def ex(v):
+            x=m["by_k"][str(v)]["exact"]
+            return "n/a" if x is None else f"{100*x:.3f}%"
+        lines.append(
+            f"| {arm} | {100*m['exact']:.3f}% | {100*(m['exact']-u['exact']):+.3f} pt | "
+            f"{100*m['poly_exact']:.3f}% | {100*(m['poly_exact']-u['poly_exact']):+.3f} pt | "
+            f"{ex(1)} | {ex(2)} | {ex(3)} | {ex(4)} | {ex(5)} | {m['under']} | {m['over']} |"
+        )
+        lines.append(
+            f"Paired {arm}: global {paired[arm]['all']['net_correct']:+d}; "
+            f"poly {paired[arm]['poly']['net_correct']:+d}."
+        )
+    lines += ["","Uniform is frozen from run 37208199201. No automatic promotion."]
     (args.output/"report.md").write_text("\n".join(lines)+"\n")
     print("\n".join(lines))
 
