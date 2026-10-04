@@ -1,0 +1,15 @@
+{
+  "experiment": "v273-targeted-transplant-combinations",
+  "training": false,
+  "source_audit_run": 37231335252,
+  "candidate_layers": [
+    "candidate_hidden2",
+    "cardinality",
+    "v240_cardinality_hidden2",
+    "candidate_norm",
+    "cluster_norm"
+  ],
+  "combinations": 32,
+  "decision_rule": "Only proceed to training if a localized combination improves global exact over the current weighted checkpoint while retaining nearly all of its polyphonic gain and avoiding a major K3/K4 collapse.",
+  "automatic_promotion": false
+}
