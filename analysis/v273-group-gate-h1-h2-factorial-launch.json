@@ -1,0 +1,23 @@
+{
+  "experiment": "v273-group-gate-h1-h2-factorial-audit",
+  "source_run": 37019193261,
+  "source_release": "v273-group-gate-37019193261",
+  "previous_factorial_run": 37177169052,
+  "training": false,
+  "design": "2x2x2 hidden1 representation source x hidden2 kernel-column source x hidden2 bias source",
+  "downstream_output": "held learned-gate",
+  "populations": {
+    "k3_regressions": 48,
+    "k3_corrections": 29,
+    "learned_correct_k3": 293
+  },
+  "evaluate": [
+    "K2",
+    "K3",
+    "K4",
+    "Cluster A",
+    "48 regressions",
+    "29 corrections"
+  ],
+  "automatic_promotion": false
+}
