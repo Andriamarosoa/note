@@ -1,0 +1,22 @@
+{
+  "experiment": "v273-trained-corrective-abc",
+  "source_learned_gate_run": 37019193261,
+  "source_attribution_run": 37181923767,
+  "training": true,
+  "fold": 3,
+  "frames": 31,
+  "weighting": "uniform",
+  "epochs": 8,
+  "arms": {
+    "control": "learned_gate with corrective parameters connected at zero effect",
+    "pool_calib": "learned_gate + five identity-initialized learnable pooling scales before cluster_norm",
+    "pool_plus_spectral": "pool_calib + zero-initialized targeted residual on log_power/positive_pre -> conv1 filter 27"
+  },
+  "matched": {
+    "same_initial_weights": true,
+    "same_parameter_count": true,
+    "same_seed": true,
+    "same_epoch_order": true
+  },
+  "automatic_promotion": false
+}
