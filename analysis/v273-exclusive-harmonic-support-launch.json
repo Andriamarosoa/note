@@ -1,0 +1,26 @@
+{
+  "experiment": "v273-exclusive-harmonic-attack-support",
+  "source_cohort": "analysis/evidence/v273-residual-acoustics/evidence.zip :: acoustic/cases.jsonl",
+  "cases": 488,
+  "validation_folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "outer_fold_3_used": false,
+  "normal_audio_only": true,
+  "question": "Do false selected F0s reuse attack energy already explained by expected-note harmonic masks, while expected notes carry more exclusive attack support?",
+  "diagnostics": [
+    "expected unique_attack_fraction",
+    "selected-unmatched unique_attack_fraction",
+    "shared_attack_fraction",
+    "selected-unmatched overlap_with_expected_fraction",
+    "paired expected-minus-unmatched deltas",
+    "group and fold stratification"
+  ],
+  "prediction_changes": false,
+  "classifier_training": false,
+  "threshold_search": false,
+  "automatic_promotion": false
+}
