@@ -1,0 +1,29 @@
+{
+  "experiment": "v273-internal-b-low-fine-STFT-harmonic-evidence",
+  "basis": "README feature research returned 2026-10-05",
+  "population": "B_low + base prediction K3 + true K in {2,3}",
+  "validation_folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "outer_fold_3_used": false,
+  "audio_source": "official GuitarSet mono pickup mix",
+  "transition_representation": "positive post-minus-pre fine-STFT power around cluster start",
+  "f0_pool": "audio-only harmonic salience, 65-1800 Hz, no annotation completion",
+  "primary_features": [
+    "reconstruction_gain_2_to_3",
+    "missing_partial_penalty",
+    "third_marginal_gain",
+    "third_unique_support_ratio"
+  ],
+  "diagnostic_variants": [
+    "current structural features",
+    "harmonic evidence only",
+    "current + harmonic evidence"
+  ],
+  "primary_metric": "AUC true K2 vs true K3",
+  "target_research_signal": "mean AUC improvement >=0.02; aspirational stable AUC >=0.65",
+  "automatic_promotion": false
+}
