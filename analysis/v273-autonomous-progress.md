@@ -58,6 +58,10 @@ information nouvelle. Aucun nouvel entraînement neuronal complet.
 
 ## Commits, runs et reprise fiable
 
+- Critère de reconstruction et gardes statiques :
+  `ff48f26757203b86161bcb1272b1ff73c96fec31`. CI
+  [`37371872093`](https://github.com/Andriamarosoa/note/actions/runs/37371872093)
+  déclenché le 6 octobre 2026 et en attente au moment de ce checkpoint.
 - Point de départ de cette étape : `83dda55a7578443652a7de66e4aba8ee74656357`.
 - Classement/capacité : `45265a0ad4b3faa950121106bd8d1fcf3e08499c`.
   CI [`37367957693`](https://github.com/Andriamarosoa/note/actions/runs/37367957693)
