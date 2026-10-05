@@ -1,0 +1,28 @@
+{
+  "experiment": "v273-internal-minimal-pair-triplet-residual-exact-guard",
+  "motivation": "test whether the two register-invariant residual features alone can produce robust Exact-K 3->2 gains",
+  "population": "B_low + base prediction K3",
+  "training_population": "rows with true K in {2,3}",
+  "validation_folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "outer_fold_3_used": false,
+  "features": [
+    "best_pair_residual_ratio",
+    "best_triplet_residual_ratio"
+  ],
+  "classifier": "logistic C=1 class_weight=balanced",
+  "threshold": 0.5,
+  "action": "3->2 only",
+  "register_gating": false,
+  "evaluations": [
+    "held-out K2-vs-K3 AUC",
+    "paired global Exact-K delta after applying action to all valid B_low/base-K3 rows",
+    "K2/K3-only Exact-K delta",
+    "corrections/regressions and by-K net"
+  ],
+  "automatic_promotion": false
+}
