@@ -1,0 +1,69 @@
+name: V27.3 Current Residual Re-Clustering
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - 'analysis/v273-current-residual-clustering-launch.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: v273-current-residual-reclustering
+  cancel-in-progress: false
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TAG: v273-current-residual-clustering-${{ github.run_id }}
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: python -m pip install numpy==1.26.4 scikit-learn==1.4.2
+
+      - name: Restore feature sources and current predictions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p inputs/low-k inputs/acoustic inputs/current inputs/historical
+          gh release download v273-low-k-audit-36358846720             --repo "${{ github.repository }}"             --pattern low-k-audit.zip             --dir inputs
+          gh release download v273-acoustic-residual-36373588730             --repo "${{ github.repository }}"             --pattern acoustic-audit.zip             --dir inputs
+          unzip -q inputs/low-k-audit.zip -d inputs/low-k
+          unzip -q inputs/acoustic-audit.zip -d inputs/acoustic
+
+          gh release download v273-outer-robust-group-eval-37290794473             --repo "${{ github.repository }}"             --pattern predictions.npz             --dir inputs/current
+
+          gh release download v273-failure-clustering-36999901054             --repo "${{ github.repository }}"             --pattern v273-failure-clustering-rows.csv             --dir inputs/historical
+
+      - name: Validate script
+        run: python -m py_compile scripts/cluster_v273_current_residual_failures.py
+
+      - name: Re-cluster current residual failures
+        run: |
+          python -B scripts/cluster_v273_current_residual_failures.py             --low-k inputs/low-k             --acoustic inputs/acoustic             --current-predictions inputs/current/predictions.npz             --historical-rows inputs/historical/v273-failure-clustering-rows.csv             --output output
+          cat output/v273-current-residual-clustering.md
+
+      - name: Publish current residual clustering
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$TAG"             --repo "${{ github.repository }}"             --target "${{ github.sha }}"             --prerelease             --title "V27.3 current residual K2/K3/K4 clustering"             --notes-file output/v273-current-residual-clustering.md
+          gh release upload "$TAG"             output/v273-current-residual-clustering.json             output/v273-current-residual-clustering.md             output/v273-current-residual-clustering-rows.csv             --repo "${{ github.repository }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-current-residual-clustering
+          path: output/
+          retention-days: 90
