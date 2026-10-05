@@ -1,0 +1,41 @@
+{
+  "experiment": "v273-internal-b-low-waveform-pitch-shift",
+  "motivation": "verify whether low-register K2/K3 harmonic evidence improves after a true duration-preserving waveform pitch shift, rather than magnitude-only spectral warping",
+  "population": "B_low + base prediction K3 + true K in {2,3}; low register defined from original FIT bottom tertile",
+  "validation_folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "outer_fold_3_used": false,
+  "views": [
+    {
+      "name": "x1",
+      "semitones": 0,
+      "factor": 1
+    },
+    {
+      "name": "x2",
+      "semitones": 12,
+      "factor": 2
+    },
+    {
+      "name": "x4",
+      "semitones": 24,
+      "factor": 4
+    }
+  ],
+  "pitch_shift_method": "librosa.effects.pitch_shift, duration-preserving, local pre+post waveform, then recompute fine-STFT and harmonic features",
+  "features": [
+    "best_pair_residual_ratio",
+    "best_triplet_residual_ratio",
+    "third_coefficient_fraction",
+    "third_unique_support_ratio"
+  ],
+  "tests": [
+    "train/evaluate on the same naturally-low rows under each waveform-shifted representation",
+    "train on natural high-register FIT rows and evaluate on waveform-shifted low-register validation rows"
+  ],
+  "automatic_promotion": false
+}
