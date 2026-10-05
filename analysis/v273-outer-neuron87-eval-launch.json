@@ -1,0 +1,23 @@
+{
+  "experiment": "v273-outer-eval-inner-selected-candidate_hidden1-neuron87",
+  "selection_source_run": 37265791941,
+  "selected_on_inner_val_fold": 0,
+  "selected_prefix": 1,
+  "selected_neurons": [
+    87
+  ],
+  "selection_rule": "maximize global correct subject to low-K net >= 0 and poly net >= 0 versus freeze_local_combo",
+  "inner_result": {
+    "global_net_vs_freeze_local_combo": 15,
+    "low_k01_net": 10,
+    "poly_net": 5,
+    "freeze_global_exact": 0.81313,
+    "selected_global_exact": 0.81407,
+    "freeze_poly_exact": 0.31881,
+    "selected_poly_exact": 0.32117
+  },
+  "outer_fold": 3,
+  "outer_evaluation_only": true,
+  "training": false,
+  "automatic_promotion": false
+}
