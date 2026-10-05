@@ -156,3 +156,5 @@ PYTHONPATH=.:src OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -B \
 
 Dépendances : Python 3.12.14, NumPy 1.26.4, SciPy 1.17.1 et
 scikit-learn 1.4.2.
+
+Suite : [audit de stabilité temporelle](README-temporal-stability-audit.md).

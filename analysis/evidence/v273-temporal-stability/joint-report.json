@@ -1,0 +1,247 @@
+{
+  "annotation_frequencies_used": false,
+  "automatic_promotion": false,
+  "control_max_probability_error": 0.0,
+  "folds": [
+    {
+      "fit_cv": {
+        "first_window": {
+          "applied": 346,
+          "corrections": 96,
+          "global_net": -78,
+          "other_k_actions": 76,
+          "regressions": 174,
+          "rows": 654
+        },
+        "joint_windows": {
+          "applied": 323,
+          "corrections": 85,
+          "global_net": -81,
+          "other_k_actions": 72,
+          "regressions": 166,
+          "rows": 654
+        }
+      },
+      "fold": 0,
+      "selected": null,
+      "val_fixed": {
+        "first_window": {
+          "applied": 124,
+          "corrections": 37,
+          "global_net": 4,
+          "other_k_actions": 54,
+          "regressions": 33,
+          "rows": 256
+        },
+        "joint_windows": {
+          "applied": 138,
+          "corrections": 40,
+          "global_net": -5,
+          "other_k_actions": 53,
+          "regressions": 45,
+          "rows": 256
+        }
+      },
+      "val_selected": {
+        "applied": 0,
+        "corrections": 0,
+        "global_net": 0,
+        "other_k_actions": 0,
+        "regressions": 0,
+        "rows": 256
+      }
+    },
+    {
+      "fit_cv": {
+        "first_window": {
+          "applied": 243,
+          "corrections": 44,
+          "global_net": -75,
+          "other_k_actions": 80,
+          "regressions": 119,
+          "rows": 477
+        },
+        "joint_windows": {
+          "applied": 241,
+          "corrections": 43,
+          "global_net": -74,
+          "other_k_actions": 81,
+          "regressions": 117,
+          "rows": 477
+        }
+      },
+      "fold": 1,
+      "selected": null,
+      "val_fixed": {
+        "first_window": {
+          "applied": 97,
+          "corrections": 30,
+          "global_net": -2,
+          "other_k_actions": 35,
+          "regressions": 32,
+          "rows": 178
+        },
+        "joint_windows": {
+          "applied": 84,
+          "corrections": 24,
+          "global_net": -3,
+          "other_k_actions": 33,
+          "regressions": 27,
+          "rows": 178
+        }
+      },
+      "val_selected": {
+        "applied": 0,
+        "corrections": 0,
+        "global_net": 0,
+        "other_k_actions": 0,
+        "regressions": 0,
+        "rows": 178
+      }
+    },
+    {
+      "fit_cv": {
+        "first_window": {
+          "applied": 201,
+          "corrections": 43,
+          "global_net": -63,
+          "other_k_actions": 52,
+          "regressions": 106,
+          "rows": 531
+        },
+        "joint_windows": {
+          "applied": 295,
+          "corrections": 64,
+          "global_net": -90,
+          "other_k_actions": 77,
+          "regressions": 154,
+          "rows": 531
+        }
+      },
+      "fold": 2,
+      "selected": null,
+      "val_fixed": {
+        "first_window": {
+          "applied": 69,
+          "corrections": 11,
+          "global_net": -9,
+          "other_k_actions": 38,
+          "regressions": 20,
+          "rows": 140
+        },
+        "joint_windows": {
+          "applied": 71,
+          "corrections": 8,
+          "global_net": -25,
+          "other_k_actions": 30,
+          "regressions": 33,
+          "rows": 140
+        }
+      },
+      "val_selected": {
+        "applied": 0,
+        "corrections": 0,
+        "global_net": 0,
+        "other_k_actions": 0,
+        "regressions": 0,
+        "rows": 140
+      }
+    },
+    {
+      "fit_cv": {
+        "first_window": {
+          "applied": 491,
+          "corrections": 125,
+          "global_net": -69,
+          "other_k_actions": 172,
+          "regressions": 194,
+          "rows": 870
+        },
+        "joint_windows": {
+          "applied": 489,
+          "corrections": 118,
+          "global_net": -95,
+          "other_k_actions": 158,
+          "regressions": 213,
+          "rows": 870
+        }
+      },
+      "fold": 4,
+      "selected": null,
+      "val_fixed": {
+        "first_window": {
+          "applied": 174,
+          "corrections": 59,
+          "global_net": 9,
+          "other_k_actions": 65,
+          "regressions": 50,
+          "rows": 271
+        },
+        "joint_windows": {
+          "applied": 192,
+          "corrections": 63,
+          "global_net": 1,
+          "other_k_actions": 67,
+          "regressions": 62,
+          "rows": 271
+        }
+      },
+      "val_selected": {
+        "applied": 0,
+        "corrections": 0,
+        "global_net": 0,
+        "other_k_actions": 0,
+        "regressions": 0,
+        "rows": 271
+      }
+    }
+  ],
+  "limitations": [
+    "Previously inspected internal folds, not untouched final validation.",
+    "Normal audio only; no compressed-path inference.",
+    "46.44 ms extra lookahead; foreign later onsets can enter.",
+    "Shared frequency set with independent amplitudes is not strict persistence."
+  ],
+  "neural_training": false,
+  "outer_fold_3_used": false,
+  "recordings": 122,
+  "selection": "FIT-only rotation; net, fewer regressions, fewer actions, arm order; abstain if net <= 0",
+  "source_sha256": {
+    "extraction": "859bd8dbe2b04f9718ff369c2327c49552e13ebfc66b357e003b3ad429bc773b",
+    "features": "57c53bfd9a00adcf0ecb83cce150007d2f343429d2d6fee044a5e9919757df57",
+    "protocol": "eebe6039c510b0ac8c2b6b5877943bde8dbd27cdcd5235bf307d180b41df36dc",
+    "script": "83196021e257456b47d3bacdb998900034b4e9c6bd27c2d55d03ed957528ada5"
+  },
+  "status": "completed",
+  "total_fixed": {
+    "first_window": {
+      "applied": 464,
+      "corrections": 137,
+      "global_net": 2,
+      "other_k_actions": 192,
+      "regressions": 135,
+      "rows": 845
+    },
+    "joint_windows": {
+      "applied": 485,
+      "corrections": 135,
+      "global_net": -32,
+      "other_k_actions": 183,
+      "regressions": 167,
+      "rows": 845
+    }
+  },
+  "total_selected": {
+    "applied": 0,
+    "corrections": 0,
+    "global_net": 0,
+    "other_k_actions": 0,
+    "regressions": 0,
+    "rows": 845
+  },
+  "unique_audio_rows": 1666,
+  "variants": [
+    "first_window",
+    "joint_windows"
+  ]
+}

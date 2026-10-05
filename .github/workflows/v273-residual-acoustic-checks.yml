@@ -27,11 +27,19 @@ on:
       - 'scripts/replay_v273_log_frequency_guard.py'
       - 'scripts/replay_v273_hann_shape_guard.py'
       - 'scripts/replay_v273_reconstruction_followups.py'
+      - 'scripts/audit_v273_temporal_stability.py'
+      - 'scripts/audit_v273_temporal_persistence_guard.py'
+      - 'scripts/diagnose_v273_temporal_stability.py'
+      - 'scripts/replay_v273_temporal_stability.py'
+      - 'test/test_v273_temporal_stability.py'
+      - 'analysis/v273-temporal-stability-protocol.md'
+      - 'analysis/v273-temporal-persistence-feature-protocol.md'
       - 'test/test_v273_candidate_ranking.py'
       - 'analysis/evidence/v273-residual-acoustics/**'
       - 'analysis/evidence/v273-harmonic-templates/**'
       - 'analysis/evidence/v273-candidate-ranking/**'
       - 'analysis/evidence/v273-reconstruction-criterion/**'
+      - 'analysis/evidence/v273-temporal-stability/**'
   workflow_dispatch:
 
 permissions:
@@ -73,8 +81,12 @@ jobs:
           scripts/replay_v273_log_frequency_guard.py
           scripts/replay_v273_hann_shape_guard.py
           scripts/replay_v273_reconstruction_followups.py
+          scripts/audit_v273_temporal_stability.py
+          scripts/audit_v273_temporal_persistence_guard.py
+          scripts/diagnose_v273_temporal_stability.py
+          scripts/replay_v273_temporal_stability.py
       - name: Check replay, ownership, matching and deterministic F0 ties
-        run: python -B -m unittest test.test_v273_residual_audit test.test_v273_residual_acoustics test.test_v273_harmonic_templates test.test_v273_candidate_ranking -v
+        run: python -B -m unittest test.test_v273_residual_audit test.test_v273_residual_acoustics test.test_v273_harmonic_templates test.test_v273_candidate_ranking test.test_v273_temporal_stability -v
       - name: Verify committed evidence archive
         run: |
           python - <<'PY'
@@ -171,4 +183,36 @@ jobs:
               assert actual == saved, 'reconstruction follow-up replay differs'
               print(json.dumps({'status': actual['status'], 'criterion_cases': actual['criterion_cases'],
                                 'unique_spectra': actual['unique_spectra']}, sort_keys=True))
+          PY
+      - name: Replay temporal spectra, diagnostics and all frozen inner models
+        run: |
+          python - <<'PY'
+          import hashlib, json, pathlib, tempfile, zipfile
+          from scripts.replay_v273_temporal_stability import verify
+          def extract(name, target):
+              root = pathlib.Path('analysis/evidence') / name
+              manifest = json.loads((root / 'checksums.json').read_text())
+              for name, digest in manifest['files'].items():
+                  assert hashlib.sha256((root / name).read_bytes()).hexdigest() == digest, name
+              with zipfile.ZipFile(root / 'evidence.zip') as z:
+                  assert set(z.namelist()) == set(manifest['archive_members'])
+                  for name, digest in manifest['archive_members'].items():
+                      raw = z.read(name)
+                      assert hashlib.sha256(raw).hexdigest() == digest, name
+                      path = pathlib.PurePosixPath(name)
+                      assert not path.is_absolute() and '..' not in path.parts
+                      destination = target / path
+                      destination.parent.mkdir(parents=True, exist_ok=True)
+                      destination.write_bytes(raw)
+          with tempfile.TemporaryDirectory() as temp:
+              temp = pathlib.Path(temp)
+              extract('v273-reconstruction-criterion', temp / 'reference')
+              extract('v273-residual-acoustics', temp / 'source')
+              extract('v273-temporal-stability', temp / 'new')
+              root = temp / 'new'
+              actual = verify(temp / 'reference/hann', root / 'temporal', root / 'diagnosis',
+                              root / 'persistence', temp / 'source/acoustic/cases.jsonl')
+              saved = json.loads((root / 'replay-check.json').read_text())
+              assert actual == saved, 'temporal replay differs'
+              print(json.dumps(actual, sort_keys=True))
           PY

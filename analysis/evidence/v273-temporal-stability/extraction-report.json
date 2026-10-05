@@ -1,0 +1,63 @@
+{
+  "added_lookahead_ms": 46.439909297052154,
+  "annotation_frequencies_used": false,
+  "first_window_max_frequency_error": 0.0,
+  "first_window_max_residual_error": 6.279698983036042e-16,
+  "first_window_max_spectrum_error": 0.0,
+  "folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "neural_training": false,
+  "outer_fold_3_used": false,
+  "padded_windows": [
+    6,
+    0,
+    0
+  ],
+  "pair_persistence_counts": {
+    "0": 379,
+    "1": 705,
+    "2": 582
+  },
+  "recordings": 122,
+  "runtime": {
+    "numpy": "1.26.4",
+    "python": "3.12.14",
+    "scikit-learn": "1.4.2",
+    "scipy": "1.17.1"
+  },
+  "source_data_md5": {
+    "annotation.zip": "b39b78e63d3446f2e54ddb7a54df9b10",
+    "audio_mono-pickup_mix.zip": "aecce79f425a44e2055e46f680e10f6a"
+  },
+  "source_manifests_sha256": {
+    "0": "ec4bdf90cbc99b373906c4bd3490562f12f22c3215088b61041e9f2f65afb3d4",
+    "1": "d981dfd99178dc5e288751cb627b68424c36c003c087ce896da5394a4ef33d08",
+    "2": "0669367359ae28c06a29202cb67d0c9759feec4fa58efc1226df9022e67848f6",
+    "4": "a4c8d36424d3fe16105725713ae738cf5650562d0f879d8be48982a5a597aa04"
+  },
+  "source_run": 37356100423,
+  "source_sha256": {
+    "config": "7c27989eb3fe330fdff203e388e76ae4c64d8b8e4838cab4d7c4622b4104451a",
+    "protocol": "eebe6039c510b0ac8c2b6b5877943bde8dbd27cdcd5235bf307d180b41df36dc",
+    "reference_features": "ef106d0b6a1bc9e067ac8dfa2640d21adafac44226648f28075d05d8994e5557",
+    "reference_spectra": "060b332e68cbd6716b6ae89ce01037790bcc4adc49f31c1171b4c858d9980b13",
+    "script": "83196021e257456b47d3bacdb998900034b4e9c6bd27c2d55d03ed957528ada5"
+  },
+  "status": "completed",
+  "total_lookahead_ms": 92.87981859410431,
+  "triplet_persistence_counts": {
+    "0": 223,
+    "1": 437,
+    "2": 592,
+    "3": 414
+  },
+  "unique_audio_rows": 1666,
+  "zero_residual_windows": [
+    0,
+    0
+  ]
+}

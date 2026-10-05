@@ -2,85 +2,83 @@
 
 ## Dernière étape terminée
 
-Audit du critère de reconstruction et deux corrections contrôlées, le 6 octobre
-2026. Base de cette étape : commit
-`83dda55a7578443652a7de66e4aba8ee74656357`. Le commit contenant ce fichier est
-le checkpoint de reprise. Résultats :
-[README](README-reconstruction-criterion-audit.md),
-[protocole](v273-reconstruction-criterion-protocol.md),
-[preuves](evidence/v273-reconstruction-criterion/).
+Audit de stabilité temporelle, le 6 octobre 2026. Point de départ :
+`d9f75cb23e14204615bf5a374629ba1f06c720f9`. Le commit contenant ce fichier
+est le checkpoint de cette étape.
 
-- Même cohorte de 488 cas, folds 0, 1, 2 et 4. Pool-64 complet dans 267/272 K3
-  et 213/216 K2. Annotations exclusivement diagnostiques.
-- Sur les 267 K3 couverts, gabarit `1/h²` : le choix libre retrouve 0, 1, 2 ou
-  3 notes dans 33, 98, 105 et 31 cas. L'oracle complet a un coût normalisé
-  supérieur de 0,03469 en médiane. Dans les groupes K3 dégradé/préservé :
-  0,06143 contre 0,01748.
-- Contrôle synthétique : 267/267 K3 complets pour les deux pentes, résidu maximal
-  `7,11e-15`. Rejeu des sorties réelles : écart zéro. Le solveur n'est pas la
-  source de l'écart observé sur les spectres réels.
-- Relations non exclusives des 400 composantes K3 non appariées avec `1/h²` :
-  157 harmoniques attendus, 132 voisines à 55–150 cents, 23 sous-harmoniques,
-  25 fondamentales étrangères, 89 harmoniques étrangers, 14 sous-harmoniques
-  étrangers et 83 non classées. Ces proximités ne prouvent pas une origine.
-- Pondération fixe log-fréquence `w(f)=65/f` : 146 corrections, 151 régressions,
-  213 actions autres K, net −5. Triplets K3 complets 30/272 contre 31 au contrôle.
-  Nets FIT −67, −85, −82, −79 ; rejet et abstention dans les quatre folds.
-- Réponse exacte Hann, pool-64 et `1/h²` : 125 corrections, 141 régressions,
-  186 actions autres K, net −16. Triplets K3 complets 29/272. Nets FIT
-  −90, −54, −69, −91 ; rejet et abstention dans les quatre folds.
-- Contrôle gaussien pool-64 / `1/h²` reproduit le +2 descriptif précédent :
-  137 corrections, 135 régressions. Il reste rejeté par FIT et non promu.
-- 29 tests locaux réussis. Rejeu des modèles : erreur de probabilité zéro.
-  Les 1 666 spectres sont archivés pour les prochains audits sans redécodage.
+[README](README-temporal-stability-audit.md),
+[protocole initial](v273-temporal-stability-protocol.md),
+[protocole de la feature directe](v273-temporal-persistence-feature-protocol.md),
+[preuves](evidence/v273-temporal-stability/).
 
-## Décision
+- Deux fenêtres post successives de 2 048 échantillons, avec le même pré.
+  Surcoût futur 46,44 ms, total 92,88 ms. Pool-64 produit par la première fenêtre,
+  saillance et gabarit gaussien `1/h²` figés ; aucune annotation en inférence.
+- Même 1 666 lignes, 122 enregistrements, 845 lignes VAL, 488 cas diagnostiques.
+  Folds 0, 1, 2, 4 exclusivement. Première fenêtre : spectres et fréquences
+  identiques à l'archive ; écart numérique résiduel maximal `6,28e-16`.
+- Sur K3, 313/405 composantes attendues du premier triplet persistent, contre
+  165/411 non appariées. Cette association ne discrimine pas correctement K2/K3 :
+  moyenne de fréquences persistantes 1,884 pour K2, 1,757 pour K3 ; AUC brute
+  « davantage de persistance => K3 » 0,4618. Aucun seuil sélectionné.
+- Critère conjoint : 135 corrections, 167 régressions, 183 actions autres K,
+  net VAL **−32**. Nets FIT **−81, −74, −90, −95** ; abstention partout.
+  Triplets complets 33/272 contre 31 ; couples complets 51/216 contre 47.
+- Feature directe de persistance ajoutée aux deux résidus initiaux :
+  124 corrections, 145 régressions, 191 actions autres K, net VAL **−21**.
+  Nets FIT **−70, −62, −78, −78** ; abstention partout.
+- Contrôle reproduit exactement 137 corrections, 135 régressions, net descriptif
+  +2 ; il reste rejeté sur FIT. Aucune variante promue.
+- Toutes les notes attendues des 488 cas gardent >=10 % de couverture Hann dans
+  la seconde fenêtre ; des notes étrangères y sont actives dans 126 K3 et 128 K2.
+  Nouvelles attaques étrangères dans cette fenêtre : 15 K3 et 16 K2. Ces comptes
+  de contexte ne prouvent pas une cause de l'échec.
+- 34 tests ciblés au total. Rejeu des 1 666 extractions, 488 traces, 16 modèles
+  finaux et 48 internes ; aucune relecture audio ni aucun réajustement, erreur de
+  probabilité zéro. Les spectres de la seconde fenêtre sont archivés.
 
-Conserver la base. Ne promouvoir ni la pondération log-fréquence, ni la réponse
-Hann, ni le contrôle à +2 descriptif. La disponibilité des fréquences, le choix
-de la pente, la mesure fréquentielle et la forme des pics ont maintenant des
-contrôles séparés. Aucun n'établit une correction Exact-K sélectionnable.
+## Décision et prochaine étape
 
-## Prochaine étape autorisée
+Conserver la base et rejeter les deux variantes temporelles. La persistance de
+fréquences sélectionnées n'est pas une correction Exact-K utile dans ces tests.
+Ne pas répéter les essais de pente, capacité, forme Hann, pondération log,
+critère temporel moyen ou feature de persistance sans information nouvelle.
 
-Tester une information qui ne réutilise pas uniquement le même spectre statique :
-stabilité temporelle des composantes sur deux fenêtres postérieures du chemin
-normal. Préenregistrer les fenêtres et le critère avant l'évaluation. Utiliser
-les 1 666 spectres archivés comme contrôle de la première fenêtre, mais redécoder
-l'audio vérifié uniquement si une seconde fenêtre absente de l'archive est
-nécessaire. Comparer d'abord la stabilité des choix sans annotations, puis
-évaluer toute feature/correction avec la même rotation FIT, tous vrais K inclus
-et abstention. Les annotations peuvent seulement expliquer après coup.
-
-Cette proposition est une hypothèse à contrôler, pas une cause établie. Ne pas
-relancer les grilles de pente, capacité, poids log-fréquence ou forme Hann sans
-information nouvelle. Aucun nouvel entraînement neuronal complet.
+Avant une autre correction, auditer la différence entre une nouvelle attaque
+et une composante déjà présente : support des fondamentales annotées dans les
+puissances pré, post-1, post-2, puis après la soustraction. Relire l'audit acoustique
+initial, réutiliser ses mesures pré/post-1 et ne compléter que les mesures
+manquantes. Préenregistrer ce contrôle avant calcul ; pas de nouvelle grille de
+seuils ou de durées. Ne proposer un bras d'inférence que si un défaut précis et
+un contraste contrôlé sont mesurés. Annotations exclusivement diagnostiques.
 
 ## Commits, runs et reprise fiable
 
 - Critère de reconstruction et gardes statiques :
-  `ff48f26757203b86161bcb1272b1ff73c96fec31`. CI
-  [`37371872093`](https://github.com/Andriamarosoa/note/actions/runs/37371872093)
-  déclenché le 6 octobre 2026 et en attente au moment de ce checkpoint.
-- Point de départ de cette étape : `83dda55a7578443652a7de66e4aba8ee74656357`.
-- Classement/capacité : `45265a0ad4b3faa950121106bd8d1fcf3e08499c`.
-  CI [`37367957693`](https://github.com/Andriamarosoa/note/actions/runs/37367957693)
-  terminé avec succès le 5 octobre 2026 UTC.
-- Gabarits/pentes : `aad8dfb83c96cf976fc7a46c3347853b514b58f2`.
-  Son run `37366044960` a été annulé avant toute étape, sans log de calcul.
+  `ff48f26757203b86161bcb1272b1ff73c96fec31`, checkpoint documentaire `d9f75cb`.
+  CI [`37371872093`](https://github.com/Andriamarosoa/note/actions/runs/37371872093)
+  vérifié le 6 octobre : run `failure`, job `111970757347` `cancelled`, aucune
+  étape exécutée, logs absents (404), aucun artefact. Cause non déterminée ;
+  aucune assertion scientifique n'a été exécutée. Ne pas le présenter comme réussi.
+- Classement/capacité : `45265a0ad4b3faa950121106bd8d1fcf3e08499c`,
+  CI `37367957693` réussi.
+- Gabarits/pentes : `aad8dfb83c96cf976fc7a46c3347853b514b58f2`,
+  run `37366044960` signalé `failure`, job annulé avant toute étape.
 - Audit acoustique/tri stable : `0bc2c59226a3d87a44e085febd1e4d36b885d4fe`,
   CI `37362400113` réussi.
 - Exports figés : run `37356100423`, commit `cd5ed339`.
-- Vérifier le HEAD et les nouveaux runs de `codex/v273-failure-clustering` avant
-  toute reprise. Ne pas dupliquer un run actif. Extraire les archives vérifiées ;
-  ne pas supposer que les dossiers temporaires existent encore.
+- Pour le nouveau rejeu, extraire les archives vérifiées `v273-temporal-stability`,
+  `v273-reconstruction-criterion` et `v273-residual-acoustics` ; suivre le README.
+  Ne pas supposer que les fichiers temporaires sont encore présents.
+- Vérifier le HEAD et les nouveaux runs avant toute reprise. Ne pas dupliquer
+  un run actif et préserver toute modification concurrente.
 
 ## Contraintes persistantes
 
 Folds 0, 1, 2, 4 uniquement ; fold 3 exclu. Base, B_low et populations figés.
-Pas de promotion sur un résultat VAL descriptif, un gain supposé ou une
-régression. Les résultats du chemin résiduel normal ne démontrent rien pour le
-chemin compressé. Publier uniquement sur la branche de recherche, préserver les
-travaux concurrents et ne pas fusionner automatiquement. L'automatisation reste
-utile pour l'audit temporel ; aucune correction sélectionnable ni blocage
-terminal d'accès ou de données n'est établi.
+Pas de nouveau réseau complet, pas de promotion à partir de VAL descriptif.
+Les résultats normaux ne démontrent aucune cause ou amélioration du chemin
+compressé. Publier uniquement sur la branche de recherche, sans fusion automatique.
+La poursuite reste autorisée : aucune correction sélectionnable ni blocage
+terminal de données ou d'accès n'est établi ; les contrôles CI sont suivis
+séparément des résultats locaux.

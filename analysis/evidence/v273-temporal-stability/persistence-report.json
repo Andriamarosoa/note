@@ -1,0 +1,255 @@
+{
+  "annotation_frequencies_used": false,
+  "automatic_promotion": false,
+  "control_max_probability_error": 0.0,
+  "feature_names": {
+    "first_window": [
+      "best_pair_residual_ratio",
+      "best_triplet_residual_ratio"
+    ],
+    "with_persistence": [
+      "best_pair_residual_ratio",
+      "best_triplet_residual_ratio",
+      "selected_triplet_persistence_fraction"
+    ]
+  },
+  "folds": [
+    {
+      "fit_cv": {
+        "first_window": {
+          "applied": 346,
+          "corrections": 96,
+          "global_net": -78,
+          "other_k_actions": 76,
+          "regressions": 174,
+          "rows": 654
+        },
+        "with_persistence": {
+          "applied": 338,
+          "corrections": 96,
+          "global_net": -70,
+          "other_k_actions": 76,
+          "regressions": 166,
+          "rows": 654
+        }
+      },
+      "fold": 0,
+      "selected": null,
+      "val_fixed": {
+        "first_window": {
+          "applied": 124,
+          "corrections": 37,
+          "global_net": 4,
+          "other_k_actions": 54,
+          "regressions": 33,
+          "rows": 256
+        },
+        "with_persistence": {
+          "applied": 125,
+          "corrections": 33,
+          "global_net": -4,
+          "other_k_actions": 55,
+          "regressions": 37,
+          "rows": 256
+        }
+      },
+      "val_selected": {
+        "applied": 0,
+        "corrections": 0,
+        "global_net": 0,
+        "other_k_actions": 0,
+        "regressions": 0,
+        "rows": 256
+      }
+    },
+    {
+      "fit_cv": {
+        "first_window": {
+          "applied": 243,
+          "corrections": 44,
+          "global_net": -75,
+          "other_k_actions": 80,
+          "regressions": 119,
+          "rows": 477
+        },
+        "with_persistence": {
+          "applied": 231,
+          "corrections": 45,
+          "global_net": -62,
+          "other_k_actions": 79,
+          "regressions": 107,
+          "rows": 477
+        }
+      },
+      "fold": 1,
+      "selected": null,
+      "val_fixed": {
+        "first_window": {
+          "applied": 97,
+          "corrections": 30,
+          "global_net": -2,
+          "other_k_actions": 35,
+          "regressions": 32,
+          "rows": 178
+        },
+        "with_persistence": {
+          "applied": 96,
+          "corrections": 27,
+          "global_net": -7,
+          "other_k_actions": 35,
+          "regressions": 34,
+          "rows": 178
+        }
+      },
+      "val_selected": {
+        "applied": 0,
+        "corrections": 0,
+        "global_net": 0,
+        "other_k_actions": 0,
+        "regressions": 0,
+        "rows": 178
+      }
+    },
+    {
+      "fit_cv": {
+        "first_window": {
+          "applied": 201,
+          "corrections": 43,
+          "global_net": -63,
+          "other_k_actions": 52,
+          "regressions": 106,
+          "rows": 531
+        },
+        "with_persistence": {
+          "applied": 239,
+          "corrections": 53,
+          "global_net": -78,
+          "other_k_actions": 55,
+          "regressions": 131,
+          "rows": 531
+        }
+      },
+      "fold": 2,
+      "selected": null,
+      "val_fixed": {
+        "first_window": {
+          "applied": 69,
+          "corrections": 11,
+          "global_net": -9,
+          "other_k_actions": 38,
+          "regressions": 20,
+          "rows": 140
+        },
+        "with_persistence": {
+          "applied": 67,
+          "corrections": 9,
+          "global_net": -15,
+          "other_k_actions": 34,
+          "regressions": 24,
+          "rows": 140
+        }
+      },
+      "val_selected": {
+        "applied": 0,
+        "corrections": 0,
+        "global_net": 0,
+        "other_k_actions": 0,
+        "regressions": 0,
+        "rows": 140
+      }
+    },
+    {
+      "fit_cv": {
+        "first_window": {
+          "applied": 491,
+          "corrections": 125,
+          "global_net": -69,
+          "other_k_actions": 172,
+          "regressions": 194,
+          "rows": 870
+        },
+        "with_persistence": {
+          "applied": 476,
+          "corrections": 117,
+          "global_net": -78,
+          "other_k_actions": 164,
+          "regressions": 195,
+          "rows": 870
+        }
+      },
+      "fold": 4,
+      "selected": null,
+      "val_fixed": {
+        "first_window": {
+          "applied": 174,
+          "corrections": 59,
+          "global_net": 9,
+          "other_k_actions": 65,
+          "regressions": 50,
+          "rows": 271
+        },
+        "with_persistence": {
+          "applied": 172,
+          "corrections": 55,
+          "global_net": 5,
+          "other_k_actions": 67,
+          "regressions": 50,
+          "rows": 271
+        }
+      },
+      "val_selected": {
+        "applied": 0,
+        "corrections": 0,
+        "global_net": 0,
+        "other_k_actions": 0,
+        "regressions": 0,
+        "rows": 271
+      }
+    }
+  ],
+  "limitations": [
+    "Previously inspected internal folds; not untouched validation.",
+    "Selected-frequency persistence is not proof of a physical source.",
+    "Normal audio only; 46.44 ms extra lookahead."
+  ],
+  "neural_training": false,
+  "outer_fold_3_used": false,
+  "source_sha256": {
+    "protocol": "cb214b0de50af915f0c1029c10f40e4b6e9d70f3dcba125ebed7b7554fedd996",
+    "script": "0ff5e2b0234610d206dba422eda17ea71c3627a98d1759986ae706e1c67a2eab",
+    "temporal": "422ed2ad04d0505568331c6180acff99ceb64b6447cfacad739ce46ded0067f6",
+    "temporal_features": "57c53bfd9a00adcf0ecb83cce150007d2f343429d2d6fee044a5e9919757df57",
+    "temporal_scores": "2f479cd44a8b233abb5fe2dc0cc7050489b35d9d334df5460b1dc29fea9f329f"
+  },
+  "status": "completed",
+  "total_fixed": {
+    "first_window": {
+      "applied": 464,
+      "corrections": 137,
+      "global_net": 2,
+      "other_k_actions": 192,
+      "regressions": 135,
+      "rows": 845
+    },
+    "with_persistence": {
+      "applied": 460,
+      "corrections": 124,
+      "global_net": -21,
+      "other_k_actions": 191,
+      "regressions": 145,
+      "rows": 845
+    }
+  },
+  "total_selected": {
+    "applied": 0,
+    "corrections": 0,
+    "global_net": 0,
+    "other_k_actions": 0,
+    "regressions": 0,
+    "rows": 845
+  },
+  "variants": [
+    "first_window",
+    "with_persistence"
+  ]
+}

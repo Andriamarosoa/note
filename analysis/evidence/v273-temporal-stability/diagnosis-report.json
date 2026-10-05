@@ -1,0 +1,385 @@
+{
+  "annotation_use": "diagnostic only; no inference selection",
+  "cases": 488,
+  "cases_sha256": "59d4cc5c5e2abc80710336268eeaefa476f8efe9f31f8355c40e70d9956029d9",
+  "folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "limitations": [
+    "Chosen-frequency persistence does not establish physical source or active amplitude.",
+    "Additional context may contain foreign onsets or owned note offsets.",
+    "Normal audio only; no compressed-path conclusion."
+  ],
+  "outer_fold_3_used": false,
+  "source_sha256": {
+    "cases": "6a3da0099c775f1d437dea4a389881326da774981ec001f3550ad6028c9d3b65",
+    "config": "7c27989eb3fe330fdff203e388e76ae4c64d8b8e4838cab4d7c4622b4104451a",
+    "script": "15249785958b05fde282245d3adea27791540764a09b73ee56f3674a6e199dab",
+    "temporal": "422ed2ad04d0505568331c6180acff99ceb64b6447cfacad739ce46ded0067f6"
+  },
+  "status": "completed",
+  "summary": {
+    "K2": {
+      "arms": {
+        "first": {
+          "complete": 47,
+          "owned_match_counts": {
+            "0": 63,
+            "1": 106,
+            "2": 47
+          }
+        },
+        "joint": {
+          "complete": 51,
+          "owned_match_counts": {
+            "0": 50,
+            "1": 115,
+            "2": 51
+          }
+        },
+        "second": {
+          "complete": 50,
+          "owned_match_counts": {
+            "0": 44,
+            "1": 122,
+            "2": 50
+          }
+        }
+      },
+      "components": {
+        "first_owned": 200,
+        "first_unmatched": 232,
+        "persisted_owned": 152,
+        "persisted_unmatched": 107
+      },
+      "context": {
+        "foreign_active": 128,
+        "foreign_births_in_second": 16,
+        "owned_weak_coverage": 0,
+        "owned_zero_coverage": 0
+      },
+      "joint_equal": 174,
+      "joint_improved": 30,
+      "joint_worsened": 12,
+      "persistence_match_counts": {
+        "0": 45,
+        "1": 83,
+        "2": 88
+      },
+      "rows": 216
+    },
+    "K2_corrected": {
+      "arms": {
+        "first": {
+          "complete": 11,
+          "owned_match_counts": {
+            "0": 35,
+            "1": 62,
+            "2": 11
+          }
+        },
+        "joint": {
+          "complete": 13,
+          "owned_match_counts": {
+            "0": 27,
+            "1": 68,
+            "2": 13
+          }
+        },
+        "second": {
+          "complete": 17,
+          "owned_match_counts": {
+            "0": 18,
+            "1": 73,
+            "2": 17
+          }
+        }
+      },
+      "components": {
+        "first_owned": 84,
+        "first_unmatched": 132,
+        "persisted_owned": 61,
+        "persisted_unmatched": 53
+      },
+      "context": {
+        "foreign_active": 53,
+        "foreign_births_in_second": 7,
+        "owned_weak_coverage": 0,
+        "owned_zero_coverage": 0
+      },
+      "joint_equal": 81,
+      "joint_improved": 19,
+      "joint_worsened": 8,
+      "persistence_match_counts": {
+        "0": 25,
+        "1": 52,
+        "2": 31
+      },
+      "rows": 108
+    },
+    "K2_missed": {
+      "arms": {
+        "first": {
+          "complete": 36,
+          "owned_match_counts": {
+            "0": 28,
+            "1": 44,
+            "2": 36
+          }
+        },
+        "joint": {
+          "complete": 38,
+          "owned_match_counts": {
+            "0": 23,
+            "1": 47,
+            "2": 38
+          }
+        },
+        "second": {
+          "complete": 33,
+          "owned_match_counts": {
+            "0": 26,
+            "1": 49,
+            "2": 33
+          }
+        }
+      },
+      "components": {
+        "first_owned": 116,
+        "first_unmatched": 100,
+        "persisted_owned": 91,
+        "persisted_unmatched": 54
+      },
+      "context": {
+        "foreign_active": 75,
+        "foreign_births_in_second": 9,
+        "owned_weak_coverage": 0,
+        "owned_zero_coverage": 0
+      },
+      "joint_equal": 93,
+      "joint_improved": 11,
+      "joint_worsened": 4,
+      "persistence_match_counts": {
+        "0": 20,
+        "1": 31,
+        "2": 57
+      },
+      "rows": 108
+    },
+    "K3": {
+      "arms": {
+        "first": {
+          "complete": 31,
+          "owned_match_counts": {
+            "0": 35,
+            "1": 100,
+            "2": 106,
+            "3": 31
+          }
+        },
+        "joint": {
+          "complete": 33,
+          "owned_match_counts": {
+            "0": 21,
+            "1": 99,
+            "2": 119,
+            "3": 33
+          }
+        },
+        "second": {
+          "complete": 26,
+          "owned_match_counts": {
+            "0": 20,
+            "1": 102,
+            "2": 124,
+            "3": 26
+          }
+        }
+      },
+      "components": {
+        "first_owned": 405,
+        "first_unmatched": 411,
+        "persisted_owned": 313,
+        "persisted_unmatched": 165
+      },
+      "context": {
+        "foreign_active": 126,
+        "foreign_births_in_second": 15,
+        "owned_weak_coverage": 0,
+        "owned_zero_coverage": 0
+      },
+      "joint_equal": 201,
+      "joint_improved": 50,
+      "joint_worsened": 21,
+      "persistence_match_counts": {
+        "0": 30,
+        "1": 81,
+        "2": 86,
+        "3": 75
+      },
+      "rows": 272
+    },
+    "K3_preserved": {
+      "arms": {
+        "first": {
+          "complete": 23,
+          "owned_match_counts": {
+            "0": 16,
+            "1": 48,
+            "2": 60,
+            "3": 23
+          }
+        },
+        "joint": {
+          "complete": 22,
+          "owned_match_counts": {
+            "0": 9,
+            "1": 43,
+            "2": 73,
+            "3": 22
+          }
+        },
+        "second": {
+          "complete": 17,
+          "owned_match_counts": {
+            "0": 9,
+            "1": 47,
+            "2": 74,
+            "3": 17
+          }
+        }
+      },
+      "components": {
+        "first_owned": 237,
+        "first_unmatched": 204,
+        "persisted_owned": 194,
+        "persisted_unmatched": 96
+      },
+      "context": {
+        "foreign_active": 81,
+        "foreign_births_in_second": 6,
+        "owned_weak_coverage": 0,
+        "owned_zero_coverage": 0
+      },
+      "joint_equal": 116,
+      "joint_improved": 23,
+      "joint_worsened": 8,
+      "persistence_match_counts": {
+        "0": 11,
+        "1": 35,
+        "2": 48,
+        "3": 53
+      },
+      "rows": 147
+    },
+    "K3_regressed": {
+      "arms": {
+        "first": {
+          "complete": 8,
+          "owned_match_counts": {
+            "0": 19,
+            "1": 52,
+            "2": 46,
+            "3": 8
+          }
+        },
+        "joint": {
+          "complete": 11,
+          "owned_match_counts": {
+            "0": 12,
+            "1": 56,
+            "2": 46,
+            "3": 11
+          }
+        },
+        "second": {
+          "complete": 9,
+          "owned_match_counts": {
+            "0": 11,
+            "1": 55,
+            "2": 50,
+            "3": 9
+          }
+        }
+      },
+      "components": {
+        "first_owned": 168,
+        "first_unmatched": 207,
+        "persisted_owned": 119,
+        "persisted_unmatched": 69
+      },
+      "context": {
+        "foreign_active": 45,
+        "foreign_births_in_second": 9,
+        "owned_weak_coverage": 0,
+        "owned_zero_coverage": 0
+      },
+      "joint_equal": 85,
+      "joint_improved": 27,
+      "joint_worsened": 13,
+      "persistence_match_counts": {
+        "0": 19,
+        "1": 46,
+        "2": 38,
+        "3": 22
+      },
+      "rows": 125
+    },
+    "all": {
+      "arms": {
+        "first": {
+          "complete": 78,
+          "owned_match_counts": {
+            "0": 98,
+            "1": 206,
+            "2": 153,
+            "3": 31
+          }
+        },
+        "joint": {
+          "complete": 84,
+          "owned_match_counts": {
+            "0": 71,
+            "1": 214,
+            "2": 170,
+            "3": 33
+          }
+        },
+        "second": {
+          "complete": 76,
+          "owned_match_counts": {
+            "0": 64,
+            "1": 224,
+            "2": 174,
+            "3": 26
+          }
+        }
+      },
+      "components": {
+        "first_owned": 605,
+        "first_unmatched": 643,
+        "persisted_owned": 465,
+        "persisted_unmatched": 272
+      },
+      "context": {
+        "foreign_active": 254,
+        "foreign_births_in_second": 31,
+        "owned_weak_coverage": 0,
+        "owned_zero_coverage": 0
+      },
+      "joint_equal": 375,
+      "joint_improved": 80,
+      "joint_worsened": 33,
+      "persistence_match_counts": {
+        "0": 75,
+        "1": 164,
+        "2": 174,
+        "3": 75
+      },
+      "rows": 488
+    }
+  }
+}
