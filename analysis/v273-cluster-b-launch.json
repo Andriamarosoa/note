@@ -1,0 +1,22 @@
+{
+  "experiment": "v273-cluster-b-structural-audit",
+  "source_failure_clustering_run": 36999901054,
+  "cluster_definition": {
+    "cluster_A": "highest undercount-rate first-stage cluster",
+    "cluster_B": "largest complementary first-stage cluster"
+  },
+  "expected_cluster_B": {
+    "rows": 680,
+    "share_of_failures": 0.5767599660729432,
+    "undercounts": 423,
+    "overcounts": 257,
+    "true_k": {
+      "K2": 290,
+      "K3": 155,
+      "K4": 235
+    }
+  },
+  "purpose": "characterize Cluster B before designing any new internal correction",
+  "tuning_on_outer": false,
+  "next_step": "any correction must be developed and selected on folds 0/1/2/4 only"
+}
