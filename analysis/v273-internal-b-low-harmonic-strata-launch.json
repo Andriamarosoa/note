@@ -1,0 +1,26 @@
+{
+  "experiment": "v273-internal-b-low-harmonic-strata",
+  "population": "B_low + base prediction K3 + true K in {2,3}",
+  "validation_folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "outer_fold_3_used": false,
+  "source_run": 37328030124,
+  "promising_features": [
+    "third_coefficient_fraction",
+    "best_pair_residual_ratio",
+    "best_triplet_residual_ratio",
+    "third_unique_support_ratio"
+  ],
+  "stratification_families": [
+    "triplet register",
+    "third-F0 nearest spacing",
+    "third-F0 low-order harmonic proximity",
+    "third shared-partial overlap"
+  ],
+  "selection_principle": "look for acoustically interpretable strata with stable AUC across multiple internal folds; no outer tuning",
+  "automatic_promotion": false
+}
