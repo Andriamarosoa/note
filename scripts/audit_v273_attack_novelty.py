@@ -193,6 +193,16 @@ def aggregate(rows):
     return out
 
 
+def format_cell(value):
+    if value is None:
+        return "n/a"
+    if isinstance(value, str):
+        return value
+    if isinstance(value, (int, np.integer)):
+        return str(value)
+    return f"{float(value):.6f}"
+
+
 def run(a):
     require(not a.output.exists(), "refusing overwrite")
     require(PROTOCOL.exists(), "missing preregistered protocol")
@@ -319,8 +329,7 @@ def run(a):
             med("selected_unmatched", "onset_contrast_raw"),
             None if pd is None else pd["median"],
         ]
-        fmt = lambda v: "n/a" if v is None else (str(v) if isinstance(v, (int, np.integer)) else f"{v:.6f}")
-        lines.append("| " + " | ".join(fmt(v) for v in vals) + " |")
+        lines.append("| " + " | ".join(format_cell(v) for v in vals) + " |")
     lines += ["", "Fold 3 excluded. Normal-audio path only. Diagnostic annotations are not inference inputs."]
     (a.output / "report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines))
