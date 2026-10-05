@@ -17,8 +17,13 @@ on:
       - 'scripts/audit_v273_decay_frequency_coverage.py'
       - 'scripts/replay_v273_harmonic_decay_guard.py'
       - 'test/test_v273_harmonic_templates.py'
+      - 'scripts/audit_v273_candidate_ranking.py'
+      - 'scripts/audit_v273_candidate_capacity_guard.py'
+      - 'scripts/replay_v273_candidate_audit.py'
+      - 'test/test_v273_candidate_ranking.py'
       - 'analysis/evidence/v273-residual-acoustics/**'
       - 'analysis/evidence/v273-harmonic-templates/**'
+      - 'analysis/evidence/v273-candidate-ranking/**'
   workflow_dispatch:
 
 permissions:
@@ -50,8 +55,11 @@ jobs:
           scripts/audit_v273_harmonic_decay_guard.py
           scripts/audit_v273_decay_frequency_coverage.py
           scripts/replay_v273_harmonic_decay_guard.py
+          scripts/audit_v273_candidate_ranking.py
+          scripts/audit_v273_candidate_capacity_guard.py
+          scripts/replay_v273_candidate_audit.py
       - name: Check replay, ownership, matching and deterministic F0 ties
-        run: python -B -m unittest test.test_v273_residual_audit test.test_v273_residual_acoustics test.test_v273_harmonic_templates -v
+        run: python -B -m unittest test.test_v273_residual_audit test.test_v273_residual_acoustics test.test_v273_harmonic_templates test.test_v273_candidate_ranking -v
       - name: Verify committed evidence archive
         run: |
           python - <<'PY'
@@ -89,4 +97,30 @@ jobs:
                   target.parent.mkdir(parents=True, exist_ok=True)
                   target.write_bytes(raw)
               print(json.dumps(verify(pathlib.Path(temp) / 'decay'), sort_keys=True))
+          PY
+      - name: Replay candidate ranking and capacity decisions
+        run: |
+          python - <<'PY'
+          import hashlib, json, pathlib, tempfile, zipfile
+          from scripts.replay_v273_candidate_audit import verify
+          root = pathlib.Path('analysis/evidence/v273-candidate-ranking')
+          manifest = json.loads((root / 'checksums.json').read_text())
+          for name, digest in manifest['files'].items():
+              assert hashlib.sha256((root / name).read_bytes()).hexdigest() == digest, name
+          with zipfile.ZipFile(root / 'evidence.zip') as z, tempfile.TemporaryDirectory() as temp:
+              assert set(z.namelist()) == set(manifest['archive_members'])
+              for name, digest in manifest['archive_members'].items():
+                  raw = z.read(name)
+                  assert hashlib.sha256(raw).hexdigest() == digest, name
+                  assert not pathlib.PurePosixPath(name).is_absolute() and '..' not in pathlib.PurePosixPath(name).parts
+                  target = pathlib.Path(temp) / name
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_bytes(raw)
+              with zipfile.ZipFile('analysis/evidence/v273-residual-acoustics/evidence.zip') as source:
+                  cases = pathlib.Path(temp) / 'source-cases.jsonl'
+                  cases.write_bytes(source.read('acoustic/cases.jsonl'))
+              actual = verify(pathlib.Path(temp) / 'ranking', pathlib.Path(temp) / 'capacity', cases)
+              saved = json.loads((pathlib.Path(temp) / 'replay-check.json').read_text())
+              assert actual == saved, 'candidate replay differs'
+              print(json.dumps({'status': actual['status'], 'cases': actual['ranking_cases'], 'models': actual['models']}, sort_keys=True))
           PY

@@ -1,0 +1,183 @@
+{
+  "frequency_coverage": {
+    "K2": {
+      "arms": {
+        "pool64_t0.5": {
+          "pair_all_owned": 23,
+          "pool_all_owned": 213,
+          "triplet_all_owned": 37
+        },
+        "pool64_t2": {
+          "pair_all_owned": 47,
+          "pool_all_owned": 213,
+          "triplet_all_owned": 74
+        },
+        "pool8_t0.5": {
+          "pair_all_owned": 19,
+          "pool_all_owned": 34,
+          "triplet_all_owned": 26
+        },
+        "pool8_t2": {
+          "pair_all_owned": 19,
+          "pool_all_owned": 34,
+          "triplet_all_owned": 28
+        }
+      },
+      "rows": 216
+    },
+    "K2_corrected": {
+      "arms": {
+        "pool64_t0.5": {
+          "pair_all_owned": 6,
+          "pool_all_owned": 107,
+          "triplet_all_owned": 8
+        },
+        "pool64_t2": {
+          "pair_all_owned": 11,
+          "pool_all_owned": 107,
+          "triplet_all_owned": 28
+        },
+        "pool8_t0.5": {
+          "pair_all_owned": 2,
+          "pool_all_owned": 4,
+          "triplet_all_owned": 3
+        },
+        "pool8_t2": {
+          "pair_all_owned": 1,
+          "pool_all_owned": 4,
+          "triplet_all_owned": 3
+        }
+      },
+      "rows": 108
+    },
+    "K2_missed": {
+      "arms": {
+        "pool64_t0.5": {
+          "pair_all_owned": 17,
+          "pool_all_owned": 106,
+          "triplet_all_owned": 29
+        },
+        "pool64_t2": {
+          "pair_all_owned": 36,
+          "pool_all_owned": 106,
+          "triplet_all_owned": 46
+        },
+        "pool8_t0.5": {
+          "pair_all_owned": 17,
+          "pool_all_owned": 30,
+          "triplet_all_owned": 23
+        },
+        "pool8_t2": {
+          "pair_all_owned": 18,
+          "pool_all_owned": 30,
+          "triplet_all_owned": 25
+        }
+      },
+      "rows": 108
+    },
+    "K3": {
+      "arms": {
+        "pool64_t0.5": {
+          "pair_all_owned": 0,
+          "pool_all_owned": 267,
+          "triplet_all_owned": 0
+        },
+        "pool64_t2": {
+          "pair_all_owned": 0,
+          "pool_all_owned": 267,
+          "triplet_all_owned": 31
+        },
+        "pool8_t0.5": {
+          "pair_all_owned": 0,
+          "pool_all_owned": 3,
+          "triplet_all_owned": 0
+        },
+        "pool8_t2": {
+          "pair_all_owned": 0,
+          "pool_all_owned": 3,
+          "triplet_all_owned": 1
+        }
+      },
+      "rows": 272
+    },
+    "K3_preserved": {
+      "arms": {
+        "pool64_t0.5": {
+          "pair_all_owned": 0,
+          "pool_all_owned": 143,
+          "triplet_all_owned": 0
+        },
+        "pool64_t2": {
+          "pair_all_owned": 0,
+          "pool_all_owned": 143,
+          "triplet_all_owned": 23
+        },
+        "pool8_t0.5": {
+          "pair_all_owned": 0,
+          "pool_all_owned": 2,
+          "triplet_all_owned": 0
+        },
+        "pool8_t2": {
+          "pair_all_owned": 0,
+          "pool_all_owned": 2,
+          "triplet_all_owned": 0
+        }
+      },
+      "rows": 147
+    },
+    "K3_regressed": {
+      "arms": {
+        "pool64_t0.5": {
+          "pair_all_owned": 0,
+          "pool_all_owned": 124,
+          "triplet_all_owned": 0
+        },
+        "pool64_t2": {
+          "pair_all_owned": 0,
+          "pool_all_owned": 124,
+          "triplet_all_owned": 8
+        },
+        "pool8_t0.5": {
+          "pair_all_owned": 0,
+          "pool_all_owned": 1,
+          "triplet_all_owned": 0
+        },
+        "pool8_t2": {
+          "pair_all_owned": 0,
+          "pool_all_owned": 1,
+          "triplet_all_owned": 1
+        }
+      },
+      "rows": 125
+    }
+  },
+  "limitations": [
+    "Salience is recomputed from archived spectra; waveform preprocessing and residuals are not recomputed here.",
+    "Annotations evaluate frozen frequency outputs only; never used in inference."
+  ],
+  "models": {
+    "audio_loaded": false,
+    "folds": [
+      0,
+      1,
+      2,
+      4
+    ],
+    "max_abs_probability_error": 0.0,
+    "model_refitted": false,
+    "outer_fold_3_used": false,
+    "rows": 845,
+    "selected": {
+      "0": null,
+      "1": null,
+      "2": null,
+      "4": null
+    },
+    "status": "verified"
+  },
+  "outer_fold_3_used": false,
+  "ranking_cases": 488,
+  "script_sha256": "c4456255c8fef5c574519289be4cda82518bc8fb5b81d5f753b9dcbe7647a170",
+  "source_cases_sha256": "6a3da0099c775f1d437dea4a389881326da774981ec001f3550ad6028c9d3b65",
+  "status": "verified"
+}

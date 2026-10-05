@@ -164,3 +164,5 @@ python -B -m unittest test.test_v273_residual_audit \
 
 Environnement : Python 3.12.14, NumPy 1.26.4, SciPy 1.17.1 et scikit-learn 1.4.2.
 Cette étude concerne le chemin normal et ne mesure aucun effet du chemin compressé.
+
+Suite : [audit du classement et de la capacité des candidats](README-candidate-ranking-audit.md).
