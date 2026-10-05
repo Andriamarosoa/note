@@ -229,3 +229,5 @@ résultats conservés. Il n'exécute pas à nouveau l'audit audio. L'ancien work
 `v273-failure-clustering`, qui lit des résultats du fold 3, exige désormais un
 fichier de lancement dédié ou un déclenchement manuel au lieu de tourner à
 chaque push sur cette branche.
+
+Suite : [contrôles des gabarits et test des pentes sans annotation](README-harmonic-template-audit.md).

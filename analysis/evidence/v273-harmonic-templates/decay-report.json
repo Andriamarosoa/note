@@ -1,0 +1,762 @@
+{
+  "annotation_frequencies_used": false,
+  "automatic_promotion": false,
+  "control_max_abs_residual_error": 1.27675647831893e-15,
+  "folds": [
+    {
+      "fit_cv": {
+        "s0.5_t0.5": {
+          "applied": 328,
+          "corrections": 84,
+          "global_net": -75,
+          "other_k_actions": 85,
+          "regressions": 159,
+          "rows": 654
+        },
+        "s0.5_t1": {
+          "applied": 337,
+          "corrections": 97,
+          "global_net": -64,
+          "other_k_actions": 79,
+          "regressions": 161,
+          "rows": 654
+        },
+        "s0.5_t2": {
+          "applied": 362,
+          "corrections": 107,
+          "global_net": -66,
+          "other_k_actions": 82,
+          "regressions": 173,
+          "rows": 654
+        },
+        "s1_t0.5": {
+          "applied": 323,
+          "corrections": 84,
+          "global_net": -77,
+          "other_k_actions": 78,
+          "regressions": 161,
+          "rows": 654
+        },
+        "s1_t1": {
+          "applied": 327,
+          "corrections": 94,
+          "global_net": -62,
+          "other_k_actions": 77,
+          "regressions": 156,
+          "rows": 654
+        },
+        "s1_t2": {
+          "applied": 381,
+          "corrections": 107,
+          "global_net": -84,
+          "other_k_actions": 83,
+          "regressions": 191,
+          "rows": 654
+        },
+        "s2_t0.5": {
+          "applied": 329,
+          "corrections": 85,
+          "global_net": -87,
+          "other_k_actions": 72,
+          "regressions": 172,
+          "rows": 654
+        },
+        "s2_t1": {
+          "applied": 329,
+          "corrections": 85,
+          "global_net": -83,
+          "other_k_actions": 76,
+          "regressions": 168,
+          "rows": 654
+        },
+        "s2_t2": {
+          "applied": 381,
+          "corrections": 104,
+          "global_net": -86,
+          "other_k_actions": 87,
+          "regressions": 190,
+          "rows": 654
+        }
+      },
+      "fold": 0,
+      "selected": null,
+      "val_fixed": {
+        "s0.5_t0.5": {
+          "applied": 137,
+          "corrections": 32,
+          "global_net": -4,
+          "other_k_actions": 69,
+          "regressions": 36,
+          "rows": 256
+        },
+        "s0.5_t1": {
+          "applied": 134,
+          "corrections": 34,
+          "global_net": -3,
+          "other_k_actions": 63,
+          "regressions": 37,
+          "rows": 256
+        },
+        "s0.5_t2": {
+          "applied": 129,
+          "corrections": 38,
+          "global_net": -1,
+          "other_k_actions": 52,
+          "regressions": 39,
+          "rows": 256
+        },
+        "s1_t0.5": {
+          "applied": 140,
+          "corrections": 30,
+          "global_net": -11,
+          "other_k_actions": 69,
+          "regressions": 41,
+          "rows": 256
+        },
+        "s1_t1": {
+          "applied": 114,
+          "corrections": 29,
+          "global_net": -4,
+          "other_k_actions": 52,
+          "regressions": 33,
+          "rows": 256
+        },
+        "s1_t2": {
+          "applied": 136,
+          "corrections": 41,
+          "global_net": -1,
+          "other_k_actions": 53,
+          "regressions": 42,
+          "rows": 256
+        },
+        "s2_t0.5": {
+          "applied": 132,
+          "corrections": 32,
+          "global_net": -5,
+          "other_k_actions": 63,
+          "regressions": 37,
+          "rows": 256
+        },
+        "s2_t1": {
+          "applied": 124,
+          "corrections": 31,
+          "global_net": -4,
+          "other_k_actions": 58,
+          "regressions": 35,
+          "rows": 256
+        },
+        "s2_t2": {
+          "applied": 138,
+          "corrections": 39,
+          "global_net": -2,
+          "other_k_actions": 58,
+          "regressions": 41,
+          "rows": 256
+        }
+      },
+      "val_selected": {
+        "applied": 0,
+        "corrections": 0,
+        "global_net": 0,
+        "other_k_actions": 0,
+        "regressions": 0,
+        "rows": 256
+      }
+    },
+    {
+      "fit_cv": {
+        "s0.5_t0.5": {
+          "applied": 207,
+          "corrections": 48,
+          "global_net": -40,
+          "other_k_actions": 71,
+          "regressions": 88,
+          "rows": 477
+        },
+        "s0.5_t1": {
+          "applied": 238,
+          "corrections": 46,
+          "global_net": -67,
+          "other_k_actions": 79,
+          "regressions": 113,
+          "rows": 477
+        },
+        "s0.5_t2": {
+          "applied": 215,
+          "corrections": 35,
+          "global_net": -72,
+          "other_k_actions": 73,
+          "regressions": 107,
+          "rows": 477
+        },
+        "s1_t0.5": {
+          "applied": 212,
+          "corrections": 52,
+          "global_net": -37,
+          "other_k_actions": 71,
+          "regressions": 89,
+          "rows": 477
+        },
+        "s1_t1": {
+          "applied": 228,
+          "corrections": 53,
+          "global_net": -53,
+          "other_k_actions": 69,
+          "regressions": 106,
+          "rows": 477
+        },
+        "s1_t2": {
+          "applied": 303,
+          "corrections": 48,
+          "global_net": -105,
+          "other_k_actions": 102,
+          "regressions": 153,
+          "rows": 477
+        },
+        "s2_t0.5": {
+          "applied": 213,
+          "corrections": 52,
+          "global_net": -40,
+          "other_k_actions": 69,
+          "regressions": 92,
+          "rows": 477
+        },
+        "s2_t1": {
+          "applied": 222,
+          "corrections": 48,
+          "global_net": -52,
+          "other_k_actions": 74,
+          "regressions": 100,
+          "rows": 477
+        },
+        "s2_t2": {
+          "applied": 229,
+          "corrections": 33,
+          "global_net": -88,
+          "other_k_actions": 75,
+          "regressions": 121,
+          "rows": 477
+        }
+      },
+      "fold": 1,
+      "selected": null,
+      "val_fixed": {
+        "s0.5_t0.5": {
+          "applied": 82,
+          "corrections": 29,
+          "global_net": 7,
+          "other_k_actions": 31,
+          "regressions": 22,
+          "rows": 178
+        },
+        "s0.5_t1": {
+          "applied": 95,
+          "corrections": 37,
+          "global_net": 11,
+          "other_k_actions": 32,
+          "regressions": 26,
+          "rows": 178
+        },
+        "s0.5_t2": {
+          "applied": 83,
+          "corrections": 22,
+          "global_net": -4,
+          "other_k_actions": 35,
+          "regressions": 26,
+          "rows": 178
+        },
+        "s1_t0.5": {
+          "applied": 81,
+          "corrections": 29,
+          "global_net": 7,
+          "other_k_actions": 30,
+          "regressions": 22,
+          "rows": 178
+        },
+        "s1_t1": {
+          "applied": 95,
+          "corrections": 32,
+          "global_net": 5,
+          "other_k_actions": 36,
+          "regressions": 27,
+          "rows": 178
+        },
+        "s1_t2": {
+          "applied": 136,
+          "corrections": 37,
+          "global_net": -10,
+          "other_k_actions": 52,
+          "regressions": 47,
+          "rows": 178
+        },
+        "s2_t0.5": {
+          "applied": 81,
+          "corrections": 28,
+          "global_net": 5,
+          "other_k_actions": 30,
+          "regressions": 23,
+          "rows": 178
+        },
+        "s2_t1": {
+          "applied": 91,
+          "corrections": 29,
+          "global_net": -1,
+          "other_k_actions": 32,
+          "regressions": 30,
+          "rows": 178
+        },
+        "s2_t2": {
+          "applied": 113,
+          "corrections": 33,
+          "global_net": -7,
+          "other_k_actions": 40,
+          "regressions": 40,
+          "rows": 178
+        }
+      },
+      "val_selected": {
+        "applied": 0,
+        "corrections": 0,
+        "global_net": 0,
+        "other_k_actions": 0,
+        "regressions": 0,
+        "rows": 178
+      }
+    },
+    {
+      "fit_cv": {
+        "s0.5_t0.5": {
+          "applied": 252,
+          "corrections": 60,
+          "global_net": -53,
+          "other_k_actions": 79,
+          "regressions": 113,
+          "rows": 531
+        },
+        "s0.5_t1": {
+          "applied": 299,
+          "corrections": 67,
+          "global_net": -77,
+          "other_k_actions": 88,
+          "regressions": 144,
+          "rows": 531
+        },
+        "s0.5_t2": {
+          "applied": 200,
+          "corrections": 37,
+          "global_net": -63,
+          "other_k_actions": 63,
+          "regressions": 100,
+          "rows": 531
+        },
+        "s1_t0.5": {
+          "applied": 255,
+          "corrections": 58,
+          "global_net": -59,
+          "other_k_actions": 80,
+          "regressions": 117,
+          "rows": 531
+        },
+        "s1_t1": {
+          "applied": 282,
+          "corrections": 67,
+          "global_net": -66,
+          "other_k_actions": 82,
+          "regressions": 133,
+          "rows": 531
+        },
+        "s1_t2": {
+          "applied": 208,
+          "corrections": 45,
+          "global_net": -62,
+          "other_k_actions": 56,
+          "regressions": 107,
+          "rows": 531
+        },
+        "s2_t0.5": {
+          "applied": 259,
+          "corrections": 62,
+          "global_net": -55,
+          "other_k_actions": 80,
+          "regressions": 117,
+          "rows": 531
+        },
+        "s2_t1": {
+          "applied": 291,
+          "corrections": 61,
+          "global_net": -83,
+          "other_k_actions": 86,
+          "regressions": 144,
+          "rows": 531
+        },
+        "s2_t2": {
+          "applied": 187,
+          "corrections": 38,
+          "global_net": -62,
+          "other_k_actions": 49,
+          "regressions": 100,
+          "rows": 531
+        }
+      },
+      "fold": 2,
+      "selected": null,
+      "val_fixed": {
+        "s0.5_t0.5": {
+          "applied": 78,
+          "corrections": 8,
+          "global_net": -19,
+          "other_k_actions": 43,
+          "regressions": 27,
+          "rows": 140
+        },
+        "s0.5_t1": {
+          "applied": 87,
+          "corrections": 14,
+          "global_net": -15,
+          "other_k_actions": 44,
+          "regressions": 29,
+          "rows": 140
+        },
+        "s0.5_t2": {
+          "applied": 76,
+          "corrections": 8,
+          "global_net": -22,
+          "other_k_actions": 38,
+          "regressions": 30,
+          "rows": 140
+        },
+        "s1_t0.5": {
+          "applied": 79,
+          "corrections": 8,
+          "global_net": -18,
+          "other_k_actions": 45,
+          "regressions": 26,
+          "rows": 140
+        },
+        "s1_t1": {
+          "applied": 80,
+          "corrections": 10,
+          "global_net": -21,
+          "other_k_actions": 39,
+          "regressions": 31,
+          "rows": 140
+        },
+        "s1_t2": {
+          "applied": 88,
+          "corrections": 11,
+          "global_net": -28,
+          "other_k_actions": 38,
+          "regressions": 39,
+          "rows": 140
+        },
+        "s2_t0.5": {
+          "applied": 79,
+          "corrections": 9,
+          "global_net": -19,
+          "other_k_actions": 42,
+          "regressions": 28,
+          "rows": 140
+        },
+        "s2_t1": {
+          "applied": 81,
+          "corrections": 11,
+          "global_net": -21,
+          "other_k_actions": 38,
+          "regressions": 32,
+          "rows": 140
+        },
+        "s2_t2": {
+          "applied": 101,
+          "corrections": 15,
+          "global_net": -28,
+          "other_k_actions": 43,
+          "regressions": 43,
+          "rows": 140
+        }
+      },
+      "val_selected": {
+        "applied": 0,
+        "corrections": 0,
+        "global_net": 0,
+        "other_k_actions": 0,
+        "regressions": 0,
+        "rows": 140
+      }
+    },
+    {
+      "fit_cv": {
+        "s0.5_t0.5": {
+          "applied": 450,
+          "corrections": 109,
+          "global_net": -69,
+          "other_k_actions": 163,
+          "regressions": 178,
+          "rows": 870
+        },
+        "s0.5_t1": {
+          "applied": 478,
+          "corrections": 122,
+          "global_net": -86,
+          "other_k_actions": 148,
+          "regressions": 208,
+          "rows": 870
+        },
+        "s0.5_t2": {
+          "applied": 474,
+          "corrections": 120,
+          "global_net": -84,
+          "other_k_actions": 150,
+          "regressions": 204,
+          "rows": 870
+        },
+        "s1_t0.5": {
+          "applied": 452,
+          "corrections": 111,
+          "global_net": -74,
+          "other_k_actions": 156,
+          "regressions": 185,
+          "rows": 870
+        },
+        "s1_t1": {
+          "applied": 442,
+          "corrections": 120,
+          "global_net": -66,
+          "other_k_actions": 136,
+          "regressions": 186,
+          "rows": 870
+        },
+        "s1_t2": {
+          "applied": 493,
+          "corrections": 126,
+          "global_net": -85,
+          "other_k_actions": 156,
+          "regressions": 211,
+          "rows": 870
+        },
+        "s2_t0.5": {
+          "applied": 446,
+          "corrections": 106,
+          "global_net": -85,
+          "other_k_actions": 149,
+          "regressions": 191,
+          "rows": 870
+        },
+        "s2_t1": {
+          "applied": 456,
+          "corrections": 109,
+          "global_net": -92,
+          "other_k_actions": 146,
+          "regressions": 201,
+          "rows": 870
+        },
+        "s2_t2": {
+          "applied": 482,
+          "corrections": 119,
+          "global_net": -83,
+          "other_k_actions": 161,
+          "regressions": 202,
+          "rows": 870
+        }
+      },
+      "fold": 4,
+      "selected": null,
+      "val_fixed": {
+        "s0.5_t0.5": {
+          "applied": 133,
+          "corrections": 40,
+          "global_net": 1,
+          "other_k_actions": 54,
+          "regressions": 39,
+          "rows": 271
+        },
+        "s0.5_t1": {
+          "applied": 161,
+          "corrections": 56,
+          "global_net": 8,
+          "other_k_actions": 57,
+          "regressions": 48,
+          "rows": 271
+        },
+        "s0.5_t2": {
+          "applied": 175,
+          "corrections": 60,
+          "global_net": 10,
+          "other_k_actions": 65,
+          "regressions": 50,
+          "rows": 271
+        },
+        "s1_t0.5": {
+          "applied": 136,
+          "corrections": 44,
+          "global_net": 5,
+          "other_k_actions": 53,
+          "regressions": 39,
+          "rows": 271
+        },
+        "s1_t1": {
+          "applied": 178,
+          "corrections": 62,
+          "global_net": 15,
+          "other_k_actions": 69,
+          "regressions": 47,
+          "rows": 271
+        },
+        "s1_t2": {
+          "applied": 185,
+          "corrections": 63,
+          "global_net": 12,
+          "other_k_actions": 71,
+          "regressions": 51,
+          "rows": 271
+        },
+        "s2_t0.5": {
+          "applied": 139,
+          "corrections": 43,
+          "global_net": 5,
+          "other_k_actions": 58,
+          "regressions": 38,
+          "rows": 271
+        },
+        "s2_t1": {
+          "applied": 175,
+          "corrections": 61,
+          "global_net": 16,
+          "other_k_actions": 69,
+          "regressions": 45,
+          "rows": 271
+        },
+        "s2_t2": {
+          "applied": 181,
+          "corrections": 62,
+          "global_net": 12,
+          "other_k_actions": 69,
+          "regressions": 50,
+          "rows": 271
+        }
+      },
+      "val_selected": {
+        "applied": 0,
+        "corrections": 0,
+        "global_net": 0,
+        "other_k_actions": 0,
+        "regressions": 0,
+        "rows": 271
+      }
+    }
+  ],
+  "limitations": [
+    "Internal folds previously inspected; exploratory evaluation, not an untouched test set.",
+    "Base neural predictions and B_low routing remain frozen inside FIT selection.",
+    "VAL outcomes of individual variants are descriptive and never select the variant."
+  ],
+  "neural_training": false,
+  "outer_fold_3_used": false,
+  "recordings": 122,
+  "runtime": {
+    "numpy": "1.26.4",
+    "python": "3.12.14",
+    "scikit-learn": "1.4.2",
+    "scipy": "1.17.1"
+  },
+  "selection": "FIT-only inner fold rotation; maximize net, fewer regressions, fewer actions, grid order; abstain if net <= 0",
+  "source_data_md5": {
+    "annotation.zip": "b39b78e63d3446f2e54ddb7a54df9b10",
+    "audio_mono-pickup_mix.zip": "aecce79f425a44e2055e46f680e10f6a"
+  },
+  "source_manifests_sha256": {
+    "0": "ec4bdf90cbc99b373906c4bd3490562f12f22c3215088b61041e9f2f65afb3d4",
+    "1": "d981dfd99178dc5e288751cb627b68424c36c003c087ce896da5394a4ef33d08",
+    "2": "0669367359ae28c06a29202cb67d0c9759feec4fa58efc1226df9022e67848f6",
+    "4": "a4c8d36424d3fe16105725713ae738cf5650562d0f879d8be48982a5a597aa04"
+  },
+  "source_run": 37356100423,
+  "source_sha256": {
+    "audit_v273_harmonic_decay_guard.py": "109a0fbab550e081f06b8033d3bce44dc1ce523279c02e6b486982921fd83640",
+    "audit_v273_internal_b_low_harmonic_strata.py": "05a49bad4b9dd89744776219a2e53dc7124f0623402b1c356378abe33982aecc",
+    "v273_residual_audit.py": "c2175f48306c64c42c112af62c12e8094f9ad00e3bfe612ba44b3ad4e2140b25"
+  },
+  "status": "completed",
+  "total_fixed": {
+    "s0.5_t0.5": {
+      "applied": 430,
+      "corrections": 109,
+      "global_net": -15,
+      "other_k_actions": 197,
+      "regressions": 124,
+      "rows": 845
+    },
+    "s0.5_t1": {
+      "applied": 477,
+      "corrections": 141,
+      "global_net": 1,
+      "other_k_actions": 196,
+      "regressions": 140,
+      "rows": 845
+    },
+    "s0.5_t2": {
+      "applied": 463,
+      "corrections": 128,
+      "global_net": -17,
+      "other_k_actions": 190,
+      "regressions": 145,
+      "rows": 845
+    },
+    "s1_t0.5": {
+      "applied": 436,
+      "corrections": 111,
+      "global_net": -17,
+      "other_k_actions": 197,
+      "regressions": 128,
+      "rows": 845
+    },
+    "s1_t1": {
+      "applied": 467,
+      "corrections": 133,
+      "global_net": -5,
+      "other_k_actions": 196,
+      "regressions": 138,
+      "rows": 845
+    },
+    "s1_t2": {
+      "applied": 545,
+      "corrections": 152,
+      "global_net": -27,
+      "other_k_actions": 214,
+      "regressions": 179,
+      "rows": 845
+    },
+    "s2_t0.5": {
+      "applied": 431,
+      "corrections": 112,
+      "global_net": -14,
+      "other_k_actions": 193,
+      "regressions": 126,
+      "rows": 845
+    },
+    "s2_t1": {
+      "applied": 471,
+      "corrections": 132,
+      "global_net": -10,
+      "other_k_actions": 197,
+      "regressions": 142,
+      "rows": 845
+    },
+    "s2_t2": {
+      "applied": 533,
+      "corrections": 149,
+      "global_net": -25,
+      "other_k_actions": 210,
+      "regressions": 174,
+      "rows": 845
+    }
+  },
+  "total_selected": {
+    "applied": 0,
+    "corrections": 0,
+    "global_net": 0,
+    "other_k_actions": 0,
+    "regressions": 0,
+    "rows": 845
+  },
+  "unique_audio_rows": 1666
+}

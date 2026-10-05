@@ -12,7 +12,13 @@ on:
       - 'scripts/v273_residual_audit.py'
       - 'test/test_v273_residual_acoustics.py'
       - 'test/test_v273_residual_audit.py'
+      - 'scripts/audit_v273_harmonic_templates.py'
+      - 'scripts/audit_v273_harmonic_decay_guard.py'
+      - 'scripts/audit_v273_decay_frequency_coverage.py'
+      - 'scripts/replay_v273_harmonic_decay_guard.py'
+      - 'test/test_v273_harmonic_templates.py'
       - 'analysis/evidence/v273-residual-acoustics/**'
+      - 'analysis/evidence/v273-harmonic-templates/**'
   workflow_dispatch:
 
 permissions:
@@ -40,8 +46,12 @@ jobs:
           scripts/audit_v273_internal_residual_acoustics.py
           scripts/audit_v273_residual_stable_pool.py
           scripts/probe_v273_residual_dictionary.py
+          scripts/audit_v273_harmonic_templates.py
+          scripts/audit_v273_harmonic_decay_guard.py
+          scripts/audit_v273_decay_frequency_coverage.py
+          scripts/replay_v273_harmonic_decay_guard.py
       - name: Check replay, ownership, matching and deterministic F0 ties
-        run: python -B -m unittest test.test_v273_residual_audit test.test_v273_residual_acoustics -v
+        run: python -B -m unittest test.test_v273_residual_audit test.test_v273_residual_acoustics test.test_v273_harmonic_templates -v
       - name: Verify committed evidence archive
         run: |
           python - <<'PY'
@@ -59,4 +69,24 @@ jobs:
               assert not report['outer_fold_3_used']
               assert len(z.read('acoustic/cases.jsonl').splitlines()) == report['cases'] == 488
           print('Evidence archive and all member hashes verified; no audio or model loaded.')
+          PY
+      - name: Replay harmonic decay decisions without audio or fitting
+        run: |
+          python - <<'PY'
+          import hashlib, json, pathlib, tempfile, zipfile
+          from scripts.replay_v273_harmonic_decay_guard import verify
+          root = pathlib.Path('analysis/evidence/v273-harmonic-templates')
+          manifest = json.loads((root / 'checksums.json').read_text())
+          for name, digest in manifest['files'].items():
+              assert hashlib.sha256((root / name).read_bytes()).hexdigest() == digest, name
+          with zipfile.ZipFile(root / 'evidence.zip') as z, tempfile.TemporaryDirectory() as temp:
+              assert set(z.namelist()) == set(manifest['archive_members'])
+              for name, digest in manifest['archive_members'].items():
+                  raw = z.read(name)
+                  assert hashlib.sha256(raw).hexdigest() == digest, name
+                  assert not pathlib.PurePosixPath(name).is_absolute() and '..' not in pathlib.PurePosixPath(name).parts
+                  target = pathlib.Path(temp) / name
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_bytes(raw)
+              print(json.dumps(verify(pathlib.Path(temp) / 'decay'), sort_keys=True))
           PY
