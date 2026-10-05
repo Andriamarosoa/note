@@ -1,0 +1,32 @@
+{
+  "experiment": "v273-attack-novelty-diagnostic",
+  "source_cohort": "analysis/evidence/v273-residual-acoustics/evidence.zip :: acoustic/cases.jsonl",
+  "cases": 488,
+  "validation_folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "outer_fold_3_used": false,
+  "normal_audio_only": true,
+  "question": "Do annotated attack frequencies show stronger PRE->POST1 novelty than selected unmatched components already present before the event?",
+  "windows": {
+    "pre": "[s-2048,s)",
+    "post1": "[s,s+2048)",
+    "post2": "[s+2048,s+4096)"
+  },
+  "diagnostics": [
+    "harmonic support PRE/POST1/POST2",
+    "normalized PRE support",
+    "PRE->POST1 onset contrast",
+    "PRE->POST1 log ratio",
+    "POST2/POST1 retention",
+    "expected vs selected-unmatched paired deltas",
+    "group and fold stratification"
+  ],
+  "prediction_changes": false,
+  "classifier_training": false,
+  "threshold_search": false,
+  "automatic_promotion": false
+}
