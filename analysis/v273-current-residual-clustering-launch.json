@@ -1,0 +1,15 @@
+{
+  "experiment": "v273-current-residual-k234-reclustering",
+  "current_configuration": "freeze_local_combo + candidate_hidden1 [42,52,61,64]",
+  "current_outer_source_run": 37290794473,
+  "historical_clustering_run": 36999901054,
+  "purpose": "redefine residual clusters after corrections before any Cluster B work",
+  "labels_excluded_from_clustering": true,
+  "outer_diagnostic_only": true,
+  "any_future_correction_must_be_selected_on_internal_folds": [
+    0,
+    1,
+    2,
+    4
+  ]
+}
