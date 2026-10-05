@@ -1,0 +1,23 @@
+{
+  "experiment": "v273-candidate_hidden1-targeted-exact-group-audit",
+  "source_multifold_run": 37271262794,
+  "outer_fold_3_used": false,
+  "training": false,
+  "layer": "candidate_hidden1",
+  "neuron_pool_size": 14,
+  "group_sizes": [
+    2,
+    3,
+    4
+  ],
+  "groups_per_size": 20,
+  "exact_groups_per_fold": 60,
+  "planning": "deterministic prescreen from single-neuron effects on folds 0,1,2,4 only; exact forward recomputation for every selected group",
+  "strict_group_rule": {
+    "low_net_nonnegative_every_fold": true,
+    "poly_net_nonnegative_every_fold": true,
+    "global_net_positive_on_at_least_n_folds": 3,
+    "total_global_net_positive": true
+  },
+  "automatic_promotion": false
+}
