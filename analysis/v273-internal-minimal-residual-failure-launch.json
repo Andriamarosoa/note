@@ -1,7 +1,7 @@
 {
   "experiment": "v273-internal-minimal-residual-failure-audit",
   "source_run": 37342597795,
-  "motivation": "explain why fold 2 is strongly negative while folds 1 and 4 are positive for the minimal pair+triplet residual discriminator",
+  "motivation": "Correct global register stratification and export row-level identities, features and frozen scores before interpreting causes or trying new representations.",
   "validation_folds": [
     0,
     1,
@@ -9,18 +9,22 @@
     4
   ],
   "outer_fold_3_used": false,
-  "population": "B_low + base prediction K3 + true K in {2,3}",
+  "population": "all valid B_low + base K3 action rows, including other true K; diagnostic fit/AUC restricted to K2/K3",
   "features": [
     "best_pair_residual_ratio",
     "best_triplet_residual_ratio"
   ],
   "checks": [
-    "K2/K3 fit and validation distributions",
-    "pair-only and triplet-only held-out AUC",
-    "standardized logistic coefficients",
-    "pair-triplet Pearson correlation overall and by class",
-    "standardized covariance condition number",
-    "low/mid/high register held-out AUC and K2/K3 exact net"
+    "global model stratified without refit; additive action counts",
+    "optional register_refit explicitly separate",
+    "other-K action accounting and explicit exclusions",
+    "FIT-only register cuts and univariate orientations",
+    "row IDs, recording IDs, sample times, features, scores and probabilities",
+    "source/input/checkpoint/runtime fingerprints",
+    "frozen score replay and exact decision equality",
+    "fold 3 excluded; no threshold tuning or automatic promotion"
   ],
-  "automatic_promotion": false
+  "automatic_promotion": false,
+  "schema_version": 2,
+  "source_audit_run": 37347597565
 }

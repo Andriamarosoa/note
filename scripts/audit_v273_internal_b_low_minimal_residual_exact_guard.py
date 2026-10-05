@@ -1,4 +1,4 @@
-"""Minimal register-invariant residual discriminator for B_low/base-K3.
+"""Minimal two-residual discriminator for B_low/base-K3.
 
 Uses ONLY:
   - best_pair_residual_ratio
@@ -20,10 +20,8 @@ from __future__ import annotations
 import argparse,json
 from pathlib import Path
 import numpy as np
-from sklearn.linear_model import LogisticRegression
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import roc_auc_score
+from scripts.v273_residual_audit import FEATURES, classifier as clf, fit_classifier
 
 from causal_note.guitarset import ALLOWED_PLAYERS,index_guitarset
 from scripts.train_boundaries import decode_pcm16_mono_wav
@@ -37,15 +35,6 @@ from scripts.v273_window_experiment import load_bundle,require
 from scripts.audit_v273_internal_b_low_harmonic_strata import (
     transition_spectrum,extract_one,build_blow,
 )
-
-FEATURES=("best_pair_residual_ratio","best_triplet_residual_ratio")
-
-def clf():
-    return Pipeline([
-      ("scale",StandardScaler()),
-      ("lr",LogisticRegression(C=1.0,max_iter=3000,solver="lbfgs",
-                               class_weight="balanced",random_state=28431))
-    ])
 
 def auc(y,s):
     y=np.asarray(y,np.int32);s=np.asarray(s,np.float64)
@@ -125,7 +114,7 @@ def main():
     require(len(np.unique(ytr))==2 and len(np.unique(yte))==2,"binary collapse")
     cols=[idx[k] for k in FEATURES]
 
-    model=clf();model.fit(Af[train][:,cols],ytr)
+    model=fit_classifier(Af[train][:,cols],ytr)
     p_k23=model.predict_proba(Av[test][:,cols])[:,1]
     k23_auc=auc(yte,p_k23)
 
