@@ -1,0 +1,230 @@
+{
+  "automatic_promotion": false,
+  "diagnostic_lr_refit": true,
+  "folds": [
+    {
+      "changed_fit_features": 20,
+      "changed_val_features": 9,
+      "changed_validation_decisions": 0,
+      "control_refit_max_abs_probability_error": 2.7755575615628914e-16,
+      "fold": 0,
+      "old": {
+        "applied": 137,
+        "by_k_net": {
+          "0": 0,
+          "1": 0,
+          "2": 32,
+          "3": -36,
+          "4": 0,
+          "5": 0,
+          "6": 0
+        },
+        "corrections": 32,
+        "global_net": -4,
+        "joint_auc": 0.47066039664690246,
+        "k23_exact_net": -4,
+        "other_k_actions": 69,
+        "regressions": 36,
+        "val_k23_rows": 140,
+        "val_rows": 256
+      },
+      "old_auc": 0.47066039664690246,
+      "stable": {
+        "applied": 137,
+        "by_k_net": {
+          "0": 0,
+          "1": 0,
+          "2": 32,
+          "3": -36,
+          "4": 0,
+          "5": 0,
+          "6": 0
+        },
+        "corrections": 32,
+        "global_net": -4,
+        "joint_auc": 0.47147822531179717,
+        "k23_exact_net": -4,
+        "other_k_actions": 69,
+        "regressions": 36,
+        "val_k23_rows": 140,
+        "val_rows": 256
+      },
+      "stable_auc": 0.47147822531179717
+    },
+    {
+      "changed_fit_features": 5,
+      "changed_val_features": 4,
+      "changed_validation_decisions": 2,
+      "control_refit_max_abs_probability_error": 0.0,
+      "fold": 1,
+      "old": {
+        "applied": 80,
+        "by_k_net": {
+          "0": 0,
+          "1": 0,
+          "2": 28,
+          "3": -22,
+          "4": 0,
+          "5": 0,
+          "6": 0
+        },
+        "corrections": 28,
+        "global_net": 6,
+        "joint_auc": 0.660969654691315,
+        "k23_exact_net": 6,
+        "other_k_actions": 30,
+        "regressions": 22,
+        "val_k23_rows": 108,
+        "val_rows": 178
+      },
+      "old_auc": 0.660969654691315,
+      "stable": {
+        "applied": 82,
+        "by_k_net": {
+          "0": 0,
+          "1": 0,
+          "2": 29,
+          "3": -22,
+          "4": 0,
+          "5": 0,
+          "6": 0
+        },
+        "corrections": 29,
+        "global_net": 7,
+        "joint_auc": 0.660969654691315,
+        "k23_exact_net": 7,
+        "other_k_actions": 31,
+        "regressions": 22,
+        "val_k23_rows": 108,
+        "val_rows": 178
+      },
+      "stable_auc": 0.660969654691315
+    },
+    {
+      "changed_fit_features": 10,
+      "changed_val_features": 1,
+      "changed_validation_decisions": 3,
+      "control_refit_max_abs_probability_error": 2.220446049250313e-16,
+      "fold": 2,
+      "old": {
+        "applied": 77,
+        "by_k_net": {
+          "0": 0,
+          "1": 0,
+          "2": 8,
+          "3": -28,
+          "4": 0,
+          "5": 0,
+          "6": 0
+        },
+        "corrections": 8,
+        "global_net": -20,
+        "joint_auc": 0.4320987654320988,
+        "k23_exact_net": -20,
+        "other_k_actions": 41,
+        "regressions": 28,
+        "val_k23_rows": 75,
+        "val_rows": 140
+      },
+      "old_auc": 0.4320987654320988,
+      "stable": {
+        "applied": 78,
+        "by_k_net": {
+          "0": 0,
+          "1": 0,
+          "2": 8,
+          "3": -27,
+          "4": 0,
+          "5": 0,
+          "6": 0
+        },
+        "corrections": 8,
+        "global_net": -19,
+        "joint_auc": 0.43033509700176364,
+        "k23_exact_net": -19,
+        "other_k_actions": 43,
+        "regressions": 27,
+        "val_k23_rows": 75,
+        "val_rows": 140
+      },
+      "stable_auc": 0.43033509700176364
+    },
+    {
+      "changed_fit_features": 21,
+      "changed_val_features": 11,
+      "changed_validation_decisions": 0,
+      "control_refit_max_abs_probability_error": 2.220446049250313e-16,
+      "fold": 4,
+      "old": {
+        "applied": 133,
+        "by_k_net": {
+          "0": 0,
+          "1": 0,
+          "2": 40,
+          "3": -39,
+          "4": 0,
+          "5": 0,
+          "6": 0
+        },
+        "corrections": 40,
+        "global_net": 1,
+        "joint_auc": 0.5282186948853616,
+        "k23_exact_net": 1,
+        "other_k_actions": 54,
+        "regressions": 39,
+        "val_k23_rows": 165,
+        "val_rows": 271
+      },
+      "old_auc": 0.5282186948853616,
+      "stable": {
+        "applied": 133,
+        "by_k_net": {
+          "0": 0,
+          "1": 0,
+          "2": 40,
+          "3": -39,
+          "4": 0,
+          "5": 0,
+          "6": 0
+        },
+        "corrections": 40,
+        "global_net": 1,
+        "joint_auc": 0.5289535567313345,
+        "k23_exact_net": 1,
+        "other_k_actions": 54,
+        "regressions": 39,
+        "val_k23_rows": 165,
+        "val_rows": 271
+      },
+      "stable_auc": 0.5289535567313345
+    }
+  ],
+  "neural_training": false,
+  "outer_fold_3_used": false,
+  "recordings": 122,
+  "single_change": "stable increasing-grid-order tie break in F0 salience sorting before NMS",
+  "source_inconsistent_rows": 14,
+  "source_run": 37356100423,
+  "source_sha256": {
+    "audit_v273_internal_b_low_harmonic_strata.py": "05a49bad4b9dd89744776219a2e53dc7124f0623402b1c356378abe33982aecc",
+    "audit_v273_residual_stable_pool.py": "69617c58091e76bbf9a3092a98b091ea59d5338c0bbdcbee14128304759edb46"
+  },
+  "status": "completed",
+  "totals": {
+    "old": {
+      "applied": 427,
+      "corrections": 108,
+      "global_net": -17,
+      "other_k_actions": 194,
+      "regressions": 125
+    },
+    "stable": {
+      "applied": 430,
+      "corrections": 109,
+      "global_net": -15,
+      "other_k_actions": 197,
+      "regressions": 124
+    }
+  },
+  "unique_audio_rows": 1666
+}

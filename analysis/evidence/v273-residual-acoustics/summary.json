@@ -1,0 +1,618 @@
+{
+  "annotation_ownership_replayed": true,
+  "cases": 488,
+  "cases_sha256": "6a3da0099c775f1d437dea4a389881326da774981ec001f3550ad6028c9d3b65",
+  "config_sha256": "7c27989eb3fe330fdff203e388e76ae4c64d8b8e4838cab4d7c4622b4104451a",
+  "dictionary_probe": {
+    "K3_preserved": {
+      "augmented_triplet_all_three": 0,
+      "contour_all_three_in_original_pool": 2,
+      "contour_available_notes": 440,
+      "mean_augmented_matches": 1.2244897959183674,
+      "median_contour_annotation_cents": 2.0245324927272197,
+      "notes_contour_deviation_over_55_cents": 2,
+      "rows": 147,
+      "total_notes": 441
+    },
+    "K3_regressed": {
+      "augmented_triplet_all_three": 0,
+      "contour_all_three_in_original_pool": 1,
+      "contour_available_notes": 369,
+      "mean_augmented_matches": 1.192,
+      "median_contour_annotation_cents": 3.0774821158593637,
+      "notes_contour_deviation_over_55_cents": 10,
+      "rows": 125,
+      "total_notes": 375
+    }
+  },
+  "example_7636": {
+    "action_applied": true,
+    "base_prediction": 3,
+    "best_pair_residual_ratio": 0.5745134551109378,
+    "best_triplet_residual_ratio": 0.5588642271269483,
+    "candidate_span_ms": 38.39002267573696,
+    "decision_role": "observed_validation",
+    "decomposition": {
+      "components": [
+        {
+          "amplitude": 0.06577714901483792,
+          "f0": 84.64043592635834,
+          "nearest_foreign_cents": 3059.074148799661,
+          "nearest_owned_cents": 1154.9163409656692,
+          "nearest_owned_harmonic_2_to_6_cents": 2354.916340965669
+        },
+        {
+          "amplitude": 0.021569435587146555,
+          "f0": 143.5181941371546,
+          "nearest_foreign_cents": 2144.896533546944,
+          "nearest_owned_cents": 240.738725712952,
+          "nearest_owned_harmonic_2_to_6_cents": 1440.7387257129521
+        },
+        {
+          "amplitude": 0.029685851885652398,
+          "f0": 162.6378935335728,
+          "nearest_foreign_cents": 1928.3807825660372,
+          "nearest_owned_cents": 24.222974732045667,
+          "nearest_owned_harmonic_2_to_6_cents": 1224.2229747320457
+        }
+      ],
+      "local_quicksort_residuals": [
+        0.5745134551109382,
+        0.5588642271269487
+      ],
+      "owned_shared_band_support": [
+        {
+          "band_positive_retained_fraction": 0.8928753513819166,
+          "band_post_power": 13100.06038188506,
+          "band_pre_power": 1485.9117566550992
+        },
+        {
+          "band_positive_retained_fraction": 0.7346386065739865,
+          "band_post_power": 14346.49619780499,
+          "band_pre_power": 4196.089227852017
+        },
+        {
+          "band_positive_retained_fraction": 0.9711920684592396,
+          "band_post_power": 3721.4886503518246,
+          "band_pre_power": 109.51814370302938
+        }
+      ],
+      "pair_amplitudes": [
+        0.07216328948299179,
+        0.03660665748516195
+      ],
+      "pair_f0": [
+        84.64043592635834,
+        162.6378935335728
+      ],
+      "pool_f0": [
+        81.18447095424841,
+        84.64043592635834,
+        74.69011219470163,
+        143.5181941371546,
+        162.6378935335728,
+        77.86961695064582,
+        169.5612725564714,
+        88.24351886016784
+      ],
+      "pool_matches": [
+        {
+          "cents": 24.2229747320455,
+          "component": 4,
+          "note": 0
+        }
+      ],
+      "post_only_pool_f0": [
+        81.18447095424841,
+        84.64043592635834,
+        74.69011219470163,
+        246.7578662789754,
+        143.5181941371546,
+        88.24351886016784,
+        71.64043022316224,
+        137.65818353619298
+      ],
+      "replay_sort_order": "quicksort",
+      "triplet_amplitudes": [
+        0.06577714901483792,
+        0.021569435587146555,
+        0.029685851885652398
+      ],
+      "triplet_f0": [
+        84.64043592635834,
+        143.5181941371546,
+        162.6378935335728
+      ],
+      "triplet_matches": [
+        {
+          "cents": 24.2229747320455,
+          "component": 2,
+          "note": 0
+        }
+      ]
+    },
+    "excluded_reason": null,
+    "fold": 0,
+    "global_score": 0.022307506387501667,
+    "group": "K3_regressed",
+    "measurements": {
+      "annotation_conditioned_residual": 0.5971125434145498,
+      "earliest_onset_ms": -1.5873015873015872,
+      "foreign_post_births": 0,
+      "foreign_post_notes": 1,
+      "latest_onset_ms": 21.04308390022676,
+      "legacy_local_residual_drift": 4.440892098500626e-16,
+      "legacy_sort_replay_changed": 0,
+      "max_owned_template_cosine": 0.25932187729476047,
+      "median_owned_midi": 59.074954627837926,
+      "min_owned_midi": 52.012148679965826,
+      "min_pitch_spacing_cents": 706.28059478721,
+      "min_post_coverage": 0.6232707897933243,
+      "min_post_cycles": 7.659309844894708,
+      "minimum_owned_band_retained_fraction": 0.7346386065739865,
+      "near_unison_pair": 0,
+      "near_zero_triplet_components": 0,
+      "onset_spread_ms": 22.630385487528343,
+      "owned_before_start": 1,
+      "owned_not_overlapping_post": 0,
+      "owned_onset_after_post": 0,
+      "owned_weak_post_coverage": 0,
+      "pool_all_owned": 0,
+      "pool_owned_matches": 1,
+      "post_only_pool_match_delta": 0,
+      "post_only_pool_owned_matches": 1,
+      "post_rms": 0.10660509921505808,
+      "pre_active_notes": 2,
+      "pre_to_post_power_ratio": 0.24138742983702294,
+      "transition_retained_post_power_fraction": 0.8040275793449663,
+      "triplet_all_owned": 0,
+      "triplet_owned_matches": 1
+    },
+    "median_triplet_f0": 143.5181941371546,
+    "nearby_notes": [
+      {
+        "midi": 52.012148679965826,
+        "offset_sample": 847419,
+        "onset_sample": 828987,
+        "own": true,
+        "owner_track_row": 255,
+        "slot": 1
+      },
+      {
+        "midi": 59.08437682027657,
+        "offset_sample": 829012,
+        "onset_sample": 811604,
+        "own": false,
+        "owner_track_row": 248,
+        "slot": 2
+      },
+      {
+        "midi": 59.074954627837926,
+        "offset_sample": 838290,
+        "onset_sample": 829586,
+        "own": true,
+        "owner_track_row": 255,
+        "slot": 2
+      },
+      {
+        "midi": 67.05957383151946,
+        "offset_sample": 838945,
+        "onset_sample": 829985,
+        "own": true,
+        "owner_track_row": 255,
+        "slot": 4
+      },
+      {
+        "midi": 71.05427932663564,
+        "offset_sample": 827037,
+        "onset_sample": 812445,
+        "own": false,
+        "owner_track_row": 248,
+        "slot": 5
+      },
+      {
+        "midi": 71.05372675830574,
+        "offset_sample": 846840,
+        "onset_sample": 827896,
+        "own": false,
+        "owner_track_row": -1,
+        "slot": 5
+      }
+    ],
+    "owned_notes": [
+      {
+        "frequency_hz": 164.92947468743,
+        "midi": 52.012148679965826,
+        "offset_sample": 847419,
+        "onset_relative_ms": -1.5873015873015872,
+        "onset_sample": 828987,
+        "post_taper_energy_coverage": 1.0,
+        "slot": 1
+      },
+      {
+        "frequency_hz": 248.01311442810547,
+        "midi": 59.074954627837926,
+        "offset_sample": 838290,
+        "onset_relative_ms": 11.995464852607709,
+        "onset_sample": 829586,
+        "post_taper_energy_coverage": 0.9564663308722012,
+        "slot": 2
+      },
+      {
+        "frequency_hz": 393.3466626320721,
+        "midi": 67.05957383151946,
+        "offset_sample": 838945,
+        "onset_relative_ms": 21.04308390022676,
+        "onset_sample": 829985,
+        "post_taper_energy_coverage": 0.6232707897933243,
+        "slot": 4
+      }
+    ],
+    "prediction_after": 2,
+    "probability_K2_weighted": 0.5055766453423557,
+    "recording_id": "00_Jazz3-150-C_comp.jams",
+    "register": "mid",
+    "residual_replay_max_abs_error": 4.440892098500626e-16,
+    "row_id": 7636,
+    "split": "val",
+    "start_sample": 829057,
+    "start_seconds": 18.799478458049887,
+    "track_row": 255,
+    "true_K": 3,
+    "valid": true
+  },
+  "folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "groups": {
+    "K2_corrected": {
+      "measurements": {
+        "foreign_post_births": {
+          "mean": 0.08333333333333333,
+          "median": 0.0,
+          "rows_above_zero": 9
+        },
+        "foreign_post_notes": {
+          "mean": 1.2962962962962963,
+          "median": 1.0,
+          "rows_above_zero": 60
+        },
+        "legacy_sort_replay_changed": {
+          "mean": 0.0,
+          "median": 0.0,
+          "rows_above_zero": 0
+        },
+        "owned_not_overlapping_post": {
+          "mean": 0.0,
+          "median": 0.0,
+          "rows_above_zero": 0
+        },
+        "owned_onset_after_post": {
+          "mean": 0.0,
+          "median": 0.0,
+          "rows_above_zero": 0
+        },
+        "owned_weak_post_coverage": {
+          "mean": 0.12962962962962962,
+          "median": 0.0,
+          "rows_above_zero": 14
+        },
+        "pool_all_owned": {
+          "mean": 0.046296296296296294,
+          "median": 0.0,
+          "rows_above_zero": 5
+        },
+        "pool_owned_matches": {
+          "mean": 0.8888888888888888,
+          "median": 1.0,
+          "rows_above_zero": 91
+        },
+        "post_only_pool_match_delta": {
+          "mean": -0.009259259259259259,
+          "median": 0.0,
+          "rows_above_zero": 1
+        },
+        "triplet_all_owned": {
+          "mean": 0.027777777777777776,
+          "median": 0.0,
+          "rows_above_zero": 3
+        },
+        "triplet_owned_matches": {
+          "mean": 0.7962962962962963,
+          "median": 1.0,
+          "rows_above_zero": 83
+        }
+      },
+      "recordings": 54,
+      "rows": 108
+    },
+    "K2_missed": {
+      "measurements": {
+        "foreign_post_births": {
+          "mean": 0.1111111111111111,
+          "median": 0.0,
+          "rows_above_zero": 10
+        },
+        "foreign_post_notes": {
+          "mean": 1.9444444444444444,
+          "median": 1.5,
+          "rows_above_zero": 85
+        },
+        "legacy_sort_replay_changed": {
+          "mean": 0.07407407407407407,
+          "median": 0.0,
+          "rows_above_zero": 8
+        },
+        "owned_not_overlapping_post": {
+          "mean": 0.0,
+          "median": 0.0,
+          "rows_above_zero": 0
+        },
+        "owned_onset_after_post": {
+          "mean": 0.0,
+          "median": 0.0,
+          "rows_above_zero": 0
+        },
+        "owned_weak_post_coverage": {
+          "mean": 0.08333333333333333,
+          "median": 0.0,
+          "rows_above_zero": 9
+        },
+        "pool_all_owned": {
+          "mean": 0.2777777777777778,
+          "median": 0.0,
+          "rows_above_zero": 30
+        },
+        "pool_owned_matches": {
+          "mean": 1.1759259259259258,
+          "median": 1.0,
+          "rows_above_zero": 97
+        },
+        "post_only_pool_match_delta": {
+          "mean": -0.046296296296296294,
+          "median": 0.0,
+          "rows_above_zero": 6
+        },
+        "triplet_all_owned": {
+          "mean": 0.21296296296296297,
+          "median": 0.0,
+          "rows_above_zero": 23
+        },
+        "triplet_owned_matches": {
+          "mean": 0.9722222222222222,
+          "median": 1.0,
+          "rows_above_zero": 82
+        }
+      },
+      "recordings": 58,
+      "rows": 108
+    },
+    "K3_preserved": {
+      "measurements": {
+        "foreign_post_births": {
+          "mean": 0.027210884353741496,
+          "median": 0.0,
+          "rows_above_zero": 4
+        },
+        "foreign_post_notes": {
+          "mean": 1.7414965986394557,
+          "median": 2.0,
+          "rows_above_zero": 115
+        },
+        "legacy_sort_replay_changed": {
+          "mean": 0.006802721088435374,
+          "median": 0.0,
+          "rows_above_zero": 1
+        },
+        "owned_not_overlapping_post": {
+          "mean": 0.0,
+          "median": 0.0,
+          "rows_above_zero": 0
+        },
+        "owned_onset_after_post": {
+          "mean": 0.0,
+          "median": 0.0,
+          "rows_above_zero": 0
+        },
+        "owned_weak_post_coverage": {
+          "mean": 0.12244897959183673,
+          "median": 0.0,
+          "rows_above_zero": 14
+        },
+        "pool_all_owned": {
+          "mean": 0.013605442176870748,
+          "median": 0.0,
+          "rows_above_zero": 2
+        },
+        "pool_owned_matches": {
+          "mean": 1.2108843537414966,
+          "median": 1.0,
+          "rows_above_zero": 140
+        },
+        "post_only_pool_match_delta": {
+          "mean": -0.11564625850340136,
+          "median": 0.0,
+          "rows_above_zero": 7
+        },
+        "triplet_all_owned": {
+          "mean": 0.0,
+          "median": 0.0,
+          "rows_above_zero": 0
+        },
+        "triplet_owned_matches": {
+          "mean": 1.0,
+          "median": 1.0,
+          "rows_above_zero": 123
+        }
+      },
+      "recordings": 65,
+      "rows": 147
+    },
+    "K3_regressed": {
+      "measurements": {
+        "foreign_post_births": {
+          "mean": 0.064,
+          "median": 0.0,
+          "rows_above_zero": 8
+        },
+        "foreign_post_notes": {
+          "mean": 1.2,
+          "median": 1.0,
+          "rows_above_zero": 74
+        },
+        "legacy_sort_replay_changed": {
+          "mean": 0.008,
+          "median": 0.0,
+          "rows_above_zero": 1
+        },
+        "owned_not_overlapping_post": {
+          "mean": 0.0,
+          "median": 0.0,
+          "rows_above_zero": 0
+        },
+        "owned_onset_after_post": {
+          "mean": 0.0,
+          "median": 0.0,
+          "rows_above_zero": 0
+        },
+        "owned_weak_post_coverage": {
+          "mean": 0.216,
+          "median": 0.0,
+          "rows_above_zero": 22
+        },
+        "pool_all_owned": {
+          "mean": 0.008,
+          "median": 0.0,
+          "rows_above_zero": 1
+        },
+        "pool_owned_matches": {
+          "mean": 1.072,
+          "median": 1.0,
+          "rows_above_zero": 118
+        },
+        "post_only_pool_match_delta": {
+          "mean": -0.032,
+          "median": 0.0,
+          "rows_above_zero": 5
+        },
+        "triplet_all_owned": {
+          "mean": 0.0,
+          "median": 0.0,
+          "rows_above_zero": 0
+        },
+        "triplet_owned_matches": {
+          "mean": 0.928,
+          "median": 1.0,
+          "rows_above_zero": 106
+        }
+      },
+      "recordings": 56,
+      "rows": 125
+    }
+  },
+  "limitations": [
+    "Case/control selection is descriptive on already inspected internal folds, not an independent validation.",
+    "Harmonic bands and inferred components can overlap several notes; they are not isolated sources.",
+    "Annotation ownership counts attacks, not the number of sustained pitches in a frame.",
+    "Frequency matching uses 55 cents and one-to-one assignment; pitch annotations and audio may differ.",
+    "Post-only pool comparison is a representation diagnostic, not a new Exact-K score.",
+    "Legacy equal-salience tie order can vary across runtimes; alternate order is used only when it reproduces the two exported residuals and median F0. Those scalars do not uniquely identify all eight original candidates.",
+    "Flags overlap and must not be added as disjoint causal explanations."
+  ],
+  "matched_controls": {
+    "matched": 85,
+    "mean_error_minus_control": {
+      "annotation_conditioned_residual": -0.08725753787720782,
+      "earliest_onset_ms": 3.2322262238228623,
+      "foreign_post_births": 0.03529411764705882,
+      "foreign_post_notes": -0.3058823529411765,
+      "latest_onset_ms": 1.1682006135787641,
+      "legacy_local_residual_drift": -0.00035081268807917436,
+      "legacy_sort_replay_changed": -0.011764705882352941,
+      "max_owned_template_cosine": 0.07478060901277647,
+      "median_owned_midi": -2.1015975928888757,
+      "min_owned_midi": -3.191541092244535,
+      "min_pitch_spacing_cents": 37.94514558184121,
+      "min_post_coverage": -0.008386470552759099,
+      "min_post_cycles": -0.9890803639749793,
+      "minimum_owned_band_retained_fraction": 0.07974995638517532,
+      "near_unison_pair": 0.011764705882352941,
+      "near_zero_triplet_components": 0.0,
+      "onset_spread_ms": -2.064025610244098,
+      "owned_before_start": -0.32941176470588235,
+      "owned_not_overlapping_post": 0.0,
+      "owned_onset_after_post": 0.0,
+      "owned_weak_post_coverage": -0.023529411764705882,
+      "pool_all_owned": 0.0,
+      "pool_owned_matches": -0.16470588235294117,
+      "post_only_pool_match_delta": 0.03529411764705882,
+      "post_only_pool_owned_matches": -0.12941176470588237,
+      "post_rms": -0.014370562814239518,
+      "pre_active_notes": -0.6705882352941176,
+      "pre_to_post_power_ratio": -0.10358824328100517,
+      "transition_retained_post_power_fraction": 0.06130043539723591,
+      "triplet_all_owned": 0.0,
+      "triplet_owned_matches": -0.011764705882352941
+    },
+    "rule": "same recording and true K3; minimum sorted-MIDI distance, then time, then row ID; reuse allowed",
+    "unique_controls": 46,
+    "unmatched": 40
+  },
+  "outer_fold_3_used": false,
+  "residual_replay_max_abs_error": 6.439293542825908e-15,
+  "runtime": {
+    "numpy": "1.26.4",
+    "python": "3.12.14",
+    "scikit-learn": "1.4.2",
+    "scipy": "1.17.1"
+  },
+  "scripts_sha256": {
+    "audit_v273_internal_b_low_harmonic_strata.py": "05a49bad4b9dd89744776219a2e53dc7124f0623402b1c356378abe33982aecc",
+    "audit_v273_internal_residual_acoustics.py": "c24dc525b72d955441b7289c0948f26c51f3d1af8da741245edd2af4adefe9cf",
+    "audit_v273_residual_stable_pool.py": "69617c58091e76bbf9a3092a98b091ea59d5338c0bbdcbee14128304759edb46",
+    "probe_v273_residual_dictionary.py": "3eccdc534a85b9b8cf0b3fa78bb9adeaa8386201e2ee146f48eaff3b16ca2654",
+    "v273_residual_audit.py": "c2175f48306c64c42c112af62c12e8094f9ad00e3bfe612ba44b3ad4e2140b25"
+  },
+  "source_commit": "cd5ed33976baa7d2d571807a6547687db1d0eaae",
+  "source_export_manifests_sha256": {
+    "0": "ec4bdf90cbc99b373906c4bd3490562f12f22c3215088b61041e9f2f65afb3d4",
+    "1": "d981dfd99178dc5e288751cb627b68424c36c003c087ce896da5394a4ef33d08",
+    "2": "0669367359ae28c06a29202cb67d0c9759feec4fa58efc1226df9022e67848f6",
+    "4": "a4c8d36424d3fe16105725713ae738cf5650562d0f879d8be48982a5a597aa04"
+  },
+  "source_md5": {
+    "annotation.zip": "b39b78e63d3446f2e54ddb7a54df9b10",
+    "audio_mono-pickup_mix.zip": "aecce79f425a44e2055e46f680e10f6a"
+  },
+  "source_run": 37356100423,
+  "stable_sort_totals": {
+    "old": {
+      "applied": 427,
+      "corrections": 108,
+      "global_net": -17,
+      "other_k_actions": 194,
+      "regressions": 125
+    },
+    "stable": {
+      "applied": 430,
+      "corrections": 109,
+      "global_net": -15,
+      "other_k_actions": 197,
+      "regressions": 124
+    }
+  },
+  "status": "completed",
+  "tracks": 97,
+  "unit_tests": {
+    "measures_model_accuracy": false,
+    "modules": [
+      "test.test_v273_residual_audit",
+      "test.test_v273_residual_acoustics"
+    ],
+    "passed": 14
+  },
+  "window_ms": 46.439909297052154
+}

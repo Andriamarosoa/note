@@ -3,6 +3,9 @@ name: V27.3 failure clustering
 on:
   push:
     branches: [codex/v273-failure-clustering]
+    # This historical audit reads fold 3; ordinary research pushes must not run it.
+    paths:
+      - analysis/v273-failure-clustering-launch.json
   workflow_dispatch:
 
 permissions:

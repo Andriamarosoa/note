@@ -1,0 +1,62 @@
+name: V27.3 Residual Acoustic Checks
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - '.github/workflows/v273-residual-acoustic-checks.yml'
+      - 'scripts/audit_v273_internal_residual_acoustics.py'
+      - 'scripts/audit_v273_residual_stable_pool.py'
+      - 'scripts/probe_v273_residual_dictionary.py'
+      - 'scripts/audit_v273_internal_b_low_harmonic_strata.py'
+      - 'scripts/v273_residual_audit.py'
+      - 'test/test_v273_residual_acoustics.py'
+      - 'test/test_v273_residual_audit.py'
+      - 'analysis/evidence/v273-residual-acoustics/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONPATH: '.:src'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+
+jobs:
+  checks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install numeric audit dependencies
+        run: python -m pip install numpy==1.26.4 scipy==1.17.1 scikit-learn==1.4.2
+      - name: Compile audit scripts
+        run: >-
+          python -m py_compile
+          scripts/audit_v273_internal_residual_acoustics.py
+          scripts/audit_v273_residual_stable_pool.py
+          scripts/probe_v273_residual_dictionary.py
+      - name: Check replay, ownership, matching and deterministic F0 ties
+        run: python -B -m unittest test.test_v273_residual_audit test.test_v273_residual_acoustics -v
+      - name: Verify committed evidence archive
+        run: |
+          python - <<'PY'
+          import hashlib, json, pathlib, zipfile
+          root = pathlib.Path('analysis/evidence/v273-residual-acoustics')
+          manifest = json.loads((root / 'checksums.json').read_text())
+          for name, digest in manifest['files'].items():
+              assert hashlib.sha256((root / name).read_bytes()).hexdigest() == digest, name
+          with zipfile.ZipFile(root / 'evidence.zip') as z:
+              assert set(z.namelist()) == set(manifest['archive_members'])
+              for name, digest in manifest['archive_members'].items():
+                  assert hashlib.sha256(z.read(name)).hexdigest() == digest, name
+              report = json.loads(z.read('acoustic/report.json'))
+              assert report['status'] == 'completed' and report['folds'] == [0, 1, 2, 4]
+              assert not report['outer_fold_3_used']
+              assert len(z.read('acoustic/cases.jsonl').splitlines()) == report['cases'] == 488
+          print('Evidence archive and all member hashes verified; no audio or model loaded.')
+          PY

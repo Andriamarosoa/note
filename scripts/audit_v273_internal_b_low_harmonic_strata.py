@@ -95,7 +95,10 @@ def harmonic_salience(freq,x,f0):
 
 def f0_pool(freq,x):
     score=np.asarray([harmonic_salience(freq,x,float(f)) for f in F0_GRID])
-    order=np.argsort(-score);chosen=[]
+    # Equal salience is common because neighbouring F0s use the same FFT bins.
+    # Keep increasing grid order for ties; an unstable sort can change which
+    # neighbour survives NMS and therefore the exported pair/triplet residuals.
+    order=np.argsort(-score,kind="stable");chosen=[]
     for idx in order:
         f=float(F0_GRID[idx])
         if any(abs(1200.0*math.log2(f/g))<NMS_CENTS for g in chosen):continue
