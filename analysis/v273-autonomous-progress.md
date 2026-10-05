@@ -54,6 +54,10 @@ un contraste contrôlé sont mesurés. Annotations exclusivement diagnostiques.
 
 ## Commits, runs et reprise fiable
 
+- Audit temporel : `699b7ef6a19bbc2c0043ba2596f49f8fe2acb7e7`.
+  CI [`37375379888`](https://github.com/Andriamarosoa/note/actions/runs/37375379888)
+  déclenché et en attente le 6 octobre 2026. Les 34 tests et la nouvelle étape
+  CI de rejeu depuis l'archive ont passé localement. Aucun run dupliqué.
 - Critère de reconstruction et gardes statiques :
   `ff48f26757203b86161bcb1272b1ff73c96fec31`, checkpoint documentaire `d9f75cb`.
   CI [`37371872093`](https://github.com/Andriamarosoa/note/actions/runs/37371872093)
