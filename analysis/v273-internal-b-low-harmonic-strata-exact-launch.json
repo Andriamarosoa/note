@@ -1,0 +1,32 @@
+{
+  "experiment": "v273-internal-b-low-harmonic-strata-exact-guard",
+  "source_strata_run": 37330190680,
+  "population": "B_low + base prediction K3",
+  "validation_folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "outer_fold_3_used": false,
+  "fresh_validation": false,
+  "reason_not_fresh": "gate families were discovered on the same internal folds in run 37330190680",
+  "fixed_gates": [
+    "all",
+    "high_register",
+    "moderate_harmonic",
+    "high_and_moderate",
+    "high_or_moderate"
+  ],
+  "features": [
+    "best_pair_residual_ratio",
+    "best_triplet_residual_ratio",
+    "third_coefficient_fraction",
+    "third_unique_support_ratio"
+  ],
+  "classifier": "logistic C=1 class_weight=balanced threshold=0.5",
+  "target": "true K2 vs not-K2",
+  "action": "3->2 only",
+  "goal": "measure paired exact-K utility of acoustically favorable harmonic strata",
+  "automatic_promotion": false
+}
