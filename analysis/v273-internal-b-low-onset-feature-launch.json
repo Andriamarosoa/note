@@ -1,0 +1,33 @@
+{
+  "experiment": "v273-internal-b-low-temporal-onset-feature-audit",
+  "basis": "README feature research returned 2026-10-05",
+  "population": "B_low and base prediction K3",
+  "validation_folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "outer_fold_3_used": false,
+  "new_feature_family": "cluster-level temporal onset evidence from 31x64x3 group_plus_verifier spectral map",
+  "feature_examples": [
+    "flux post-pre delta",
+    "early/group/late flux",
+    "flux peak and delay",
+    "flux temporal spread/peak count",
+    "flux band entropy",
+    "positive-pre early/group/late evidence",
+    "log-power post-pre delta"
+  ],
+  "diagnostic_comparisons": [
+    "current structural features",
+    "new onset features only",
+    "current + onset"
+  ],
+  "diagnostic_classifier": "logistic regression C=1 class_weight=balanced, fixed",
+  "primary_metric": "AUC true K2 vs true K3 within B_low/base-K3",
+  "secondary_metric": "AUC true K2 vs not-K2 within B_low/base-K3",
+  "target_research_signal": "combined mean AUC improvement >=0.02; aspirational AUC >=0.65 stable across folds",
+  "candidate_specific_F0_features": false,
+  "automatic_promotion": false
+}
