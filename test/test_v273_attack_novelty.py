@@ -3,7 +3,7 @@ import numpy as np
 
 from scripts import audit_v273_internal_b_low_harmonic_strata as h
 from scripts.audit_v273_attack_novelty import (
-    harmonic_mask, component_metrics, case_measurement, aggregate,
+    harmonic_mask, component_metrics, case_measurement, aggregate, format_cell,
 )
 
 
@@ -31,10 +31,8 @@ class AttackNoveltyTests(unittest.TestCase):
     def test_case_measurement_marks_unmatched_component_and_paired_delta(self):
         freq = np.arange(50.0, 1201.0, 1.0)
         powers = np.ones((3, len(freq)), dtype=float)
-        # Expected notes get strong POST1 onset evidence.
         for f0 in (100.0, 200.0, 300.0):
             powers[1, harmonic_mask(freq, f0)] += 8.0
-        # The unmatched selected component is already strong in PRE.
         powers[0, harmonic_mask(freq, 500.0)] += 8.0
         powers[1, harmonic_mask(freq, 500.0)] += 8.0
         row = {
@@ -76,6 +74,12 @@ class AttackNoveltyTests(unittest.TestCase):
         self.assertEqual(out["expected"]["components"], 3)
         self.assertEqual(out["selected_unmatched"]["components"], 1)
         self.assertEqual(out["expected_minus_unmatched"]["onset_contrast_raw"]["n"], 1)
+
+    def test_report_formatter_accepts_labels_and_numbers(self):
+        self.assertEqual(format_cell("K3_regressed"), "K3_regressed")
+        self.assertEqual(format_cell(125), "125")
+        self.assertEqual(format_cell(None), "n/a")
+        self.assertEqual(format_cell(0.25), "0.250000")
 
 
 if __name__ == "__main__":
