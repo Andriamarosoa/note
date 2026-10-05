@@ -1,0 +1,32 @@
+{
+  "experiment": "v273-inner-candidate-hidden1-posttrain-transplant-audit",
+  "training_scope": "inner_fit only",
+  "fit_folds": [
+    1,
+    2,
+    4
+  ],
+  "validation_fold": 0,
+  "outer_fold_3_loaded": false,
+  "seed_formula": "v260.SEED+1003",
+  "epochs": {
+    "uniform_anchor": 8,
+    "weighted_finetune": 8
+  },
+  "weighting": "targeted_k23_half_k4_quarter",
+  "freeze_local_combo": [
+    "candidate_norm",
+    "candidate_hidden2",
+    "cardinality"
+  ],
+  "posttrain_transplant": "candidate_hidden1",
+  "clustering": "deterministic k-means on model-output disagreement signatures, k=2..5 selected by silhouette",
+  "strict_confirmation_rule": [
+    "transplant global > freeze_local_combo global",
+    "transplant global >= uniform global",
+    "transplant poly >= freeze_local_combo poly - 0.25 pt",
+    "transplant poly > uniform poly"
+  ],
+  "outer_used_for_selection": false,
+  "automatic_promotion": false
+}
