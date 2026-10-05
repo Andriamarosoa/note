@@ -1,0 +1,269 @@
+{
+  "annotation_frequencies_used": false,
+  "automatic_promotion": false,
+  "control_max_abs_frequency_error": 0.0,
+  "control_max_abs_residual_error": 0.0,
+  "folds": [
+    {
+      "fit_cv": {
+        "linear_hz": {
+          "applied": 346,
+          "corrections": 96,
+          "global_net": -78,
+          "other_k_actions": 76,
+          "regressions": 174,
+          "rows": 654
+        },
+        "log_hz": {
+          "applied": 349,
+          "corrections": 99,
+          "global_net": -67,
+          "other_k_actions": 84,
+          "regressions": 166,
+          "rows": 654
+        }
+      },
+      "fold": 0,
+      "selected": null,
+      "val_fixed": {
+        "linear_hz": {
+          "applied": 124,
+          "corrections": 37,
+          "global_net": 4,
+          "other_k_actions": 54,
+          "regressions": 33,
+          "rows": 256
+        },
+        "log_hz": {
+          "applied": 136,
+          "corrections": 37,
+          "global_net": -2,
+          "other_k_actions": 60,
+          "regressions": 39,
+          "rows": 256
+        }
+      },
+      "val_selected": {
+        "applied": 0,
+        "corrections": 0,
+        "global_net": 0,
+        "other_k_actions": 0,
+        "regressions": 0,
+        "rows": 256
+      }
+    },
+    {
+      "fit_cv": {
+        "linear_hz": {
+          "applied": 243,
+          "corrections": 44,
+          "global_net": -75,
+          "other_k_actions": 80,
+          "regressions": 119,
+          "rows": 477
+        },
+        "log_hz": {
+          "applied": 270,
+          "corrections": 46,
+          "global_net": -85,
+          "other_k_actions": 93,
+          "regressions": 131,
+          "rows": 477
+        }
+      },
+      "fold": 1,
+      "selected": null,
+      "val_fixed": {
+        "linear_hz": {
+          "applied": 97,
+          "corrections": 30,
+          "global_net": -2,
+          "other_k_actions": 35,
+          "regressions": 32,
+          "rows": 178
+        },
+        "log_hz": {
+          "applied": 107,
+          "corrections": 30,
+          "global_net": -5,
+          "other_k_actions": 42,
+          "regressions": 35,
+          "rows": 178
+        }
+      },
+      "val_selected": {
+        "applied": 0,
+        "corrections": 0,
+        "global_net": 0,
+        "other_k_actions": 0,
+        "regressions": 0,
+        "rows": 178
+      }
+    },
+    {
+      "fit_cv": {
+        "linear_hz": {
+          "applied": 201,
+          "corrections": 43,
+          "global_net": -63,
+          "other_k_actions": 52,
+          "regressions": 106,
+          "rows": 531
+        },
+        "log_hz": {
+          "applied": 252,
+          "corrections": 51,
+          "global_net": -82,
+          "other_k_actions": 68,
+          "regressions": 133,
+          "rows": 531
+        }
+      },
+      "fold": 2,
+      "selected": null,
+      "val_fixed": {
+        "linear_hz": {
+          "applied": 69,
+          "corrections": 11,
+          "global_net": -9,
+          "other_k_actions": 38,
+          "regressions": 20,
+          "rows": 140
+        },
+        "log_hz": {
+          "applied": 72,
+          "corrections": 11,
+          "global_net": -9,
+          "other_k_actions": 41,
+          "regressions": 20,
+          "rows": 140
+        }
+      },
+      "val_selected": {
+        "applied": 0,
+        "corrections": 0,
+        "global_net": 0,
+        "other_k_actions": 0,
+        "regressions": 0,
+        "rows": 140
+      }
+    },
+    {
+      "fit_cv": {
+        "linear_hz": {
+          "applied": 491,
+          "corrections": 125,
+          "global_net": -69,
+          "other_k_actions": 172,
+          "regressions": 194,
+          "rows": 870
+        },
+        "log_hz": {
+          "applied": 510,
+          "corrections": 127,
+          "global_net": -79,
+          "other_k_actions": 177,
+          "regressions": 206,
+          "rows": 870
+        }
+      },
+      "fold": 4,
+      "selected": null,
+      "val_fixed": {
+        "linear_hz": {
+          "applied": 174,
+          "corrections": 59,
+          "global_net": 9,
+          "other_k_actions": 65,
+          "regressions": 50,
+          "rows": 271
+        },
+        "log_hz": {
+          "applied": 195,
+          "corrections": 68,
+          "global_net": 11,
+          "other_k_actions": 70,
+          "regressions": 57,
+          "rows": 271
+        }
+      },
+      "val_selected": {
+        "applied": 0,
+        "corrections": 0,
+        "global_net": 0,
+        "other_k_actions": 0,
+        "regressions": 0,
+        "rows": 271
+      }
+    }
+  ],
+  "limitations": [
+    "Internal folds previously inspected; not untouched validation.",
+    "Frozen base neural predictions and B_low routing, including inside FIT rotation.",
+    "Normal residual-audio path only; no compressed-path gain inferred."
+  ],
+  "neural_training": false,
+  "outer_fold_3_used": false,
+  "recordings": 122,
+  "runtime": {
+    "numpy": "1.26.4",
+    "python": "3.12.14",
+    "scikit-learn": "1.4.2",
+    "scipy": "1.17.1"
+  },
+  "selection": "FIT-only rotation; net, fewer regressions, fewer actions, arm order; abstain if net <= 0",
+  "source_data_md5": {
+    "annotation.zip": "b39b78e63d3446f2e54ddb7a54df9b10",
+    "audio_mono-pickup_mix.zip": "aecce79f425a44e2055e46f680e10f6a"
+  },
+  "source_manifests_sha256": {
+    "0": "ec4bdf90cbc99b373906c4bd3490562f12f22c3215088b61041e9f2f65afb3d4",
+    "1": "d981dfd99178dc5e288751cb627b68424c36c003c087ce896da5394a4ef33d08",
+    "2": "0669367359ae28c06a29202cb67d0c9759feec4fa58efc1226df9022e67848f6",
+    "4": "a4c8d36424d3fe16105725713ae738cf5650562d0f879d8be48982a5a597aa04"
+  },
+  "source_run": 37356100423,
+  "source_sha256": {
+    "audit_v273_candidate_ranking.py": "00450a0b9a4599364cecc192c5b0dfeb6b6917b9e69192d14d79814d17fdca32",
+    "audit_v273_harmonic_decay_guard.py": "109a0fbab550e081f06b8033d3bce44dc1ce523279c02e6b486982921fd83640",
+    "audit_v273_internal_b_low_harmonic_strata.py": "05a49bad4b9dd89744776219a2e53dc7124f0623402b1c356378abe33982aecc",
+    "audit_v273_log_frequency_guard.py": "5c34b81c0b7ba9466c4b2ca28bbfab1966d00b4ab450b8f4457861181fc7361b",
+    "v273_residual_audit.py": "c2175f48306c64c42c112af62c12e8094f9ad00e3bfe612ba44b3ad4e2140b25"
+  },
+  "status": "completed",
+  "total_fixed": {
+    "linear_hz": {
+      "applied": 464,
+      "corrections": 137,
+      "global_net": 2,
+      "other_k_actions": 192,
+      "regressions": 135,
+      "rows": 845
+    },
+    "log_hz": {
+      "applied": 510,
+      "corrections": 146,
+      "global_net": -5,
+      "other_k_actions": 213,
+      "regressions": 151,
+      "rows": 845
+    }
+  },
+  "total_selected": {
+    "applied": 0,
+    "corrections": 0,
+    "global_net": 0,
+    "other_k_actions": 0,
+    "regressions": 0,
+    "rows": 845
+  },
+  "unique_audio_rows": 1666,
+  "variants": [
+    "linear_hz",
+    "log_hz"
+  ],
+  "weighting": {
+    "linear_hz": "w(f)=1",
+    "log_hz": "w(f)=65.0/f; fixed before evaluation"
+  }
+}

@@ -152,3 +152,5 @@ PYTHONPATH=.:src OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -B \
 
 Dépendances utilisées : Python 3.12.14, NumPy 1.26.4, SciPy 1.17.1,
 scikit-learn 1.4.2. Les sorties existantes ne sont pas écrasées.
+
+Suite : [audit du critère de reconstruction](README-reconstruction-criterion-audit.md).

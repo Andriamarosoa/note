@@ -1,0 +1,733 @@
+{
+  "annotation_use": "diagnostic only; never inference input",
+  "archive_replay_max_abs_frequency_error": 0.0,
+  "archive_replay_max_abs_residual_error": 0.0,
+  "arms": [
+    "pool64_t0.5",
+    "pool64_t2"
+  ],
+  "cases": 488,
+  "cases_sha256": "859cfd08c5bb41d11f7476b2eda30974a58f56c636f5c9349ada3a881f95124d",
+  "folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "limitations": [
+    "Frequency relations are non-exclusive and do not identify a physical source.",
+    "Oracle combinations use annotations only to diagnose the frozen criterion.",
+    "Internal folds were previously inspected; no untouched test claim.",
+    "Normal residual path only; no compressed-path inference."
+  ],
+  "neural_training": false,
+  "outer_fold_3_used": false,
+  "source_sha256": {
+    "capacity_features": "2a4ed9412081c3e1ce5e1123296a4a22c936e05d285a24da0753db6057aa2437",
+    "cases": "6a3da0099c775f1d437dea4a389881326da774981ec001f3550ad6028c9d3b65",
+    "ranking_cases": "6a67678c2d5657b260534a337f908d59938ab08494a0192c4014d4e44925f537",
+    "ranking_report": "d4e26c9fbf1d751a464f756a55010915106f2a666be70ee29083548a022432f9",
+    "script": "33637853588acbe345cbf666e1148f78ced92302e1259563cec5bbb9f16d8955",
+    "spectra": "29c2e244f98cccd33c52655bfcf1b1c160de6fa1120a33c871a793d0973fd8a3"
+  },
+  "status": "completed",
+  "summary": {
+    "K2": {
+      "arms": {
+        "pool64_t0.5": {
+          "close_selected_pair_cases": {
+            "18.0": 74,
+            "36.0": 84
+          },
+          "covered_rows": 213,
+          "high_selected_template_cosine_cases": {
+            "0.8": 5,
+            "0.9": 0,
+            "0.95": 0
+          },
+          "oracle_minus_selected_ratio": {
+            "maximum": 0.6015019257848202,
+            "mean": 0.09292279785180048,
+            "median": 0.04898037955571705,
+            "q25": 0.02560942764169046,
+            "q75": 0.09496464601289992
+          },
+          "pool_complete": 213,
+          "relation_case_counts_nonexclusive": {
+            "foreign_fundamental": 23,
+            "foreign_harmonic": 22,
+            "foreign_subharmonic": 41,
+            "owned_harmonic": 26,
+            "owned_neighbor_55_to_150": 79,
+            "owned_subharmonic": 71,
+            "unclassified": 46
+          },
+          "relation_component_counts_nonexclusive": {
+            "foreign_fundamental": 23,
+            "foreign_harmonic": 23,
+            "foreign_subharmonic": 42,
+            "owned_harmonic": 26,
+            "owned_neighbor_55_to_150": 94,
+            "owned_subharmonic": 72,
+            "unclassified": 50
+          },
+          "rows": 216,
+          "selected_owned_matches": {
+            "0": 60,
+            "1": 130,
+            "2": 23
+          },
+          "synthetic_complete": 213,
+          "synthetic_max_residual": 3.9968028886505635e-15,
+          "unmatched_components": 250
+        },
+        "pool64_t2": {
+          "close_selected_pair_cases": {
+            "18.0": 10,
+            "36.0": 16
+          },
+          "covered_rows": 213,
+          "high_selected_template_cosine_cases": {
+            "0.8": 10,
+            "0.9": 7,
+            "0.95": 5
+          },
+          "oracle_minus_selected_ratio": {
+            "maximum": 0.9105392825927957,
+            "mean": 0.22214128710162076,
+            "median": 0.09618683364497266,
+            "q25": 0.0024775350253409528,
+            "q75": 0.4014672468558496
+          },
+          "pool_complete": 213,
+          "relation_case_counts_nonexclusive": {
+            "foreign_fundamental": 20,
+            "foreign_harmonic": 62,
+            "foreign_subharmonic": 10,
+            "owned_harmonic": 97,
+            "owned_neighbor_55_to_150": 48,
+            "owned_subharmonic": 12,
+            "unclassified": 40
+          },
+          "relation_component_counts_nonexclusive": {
+            "foreign_fundamental": 22,
+            "foreign_harmonic": 70,
+            "foreign_subharmonic": 10,
+            "owned_harmonic": 109,
+            "owned_neighbor_55_to_150": 51,
+            "owned_subharmonic": 12,
+            "unclassified": 44
+          },
+          "rows": 216,
+          "selected_owned_matches": {
+            "0": 63,
+            "1": 103,
+            "2": 47
+          },
+          "synthetic_complete": 213,
+          "synthetic_max_residual": 4.884981308350689e-15,
+          "unmatched_components": 229
+        }
+      },
+      "rows": 216
+    },
+    "K2_corrected": {
+      "arms": {
+        "pool64_t0.5": {
+          "close_selected_pair_cases": {
+            "18.0": 60,
+            "36.0": 64
+          },
+          "covered_rows": 107,
+          "high_selected_template_cosine_cases": {
+            "0.8": 5,
+            "0.9": 0,
+            "0.95": 0
+          },
+          "oracle_minus_selected_ratio": {
+            "maximum": 0.6015019257848202,
+            "mean": 0.10539965183684775,
+            "median": 0.05487325369556039,
+            "q25": 0.03824815971746039,
+            "q75": 0.08996888120206636
+          },
+          "pool_complete": 107,
+          "relation_case_counts_nonexclusive": {
+            "foreign_fundamental": 9,
+            "foreign_harmonic": 5,
+            "foreign_subharmonic": 14,
+            "owned_harmonic": 8,
+            "owned_neighbor_55_to_150": 53,
+            "owned_subharmonic": 30,
+            "unclassified": 26
+          },
+          "relation_component_counts_nonexclusive": {
+            "foreign_fundamental": 9,
+            "foreign_harmonic": 5,
+            "foreign_subharmonic": 14,
+            "owned_harmonic": 8,
+            "owned_neighbor_55_to_150": 63,
+            "owned_subharmonic": 30,
+            "unclassified": 29
+          },
+          "rows": 108,
+          "selected_owned_matches": {
+            "0": 30,
+            "1": 71,
+            "2": 6
+          },
+          "synthetic_complete": 107,
+          "synthetic_max_residual": 3.9968028886505635e-15,
+          "unmatched_components": 131
+        },
+        "pool64_t2": {
+          "close_selected_pair_cases": {
+            "18.0": 6,
+            "36.0": 8
+          },
+          "covered_rows": 107,
+          "high_selected_template_cosine_cases": {
+            "0.8": 6,
+            "0.9": 3,
+            "0.95": 3
+          },
+          "oracle_minus_selected_ratio": {
+            "maximum": 0.9105392825927957,
+            "mean": 0.2061105603513457,
+            "median": 0.1057140354970432,
+            "q25": 0.025839869972558483,
+            "q75": 0.314950925905672
+          },
+          "pool_complete": 107,
+          "relation_case_counts_nonexclusive": {
+            "foreign_fundamental": 10,
+            "foreign_harmonic": 24,
+            "foreign_subharmonic": 7,
+            "owned_harmonic": 54,
+            "owned_neighbor_55_to_150": 34,
+            "owned_subharmonic": 8,
+            "unclassified": 24
+          },
+          "relation_component_counts_nonexclusive": {
+            "foreign_fundamental": 11,
+            "foreign_harmonic": 24,
+            "foreign_subharmonic": 7,
+            "owned_harmonic": 56,
+            "owned_neighbor_55_to_150": 36,
+            "owned_subharmonic": 8,
+            "unclassified": 26
+          },
+          "rows": 108,
+          "selected_owned_matches": {
+            "0": 35,
+            "1": 61,
+            "2": 11
+          },
+          "synthetic_complete": 107,
+          "synthetic_max_residual": 3.552713678800501e-15,
+          "unmatched_components": 131
+        }
+      },
+      "rows": 108
+    },
+    "K2_missed": {
+      "arms": {
+        "pool64_t0.5": {
+          "close_selected_pair_cases": {
+            "18.0": 14,
+            "36.0": 20
+          },
+          "covered_rows": 106,
+          "high_selected_template_cosine_cases": {
+            "0.8": 0,
+            "0.9": 0,
+            "0.95": 0
+          },
+          "oracle_minus_selected_ratio": {
+            "maximum": 0.4473903016087973,
+            "mean": 0.08032823769708292,
+            "median": 0.03994178870287668,
+            "q25": 0.008866405865806358,
+            "q75": 0.09845487753975916
+          },
+          "pool_complete": 106,
+          "relation_case_counts_nonexclusive": {
+            "foreign_fundamental": 14,
+            "foreign_harmonic": 17,
+            "foreign_subharmonic": 27,
+            "owned_harmonic": 18,
+            "owned_neighbor_55_to_150": 26,
+            "owned_subharmonic": 41,
+            "unclassified": 20
+          },
+          "relation_component_counts_nonexclusive": {
+            "foreign_fundamental": 14,
+            "foreign_harmonic": 18,
+            "foreign_subharmonic": 28,
+            "owned_harmonic": 18,
+            "owned_neighbor_55_to_150": 31,
+            "owned_subharmonic": 42,
+            "unclassified": 21
+          },
+          "rows": 108,
+          "selected_owned_matches": {
+            "0": 30,
+            "1": 59,
+            "2": 17
+          },
+          "synthetic_complete": 106,
+          "synthetic_max_residual": 3.552713678800501e-15,
+          "unmatched_components": 119
+        },
+        "pool64_t2": {
+          "close_selected_pair_cases": {
+            "18.0": 4,
+            "36.0": 8
+          },
+          "covered_rows": 106,
+          "high_selected_template_cosine_cases": {
+            "0.8": 4,
+            "0.9": 4,
+            "0.95": 2
+          },
+          "oracle_minus_selected_ratio": {
+            "maximum": 0.82800063431876,
+            "mean": 0.2383232471231248,
+            "median": 0.08154600251325361,
+            "q25": 0.0,
+            "q75": 0.4638495180909873
+          },
+          "pool_complete": 106,
+          "relation_case_counts_nonexclusive": {
+            "foreign_fundamental": 10,
+            "foreign_harmonic": 38,
+            "foreign_subharmonic": 3,
+            "owned_harmonic": 43,
+            "owned_neighbor_55_to_150": 14,
+            "owned_subharmonic": 4,
+            "unclassified": 16
+          },
+          "relation_component_counts_nonexclusive": {
+            "foreign_fundamental": 11,
+            "foreign_harmonic": 46,
+            "foreign_subharmonic": 3,
+            "owned_harmonic": 53,
+            "owned_neighbor_55_to_150": 15,
+            "owned_subharmonic": 4,
+            "unclassified": 18
+          },
+          "rows": 108,
+          "selected_owned_matches": {
+            "0": 28,
+            "1": 42,
+            "2": 36
+          },
+          "synthetic_complete": 106,
+          "synthetic_max_residual": 4.884981308350689e-15,
+          "unmatched_components": 98
+        }
+      },
+      "rows": 108
+    },
+    "K3": {
+      "arms": {
+        "pool64_t0.5": {
+          "close_selected_pair_cases": {
+            "18.0": 167,
+            "36.0": 195
+          },
+          "covered_rows": 267,
+          "high_selected_template_cosine_cases": {
+            "0.8": 22,
+            "0.9": 1,
+            "0.95": 0
+          },
+          "oracle_minus_selected_ratio": {
+            "maximum": 0.3966367105050491,
+            "mean": 0.09689791629875627,
+            "median": 0.0851168916916989,
+            "q25": 0.05935147998577034,
+            "q75": 0.1145120296989123
+          },
+          "pool_complete": 267,
+          "relation_case_counts_nonexclusive": {
+            "foreign_fundamental": 31,
+            "foreign_harmonic": 21,
+            "foreign_subharmonic": 74,
+            "owned_harmonic": 26,
+            "owned_neighbor_55_to_150": 166,
+            "owned_subharmonic": 153,
+            "unclassified": 78
+          },
+          "relation_component_counts_nonexclusive": {
+            "foreign_fundamental": 34,
+            "foreign_harmonic": 21,
+            "foreign_subharmonic": 79,
+            "owned_harmonic": 27,
+            "owned_neighbor_55_to_150": 223,
+            "owned_subharmonic": 166,
+            "unclassified": 92
+          },
+          "rows": 272,
+          "selected_owned_matches": {
+            "0": 37,
+            "1": 167,
+            "2": 63
+          },
+          "synthetic_complete": 267,
+          "synthetic_max_residual": 7.105427357601002e-15,
+          "unmatched_components": 508
+        },
+        "pool64_t2": {
+          "close_selected_pair_cases": {
+            "18.0": 64,
+            "36.0": 78
+          },
+          "covered_rows": 267,
+          "high_selected_template_cosine_cases": {
+            "0.8": 59,
+            "0.9": 47,
+            "0.95": 31
+          },
+          "oracle_minus_selected_ratio": {
+            "maximum": 0.7527291898103452,
+            "mean": 0.1156779287920134,
+            "median": 0.0346877603438249,
+            "q25": 0.003996699221802194,
+            "q75": 0.16534054718527513
+          },
+          "pool_complete": 267,
+          "relation_case_counts_nonexclusive": {
+            "foreign_fundamental": 25,
+            "foreign_harmonic": 66,
+            "foreign_subharmonic": 14,
+            "owned_harmonic": 126,
+            "owned_neighbor_55_to_150": 112,
+            "owned_subharmonic": 23,
+            "unclassified": 72
+          },
+          "relation_component_counts_nonexclusive": {
+            "foreign_fundamental": 25,
+            "foreign_harmonic": 89,
+            "foreign_subharmonic": 14,
+            "owned_harmonic": 157,
+            "owned_neighbor_55_to_150": 132,
+            "owned_subharmonic": 23,
+            "unclassified": 83
+          },
+          "rows": 272,
+          "selected_owned_matches": {
+            "0": 33,
+            "1": 98,
+            "2": 105,
+            "3": 31
+          },
+          "synthetic_complete": 267,
+          "synthetic_max_residual": 7.105427357601002e-15,
+          "unmatched_components": 400
+        }
+      },
+      "rows": 272
+    },
+    "K3_preserved": {
+      "arms": {
+        "pool64_t0.5": {
+          "close_selected_pair_cases": {
+            "18.0": 70,
+            "36.0": 89
+          },
+          "covered_rows": 143,
+          "high_selected_template_cosine_cases": {
+            "0.8": 1,
+            "0.9": 0,
+            "0.95": 0
+          },
+          "oracle_minus_selected_ratio": {
+            "maximum": 0.3700849925233691,
+            "mean": 0.10405588118458037,
+            "median": 0.09456250291896008,
+            "q25": 0.06961024863399116,
+            "q75": 0.11712495570965767
+          },
+          "pool_complete": 143,
+          "relation_case_counts_nonexclusive": {
+            "foreign_fundamental": 17,
+            "foreign_harmonic": 16,
+            "foreign_subharmonic": 45,
+            "owned_harmonic": 18,
+            "owned_neighbor_55_to_150": 80,
+            "owned_subharmonic": 94,
+            "unclassified": 34
+          },
+          "relation_component_counts_nonexclusive": {
+            "foreign_fundamental": 19,
+            "foreign_harmonic": 16,
+            "foreign_subharmonic": 49,
+            "owned_harmonic": 19,
+            "owned_neighbor_55_to_150": 108,
+            "owned_subharmonic": 101,
+            "unclassified": 41
+          },
+          "rows": 147,
+          "selected_owned_matches": {
+            "0": 23,
+            "1": 83,
+            "2": 37
+          },
+          "synthetic_complete": 143,
+          "synthetic_max_residual": 7.105427357601002e-15,
+          "unmatched_components": 272
+        },
+        "pool64_t2": {
+          "close_selected_pair_cases": {
+            "18.0": 38,
+            "36.0": 45
+          },
+          "covered_rows": 143,
+          "high_selected_template_cosine_cases": {
+            "0.8": 33,
+            "0.9": 24,
+            "0.95": 15
+          },
+          "oracle_minus_selected_ratio": {
+            "maximum": 0.7344143598269519,
+            "mean": 0.11933024816918154,
+            "median": 0.017475959596336337,
+            "q25": 0.001663298219978284,
+            "q75": 0.1490700864551821
+          },
+          "pool_complete": 143,
+          "relation_case_counts_nonexclusive": {
+            "foreign_fundamental": 16,
+            "foreign_harmonic": 36,
+            "foreign_subharmonic": 7,
+            "owned_harmonic": 63,
+            "owned_neighbor_55_to_150": 58,
+            "owned_subharmonic": 11,
+            "unclassified": 28
+          },
+          "relation_component_counts_nonexclusive": {
+            "foreign_fundamental": 16,
+            "foreign_harmonic": 48,
+            "foreign_subharmonic": 7,
+            "owned_harmonic": 78,
+            "owned_neighbor_55_to_150": 67,
+            "owned_subharmonic": 11,
+            "unclassified": 32
+          },
+          "rows": 147,
+          "selected_owned_matches": {
+            "0": 14,
+            "1": 47,
+            "2": 59,
+            "3": 23
+          },
+          "synthetic_complete": 143,
+          "synthetic_max_residual": 6.217248937900877e-15,
+          "unmatched_components": 195
+        }
+      },
+      "rows": 147
+    },
+    "K3_regressed": {
+      "arms": {
+        "pool64_t0.5": {
+          "close_selected_pair_cases": {
+            "18.0": 97,
+            "36.0": 106
+          },
+          "covered_rows": 124,
+          "high_selected_template_cosine_cases": {
+            "0.8": 21,
+            "0.9": 1,
+            "0.95": 0
+          },
+          "oracle_minus_selected_ratio": {
+            "maximum": 0.3966367105050491,
+            "mean": 0.08864316647074949,
+            "median": 0.07199404219401367,
+            "q25": 0.04738385927012602,
+            "q75": 0.10305093014254497
+          },
+          "pool_complete": 124,
+          "relation_case_counts_nonexclusive": {
+            "foreign_fundamental": 14,
+            "foreign_harmonic": 5,
+            "foreign_subharmonic": 29,
+            "owned_harmonic": 8,
+            "owned_neighbor_55_to_150": 86,
+            "owned_subharmonic": 59,
+            "unclassified": 44
+          },
+          "relation_component_counts_nonexclusive": {
+            "foreign_fundamental": 15,
+            "foreign_harmonic": 5,
+            "foreign_subharmonic": 30,
+            "owned_harmonic": 8,
+            "owned_neighbor_55_to_150": 115,
+            "owned_subharmonic": 65,
+            "unclassified": 51
+          },
+          "rows": 125,
+          "selected_owned_matches": {
+            "0": 14,
+            "1": 84,
+            "2": 26
+          },
+          "synthetic_complete": 124,
+          "synthetic_max_residual": 6.217248937900877e-15,
+          "unmatched_components": 236
+        },
+        "pool64_t2": {
+          "close_selected_pair_cases": {
+            "18.0": 26,
+            "36.0": 33
+          },
+          "covered_rows": 124,
+          "high_selected_template_cosine_cases": {
+            "0.8": 26,
+            "0.9": 23,
+            "0.95": 16
+          },
+          "oracle_minus_selected_ratio": {
+            "maximum": 0.7527291898103452,
+            "mean": 0.1114659798328598,
+            "median": 0.061429906534673104,
+            "q25": 0.010554641544820461,
+            "q75": 0.18855984123767855
+          },
+          "pool_complete": 124,
+          "relation_case_counts_nonexclusive": {
+            "foreign_fundamental": 9,
+            "foreign_harmonic": 30,
+            "foreign_subharmonic": 7,
+            "owned_harmonic": 63,
+            "owned_neighbor_55_to_150": 54,
+            "owned_subharmonic": 12,
+            "unclassified": 44
+          },
+          "relation_component_counts_nonexclusive": {
+            "foreign_fundamental": 9,
+            "foreign_harmonic": 41,
+            "foreign_subharmonic": 7,
+            "owned_harmonic": 79,
+            "owned_neighbor_55_to_150": 65,
+            "owned_subharmonic": 12,
+            "unclassified": 51
+          },
+          "rows": 125,
+          "selected_owned_matches": {
+            "0": 19,
+            "1": 51,
+            "2": 46,
+            "3": 8
+          },
+          "synthetic_complete": 124,
+          "synthetic_max_residual": 7.105427357601002e-15,
+          "unmatched_components": 205
+        }
+      },
+      "rows": 125
+    },
+    "all": {
+      "arms": {
+        "pool64_t0.5": {
+          "close_selected_pair_cases": {
+            "18.0": 241,
+            "36.0": 279
+          },
+          "covered_rows": 480,
+          "high_selected_template_cosine_cases": {
+            "0.8": 27,
+            "0.9": 1,
+            "0.95": 0
+          },
+          "oracle_minus_selected_ratio": {
+            "maximum": 0.6015019257848202,
+            "mean": 0.09513395748791963,
+            "median": 0.07043326729116602,
+            "q25": 0.04204756636607862,
+            "q75": 0.11299205357590347
+          },
+          "pool_complete": 480,
+          "relation_case_counts_nonexclusive": {
+            "foreign_fundamental": 54,
+            "foreign_harmonic": 43,
+            "foreign_subharmonic": 115,
+            "owned_harmonic": 52,
+            "owned_neighbor_55_to_150": 245,
+            "owned_subharmonic": 224,
+            "unclassified": 124
+          },
+          "relation_component_counts_nonexclusive": {
+            "foreign_fundamental": 57,
+            "foreign_harmonic": 44,
+            "foreign_subharmonic": 121,
+            "owned_harmonic": 53,
+            "owned_neighbor_55_to_150": 317,
+            "owned_subharmonic": 238,
+            "unclassified": 142
+          },
+          "rows": 488,
+          "selected_owned_matches": {
+            "0": 97,
+            "1": 297,
+            "2": 86
+          },
+          "synthetic_complete": 480,
+          "synthetic_max_residual": 7.105427357601002e-15,
+          "unmatched_components": 758
+        },
+        "pool64_t2": {
+          "close_selected_pair_cases": {
+            "18.0": 74,
+            "36.0": 94
+          },
+          "covered_rows": 480,
+          "high_selected_template_cosine_cases": {
+            "0.8": 69,
+            "0.9": 54,
+            "0.95": 36
+          },
+          "oracle_minus_selected_ratio": {
+            "maximum": 0.9105392825927957,
+            "mean": 0.16292104404190166,
+            "median": 0.05386979450933298,
+            "q25": 0.0033868466857120048,
+            "q75": 0.26409144308585875
+          },
+          "pool_complete": 480,
+          "relation_case_counts_nonexclusive": {
+            "foreign_fundamental": 45,
+            "foreign_harmonic": 128,
+            "foreign_subharmonic": 24,
+            "owned_harmonic": 223,
+            "owned_neighbor_55_to_150": 160,
+            "owned_subharmonic": 35,
+            "unclassified": 112
+          },
+          "relation_component_counts_nonexclusive": {
+            "foreign_fundamental": 47,
+            "foreign_harmonic": 159,
+            "foreign_subharmonic": 24,
+            "owned_harmonic": 266,
+            "owned_neighbor_55_to_150": 183,
+            "owned_subharmonic": 35,
+            "unclassified": 127
+          },
+          "rows": 488,
+          "selected_owned_matches": {
+            "0": 96,
+            "1": 201,
+            "2": 152,
+            "3": 31
+          },
+          "synthetic_complete": 480,
+          "synthetic_max_residual": 7.105427357601002e-15,
+          "unmatched_components": 629
+        }
+      },
+      "rows": 488
+    }
+  }
+}

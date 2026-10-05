@@ -20,10 +20,18 @@ on:
       - 'scripts/audit_v273_candidate_ranking.py'
       - 'scripts/audit_v273_candidate_capacity_guard.py'
       - 'scripts/replay_v273_candidate_audit.py'
+      - 'scripts/audit_v273_reconstruction_criterion.py'
+      - 'scripts/audit_v273_log_frequency_guard.py'
+      - 'scripts/audit_v273_hann_shape_guard.py'
+      - 'scripts/audit_v273_two_variant_frequency_coverage.py'
+      - 'scripts/replay_v273_log_frequency_guard.py'
+      - 'scripts/replay_v273_hann_shape_guard.py'
+      - 'scripts/replay_v273_reconstruction_followups.py'
       - 'test/test_v273_candidate_ranking.py'
       - 'analysis/evidence/v273-residual-acoustics/**'
       - 'analysis/evidence/v273-harmonic-templates/**'
       - 'analysis/evidence/v273-candidate-ranking/**'
+      - 'analysis/evidence/v273-reconstruction-criterion/**'
   workflow_dispatch:
 
 permissions:
@@ -58,6 +66,13 @@ jobs:
           scripts/audit_v273_candidate_ranking.py
           scripts/audit_v273_candidate_capacity_guard.py
           scripts/replay_v273_candidate_audit.py
+          scripts/audit_v273_reconstruction_criterion.py
+          scripts/audit_v273_log_frequency_guard.py
+          scripts/audit_v273_hann_shape_guard.py
+          scripts/audit_v273_two_variant_frequency_coverage.py
+          scripts/replay_v273_log_frequency_guard.py
+          scripts/replay_v273_hann_shape_guard.py
+          scripts/replay_v273_reconstruction_followups.py
       - name: Check replay, ownership, matching and deterministic F0 ties
         run: python -B -m unittest test.test_v273_residual_audit test.test_v273_residual_acoustics test.test_v273_harmonic_templates test.test_v273_candidate_ranking -v
       - name: Verify committed evidence archive
@@ -123,4 +138,37 @@ jobs:
               saved = json.loads((pathlib.Path(temp) / 'replay-check.json').read_text())
               assert actual == saved, 'candidate replay differs'
               print(json.dumps({'status': actual['status'], 'cases': actual['ranking_cases'], 'models': actual['models']}, sort_keys=True))
+          PY
+      - name: Replay reconstruction criterion and follow-up guards
+        run: |
+          python - <<'PY'
+          import hashlib, json, pathlib, tempfile, zipfile
+          from scripts.replay_v273_reconstruction_followups import verify
+          def extract(root, target):
+              manifest = json.loads((root / 'checksums.json').read_text())
+              for name, digest in manifest['files'].items():
+                  assert hashlib.sha256((root / name).read_bytes()).hexdigest() == digest, name
+              with zipfile.ZipFile(root / 'evidence.zip') as z:
+                  assert set(z.namelist()) == set(manifest['archive_members'])
+                  for name, digest in manifest['archive_members'].items():
+                      raw = z.read(name)
+                      assert hashlib.sha256(raw).hexdigest() == digest, name
+                      path = pathlib.PurePosixPath(name)
+                      assert not path.is_absolute() and '..' not in path.parts
+                      destination = target / path
+                      destination.parent.mkdir(parents=True, exist_ok=True)
+                      destination.write_bytes(raw)
+          with tempfile.TemporaryDirectory() as temp:
+              temp = pathlib.Path(temp)
+              extract(pathlib.Path('analysis/evidence/v273-candidate-ranking'), temp / 'candidate')
+              extract(pathlib.Path('analysis/evidence/v273-residual-acoustics'), temp / 'source')
+              extract(pathlib.Path('analysis/evidence/v273-reconstruction-criterion'), temp / 'followup')
+              root = temp / 'followup'
+              actual = verify(temp / 'candidate', temp / 'source/acoustic/cases.jsonl',
+                              root / 'criterion', root / 'log', root / 'log-coverage',
+                              root / 'hann', root / 'hann-coverage')
+              saved = json.loads((root / 'replay-check.json').read_text())
+              assert actual == saved, 'reconstruction follow-up replay differs'
+              print(json.dumps({'status': actual['status'], 'criterion_cases': actual['criterion_cases'],
+                                'unique_spectra': actual['unique_spectra']}, sort_keys=True))
           PY

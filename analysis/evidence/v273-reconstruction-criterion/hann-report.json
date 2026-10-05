@@ -1,0 +1,272 @@
+{
+  "annotation_frequencies_used": false,
+  "automatic_promotion": false,
+  "control_max_abs_frequency_error": 0.0,
+  "control_max_abs_residual_error": 0.0,
+  "control_source": "verified pool64_t2 arrays from the candidate-capacity evidence",
+  "folds": [
+    {
+      "fit_cv": {
+        "gaussian_t2": {
+          "applied": 346,
+          "corrections": 96,
+          "global_net": -78,
+          "other_k_actions": 76,
+          "regressions": 174,
+          "rows": 654
+        },
+        "hann_t2": {
+          "applied": 339,
+          "corrections": 90,
+          "global_net": -90,
+          "other_k_actions": 69,
+          "regressions": 180,
+          "rows": 654
+        }
+      },
+      "fold": 0,
+      "selected": null,
+      "val_fixed": {
+        "gaussian_t2": {
+          "applied": 124,
+          "corrections": 37,
+          "global_net": 4,
+          "other_k_actions": 54,
+          "regressions": 33,
+          "rows": 256
+        },
+        "hann_t2": {
+          "applied": 132,
+          "corrections": 32,
+          "global_net": -9,
+          "other_k_actions": 59,
+          "regressions": 41,
+          "rows": 256
+        }
+      },
+      "val_selected": {
+        "applied": 0,
+        "corrections": 0,
+        "global_net": 0,
+        "other_k_actions": 0,
+        "regressions": 0,
+        "rows": 256
+      }
+    },
+    {
+      "fit_cv": {
+        "gaussian_t2": {
+          "applied": 243,
+          "corrections": 44,
+          "global_net": -75,
+          "other_k_actions": 80,
+          "regressions": 119,
+          "rows": 477
+        },
+        "hann_t2": {
+          "applied": 216,
+          "corrections": 41,
+          "global_net": -54,
+          "other_k_actions": 80,
+          "regressions": 95,
+          "rows": 477
+        }
+      },
+      "fold": 1,
+      "selected": null,
+      "val_fixed": {
+        "gaussian_t2": {
+          "applied": 97,
+          "corrections": 30,
+          "global_net": -2,
+          "other_k_actions": 35,
+          "regressions": 32,
+          "rows": 178
+        },
+        "hann_t2": {
+          "applied": 64,
+          "corrections": 18,
+          "global_net": -4,
+          "other_k_actions": 24,
+          "regressions": 22,
+          "rows": 178
+        }
+      },
+      "val_selected": {
+        "applied": 0,
+        "corrections": 0,
+        "global_net": 0,
+        "other_k_actions": 0,
+        "regressions": 0,
+        "rows": 178
+      }
+    },
+    {
+      "fit_cv": {
+        "gaussian_t2": {
+          "applied": 201,
+          "corrections": 43,
+          "global_net": -63,
+          "other_k_actions": 52,
+          "regressions": 106,
+          "rows": 531
+        },
+        "hann_t2": {
+          "applied": 202,
+          "corrections": 40,
+          "global_net": -69,
+          "other_k_actions": 53,
+          "regressions": 109,
+          "rows": 531
+        }
+      },
+      "fold": 2,
+      "selected": null,
+      "val_fixed": {
+        "gaussian_t2": {
+          "applied": 69,
+          "corrections": 11,
+          "global_net": -9,
+          "other_k_actions": 38,
+          "regressions": 20,
+          "rows": 140
+        },
+        "hann_t2": {
+          "applied": 65,
+          "corrections": 10,
+          "global_net": -10,
+          "other_k_actions": 35,
+          "regressions": 20,
+          "rows": 140
+        }
+      },
+      "val_selected": {
+        "applied": 0,
+        "corrections": 0,
+        "global_net": 0,
+        "other_k_actions": 0,
+        "regressions": 0,
+        "rows": 140
+      }
+    },
+    {
+      "fit_cv": {
+        "gaussian_t2": {
+          "applied": 491,
+          "corrections": 125,
+          "global_net": -69,
+          "other_k_actions": 172,
+          "regressions": 194,
+          "rows": 870
+        },
+        "hann_t2": {
+          "applied": 479,
+          "corrections": 115,
+          "global_net": -91,
+          "other_k_actions": 158,
+          "regressions": 206,
+          "rows": 870
+        }
+      },
+      "fold": 4,
+      "selected": null,
+      "val_fixed": {
+        "gaussian_t2": {
+          "applied": 174,
+          "corrections": 59,
+          "global_net": 9,
+          "other_k_actions": 65,
+          "regressions": 50,
+          "rows": 271
+        },
+        "hann_t2": {
+          "applied": 191,
+          "corrections": 65,
+          "global_net": 7,
+          "other_k_actions": 68,
+          "regressions": 58,
+          "rows": 271
+        }
+      },
+      "val_selected": {
+        "applied": 0,
+        "corrections": 0,
+        "global_net": 0,
+        "other_k_actions": 0,
+        "regressions": 0,
+        "rows": 271
+      }
+    }
+  ],
+  "limitations": [
+    "Internal folds previously inspected; not untouched validation.",
+    "Frozen base neural predictions and B_low routing, including inside FIT rotation.",
+    "Normal residual-audio path only; no compressed-path gain inferred."
+  ],
+  "neural_training": false,
+  "outer_fold_3_used": false,
+  "recordings": 122,
+  "runtime": {
+    "numpy": "1.26.4",
+    "python": "3.12.14",
+    "scikit-learn": "1.4.2",
+    "scipy": "1.17.1"
+  },
+  "selection": "FIT-only rotation; net, fewer regressions, fewer actions, arm order; abstain if net <= 0",
+  "source_data_md5": {
+    "annotation.zip": "b39b78e63d3446f2e54ddb7a54df9b10",
+    "audio_mono-pickup_mix.zip": "aecce79f425a44e2055e46f680e10f6a"
+  },
+  "source_manifests_sha256": {
+    "0": "ec4bdf90cbc99b373906c4bd3490562f12f22c3215088b61041e9f2f65afb3d4",
+    "1": "d981dfd99178dc5e288751cb627b68424c36c003c087ce896da5394a4ef33d08",
+    "2": "0669367359ae28c06a29202cb67d0c9759feec4fa58efc1226df9022e67848f6",
+    "4": "a4c8d36424d3fe16105725713ae738cf5650562d0f879d8be48982a5a597aa04"
+  },
+  "source_run": 37356100423,
+  "source_sha256": {
+    "audit_v273_candidate_ranking.py": "00450a0b9a4599364cecc192c5b0dfeb6b6917b9e69192d14d79814d17fdca32",
+    "audit_v273_hann_shape_guard.py": "2d1e0af26901d557ae08da0da8dc547dd1b52a7e114dd150195b44e0b3db8b87",
+    "audit_v273_harmonic_decay_guard.py": "109a0fbab550e081f06b8033d3bce44dc1ce523279c02e6b486982921fd83640",
+    "audit_v273_harmonic_templates.py": "d06c116c1375a8ea54884836b957c85d5f14f1f507804423835cf93b28279ed0",
+    "audit_v273_internal_b_low_harmonic_strata.py": "05a49bad4b9dd89744776219a2e53dc7124f0623402b1c356378abe33982aecc",
+    "audit_v273_log_frequency_guard.py": "5c34b81c0b7ba9466c4b2ca28bbfab1966d00b4ab450b8f4457861181fc7361b",
+    "v273_residual_audit.py": "c2175f48306c64c42c112af62c12e8094f9ad00e3bfe612ba44b3ad4e2140b25"
+  },
+  "status": "completed",
+  "templates": {
+    "gaussian_t2": "sigma 18 Hz, peak heights 1/h^2",
+    "hann_t2": "exact phase-averaged Hann power response, peak heights 1/h^2"
+  },
+  "total_fixed": {
+    "gaussian_t2": {
+      "applied": 464,
+      "corrections": 137,
+      "global_net": 2,
+      "other_k_actions": 192,
+      "regressions": 135,
+      "rows": 845
+    },
+    "hann_t2": {
+      "applied": 452,
+      "corrections": 125,
+      "global_net": -16,
+      "other_k_actions": 186,
+      "regressions": 141,
+      "rows": 845
+    }
+  },
+  "total_selected": {
+    "applied": 0,
+    "corrections": 0,
+    "global_net": 0,
+    "other_k_actions": 0,
+    "regressions": 0,
+    "rows": 845
+  },
+  "unique_audio_rows": 1666,
+  "variants": [
+    "gaussian_t2",
+    "hann_t2"
+  ]
+}
