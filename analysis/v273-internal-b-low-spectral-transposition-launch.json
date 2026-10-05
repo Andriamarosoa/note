@@ -1,0 +1,43 @@
+{
+  "experiment": "v273-internal-b-low-low-to-high-spectral-transposition",
+  "motivation": "test whether the apparent high-register advantage is transferable by transposing low-register acoustic evidence upward",
+  "population": "B_low + base prediction K3 + true K in {2,3}",
+  "low_register_definition": "bottom tertile of original median_triplet_f0 on FIT only",
+  "validation_folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "outer_fold_3_used": false,
+  "views": [
+    {
+      "name": "x1",
+      "factor": 1,
+      "semitones": 0
+    },
+    {
+      "name": "x2",
+      "factor": 2,
+      "semitones": 12
+    },
+    {
+      "name": "x4",
+      "factor": 4,
+      "semitones": 24
+    }
+  ],
+  "transposition_method": "controlled magnitude spectral warp X_shift(f)=X_original(f/factor)",
+  "features": [
+    "best_pair_residual_ratio",
+    "best_triplet_residual_ratio",
+    "third_coefficient_fraction",
+    "third_unique_support_ratio"
+  ],
+  "tests": [
+    "train/evaluate on the same low rows under each transposed representation",
+    "train on natural high-register FIT rows and evaluate on shifted low-register validation rows"
+  ],
+  "interpretation_rule": "if shifted low rows become more separable consistently, the high-register advantage is at least partly representation/frequency-location dependent",
+  "automatic_promotion": false
+}
