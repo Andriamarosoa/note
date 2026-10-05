@@ -1,0 +1,98 @@
+name: V27.3 Outer B-Low Transition Guard Confirmation
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - 'analysis/v273-outer-b-low-transition-launch.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: v273-outer-b-low-transition
+  cancel-in-progress: false
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TAG: v273-outer-b-low-transition-${{ github.run_id }}
+
+jobs:
+  confirm:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: python -m pip install numpy==1.26.4
+
+      - name: Validate script
+        run: python -m py_compile scripts/evaluate_v273_outer_b_low_transition_guard.py
+
+      - name: Restore frozen B_low outer predictions and internal selection
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/base model/selection model/result
+          gh release download v273-outer-b-low-eval-37316567815 \
+            --repo "${{ github.repository }}" \
+            --pattern predictions.npz \
+            --dir model/base
+
+          gh release download v273-internal-b-low-transition-37318538357 \
+            --repo "${{ github.repository }}" \
+            --pattern report.json \
+            --dir model/selection
+
+      - name: Verify selected internal guard
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open("model/selection/report.json"))
+          s=r["selected_guard"]
+          assert r["outer_fold_3_used"] is False
+          assert s["guard_id"] == "2->4+3->2+3->4+4->2+4->3"
+          assert s["strict_robust"] is True
+          assert s["positive_global_folds"] == 4
+          assert s["total_global_net"] == 29
+          assert s["min_global_net"] == 5
+          print("Guard locked:", s["guard_id"])
+          PY
+
+      - name: Confirm selected guard on already-exposed outer fold
+        run: |
+          rm -rf model/result
+          python -B scripts/evaluate_v273_outer_b_low_transition_guard.py \
+            --b-low-predictions model/base/predictions.npz \
+            --selection-report model/selection/report.json \
+            --output model/result
+          cat model/result/report.md
+
+      - name: Publish exploratory confirmation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$TAG" \
+            --repo "${{ github.repository }}" \
+            --target "${{ github.sha }}" \
+            --prerelease \
+            --title "V27.3 exploratory outer B_low transition guard confirmation" \
+            --notes-file model/result/report.md
+          gh release upload "$TAG" \
+            model/result/report.json \
+            model/result/report.md \
+            model/result/predictions.npz \
+            --repo "${{ github.repository }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-outer-b-low-transition
+          path: model/result/
+          retention-days: 90
