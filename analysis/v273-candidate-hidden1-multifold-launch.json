@@ -1,0 +1,38 @@
+{
+  "experiment": "v273-candidate_hidden1-multifold-internal-validation",
+  "internal_validation_folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "outer_fold_3_used": false,
+  "per_fold_protocol": {
+    "fit_on_other_three_internal_folds": true,
+    "uniform_anchor_epochs": 8,
+    "weighted_finetune_epochs": 8,
+    "weighting": "targeted_k23_half_k4_quarter",
+    "freeze_local_combo": [
+      "candidate_norm",
+      "candidate_hidden2",
+      "cardinality"
+    ],
+    "audit_layer": "candidate_hidden1",
+    "neurons": 96
+  },
+  "fold0_reuse_run": 37247417133,
+  "strict_robust_selection": {
+    "low_net_nonnegative_on_every_fold": true,
+    "poly_net_nonnegative_on_every_fold": true,
+    "global_net_positive_on_at_least_n_folds": 3,
+    "total_global_net_positive": true,
+    "ranking": [
+      "total_global_net",
+      "min_global_net",
+      "total_poly_net",
+      "total_low_net"
+    ]
+  },
+  "purpose": "Identify neuron effects stable across internal partitions before any further outer evaluation.",
+  "automatic_promotion": false
+}
