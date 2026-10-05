@@ -1,0 +1,18 @@
+{
+  "experiment": "v273-exploratory-outer-b-low-transition-guard",
+  "base_configuration": "freeze_local_combo + candidate_hidden1 [42,52,61,64]",
+  "b_low_corrector": "C=0.01, class_weight=None",
+  "selected_internal_run": 37318538357,
+  "selected_guard": "2->4+3->2+3->4+4->2+4->3",
+  "internal_result": {
+    "strict_candidate_count": 22,
+    "positive_global_folds": "4/4",
+    "total_global_net": 29,
+    "min_global_net": 5
+  },
+  "outer_fold": 3,
+  "outer_used_for_guard_selection": false,
+  "fresh_independent_outer_validation": false,
+  "reason_not_fresh": "fold 3 was already inspected diagnostically after the prior B_low one-shot evaluation",
+  "automatic_promotion": false
+}
