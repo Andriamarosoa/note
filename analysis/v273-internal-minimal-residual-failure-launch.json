@@ -1,0 +1,26 @@
+{
+  "experiment": "v273-internal-minimal-residual-failure-audit",
+  "source_run": 37342597795,
+  "motivation": "explain why fold 2 is strongly negative while folds 1 and 4 are positive for the minimal pair+triplet residual discriminator",
+  "validation_folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "outer_fold_3_used": false,
+  "population": "B_low + base prediction K3 + true K in {2,3}",
+  "features": [
+    "best_pair_residual_ratio",
+    "best_triplet_residual_ratio"
+  ],
+  "checks": [
+    "K2/K3 fit and validation distributions",
+    "pair-only and triplet-only held-out AUC",
+    "standardized logistic coefficients",
+    "pair-triplet Pearson correlation overall and by class",
+    "standardized covariance condition number",
+    "low/mid/high register held-out AUC and K2/K3 exact net"
+  ],
+  "automatic_promotion": false
+}
