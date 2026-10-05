@@ -1,5 +1,7 @@
 {
   "experiment": "v273-attack-novelty-diagnostic",
+  "retry": 2,
+  "retry_reason": "fix report.md formatting after all 488 cases completed successfully; no scientific computation changed",
   "source_cohort": "analysis/evidence/v273-residual-acoustics/evidence.zip :: acoustic/cases.jsonl",
   "cases": 488,
   "validation_folds": [
