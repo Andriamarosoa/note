@@ -1,0 +1,24 @@
+{
+  "experiment": "v273-inner-candidate_hidden1-neuron-audit",
+  "source_inner_run": 37247417133,
+  "training": false,
+  "validation_fold": 0,
+  "outer_fold_3_loaded": false,
+  "layer": "candidate_hidden1",
+  "neuron_definition": "one Dense output unit = one kernel column plus matching bias entry",
+  "width": 96,
+  "safety_filter": "single neuron must have low-K net >= 0, poly net >= 0, and global net > 0 versus freeze_local_combo",
+  "cumulative_selection": "inner validation only; maximize global net subject to low-K net >= 0 and poly net >= 0",
+  "cumulative_prefixes": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32,
+    64,
+    96
+  ],
+  "control": "also evaluate cumulative swaps ordered only by parameter delta norm",
+  "automatic_promotion": false
+}
