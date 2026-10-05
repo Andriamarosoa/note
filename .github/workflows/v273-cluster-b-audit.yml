@@ -1,0 +1,88 @@
+name: V27.3 Cluster B Structural Audit
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - 'analysis/v273-cluster-b-launch.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: v273-cluster-b-structural-audit
+  cancel-in-progress: false
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TAG: v273-cluster-b-audit-${{ github.run_id }}
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install analysis dependencies
+        run: python -m pip install numpy==1.26.4 scikit-learn==1.4.2
+
+      - name: Restore frozen diagnostic sources
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p inputs/low-k inputs/acoustic inputs/clustering
+          gh release download v273-low-k-audit-36358846720 \
+            --repo "${{ github.repository }}" \
+            --pattern low-k-audit.zip \
+            --dir inputs
+          gh release download v273-acoustic-residual-36373588730 \
+            --repo "${{ github.repository }}" \
+            --pattern acoustic-audit.zip \
+            --dir inputs
+          unzip -q inputs/low-k-audit.zip -d inputs/low-k
+          unzip -q inputs/acoustic-audit.zip -d inputs/acoustic
+
+          gh release download v273-failure-clustering-36999901054 \
+            --repo "${{ github.repository }}" \
+            --pattern v273-failure-clustering-rows.csv \
+            --dir inputs/clustering
+
+      - name: Validate Cluster B analysis
+        run: python -m py_compile scripts/analyze_v273_cluster_b.py
+
+      - name: Audit Cluster B
+        run: |
+          python -B scripts/analyze_v273_cluster_b.py \
+            --low-k inputs/low-k \
+            --acoustic inputs/acoustic \
+            --clustering inputs/clustering \
+            --output output
+          cat output/v273-cluster-b-analysis.md
+
+      - name: Publish Cluster B diagnostic
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$TAG" \
+            --repo "${{ github.repository }}" \
+            --target "${{ github.sha }}" \
+            --prerelease \
+            --title "V27.3 Cluster B structural audit" \
+            --notes-file output/v273-cluster-b-analysis.md
+          gh release upload "$TAG" \
+            output/v273-cluster-b-analysis.json \
+            output/v273-cluster-b-analysis.md \
+            --repo "${{ github.repository }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-cluster-b-audit
+          path: output/
+          retention-days: 90
