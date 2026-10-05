@@ -1,0 +1,33 @@
+{
+  "experiment": "v273-internal-natural-high-vs-low-structure",
+  "motivation": "identify what structurally distinguishes naturally high from naturally low B_low/base-K3 cases after waveform transposition failed to transfer the high-register advantage",
+  "population": "B_low + base prediction K3 + true K in {2,3}",
+  "validation_folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "outer_fold_3_used": false,
+  "register_definition": "FIT tertiles of natural median_triplet_f0",
+  "relative_features": [
+    "best_pair_residual_ratio",
+    "best_triplet_residual_ratio",
+    "residual_drop_ratio",
+    "third_coefficient_fraction",
+    "third_unique_support_ratio",
+    "third_shared_partial_overlap",
+    "third_harmonic_relation_distance_cents",
+    "third_nearest_spacing_cents",
+    "triplet_span_octaves",
+    "third_to_median_ratio_log2",
+    "third_to_min_ratio_log2",
+    "third_to_max_ratio_log2"
+  ],
+  "questions": [
+    "which relative descriptors separate natural high from natural low",
+    "which descriptors discriminate K2 vs K3 within low and high separately",
+    "which descriptors keep the same K2/K3 direction across both registers and folds"
+  ],
+  "automatic_promotion": false
+}
