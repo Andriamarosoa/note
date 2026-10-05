@@ -45,6 +45,10 @@ sans information nouvelle. Aucun nouveau réseau complet à entraîner à ce sta
 
 ## Commits, runs et reprise fiable
 
+- Classement et capacité : `45265a0ad4b3faa950121106bd8d1fcf3e08499c`.
+  Contrôle CI `37367957693` déclenché et encore en attente le 5 octobre 2026 UTC.
+  Ce point de suivi documentaire est ajouté après publication des preuves ; il
+  ne modifie ni les calculs ni leurs résultats. Les étapes CI ont passé localement.
 - Audit acoustique initial et tri stable : `0bc2c59226a3d87a44e085febd1e4d36b885d4fe`.
   Le run CI `37362400113` est terminé avec succès, état revérifié le 5 octobre.
 - Gabarits et neuf pentes : `aad8dfb83c96cf976fc7a46c3347853b514b58f2`.
