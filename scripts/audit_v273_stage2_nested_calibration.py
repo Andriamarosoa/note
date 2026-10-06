@@ -138,7 +138,7 @@ def main():
                       "inner_candidates":cands,"final_train_survivors":len(final_train),
                       "outer_survivor_prob_median":None if not probs else float(np.median(probs))})
 
-    b1=counts(rows,s1);b2=counts(rows,s2);final=counts(rows,~(s1|s2));source=counts(rows,np.ones(len(rows),bool))
+    b1=counts(rows,s1);b2=counts(rows,s2);final=counts(rows,~(s1|s2));source=counts(rows,np.ones(len(rows),bool)))
     require((b1["corrections"],b1["regressions"])==(24,48),"stage1 drift")
     per=[]
     for f in FOLDS:
