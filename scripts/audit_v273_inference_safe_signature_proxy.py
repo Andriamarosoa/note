@@ -133,7 +133,7 @@ def main():
         x=np.asarray([r["features"][n] for r in rows],float); raw=float(roc_auc_score(y,x)); orient=1 if raw>=.5 else -1
         per=[]
         for f in FOLDS:
-            m=folds==f; a=float(roc_auc_score(y[m],x[m])); per.append(a if orient==1 else 1-a)
+            m=folds==f; fold_auc=float(roc_auc_score(y[m],x[m])); per.append(fold_auc if orient==1 else 1-fold_auc)
         uni.append({"feature":n,"mean_auc":float(np.mean(per)),"min_auc":float(np.min(per)),
                     "global_oriented_auc":raw if orient==1 else 1-raw,
                     "direction":"higher_in_regressions" if orient==1 else "lower_in_regressions"})
