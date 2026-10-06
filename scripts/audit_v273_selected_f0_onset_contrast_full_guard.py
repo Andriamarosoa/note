@@ -78,13 +78,19 @@ def main():
             y=arr[split+"_true_k"][action][valid].astype(int)
             vals=np.asarray([np.nan if computed[int(i)] is None else computed[int(i)] for i in ids],float)
             good=np.isfinite(vals)
-            data[split]={"ids":ids,"y":y,"v":vals,"good":good,"excluded":int((~good).sum())}
+            source_probability=np.asarray(arr[split+"_probability"],float)
+            require(len(source_probability)==len(ids),"source probability alignment drift")
+            source_apply=source_probability>=0.5
+            data[split]={"ids":ids,"y":y,"v":vals,"good":good,"source_apply":source_apply,
+                         "excluded":int((~good).sum())}
         fit,val=data["fit"],data["val"]
-        sel=select(fit["y"][fit["good"]],fit["v"][fit["good"]])
-        base_apply=np.ones(len(val["y"]),bool)
+        fit_eligible=fit["good"]&fit["source_apply"]
+        sel=select(fit["y"][fit_eligible],fit["v"][fit_eligible])
+        base_apply=val["source_apply"].copy()
         guard_apply=np.zeros(len(val["y"]),bool)
+        eligible=val["good"]&val["source_apply"]
         if sel is not None:
-            guard_apply[val["good"]]=sel["orientation"]*val["v"][val["good"]]<=sel["threshold"]
+            guard_apply[eligible]=sel["orientation"]*val["v"][eligible]<=sel["threshold"]
         reports.append({"fold":f,"selected":sel,"fit_rows":int(len(fit["y"])),"val_rows":int(len(val["y"])),
                         "excluded_fit":fit["excluded"],"excluded_val":val["excluded"],
                         "val_base_all_actions":account(val["y"],base_apply),
@@ -98,11 +104,11 @@ def main():
     report={"status":"completed","experiment":"v273_selected_f0_onset_contrast_full_population_guard",
             "feature":FEATURE,"source_run":37356100423,"outer_fold_3_used":False,
             "threshold_selection":"FIT K2/K3 only; exhaustive midpoint; maximize net then fewer regressions/more corrections/fewer actions; abstain if FIT net<=0",
-            "action_population":"all valid B_low + base K3, including other true K","folds":reports,
+            "action_population":"original residual-guard actions only (source probability >= 0.5), including other true K","folds":reports,
             "total_base_all_actions":total_base,"total_guarded":total_guard,"automatic_promotion":False}
     a.output.mkdir(parents=True);write_json(a.output/"report.json",report)
     lines=["# Selected-F0 onset-contrast full-population Exact-K guard","",
-           f"Frozen source all-actions control: **{total_base['corrections']} corrections / {total_base['regressions']} regressions / {total_base['other_k_actions']} other-K actions, net {total_base['global_net']:+d}**.",
+           f"Frozen source residual-guard control: **{total_base['corrections']} corrections / {total_base['regressions']} regressions / {total_base['other_k_actions']} other-K actions, net {total_base['global_net']:+d}**.",
            f"Guarded OOF: **{total_guard['corrections']} corrections / {total_guard['regressions']} regressions / {total_guard['other_k_actions']} other-K actions, net {total_guard['global_net']:+d}**.","",
            "| fold | actions | corr | reg | other K | net |","|---:|---:|---:|---:|---:|---:|"]
     for r in reports:
