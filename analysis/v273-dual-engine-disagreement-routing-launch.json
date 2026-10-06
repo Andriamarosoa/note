@@ -1,0 +1,19 @@
+{
+  "experiment": "v273-dual-engine-disagreement-routing",
+  "librosa_internal_run": 37404522178,
+  "rubberband_internal_run": 37478200631,
+  "librosa_outer_run": 37421205179,
+  "rubberband_outer_run": 37503022853,
+  "cells": [
+    "BOTH",
+    "RUBBER_ONLY",
+    "LIBROSA_ONLY",
+    "NONE"
+  ],
+  "internal_selection": "leave-one-fold-out; activate cell if FIT net>0 and corrections>=3",
+  "outer_selection": "activate cell if all-internal net>0 and corrections>=4",
+  "outer_fold": 3,
+  "outer_fold_previously_exposed": true,
+  "no_audio_recompute": true,
+  "automatic_promotion": false
+}
