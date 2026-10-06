@@ -1,0 +1,37 @@
+name: V27.3 Outer Residual Threshold Curve 060 064
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths: ['analysis/v273-outer-residual-threshold-curve-launch.json']
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TAG: v273-outer-residual-threshold-curve-${{ github.run_id }}
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python -m pip install numpy==1.26.4
+      - run: python -m py_compile scripts/audit_v273_outer_residual_threshold_curve.py
+      - name: Restore frozen reports
+        env: {GH_TOKEN: "${{ github.token }}"}
+        run: |
+          mkdir -p model/p064 model/blow model/internal
+          gh release download v273-outer-residual-p064-37546289320 --repo "${{ github.repository }}" --pattern predictions.npz --dir model/p064
+          gh release download v273-outer-b-low-eval-37316567815 --repo "${{ github.repository }}" --pattern predictions.npz --dir model/blow
+          gh release download v273-residual-robust-threshold-37546108223 --repo "${{ github.repository }}" --pattern report.json --dir model/internal
+      - run: python -B scripts/audit_v273_outer_residual_threshold_curve.py --outer-p064 model/p064/predictions.npz --outer-blow model/blow/predictions.npz --internal-threshold-report model/internal/report.json --output model/result
+      - env: {GH_TOKEN: "${{ github.token }}"}
+        run: |
+          gh release create "$TAG" --repo "${{ github.repository }}" --target "${{ github.sha }}" --prerelease --title "V27.3 outer residual threshold curve 0.60-0.64" --notes-file model/result/report.md
+          gh release upload "$TAG" model/result/report.json model/result/report.md --repo "${{ github.repository }}"
+      - uses: actions/upload-artifact@v4
+        with: {name: v273-outer-residual-threshold-curve-results, path: model/result/, retention-days: 90}
