@@ -1,0 +1,55 @@
+name: V27.3 Low Band Fold2 vs Fold4
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths: ['analysis/v273-low-band-fold2-vs-fold4-launch.json']
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+  TAG: v273-low-band-fold2-vs-fold4-${{ github.run_id }}
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python -m pip install numpy==1.26.4 scipy==1.17.1 scikit-learn==1.4.2
+      - run: python -m py_compile scripts/audit_v273_low_band_fold2_vs_fold4.py
+      - uses: actions/cache@v4
+        id: gs
+        with: {path: data/GuitarSet, key: "${{ env.GUITARSET_CACHE_KEY }}"}
+      - if: steps.gs.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+      - run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Restore frozen internal exports
+        env: {GH_TOKEN: "${{ github.token }}"}
+        run: |
+          mkdir -p model/internal
+          for f in 0 1 2 4; do
+            mkdir -p "model/internal/fold-$f"
+            gh run download 37356100423 --repo "${{ github.repository }}" --name "v273-internal-minimal-residual-failure-fold-$f" --dir "model/internal/fold-$f"
+          done
+      - run: |
+          mkdir -p model/input
+          unzip -q analysis/evidence/v273-residual-acoustics/evidence.zip -d model/input
+      - run: python -B scripts/audit_v273_low_band_fold2_vs_fold4.py --internal-exports model/internal --cases model/input/acoustic/cases.jsonl --dataset data/GuitarSet --output model/result
+      - env: {GH_TOKEN: "${{ github.token }}"}
+        run: |
+          gh release create "$TAG" --repo "${{ github.repository }}" --target "${{ github.sha }}" --prerelease --title "V27.3 low-band fold2 vs fold4 audit" --notes-file model/result/report.md
+          gh release upload "$TAG" model/result/report.json model/result/report.md --repo "${{ github.repository }}"
+      - uses: actions/upload-artifact@v4
+        with: {name: v273-low-band-fold2-vs-fold4-results, path: model/result/, retention-days: 90}
