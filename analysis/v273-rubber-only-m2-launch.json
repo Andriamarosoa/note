@@ -1,0 +1,21 @@
+{
+  "experiment": "v273-rubber-only-m2",
+  "motivation": "outer RUBBER_ONLY corrections all had Rubber Band -2 margin positive",
+  "internal_librosa_run": 37404522178,
+  "internal_rubber_run": 37478200631,
+  "outer_librosa_run": 37421205179,
+  "outer_rubber_run": 37503022853,
+  "candidates": [
+    "M2_POS",
+    "M2_M1_POS",
+    "M2_PAIR_POS",
+    "M2_CENTER_NEG",
+    "M2_P1_POS",
+    "M2_OR_M1_STRONG"
+  ],
+  "internal_validation": "leave-one-fold-out on 0,1,2,4",
+  "outer_fold": 3,
+  "outer_fold_previously_exposed": true,
+  "no_audio_recompute": true,
+  "automatic_promotion": false
+}
