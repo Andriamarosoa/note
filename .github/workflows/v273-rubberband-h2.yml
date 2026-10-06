@@ -101,7 +101,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install summary dependencies
-        run: python -m pip install numpy==1.26.4
+        run: python -m pip install numpy==1.26.4 scipy==1.17.1
       - uses: actions/download-artifact@v4
         with:
           pattern: v273-rubberband-h2-fold-*
