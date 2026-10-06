@@ -1,0 +1,29 @@
+{
+  "experiment": "v273-outer-symmetric-h2-global",
+  "reference_outer_run": 37316567815,
+  "reference_model": "freeze_local_combo + candidate_hidden1 [42,52,61,64]",
+  "outer_fold": 3,
+  "outer_fold_previously_exposed": true,
+  "outer_rows": 15279,
+  "target_population": "B_low AND base_predicted==3",
+  "steps": [
+    -2,
+    -1,
+    0,
+    1,
+    2
+  ],
+  "rule": "mean(P(K2)-P(K3)) > 0 => 3->2",
+  "step_zero": "frozen outer base probability",
+  "shifted_inputs": "spectral_map only; temporal candidate inputs frozen",
+  "metrics": [
+    "Exact-K global",
+    "Poly Exact-K",
+    "corrections",
+    "regressions",
+    "net",
+    "by-K delta"
+  ],
+  "outer_selection_or_tuning": false,
+  "automatic_promotion": false
+}
