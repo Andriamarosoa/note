@@ -1,0 +1,64 @@
+name: V27.3 Semitone Trajectory Shape Audit
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - 'analysis/v273-semitone-trajectory-shape-launch.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  TAG: v273-semitone-trajectory-shape-${{ github.run_id }}
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install numeric dependencies
+        run: python -m pip install numpy==1.26.4 scipy==1.17.1 scikit-learn==1.4.2
+
+      - name: Compile and test
+        run: |
+          python -m py_compile scripts/audit_v273_semitone_trajectory_shape.py
+          python -B -m unittest test.test_v273_semitone_trajectory_shape -v
+
+      - name: Restore semitone trajectory artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/input
+          gh run download 37400666855             --repo "${{ github.repository }}"             --pattern "v273-semitone-disappearance-fold-*"             --dir model/input
+          test "$(find model/input -name trajectories.npz | wc -l)" -eq 4
+          test "$(find model/input -name report.json | wc -l)" -eq 4
+
+      - name: Run full trajectory-shape audit
+        run: |
+          python -B scripts/audit_v273_semitone_trajectory_shape.py             --input-root model/input             --output model/result
+
+      - name: Publish audit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$TAG"             --repo "${{ github.repository }}"             --target "${{ github.sha }}"             --prerelease             --title "V27.3 semitone trajectory-shape audit"             --notes-file model/result/report.md
+          gh release upload "$TAG"             model/result/report.json             model/result/report.md             --repo "${{ github.repository }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-semitone-trajectory-shape-results
+          path: model/result/
+          retention-days: 90
