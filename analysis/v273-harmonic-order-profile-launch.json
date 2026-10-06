@@ -1,0 +1,38 @@
+{
+  "experiment": "v273-harmonic-order-profile",
+  "source_cohort": "analysis/evidence/v273-residual-acoustics/evidence.zip :: acoustic/cases.jsonl",
+  "cases": 488,
+  "validation_folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "outer_fold_3_used": false,
+  "normal_audio_only": true,
+  "orders": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "primary_metric": "profile_fraction",
+  "secondary_metrics": [
+    "global_fraction",
+    "pre_fraction",
+    "post1_fraction",
+    "onset_ratio"
+  ],
+  "comparison": "expected vs selected_unmatched; K3 first; per-fold stability",
+  "overlap_diagnostic": "selected-unmatched harmonic centers vs expected harmonic centers within KERNEL_HZ",
+  "prediction_changes": false,
+  "classifier_training": false,
+  "threshold_search": false,
+  "automatic_promotion": false
+}
