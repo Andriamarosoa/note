@@ -1,0 +1,48 @@
+name: V27.3 Correction Regression Signature Audit
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths: ['analysis/v273-correction-regression-signatures-launch.json']
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+  TAG: v273-correction-regression-signatures-${{ github.run_id }}
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python -m pip install numpy==1.26.4 scipy==1.17.1 scikit-learn==1.4.2
+      - run: python -m py_compile scripts/audit_v273_correction_regression_signatures.py
+      - uses: actions/cache@v4
+        id: gs
+        with: {path: data/GuitarSet, key: "${{ env.GUITARSET_CACHE_KEY }}"}
+      - if: steps.gs.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+      - run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - run: |
+          mkdir -p model/input
+          unzip -q analysis/evidence/v273-residual-acoustics/evidence.zip -d model/input
+          find model/input -name cases.jsonl -print
+      - run: python -B scripts/audit_v273_correction_regression_signatures.py --cases model/input/acoustic/cases.jsonl --dataset data/GuitarSet --output model/result
+      - env: {GH_TOKEN: "${{ github.token }}"}
+        run: |
+          gh release create "$TAG" --repo "${{ github.repository }}" --target "${{ github.sha }}" --prerelease --title "V27.3 correction vs regression signature audit" --notes-file model/result/report.md
+          gh release upload "$TAG" model/result/report.json model/result/report.md model/result/rows.jsonl --repo "${{ github.repository }}"
+      - uses: actions/upload-artifact@v4
+        with: {name: v273-correction-regression-signatures-results, path: model/result/, retention-days: 90}
