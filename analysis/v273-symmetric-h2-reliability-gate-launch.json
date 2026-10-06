@@ -1,0 +1,49 @@
+{
+  "experiment": "v273-symmetric-h2-reliability-gate",
+  "source_run": 37404522178,
+  "fixed_base_rule": "mean_margin over views -2,-1,0,+1,+2 > 0",
+  "fixed_base_result": {
+    "corrections": 26,
+    "regressions": 16,
+    "net": 10,
+    "fold_nets": {
+      "0": 5,
+      "1": 6,
+      "2": -4,
+      "4": 3
+    }
+  },
+  "validation_folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "outer_fold_3_used": false,
+  "reliability_features": [
+    "mean_margin",
+    "median_margin",
+    "std_margin",
+    "min_margin",
+    "max_margin",
+    "positive_margin_fraction",
+    "k2_vote_fraction",
+    "k3_vote_fraction",
+    "pair_asymmetry_1",
+    "pair_asymmetry_2",
+    "mean_pair_asymmetry",
+    "center_margin",
+    "outer_mean_margin",
+    "inner_mean_margin",
+    "margin_range"
+  ],
+  "gate": "StandardScaler + LogisticRegression C=1 balanced lbfgs threshold 0.5",
+  "threshold_search": false,
+  "criteria": {
+    "gated_net_gt": 10,
+    "at_least_3_of_4_folds_nonnegative": true,
+    "worst_fold_net_gte": -3,
+    "keeps_at_least_fraction_of_raw_corrections": 0.5
+  },
+  "automatic_promotion": false
+}
