@@ -1,0 +1,71 @@
+name: V27.3 Trajectory Reliability Gate
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - 'analysis/v273-trajectory-reliability-gate-launch.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  TAG: v273-trajectory-reliability-gate-${{ github.run_id }}
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install numeric dependencies
+        run: python -m pip install numpy==1.26.4 scipy==1.17.1 scikit-learn==1.4.2
+
+      - name: Compile and test
+        run: |
+          python -m py_compile scripts/audit_v273_trajectory_reliability_gate.py
+          python -B -m unittest test.test_v273_trajectory_reliability_gate -v
+
+      - name: Restore semitone trajectory artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/trajectory
+          gh run download 37400666855             --repo "${{ github.repository }}"             --pattern "v273-semitone-disappearance-fold-*"             --dir model/trajectory
+          test "$(find model/trajectory -name trajectories.npz | wc -l)" -eq 4
+
+      - name: Restore residual audit artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/residual
+          gh run download 37356100423             --repo "${{ github.repository }}"             --pattern "v273-internal-minimal-residual-failure-fold-*"             --dir model/residual
+          test "$(find model/residual -name replay.npz | wc -l)" -eq 4
+
+      - name: Run nested reliability gate
+        run: |
+          python -B scripts/audit_v273_trajectory_reliability_gate.py             --trajectory-root model/trajectory             --residual-root model/residual             --output model/result
+
+      - name: Publish audit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$TAG"             --repo "${{ github.repository }}"             --target "${{ github.sha }}"             --prerelease             --title "V27.3 nested trajectory reliability gate"             --notes-file model/result/report.md
+          gh release upload "$TAG"             model/result/report.json             model/result/report.md             --repo "${{ github.repository }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-trajectory-reliability-gate-results
+          path: model/result/
+          retention-days: 90
