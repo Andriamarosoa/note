@@ -1,0 +1,76 @@
+name: V27.3 Dual Engine Disagreement Routing
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - 'analysis/v273-dual-engine-disagreement-routing-launch.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TAG: v273-dual-engine-disagreement-routing-${{ github.run_id }}
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install numeric dependency
+        run: python -m pip install numpy==1.26.4
+
+      - name: Validate script
+        run: python -m py_compile scripts/audit_v273_dual_engine_disagreement_routing.py
+
+      - name: Restore Librosa internal H2 artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/librosa-internal
+          gh run download 37404522178             --repo "${{ github.repository }}"             --pattern "v273-symmetric-pitch-tta-fold-*"             --dir model/librosa-internal
+          test "$(find model/librosa-internal -name symmetric.npz | wc -l)" -eq 4
+
+      - name: Restore Rubber Band internal H2 artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/rubber-internal
+          gh run download 37478200631             --repo "${{ github.repository }}"             --pattern "v273-rubberband-h2-fold-*"             --dir model/rubber-internal
+          test "$(find model/rubber-internal -name rubberband_h2.npz | wc -l)" -eq 4
+
+      - name: Restore outer predictions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/librosa-outer model/rubber-outer
+          gh release download v273-outer-symmetric-h2-global-37421205179             --repo "${{ github.repository }}"             --pattern predictions.npz             --dir model/librosa-outer
+          gh release download v273-rubberband-h2-resume-37503022853             --repo "${{ github.repository }}"             --pattern predictions.npz             --dir model/rubber-outer
+
+      - name: Evaluate disagreement routing
+        run: |
+          python -B scripts/audit_v273_dual_engine_disagreement_routing.py             --librosa-internal model/librosa-internal             --rubber-internal model/rubber-internal             --librosa-outer model/librosa-outer/predictions.npz             --rubber-outer model/rubber-outer/predictions.npz             --output model/result
+          cat model/result/report.md
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$TAG"             --repo "${{ github.repository }}"             --target "${{ github.sha }}"             --prerelease             --title "V27.3 dual-engine disagreement routing"             --notes-file model/result/report.md
+          gh release upload "$TAG"             model/result/report.json             model/result/report.md             --repo "${{ github.repository }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-dual-engine-disagreement-routing
+          path: model/result/
+          retention-days: 90
