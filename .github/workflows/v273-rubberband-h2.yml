@@ -1,0 +1,198 @@
+name: V27.3 Rubber Band H2
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - 'analysis/v273-rubberband-h2-launch.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  TF_NUM_INTRAOP_THREADS: '2'
+  TF_NUM_INTEROP_THREADS: '2'
+  OMP_NUM_THREADS: '2'
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+  TAG: v273-rubberband-h2-${{ github.run_id }}
+
+jobs:
+  internal:
+    strategy:
+      fail-fast: false
+      matrix:
+        val_fold: [0,1,2,4]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+
+      - name: Install runtime and Rubber Band
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rubberband-cli
+          python -m pip install -r requirements-train.txt numpy==1.26.4 scikit-learn==1.4.2
+          python -m pip install pyrubberband==0.4.0 soundfile
+
+      - name: Validate scripts
+        run: |
+          rubberband --version
+          python -m py_compile scripts/v273_rubberband_pitch.py
+          python -m py_compile scripts/audit_v273_rubberband_h2_fold.py
+          python -m py_compile scripts/summarize_v273_rubberband_h2.py
+
+      - name: Restore GuitarSet
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+
+      - name: Download GuitarSet when cache misses
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+
+      - name: Verify GuitarSet
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+
+      - name: Restore frozen source, bundle, and fold checkpoints
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/source model/download model/bundle model/folds
+          gh run download 37400666855             --repo "${{ github.repository }}"             --name "v273-semitone-disappearance-fold-${{ matrix.val_fold }}"             --dir model/source
+          gh release download v273-window-pair-36351028493             --repo "${{ github.repository }}"             --pattern native-window-bundle.zip             --dir model/download
+          unzip -q model/download/native-window-bundle.zip -d model/bundle
+          gh release download v273-candidate-hidden1-multifold-37271262794             --repo "${{ github.repository }}"             --pattern v273-candidate-hidden1-multifold-folds.tgz             --dir model/download
+          tar -xzf model/download/v273-candidate-hidden1-multifold-folds.tgz -C model/folds
+
+      - name: Evaluate Rubber Band H2
+        run: |
+          python -B scripts/audit_v273_rubberband_h2_fold.py             --source model/source/trajectories.npz             --dataset data/GuitarSet             --bundle model/bundle             --config analysis/v273-native-paired-config.json             --fold-root model/folds             --val-fold "${{ matrix.val_fold }}"             --output "model/result-${{ matrix.val_fold }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-rubberband-h2-fold-${{ matrix.val_fold }}
+          path: model/result-${{ matrix.val_fold }}/
+          retention-days: 90
+
+  summarize:
+    needs: internal
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install summary dependencies
+        run: python -m pip install numpy==1.26.4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v273-rubberband-h2-fold-*
+          path: model/internal
+      - name: Summarize internal comparison
+        run: |
+          python -B scripts/summarize_v273_rubberband_h2.py             --input-root model/internal             --output model/summary
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-rubberband-h2-summary
+          path: model/summary/
+          retention-days: 90
+
+  outer:
+    needs: summarize
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+
+      - name: Install runtime and Rubber Band
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rubberband-cli
+          python -m pip install -r requirements-train.txt numpy==1.26.4 scikit-learn==1.4.2
+          python -m pip install pyrubberband==0.4.0 soundfile
+
+      - name: Validate outer script
+        run: |
+          rubberband --version
+          python -m py_compile scripts/evaluate_v273_outer_rubberband_h2_global.py
+
+      - name: Restore GuitarSet
+        id: guitarset-cache
+        uses: actions/cache@v4
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+
+      - name: Download GuitarSet when cache misses
+        if: steps.guitarset-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+
+      - name: Verify GuitarSet
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+
+      - name: Restore outer inputs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/download model/bundle model/uniform model/freeze model/base
+          gh release download v273-window-pair-36351028493             --repo "${{ github.repository }}"             --pattern native-window-bundle.zip             --dir model/download
+          unzip -q model/download/native-window-bundle.zip -d model/bundle
+          gh release download v273-loss-weighting-37208199201             --repo "${{ github.repository }}"             --pattern v273-loss-weighting-uniform.tgz             --dir model/download
+          tar -xzf model/download/v273-loss-weighting-uniform.tgz -C model/uniform
+          gh release download v273-uniform-anchored-freeze-37233793945             --repo "${{ github.repository }}"             --pattern v273-uniform-anchored-freeze-result.tgz             --dir model/download
+          tar -xzf model/download/v273-uniform-anchored-freeze-result.tgz -C model/freeze
+          gh release download v273-outer-b-low-eval-37316567815             --repo "${{ github.repository }}"             --pattern predictions.npz             --dir model/base
+
+      - name: Measure outer Rubber Band H2
+        run: |
+          python -B scripts/evaluate_v273_outer_rubberband_h2_global.py             --bundle model/bundle             --config analysis/v273-native-paired-config.json             --dataset data/GuitarSet             --uniform-weights model/uniform/uniform.weights.h5             --freeze-weights model/freeze/freeze_local_combo.weights.h5             --outer-predictions model/base/predictions.npz             --output model/outer
+
+      - name: Combine and publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/summary-download
+          gh run download "${{ github.run_id }}"             --repo "${{ github.repository }}"             --name v273-rubberband-h2-summary             --dir model/summary-download
+          {
+            cat model/summary-download/report.md
+            echo
+            echo "---"
+            echo
+            cat model/outer/report.md
+          } > model/final-report.md
+          gh release create "$TAG"             --repo "${{ github.repository }}"             --target "${{ github.sha }}"             --prerelease             --title "V27.3 Rubber Band H2 comparison"             --notes-file model/final-report.md
+          gh release upload "$TAG"             model/summary-download/report.json             model/outer/report.json             model/outer/predictions.npz             model/final-report.md             --repo "${{ github.repository }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-rubberband-h2-outer
+          path: model/outer/
+          retention-days: 90
