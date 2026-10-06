@@ -1,0 +1,27 @@
+{
+  "experiment": "v273-novel-marginal-third-component-gain",
+  "source_action_run": 37356100423,
+  "source_pool64_control": "analysis/evidence/v273-candidate-ranking/evidence.zip :: capacity/pool64_t2",
+  "validation_folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "outer_fold_3_used": false,
+  "normal_audio_only": true,
+  "variants": [
+    "control_residual2",
+    "plus_novel3"
+  ],
+  "novel_feature": "max(J2-J3,0)/||x||^2 * ||(y3-y2)[unique_third_bins]||^2/||y3-y2||^2",
+  "reconstruction_frozen": true,
+  "template": "gaussian 1/h^2",
+  "classifier": "StandardScaler + LogisticRegression(C=1,class_weight=balanced,lbfgs)",
+  "decision_threshold": 0.5,
+  "selection": "FIT-only rotation; net, fewer regressions, fewer actions, model order; abstain if net<=0",
+  "annotation_use": false,
+  "neural_training": false,
+  "threshold_search": false,
+  "automatic_promotion": false
+}
