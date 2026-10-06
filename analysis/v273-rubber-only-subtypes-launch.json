@@ -1,0 +1,23 @@
+{
+  "experiment": "v273-rubber-only-subtypes",
+  "librosa_internal_run": 37404522178,
+  "rubberband_internal_run": 37478200631,
+  "librosa_outer_run": 37421205179,
+  "rubberband_outer_run": 37503022853,
+  "population": "RUBBER_ONLY = Librosa mean margin <= 0 and Rubber Band mean margin > 0",
+  "subtypes": [
+    "VOTE4",
+    "PAIRS",
+    "ALL_SHIFTED",
+    "STRONG",
+    "LOW_VAR",
+    "STRONG_PAIRS",
+    "STRONG_VOTE4",
+    "PAIRS_LOW_VAR"
+  ],
+  "internal_validation": "leave-one-fold-out on 0,1,2,4",
+  "outer_fold": 3,
+  "outer_fold_previously_exposed": true,
+  "no_audio_recompute": true,
+  "automatic_promotion": false
+}
