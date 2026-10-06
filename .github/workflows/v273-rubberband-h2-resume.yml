@@ -108,8 +108,10 @@ jobs:
             echo
             cat model/outer/report.md
           } > model/final-report.md
+          cp model/summary/report.json model/internal-report.json
+          cp model/outer/report.json model/outer-report.json
           gh release create "$TAG"             --repo "${{ github.repository }}"             --target "${{ github.sha }}"             --prerelease             --title "V27.3 Rubber Band H2 resumed comparison"             --notes-file model/final-report.md
-          gh release upload "$TAG"             model/summary/report.json             model/outer/report.json             model/outer/predictions.npz             model/final-report.md             --repo "${{ github.repository }}"
+          gh release upload "$TAG"             model/internal-report.json             model/outer-report.json             model/outer/predictions.npz             model/final-report.md             --repo "${{ github.repository }}"
 
       - uses: actions/upload-artifact@v4
         with:
