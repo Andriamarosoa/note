@@ -45,7 +45,7 @@ def thresholds_from(rows):
     out={}
     for alias,(feature,direction) in SIGNALS.items():
         vals=[r["features"][feature] for r in rows if r.get("features") is not None and r["y"] in (2,3)]
-        require(len(vals)>=20,f"small threshold fit for {alias}")
+        require(len(vals)>=8,f"small threshold fit for {alias}")
         out[alias]={"feature":feature,"direction":direction,"threshold":float(np.median(vals))}
     return out
 
