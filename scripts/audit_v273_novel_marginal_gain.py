@@ -30,6 +30,17 @@ NAMES = ("control_residual2", "plus_novel3")
 EPS = 1e-12
 
 
+def template_t2(freq, f0):
+    """Exact Gaussian harmonic column used by pool64_t2 (peak weight 1/h^2)."""
+    d = np.zeros(len(freq), dtype=np.float64)
+    for harmonic in range(1, h.MAX_HARMONICS + 1):
+        center = harmonic * float(f0)
+        if center > freq[-1]:
+            break
+        d += np.exp(-0.5 * ((freq - center) / h.KERNEL_HZ) ** 2) / (harmonic ** 2)
+    return d / (np.linalg.norm(d) + EPS)
+
+
 def fit_small_nnls(D, x):
     """Exact active-subset NNLS for at most three columns."""
     k = D.shape[1]
@@ -55,7 +66,7 @@ def fit_small_nnls(D, x):
 
 
 def marginal_feature(freq, x, triplet_f0):
-    D = np.column_stack([h.template(freq, float(f)) for f in triplet_f0])
+    D = np.column_stack([template_t2(freq, float(f)) for f in triplet_f0])
     j3, a3, _ = fit_small_nnls(D, x)
     y3 = D @ a3
 
@@ -154,6 +165,7 @@ def run(a):
         by_member.setdefault(member, []).append((row, start))
 
     computed = {}
+    triplet_replay_errors = []
     for member in sorted(wanted):
         track = tracks[member]
         audio = decode_pcm16_mono_wav(track.audio_zip, track.audio_member)
@@ -162,9 +174,15 @@ def run(a):
             freq, x = h.transition_spectrum(samples, start)
             idx = by_id_index[int(row)]
             computed[int(row)] = marginal_feature(freq, x, triplet_f0[idx])
+            triplet_replay_errors.append(
+                abs(computed[int(row)]["j3_ratio"] - float(control[idx, 1]))
+            )
         print(json.dumps({"recording": member, "rows": len(computed)}), flush=True)
 
     require(len(computed) == len(ids), "incomplete feature extraction")
+    triplet_replay_max_abs_error = float(max(triplet_replay_errors, default=0.0))
+    require(triplet_replay_max_abs_error < 1e-10,
+            "pool64_t2 triplet residual replay changed")
     novel = np.array([computed[int(row)]["novel_marginal_gain"] for row in ids])
     details = np.array([
         [computed[int(row)]["marginal_gain"],
@@ -266,6 +284,7 @@ def run(a):
         "unique_audio_rows": len(ids),
         "recordings": len(wanted),
         "feature_definition": "max(J2-J3,0)/||x||^2 * ||(y3-y2)[unique_third_bins]||^2/||y3-y2||^2",
+        "triplet_replay_max_abs_error": triplet_replay_max_abs_error,
         "total_selected": total([r["val_selected"] for r in reports]),
         "total_fixed": {
             name: total([r["val_fixed"][name] for r in reports])
