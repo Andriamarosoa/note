@@ -1,0 +1,40 @@
+{
+  "experiment": "v273-semitone-trajectory-shape",
+  "source_run": 37400666855,
+  "source_rows": 488,
+  "validation_folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "outer_fold_3_used": false,
+  "features": [
+    "fraction_k2",
+    "fraction_k3",
+    "fraction_below3",
+    "transitions_3_to_2",
+    "transitions_2_to_3",
+    "transitions_total",
+    "longest_k2_run",
+    "longest_k3_run_after_exit",
+    "total_variation",
+    "unique_k_count",
+    "state_entropy",
+    "final_k",
+    "first_k2_step",
+    "first_non3_step",
+    "first_below3_step",
+    "reentered_k3",
+    "monotone_nonincreasing"
+  ],
+  "classifier": "StandardScaler + LogisticRegression C=1 balanced lbfgs",
+  "threshold": 0.5,
+  "feature_subset_search": false,
+  "criteria": {
+    "total_net_positive": true,
+    "at_least_3_of_4_folds_nonnegative": true,
+    "mean_val_auc_gt": 0.55
+  },
+  "automatic_promotion": false
+}
