@@ -43,10 +43,13 @@ jobs:
             mkdir -p "model/internal/fold-$f"
             gh run download 37356100423 --repo "${{ github.repository }}" --name "v273-internal-minimal-residual-failure-fold-$f" --dir "model/internal/fold-$f"
           done
-      - run: |
-          mkdir -p model/input
-          unzip -q analysis/evidence/v273-residual-acoustics/evidence.zip -d model/input
-      - run: python -B scripts/audit_v273_low_band_fold2_vs_fold4.py --internal-exports model/internal --cases model/input/acoustic/cases.jsonl --dataset data/GuitarSet --output model/result
+      - name: Restore native bundle
+        env: {GH_TOKEN: "${{ github.token }}"}
+        run: |
+          mkdir -p model/download model/bundle
+          gh release download v273-window-pair-36351028493 --repo "${{ github.repository }}" --pattern native-window-bundle.zip --dir model/download
+          unzip -q model/download/native-window-bundle.zip -d model/bundle
+      - run: python -B scripts/audit_v273_low_band_fold2_vs_fold4.py --internal-exports model/internal --bundle model/bundle --config analysis/v273-native-paired-config.json --dataset data/GuitarSet --output model/result
       - env: {GH_TOKEN: "${{ github.token }}"}
         run: |
           gh release create "$TAG" --repo "${{ github.repository }}" --target "${{ github.sha }}" --prerelease --title "V27.3 low-band fold2 vs fold4 audit" --notes-file model/result/report.md
