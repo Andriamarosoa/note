@@ -78,12 +78,13 @@ def main():
             y=arr[split+"_true_k"][action][valid].astype(int)
             vals=np.asarray([np.nan if computed[int(i)] is None else computed[int(i)] for i in ids],float)
             good=np.isfinite(vals)
-            data[split]={"ids":ids[good],"y":y[good],"v":vals[good],"excluded":int((~good).sum())}
+            data[split]={"ids":ids,"y":y,"v":vals,"good":good,"excluded":int((~good).sum())}
         fit,val=data["fit"],data["val"]
-        sel=select(fit["y"],fit["v"])
+        sel=select(fit["y"][fit["good"]],fit["v"][fit["good"]])
         base_apply=np.ones(len(val["y"]),bool)
-        if sel is None:guard_apply=np.zeros(len(val["y"]),bool)
-        else:guard_apply=sel["orientation"]*val["v"]<=sel["threshold"]
+        guard_apply=np.zeros(len(val["y"]),bool)
+        if sel is not None:
+            guard_apply[val["good"]]=sel["orientation"]*val["v"][val["good"]]<=sel["threshold"]
         reports.append({"fold":f,"selected":sel,"fit_rows":int(len(fit["y"])),"val_rows":int(len(val["y"])),
                         "excluded_fit":fit["excluded"],"excluded_val":val["excluded"],
                         "val_base_all_actions":account(val["y"],base_apply),
