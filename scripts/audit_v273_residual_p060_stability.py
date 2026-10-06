@@ -7,7 +7,8 @@ from __future__ import annotations
 import argparse,json,re
 from pathlib import Path
 import numpy as np
-from scripts.v273_residual_audit import require
+def require(cond,msg):
+    if not cond: raise RuntimeError(msg)
 
 TH=.60
 FOLDS=(0,1,2,4)
