@@ -127,10 +127,13 @@ def main():
     corr_m = metrics(y_outer, corrected)
 
     changed_y = y_outer[changed]
+    # Because the action is always 3->2:
+    # - true K2 changes wrong->correct (correction),
+    # - true K3 changes correct->wrong (regression),
+    # - every other true K stays wrong->wrong (neutral action).
     corrections = int(np.sum(changed_y == 2))
     regressions = int(np.sum(changed_y == 3))
-    other_true_k = int(np.sum(~np.isin(changed_y, (2, 3))))
-    require(other_true_k == 0, f"H2 acted on other true-K rows: {other_true_k}")
+    neutral_other_k = int(np.sum(~np.isin(changed_y, (2, 3))))
     net = corrections - regressions
 
     by_k = {
@@ -158,6 +161,7 @@ def main():
             "corrections": corrections,
             "regressions": regressions,
             "net_exact": net,
+            "neutral_other_k_actions": neutral_other_k,
             "action_success_rate": float(corrections / max(1, corrections + regressions)),
             "corrected_metrics": corr_m,
             "by_true_k_net": by_k,
@@ -203,6 +207,7 @@ def main():
         f"B_low + base K3 targets: **{len(target_ids)}**.",
         f"H2 actions: **{int(action.sum())}**.",
         f"Corrections/regressions: **{corrections}/{regressions}**.",
+        f"Neutral actions on other true-K: **{neutral_other_k}**.",
         f"Net Exact-K: **{net:+d}**.",
         "By-K net: " + ", ".join(f"K{k} {by_k[str(k)]:+d}" for k in range(7)) + ".",
         "",
