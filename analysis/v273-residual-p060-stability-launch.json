@@ -1,1 +1,18 @@
-{"experiment":"v273-residual-p060-stability","policy":"raw residual LR p(K2)>=0.60","question":"Is the internal +7 net diffuse across players/styles/recordings or concentrated in a few groups?","breakdowns":["fold","player","style","comp_vs_solo","variant","piece","recording"],"threshold_search":false,"prediction_changes":false,"outer_fold_3_used":false}
+{
+  "experiment": "v273-residual-p060-stability",
+  "policy": "raw residual LR p(K2)>=0.60",
+  "question": "Is the internal +7 net diffuse across players/styles/recordings or concentrated in a few groups?",
+  "breakdowns": [
+    "fold",
+    "player",
+    "style",
+    "comp_vs_solo",
+    "variant",
+    "piece",
+    "recording"
+  ],
+  "threshold_search": false,
+  "prediction_changes": false,
+  "outer_fold_3_used": false,
+  "retry_after_fix": "881810b5ac784d8ec732580668ddd62a26aae90e"
+}
