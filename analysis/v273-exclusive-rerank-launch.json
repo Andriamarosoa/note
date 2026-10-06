@@ -1,0 +1,24 @@
+{
+  "experiment": "v273-exclusive-support-rerank64",
+  "source_action_run": 37356100423,
+  "source_capacity_evidence": "analysis/evidence/v273-candidate-ranking/evidence.zip :: capacity",
+  "source_diagnostic": "v273-exclusive-harmonic-support-37391242629",
+  "validation_folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "outer_fold_3_used": false,
+  "normal_audio_only": true,
+  "control": "pool64_t2",
+  "arm": "exclusive_rerank64",
+  "top_n_nnls_combinations": 64,
+  "rerank_score": "min_internal_unique_attack_fraction / (normalized_nnls_cost + 1e-12)",
+  "exact_k_selection": "FIT-only rotating folds; abstain if best net <= 0",
+  "annotation_use_for_inference": false,
+  "prediction_changes": true,
+  "neural_training": false,
+  "threshold_search": false,
+  "automatic_promotion": false
+}
