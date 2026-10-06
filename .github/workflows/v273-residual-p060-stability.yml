@@ -1,0 +1,38 @@
+name: V27.3 Residual P060 Stability
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths: ['analysis/v273-residual-p060-stability-launch.json']
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TAG: v273-residual-p060-stability-${{ github.run_id }}
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python -m pip install numpy==1.26.4
+      - run: python -m py_compile scripts/audit_v273_residual_p060_stability.py
+      - name: Restore frozen internal exports
+        env: {GH_TOKEN: "${{ github.token }}"}
+        run: |
+          mkdir -p model/internal
+          for f in 0 1 2 4; do
+            mkdir -p "model/internal/fold-$f"
+            gh run download 37356100423 --repo "${{ github.repository }}" --name "v273-internal-minimal-residual-failure-fold-$f" --dir "model/internal/fold-$f"
+          done
+      - run: python -B scripts/audit_v273_residual_p060_stability.py --internal-exports model/internal --output model/result
+      - env: {GH_TOKEN: "${{ github.token }}"}
+        run: |
+          gh release create "$TAG" --repo "${{ github.repository }}" --target "${{ github.sha }}" --prerelease --title "V27.3 residual p0.60 stability audit" --notes-file model/result/report.md
+          gh release upload "$TAG" model/result/report.json model/result/report.md --repo "${{ github.repository }}"
+      - uses: actions/upload-artifact@v4
+        with: {name: v273-residual-p060-stability-results, path: model/result/, retention-days: 90}
