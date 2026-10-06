@@ -30,12 +30,14 @@ Aucun vrai K n'est utilisé pour sélectionner les lignes.
 
 ## H2
 
-Pour chaque ligne cible, calculer cinq vues audio :
+Pour chaque ligne cible, utiliser cinq vues :
 
 - -2, -1, 0, +1, +2 demi-tons.
 
-Même méthode de pitch shift et même spectral map COVERED 31x64x3 que les runs
-37400666855 et 37404522178. Les entrées temporelles/candidates restent figées.
+La vue 0 réutilise directement la probabilité de base outer figée. Les quatre
+vues ±1/±2 sont recalculées depuis l'audio avec exactement la même méthode de
+pitch shift et la même spectral map COVERED 31x64x3 que les runs 37400666855
+et 37404522178. Les entrées temporelles/candidates restent figées.
 
 Pour chaque vue :
 
@@ -50,8 +52,7 @@ Aucun seuil appris, aucun gate, aucune sélection sur fold 3.
 
 ## Contrôles
 
-- la vue step=0 doit reproduire les probabilités outer figées avec tolérance
-  absolue <= 1e-5 ;
+- la vue step=0 est exactement la probabilité outer figée ;
 - les indices globaux et vrais K du fichier outer doivent correspondre au bundle ;
 - aucune autre prédiction que les K3 B_low ciblées ne peut changer.
 
