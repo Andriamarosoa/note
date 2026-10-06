@@ -1,1 +1,37 @@
-{"experiment":"v273-stable-signature-generalization","pattern":["pre_high","amp_range_low","amp_cv_low"],"source":"fixed trio from completed runs 37530685909 and 37531146287","questions":["Is the +26 veto gain concentrated in a few players/styles/tracks?","Does the pattern transfer when each player or style is held out from threshold calibration as well as the row's fold?"],"breakdowns":["player","style","comp_vs_solo","variant","piece","track_family","player_x_style"],"transfer":["leave-one-player-out plus leave-fold-out","leave-one-style-out plus leave-fold-out","leave-one-part-out plus leave-fold-out"],"validation_folds":[0,1,2,4],"outer_fold_3_used":false,"prediction_changes":false,"automatic_promotion":false}
+{
+  "experiment": "v273-stable-signature-generalization",
+  "pattern": [
+    "pre_high",
+    "amp_range_low",
+    "amp_cv_low"
+  ],
+  "source": "fixed trio from completed runs 37530685909 and 37531146287",
+  "questions": [
+    "Is the +26 veto gain concentrated in a few players/styles/tracks?",
+    "Does the pattern transfer when each player or style is held out from threshold calibration as well as the row's fold?"
+  ],
+  "breakdowns": [
+    "player",
+    "style",
+    "comp_vs_solo",
+    "variant",
+    "piece",
+    "track_family",
+    "player_x_style"
+  ],
+  "transfer": [
+    "leave-one-player-out plus leave-fold-out",
+    "leave-one-style-out plus leave-fold-out",
+    "leave-one-part-out plus leave-fold-out"
+  ],
+  "validation_folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "outer_fold_3_used": false,
+  "prediction_changes": false,
+  "automatic_promotion": false,
+  "retry_after_fix": "d83b0819e4f5729401a62a4fe90f8f19db7c212c"
+}
