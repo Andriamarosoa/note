@@ -1,0 +1,13 @@
+{
+  "experiment": "v273-raw-pcm-pick-transient-diagnostic",
+  "question": "Can short broadband pick/strike transients distinguish K2_corrected from K3_regressed residual-guard cases?",
+  "source_cohort": "analysis/evidence/v273-residual-acoustics/evidence.zip :: acoustic/cases.jsonl",
+  "groups": {"K2_corrected": 108, "K3_regressed": 125},
+  "validation_folds": [0,1,2,4],
+  "outer_fold_3_used": false,
+  "raw_pcm_window_ms": [-5,50],
+  "micro_transient_focus_ms": [0,20],
+  "features": ["micro-peak counts","peak spacing","high-band ratio","spectral centroid","spectral flatness","spectral flux","crest factor","zero-crossing rate","kurtosis","attack slope"],
+  "prediction_changes": false,
+  "automatic_promotion": false
+}
