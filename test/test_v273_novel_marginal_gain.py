@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 
 from scripts import audit_v273_internal_b_low_harmonic_strata as h
-from scripts.audit_v273_novel_marginal_gain import fit_small_nnls, marginal_feature
+from scripts.audit_v273_novel_marginal_gain import fit_small_nnls, marginal_feature, template_t2
 
 
 class NovelMarginalGainTests(unittest.TestCase):
@@ -19,7 +19,7 @@ class NovelMarginalGainTests(unittest.TestCase):
     def test_marginal_feature_is_nonnegative_and_bounded_by_gain(self):
         freq = np.linspace(h.MIN_HZ, h.MAX_ANALYSIS_HZ, 1800)
         f0 = np.array([101.0, 173.0, 283.0])
-        D = np.column_stack([h.template(freq, f) for f in f0])
+        D = np.column_stack([template_t2(freq, f) for f in f0])
         x = D @ np.array([1.0, 0.8, 0.6])
         out = marginal_feature(freq, x, f0)
         self.assertGreaterEqual(out["novel_marginal_gain"], 0.0)
@@ -32,7 +32,7 @@ class NovelMarginalGainTests(unittest.TestCase):
     def test_marginal_component_is_not_in_best_internal_pair(self):
         freq = np.linspace(h.MIN_HZ, h.MAX_ANALYSIS_HZ, 1800)
         f0 = np.array([110.0, 196.0, 311.0])
-        D = np.column_stack([h.template(freq, f) for f in f0])
+        D = np.column_stack([template_t2(freq, f) for f in f0])
         x = D @ np.array([1.0, 0.9, 0.2])
         out = marginal_feature(freq, x, f0)
         self.assertNotIn(out["marginal_component"], out["best_internal_pair"])
