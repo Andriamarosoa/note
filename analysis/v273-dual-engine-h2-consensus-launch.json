@@ -1,0 +1,17 @@
+{
+  "experiment": "v273-dual-engine-h2-consensus",
+  "librosa_internal_run": 37404522178,
+  "rubberband_internal_run": 37478200631,
+  "librosa_outer_run": 37421205179,
+  "rubberband_outer_run": 37503022853,
+  "rules": [
+    "strict_consensus",
+    "positive_agreement_weighted",
+    "mean_engine_margin"
+  ],
+  "selection": "best total internal net across folds 0,1,2,4; tie fewer regressions/actions",
+  "outer_fold": 3,
+  "outer_fold_previously_exposed": true,
+  "no_audio_recompute": true,
+  "automatic_promotion": false
+}
