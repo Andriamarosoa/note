@@ -190,7 +190,9 @@ def evaluate_rotation(rows, val_fold):
 
     scale = m.named_steps["scale"]
     lr = m.named_steps["lr"]
-    corr = np.corrcoef(scale.transform(Xf), rowvar=False)\n    corr = np.nan_to_num(corr, nan=0.0, posinf=0.0, neginf=0.0)\n
+    corr = np.corrcoef(scale.transform(Xf), rowvar=False)
+    corr = np.nan_to_num(corr, nan=0.0, posinf=0.0, neginf=0.0)
+
     return {
         "fold": val_fold,
         "fit_rows": len(fit),
