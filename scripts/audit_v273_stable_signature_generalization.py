@@ -156,7 +156,7 @@ def main():
         fixed_breakdowns[key]={"groups":gg,"concentration":concentration(gg)}
 
     transfer={}
-    for key in ("player","style","part"):
+    for key in ("player","style"):
         gg=transfer_holdout(rows,key)
         transfer[key]={"groups":gg,"concentration":concentration(gg),
                        "all_groups_nonnegative":all(q["veto_gain"]>=0 for q in gg),
