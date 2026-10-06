@@ -1,0 +1,17 @@
+{
+  "experiment": "v273-rubber-only-recovery",
+  "base_rule": "M2_P1_POS",
+  "recovery_candidates": [
+    "REC_M2_M1_P2",
+    "REC_M2_M1_P2_P1NEG",
+    "REC_M2_M1_P2_CENTERNEG",
+    "REC_M2_M1_P2_P1NEG_CENTERNEG",
+    "REC_M2_M1",
+    "REC_M2_P2"
+  ],
+  "internal_validation": "leave-one-fold-out on 0,1,2,4",
+  "outer_fold": 3,
+  "outer_fold_previously_exposed": true,
+  "no_audio_recompute": true,
+  "automatic_promotion": false
+}
