@@ -1,0 +1,30 @@
+{
+  "experiment": "v273-symmetric-pitch-tta",
+  "source_positive_run": 37400666855,
+  "cohort_rows": 488,
+  "validation_folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "outer_fold_3_used": false,
+  "views": "-6..+6 semitones",
+  "horizons": [
+    1,
+    2,
+    3,
+    4,
+    6
+  ],
+  "aggregators": [
+    "mean_margin",
+    "lcb_margin",
+    "median_margin",
+    "mean_argmax"
+  ],
+  "fit_selection": "best net on 3 FIT folds only; abstain if best <=0",
+  "target_action": "3->2 only",
+  "candidate_inputs_frozen": true,
+  "automatic_promotion": false
+}
