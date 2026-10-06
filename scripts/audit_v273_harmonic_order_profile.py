@@ -313,6 +313,11 @@ def run(a):
     out["components_sha256"] = sha256_file(a.output / "components.jsonl")
     write_json(a.output / "report.json", out)
 
+    def fmt(value, digits=6):
+        if value is None:
+            return "n/a"
+        return f"{float(value):.{digits}f}"
+
     lines = [
         "# Harmonic-order profile diagnostic",
         "",
@@ -325,16 +330,20 @@ def run(a):
     for order in ORDERS:
         q = k3["orders"][str(order)]
         m = q["metrics"]["profile_fraction"]
-        e = m["expected"]; u = m["selected_unmatched"]; auc = m["auc"]
+        e = m["expected"]
+        u = m["selected_unmatched"]
+        auc = m["auc"]
         ov = q["unmatched_overlap_with_expected"]
         lines.append(
-            f"| {order} | "
-            f"{'n/a' if e is None else f'{e['median']:.6f}'} | "
-            f"{'n/a' if u is None else f'{u['median']:.6f}'} | "
-            f"{'n/a' if m['median_delta_expected_minus_unmatched'] is None else f'{m['median_delta_expected_minus_unmatched']:.6f}'} | "
-            f"{'n/a' if auc is None else f'{auc['oriented_auc']:.3f}'} | "
-            f"{'n/a' if auc is None else auc['direction']} | "
-            f"{'n/a' if ov is None else f'{ov['count_overlap_rate']:.3f}'} |"
+            "| " + " | ".join([
+                str(order),
+                fmt(None if e is None else e["median"]),
+                fmt(None if u is None else u["median"]),
+                fmt(m["median_delta_expected_minus_unmatched"]),
+                fmt(None if auc is None else auc["oriented_auc"], 3),
+                "n/a" if auc is None else auc["direction"],
+                fmt(None if ov is None else ov["count_overlap_rate"], 3),
+            ]) + " |"
         )
     lines += ["", "Fold 3 excluded. No Exact-K changes. Diagnostic only."]
     (a.output / "report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
