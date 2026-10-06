@@ -1,0 +1,29 @@
+{
+  "experiment": "v273-B_low-baseK3-subclustering",
+  "source_action_run": 37356100423,
+  "validation_folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "outer_fold_3_used": false,
+  "population": "B_low & base_K==3",
+  "clustering_features": "37 exported structural/inference-time features",
+  "preprocessing": "StandardScaler + FIT PCA (90% variance target, cap 16)",
+  "k_grid": [
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "k_selection": "FIT-only silhouette; reject cluster <5%; tie -> smaller K",
+  "stability": "8 extra KMeans seeds, ARI diagnostic",
+  "cluster_policy": "activate 3->2 if FIT cluster has #K2-#K3 > 0",
+  "oracle": "VAL labels used only after clustering for fixed-partition upper bound",
+  "annotation_use": false,
+  "neural_training": false,
+  "threshold_search": false,
+  "automatic_promotion": false
+}
