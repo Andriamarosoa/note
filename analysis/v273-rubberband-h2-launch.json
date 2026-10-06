@@ -1,0 +1,26 @@
+{
+  "experiment": "v273-rubberband-h2",
+  "comparison": "Rubber Band vs Librosa for fixed symmetric H2",
+  "internal_source_run": 37400666855,
+  "internal_reference_librosa_run": 37404522178,
+  "outer_reference_librosa_run": 37421205179,
+  "steps": [
+    -2,
+    -1,
+    0,
+    1,
+    2
+  ],
+  "rule": "mean(P(K2)-P(K3)) > 0 => 3->2",
+  "only_changed_variable": "pitch engine for non-zero views",
+  "rubberband": "pyrubberband 0.4.0 + rubberband-cli",
+  "internal_folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "outer_fold": 3,
+  "outer_fold_previously_exposed": true,
+  "automatic_promotion": false
+}
