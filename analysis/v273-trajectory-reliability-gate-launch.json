@@ -1,0 +1,42 @@
+{
+  "experiment": "v273-nested-trajectory-reliability-gate",
+  "trajectory_source_run": 37400666855,
+  "residual_source_run": 37356100423,
+  "cohort_rows": 488,
+  "validation_folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "outer_fold_3_used": false,
+  "level1": "17 trajectory features -> balanced LR C=1 threshold 0.5",
+  "gate_training": "nested OOF within the 3 outer-FIT folds",
+  "gates": {
+    "trajectory_only": [
+      "17 trajectory features",
+      "p_traj_k2"
+    ],
+    "trajectory_plus_acoustic": [
+      "17 trajectory features",
+      "p_traj_k2",
+      "best_pair_residual_ratio",
+      "best_triplet_residual_ratio",
+      "median_triplet_f0",
+      "base_probability_k2",
+      "base_probability_k3",
+      "base_margin_k3_minus_k2"
+    ]
+  },
+  "gate_classifier": "StandardScaler + LogisticRegression C=1 balanced lbfgs threshold 0.5",
+  "threshold_search": false,
+  "feature_subset_search": false,
+  "criteria": {
+    "improves_over_raw_net": true,
+    "net_positive": true,
+    "at_least_3_of_4_folds_nonnegative": true,
+    "worst_fold_net_gte": -5,
+    "keeps_at_least_25pct_raw_corrections": true
+  },
+  "automatic_promotion": false
+}
