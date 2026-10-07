@@ -39,8 +39,13 @@ result is computed.
 
 ## Holdout scope
 
-All GuitarSet tracks belonging to performer `05` are used exactly once.
-Expected inventory: 48 tracks (24 compositions × comp/solo).
+All 60 GuitarSet tracks belonging to performer `05` are used exactly once.
+Metadata-only preflight established the archive inventory is **60 tracks** for
+player 05. The initial run stopped on the incorrect 48-track assertion before
+mining or prediction, so this correction was made without seeing any player-05
+model output or label.
+
+Expected inventory: 60 tracks (30 compositions × comp/solo).
 
 The holdout shares the GuitarSet recording protocol and compositions with the
 development corpus, so this is **performer-independent**, not
