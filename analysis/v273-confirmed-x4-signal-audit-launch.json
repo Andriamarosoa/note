@@ -1,0 +1,30 @@
+{
+  "experiment": "v273_confirmed_x4_signal_crossfold",
+  "date": "2026-10-07",
+  "source_x4_run": 37664084466,
+  "source_trajectory_run": 37400666855,
+  "cohort": "dual-engine x4 K3->K2 disappearances only",
+  "expected_rows": 76,
+  "expected_truth": {
+    "K2": 40,
+    "K3": 36
+  },
+  "signal_families": [
+    "raw transient/pick",
+    "selected-F0 attack novelty + exclusive support",
+    "harmonic reconstruction",
+    "spectral morphology",
+    "semitone trajectory",
+    "x4 confidence/margin",
+    "combined"
+  ],
+  "folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "outer_fold_3_used": false,
+  "threshold_selection": "nested OOF within FIT folds",
+  "automatic_promotion": false
+}
