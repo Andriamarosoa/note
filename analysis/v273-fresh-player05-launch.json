@@ -1,0 +1,19 @@
+{
+  "experiment": "v273-fresh-player05-independent-validation",
+  "holdout": "GuitarSet player 05, all 48 tracks",
+  "independence": "player 05 excluded by historical and current ALLOWED_PLAYERS=00..04 guard",
+  "proposal_source_tag": "v273-source-recovery-35086829802",
+  "proposal_source_commit": "8aba7737d4112671beeaedac92329d533fcfc316",
+  "protocol_file": "analysis/v273-fresh-player05-protocol.md",
+  "protocol_commit": "631ab0ee48ece54b5420fb9c61007837de544b08",
+  "selected_model_run": 37547761255,
+  "variant": "base_geom_attack",
+  "threshold": 0.59,
+  "pass_rule": [
+    "paired Exact-K corrections > regressions",
+    "polyphonic Exact-K strictly higher than robust base"
+  ],
+  "labels_read_only_after_predictions_are_frozen": true,
+  "automatic_retuning_after_holdout": false,
+  "automatic_promotion": false
+}
