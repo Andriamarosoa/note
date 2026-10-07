@@ -1,11 +1,11 @@
 {
   "experiment": "v273-fresh-player05-independent-validation",
-  "holdout": "GuitarSet player 05, all 48 tracks",
+  "holdout": "GuitarSet player 05, all 60 tracks",
   "independence": "player 05 excluded by historical and current ALLOWED_PLAYERS=00..04 guard",
   "proposal_source_tag": "v273-source-recovery-35086829802",
   "proposal_source_commit": "8aba7737d4112671beeaedac92329d533fcfc316",
   "protocol_file": "analysis/v273-fresh-player05-protocol.md",
-  "protocol_commit": "631ab0ee48ece54b5420fb9c61007837de544b08",
+  "protocol_commit": "54a36e97c8cf076a9bb0c955a314e34329d6d6ee",
   "selected_model_run": 37547761255,
   "variant": "base_geom_attack",
   "threshold": 0.59,
@@ -15,5 +15,7 @@
   ],
   "labels_read_only_after_predictions_are_frozen": true,
   "automatic_retuning_after_holdout": false,
-  "automatic_promotion": false
+  "automatic_promotion": false,
+  "retry_after_inventory_only_failure": 37549972530,
+  "inventory_correction": "48->60 tracks; previous run stopped before mining/prediction/labels"
 }
