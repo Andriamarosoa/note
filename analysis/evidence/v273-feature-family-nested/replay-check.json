@@ -1,0 +1,45 @@
+{
+  "audio_loaded": false,
+  "final_models": 16,
+  "folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "inner_models": 48,
+  "max_probability_error": 0.0,
+  "model_refitted": false,
+  "outer_fold_3_used": false,
+  "source_sha256": {
+    "extra-features.npz": "7c9bfbaf0b81ce0913c9e84d9e22974a4ac37f20997ee5c6c2714b486d1b0dfa",
+    "inputs.npz": "785ce19d9d365c43db32ce06c78ad7ea7c1c6218c6ee294140babdb8b59f9e73",
+    "models.json": "478673957216529b26509dfc440c9031b91fc195d3d91b29461899b98d25fc51",
+    "report.json": "fb4942d0ef7f8198d5222f76a654ac55f0414cef9d5ca90f7ff9fd548067bb02",
+    "scores.npz": "aa823f2d2ddcb843e2e7f0de54bda8b2ecfcbfedf83e82cc68e2dde002a4dba5"
+  },
+  "status": "verified",
+  "total_selected": {
+    "fixed050": {
+      "actions": 0,
+      "corrections": 0,
+      "net": 0,
+      "other_k": 0,
+      "regressions": 0
+    },
+    "robust_base": {
+      "actions": 4,
+      "corrections": 1,
+      "net": 0,
+      "other_k": 2,
+      "regressions": 1
+    },
+    "robust_family": {
+      "actions": 5,
+      "corrections": 1,
+      "net": 0,
+      "other_k": 3,
+      "regressions": 1
+    }
+  }
+}

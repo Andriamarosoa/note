@@ -1,0 +1,941 @@
+{
+  "annotation_frequencies_used": false,
+  "automatic_promotion": false,
+  "baseline_max_probability_error": 3.3306690738754696e-16,
+  "descriptive_control059": {
+    "actions": 161,
+    "corrections": 53,
+    "net": 20,
+    "other_k": 75,
+    "regressions": 33
+  },
+  "extraction_sha256": "55ffd6b9c1ad56689ac81d4dc3a5dffd89947dceed6238624fe3f5faa87a42c1",
+  "fold_results": [
+    {
+      "choices": {
+        "fixed050": null,
+        "robust_base": null,
+        "robust_family": null
+      },
+      "fit_diagnostics": {
+        "auc": {
+          "base": 0.4891576768006974,
+          "base_attack": 0.5480185972176819,
+          "base_geom": 0.5128400711924739,
+          "base_geom_attack": 0.5430423885801461
+        },
+        "fixed050": {
+          "base": {
+            "actions": 332,
+            "corrections": 86,
+            "net": -75,
+            "other_k": 85,
+            "regressions": 161
+          },
+          "base_attack": {
+            "actions": 313,
+            "corrections": 90,
+            "net": -63,
+            "other_k": 70,
+            "regressions": 153
+          },
+          "base_geom": {
+            "actions": 305,
+            "corrections": 82,
+            "net": -68,
+            "other_k": 73,
+            "regressions": 150
+          },
+          "base_geom_attack": {
+            "actions": 314,
+            "corrections": 87,
+            "net": -71,
+            "other_k": 69,
+            "regressions": 158
+          }
+        },
+        "robust_best": {
+          "base": null,
+          "base_attack": null,
+          "base_geom": null,
+          "base_geom_attack": null
+        }
+      },
+      "fold": 0,
+      "val_enriched059_control": {
+        "actions": 58,
+        "corrections": 16,
+        "net": 1,
+        "other_k": 27,
+        "regressions": 15
+      },
+      "val_fixed050": {
+        "base": {
+          "actions": 137,
+          "corrections": 32,
+          "net": -4,
+          "other_k": 69,
+          "regressions": 36
+        },
+        "base_attack": {
+          "actions": 113,
+          "corrections": 30,
+          "net": -1,
+          "other_k": 52,
+          "regressions": 31
+        },
+        "base_geom": {
+          "actions": 139,
+          "corrections": 31,
+          "net": -13,
+          "other_k": 64,
+          "regressions": 44
+        },
+        "base_geom_attack": {
+          "actions": 112,
+          "corrections": 27,
+          "net": -5,
+          "other_k": 53,
+          "regressions": 32
+        }
+      },
+      "val_selected": {
+        "fixed050": {
+          "actions": 0,
+          "corrections": 0,
+          "net": 0,
+          "other_k": 0,
+          "regressions": 0
+        },
+        "robust_base": {
+          "actions": 0,
+          "corrections": 0,
+          "net": 0,
+          "other_k": 0,
+          "regressions": 0
+        },
+        "robust_family": {
+          "actions": 0,
+          "corrections": 0,
+          "net": 0,
+          "other_k": 0,
+          "regressions": 0
+        }
+      }
+    },
+    {
+      "choices": {
+        "fixed050": null,
+        "robust_base": {
+          "family": "base",
+          "threshold": 0.75
+        },
+        "robust_family": {
+          "family": "base_geom",
+          "threshold": 0.75
+        }
+      },
+      "fit_diagnostics": {
+        "auc": {
+          "base": 0.6556565244026955,
+          "base_attack": 0.6460588115172554,
+          "base_geom": 0.636001633653257,
+          "base_geom_attack": 0.6311006738819686
+        },
+        "fixed050": {
+          "base": {
+            "actions": 208,
+            "corrections": 49,
+            "net": -39,
+            "other_k": 71,
+            "regressions": 88
+          },
+          "base_attack": {
+            "actions": 213,
+            "corrections": 53,
+            "net": -44,
+            "other_k": 63,
+            "regressions": 97
+          },
+          "base_geom": {
+            "actions": 211,
+            "corrections": 45,
+            "net": -49,
+            "other_k": 72,
+            "regressions": 94
+          },
+          "base_geom_attack": {
+            "actions": 211,
+            "corrections": 47,
+            "net": -55,
+            "other_k": 62,
+            "regressions": 102
+          }
+        },
+        "robust_best": {
+          "base": {
+            "feasible": true,
+            "folds": {
+              "0": {
+                "actions": 1,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 1,
+                "regressions": 0
+              },
+              "2": {
+                "actions": 2,
+                "corrections": 1,
+                "net": 0,
+                "other_k": 0,
+                "regressions": 1
+              },
+              "4": {
+                "actions": 3,
+                "corrections": 2,
+                "net": 2,
+                "other_k": 1,
+                "regressions": 0
+              }
+            },
+            "players": {
+              "00": {
+                "actions": 2,
+                "corrections": 1,
+                "net": 1,
+                "other_k": 1,
+                "regressions": 0
+              },
+              "01": {
+                "actions": 0,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 0,
+                "regressions": 0
+              },
+              "02": {
+                "actions": 0,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 0,
+                "regressions": 0
+              },
+              "03": {
+                "actions": 3,
+                "corrections": 1,
+                "net": 0,
+                "other_k": 1,
+                "regressions": 1
+              },
+              "04": {
+                "actions": 1,
+                "corrections": 1,
+                "net": 1,
+                "other_k": 0,
+                "regressions": 0
+              }
+            },
+            "styles": {
+              "BN": {
+                "actions": 0,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 0,
+                "regressions": 0
+              },
+              "Funk": {
+                "actions": 0,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 0,
+                "regressions": 0
+              },
+              "Jazz": {
+                "actions": 0,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 0,
+                "regressions": 0
+              },
+              "Rock": {
+                "actions": 6,
+                "corrections": 3,
+                "net": 2,
+                "other_k": 2,
+                "regressions": 1
+              },
+              "SS": {
+                "actions": 0,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 0,
+                "regressions": 0
+              }
+            },
+            "threshold": 0.75,
+            "total": {
+              "actions": 6,
+              "corrections": 3,
+              "net": 2,
+              "other_k": 2,
+              "regressions": 1
+            }
+          },
+          "base_attack": {
+            "feasible": true,
+            "folds": {
+              "0": {
+                "actions": 1,
+                "corrections": 1,
+                "net": 1,
+                "other_k": 0,
+                "regressions": 0
+              },
+              "2": {
+                "actions": 0,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 0,
+                "regressions": 0
+              },
+              "4": {
+                "actions": 0,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 0,
+                "regressions": 0
+              }
+            },
+            "players": {
+              "00": {
+                "actions": 1,
+                "corrections": 1,
+                "net": 1,
+                "other_k": 0,
+                "regressions": 0
+              },
+              "01": {
+                "actions": 0,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 0,
+                "regressions": 0
+              },
+              "02": {
+                "actions": 0,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 0,
+                "regressions": 0
+              },
+              "03": {
+                "actions": 0,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 0,
+                "regressions": 0
+              },
+              "04": {
+                "actions": 0,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 0,
+                "regressions": 0
+              }
+            },
+            "styles": {
+              "BN": {
+                "actions": 0,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 0,
+                "regressions": 0
+              },
+              "Funk": {
+                "actions": 0,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 0,
+                "regressions": 0
+              },
+              "Jazz": {
+                "actions": 0,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 0,
+                "regressions": 0
+              },
+              "Rock": {
+                "actions": 1,
+                "corrections": 1,
+                "net": 1,
+                "other_k": 0,
+                "regressions": 0
+              },
+              "SS": {
+                "actions": 0,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 0,
+                "regressions": 0
+              }
+            },
+            "threshold": 0.8,
+            "total": {
+              "actions": 1,
+              "corrections": 1,
+              "net": 1,
+              "other_k": 0,
+              "regressions": 0
+            }
+          },
+          "base_geom": {
+            "feasible": true,
+            "folds": {
+              "0": {
+                "actions": 3,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 3,
+                "regressions": 0
+              },
+              "2": {
+                "actions": 2,
+                "corrections": 1,
+                "net": 0,
+                "other_k": 0,
+                "regressions": 1
+              },
+              "4": {
+                "actions": 4,
+                "corrections": 3,
+                "net": 3,
+                "other_k": 1,
+                "regressions": 0
+              }
+            },
+            "players": {
+              "00": {
+                "actions": 3,
+                "corrections": 1,
+                "net": 1,
+                "other_k": 2,
+                "regressions": 0
+              },
+              "01": {
+                "actions": 1,
+                "corrections": 1,
+                "net": 1,
+                "other_k": 0,
+                "regressions": 0
+              },
+              "02": {
+                "actions": 1,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 1,
+                "regressions": 0
+              },
+              "03": {
+                "actions": 3,
+                "corrections": 1,
+                "net": 0,
+                "other_k": 1,
+                "regressions": 1
+              },
+              "04": {
+                "actions": 1,
+                "corrections": 1,
+                "net": 1,
+                "other_k": 0,
+                "regressions": 0
+              }
+            },
+            "styles": {
+              "BN": {
+                "actions": 0,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 0,
+                "regressions": 0
+              },
+              "Funk": {
+                "actions": 0,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 0,
+                "regressions": 0
+              },
+              "Jazz": {
+                "actions": 0,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 0,
+                "regressions": 0
+              },
+              "Rock": {
+                "actions": 8,
+                "corrections": 4,
+                "net": 3,
+                "other_k": 3,
+                "regressions": 1
+              },
+              "SS": {
+                "actions": 1,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 1,
+                "regressions": 0
+              }
+            },
+            "threshold": 0.75,
+            "total": {
+              "actions": 9,
+              "corrections": 4,
+              "net": 3,
+              "other_k": 4,
+              "regressions": 1
+            }
+          },
+          "base_geom_attack": null
+        }
+      },
+      "fold": 1,
+      "val_enriched059_control": {
+        "actions": 40,
+        "corrections": 18,
+        "net": 11,
+        "other_k": 15,
+        "regressions": 7
+      },
+      "val_fixed050": {
+        "base": {
+          "actions": 80,
+          "corrections": 28,
+          "net": 6,
+          "other_k": 30,
+          "regressions": 22
+        },
+        "base_attack": {
+          "actions": 88,
+          "corrections": 32,
+          "net": 8,
+          "other_k": 32,
+          "regressions": 24
+        },
+        "base_geom": {
+          "actions": 75,
+          "corrections": 26,
+          "net": 6,
+          "other_k": 29,
+          "regressions": 20
+        },
+        "base_geom_attack": {
+          "actions": 84,
+          "corrections": 31,
+          "net": 8,
+          "other_k": 30,
+          "regressions": 23
+        }
+      },
+      "val_selected": {
+        "fixed050": {
+          "actions": 0,
+          "corrections": 0,
+          "net": 0,
+          "other_k": 0,
+          "regressions": 0
+        },
+        "robust_base": {
+          "actions": 0,
+          "corrections": 0,
+          "net": 0,
+          "other_k": 0,
+          "regressions": 0
+        },
+        "robust_family": {
+          "actions": 1,
+          "corrections": 0,
+          "net": 0,
+          "other_k": 1,
+          "regressions": 0
+        }
+      }
+    },
+    {
+      "choices": {
+        "fixed050": null,
+        "robust_base": {
+          "family": "base",
+          "threshold": 0.63
+        },
+        "robust_family": {
+          "family": "base",
+          "threshold": 0.63
+        }
+      },
+      "fit_diagnostics": {
+        "auc": {
+          "base": 0.5663251640551761,
+          "base_attack": 0.5426543457881344,
+          "base_geom": 0.5435583232891389,
+          "base_geom_attack": 0.5247421990089729
+        },
+        "fixed050": {
+          "base": {
+            "actions": 252,
+            "corrections": 60,
+            "net": -53,
+            "other_k": 79,
+            "regressions": 113
+          },
+          "base_attack": {
+            "actions": 241,
+            "corrections": 55,
+            "net": -55,
+            "other_k": 76,
+            "regressions": 110
+          },
+          "base_geom": {
+            "actions": 264,
+            "corrections": 60,
+            "net": -63,
+            "other_k": 81,
+            "regressions": 123
+          },
+          "base_geom_attack": {
+            "actions": 235,
+            "corrections": 54,
+            "net": -50,
+            "other_k": 77,
+            "regressions": 104
+          }
+        },
+        "robust_best": {
+          "base": {
+            "feasible": true,
+            "folds": {
+              "0": {
+                "actions": 1,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 1,
+                "regressions": 0
+              },
+              "1": {
+                "actions": 2,
+                "corrections": 1,
+                "net": 1,
+                "other_k": 1,
+                "regressions": 0
+              },
+              "4": {
+                "actions": 0,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 0,
+                "regressions": 0
+              }
+            },
+            "players": {
+              "00": {
+                "actions": 1,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 1,
+                "regressions": 0
+              },
+              "01": {
+                "actions": 1,
+                "corrections": 1,
+                "net": 1,
+                "other_k": 0,
+                "regressions": 0
+              },
+              "02": {
+                "actions": 0,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 0,
+                "regressions": 0
+              },
+              "03": {
+                "actions": 1,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 1,
+                "regressions": 0
+              },
+              "04": {
+                "actions": 0,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 0,
+                "regressions": 0
+              }
+            },
+            "styles": {
+              "BN": {
+                "actions": 1,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 1,
+                "regressions": 0
+              },
+              "Funk": {
+                "actions": 0,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 0,
+                "regressions": 0
+              },
+              "Jazz": {
+                "actions": 0,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 0,
+                "regressions": 0
+              },
+              "Rock": {
+                "actions": 1,
+                "corrections": 0,
+                "net": 0,
+                "other_k": 1,
+                "regressions": 0
+              },
+              "SS": {
+                "actions": 1,
+                "corrections": 1,
+                "net": 1,
+                "other_k": 0,
+                "regressions": 0
+              }
+            },
+            "threshold": 0.63,
+            "total": {
+              "actions": 3,
+              "corrections": 1,
+              "net": 1,
+              "other_k": 2,
+              "regressions": 0
+            }
+          },
+          "base_attack": null,
+          "base_geom": null,
+          "base_geom_attack": null
+        }
+      },
+      "fold": 2,
+      "val_enriched059_control": {
+        "actions": 29,
+        "corrections": 5,
+        "net": 0,
+        "other_k": 19,
+        "regressions": 5
+      },
+      "val_fixed050": {
+        "base": {
+          "actions": 77,
+          "corrections": 8,
+          "net": -20,
+          "other_k": 41,
+          "regressions": 28
+        },
+        "base_attack": {
+          "actions": 75,
+          "corrections": 14,
+          "net": -6,
+          "other_k": 41,
+          "regressions": 20
+        },
+        "base_geom": {
+          "actions": 77,
+          "corrections": 8,
+          "net": -19,
+          "other_k": 42,
+          "regressions": 27
+        },
+        "base_geom_attack": {
+          "actions": 71,
+          "corrections": 13,
+          "net": -6,
+          "other_k": 39,
+          "regressions": 19
+        }
+      },
+      "val_selected": {
+        "fixed050": {
+          "actions": 0,
+          "corrections": 0,
+          "net": 0,
+          "other_k": 0,
+          "regressions": 0
+        },
+        "robust_base": {
+          "actions": 4,
+          "corrections": 1,
+          "net": 0,
+          "other_k": 2,
+          "regressions": 1
+        },
+        "robust_family": {
+          "actions": 4,
+          "corrections": 1,
+          "net": 0,
+          "other_k": 2,
+          "regressions": 1
+        }
+      }
+    },
+    {
+      "choices": {
+        "fixed050": null,
+        "robust_base": null,
+        "robust_family": null
+      },
+      "fit_diagnostics": {
+        "auc": {
+          "base": 0.5515520470966015,
+          "base_attack": 0.5228391758094728,
+          "base_geom": 0.557064490232807,
+          "base_geom_attack": 0.5267460529836767
+        },
+        "fixed050": {
+          "base": {
+            "actions": 447,
+            "corrections": 109,
+            "net": -67,
+            "other_k": 162,
+            "regressions": 176
+          },
+          "base_attack": {
+            "actions": 434,
+            "corrections": 109,
+            "net": -68,
+            "other_k": 148,
+            "regressions": 177
+          },
+          "base_geom": {
+            "actions": 438,
+            "corrections": 114,
+            "net": -57,
+            "other_k": 153,
+            "regressions": 171
+          },
+          "base_geom_attack": {
+            "actions": 407,
+            "corrections": 96,
+            "net": -72,
+            "other_k": 143,
+            "regressions": 168
+          }
+        },
+        "robust_best": {
+          "base": null,
+          "base_attack": null,
+          "base_geom": null,
+          "base_geom_attack": null
+        }
+      },
+      "fold": 4,
+      "val_enriched059_control": {
+        "actions": 34,
+        "corrections": 14,
+        "net": 8,
+        "other_k": 14,
+        "regressions": 6
+      },
+      "val_fixed050": {
+        "base": {
+          "actions": 133,
+          "corrections": 40,
+          "net": 1,
+          "other_k": 54,
+          "regressions": 39
+        },
+        "base_attack": {
+          "actions": 138,
+          "corrections": 47,
+          "net": 10,
+          "other_k": 54,
+          "regressions": 37
+        },
+        "base_geom": {
+          "actions": 118,
+          "corrections": 35,
+          "net": -5,
+          "other_k": 43,
+          "regressions": 40
+        },
+        "base_geom_attack": {
+          "actions": 137,
+          "corrections": 44,
+          "net": 4,
+          "other_k": 53,
+          "regressions": 40
+        }
+      },
+      "val_selected": {
+        "fixed050": {
+          "actions": 0,
+          "corrections": 0,
+          "net": 0,
+          "other_k": 0,
+          "regressions": 0
+        },
+        "robust_base": {
+          "actions": 0,
+          "corrections": 0,
+          "net": 0,
+          "other_k": 0,
+          "regressions": 0
+        },
+        "robust_family": {
+          "actions": 0,
+          "corrections": 0,
+          "net": 0,
+          "other_k": 0,
+          "regressions": 0
+        }
+      }
+    }
+  ],
+  "folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "limitations": [
+    "Previously inspected internal folds, not independent validation.",
+    "Frozen routing was estimated upstream; only this residual selection is nested.",
+    "Normal audio only; no compressed-path conclusion."
+  ],
+  "neural_training": false,
+  "outer_fold_3_used": false,
+  "source_report_sha256": "1f373e4cc80bf1e9919dd787a6860681670ba01fcf47f27d72984802ff93714f",
+  "status": "completed",
+  "total_selected": {
+    "fixed050": {
+      "actions": 0,
+      "corrections": 0,
+      "net": 0,
+      "other_k": 0,
+      "regressions": 0
+    },
+    "robust_base": {
+      "actions": 4,
+      "corrections": 1,
+      "net": 0,
+      "other_k": 2,
+      "regressions": 1
+    },
+    "robust_family": {
+      "actions": 5,
+      "corrections": 1,
+      "net": 0,
+      "other_k": 3,
+      "regressions": 1
+    }
+  }
+}

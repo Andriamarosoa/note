@@ -1,0 +1,58 @@
+name: V27.3 Nested Feature Family Checks
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - '.github/workflows/v273-feature-family-nested-checks.yml'
+      - 'scripts/audit_v273_feature_family_nested.py'
+      - 'test/test_v273_feature_family_nested.py'
+      - 'analysis/v273-feature-family-nested-protocol.md'
+      - 'analysis/evidence/v273-feature-family-nested/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONPATH: '.:src'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+
+jobs:
+  checks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==1.26.4 scipy==1.17.1 scikit-learn==1.4.2
+      - name: Check FIT isolation and portable scores
+        run: python -B -m unittest test.test_v273_feature_family_nested -v
+      - name: Replay frozen models and FIT-only choices
+        run: |
+          python - <<'PY'
+          import hashlib, json, pathlib, tempfile, zipfile
+          from scripts.audit_v273_feature_family_nested import replay
+          root = pathlib.Path('analysis/evidence/v273-feature-family-nested')
+          manifest = json.loads((root / 'checksums.json').read_text())
+          for name, digest in manifest['files'].items():
+              assert hashlib.sha256((root / name).read_bytes()).hexdigest() == digest, name
+          with tempfile.TemporaryDirectory() as temp, zipfile.ZipFile(root / 'evidence.zip') as z:
+              temp = pathlib.Path(temp)
+              assert set(z.namelist()) == set(manifest['archive_members'])
+              for name, digest in manifest['archive_members'].items():
+                  raw = z.read(name)
+                  assert hashlib.sha256(raw).hexdigest() == digest, name
+                  path = pathlib.PurePosixPath(name)
+                  assert not path.is_absolute() and '..' not in path.parts
+                  destination = temp / path
+                  destination.parent.mkdir(parents=True, exist_ok=True)
+                  destination.write_bytes(raw)
+              actual = replay(temp, temp / 'source-report.json')
+              expected = json.loads((temp / 'replay-check.json').read_text())
+              assert actual == expected, 'nested replay differs'
+              print(json.dumps(actual, sort_keys=True))
+          PY

@@ -1,0 +1,42 @@
+{
+  "annotation_frequencies_used": false,
+  "bundle_loaded": false,
+  "config_sha256": "7c27989eb3fe330fdff203e388e76ae4c64d8b8e4838cab4d7c4622b4104451a",
+  "data_md5": {
+    "annotation.zip": "b39b78e63d3446f2e54ddb7a54df9b10",
+    "audio_mono-pickup_mix.zip": "aecce79f425a44e2055e46f680e10f6a"
+  },
+  "files_sha256": {
+    "extra-features.npz": "7c9bfbaf0b81ce0913c9e84d9e22974a4ac37f20997ee5c6c2714b486d1b0dfa",
+    "inputs.npz": "785ce19d9d365c43db32ce06c78ad7ea7c1c6218c6ee294140babdb8b59f9e73"
+  },
+  "folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "manifests_sha256": {
+    "0": "ec4bdf90cbc99b373906c4bd3490562f12f22c3215088b61041e9f2f65afb3d4",
+    "1": "d981dfd99178dc5e288751cb627b68424c36c003c087ce896da5394a4ef33d08",
+    "2": "0669367359ae28c06a29202cb67d0c9759feec4fa58efc1226df9022e67848f6",
+    "4": "a4c8d36424d3fe16105725713ae738cf5650562d0f879d8be48982a5a597aa04"
+  },
+  "neural_training": false,
+  "outer_fold_3_used": false,
+  "recordings": 122,
+  "rows": 1666,
+  "sources_sha256": {
+    "analysis/v273-feature-family-nested-protocol.md": "c8abaa50ba0a66795705957be5d0659cb784a195b7079c179c46b6c086220714",
+    "scripts/audit_v273_attack_novelty.py": "80f347be5e1420c3b311bef8f09ad881dd5554f47a926302784c7cbd654a0ae9",
+    "scripts/audit_v273_exclusive_harmonic_support.py": "c9cb4d8495a7b0d37b9d7876d30f6919e95b1e8b5a78fde9a5b7b4f0fea78356",
+    "scripts/audit_v273_feature_family_nested.py": "c311b1b8d65e3421eba85bd9e92921732c027f5e33cf66e137c7ca70602887c6",
+    "scripts/audit_v273_internal_b_low_harmonic_strata.py": "05a49bad4b9dd89744776219a2e53dc7124f0623402b1c356378abe33982aecc",
+    "scripts/audit_v273_low_band_fold2_vs_fold4.py": "142526cf16582e1d532ebf782d7dc5ad75e4414db12bafd49f978385a190b242",
+    "scripts/audit_v273_residual_feature_family_lofo.py": "be30de585f4cd47ce935335aaaef88cfc00f46dd52c33d92d1aa8f426bd322b3",
+    "scripts/audit_v273_selected_f0_attack_exclusive.py": "6309ac7a9ead5416485374c8412cbdc3e1a9a2fdb056307cae695e890d1564bc",
+    "scripts/v273_residual_audit.py": "c2175f48306c64c42c112af62c12e8094f9ad00e3bfe612ba44b3ad4e2140b25"
+  },
+  "status": "completed",
+  "val_rows": 845
+}
