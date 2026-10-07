@@ -1,0 +1,23 @@
+{
+  "experiment": "v273_energy_flow_audit",
+  "cohort": "frozen 488 baseline-K3 rows (216 true K2 / 272 true K3)",
+  "hypothesis": "signed multi-band energy flow plus energy state contains Exact-K information missed by frequency/attack-only audits",
+  "branch": "codex/v273-failure-clustering",
+  "folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "fold3_excluded": true,
+  "families": [
+    "energy_only",
+    "flux_only",
+    "flow_geometry_only",
+    "energy_flux",
+    "energy_flux_geometry",
+    "interaction_only",
+    "full_energy_flow"
+  ],
+  "automatic_promotion": false
+}\n
