@@ -1,5 +1,34 @@
 # Point de reprise — Exact-K
 
+## Reprise du 7 octobre : sélection FIT des familles de features
+
+HEAD vérifié : `a39dfbb8ff357d2c27b3909c28d2f3fe456512cb`. La branche a reçu
+d'autres travaux ; aucune modification concurrente n'est écrasée. Aucun run
+en cours ou en attente lors de cette vérification.
+
+Le run interne `37547761255` est réussi. Son correcteur enrichi annonce
+53 corrections / 33 régressions (+20), mais `robust_threshold` choisit le seuil
+sur les VAL réunis : c'est un bilan de sélection exploratoire. Aucun résultat
+du fold 3 ni de player 05 n'est chargé pour cette reprise.
+
+[Protocole de sélection imbriquée](v273-feature-family-nested-protocol.md),
+écrit avant le nouveau calcul : mêmes exports, base, routage et populations ;
+rotations internes dans FIT, seuil principal 0,50, abstention. La grille robuste
+existante est un contrôle secondaire sélectionné sur FIT exclusivement.
+Quatre familles figées ; aucun nouvel entraînement neuronal.
+
+Les cinq nouveaux tests passent. Les quatre exports sources ont été récupérés
+et vérifiés. L'extraction des 1 666 lignes utilise uniquement leurs horodatages,
+sans charger le bundle global. À terminer : reproduction des quatre familles,
+évaluation imbriquée, rejeu des modèles figés, publication des résultats et CI.
+
+L'audit local « onset-support » commencé dans la reprise précédente n'a pas
+atteint un commit publié ; ses fichiers temporaires ne sont plus disponibles.
+Ses chiffres ne doivent pas être présentés comme de nouvelles preuves archivées.
+Entre-temps, l'étude `v273-attack-novelty` a été ajoutée à la branche : ne pas
+dupliquer ce diagnostic. Le résultat ci-dessous reste le dernier checkpoint
+complet de cette série d'audits.
+
 ## Dernière étape terminée
 
 Audit de stabilité temporelle, le 6 octobre 2026. Point de départ :
@@ -56,8 +85,7 @@ un contraste contrôlé sont mesurés. Annotations exclusivement diagnostiques.
 
 - Audit temporel : `699b7ef6a19bbc2c0043ba2596f49f8fe2acb7e7`.
   CI [`37375379888`](https://github.com/Andriamarosoa/note/actions/runs/37375379888)
-  déclenché et en attente le 6 octobre 2026. Les 34 tests et la nouvelle étape
-  CI de rejeu depuis l'archive ont passé localement. Aucun run dupliqué.
+  vérifié réussi le 6 octobre 2026. Aucun run dupliqué.
 - Critère de reconstruction et gardes statiques :
   `ff48f26757203b86161bcb1272b1ff73c96fec31`, checkpoint documentaire `d9f75cb`.
   CI [`37371872093`](https://github.com/Andriamarosoa/note/actions/runs/37371872093)
