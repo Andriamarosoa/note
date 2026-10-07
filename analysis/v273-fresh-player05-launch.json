@@ -5,7 +5,7 @@
   "proposal_source_tag": "v273-source-recovery-35086829802",
   "proposal_source_commit": "8aba7737d4112671beeaedac92329d533fcfc316",
   "protocol_file": "analysis/v273-fresh-player05-protocol.md",
-  "protocol_commit": "54a36e97c8cf076a9bb0c955a314e34329d6d6ee",
+  "protocol_commit": "b6ad8a6dc99f95aeaf00832a7003d3948bef0130",
   "selected_model_run": 37547761255,
   "variant": "base_geom_attack",
   "threshold": 0.59,
@@ -20,5 +20,8 @@
   "inventory_correction": "48->60 tracks; previous run stopped before mining/prediction/labels",
   "retry_after_inventory_guard_fix": 37550221022,
   "inventory_guard_fix_commit": "67f4ac2c2ac93741b6f42dd3cae73092614ae2ad",
-  "model_or_threshold_changed": false
+  "model_or_threshold_changed": false,
+  "retry_after_runtime_label_guard_failure": 37550468253,
+  "runtime_only_fix_commit": "ce5a19064096f7f9f411b8f31ae34fb951580b06",
+  "runtime_equivalence_preflight": true
 }
