@@ -70,7 +70,7 @@ def index_player05(dataset):
         gs.ALLOWED_PLAYERS=old
     require(len(tracks)==60,f"expected 60 player05 tracks, got {len(tracks)}")
     require({t.player_id for t in tracks}=={PLAYER},"player05 scope drift")
-    require(len({t.annotation_member for t in tracks})==48,"duplicate player05 member")
+    require(len({t.annotation_member for t in tracks})==60,"duplicate player05 member")
     return tracks
 
 def proposal_args(source_dir):
