@@ -1,0 +1,23 @@
+{
+  "experiment": "v273_quartet_full488_validation",
+  "date": "2026-10-07",
+  "source_x4_run": 37664084466,
+  "cohort_rows": 488,
+  "threshold_training_population": "dual-engine-common FIT rows only",
+  "rule": "fixed 3-of-4 attack-homogeneity quartet",
+  "validation_categories": [
+    "both",
+    "librosa_only",
+    "rubberband_only",
+    "neither"
+  ],
+  "folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "outer_fold_3_used": false,
+  "independent_row_subset_validation": true,
+  "automatic_promotion": false
+}
