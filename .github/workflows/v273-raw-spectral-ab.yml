@@ -1,0 +1,90 @@
+name: V27.3 Native Raw Spectral Evidence A/B
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths: ['analysis/v273-raw-spectral-ab-launch.json']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v273-raw-spectral-ab
+  cancel-in-progress: false
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  TF_NUM_INTRAOP_THREADS: '2'
+  TF_NUM_INTEROP_THREADS: '2'
+  OMP_NUM_THREADS: '2'
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - run: python -m pip install -r requirements-train.txt numpy==1.26.4
+      - run: python -m unittest test.test_v273_raw_spectral_ab -v
+  fold:
+    needs: preflight
+    strategy:
+      fail-fast: false
+      matrix:
+        fold: [0, 1, 2, 4]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - run: python -m pip install -r requirements-train.txt numpy==1.26.4
+      - name: Restore verified inputs and fold-specific checkpoints
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/download model/bundle model/folds
+          gh release download v273-window-pair-36351028493 --repo "${{ github.repository }}" --pattern native-window-bundle.zip --dir model/download
+          unzip -q model/download/native-window-bundle.zip -d model/bundle
+          gh release download v273-candidate-hidden1-multifold-37271262794 --repo "${{ github.repository }}" --pattern v273-candidate-hidden1-multifold-folds.tgz --dir model/download
+          tar -xzf model/download/v273-candidate-hidden1-multifold-folds.tgz -C model/folds
+      - name: Replay reference and train matched count networks
+        run: |
+          python -B scripts/train_v273_raw_spectral_ab.py \
+            --bundle model/bundle \
+            --config analysis/v273-native-paired-config.json \
+            --fold-root model/folds \
+            --fold "${{ matrix.fold }}" \
+            --output "model/result-${{ matrix.fold }}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-raw-spectral-fold-${{ matrix.fold }}
+          path: model/result-${{ matrix.fold }}/
+          retention-days: 90
+  summarize:
+    needs: fold
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v273-raw-spectral-fold-*
+          path: model/results
+      - run: python -B scripts/summarize_v273_raw_spectral_ab.py --input-root model/results --output model/summary
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-raw-spectral-summary
+          path: model/summary/
+          retention-days: 90

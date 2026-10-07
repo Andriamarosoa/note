@@ -115,7 +115,8 @@ def _candidate_subset_loss():
 
 def _build_model(spec, *, time_frames=v100.TIME_FRAMES, count_only=False,
                  spectral_normalization="channel_norm", count_dropout_seed=None,
-                 ownership_context=False, spectral_channels=v100.SPECTRAL_CHANNELS):
+                 ownership_context=False, spectral_channels=v100.SPECTRAL_CHANNELS,
+                 spectral_evidence="none"):
     # The historical event-set loss still packs a 23-frame target. Extended
     # windows are supported only by the pruned native count models below.
     if time_frames != v100.TIME_FRAMES and not count_only:
@@ -128,6 +129,10 @@ def _build_model(spec, *, time_frames=v100.TIME_FRAMES, count_only=False,
         raise V240Error("ownership context currently supports count_only=True")
     if spectral_channels != v100.SPECTRAL_CHANNELS and not count_only:
         raise V240Error("experimental spectral channels require count_only=True")
+    if spectral_evidence not in ("none", "normalized_duplicate", "raw"):
+        raise V240Error("unknown spectral evidence")
+    if spectral_evidence != "none" and (not count_only or spectral_normalization != "channel_norm"):
+        raise V240Error("extra spectral evidence requires a normalized count-only base")
     try:
         import tensorflow as tf
         from tensorflow import keras
@@ -164,6 +169,13 @@ def _build_model(spec, *, time_frames=v100.TIME_FRAMES, count_only=False,
         # values with a fixed invertible scale; do not estimate new statistics.
         dense = keras.layers.Rescaling(1.0 / 12.0, name="v240_dense_channel_norm")(spectral)
     spatial_inputs = [dense, coords]
+    if spectral_evidence != "none":
+        # Same three extra channels/parameters in both arms. Keep the original
+        # normalized channels and coordinates in their original positions so
+        # archived Conv2D kernels can be extended with zero-weight channels.
+        evidence = dense if spectral_evidence == "normalized_duplicate" else spectral
+        scale = 1.0 if spectral_evidence == "normalized_duplicate" else 1.0 / 12.0
+        spatial_inputs.append(keras.layers.Rescaling(scale, name="v273_extra_spectral_evidence")(evidence))
     if ownership_context:
         ownership = keras.Input((time_frames, 1), name="ownership_map")
         model_inputs.append(ownership)

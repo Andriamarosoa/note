@@ -55,11 +55,12 @@ def arm_weights(arm, fit_k):
     raise ValueError(arm)
 
 
-def build_model(arm, seed, *, time_frames=23):
+def build_model(arm, seed, *, time_frames=23, spectral_evidence='none'):
     from scripts import train_v250_count_only as v250
     if arm not in ARMS:
         raise ValueError(arm)
-    return v250.build_model('categorical', seed, time_frames=time_frames)
+    return v250.build_model('categorical', seed, time_frames=time_frames,
+                            spectral_evidence=spectral_evidence)
 
 
 def validate_partitions(ctx):

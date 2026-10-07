@@ -53,7 +53,8 @@ def ordinal_probabilities(tf, logits):
 
 
 def build_model(arm, seed, *, time_frames=23, spectral_normalization='channel_norm',
-                count_dropout_seed=None, ownership_context=False, spectral_channels=3):
+                count_dropout_seed=None, ownership_context=False, spectral_channels=3,
+                spectral_evidence='none'):
     import tensorflow as tf
     if arm not in ARMS:
         raise ValueError(arm)
@@ -61,7 +62,8 @@ def build_model(arm, seed, *, time_frames=23, spectral_normalization='channel_no
     tf.keras.utils.set_random_seed(seed)
     scaffold, _, _ = v240._build_model({}, time_frames=time_frames, count_only=True,
         spectral_normalization=spectral_normalization, count_dropout_seed=count_dropout_seed,
-        ownership_context=ownership_context, spectral_channels=spectral_channels)
+        ownership_context=ownership_context, spectral_channels=spectral_channels,
+        spectral_evidence=spectral_evidence)
     hidden = scaffold.get_layer('v240_cardinality_hidden2').output
     if arm == 'categorical':
         out = scaffold.get_layer('cardinality').output

@@ -1,0 +1,14 @@
+{
+  "experiment": "v273_raw_spectral_native_matched_ab",
+  "audit_source_commit": "ac8087945b1f6501ad89e427ffb1942c988e2987",
+  "folds": [0, 1, 2, 4],
+  "arms": ["normalized_duplicate", "raw"],
+  "epochs_per_arm": 8,
+  "anchor": "fold-specific uniform checkpoint from run 37271262794",
+  "reference": "archived freeze_local_combo for each held-out fold",
+  "purpose": "Test preserved pre-LayerNorm spectral information inside the count CNN with a matched-capacity control",
+  "same_audio_context": true,
+  "note_identification": false,
+  "fold3_and_player05_excluded": true,
+  "automatic_promotion": false
+}

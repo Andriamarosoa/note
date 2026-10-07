@@ -38,11 +38,12 @@ def weight_hash(model):
     return h.hexdigest()
 
 
-def build_model(arm: str, seed: int):
+def build_model(arm: str, seed: int, *, spectral_evidence="none"):
     import tensorflow as tf
     if arm not in ARMS:
         raise ValueError(arm)
-    base = v260.build_model("uniform", seed, time_frames=FRAMES)
+    base = v260.build_model("uniform", seed, time_frames=FRAMES,
+                           spectral_evidence=spectral_evidence)
     if FROZEN_CANDIDATE_DIM != V88_FEATURE_DIM + 8:
         raise RuntimeError("unexpected V8.8 feature layout")
 
