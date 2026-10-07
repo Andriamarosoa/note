@@ -296,6 +296,11 @@ def main():
     internal_cache,parts,_=load_bundle(a.bundle,a.config)
     internal_members={str(x) for x in np.asarray(internal_cache["members"]).astype(str)}
     hold_members={t.annotation_member for t in tracks}
+    from scripts.train_boundaries import group_stem
+    dev_compositions=set(json.loads(a.config.read_text())["composition_folds"])
+    hold_compositions={group_stem(m) for m in hold_members}
+    overlap_compositions=hold_compositions & dev_compositions
+    new_compositions=hold_compositions - dev_compositions
     require(not internal_members & hold_members,"player05 overlaps internal bundle")
     require({m[:2] for m in internal_members}<=set(("00","01","02","03","04")),"internal player scope drift")
 
@@ -404,7 +409,7 @@ def main():
         "passed":pass_rule,
       },
       "fresh_independent_validation":True,
-      "composition_independent":False,
+      "composition_independent":len(overlap_compositions)==0,
       "prediction_changes":True,
     }
     (a.output/"report.json").write_text(json.dumps(report,indent=2,sort_keys=True)+"\n")
