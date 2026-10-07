@@ -1,0 +1,16 @@
+{
+  "experiment": "freeze_local_combo_stage_ablation",
+  "date": "2026-10-07",
+  "folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "encoder_cut": "v240_cardinality_context",
+  "predecoder_cut": "v240_cardinality_hidden2",
+  "full_decoder": "original Dense(7, softmax) cardinality head",
+  "probe": "same fixed cross-fold linear probe as YourMT3+ ablation",
+  "fold3_used": false,
+  "player05_used": false
+}
