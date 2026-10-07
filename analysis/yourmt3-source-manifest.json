@@ -1,0 +1,482 @@
+{
+  "repository": "mimbres/YourMT3",
+  "repo_type": "space",
+  "revision": "5e66c1ea173a8186e0d20432b841d3180cc015b5",
+  "files": [
+    {
+      "path": "amt/src/config/config.py",
+      "oid": "0a8d68698649beb7e48d61f5b55cc880205de579",
+      "size": 13602
+    },
+    {
+      "path": "amt/src/config/data_presets.py",
+      "oid": "8947f18110d50404ce9c10dd7449c9a8db0ec5c0",
+      "size": 37710
+    },
+    {
+      "path": "amt/src/config/task.py",
+      "oid": "aca181f3461b1ff06d87b13937358338f5dd0503",
+      "size": 5706
+    },
+    {
+      "path": "amt/src/config/vocabulary.py",
+      "oid": "55de16d21e35652e1ca80ffdbe97dda69d00b4e7",
+      "size": 11942
+    },
+    {
+      "path": "amt/src/extras/check_drum_channel_slakh.py",
+      "oid": "fd89011bfe7465f6a35a62ff8d650f2269c24212",
+      "size": 938
+    },
+    {
+      "path": "amt/src/extras/dataset_mutable_var_sanity_check.py",
+      "oid": "e6a9dd5c7e91b209e435de5a1a37ea9f22ef80e0",
+      "size": 3875
+    },
+    {
+      "path": "amt/src/extras/datasets_eval_testing.py",
+      "oid": "e70805d7dcec406a8038bda1c359f5f4d731bd38",
+      "size": 922
+    },
+    {
+      "path": "amt/src/extras/demo_cross_augmentation.py",
+      "oid": "fb21d608f09c72f053180ba5470fb2e8ac16998b",
+      "size": 2327
+    },
+    {
+      "path": "amt/src/extras/demo_intra_augmentation.py",
+      "oid": "d9b2ba36e0f945c771d1e0336d8c0ce287c011be",
+      "size": 1694
+    },
+    {
+      "path": "amt/src/extras/download_mirst500.py",
+      "oid": "9c79736ecf3594e646730c7c7ef511c43f5c7d5b",
+      "size": 1563
+    },
+    {
+      "path": "amt/src/extras/inspecting_slakh_bass.py",
+      "oid": "e86e517896630078007022508ec28b6ab20800fb",
+      "size": 1242
+    },
+    {
+      "path": "amt/src/extras/label_smoothing.py",
+      "oid": "a7e052dd808238e2d6e8eab0353a1b67c481a3a5",
+      "size": 1739
+    },
+    {
+      "path": "amt/src/extras/multi_channel_seqlen_stats.py",
+      "oid": "52804eb622653f776f1e1a89b43a263dd72e14a4",
+      "size": 5406
+    },
+    {
+      "path": "amt/src/extras/npy_speed_benchmark.py",
+      "oid": "a0f311b67932fdc3276c72e63e54ae11efb62770",
+      "size": 5356
+    },
+    {
+      "path": "amt/src/extras/perceivertf_inspect.py",
+      "oid": "9ca467326c0fb973da042c96350c5bb6d22d7c4e",
+      "size": 21001
+    },
+    {
+      "path": "amt/src/extras/perceivertf_multi_inspect.py",
+      "oid": "6e15c86073a7bf987534867cd9cee051798d4c87",
+      "size": 26291
+    },
+    {
+      "path": "amt/src/extras/pitch_shift_benchmark.py",
+      "oid": "a333e13bf189c4f52dc055ed466ce32a0e57b663",
+      "size": 5843
+    },
+    {
+      "path": "amt/src/extras/remove_silence_musicnet_midi.py",
+      "oid": "096816d80eed31b3745506f6a560b4743312ceeb",
+      "size": 1116
+    },
+    {
+      "path": "amt/src/extras/rotary_positional_embedding.py",
+      "oid": "30afd292c21b9e214876bfdc20f568c5fa90dcd4",
+      "size": 6938
+    },
+    {
+      "path": "amt/src/extras/swap_channel.py",
+      "oid": "39c71a6765c91c633ffaf423ebb3217f5334a946",
+      "size": 3823
+    },
+    {
+      "path": "amt/src/extras/t5_dev.py",
+      "oid": "d6d9a842ab729853bd370f75a3934172bb47e2b8",
+      "size": 1342
+    },
+    {
+      "path": "amt/src/extras/t5perceiver.py",
+      "oid": "998cb320bf1016c0933ee78e45b17c420a434138",
+      "size": 19888
+    },
+    {
+      "path": "amt/src/extras/unimax_sampler/demo.py",
+      "oid": "6480ac8d702e2c7b950dd10b906d4f2c9d76beac",
+      "size": 681
+    },
+    {
+      "path": "amt/src/extras/unimax_sampler/unimax_sampler.py",
+      "oid": "fd06ba1fd314f90e5770b1a359b8509080665c4c",
+      "size": 5761
+    },
+    {
+      "path": "amt/src/install_dataset.py",
+      "oid": "a1f8f25ef342dde659c9c358bb8493a15592474b",
+      "size": 13234
+    },
+    {
+      "path": "amt/src/model/RoPE/RoPE.py",
+      "oid": "0884d027c25393e76ac9ff292c162abc9e4fcbbc",
+      "size": 10401
+    },
+    {
+      "path": "amt/src/model/conformer_helper.py",
+      "oid": "736b82c663ae793b6e61ce99da98ac669cd8d980",
+      "size": 8455
+    },
+    {
+      "path": "amt/src/model/conformer_mod.py",
+      "oid": "7c76131317546e7e19b9eb1f3c76087a546c0e3d",
+      "size": 18482
+    },
+    {
+      "path": "amt/src/model/conv_block.py",
+      "oid": "383e93e46951a859139b0276d12fc69ff61b6a58",
+      "size": 9295
+    },
+    {
+      "path": "amt/src/model/ff_layer.py",
+      "oid": "8595eb09535864f7e77470bed59b5be9e6d2d4da",
+      "size": 10376
+    },
+    {
+      "path": "amt/src/model/init_train.py",
+      "oid": "1f008b9198d9ec63547e258204ddd91dd7feff96",
+      "size": 14240
+    },
+    {
+      "path": "amt/src/model/lm_head.py",
+      "oid": "7a12b17c0f225dad545d3c9c03cd81565094924f",
+      "size": 1498
+    },
+    {
+      "path": "amt/src/model/lr_scheduler.py",
+      "oid": "db680c581f7a5eeb617e8a623ae66c6692acb8d7",
+      "size": 2990
+    },
+    {
+      "path": "amt/src/model/ops.py",
+      "oid": "d11fb7d93b17318ea30b60e8f7012e1faa90f8de",
+      "size": 3556
+    },
+    {
+      "path": "amt/src/model/optimizers.py",
+      "oid": "10234d68d207d2098fbd38e3ccabefe2e6a45796",
+      "size": 8679
+    },
+    {
+      "path": "amt/src/model/perceiver_helper.py",
+      "oid": "fb52f1f9e71514aca2df338b5cf209fdbd6cc115",
+      "size": 16384
+    },
+    {
+      "path": "amt/src/model/perceiver_mod.py",
+      "oid": "749d9cd5e5b62c76671dfcdbf1cb078c372c7a2a",
+      "size": 40849
+    },
+    {
+      "path": "amt/src/model/pitchshift_layer.py",
+      "oid": "27d85d26e7be165cfecab1c2cbacbecc99b94189",
+      "size": 24312
+    },
+    {
+      "path": "amt/src/model/positional_encoding.py",
+      "oid": "bb6723f226882a666ce5c2385b28ec0801ccde8f",
+      "size": 11684
+    },
+    {
+      "path": "amt/src/model/projection_layer.py",
+      "oid": "f19dcc2f5998e671e52b9bc9d786a533f6eb295b",
+      "size": 13549
+    },
+    {
+      "path": "amt/src/model/spectrogram.py",
+      "oid": "fb4b38373f9d73c63535df407007c956c3a49e7c",
+      "size": 8182
+    },
+    {
+      "path": "amt/src/model/t5mod.py",
+      "oid": "523a26019c0af5716428b1df9abd9449a6ffddb4",
+      "size": 29365
+    },
+    {
+      "path": "amt/src/model/t5mod_helper.py",
+      "oid": "65468f316efcc8910f7cd1deb3b44db974990c3c",
+      "size": 6720
+    },
+    {
+      "path": "amt/src/model/ymt3.py",
+      "oid": "89d27654191f5c0de6d9599a1fb9a2626bbd258a",
+      "size": 50131
+    },
+    {
+      "path": "amt/src/test.py",
+      "oid": "869456ab5be65a8834651683edec4d18551b3af3",
+      "size": 14989
+    },
+    {
+      "path": "amt/src/tests/assert_fns.py",
+      "oid": "9e374bcd9ccddcb9d0cb279a21fefeca73390cad",
+      "size": 2642
+    },
+    {
+      "path": "amt/src/tests/audio_test.py",
+      "oid": "1d54319436aaa3727b657cdca930dca31f348ba5",
+      "size": 5136
+    },
+    {
+      "path": "amt/src/tests/event2note_test.py",
+      "oid": "306d3de80743dab6f5ba2dd81149a62a60f34dca",
+      "size": 9704
+    },
+    {
+      "path": "amt/src/tests/event_codec_test.py",
+      "oid": "68fbe94fb25d1918958299562f684b6b6443a043",
+      "size": 5886
+    },
+    {
+      "path": "amt/src/tests/metrics_test.py",
+      "oid": "2ce80ad36151c50d85253c6e256608f9b8d8d883",
+      "size": 4690
+    },
+    {
+      "path": "amt/src/tests/midi_test.py",
+      "oid": "877f99e9a2575a4b02a6a4fed5df476d838a99c6",
+      "size": 3062
+    },
+    {
+      "path": "amt/src/tests/model/ops_test.py",
+      "oid": "130285f212522b5d4092b672d0b018ffc1bc1227",
+      "size": 491
+    },
+    {
+      "path": "amt/src/tests/model/spectrogram_test.py",
+      "oid": "c639aa2fce8716a094eb6822265db5f86018c7ac",
+      "size": 774
+    },
+    {
+      "path": "amt/src/tests/note2event_test.py",
+      "oid": "634089325f7b910b81c6db84648be7e4a33358cf",
+      "size": 30148
+    },
+    {
+      "path": "amt/src/tests/note_event_roundtrip_test.py",
+      "oid": "393388da4ab5094bbbcc51e3295a2246f9daa7a9",
+      "size": 12471
+    },
+    {
+      "path": "amt/src/tests/tokenizer_test.py",
+      "oid": "441a3f826253154ee704c6c1290fae8dad9234f0",
+      "size": 4576
+    },
+    {
+      "path": "amt/src/tests/utils_test.py",
+      "oid": "ca5c79d12e63f1712e79c7202d75f944c8dad8bf",
+      "size": 4170
+    },
+    {
+      "path": "amt/src/train.py",
+      "oid": "9981753ec1437a3b387a6823cd2e74205e34a527",
+      "size": 17081
+    },
+    {
+      "path": "amt/src/utils/audio.py",
+      "oid": "02f0ac6edc6df50fd08734d72f7d281625364df3",
+      "size": 11279
+    },
+    {
+      "path": "amt/src/utils/augment.py",
+      "oid": "52774016c48d48525f4d4df1c259c52356ecb24a",
+      "size": 39133
+    },
+    {
+      "path": "amt/src/utils/data_modules.py",
+      "oid": "b5b482a8b5e7464272c3a0e9c77bdb1f9191dd39",
+      "size": 9538
+    },
+    {
+      "path": "amt/src/utils/datasets_eval.py",
+      "oid": "1d2d29053d5621e31a62ffa053292cd06145ed65",
+      "size": 8932
+    },
+    {
+      "path": "amt/src/utils/datasets_helper.py",
+      "oid": "1cfc866d76d34cc34154ec5a7c9048826109161c",
+      "size": 11583
+    },
+    {
+      "path": "amt/src/utils/datasets_train.py",
+      "oid": "9de23e5f54db01c8c8a9454c44ff446ed5c9a2fa",
+      "size": 33275
+    },
+    {
+      "path": "amt/src/utils/event2note.py",
+      "oid": "9df38be5093ea2c41aa2232a2b777a15173a278d",
+      "size": 11968
+    },
+    {
+      "path": "amt/src/utils/event_codec.py",
+      "oid": "a0915e39cbaf960b43851a6e400f93527b0a05e5",
+      "size": 12636
+    },
+    {
+      "path": "amt/src/utils/metrics.py",
+      "oid": "85d940ea8b945d38b89263809cf99344fa51f3b6",
+      "size": 21758
+    },
+    {
+      "path": "amt/src/utils/metrics_helper.py",
+      "oid": "887b5098ac91c64d5f15ff5b84f27d6245a28373",
+      "size": 13742
+    },
+    {
+      "path": "amt/src/utils/midi.py",
+      "oid": "b397bddd55721ee60370d6af40103aa0d8616a03",
+      "size": 17245
+    },
+    {
+      "path": "amt/src/utils/mirdata_dev/datasets/slakh16k.py",
+      "oid": "465a8944f0a327f8d29ddb6df14035d00516c8e5",
+      "size": 17079
+    },
+    {
+      "path": "amt/src/utils/mirdata_dev/scripts/make_slakh_index.py",
+      "oid": "751a914359d68f1344f6ba344deab1a41678e1f2",
+      "size": 4299
+    },
+    {
+      "path": "amt/src/utils/note2event.py",
+      "oid": "6ed2ce770795c0dc3a3eaaa9788d6054da542b8c",
+      "size": 33109
+    },
+    {
+      "path": "amt/src/utils/note_event_dataclasses.py",
+      "oid": "f98ebf41c4a634af48fff2ed9bce514804bcafeb",
+      "size": 2528
+    },
+    {
+      "path": "amt/src/utils/preprocess/dataset_stats.py",
+      "oid": "f1625c33b96ae4db7fa886468230dd7635162e03",
+      "size": 1449
+    },
+    {
+      "path": "amt/src/utils/preprocess/generate_dataset_stats.py",
+      "oid": "09fca2632d2137220a685f8b8b22e4d89d08deb7",
+      "size": 2139
+    },
+    {
+      "path": "amt/src/utils/preprocess/preprocess_cmedia.py",
+      "oid": "403a3fc4e2bd84a27572a92bf567fe625e2e61b0",
+      "size": 11094
+    },
+    {
+      "path": "amt/src/utils/preprocess/preprocess_egmd.py",
+      "oid": "29c47b285884029bb36655fee7723a1f04ab7dcb",
+      "size": 6905
+    },
+    {
+      "path": "amt/src/utils/preprocess/preprocess_enstdrums.py",
+      "oid": "225e0e5d748cd8edef69f7daa48387a48ed1f982",
+      "size": 19617
+    },
+    {
+      "path": "amt/src/utils/preprocess/preprocess_geerdes.py",
+      "oid": "e57b401951ec75e7e7ea2b7b77440b05dd51fe8f",
+      "size": 20549
+    },
+    {
+      "path": "amt/src/utils/preprocess/preprocess_guitarset.py",
+      "oid": "ff3110f9c979bf473df33d933b2f6f895394fe3c",
+      "size": 17257
+    },
+    {
+      "path": "amt/src/utils/preprocess/preprocess_idmt_smt_bass.py",
+      "oid": "aa9ac42f3338d1b929186b2e8f07a2708f4f4115",
+      "size": 10263
+    },
+    {
+      "path": "amt/src/utils/preprocess/preprocess_maestro.py",
+      "oid": "4ea0d1b0c01c3afada00685e0bd985d293f8fdf8",
+      "size": 6362
+    },
+    {
+      "path": "amt/src/utils/preprocess/preprocess_maps.py",
+      "oid": "2337de4585beac53d1f01d2773e9adeab0b92a9f",
+      "size": 6869
+    },
+    {
+      "path": "amt/src/utils/preprocess/preprocess_mir1k.py",
+      "oid": "66db0ac8a480dea48991793a692a952f64ad7101",
+      "size": 4106
+    },
+    {
+      "path": "amt/src/utils/preprocess/preprocess_mir_st500.py",
+      "oid": "0d3741f8747cb38d013d42c60c5648e55da41868",
+      "size": 10342
+    },
+    {
+      "path": "amt/src/utils/preprocess/preprocess_musicnet.py",
+      "oid": "3490fa2df31932b7df88fe50a06b2c6f0fc3e568",
+      "size": 23483
+    },
+    {
+      "path": "amt/src/utils/preprocess/preprocess_rnsynth.py",
+      "oid": "641d03826217a23b48442b443555fdd6c2b8ac70",
+      "size": 13593
+    },
+    {
+      "path": "amt/src/utils/preprocess/preprocess_rwc_pop.py",
+      "oid": "0cbac1a86bf35cf45fe2bab1edbdeba8562c468e",
+      "size": 5443
+    },
+    {
+      "path": "amt/src/utils/preprocess/preprocess_rwc_pop_full.py",
+      "oid": "0cdf585f00c11ccb7de2f7daa856f3004bbfdbff",
+      "size": 12849
+    },
+    {
+      "path": "amt/src/utils/preprocess/preprocess_slakh.py",
+      "oid": "5fa3a037d7a8478e3464d0fdf0fd669138dc8984",
+      "size": 9796
+    },
+    {
+      "path": "amt/src/utils/preprocess/preprocess_urmp.py",
+      "oid": "eeca6a3e71bcec730a1015e52686fef6f2af6bf3",
+      "size": 9195
+    },
+    {
+      "path": "amt/src/utils/task_manager.py",
+      "oid": "5911b621a244039127028083b917d2444a7a9303",
+      "size": 20055
+    },
+    {
+      "path": "amt/src/utils/tokenizer.py",
+      "oid": "cdc309601e3f0f82503ccb5b0154b9cfe652a552",
+      "size": 17948
+    },
+    {
+      "path": "amt/src/utils/utils.py",
+      "oid": "ae6ce712694e7c5dd3ea461b8d4958a933e5a7aa",
+      "size": 21763
+    },
+    {
+      "path": "model_helper.py",
+      "oid": "fd21a3df8312509dc9ae7b42031126c7e28f4ace",
+      "size": 14446
+    }
+  ]
+}
