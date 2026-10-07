@@ -1,5 +1,13 @@
 # Point de reprise — Exact-K
 
+## Périmètre joueurs confirmé
+
+- **Players autorisés : 00–04 uniquement. Player 05 reste exclu.**
+- Le garde-fou est déjà codé et testé dans `causal_note.guitarset`.
+- Les runs historiques player 05 sont conservés pour traçabilité mais ne
+  participent plus à aucune sélection, validation ou métrique de référence.
+- Politique détaillée : [v273-player-scope-policy.md](v273-player-scope-policy.md).
+
 ## Dernière étape : sélection des familles sur FIT exclusivement
 
 Audit du **7 octobre 2026**, depuis `a39dfbb8ff357d2c27b3909c28d2f3fe456512cb`.
