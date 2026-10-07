@@ -52,9 +52,23 @@ Exact global : **48 454 / 59 309 = 81,6976 %** ; exact polyphonique K2–K6 :
 
 Le run de confirmation pairwise dédupliqué
 [37577749778](https://github.com/Andriamarosoa/note/actions/runs/37577749778),
-lancé avant observation de ce verdict, est encore en cours. Il doit seulement
-vérifier la reproductibilité du même test fixe. La branche conditionnelle de
-re-sélection nested n'est pas ouverte, puisque le groupe fixe a échoué.
+lancé avant observation du premier verdict, est lui aussi **completed / success**.
+Ses six entraînements et son job de synthèse sont réussis ; la
+[release](https://github.com/Andriamarosoa/note/releases/tag/v273-reference-hidden1-pairwise-37577749778)
+contient les rapports et checkpoints. Il reproduit la décision confirmatoire :
+**0/4 rotation acceptée, net de politique nested 0, verdict FAIL**. Les nombres
+externes figés sont identiques (`+41` global, `+27` low, `+14` poly).
+
+Audit de reproductibilité : quatre paires d'entraînement sur six reproduisent
+bit à bit le checkpoint uniform du premier run. Les paires `(0,2)` et `(1,2)`
+ont des poids et scores inner différents malgré des ordres d'époques identiques.
+Il ne faut donc pas présenter les valeurs inner comme bit-identiques entre
+runners. Cette variation ne change toutefois aucune décision : les quatre
+rotations sont rejetées dans chacun des deux runs indépendants. Détails et
+empreintes : [README de confirmation](README-v273-reference-hidden1-confirmation.md).
+
+La branche conditionnelle de re-sélection nested n'est pas ouverte, puisque le
+groupe fixe a échoué. Aucun retry n'est nécessaire pour trancher la référence.
 
 ## Dernière étape : sélection des familles sur FIT exclusivement
 
