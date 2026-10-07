@@ -1,0 +1,15 @@
+{
+  "experiment": "v273_energy_continuity_audit",
+  "reason": "First energy-flow audit showed flux_only > energy_only, while naive concatenation energy+flux degraded. Test energy-conditioned flow instead.",
+  "equation": "R_b(t)=E_b(t+1)-r_b E_b(t), with r_b estimated from PRE only; plus symmetric relative flow 2 dE/(E_next+E_prev)",
+  "cohort": "frozen 488 baseline-K3 rows (216 true K2 / 272 true K3)",
+  "folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "fold3_excluded": true,
+  "interpretation_guard": "A negative result rejects only this proxy, not the general energy-flow hypothesis.",
+  "automatic_promotion": false
+}\n
