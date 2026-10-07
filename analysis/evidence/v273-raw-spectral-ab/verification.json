@@ -1,0 +1,39 @@
+{
+  "artifacts": {
+    "fold-0": {
+      "artifact_id": 11493255206,
+      "sha256": "72fdda40cd80c7c558c49ae60a30b3caf2f6d88c3b1e520e0c34a8615670afff"
+    },
+    "fold-1": {
+      "artifact_id": 11494318606,
+      "sha256": "ec5ddcbe2cae76668037e789ca7cc6ca31e2eba2c4a8b8089d421221f3e2be28"
+    },
+    "fold-2": {
+      "artifact_id": 11493143218,
+      "sha256": "b0a2d60f013125d326ff1c7224bdd18527c212da7dc841a164112fe735064b44"
+    },
+    "fold-4": {
+      "artifact_id": 11493273158,
+      "sha256": "cd08b6fd089fb66cb901376133706b5e447d662e725b5399d282265c9a99cd3a"
+    },
+    "summary": {
+      "artifact_id": 11493694452,
+      "sha256": "35a04527defdf0e415585280b6886e1864eb360f2595c8314a2c67968f92be66"
+    }
+  },
+  "checks": [
+    "all archive SHA-256 values agree with GitHub artifact metadata",
+    "four-fold concatenation equals summary for every NPZ array including probabilities",
+    "59309 distinct global row identifiers",
+    "baseline 48454 global exacts and 2530 poly exacts reproduced",
+    "per-K metrics and paired corrections/regressions recomputed from predictions"
+  ],
+  "date": "2026-10-07",
+  "poly_rows": 7385,
+  "reference": "freeze_local_combo",
+  "rows": 59309,
+  "run_id": 37634787024,
+  "source_commit": "db272e8bb1dea3547c1883fa9d8398571ae63fbd",
+  "status": "verified",
+  "verdict": "raw_spectral_native_modification_not_retained"
+}
