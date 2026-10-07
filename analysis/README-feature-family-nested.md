@@ -129,3 +129,8 @@ BLAS Haswell reproduit **uniquement** cette différence, `3,33e-16` ; tous les
 autres champs sont identiques. La comparaison finale conserve donc la tolérance
 préexistante `<1e-12` sur les probabilités, et l'égalité stricte des choix,
 comptes, populations et empreintes. Les données et modèles restent identiques.
+
+Contrôle final : [CI 37570591433 réussie](https://github.com/Andriamarosoa/note/actions/runs/37570591433),
+commit `3d22697f5efe55ad14770ece9708396b3d27f2b4`, vérifié le 7 octobre 2026.
+Les cinq tests et les 64 modèles passent ; l'écart CI est `3,33e-16`, avec les
+mêmes décisions et comptes que le rejeu local.

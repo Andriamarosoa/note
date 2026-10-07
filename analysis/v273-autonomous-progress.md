@@ -59,8 +59,12 @@ et le réseau amont restent figés ; aucune nouvelle variante n'est sélectionn�
   Cause reproduite localement avec BLAS Haswell : seul `max_probability_error`
   passe de 0 à `3,33e-16`, toutes les décisions et empreintes identiques.
   La comparaison finale applique désormais la tolérance déjà prévue `<1e-12`
-  pour ce champ et conserve l'égalité stricte du reste. Le prochain checkpoint
-  consigne le commit et le run de cette correction CI.
+  pour ce champ et conserve l'égalité stricte du reste.
+- Correction CI : `3d22697f5efe55ad14770ece9708396b3d27f2b4`.
+  Run [37570591433](https://github.com/Andriamarosoa/note/actions/runs/37570591433)
+  vérifié **completed / success** le 7 octobre 2026, job `112628068518`.
+  Cinq tests réussis, 64 modèles rejoués, écart CI `3,33e-16` ; choix et comptes
+  strictement identiques. Ce checkpoint documentaire clôt l'étape.
 - Lire d'abord le HEAD et les runs ; ne pas dupliquer un run actif. La branche a
   reçu des travaux concurrents, préservés intégralement.
 - Rejeu courant : vérifier `analysis/evidence/v273-feature-family-nested/checksums.json`,
