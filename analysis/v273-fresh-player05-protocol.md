@@ -90,3 +90,26 @@ Predeclared pass:
 
 The historical fold-3 result is shown only as context and is not used for any
 selection.
+
+## Runtime-label separation audit
+
+The historical V8.6 helper `_records()` combines inference-time fields with
+supervision-only fields. A preflight run showed that it attempts to open
+annotations while constructing those supervision fields. This occurred before
+any player-05 cardinality prediction, label, or metric was produced.
+
+The fresh validator therefore reconstructs only the runtime fields:
+audio transition horizons, V8.4 score context, candidate score/count/source,
+then V8.6/V8.7/V8.8 frozen inference outputs. Supervision fields are neutral
+placeholders and are never model inputs.
+
+Before player 05 is processed, the validator proves this separation on two
+allowed development tracks by comparing the historical labelled path with the
+new runtime-only path. It requires exact equality of runtime records/X88 and
+numerical equality of all V8.8 outputs. Player 05 processing is aborted if this
+equivalence check fails.
+
+Run 37550468253 processed only unlabeled V8.4 audio score streams and stopped at
+the first forbidden annotation access. No player-05 annotations, cardinality
+predictions, Exact-K metrics, or tuning signal were observed. Frozen model,
+features, classifier and threshold remain unchanged.
