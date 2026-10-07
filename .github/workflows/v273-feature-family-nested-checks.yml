@@ -53,6 +53,10 @@ jobs:
                   destination.write_bytes(raw)
               actual = replay(temp, temp / 'source-report.json')
               expected = json.loads((temp / 'replay-check.json').read_text())
-              assert actual == expected, 'nested replay differs'
               print(json.dumps(actual, sort_keys=True))
+              # replay() already requires <1e-12 and exact choices/counts.
+              # Different BLAS kernels may change only the measured last-bit error.
+              assert actual['max_probability_error'] < 1e-12
+              exact = lambda report: {k: v for k, v in report.items() if k != 'max_probability_error'}
+              assert exact(actual) == exact(expected), 'nested decisions/provenance differ'
           PY

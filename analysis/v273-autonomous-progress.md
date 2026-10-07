@@ -53,8 +53,14 @@ et le réseau amont restent figés ; aucune nouvelle variante n'est sélectionn�
 ## Commits, CI et reprise
 
 - Protocole/code imbriqué : `e064c0ce9e7f9791d4f44658ccf4db191679854a`.
-- Les preuves et la CI dédiée sont publiées dans le commit scientifique suivant ;
-  un checkpoint documentaire consigne ensuite son SHA et son run.
+- Preuves et CI dédiée : `4ebe66504842fed2c8bad74c7f15a88e29e1f695`.
+  Run `37570350189` : tests réussis, rejeu scientifique passé, puis échec de
+  l'égalité globale du rapport. Logs inspectés, aucun artefact.
+  Cause reproduite localement avec BLAS Haswell : seul `max_probability_error`
+  passe de 0 à `3,33e-16`, toutes les décisions et empreintes identiques.
+  La comparaison finale applique désormais la tolérance déjà prévue `<1e-12`
+  pour ce champ et conserve l'égalité stricte du reste. Le prochain checkpoint
+  consigne le commit et le run de cette correction CI.
 - Lire d'abord le HEAD et les runs ; ne pas dupliquer un run actif. La branche a
   reçu des travaux concurrents, préservés intégralement.
 - Rejeu courant : vérifier `analysis/evidence/v273-feature-family-nested/checksums.json`,

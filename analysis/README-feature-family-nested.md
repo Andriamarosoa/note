@@ -121,3 +121,11 @@ python -B scripts/audit_v273_feature_family_nested.py replay \
 La CI dédiée vérifie les cinq tests, toutes les empreintes et ce rejeu exact.
 Une nouvelle extraction n'est nécessaire que pour contrôler la provenance audio,
 pas pour reproduire la sélection et son bilan.
+
+Le premier contrôle CI `37570350189` a passé les tests et le rejeu scientifique,
+puis échoué sur l'égalité globale du rapport : son champ d'erreur numérique
+n'était pas exactement zéro comme en local. Un contrôle local avec le noyau
+BLAS Haswell reproduit **uniquement** cette différence, `3,33e-16` ; tous les
+autres champs sont identiques. La comparaison finale conserve donc la tolérance
+préexistante `<1e-12` sur les probabilités, et l'égalité stricte des choix,
+comptes, populations et empreintes. Les données et modèles restent identiques.
