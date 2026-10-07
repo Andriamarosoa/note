@@ -1,0 +1,154 @@
+name: YourMT3+ Exact-K Representation Probe
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths: ['analysis/yourmt3-count-probe-launch.json']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: yourmt3-count-probe
+  cancel-in-progress: false
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  OMP_NUM_THREADS: '4'
+  WANDB_MODE: disabled
+  HF_HUB_DISABLE_TELEMETRY: '1'
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - run: python -m py_compile scripts/extract_yourmt3_count_features.py scripts/summarize_yourmt3_count_probe.py
+      - run: python -m pip install -r requirements-train.txt numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2
+      - uses: actions/cache@v4
+        id: guitarset
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+      - name: Download official GuitarSet if needed
+        if: steps.guitarset.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+      - name: Restore frozen V27.3 inputs
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          echo 'b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip' | md5sum -c -
+          echo 'aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip' | md5sum -c -
+          mkdir -p model/download model/bundle model/folds model/timing
+          gh release download v273-window-pair-36351028493 --repo '${{ github.repository }}' --pattern native-window-bundle.zip --dir model/download
+          unzip -q model/download/native-window-bundle.zip -d model/bundle
+          gh release download v273-candidate-hidden1-multifold-37271262794 --repo '${{ github.repository }}' --pattern v273-candidate-hidden1-multifold-folds.tgz --dir model/download
+          tar -xzf model/download/v273-candidate-hidden1-multifold-folds.tgz -C model/folds
+          gh release download v273-window-pair-36351028493 --repo '${{ github.repository }}' --pattern 'training-part-*.zip' --dir model/download
+          for part in model/download/training-part-*.zip; do
+            unzip -q "$part" -d "model/timing/$(basename "$part" .zip)"
+          done
+      - name: Replay exact frozen cohort
+        run: >-
+          python -B scripts/prepare_yourmt3_exactk.py
+          --bundle model/bundle --fold-root model/folds
+          --config analysis/v273-native-paired-config.json
+          --dataset data/GuitarSet --timing-root model/timing --output model/cohort
+      - uses: actions/upload-artifact@v4
+        with:
+          name: yourmt3-count-probe-cohort
+          path: model/cohort/
+          retention-days: 90
+
+  extract:
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        fold: [0, 1, 2, 4]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-yourmt3.txt
+      - name: Install pinned YourMT3+ runtime
+        run: |
+          python -m pip install torch==2.5.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -r requirements-yourmt3.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: yourmt3-count-probe-cohort
+          path: model/cohort
+      - uses: actions/cache/restore@v4
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+          fail-on-cache-miss: true
+      - name: Verify audio bytes
+        run: echo 'aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip' | md5sum -c -
+      - uses: actions/cache@v4
+        with:
+          path: model/yourmt3
+          key: yourmt3-official-5e66c1e-ae38e415
+      - name: Verify pinned official sources and weights
+        run: python -B scripts/bootstrap_yourmt3.py --output model/yourmt3
+      - name: Extract encoder and pre-decoder representations
+        run: >-
+          python -B scripts/extract_yourmt3_count_features.py
+          --source model/yourmt3 --cohort model/cohort
+          --dataset data/GuitarSet --fold ${{ matrix.fold }}
+          --threads 4 --batch-size 4 --radius 2
+          --output model/features-${{ matrix.fold }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: yourmt3-count-features-fold-${{ matrix.fold }}
+          path: model/features-${{ matrix.fold }}/
+          retention-days: 90
+
+  summarize:
+    needs: extract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: yourmt3-count-features-fold-*
+          path: model/features
+      - name: Download verified full YourMT3+ predictions from run 37605163312
+        uses: actions/download-artifact@v4
+        with:
+          pattern: yourmt3-exactk-fold-*
+          path: model/full
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37605163312
+      - name: Cross-fold linear probe and compare with full decoder
+        run: >-
+          python -B scripts/summarize_yourmt3_count_probe.py
+          --features model/features --full model/full --output model/summary
+      - name: Display ablation
+        run: cat model/summary/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: yourmt3-count-probe-summary
+          path: model/summary/
+          retention-days: 90
