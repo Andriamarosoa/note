@@ -68,7 +68,7 @@ def index_player05(dataset):
         tracks=gs.index_guitarset(dataset)
     finally:
         gs.ALLOWED_PLAYERS=old
-    require(len(tracks)==48,f"expected 48 player05 tracks, got {len(tracks)}")
+    require(len(tracks)==60,f"expected 60 player05 tracks, got {len(tracks)}")
     require({t.player_id for t in tracks}=={PLAYER},"player05 scope drift")
     require(len({t.annotation_member for t in tracks})==48,"duplicate player05 member")
     return tracks
@@ -301,7 +301,9 @@ def main():
         "features":["best_pair_residual_ratio","best_triplet_residual_ratio",*EXTRA],
         "automatic_retuning_after_holdout":False,
       },
-      "inventory":{"members":sorted(hold_members),"clusters":len(y),
+      "inventory":{"members":sorted(hold_members),
+                   "compositions":sorted({m.split("_",1)[1].rsplit("_",1)[0] for m in hold_members}),
+                   "track_count":len(hold_members),"clusters":len(y),
                    "truncated_candidates":int(np.sum(truncated))},
       "internal_fit":{"B_like_cluster":int(bid),"B_low_cluster":int(lid),
                       "coarse_clusters":{str(k):v for k,v in cstats.items()},
