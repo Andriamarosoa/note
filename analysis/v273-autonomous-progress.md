@@ -42,6 +42,36 @@ Audit du **7 octobre 2026**, depuis `a39dfbb8ff357d2c27b3909c28d2f3fe456512cb`.
 - Décision : **conserver la référence**. La correction du protocole est vérifiée,
   mais aucun gain Exact-K sélectionnable n'est démontré.
 
+
+## Audit FIT↔VAL à vrai K identique — players 00–04 uniquement
+
+Run [37571738846](https://github.com/Andriamarosoa/note/actions/runs/37571738846)
+**completed / success**. Player 05 et fold 3 explicitement exclus ; aucun audio
+rechargé, aucune sélection de modèle ni de seuil.
+
+L'audit sépare le changement de proportions K2/K3 d'un changement du signal
+à classe vraie fixée. Résultat principal :
+
+- `geom_harmonic_relation_min_error` : **4/4 inversions de sens**, AUC classe
+  moyenne FIT 0,513 → VAL 0,455 ;
+- `weak_unique_post1_norm` : 2 inversions, 0,539 → 0,472 ;
+- `geom_span_cents` : 2 inversions, 0,535 → 0,500 ;
+- `amp3_over_amp2` : 2 inversions, 0,539 → 0,499 ;
+- `best_pair_residual_ratio` : **0 inversion**, 0,575 → 0,558 ;
+- `nov_onset_contrast_norm_median` : **0 inversion**, 0,540 → 0,601 ;
+- `best_triplet_residual_ratio` : 1 inversion, 0,559 → 0,562 ;
+- `joint_unique_x_post_median` : 1 inversion, 0,518 → 0,565.
+
+Le déplacement de domaine à K fixé reste modéré en moyenne (AUC domaine
+environ 0,51–0,56), mais plusieurs features changent néanmoins de relation
+K2/K3 selon le fold. Le simple changement de proportions K2/K3 n'explique donc
+pas seul l'absence de gain nested.
+
+Décision : **aucune feature promue depuis cet audit**. La référence nested reste
+inchangée, net sélectionné 0. Toute nouvelle variante doit sélectionner sa
+stabilité exclusivement sur FIT avant d'être évaluée sur VAL.
+
+
 ## Prochaine étape
 
 Ne pas refaire les grilles, gabarits, fenêtres ou features déjà rejetés sans
