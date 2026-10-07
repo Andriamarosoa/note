@@ -1,0 +1,21 @@
+{
+  "experiment": "yourmt3_exactk_representation_probe",
+  "date": "2026-10-07",
+  "source_full_decoder_run": 37605163312,
+  "folds": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "representations": [
+    "perceiver_tf_moe_encoder",
+    "13_channel_predecoder",
+    "full_multi_t5_decoder"
+  ],
+  "classifier": "fixed cross-fold linear probe",
+  "target": "K0-K6 only",
+  "note_identification": false,
+  "fold3_used": false,
+  "player05_used": false
+}
