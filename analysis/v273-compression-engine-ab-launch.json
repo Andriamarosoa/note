@@ -1,0 +1,23 @@
+{
+  "experiment": "v273_compression_engine_ab",
+  "date": "2026-10-07",
+  "views": {
+    "x1": 0,
+    "x2": 12,
+    "x4": 24
+  },
+  "engines": [
+    "librosa",
+    "rubberband"
+  ],
+  "goal": "compare x2/x4 compression quality before any Exact-K use",
+  "metrics": [
+    "same-low K2/K3 AUC",
+    "natural-high transfer AUC",
+    "attack-envelope correlation",
+    "register shift"
+  ],
+  "outer_fold_3_used": false,
+  "exact_k_model_evaluated": false,
+  "audio_examples": true
+}
