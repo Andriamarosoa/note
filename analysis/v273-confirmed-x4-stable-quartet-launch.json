@@ -1,0 +1,23 @@
+{
+  "experiment": "v273_confirmed_x4_stable_quartet_consensus",
+  "date": "2026-10-07",
+  "source_signal_run": 37667754337,
+  "cohort_rows": 76,
+  "fixed_features": [
+    "attackf0__nov_pre_norm_range",
+    "attackf0__nov_onset_contrast_raw_range",
+    "attackf0__nov_post1_norm_median",
+    "attackf0__nov_positive_retained_fraction_range"
+  ],
+  "rule": "3 of 4 votes",
+  "thresholds": "FIT-only midpoint of K2/K3 medians",
+  "diagnostics": [
+    "2/4",
+    "3/4",
+    "4/4",
+    "leave-one-feature-out majority"
+  ],
+  "outer_fold_3_used": false,
+  "independent_confirmation": false,
+  "automatic_promotion": false
+}
