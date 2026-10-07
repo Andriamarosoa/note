@@ -24,7 +24,13 @@ from sklearn.preprocessing import StandardScaler
 import causal_note.guitarset as gs
 from scripts import candidate_timing as timing
 from scripts.train_boundaries import decode_pcm16_mono_wav
-from scripts.train_v91_ordinal_cardinality import _load_frozen_stack,_represent_full
+from scripts.evaluate_v8_boundaries import _arrangement
+from scripts.train_v86_state_transition_proposals import (
+    _predict_score_tracks,_candidate_groups,_spectral_transition,_score_context,_records,HORIZONS
+)
+from scripts.train_v87_causal_candidate_memory import _encode_records,_sequence_arrays
+from scripts.train_v88_regime_moe import _encode_v87,_feature_matrix,_predictions
+from scripts.train_v91_ordinal_cardinality import _load_frozen_stack
 from scripts.train_v90_structured_cluster_cardinality import (
     _extended_candidate_features,_cluster_arrays,MAX_CANDIDATES,CLUSTER_WINDOW_MS
 )
@@ -82,11 +88,80 @@ def proposal_args(source_dir):
         setattr(a,version+"_report",source_dir/version/"report.json")
     return a
 
-def label_free_holdout(tracks,source_dir):
+def runtime_records(tracks,score_by_member,floor):
+    """Build the exact V8.6 runtime inputs without reading reference annotations.
+
+    The historical _records() function mixes runtime fields with supervision
+    fields. Only class_id/birth/matched_reference_count depend on references;
+    downstream inference tensors ignore those labels. They are set to neutral
+    placeholders here.
+    """
+    records=[]
+    for ordinal,track in enumerate(tracks,start=1):
+        member=track.annotation_member
+        audio=decode_pcm16_mono_wav(track.audio_zip,track.audio_member)
+        normalized=np.asarray(audio.samples,dtype=np.float64)/32768.0
+        groups=_candidate_groups(score_by_member[member],floor)
+        presence=score_by_member[member]["presence"]
+        multiplicity=score_by_member[member]["multiplicity"]
+        for group in groups:
+            sample=int(group["sample"])
+            records.append({
+              "member":member,
+              "arrangement":_arrangement(member),
+              "sample":sample,
+              "count":int(group["count"]),
+              "score":float(group["score"]),
+              "sources":list(group["sources"]),
+              "class_id":0,
+              "birth":0,
+              "matched_reference_count":0,
+              "horizons":[_spectral_transition(normalized,sample,h) for h in HORIZONS],
+              "score_context":_score_context(presence,multiplicity,sample),
+            })
+        print(f"runtime features {ordinal}/{len(tracks)}: {member} candidates={len(groups)}",flush=True)
+    return records
+
+def runtime_stack(records,enc86,enc87,model88):
+    emb86,prob86=_encode_records(enc86,records)
+    sequences,_=_sequence_arrays(records,emb86,prob86)
+    hidden87,prob87=_encode_v87(enc87,sequences)
+    x88=_feature_matrix(records,emb86,prob86,hidden87,prob87)
+    out88=_predictions(model88,x88)
+    return x88,out88
+
+def runtime_equivalence_guard(dataset,base_model,floor,enc86,enc87,model88):
+    """Prove on allowed internal tracks that removing labels changes no runtime tensor."""
+    tracks=gs.index_guitarset(dataset)
+    require(len(tracks)>0,"no internal tracks for runtime equivalence")
+    probe=(tracks[0],tracks[-1])
+    scores=_predict_score_tracks(base_model,probe)
+    labelled=_records(probe,scores,floor)
+    runtime=runtime_records(probe,scores,floor)
+    require(len(labelled)==len(runtime)>0,"runtime record length mismatch")
+    for a,b in zip(labelled,runtime):
+        for key in ("member","arrangement","sample","count","score","sources"):
+            require(a[key]==b[key],f"runtime record drift {key}")
+        np.testing.assert_allclose(a["horizons"],b["horizons"],rtol=0,atol=0)
+        np.testing.assert_allclose(a["score_context"],b["score_context"],rtol=0,atol=0)
+    xl,ol=runtime_stack(labelled,enc86,enc87,model88)
+    xr,orr=runtime_stack(runtime,enc86,enc87,model88)
+    np.testing.assert_allclose(xl,xr,rtol=0,atol=0)
+    for key in sorted(ol):
+        np.testing.assert_allclose(ol[key],orr[key],rtol=0,atol=1e-7)
+    return {"probe_members":[t.annotation_member for t in probe],
+            "records":len(runtime),"x88_max_abs":float(np.max(np.abs(xl-xr))) if len(xl) else 0.0,
+            "outputs_equal":True}
+
+def label_free_holdout(tracks,source_dir,dataset):
     ma=proposal_args(source_dir)
     floor,_,enc86,enc87,model88=_load_frozen_stack(ma)
+    equivalence=runtime_equivalence_guard(dataset,ma.base_model,floor,enc86,enc87,model88)
+    print(json.dumps({"phase":"runtime_equivalence_passed",**equivalence}),flush=True)
     print(json.dumps({"phase":"player05_proposals","tracks":len(tracks)}),flush=True)
-    _,records,x88,out88=_represent_full(tracks,ma.base_model,floor,enc86,enc87,model88)
+    score_streams=_predict_score_tracks(ma.base_model,tracks)
+    records=runtime_records(tracks,score_streams,floor)
+    x88,out88=runtime_stack(records,enc86,enc87,model88)
     candidate_features,fused=_extended_candidate_features(x88,out88)
     clusters=_clusters_window(records,CLUSTER_WINDOW_MS)
     sequence,mask,stats,_,_,truncated=_cluster_arrays(
@@ -96,7 +171,7 @@ def label_free_holdout(tracks,source_dir):
     spectra=_spectral_maps_for_runtime(tracks,clusters,records,window=COVERED)
     require(np.isfinite(sequence).all() and np.isfinite(stats).all() and np.isfinite(spectra).all(),
             "nonfinite player05 runtime input")
-    members=np.asarray([c["member"] for c in clusters],dtype="U96")
+    members=np.asarray([cl["member"] for cl in clusters],dtype="U96")
     cache={
       "sequence":np.asarray(sequence,np.float32),
       "mask":np.asarray(mask,np.float32),
@@ -106,7 +181,7 @@ def label_free_holdout(tracks,source_dir):
       "cluster_start_samples":np.asarray(fields["cluster_start_samples"],np.int64),
     }
     require(len(cache["sequence"])==len(clusters)>0,"empty player05 clusters")
-    return cache,clusters,records,x88,out88,fused,truncated
+    return cache,clusters,records,x88,out88,fused,truncated,equivalence
 
 def holdout_audio_rows(cache,ids,tracks):
     by={t.annotation_member:t for t in tracks}
@@ -224,7 +299,7 @@ def main():
     require(not internal_members & hold_members,"player05 overlaps internal bundle")
     require({m[:2] for m in internal_members}<=set(("00","01","02","03","04")),"internal player scope drift")
 
-    hold,clusters,records,x88,out88,_,truncated=label_free_holdout(tracks,a.source_dir)
+    hold,clusters,records,x88,out88,_,truncated,runtime_equivalence=label_free_holdout(tracks,a.source_dir,a.dataset)
     hid=np.arange(len(hold["sequence"]),dtype=np.int64)
 
     # Frozen robust count base: internal FIT labels define B_low; holdout labels are unavailable here.
@@ -292,6 +367,7 @@ def main():
         "player":"05","tracks":len(tracks),
         "independence":"unseen performer; same GuitarSet composition inventory",
         "proposal_source_player05_excluded":True,
+        "runtime_label_free_equivalence_guard":runtime_equivalence,
         "count_training_player05_excluded":True,
         "development_folds_player05_excluded":True,
         "labels_read_after_prediction_sha_frozen":True,
