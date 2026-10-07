@@ -253,7 +253,7 @@ def save_examples(cache, ids, dataset_dir, output):
         for engine in ENGINES:
             # Use a 0.1s pre-roll and enough post-roll for listening.
             # The analysis transformer already protects boundaries with PAD.
-            local_start = start + int(0.10*SAMPLE_RATE)
+            local_start = int(0.10*SAMPLE_RATE)
             for label, steps in (("x2", 12.0), ("x4", 24.0)):
                 transformed, onset = pitch_shift_local(clip, local_start, steps, engine)
                 audible = pcm_window(
