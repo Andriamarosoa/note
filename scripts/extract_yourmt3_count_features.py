@@ -52,7 +52,6 @@ def main(a):
     import soundfile as sf
     import torch
     import torchaudio
-    from utils.audio import slice_padded_array
 
     torch.set_num_threads(a.threads)
     torch.manual_seed(0)
@@ -72,6 +71,7 @@ def main(a):
     tracks = json.loads((a.cohort / f"tracks-{a.fold}.json").read_text())
 
     model = load_model(a.source)
+    from utils.audio import slice_padded_array
     model_sr = int(model.audio_cfg["sample_rate"])
     input_frames = int(model.audio_cfg["input_frames"])
     enc_features = [None] * len(data["k"])
