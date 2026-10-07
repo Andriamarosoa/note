@@ -1,0 +1,58 @@
+name: V27.3 Confirmed x4 Stable Quartet
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - 'analysis/v273-confirmed-x4-stable-quartet-launch.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: python -m pip install numpy==1.26.4
+
+      - name: Restore signal rows from source audit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/input
+          for F in 0 1 2 4; do
+            mkdir -p "model/input/fold-$F"
+            gh run download 37667754337 \
+              --repo "${{ github.repository }}" \
+              --name "v273-confirmed-x4-signals-fold-$F" \
+              --dir "model/input/fold-$F"
+            test -f "model/input/fold-$F/rows.jsonl"
+          done
+
+      - name: Run fixed quartet consensus
+        run: >-
+          python -B scripts/audit_v273_confirmed_x4_stable_quartet.py
+          --input-root model/input
+          --output model/result
+
+      - name: Show result
+        run: cat model/result/report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-confirmed-x4-stable-quartet
+          path: model/result/
+          retention-days: 90
