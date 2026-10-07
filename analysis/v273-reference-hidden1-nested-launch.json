@@ -1,0 +1,24 @@
+{
+  "experiment":"v273-reference-hidden1-nested-confirmation",
+  "fixed_reference_group":[42,52,61,64],
+  "outer_validation_folds":[0,1,2,4],
+  "inner_validation":"for each outer fold, 3 fresh models trained on 2 folds and validated on the third",
+  "inner_acceptance_rule":{
+    "low_net_nonnegative_each_inner_fold":true,
+    "poly_net_nonnegative_each_inner_fold":true,
+    "global_positive_at_least_inner_folds":2,
+    "total_global_net_positive":true
+  },
+  "confirmation_rule":{
+    "inner_acceptance_all_four_outer_rotations":true,
+    "outer_low_net_nonnegative_each_fold":true,
+    "outer_poly_net_nonnegative_each_fold":true,
+    "outer_global_positive_at_least_folds":3,
+    "outer_total_global_net_positive":true
+  },
+  "no_alternative_group_search":true,
+  "fold3_used":false,
+  "player05_used":false,
+  "automatic_replacement":false,
+  "protocol":"analysis/v273-reference-hidden1-nested-validation-protocol.md"
+}
