@@ -1,0 +1,135 @@
+name: freeze_local_combo Stage Probe
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - 'analysis/freeze-local-combo-stage-probe-launch.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: freeze-local-combo-stage-probe
+  cancel-in-progress: false
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  TF_NUM_INTRAOP_THREADS: '2'
+  TF_NUM_INTEROP_THREADS: '2'
+  OMP_NUM_THREADS: '2'
+
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore frozen bundle and exact fold checkpoints
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/shared/download model/shared/bundle model/shared/folds
+          gh release download v273-window-pair-36351028493 \
+            --repo "${{ github.repository }}" \
+            --pattern native-window-bundle.zip \
+            --dir model/shared/download
+          unzip -q model/shared/download/native-window-bundle.zip -d model/shared/bundle
+          test -f model/shared/bundle/bundle.json
+
+          gh release download v273-candidate-hidden1-multifold-37271262794 \
+            --repo "${{ github.repository }}" \
+            --pattern v273-candidate-hidden1-multifold-folds.tgz \
+            --dir model/shared/download
+          tar -xzf model/shared/download/v273-candidate-hidden1-multifold-folds.tgz -C model/shared/folds
+          test "$(find model/shared/folds -name freeze_local_combo.weights.h5 | wc -l)" -eq 4
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: freeze-local-combo-stage-shared
+          path: |
+            model/shared/bundle/
+            model/shared/folds/
+          retention-days: 30
+
+  fold:
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        val_fold: [0, 1, 2, 4]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+
+      - name: Install pinned runtime
+        run: python -m pip install -r requirements-train.txt numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2
+
+      - name: Compile audit scripts
+        run: python -m py_compile scripts/probe_freeze_local_combo_stages.py scripts/summarize_freeze_local_combo_stages.py
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: freeze-local-combo-stage-shared
+          path: model/shared
+
+      - name: Run held-out stage probe
+        run: >-
+          python -B scripts/probe_freeze_local_combo_stages.py
+          --bundle model/shared/bundle
+          --config analysis/v273-native-paired-config.json
+          --fold-root model/shared/folds
+          --val-fold ${{ matrix.val_fold }}
+          --output model/fold-${{ matrix.val_fold }}
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: freeze-local-combo-stage-fold-${{ matrix.val_fold }}
+          path: model/fold-${{ matrix.val_fold }}/
+          retention-days: 90
+
+  summarize:
+    needs: fold
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: python -m pip install numpy==1.26.4
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: freeze-local-combo-stage-fold-*
+          path: model/folds
+
+      - name: Aggregate exact four-fold ablation
+        run: >-
+          python -B scripts/summarize_freeze_local_combo_stages.py
+          --input model/folds
+          --output model/summary
+
+      - name: Display comparison
+        run: cat model/summary/report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: freeze-local-combo-stage-summary
+          path: model/summary/
+          retention-days: 90
