@@ -36,7 +36,7 @@ jobs:
 
       - name: Install runtime
         run: |
-          python -m pip install -r requirements-train.txt numpy==1.26.4 scipy==1.17.1
+          python -m pip install -r requirements-train.txt numpy==1.26.4 scipy==1.17.1 scikit-learn==1.4.2
 
       - name: Restore GuitarSet
         id: guitarset-cache
