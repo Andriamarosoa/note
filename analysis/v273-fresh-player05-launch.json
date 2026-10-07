@@ -17,11 +17,17 @@
   "automatic_retuning_after_holdout": false,
   "automatic_promotion": false,
   "retry_after_inventory_only_failure": 37549972530,
-  "inventory_correction": "48->60 tracks; previous run stopped before mining/prediction/labels",
+  "inventory_correction": {
+    "failed_preflight_run": 37549972530,
+    "observed_tracks": 60,
+    "labels_read": false,
+    "scores_produced": false
+  },
   "retry_after_inventory_guard_fix": 37550221022,
   "inventory_guard_fix_commit": "67f4ac2c2ac93741b6f42dd3cae73092614ae2ad",
   "model_or_threshold_changed": false,
   "retry_after_runtime_label_guard_failure": 37550468253,
   "runtime_only_fix_commit": "ce5a19064096f7f9f411b8f31ae34fb951580b06",
-  "runtime_equivalence_preflight": true
+  "runtime_equivalence_preflight": true,
+  "retry_after_inventory_fix": "6693beb0fd9742590dab778fe827ad03b0c050ac"
 }
