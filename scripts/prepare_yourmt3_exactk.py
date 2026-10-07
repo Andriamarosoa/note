@@ -27,6 +27,20 @@ def main(a):
     names = np.asarray(cache["members"]).astype(str)
     folds = np.asarray([cfg["member_folds"][s] for s in names])
     tracks = {t.annotation_member: t for t in index_guitarset(a.dataset)}
+    # The packed bundle omits the original integer end timestamps. Recover them
+    # from its exact, checksum-pinned source shards, never from float16 features.
+    timing = {}
+    for path in a.timing_root.rglob("v100-spectral-shard-*.npz"):
+        with np.load(path, allow_pickle=False) as z:
+            shard_members = set(z["members"].astype(str))
+            require(len(shard_members) == 1, "mixed timing shard")
+            member = next(iter(shard_members))
+            require(member not in timing and cfg["member_folds"][member] in FOLDS, "timing shard leak/duplicate")
+            require(digest(path) == bundle_report["source_cache_sha256"][member], "timing source checksum drift")
+            s = np.asarray(z["cluster_start_samples"], np.int64)
+            e = cluster_ends(s, z["full_candidate_samples"], z["full_candidate_offsets"])
+            timing[member] = (s, e)
+    require(set(timing) == {m for m, f in cfg["member_folds"].items() if f in FOLDS}, "incomplete timing inventory")
     all_y, all_base = [], []
     manifest = {"status": "verified", "folds": list(FOLDS), "fold_3_evaluated": False,
                 "player_05_evaluated": False, "config_sha256": digest(a.config),
@@ -36,7 +50,12 @@ def main(a):
         members = names[ids]
         require(all(s[:2] in {"00", "01", "02", "03", "04"} for s in members), "player leak")
         starts = np.asarray(cache["cluster_start_samples"][ids], np.int64)
-        ends = cluster_ends(cache["sequence"][ids], cache["mask"][ids], starts, cache["stats"][ids])
+        ends = np.empty(len(ids), np.int64)
+        for member in sorted(set(members)):
+            local = np.flatnonzero(members == member)
+            original_starts, original_ends = timing[member]
+            np.testing.assert_array_equal(original_starts, starts[local], err_msg="timing row identity drift")
+            ends[local] = original_ends
         exact = np.asarray(cache["exact"][ids], np.int32)
         y = np.minimum(exact, 6)
         track_metadata = {}
@@ -83,6 +102,6 @@ def main(a):
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__)
-    for name in ("bundle", "fold-root", "config", "dataset", "output"):
+    for name in ("bundle", "fold-root", "config", "dataset", "timing-root", "output"):
         p.add_argument("--" + name, type=Path, required=True)
     main(p.parse_args())

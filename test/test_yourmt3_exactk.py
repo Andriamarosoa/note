@@ -24,17 +24,14 @@ class YourMT3ExactKTests(unittest.TestCase):
             np.testing.assert_array_equal(assigned, expected)
             self.assertEqual(int(counts.sum()), sum(j >= 0 for j in expected))
 
-    def test_retained_geometry_recovers_missing_endpoints_and_singleton(self):
+    def test_integer_source_timing_preserves_endpoints_and_singleton(self):
         starts = np.array([100, 2500, 5000])
         ends = np.array([1864, 2900, 5000])
-        samples = np.array([[500, 1000], [2650, 2799], [5000, 5000]])
-        centers = (starts+ends)/2
-        sequence = np.stack([(samples-starts[:, None])/1764,
-                             (samples-centers[:, None])/1764], axis=-1).astype(np.float32)
-        stats = np.zeros((3, 8), np.float32)
-        stats[:, 1] = np.maximum(1, ends-starts)/1764
-        result = cluster_ends(sequence, np.ones((3, 2)), starts, stats)
+        samples = np.array([100, 500, 1000, 1864, 2500, 2650, 2799, 2900, 5000, 5000])
+        result = cluster_ends(starts, samples, np.array([0, 4, 8, 10]))
         np.testing.assert_array_equal(result, ends)
+        with self.assertRaises(ValueError):
+            cluster_ends(starts, samples.astype(np.float16), np.array([0, 4, 8, 10]))
 
     def test_boundary_tie_and_radius_are_exact(self):
         counts, assigned = assign_onsets([-883, -882, 882, 883], [0, 1764], [0, 1764])

@@ -39,28 +39,24 @@ def write_json(path, value):
     Path(path).write_text(json.dumps(value, indent=2, sort_keys=True, allow_nan=False) + "\n")
 
 
-def cluster_ends(sequence, mask, starts, stats):
-    """Recover original endpoints even when candidate rows were truncated.
+def cluster_ends(starts, full_samples, offsets):
+    """Read lossless endpoints from original pre-truncation integer timestamps.
 
-    Last two features are (sample-start)/1764 and (sample-center)/1764.
-    Their difference gives (end-start)/3528 for EVERY retained candidate.
-    No labels, model predictions, or rounded time windows enter this recovery.
+    Native packed input features use float16; they must never be used to
+    reconstruct sample-accurate timing. Original source shards preserve it.
     """
-    sequence = np.asarray(sequence)
-    mask = np.asarray(mask) > 0
-    starts = np.asarray(starts, np.int64)
-    require(mask.ndim == 2 and np.all(mask.any(axis=1)), "empty candidate group")
-    widths_float = 2 * CLUSTER_SAMPLES * (sequence[..., -2].astype(np.float64)
-                                         - sequence[..., -1].astype(np.float64))
-    widths = np.rint(widths_float).astype(np.int64)
-    require(np.max(np.abs(widths_float[mask] - widths[mask])) < 0.01,
-            "candidate timing cannot be recovered sample-accurately")
-    width = widths[np.arange(len(starts)), mask.argmax(axis=1)]
-    require(np.all((widths == width[:, None]) | ~mask), "inconsistent group centers")
-    require(np.all((width >= 0) & (width <= CLUSTER_SAMPLES)), "invalid group widths")
-    stats_width = np.rint(np.asarray(stats)[:, 1].astype(np.float64) * CLUSTER_SAMPLES)
-    require(np.array_equal(stats_width, np.maximum(1, width)), "width metadata drift")
-    return starts + width
+    starts, samples, offsets = map(np.asarray, (starts, full_samples, offsets))
+    require(all(x.dtype.kind in "iu" for x in (starts, samples, offsets)), "timing must be integer")
+    require(starts.ndim == samples.ndim == offsets.ndim == 1, "invalid timing dimensions")
+    require(len(offsets) == len(starts)+1 and offsets[0] == 0 and offsets[-1] == len(samples)
+            and np.all(np.diff(offsets) > 0), "invalid candidate offsets")
+    ends = np.empty(len(starts), np.int64)
+    for i, (a, b) in enumerate(zip(offsets[:-1], offsets[1:])):
+        group = samples[int(a):int(b)]
+        require(group[0] == starts[i] and np.all(np.diff(group) >= 0), "invalid candidate group")
+        require(0 <= group[-1]-group[0] <= CLUSTER_SAMPLES, "invalid group width")
+        ends[i] = group[-1]
+    return ends
 
 
 def assign_onsets(onsets, starts, ends):

@@ -54,12 +54,20 @@ jobs:
           unzip -q model/download/native-window-bundle.zip -d model/bundle
           gh release download v273-candidate-hidden1-multifold-37271262794 --repo '${{ github.repository }}' --pattern v273-candidate-hidden1-multifold-folds.tgz --dir model/download
           tar -xzf model/download/v273-candidate-hidden1-multifold-folds.tgz -C model/folds
+      - name: Restore original integer candidate timestamps
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          mkdir -p model/timing
+          gh release download v273-window-pair-36351028493 --repo '${{ github.repository }}' --pattern 'training-part-*.zip' --dir model/download
+          for part in model/download/training-part-*.zip; do
+            unzip -q "$part" -d "model/timing/$(basename "$part" .zip)"
+          done
       - name: Verify every target and replay freeze_local_combo
         run: >-
           python -B scripts/prepare_yourmt3_exactk.py
           --bundle model/bundle --fold-root model/folds
           --config analysis/v273-native-paired-config.json
-          --dataset data/GuitarSet --output model/cohort
+          --dataset data/GuitarSet --timing-root model/timing --output model/cohort
       - uses: actions/upload-artifact@v4
         with:
           name: yourmt3-exactk-cohort

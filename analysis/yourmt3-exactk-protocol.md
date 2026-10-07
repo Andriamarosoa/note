@@ -25,9 +25,10 @@ Protocole fixé le 7 octobre 2026, avant toute observation des prédictions.
   événements de note décodés sont conservés. Les événements hors groupe sont
   rapportés séparément. La classe 6 est plafonnée à 6 comme la cible existante ;
   les comptages bruts supérieurs à six restent exportés.
-- Les bornes originales des groupes sont reconstruites des deux coordonnées
-  temporelles conservées dans les features. Leur différence donne exactement
-  la largeur, y compris si les candidats extrêmes ont été tronqués. Comme les
+- Les bornes originales des groupes proviennent des horodatages entiers avant
+  troncature, conservés dans les dix archives `training-part-*.zip`. Chaque shard
+  doit correspondre à l'empreinte SHA256 du manifeste du bundle. Les features
+  du bundle sont en float16 et ne servent pas à reconstruire le temps. Comme les
   groupes sont disjoints et larges d'au plus 40 ms, l'affectation au groupe par
   distance à l'intervalle équivaut à celle par candidat le plus proche pour le
   rayon natif de 20 ms. Cette propriété est testée contre les listes complètes
@@ -35,6 +36,11 @@ Protocole fixé le 7 octobre 2026, avant toute observation des prédictions.
 - Sorties : Exact-K0 à K6, global, poly K2–K6, sous-/sur-comptage, matrices de
   confusion, corrections, régressions, net, détail par fold et par ligne,
   notes et attaques non affectées, erreurs de décodage, temps d'inférence.
+
+Correction technique avant mesure : le run `37604653992` s'est arrêté au
+contrôle de précision des coordonnées float16. Aucun score YourMT3+ n'a été
+observé dans ce run. Le lancement 2 récupère les horodatages intégraux des
+caches originaux ; le protocole d'affectation et les critères sont inchangés.
 
 ## Portée de la conclusion
 
