@@ -8,6 +8,54 @@
   participent plus à aucune sélection, validation ou métrique de référence.
 - Politique détaillée : [v273-player-scope-policy.md](v273-player-scope-policy.md).
 
+## Verdict confirmatoire de la référence hidden1 historique
+
+Run [37572714248](https://github.com/Andriamarosoa/note/actions/runs/37572714248)
+**completed / success** le 7 octobre 2026 ; release vérifiée
+[v273-reference-hidden1-nested-37572714248](https://github.com/Andriamarosoa/note/releases/tag/v273-reference-hidden1-nested-37572714248).
+Le run respecte le protocole préenregistré : folds 0/1/2/4 uniquement,
+players 00–04 uniquement, groupe fixe `[42,52,61,64]`, aucune recherche de
+groupe alternatif et aucune promotion automatique.
+
+Résultat mesuré : le groupe fixe améliore descriptivement les quatre folds
+externes (`+2`, `+8`, `+14`, `+17`), soit **+41 exacts** au total, dont
+**+27 low** et **+14 poly**. Il satisfait donc l'ancienne règle externe.
+Cependant, il échoue à la règle nested pré-déclarée dans **4 rotations sur 4** :
+
+| fold externe | accepté en inner | min global | min low | min poly | somme global |
+|---:|:---:|---:|---:|---:|---:|
+| 0 | non | -14 | -11 | -3 | +2 |
+| 1 | non | -4 | -2 | -6 | +10 |
+| 2 | non | -12 | -11 | -7 | -10 |
+| 4 | non | -4 | +1 | -5 | +27 |
+
+La politique nested s'abstient donc sur les quatre folds et produit un net
+sélectionné de **0**. Décision : **`candidate_hidden1 [42,52,61,64]` n'est pas
+confirmé comme référence robuste**. La référence conservée est le dernier niveau
+antérieur validé, **`freeze_local_combo`**. Le `+41` reste un résultat descriptif
+du groupe fixe et ne justifie aucune promotion.
+
+Exact-K agrégé de la référence conservée sur les mêmes folds externes :
+
+| vrai K | exacts / cas | exact |
+|---:|---:|---:|
+| 0 (silence) | 38 035 / 39 652 | 95,9220 % |
+| 1 | 7 889 / 12 272 | 64,2846 % |
+| 2 | 1 183 / 3 445 | 34,3396 % |
+| 3 | 915 / 2 289 | 39,9738 % |
+| 4 | 417 / 1 207 | 34,5485 % |
+| 5 | 15 / 355 | 4,2254 % |
+| 6 | 0 / 89 | 0,0000 % |
+
+Exact global : **48 454 / 59 309 = 81,6976 %** ; exact polyphonique K2–K6 :
+**2 530 / 7 385 = 34,2586 %**.
+
+Le run de confirmation pairwise dédupliqué
+[37577749778](https://github.com/Andriamarosoa/note/actions/runs/37577749778),
+lancé avant observation de ce verdict, est encore en cours. Il doit seulement
+vérifier la reproductibilité du même test fixe. La branche conditionnelle de
+re-sélection nested n'est pas ouverte, puisque le groupe fixe a échoué.
+
 ## Dernière étape : sélection des familles sur FIT exclusivement
 
 Audit du **7 octobre 2026**, depuis `a39dfbb8ff357d2c27b3909c28d2f3fe456512cb`.
