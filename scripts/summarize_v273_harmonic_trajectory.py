@@ -25,6 +25,7 @@ ARMS={
  "harmonic_coherence_only":(("harmonic","features",("coherence__",)),),
  "harmonic_full":(("harmonic","features",tuple()),),
  "harmonic_detuned_control":(("harmonic","detuned",tuple()),),
+ "harmonic_fundamental_control":(("harmonic","fundamental",tuple()),),
  "harmonic_time_scrambled_control":(("harmonic","scrambled",tuple()),),
  "band_static_plus_harmonic_lifecycle":(
     ("band","features",("static__",)),
@@ -66,6 +67,7 @@ def main():
     ids=sorted(h)
     for i in ids:
         require(all(h[i][z]==b[i][z] for z in ("member","fold","true_k","base_pred")),"metadata mismatch")
+        require("fundamental" in h[i], "fundamental-only control not exported")
     y=np.asarray([h[i]["true_k"] for i in ids],int)
     fold=np.asarray([h[i]["fold"] for i in ids],int)
     baseline=np.asarray([h[i]["base_pred"] for i in ids],int)
