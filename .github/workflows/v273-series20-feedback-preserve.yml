@@ -1,0 +1,34 @@
+name: V27.3 preserve S20 B-feedback causal control audit
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series20-feedback-preserve.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  preserve:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover all 78 source B/no-B changed cases and per-K audit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37858615276 --repo "$GITHUB_REPOSITORY" --name v273-series20-B-feedback-audit --dir model/feedback-audit
+      - name: Check required case evidence, preserve with permanent checksum
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test -s model/feedback-audit/all-B-vs-noB-changed-cases.csv
+          test -s model/feedback-audit/report.json
+          mkdir -p model/archive
+          tar -czf model/archive/v273-series20-B-feedback-audit.tar.gz -C model/feedback-audit .
+          (cd model/archive && sha256sum v273-series20-B-feedback-audit.tar.gz > SHA256SUMS)
+          gh release create "v273-series20-B-audit-${GITHUB_RUN_ID}" \
+            model/archive/v273-series20-B-feedback-audit.tar.gz model/archive/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "V27.3 S20 B versus no-B regression signatures ${GITHUB_RUN_ID}" \
+            --notes "Observed B effects only; 28 fixes, 26 regressions, 24 neutral changes, by true K and held fold, all 78 event-level cases. No independent validation or production model promotion."
