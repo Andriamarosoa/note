@@ -1,0 +1,64 @@
+name: V27.3 Dynamic Specialist Head Mixture
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - 'scripts/evaluate_v273_dynamic_heads.py'
+      - 'test/test_v273_dynamic_heads.py'
+      - '.github/workflows/v273-dynamic-head-mixture.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+
+jobs:
+  validate-and-evaluate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install fixed dependencies
+        run: python -m pip install numpy==1.26.4 scipy==1.17.1 scikit-learn==1.4.2
+      - name: Compile and verify dynamic routing
+        run: |
+          python -m py_compile scripts/evaluate_v273_dynamic_heads.py
+          python -B -m unittest -v test.test_v273_dynamic_heads
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37605163312
+          name: yourmt3-exactk-cohort
+          path: model/cohort
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37740493178
+          pattern: v273-harmonic-global-fold-*
+          path: model/features
+      - name: Train dynamic mixture and score ALL 59309 Exact-K examples
+        run: |
+          python -B scripts/evaluate_v273_dynamic_heads.py \
+            --cohort model/cohort \
+            --features model/features \
+            --output model/dynamic
+      - name: Publish per K and per fold scorecard
+        run: cat model/dynamic/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-dynamic-head-mixture-results
+          path: model/dynamic/
+          retention-days: 90
