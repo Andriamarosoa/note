@@ -1,4 +1,4 @@
-name: V27.3 Native Neural Head Selection with Fixes
+name: V27.3 Class-Conditional Neural Head Selection with Fixes
 
 on:
   push:
@@ -6,6 +6,7 @@ on:
     paths:
       - 'scripts/evaluate_v273_neural_history_mix.py'
       - 'scripts/learn_v273_neural_head_selector.py'
+      - 'test/test_v273_class_conditional_head_selector.py'
       - '.github/workflows/v273-native-neural-head-mix.yml'
   workflow_dispatch:
 
@@ -39,7 +40,7 @@ jobs:
       - name: Verify learned-attention head interaction tests
         run: |
           python -m py_compile scripts/evaluate_v273_neural_history_mix.py scripts/learn_v273_neural_head_selector.py
-          python -m unittest -v test.test_v273_neural_history_selector
+          python -m unittest -v test.test_v273_neural_history_selector test.test_v273_class_conditional_head_selector
       - uses: actions/download-artifact@v4
         with:
           github-token: ${{ github.token }}
