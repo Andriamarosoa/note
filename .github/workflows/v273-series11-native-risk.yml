@@ -1,0 +1,48 @@
+name: V27.3 series11 native regression risk loop
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series11-native-risk.yml'
+      - 'scripts/loop_v273_native_risk.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v273-series11-native-risk
+  cancel-in-progress: false
+jobs:
+  loop:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Check fixed feature and decoding contracts
+        run: python -m scripts.loop_v273_native_risk --self-test
+      - name: Retrieve verified series9 decisions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37853130781 --repo "$GITHUB_REPOSITORY" --name v273-series9-posthoc-audit --dir model/series9-input
+      - name: Run nested native risk gates and preserve all candidates
+        run: >-
+          python -m scripts.loop_v273_native_risk
+          --series9 model/series9-input/predictions.npz
+          --output model/series11-native-risk
+      - name: Publish audit
+        run: cat model/series11-native-risk/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series11-native-risk
+          path: model/series11-native-risk/
+          retention-days: 90
