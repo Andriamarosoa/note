@@ -188,10 +188,12 @@ def evaluate_piece(model,x,out,indices,probe):
                 out['B'][indices[start:start+len(chunk)],t]=torch.sigmoid(b[t]).numpy()
             out['probs'][indices[start:start+len(chunk)],4]=no_b.numpy()
             # Intervention test is only a diagnostic: NEVER used as a prediction.
-            sel=np.flatnonzero(p[0].argmax(1).numpy()==4)
+            # Probe the highest-K4 events in EVERY held piece. The
+            # network may never argmax K4 early in training.
+            sel=torch.topk(p[0][:,4],k=min(16,len(chunk))).indices
             if len(sel):
                 msg=torch.tanh(b[0][sel]).clone()
-                msg[:,4]=-4.0
+                msg[:,4]=-1.0
                 alt=model(chunk[sel],passes=2,
                     second_message_override=msg)[2][1]
                 natural=p[1][sel]
@@ -340,7 +342,7 @@ def train(a):
         lines.append(f"| {key} | {p['corrections']} | {p['regressions']} | "
             f"{p['net']:+d} | {value['changed']} |")
     lines+=['','## B counterfactual exclusion of K4','',
-        f"K4 candidate events tested: {probe['tested']}",
+        f"Top-K4 probability candidates tested: {probe['tested']}",
         f"Mean absolute distribution change in A2: {probe['mean_prob_absolute_change']:.8f}",
         f"A2 class decision changed by only the B intervention: {probe['decision_changed']}",
         f"K4 probability decreased: {probe['K4_reduced']}/{probe['tested']}",
