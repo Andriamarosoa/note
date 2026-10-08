@@ -1,0 +1,114 @@
+name: V27.3 Harmonic Source Trajectory K234 Audit
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - 'scripts/extract_v273_harmonic_trajectory.py'
+      - 'scripts/summarize_v273_harmonic_trajectory.py'
+      - 'test/test_v273_harmonic_trajectory.py'
+      - '.github/workflows/v273-harmonic-trajectory-k234.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+
+jobs:
+  extract:
+    strategy:
+      fail-fast: false
+      matrix:
+        fold: [0, 1, 2, 4]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 110
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install pinned runtime
+        run: python -m pip install -r requirements-train.txt numpy==1.26.4 scipy==1.17.1 scikit-learn==1.4.2
+      - name: Compile and test known harmonic-source audio
+        run: |
+          python -m py_compile scripts/extract_v273_harmonic_trajectory.py scripts/summarize_v273_harmonic_trajectory.py
+          python -m unittest -v test.test_v273_harmonic_trajectory
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37605163312
+          name: yourmt3-exactk-cohort
+          path: model/cohort
+      - uses: actions/cache@v4
+        id: gs
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+      - if: steps.gs.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+      - name: Verify dataset original identity
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Extract harmonic trajectories and placebo controls
+        run: |
+          python -B scripts/extract_v273_harmonic_trajectory.py \
+            --cohort model/cohort \
+            --dataset data/GuitarSet \
+            --fold ${{ matrix.fold }} \
+            --output model/harmonic-${{ matrix.fold }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-harmonic-trajectory-fold-${{ matrix.fold }}
+          path: model/harmonic-${{ matrix.fold }}/
+          retention-days: 90
+  evaluate:
+    needs: extract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.17.1 scikit-learn==1.4.2
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v273-harmonic-trajectory-fold-*
+          path: model/harmonic
+      - name: Retrieve identically selected fixed K234 24-band controls
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37738068677
+          pattern: v273-transport-k234-fold-*
+          path: model/band
+      - name: Compare harmonic birth retention damping with prior controls
+        run: |
+          python -B scripts/summarize_v273_harmonic_trajectory.py \
+            --harmonic-root model/harmonic \
+            --band-root model/band \
+            --output model/evaluation
+      - name: Publish comparative report
+        run: cat model/evaluation/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-harmonic-trajectory-k234-report
+          path: model/evaluation/
+          retention-days: 90
