@@ -67,7 +67,10 @@ def _states(spec, bank):
         A *= np.maximum(q - penalty, 0.0) / (A @ gram + EPS)
         A = np.maximum(A, 0.0)
     require(np.isfinite(A).all() and np.min(A) >= 0.0, "nonfinite activation")
-    A = uniform_filter1d(A, size=3, axis=0, mode="nearest")
+    # uniform_filter1d can emit tiny negative roundoff after smoothing
+    # extremely sparse reconstructions; activations are physically nonnegative.
+    A = np.maximum(uniform_filter1d(A, size=3, axis=0, mode="nearest"), 0.0)
+    require(np.isfinite(A).all(), "nonfinite smoothed activations")
     return A
 
 def _moment(out, prefix, v):
