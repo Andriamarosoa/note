@@ -1,0 +1,80 @@
+name: V27.3 S21 verify B trust and preserve models
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series21-verify.yml'
+      - 'scripts/verify_v273_message_reliability.py'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install all replay and audio feature libraries
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Download original S21 gate weights probabilities and all 96 decisions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37859454327 --repo "$GITHUB_REPOSITORY" --name v273-series21-B-trust --dir model/s21-original
+      - name: Retrieve source S20 distributions from original action run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37858383973 --repo "$GITHUB_REPOSITORY" --name v273-series20-residual --dir model/s20
+      - name: Retrieve exact S18 source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37856499212 --repo "$GITHUB_REPOSITORY" --name v273-series18-k43-k21 --dir model/s18
+      - name: Retrieve authenticated original audio features for all folds
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/acoustic-sources
+          gh release download v273-open-k0-k6-37837235723 --repo "$GITHUB_REPOSITORY" --pattern 'v273-open-features-*.tar' --dir model/acoustic-sources
+          for fold in 0 1 2 4; do
+            mkdir -p "model/features/fold-$fold"
+            tar -xf "model/acoustic-sources/v273-open-features-$fold.tar" -C "model/features/fold-$fold"
+          done
+      - name: Independently re-infer 76 fitted trust models and all 96 decisions
+        run: >-
+          python -m scripts.verify_v273_message_reliability
+          --features model/features
+          --s18 model/s18/predictions.npz
+          --series20 model/s20/probabilities.npz
+          --input model/s21-original
+          --output model/s21-verified
+      - name: Publish full corrected/regressed gate audit
+        run: cat model/s21-verified/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series21-verified
+          path: model/s21-verified/
+          retention-days: 90
+      - name: Preserve all scores and gates with permanent checksum
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/archive
+          tar -czf model/archive/v273-series21-trust-research.tar.gz -C model s21-original s21-verified
+          (cd model/archive && sha256sum v273-series21-trust-research.tar.gz > SHA256SUMS)
+          gh release create "v273-series21-research-${GITHUB_RUN_ID}" \
+            model/archive/v273-series21-trust-research.tar.gz model/archive/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "V27.3 S21 reliability gate research ${GITHUB_RUN_ID}" \
+            --notes "Experimental 96 trust selectors, 76 checkpoint fits, preserved B-score ablations and every regression/correction; not independent music validation nor production promotion."
