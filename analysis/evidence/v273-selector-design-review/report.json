@@ -1,0 +1,2284 @@
+{
+  "calibrated_posterior_counterexample": {
+    "baseline_K": 3,
+    "expected_net_prediction": 3,
+    "interpretation": "synthetic probability distribution, not measured native performance",
+    "old_prediction": 2,
+    "truth_probabilities": [
+      0.3,
+      0.4,
+      0.2,
+      0.06,
+      0.04
+    ]
+  },
+  "evaluated_run": 37758789956,
+  "evaluated_run_ref": "2507836c4ee590fb944fb8d2df0ac401ae0c7704",
+  "independent_validation": false,
+  "inner_audit_producer_dependencies": [
+    {
+      "outer_fold": 0,
+      "outer_ids_in_producer_train": 0,
+      "overlap_id_sha256": "100ee8da5a2bd23bd5998fb84d3bb935e00a477ffaceb81a73db46cab35c7adf",
+      "receiver_fold": 1,
+      "receiver_ids_in_producer_train": 1287,
+      "reference_prediction_fold": 2,
+      "specialist_train_rows": 2780
+    },
+    {
+      "outer_fold": 0,
+      "outer_ids_in_producer_train": 0,
+      "overlap_id_sha256": "100ee8da5a2bd23bd5998fb84d3bb935e00a477ffaceb81a73db46cab35c7adf",
+      "receiver_fold": 1,
+      "receiver_ids_in_producer_train": 1287,
+      "reference_prediction_fold": 4,
+      "specialist_train_rows": 2478
+    },
+    {
+      "outer_fold": 0,
+      "outer_ids_in_producer_train": 0,
+      "overlap_id_sha256": "e9f5ef91986f414983e0705d4ed7f84cee5a4ebbe3d906ba07d8ac03137bc98f",
+      "receiver_fold": 2,
+      "receiver_ids_in_producer_train": 1191,
+      "reference_prediction_fold": 1,
+      "specialist_train_rows": 2684
+    },
+    {
+      "outer_fold": 0,
+      "outer_ids_in_producer_train": 0,
+      "overlap_id_sha256": "e9f5ef91986f414983e0705d4ed7f84cee5a4ebbe3d906ba07d8ac03137bc98f",
+      "receiver_fold": 2,
+      "receiver_ids_in_producer_train": 1191,
+      "reference_prediction_fold": 4,
+      "specialist_train_rows": 2478
+    },
+    {
+      "outer_fold": 0,
+      "outer_ids_in_producer_train": 0,
+      "overlap_id_sha256": "9cd2ab6754ad2fa5c1dd6bdf7f122436b63fbffa3db5cb58e0068526fd70c2d6",
+      "receiver_fold": 4,
+      "receiver_ids_in_producer_train": 1493,
+      "reference_prediction_fold": 1,
+      "specialist_train_rows": 2684
+    },
+    {
+      "outer_fold": 0,
+      "outer_ids_in_producer_train": 0,
+      "overlap_id_sha256": "9cd2ab6754ad2fa5c1dd6bdf7f122436b63fbffa3db5cb58e0068526fd70c2d6",
+      "receiver_fold": 4,
+      "receiver_ids_in_producer_train": 1493,
+      "reference_prediction_fold": 2,
+      "specialist_train_rows": 2780
+    },
+    {
+      "outer_fold": 1,
+      "outer_ids_in_producer_train": 0,
+      "overlap_id_sha256": "541ebc191ea82d63770d0fd7880f6655fcfb6cbe112c46a10a38cdb6cc7a9d53",
+      "receiver_fold": 0,
+      "receiver_ids_in_producer_train": 1481,
+      "reference_prediction_fold": 2,
+      "specialist_train_rows": 2974
+    },
+    {
+      "outer_fold": 1,
+      "outer_ids_in_producer_train": 0,
+      "overlap_id_sha256": "541ebc191ea82d63770d0fd7880f6655fcfb6cbe112c46a10a38cdb6cc7a9d53",
+      "receiver_fold": 0,
+      "receiver_ids_in_producer_train": 1481,
+      "reference_prediction_fold": 4,
+      "specialist_train_rows": 2672
+    },
+    {
+      "outer_fold": 1,
+      "outer_ids_in_producer_train": 0,
+      "overlap_id_sha256": "e9f5ef91986f414983e0705d4ed7f84cee5a4ebbe3d906ba07d8ac03137bc98f",
+      "receiver_fold": 2,
+      "receiver_ids_in_producer_train": 1191,
+      "reference_prediction_fold": 0,
+      "specialist_train_rows": 2684
+    },
+    {
+      "outer_fold": 1,
+      "outer_ids_in_producer_train": 0,
+      "overlap_id_sha256": "e9f5ef91986f414983e0705d4ed7f84cee5a4ebbe3d906ba07d8ac03137bc98f",
+      "receiver_fold": 2,
+      "receiver_ids_in_producer_train": 1191,
+      "reference_prediction_fold": 4,
+      "specialist_train_rows": 2672
+    },
+    {
+      "outer_fold": 1,
+      "outer_ids_in_producer_train": 0,
+      "overlap_id_sha256": "9cd2ab6754ad2fa5c1dd6bdf7f122436b63fbffa3db5cb58e0068526fd70c2d6",
+      "receiver_fold": 4,
+      "receiver_ids_in_producer_train": 1493,
+      "reference_prediction_fold": 0,
+      "specialist_train_rows": 2684
+    },
+    {
+      "outer_fold": 1,
+      "outer_ids_in_producer_train": 0,
+      "overlap_id_sha256": "9cd2ab6754ad2fa5c1dd6bdf7f122436b63fbffa3db5cb58e0068526fd70c2d6",
+      "receiver_fold": 4,
+      "receiver_ids_in_producer_train": 1493,
+      "reference_prediction_fold": 2,
+      "specialist_train_rows": 2974
+    },
+    {
+      "outer_fold": 2,
+      "outer_ids_in_producer_train": 0,
+      "overlap_id_sha256": "541ebc191ea82d63770d0fd7880f6655fcfb6cbe112c46a10a38cdb6cc7a9d53",
+      "receiver_fold": 0,
+      "receiver_ids_in_producer_train": 1481,
+      "reference_prediction_fold": 1,
+      "specialist_train_rows": 2974
+    },
+    {
+      "outer_fold": 2,
+      "outer_ids_in_producer_train": 0,
+      "overlap_id_sha256": "541ebc191ea82d63770d0fd7880f6655fcfb6cbe112c46a10a38cdb6cc7a9d53",
+      "receiver_fold": 0,
+      "receiver_ids_in_producer_train": 1481,
+      "reference_prediction_fold": 4,
+      "specialist_train_rows": 2768
+    },
+    {
+      "outer_fold": 2,
+      "outer_ids_in_producer_train": 0,
+      "overlap_id_sha256": "100ee8da5a2bd23bd5998fb84d3bb935e00a477ffaceb81a73db46cab35c7adf",
+      "receiver_fold": 1,
+      "receiver_ids_in_producer_train": 1287,
+      "reference_prediction_fold": 0,
+      "specialist_train_rows": 2780
+    },
+    {
+      "outer_fold": 2,
+      "outer_ids_in_producer_train": 0,
+      "overlap_id_sha256": "100ee8da5a2bd23bd5998fb84d3bb935e00a477ffaceb81a73db46cab35c7adf",
+      "receiver_fold": 1,
+      "receiver_ids_in_producer_train": 1287,
+      "reference_prediction_fold": 4,
+      "specialist_train_rows": 2768
+    },
+    {
+      "outer_fold": 2,
+      "outer_ids_in_producer_train": 0,
+      "overlap_id_sha256": "9cd2ab6754ad2fa5c1dd6bdf7f122436b63fbffa3db5cb58e0068526fd70c2d6",
+      "receiver_fold": 4,
+      "receiver_ids_in_producer_train": 1493,
+      "reference_prediction_fold": 0,
+      "specialist_train_rows": 2780
+    },
+    {
+      "outer_fold": 2,
+      "outer_ids_in_producer_train": 0,
+      "overlap_id_sha256": "9cd2ab6754ad2fa5c1dd6bdf7f122436b63fbffa3db5cb58e0068526fd70c2d6",
+      "receiver_fold": 4,
+      "receiver_ids_in_producer_train": 1493,
+      "reference_prediction_fold": 1,
+      "specialist_train_rows": 2974
+    },
+    {
+      "outer_fold": 4,
+      "outer_ids_in_producer_train": 0,
+      "overlap_id_sha256": "541ebc191ea82d63770d0fd7880f6655fcfb6cbe112c46a10a38cdb6cc7a9d53",
+      "receiver_fold": 0,
+      "receiver_ids_in_producer_train": 1481,
+      "reference_prediction_fold": 1,
+      "specialist_train_rows": 2672
+    },
+    {
+      "outer_fold": 4,
+      "outer_ids_in_producer_train": 0,
+      "overlap_id_sha256": "541ebc191ea82d63770d0fd7880f6655fcfb6cbe112c46a10a38cdb6cc7a9d53",
+      "receiver_fold": 0,
+      "receiver_ids_in_producer_train": 1481,
+      "reference_prediction_fold": 2,
+      "specialist_train_rows": 2768
+    },
+    {
+      "outer_fold": 4,
+      "outer_ids_in_producer_train": 0,
+      "overlap_id_sha256": "100ee8da5a2bd23bd5998fb84d3bb935e00a477ffaceb81a73db46cab35c7adf",
+      "receiver_fold": 1,
+      "receiver_ids_in_producer_train": 1287,
+      "reference_prediction_fold": 0,
+      "specialist_train_rows": 2478
+    },
+    {
+      "outer_fold": 4,
+      "outer_ids_in_producer_train": 0,
+      "overlap_id_sha256": "100ee8da5a2bd23bd5998fb84d3bb935e00a477ffaceb81a73db46cab35c7adf",
+      "receiver_fold": 1,
+      "receiver_ids_in_producer_train": 1287,
+      "reference_prediction_fold": 2,
+      "specialist_train_rows": 2768
+    },
+    {
+      "outer_fold": 4,
+      "outer_ids_in_producer_train": 0,
+      "overlap_id_sha256": "e9f5ef91986f414983e0705d4ed7f84cee5a4ebbe3d906ba07d8ac03137bc98f",
+      "receiver_fold": 2,
+      "receiver_ids_in_producer_train": 1191,
+      "reference_prediction_fold": 0,
+      "specialist_train_rows": 2478
+    },
+    {
+      "outer_fold": 4,
+      "outer_ids_in_producer_train": 0,
+      "overlap_id_sha256": "e9f5ef91986f414983e0705d4ed7f84cee5a4ebbe3d906ba07d8ac03137bc98f",
+      "receiver_fold": 2,
+      "receiver_ids_in_producer_train": 1191,
+      "reference_prediction_fold": 1,
+      "specialist_train_rows": 2672
+    }
+  ],
+  "limitations": [
+    "No weights retrained and no fresh holdout evaluated.",
+    "A decoder intervention is confounded by heads trained jointly with the old score and weighted loss.",
+    "Inner producer dependence is reconstructed from actual split logic and artifact IDs; no claim of outer-test-label leakage.",
+    "Missing direct spectral context does not imply spectral evidence is absent from specialist outputs.",
+    "Theoretical eligibility ceiling uses labels for diagnosis only, never prediction.",
+    "Matrices include observable features and archived risks, but not individual fundamental candidates, head posteriors, or audio clips absent from these artifacts."
+  ],
+  "promotion": false,
+  "replay_only": true,
+  "source_contract": {
+    "active_keep_adapter_values": [
+      0.9800000190734863,
+      1.0,
+      0.9800000190734863,
+      1.0,
+      0.9800000190734863,
+      1.0
+    ],
+    "baseline_posterior": [
+      [
+        0.84,
+        0.04000000000000001,
+        0.04000000000000001,
+        0.04000000000000001,
+        0.04000000000000001
+      ],
+      [
+        0.04000000000000001,
+        0.84,
+        0.04000000000000001,
+        0.04000000000000001,
+        0.04000000000000001
+      ],
+      [
+        0.04000000000000001,
+        0.04000000000000001,
+        0.84,
+        0.04000000000000001,
+        0.04000000000000001
+      ]
+    ],
+    "correction_presence_descriptor": {
+      "checked_slots": 512,
+      "incorrect_slots": 128,
+      "scope": "one structural representative per baseline K2/K3/K4; not error counts"
+    },
+    "direct_context_families": {
+      "birth": 11,
+      "damping": 11,
+      "persistence": 4
+    },
+    "direct_context_names": [
+      "birth__early_mass_fraction",
+      "birth__frame_max",
+      "birth__frame_mean",
+      "birth__frame_std",
+      "birth__late_mass_fraction",
+      "birth__mid_mass_fraction",
+      "birth__novel_mass",
+      "birth__novel_track_fraction",
+      "birth__positive_flow",
+      "birth__positive_fraction",
+      "birth__positive_track_concentration",
+      "damping__early_mass_fraction",
+      "damping__frame_max",
+      "damping__frame_mean",
+      "damping__frame_std",
+      "damping__late_mass_fraction",
+      "damping__lost_mass",
+      "damping__mid_mass_fraction",
+      "damping__negative_flow",
+      "damping__sink_fraction",
+      "damping__sink_track_concentration",
+      "damping__vanishing_track_fraction",
+      "persistence__mean_survival",
+      "persistence__new_source_retention",
+      "persistence__pre_post_retention",
+      "persistence__retention_10"
+    ],
+    "low_k_keep_target": [
+      1.0,
+      1.0
+    ],
+    "schema_families": {
+      "birth": 11,
+      "coherence": 7,
+      "damping": 11,
+      "persistence": 7,
+      "source": 8,
+      "spectral": 14
+    },
+    "schema_features": 58,
+    "spectral_features_directly_visible": 0
+  },
+  "source_ref": "aa4ca4b7729a00e19dcfd1a071d6afac09933dc3",
+  "source_sha256": {
+    "scripts/audit_v273_kconditional_127_subsets.py": "00173fc66f6aa594102717c39b6ddea2c9c44f7273ecde6db112afbe77dd1c4d",
+    "scripts/evaluate_v273_audit_aware_selection.py": "10787c5ba2ea2abb84dc5786993beab19a50e94fade49e9b01a6941defae6b3e",
+    "scripts/evaluate_v273_dynamic_heads.py": "44c2f0d6887992dd9869e56d5eac6185d0ac1898f1004417fd6eca977bf0b461",
+    "scripts/evaluate_v273_neural_history_mix.py": "d810003cb26f4772babe309ae18158708c892d01f9346bc2fdc546947de02f06",
+    "scripts/extract_v273_harmonic_global.py": "b41d705bfa798f8c2a8c28e919ce9f0742a0a1ece080e1fcde00a803d1b5cb32",
+    "scripts/extract_v273_harmonic_trajectory.py": "7c995ec02d1f8e5d62fcdfc1d2aef32e994396479d98c54766dbd75cd3e3375b",
+    "scripts/learn_v273_audit_aware_selection.py": "1bd208cd3b043981923031549dc228fba489a4cb9039f5b0d6a1cbfa5da399e8",
+    "scripts/learn_v273_transition_combo_risk.py": "7a89ada748488af98cf47663599284b19539cfb41f93f0f84e41d0bbb875c3ff",
+    "scripts/summarize_v273_harmonic_global.py": "86e3d2fc4f4c487190d73c5c5a147a4709556a1757df9878596fdeb588d67bc8"
+  },
+  "status": "completed",
+  "variants": {
+    "baseline": {
+      "artifact_sha256": "4a625c014524e327dfe07ee428f60137436161b93e9897a701a73e3a5f481b42",
+      "by_fold": {
+        "0": {
+          "original": {
+            "by_k": {
+              "0": {
+                "changes": 3,
+                "correct": 10477,
+                "corrections": 0,
+                "exact": 0.973427483043761,
+                "net": 0,
+                "regressions": 0,
+                "rows": 10763
+              },
+              "1": {
+                "changes": 25,
+                "correct": 1821,
+                "corrections": 0,
+                "exact": 0.5916179337231969,
+                "net": 0,
+                "regressions": 0,
+                "rows": 3078
+              },
+              "2": {
+                "changes": 75,
+                "correct": 365,
+                "corrections": 15,
+                "exact": 0.3675730110775428,
+                "net": -7,
+                "regressions": 22,
+                "rows": 993
+              },
+              "3": {
+                "changes": 99,
+                "correct": 161,
+                "corrections": 30,
+                "exact": 0.27104377104377103,
+                "net": -20,
+                "regressions": 50,
+                "rows": 594
+              },
+              "4": {
+                "changes": 123,
+                "correct": 128,
+                "corrections": 43,
+                "exact": 0.3422459893048128,
+                "net": 12,
+                "regressions": 31,
+                "rows": 374
+              },
+              "5": {
+                "changes": 56,
+                "correct": 30,
+                "corrections": 26,
+                "exact": 0.2608695652173913,
+                "net": 26,
+                "regressions": 0,
+                "rows": 115
+              },
+              "6": {
+                "changes": 17,
+                "correct": 5,
+                "corrections": 5,
+                "exact": 0.14285714285714285,
+                "net": 5,
+                "regressions": 0,
+                "rows": 35
+              }
+            },
+            "global_metrics": {
+              "changes": 398,
+              "correct": 12987,
+              "corrections": 119,
+              "exact": 0.814129889669007,
+              "net": 16,
+              "regressions": 103,
+              "rows": 15952
+            },
+            "poly": {
+              "changes": 370,
+              "correct": 689,
+              "corrections": 119,
+              "exact": 0.3263855992420654,
+              "net": 16,
+              "regressions": 103,
+              "rows": 2111
+            }
+          },
+          "replay": {
+            "by_k": {
+              "0": {
+                "changes": 18,
+                "correct": 10477,
+                "corrections": 0,
+                "exact": 0.973427483043761,
+                "net": 0,
+                "regressions": 0,
+                "rows": 10763
+              },
+              "1": {
+                "changes": 100,
+                "correct": 1821,
+                "corrections": 0,
+                "exact": 0.5916179337231969,
+                "net": 0,
+                "regressions": 0,
+                "rows": 3078
+              },
+              "2": {
+                "changes": 145,
+                "correct": 302,
+                "corrections": 27,
+                "exact": 0.3041289023162135,
+                "net": -70,
+                "regressions": 97,
+                "rows": 993
+              },
+              "3": {
+                "changes": 116,
+                "correct": 199,
+                "corrections": 59,
+                "exact": 0.335016835016835,
+                "net": 18,
+                "regressions": 41,
+                "rows": 594
+              },
+              "4": {
+                "changes": 92,
+                "correct": 113,
+                "corrections": 19,
+                "exact": 0.30213903743315507,
+                "net": -3,
+                "regressions": 22,
+                "rows": 374
+              },
+              "5": {
+                "changes": 43,
+                "correct": 23,
+                "corrections": 19,
+                "exact": 0.2,
+                "net": 19,
+                "regressions": 0,
+                "rows": 115
+              },
+              "6": {
+                "changes": 13,
+                "correct": 4,
+                "corrections": 4,
+                "exact": 0.11428571428571428,
+                "net": 4,
+                "regressions": 0,
+                "rows": 35
+              }
+            },
+            "global_metrics": {
+              "changes": 527,
+              "correct": 12939,
+              "corrections": 128,
+              "exact": 0.8111208625877633,
+              "net": -32,
+              "regressions": 160,
+              "rows": 15952
+            },
+            "poly": {
+              "changes": 409,
+              "correct": 641,
+              "corrections": 128,
+              "exact": 0.3036475603979157,
+              "net": -32,
+              "regressions": 160,
+              "rows": 2111
+            }
+          }
+        },
+        "1": {
+          "original": {
+            "by_k": {
+              "0": {
+                "changes": 4,
+                "correct": 8625,
+                "corrections": 0,
+                "exact": 0.9559964531146087,
+                "net": 0,
+                "regressions": 0,
+                "rows": 9022
+              },
+              "1": {
+                "changes": 36,
+                "correct": 1969,
+                "corrections": 0,
+                "exact": 0.6384565499351491,
+                "net": 0,
+                "regressions": 0,
+                "rows": 3084
+              },
+              "2": {
+                "changes": 101,
+                "correct": 274,
+                "corrections": 24,
+                "exact": 0.3075196408529742,
+                "net": 2,
+                "regressions": 22,
+                "rows": 891
+              },
+              "3": {
+                "changes": 123,
+                "correct": 217,
+                "corrections": 43,
+                "exact": 0.384070796460177,
+                "net": -13,
+                "regressions": 56,
+                "rows": 565
+              },
+              "4": {
+                "changes": 68,
+                "correct": 74,
+                "corrections": 14,
+                "exact": 0.3274336283185841,
+                "net": -25,
+                "regressions": 39,
+                "rows": 226
+              },
+              "5": {
+                "changes": 41,
+                "correct": 18,
+                "corrections": 17,
+                "exact": 0.28125,
+                "net": 17,
+                "regressions": 0,
+                "rows": 64
+              },
+              "6": {
+                "changes": 10,
+                "correct": 2,
+                "corrections": 2,
+                "exact": 0.125,
+                "net": 2,
+                "regressions": 0,
+                "rows": 16
+              }
+            },
+            "global_metrics": {
+              "changes": 383,
+              "correct": 11179,
+              "corrections": 100,
+              "exact": 0.8061003749639458,
+              "net": -17,
+              "regressions": 117,
+              "rows": 13868
+            },
+            "poly": {
+              "changes": 343,
+              "correct": 585,
+              "corrections": 100,
+              "exact": 0.33200908059023837,
+              "net": -17,
+              "regressions": 117,
+              "rows": 1762
+            }
+          },
+          "replay": {
+            "by_k": {
+              "0": {
+                "changes": 23,
+                "correct": 8625,
+                "corrections": 0,
+                "exact": 0.9559964531146087,
+                "net": 0,
+                "regressions": 0,
+                "rows": 9022
+              },
+              "1": {
+                "changes": 87,
+                "correct": 1969,
+                "corrections": 0,
+                "exact": 0.6384565499351491,
+                "net": 0,
+                "regressions": 0,
+                "rows": 3084
+              },
+              "2": {
+                "changes": 144,
+                "correct": 236,
+                "corrections": 36,
+                "exact": 0.2648709315375982,
+                "net": -36,
+                "regressions": 72,
+                "rows": 891
+              },
+              "3": {
+                "changes": 119,
+                "correct": 263,
+                "corrections": 67,
+                "exact": 0.4654867256637168,
+                "net": 33,
+                "regressions": 34,
+                "rows": 565
+              },
+              "4": {
+                "changes": 55,
+                "correct": 79,
+                "corrections": 7,
+                "exact": 0.3495575221238938,
+                "net": -20,
+                "regressions": 27,
+                "rows": 226
+              },
+              "5": {
+                "changes": 25,
+                "correct": 16,
+                "corrections": 15,
+                "exact": 0.25,
+                "net": 15,
+                "regressions": 0,
+                "rows": 64
+              },
+              "6": {
+                "changes": 6,
+                "correct": 2,
+                "corrections": 2,
+                "exact": 0.125,
+                "net": 2,
+                "regressions": 0,
+                "rows": 16
+              }
+            },
+            "global_metrics": {
+              "changes": 459,
+              "correct": 11190,
+              "corrections": 127,
+              "exact": 0.806893567926161,
+              "net": -6,
+              "regressions": 133,
+              "rows": 13868
+            },
+            "poly": {
+              "changes": 349,
+              "correct": 596,
+              "corrections": 127,
+              "exact": 0.33825198637911463,
+              "net": -6,
+              "regressions": 133,
+              "rows": 1762
+            }
+          }
+        },
+        "2": {
+          "original": {
+            "by_k": {
+              "0": {
+                "changes": 2,
+                "correct": 9620,
+                "corrections": 0,
+                "exact": 0.9525695613427072,
+                "net": 0,
+                "regressions": 0,
+                "rows": 10099
+              },
+              "1": {
+                "changes": 38,
+                "correct": 1989,
+                "corrections": 0,
+                "exact": 0.6846815834767642,
+                "net": 0,
+                "regressions": 0,
+                "rows": 2905
+              },
+              "2": {
+                "changes": 76,
+                "correct": 265,
+                "corrections": 29,
+                "exact": 0.363013698630137,
+                "net": 16,
+                "regressions": 13,
+                "rows": 730
+              },
+              "3": {
+                "changes": 114,
+                "correct": 134,
+                "corrections": 32,
+                "exact": 0.2392857142857143,
+                "net": -19,
+                "regressions": 51,
+                "rows": 560
+              },
+              "4": {
+                "changes": 74,
+                "correct": 113,
+                "corrections": 16,
+                "exact": 0.424812030075188,
+                "net": -29,
+                "regressions": 45,
+                "rows": 266
+              },
+              "5": {
+                "changes": 37,
+                "correct": 15,
+                "corrections": 10,
+                "exact": 0.16666666666666666,
+                "net": 10,
+                "regressions": 0,
+                "rows": 90
+              },
+              "6": {
+                "changes": 8,
+                "correct": 4,
+                "corrections": 4,
+                "exact": 0.26666666666666666,
+                "net": 4,
+                "regressions": 0,
+                "rows": 15
+              }
+            },
+            "global_metrics": {
+              "changes": 349,
+              "correct": 12140,
+              "corrections": 91,
+              "exact": 0.8278213433344698,
+              "net": -18,
+              "regressions": 109,
+              "rows": 14665
+            },
+            "poly": {
+              "changes": 309,
+              "correct": 531,
+              "corrections": 91,
+              "exact": 0.31968693558097533,
+              "net": -18,
+              "regressions": 109,
+              "rows": 1661
+            }
+          },
+          "replay": {
+            "by_k": {
+              "0": {
+                "changes": 11,
+                "correct": 9620,
+                "corrections": 0,
+                "exact": 0.9525695613427072,
+                "net": 0,
+                "regressions": 0,
+                "rows": 10099
+              },
+              "1": {
+                "changes": 62,
+                "correct": 1989,
+                "corrections": 0,
+                "exact": 0.6846815834767642,
+                "net": 0,
+                "regressions": 0,
+                "rows": 2905
+              },
+              "2": {
+                "changes": 80,
+                "correct": 238,
+                "corrections": 26,
+                "exact": 0.32602739726027397,
+                "net": -11,
+                "regressions": 37,
+                "rows": 730
+              },
+              "3": {
+                "changes": 104,
+                "correct": 169,
+                "corrections": 52,
+                "exact": 0.30178571428571427,
+                "net": 16,
+                "regressions": 36,
+                "rows": 560
+              },
+              "4": {
+                "changes": 52,
+                "correct": 126,
+                "corrections": 6,
+                "exact": 0.47368421052631576,
+                "net": -16,
+                "regressions": 22,
+                "rows": 266
+              },
+              "5": {
+                "changes": 28,
+                "correct": 14,
+                "corrections": 9,
+                "exact": 0.15555555555555556,
+                "net": 9,
+                "regressions": 0,
+                "rows": 90
+              },
+              "6": {
+                "changes": 5,
+                "correct": 3,
+                "corrections": 3,
+                "exact": 0.2,
+                "net": 3,
+                "regressions": 0,
+                "rows": 15
+              }
+            },
+            "global_metrics": {
+              "changes": 342,
+              "correct": 12159,
+              "corrections": 96,
+              "exact": 0.8291169451073985,
+              "net": 1,
+              "regressions": 95,
+              "rows": 14665
+            },
+            "poly": {
+              "changes": 269,
+              "correct": 550,
+              "corrections": 96,
+              "exact": 0.33112582781456956,
+              "net": 1,
+              "regressions": 95,
+              "rows": 1661
+            }
+          }
+        },
+        "4": {
+          "original": {
+            "by_k": {
+              "0": {
+                "changes": 3,
+                "correct": 9313,
+                "corrections": 0,
+                "exact": 0.9534193284193284,
+                "net": 0,
+                "regressions": 0,
+                "rows": 9768
+              },
+              "1": {
+                "changes": 11,
+                "correct": 2110,
+                "corrections": 0,
+                "exact": 0.6583463338533542,
+                "net": 0,
+                "regressions": 0,
+                "rows": 3205
+              },
+              "2": {
+                "changes": 60,
+                "correct": 303,
+                "corrections": 21,
+                "exact": 0.36462093862815886,
+                "net": 13,
+                "regressions": 8,
+                "rows": 831
+              },
+              "3": {
+                "changes": 113,
+                "correct": 270,
+                "corrections": 11,
+                "exact": 0.47368421052631576,
+                "net": -81,
+                "regressions": 92,
+                "rows": 570
+              },
+              "4": {
+                "changes": 116,
+                "correct": 104,
+                "corrections": 59,
+                "exact": 0.30498533724340177,
+                "net": 44,
+                "regressions": 15,
+                "rows": 341
+              },
+              "5": {
+                "changes": 50,
+                "correct": 27,
+                "corrections": 22,
+                "exact": 0.313953488372093,
+                "net": 22,
+                "regressions": 0,
+                "rows": 86
+              },
+              "6": {
+                "changes": 11,
+                "correct": 3,
+                "corrections": 3,
+                "exact": 0.13043478260869565,
+                "net": 3,
+                "regressions": 0,
+                "rows": 23
+              }
+            },
+            "global_metrics": {
+              "changes": 364,
+              "correct": 12130,
+              "corrections": 116,
+              "exact": 0.8182676740420939,
+              "net": 1,
+              "regressions": 115,
+              "rows": 14824
+            },
+            "poly": {
+              "changes": 350,
+              "correct": 707,
+              "corrections": 116,
+              "exact": 0.381955699621826,
+              "net": 1,
+              "regressions": 115,
+              "rows": 1851
+            }
+          },
+          "replay": {
+            "by_k": {
+              "0": {
+                "changes": 21,
+                "correct": 9313,
+                "corrections": 0,
+                "exact": 0.9534193284193284,
+                "net": 0,
+                "regressions": 0,
+                "rows": 9768
+              },
+              "1": {
+                "changes": 68,
+                "correct": 2110,
+                "corrections": 0,
+                "exact": 0.6583463338533542,
+                "net": 0,
+                "regressions": 0,
+                "rows": 3205
+              },
+              "2": {
+                "changes": 82,
+                "correct": 276,
+                "corrections": 25,
+                "exact": 0.33212996389891697,
+                "net": -14,
+                "regressions": 39,
+                "rows": 831
+              },
+              "3": {
+                "changes": 89,
+                "correct": 316,
+                "corrections": 23,
+                "exact": 0.5543859649122806,
+                "net": -35,
+                "regressions": 58,
+                "rows": 570
+              },
+              "4": {
+                "changes": 76,
+                "correct": 86,
+                "corrections": 32,
+                "exact": 0.25219941348973607,
+                "net": 26,
+                "regressions": 6,
+                "rows": 341
+              },
+              "5": {
+                "changes": 40,
+                "correct": 25,
+                "corrections": 20,
+                "exact": 0.29069767441860467,
+                "net": 20,
+                "regressions": 0,
+                "rows": 86
+              },
+              "6": {
+                "changes": 7,
+                "correct": 2,
+                "corrections": 2,
+                "exact": 0.08695652173913043,
+                "net": 2,
+                "regressions": 0,
+                "rows": 23
+              }
+            },
+            "global_metrics": {
+              "changes": 383,
+              "correct": 12128,
+              "corrections": 102,
+              "exact": 0.8181327576902321,
+              "net": -1,
+              "regressions": 103,
+              "rows": 14824
+            },
+            "poly": {
+              "changes": 294,
+              "correct": 705,
+              "corrections": 102,
+              "exact": 0.38087520259319285,
+              "net": -1,
+              "regressions": 103,
+              "rows": 1851
+            }
+          }
+        }
+      },
+      "coverage": {
+        "eligible_true_low_k": 2041,
+        "eligible_true_poly": 5452,
+        "perfect_eligible_poly_upper_bound": 5467,
+        "poly_errors_outside_eligibility": 1918,
+        "poly_rows": 7385,
+        "true_poly_predicted_K0_K1": 1889
+      },
+      "expected_net_replay": {
+        "by_k": {
+          "0": {
+            "changes": 73,
+            "correct": 38035,
+            "corrections": 0,
+            "exact": 0.9592202158781398,
+            "net": 0,
+            "regressions": 0,
+            "rows": 39652
+          },
+          "1": {
+            "changes": 317,
+            "correct": 7889,
+            "corrections": 0,
+            "exact": 0.6428455019556715,
+            "net": 0,
+            "regressions": 0,
+            "rows": 12272
+          },
+          "2": {
+            "changes": 451,
+            "correct": 1052,
+            "corrections": 114,
+            "exact": 0.3053701015965167,
+            "net": -131,
+            "regressions": 245,
+            "rows": 3445
+          },
+          "3": {
+            "changes": 428,
+            "correct": 947,
+            "corrections": 201,
+            "exact": 0.4137177806902578,
+            "net": 32,
+            "regressions": 169,
+            "rows": 2289
+          },
+          "4": {
+            "changes": 275,
+            "correct": 404,
+            "corrections": 64,
+            "exact": 0.3347141673570837,
+            "net": -13,
+            "regressions": 77,
+            "rows": 1207
+          },
+          "5": {
+            "changes": 136,
+            "correct": 78,
+            "corrections": 63,
+            "exact": 0.21971830985915494,
+            "net": 63,
+            "regressions": 0,
+            "rows": 355
+          },
+          "6": {
+            "changes": 31,
+            "correct": 11,
+            "corrections": 11,
+            "exact": 0.12359550561797752,
+            "net": 11,
+            "regressions": 0,
+            "rows": 89
+          }
+        },
+        "global_metrics": {
+          "changes": 1711,
+          "correct": 48416,
+          "corrections": 453,
+          "exact": 0.8163347889864945,
+          "net": -38,
+          "regressions": 491,
+          "rows": 59309
+        },
+        "poly": {
+          "changes": 1321,
+          "correct": 2492,
+          "corrections": 453,
+          "exact": 0.33744075829383885,
+          "net": -38,
+          "regressions": 491,
+          "rows": 7385
+        }
+      },
+      "frozen_reference": {
+        "by_k": {
+          "0": {
+            "changes": 0,
+            "correct": 38035,
+            "corrections": 0,
+            "exact": 0.9592202158781398,
+            "net": 0,
+            "regressions": 0,
+            "rows": 39652
+          },
+          "1": {
+            "changes": 0,
+            "correct": 7889,
+            "corrections": 0,
+            "exact": 0.6428455019556715,
+            "net": 0,
+            "regressions": 0,
+            "rows": 12272
+          },
+          "2": {
+            "changes": 0,
+            "correct": 1183,
+            "corrections": 0,
+            "exact": 0.3433962264150943,
+            "net": 0,
+            "regressions": 0,
+            "rows": 3445
+          },
+          "3": {
+            "changes": 0,
+            "correct": 915,
+            "corrections": 0,
+            "exact": 0.399737876802097,
+            "net": 0,
+            "regressions": 0,
+            "rows": 2289
+          },
+          "4": {
+            "changes": 0,
+            "correct": 417,
+            "corrections": 0,
+            "exact": 0.34548467274233635,
+            "net": 0,
+            "regressions": 0,
+            "rows": 1207
+          },
+          "5": {
+            "changes": 0,
+            "correct": 15,
+            "corrections": 0,
+            "exact": 0.04225352112676056,
+            "net": 0,
+            "regressions": 0,
+            "rows": 355
+          },
+          "6": {
+            "changes": 0,
+            "correct": 0,
+            "corrections": 0,
+            "exact": 0.0,
+            "net": 0,
+            "regressions": 0,
+            "rows": 89
+          }
+        },
+        "global_metrics": {
+          "changes": 0,
+          "correct": 48454,
+          "corrections": 0,
+          "exact": 0.8169755011886898,
+          "net": 0,
+          "regressions": 0,
+          "rows": 59309
+        },
+        "poly": {
+          "changes": 0,
+          "correct": 2530,
+          "corrections": 0,
+          "exact": 0.3425863236289777,
+          "net": 0,
+          "regressions": 0,
+          "rows": 7385
+        }
+      },
+      "k3_regressions": 249,
+      "negative_estimated_net_selected": {
+        "corrections": 163,
+        "regressions": 182,
+        "rows": 560
+      },
+      "original_selector": {
+        "by_k": {
+          "0": {
+            "changes": 12,
+            "correct": 38035,
+            "corrections": 0,
+            "exact": 0.9592202158781398,
+            "net": 0,
+            "regressions": 0,
+            "rows": 39652
+          },
+          "1": {
+            "changes": 110,
+            "correct": 7889,
+            "corrections": 0,
+            "exact": 0.6428455019556715,
+            "net": 0,
+            "regressions": 0,
+            "rows": 12272
+          },
+          "2": {
+            "changes": 312,
+            "correct": 1207,
+            "corrections": 89,
+            "exact": 0.35036284470246737,
+            "net": 24,
+            "regressions": 65,
+            "rows": 3445
+          },
+          "3": {
+            "changes": 449,
+            "correct": 782,
+            "corrections": 116,
+            "exact": 0.3416339012669288,
+            "net": -133,
+            "regressions": 249,
+            "rows": 2289
+          },
+          "4": {
+            "changes": 381,
+            "correct": 419,
+            "corrections": 132,
+            "exact": 0.3471416735708368,
+            "net": 2,
+            "regressions": 130,
+            "rows": 1207
+          },
+          "5": {
+            "changes": 184,
+            "correct": 90,
+            "corrections": 75,
+            "exact": 0.2535211267605634,
+            "net": 75,
+            "regressions": 0,
+            "rows": 355
+          },
+          "6": {
+            "changes": 46,
+            "correct": 14,
+            "corrections": 14,
+            "exact": 0.15730337078651685,
+            "net": 14,
+            "regressions": 0,
+            "rows": 89
+          }
+        },
+        "global_metrics": {
+          "changes": 1494,
+          "correct": 48436,
+          "corrections": 426,
+          "exact": 0.8166720059350183,
+          "net": -18,
+          "regressions": 444,
+          "rows": 59309
+        },
+        "poly": {
+          "changes": 1372,
+          "correct": 2512,
+          "corrections": 426,
+          "exact": 0.3401489505754909,
+          "net": -18,
+          "regressions": 444,
+          "rows": 7385
+        }
+      },
+      "replay_decision_changes": 1378,
+      "reproduction_disagreements": 0,
+      "same_event_regression_risk_spread": {
+        "above_point_one": 4569,
+        "median": 0.11789438128471375,
+        "p95": 0.2819969952106476
+      }
+    },
+    "both": {
+      "artifact_sha256": "b5932543ff693ba810a8d9a7292e8b37d1fcacf05e71a92188c18d5ed4a56dd8",
+      "by_fold": {
+        "0": {
+          "original": {
+            "by_k": {
+              "0": {
+                "changes": 6,
+                "correct": 10477,
+                "corrections": 0,
+                "exact": 0.973427483043761,
+                "net": 0,
+                "regressions": 0,
+                "rows": 10763
+              },
+              "1": {
+                "changes": 33,
+                "correct": 1821,
+                "corrections": 0,
+                "exact": 0.5916179337231969,
+                "net": 0,
+                "regressions": 0,
+                "rows": 3078
+              },
+              "2": {
+                "changes": 102,
+                "correct": 346,
+                "corrections": 16,
+                "exact": 0.34843907351460224,
+                "net": -26,
+                "regressions": 42,
+                "rows": 993
+              },
+              "3": {
+                "changes": 137,
+                "correct": 161,
+                "corrections": 46,
+                "exact": 0.27104377104377103,
+                "net": -20,
+                "regressions": 66,
+                "rows": 594
+              },
+              "4": {
+                "changes": 141,
+                "correct": 121,
+                "corrections": 40,
+                "exact": 0.3235294117647059,
+                "net": 5,
+                "regressions": 35,
+                "rows": 374
+              },
+              "5": {
+                "changes": 63,
+                "correct": 25,
+                "corrections": 21,
+                "exact": 0.21739130434782608,
+                "net": 21,
+                "regressions": 0,
+                "rows": 115
+              },
+              "6": {
+                "changes": 18,
+                "correct": 8,
+                "corrections": 8,
+                "exact": 0.22857142857142856,
+                "net": 8,
+                "regressions": 0,
+                "rows": 35
+              }
+            },
+            "global_metrics": {
+              "changes": 500,
+              "correct": 12959,
+              "corrections": 131,
+              "exact": 0.8123746238716149,
+              "net": -12,
+              "regressions": 143,
+              "rows": 15952
+            },
+            "poly": {
+              "changes": 461,
+              "correct": 661,
+              "corrections": 131,
+              "exact": 0.3131217432496447,
+              "net": -12,
+              "regressions": 143,
+              "rows": 2111
+            }
+          },
+          "replay": {
+            "by_k": {
+              "0": {
+                "changes": 29,
+                "correct": 10477,
+                "corrections": 0,
+                "exact": 0.973427483043761,
+                "net": 0,
+                "regressions": 0,
+                "rows": 10763
+              },
+              "1": {
+                "changes": 150,
+                "correct": 1821,
+                "corrections": 0,
+                "exact": 0.5916179337231969,
+                "net": 0,
+                "regressions": 0,
+                "rows": 3078
+              },
+              "2": {
+                "changes": 215,
+                "correct": 248,
+                "corrections": 28,
+                "exact": 0.2497482376636455,
+                "net": -124,
+                "regressions": 152,
+                "rows": 993
+              },
+              "3": {
+                "changes": 174,
+                "correct": 222,
+                "corrections": 96,
+                "exact": 0.37373737373737376,
+                "net": 41,
+                "regressions": 55,
+                "rows": 594
+              },
+              "4": {
+                "changes": 137,
+                "correct": 102,
+                "corrections": 23,
+                "exact": 0.2727272727272727,
+                "net": -14,
+                "regressions": 37,
+                "rows": 374
+              },
+              "5": {
+                "changes": 55,
+                "correct": 25,
+                "corrections": 21,
+                "exact": 0.21739130434782608,
+                "net": 21,
+                "regressions": 0,
+                "rows": 115
+              },
+              "6": {
+                "changes": 11,
+                "correct": 5,
+                "corrections": 5,
+                "exact": 0.14285714285714285,
+                "net": 5,
+                "regressions": 0,
+                "rows": 35
+              }
+            },
+            "global_metrics": {
+              "changes": 771,
+              "correct": 12900,
+              "corrections": 173,
+              "exact": 0.8086760280842528,
+              "net": -71,
+              "regressions": 244,
+              "rows": 15952
+            },
+            "poly": {
+              "changes": 592,
+              "correct": 602,
+              "corrections": 173,
+              "exact": 0.2851729038370441,
+              "net": -71,
+              "regressions": 244,
+              "rows": 2111
+            }
+          }
+        },
+        "1": {
+          "original": {
+            "by_k": {
+              "0": {
+                "changes": 4,
+                "correct": 8625,
+                "corrections": 0,
+                "exact": 0.9559964531146087,
+                "net": 0,
+                "regressions": 0,
+                "rows": 9022
+              },
+              "1": {
+                "changes": 31,
+                "correct": 1969,
+                "corrections": 0,
+                "exact": 0.6384565499351491,
+                "net": 0,
+                "regressions": 0,
+                "rows": 3084
+              },
+              "2": {
+                "changes": 108,
+                "correct": 275,
+                "corrections": 32,
+                "exact": 0.30864197530864196,
+                "net": 3,
+                "regressions": 29,
+                "rows": 891
+              },
+              "3": {
+                "changes": 136,
+                "correct": 216,
+                "corrections": 50,
+                "exact": 0.3823008849557522,
+                "net": -14,
+                "regressions": 64,
+                "rows": 565
+              },
+              "4": {
+                "changes": 57,
+                "correct": 83,
+                "corrections": 13,
+                "exact": 0.3672566371681416,
+                "net": -16,
+                "regressions": 29,
+                "rows": 226
+              },
+              "5": {
+                "changes": 36,
+                "correct": 20,
+                "corrections": 19,
+                "exact": 0.3125,
+                "net": 19,
+                "regressions": 0,
+                "rows": 64
+              },
+              "6": {
+                "changes": 9,
+                "correct": 1,
+                "corrections": 1,
+                "exact": 0.0625,
+                "net": 1,
+                "regressions": 0,
+                "rows": 16
+              }
+            },
+            "global_metrics": {
+              "changes": 381,
+              "correct": 11189,
+              "corrections": 115,
+              "exact": 0.8068214594750505,
+              "net": -7,
+              "regressions": 122,
+              "rows": 13868
+            },
+            "poly": {
+              "changes": 346,
+              "correct": 595,
+              "corrections": 115,
+              "exact": 0.3376844494892168,
+              "net": -7,
+              "regressions": 122,
+              "rows": 1762
+            }
+          },
+          "replay": {
+            "by_k": {
+              "0": {
+                "changes": 22,
+                "correct": 8625,
+                "corrections": 0,
+                "exact": 0.9559964531146087,
+                "net": 0,
+                "regressions": 0,
+                "rows": 9022
+              },
+              "1": {
+                "changes": 86,
+                "correct": 1969,
+                "corrections": 0,
+                "exact": 0.6384565499351491,
+                "net": 0,
+                "regressions": 0,
+                "rows": 3084
+              },
+              "2": {
+                "changes": 159,
+                "correct": 232,
+                "corrections": 47,
+                "exact": 0.26038159371492703,
+                "net": -40,
+                "regressions": 87,
+                "rows": 891
+              },
+              "3": {
+                "changes": 136,
+                "correct": 276,
+                "corrections": 83,
+                "exact": 0.48849557522123893,
+                "net": 46,
+                "regressions": 37,
+                "rows": 565
+              },
+              "4": {
+                "changes": 41,
+                "correct": 88,
+                "corrections": 6,
+                "exact": 0.3893805309734513,
+                "net": -11,
+                "regressions": 17,
+                "rows": 226
+              },
+              "5": {
+                "changes": 23,
+                "correct": 14,
+                "corrections": 13,
+                "exact": 0.21875,
+                "net": 13,
+                "regressions": 0,
+                "rows": 64
+              },
+              "6": {
+                "changes": 9,
+                "correct": 1,
+                "corrections": 1,
+                "exact": 0.0625,
+                "net": 1,
+                "regressions": 0,
+                "rows": 16
+              }
+            },
+            "global_metrics": {
+              "changes": 476,
+              "correct": 11205,
+              "corrections": 150,
+              "exact": 0.807975194692818,
+              "net": 9,
+              "regressions": 141,
+              "rows": 13868
+            },
+            "poly": {
+              "changes": 368,
+              "correct": 611,
+              "corrections": 150,
+              "exact": 0.34676503972758227,
+              "net": 9,
+              "regressions": 141,
+              "rows": 1762
+            }
+          }
+        },
+        "2": {
+          "original": {
+            "by_k": {
+              "0": {
+                "changes": 6,
+                "correct": 9620,
+                "corrections": 0,
+                "exact": 0.9525695613427072,
+                "net": 0,
+                "regressions": 0,
+                "rows": 10099
+              },
+              "1": {
+                "changes": 60,
+                "correct": 1989,
+                "corrections": 0,
+                "exact": 0.6846815834767642,
+                "net": 0,
+                "regressions": 0,
+                "rows": 2905
+              },
+              "2": {
+                "changes": 87,
+                "correct": 277,
+                "corrections": 40,
+                "exact": 0.37945205479452054,
+                "net": 28,
+                "regressions": 12,
+                "rows": 730
+              },
+              "3": {
+                "changes": 137,
+                "correct": 131,
+                "corrections": 40,
+                "exact": 0.23392857142857143,
+                "net": -22,
+                "regressions": 62,
+                "rows": 560
+              },
+              "4": {
+                "changes": 91,
+                "correct": 106,
+                "corrections": 20,
+                "exact": 0.39849624060150374,
+                "net": -36,
+                "regressions": 56,
+                "rows": 266
+              },
+              "5": {
+                "changes": 52,
+                "correct": 20,
+                "corrections": 15,
+                "exact": 0.2222222222222222,
+                "net": 15,
+                "regressions": 0,
+                "rows": 90
+              },
+              "6": {
+                "changes": 9,
+                "correct": 4,
+                "corrections": 4,
+                "exact": 0.26666666666666666,
+                "net": 4,
+                "regressions": 0,
+                "rows": 15
+              }
+            },
+            "global_metrics": {
+              "changes": 442,
+              "correct": 12147,
+              "corrections": 119,
+              "exact": 0.8282986703034436,
+              "net": -11,
+              "regressions": 130,
+              "rows": 14665
+            },
+            "poly": {
+              "changes": 376,
+              "correct": 538,
+              "corrections": 119,
+              "exact": 0.32390126429861527,
+              "net": -11,
+              "regressions": 130,
+              "rows": 1661
+            }
+          },
+          "replay": {
+            "by_k": {
+              "0": {
+                "changes": 21,
+                "correct": 9620,
+                "corrections": 0,
+                "exact": 0.9525695613427072,
+                "net": 0,
+                "regressions": 0,
+                "rows": 10099
+              },
+              "1": {
+                "changes": 82,
+                "correct": 1989,
+                "corrections": 0,
+                "exact": 0.6846815834767642,
+                "net": 0,
+                "regressions": 0,
+                "rows": 2905
+              },
+              "2": {
+                "changes": 111,
+                "correct": 243,
+                "corrections": 39,
+                "exact": 0.33287671232876714,
+                "net": -6,
+                "regressions": 45,
+                "rows": 730
+              },
+              "3": {
+                "changes": 151,
+                "correct": 172,
+                "corrections": 71,
+                "exact": 0.30714285714285716,
+                "net": 19,
+                "regressions": 52,
+                "rows": 560
+              },
+              "4": {
+                "changes": 67,
+                "correct": 111,
+                "corrections": 7,
+                "exact": 0.41729323308270677,
+                "net": -31,
+                "regressions": 38,
+                "rows": 266
+              },
+              "5": {
+                "changes": 35,
+                "correct": 16,
+                "corrections": 11,
+                "exact": 0.17777777777777778,
+                "net": 11,
+                "regressions": 0,
+                "rows": 90
+              },
+              "6": {
+                "changes": 7,
+                "correct": 2,
+                "corrections": 2,
+                "exact": 0.13333333333333333,
+                "net": 2,
+                "regressions": 0,
+                "rows": 15
+              }
+            },
+            "global_metrics": {
+              "changes": 474,
+              "correct": 12153,
+              "corrections": 130,
+              "exact": 0.8287078077054211,
+              "net": -5,
+              "regressions": 135,
+              "rows": 14665
+            },
+            "poly": {
+              "changes": 371,
+              "correct": 544,
+              "corrections": 130,
+              "exact": 0.32751354605659244,
+              "net": -5,
+              "regressions": 135,
+              "rows": 1661
+            }
+          }
+        },
+        "4": {
+          "original": {
+            "by_k": {
+              "0": {
+                "changes": 3,
+                "correct": 9313,
+                "corrections": 0,
+                "exact": 0.9534193284193284,
+                "net": 0,
+                "regressions": 0,
+                "rows": 9768
+              },
+              "1": {
+                "changes": 15,
+                "correct": 2110,
+                "corrections": 0,
+                "exact": 0.6583463338533542,
+                "net": 0,
+                "regressions": 0,
+                "rows": 3205
+              },
+              "2": {
+                "changes": 73,
+                "correct": 302,
+                "corrections": 27,
+                "exact": 0.36341756919374246,
+                "net": 12,
+                "regressions": 15,
+                "rows": 831
+              },
+              "3": {
+                "changes": 108,
+                "correct": 277,
+                "corrections": 12,
+                "exact": 0.48596491228070177,
+                "net": -74,
+                "regressions": 86,
+                "rows": 570
+              },
+              "4": {
+                "changes": 104,
+                "correct": 99,
+                "corrections": 53,
+                "exact": 0.2903225806451613,
+                "net": 39,
+                "regressions": 14,
+                "rows": 341
+              },
+              "5": {
+                "changes": 48,
+                "correct": 25,
+                "corrections": 20,
+                "exact": 0.29069767441860467,
+                "net": 20,
+                "regressions": 0,
+                "rows": 86
+              },
+              "6": {
+                "changes": 13,
+                "correct": 2,
+                "corrections": 2,
+                "exact": 0.08695652173913043,
+                "net": 2,
+                "regressions": 0,
+                "rows": 23
+              }
+            },
+            "global_metrics": {
+              "changes": 364,
+              "correct": 12128,
+              "corrections": 114,
+              "exact": 0.8181327576902321,
+              "net": -1,
+              "regressions": 115,
+              "rows": 14824
+            },
+            "poly": {
+              "changes": 346,
+              "correct": 705,
+              "corrections": 114,
+              "exact": 0.38087520259319285,
+              "net": -1,
+              "regressions": 115,
+              "rows": 1851
+            }
+          },
+          "replay": {
+            "by_k": {
+              "0": {
+                "changes": 17,
+                "correct": 9313,
+                "corrections": 0,
+                "exact": 0.9534193284193284,
+                "net": 0,
+                "regressions": 0,
+                "rows": 9768
+              },
+              "1": {
+                "changes": 62,
+                "correct": 2110,
+                "corrections": 0,
+                "exact": 0.6583463338533542,
+                "net": 0,
+                "regressions": 0,
+                "rows": 3205
+              },
+              "2": {
+                "changes": 97,
+                "correct": 265,
+                "corrections": 28,
+                "exact": 0.31889290012033694,
+                "net": -25,
+                "regressions": 53,
+                "rows": 831
+              },
+              "3": {
+                "changes": 76,
+                "correct": 326,
+                "corrections": 20,
+                "exact": 0.5719298245614035,
+                "net": -25,
+                "regressions": 45,
+                "rows": 570
+              },
+              "4": {
+                "changes": 69,
+                "correct": 80,
+                "corrections": 27,
+                "exact": 0.23460410557184752,
+                "net": 20,
+                "regressions": 7,
+                "rows": 341
+              },
+              "5": {
+                "changes": 34,
+                "correct": 24,
+                "corrections": 19,
+                "exact": 0.27906976744186046,
+                "net": 19,
+                "regressions": 0,
+                "rows": 86
+              },
+              "6": {
+                "changes": 9,
+                "correct": 1,
+                "corrections": 1,
+                "exact": 0.043478260869565216,
+                "net": 1,
+                "regressions": 0,
+                "rows": 23
+              }
+            },
+            "global_metrics": {
+              "changes": 364,
+              "correct": 12119,
+              "corrections": 95,
+              "exact": 0.8175256341068537,
+              "net": -10,
+              "regressions": 105,
+              "rows": 14824
+            },
+            "poly": {
+              "changes": 285,
+              "correct": 696,
+              "corrections": 95,
+              "exact": 0.3760129659643436,
+              "net": -10,
+              "regressions": 105,
+              "rows": 1851
+            }
+          }
+        }
+      },
+      "coverage": {
+        "eligible_true_low_k": 2041,
+        "eligible_true_poly": 5452,
+        "perfect_eligible_poly_upper_bound": 5467,
+        "poly_errors_outside_eligibility": 1918,
+        "poly_rows": 7385,
+        "true_poly_predicted_K0_K1": 1889
+      },
+      "expected_net_replay": {
+        "by_k": {
+          "0": {
+            "changes": 89,
+            "correct": 38035,
+            "corrections": 0,
+            "exact": 0.9592202158781398,
+            "net": 0,
+            "regressions": 0,
+            "rows": 39652
+          },
+          "1": {
+            "changes": 380,
+            "correct": 7889,
+            "corrections": 0,
+            "exact": 0.6428455019556715,
+            "net": 0,
+            "regressions": 0,
+            "rows": 12272
+          },
+          "2": {
+            "changes": 582,
+            "correct": 988,
+            "corrections": 142,
+            "exact": 0.28679245283018867,
+            "net": -195,
+            "regressions": 337,
+            "rows": 3445
+          },
+          "3": {
+            "changes": 537,
+            "correct": 996,
+            "corrections": 270,
+            "exact": 0.4351245085190039,
+            "net": 81,
+            "regressions": 189,
+            "rows": 2289
+          },
+          "4": {
+            "changes": 314,
+            "correct": 381,
+            "corrections": 63,
+            "exact": 0.3156586578293289,
+            "net": -36,
+            "regressions": 99,
+            "rows": 1207
+          },
+          "5": {
+            "changes": 147,
+            "correct": 79,
+            "corrections": 64,
+            "exact": 0.22253521126760564,
+            "net": 64,
+            "regressions": 0,
+            "rows": 355
+          },
+          "6": {
+            "changes": 36,
+            "correct": 9,
+            "corrections": 9,
+            "exact": 0.10112359550561797,
+            "net": 9,
+            "regressions": 0,
+            "rows": 89
+          }
+        },
+        "global_metrics": {
+          "changes": 2085,
+          "correct": 48377,
+          "corrections": 548,
+          "exact": 0.815677215936873,
+          "net": -77,
+          "regressions": 625,
+          "rows": 59309
+        },
+        "poly": {
+          "changes": 1616,
+          "correct": 2453,
+          "corrections": 548,
+          "exact": 0.3321597833446175,
+          "net": -77,
+          "regressions": 625,
+          "rows": 7385
+        }
+      },
+      "frozen_reference": {
+        "by_k": {
+          "0": {
+            "changes": 0,
+            "correct": 38035,
+            "corrections": 0,
+            "exact": 0.9592202158781398,
+            "net": 0,
+            "regressions": 0,
+            "rows": 39652
+          },
+          "1": {
+            "changes": 0,
+            "correct": 7889,
+            "corrections": 0,
+            "exact": 0.6428455019556715,
+            "net": 0,
+            "regressions": 0,
+            "rows": 12272
+          },
+          "2": {
+            "changes": 0,
+            "correct": 1183,
+            "corrections": 0,
+            "exact": 0.3433962264150943,
+            "net": 0,
+            "regressions": 0,
+            "rows": 3445
+          },
+          "3": {
+            "changes": 0,
+            "correct": 915,
+            "corrections": 0,
+            "exact": 0.399737876802097,
+            "net": 0,
+            "regressions": 0,
+            "rows": 2289
+          },
+          "4": {
+            "changes": 0,
+            "correct": 417,
+            "corrections": 0,
+            "exact": 0.34548467274233635,
+            "net": 0,
+            "regressions": 0,
+            "rows": 1207
+          },
+          "5": {
+            "changes": 0,
+            "correct": 15,
+            "corrections": 0,
+            "exact": 0.04225352112676056,
+            "net": 0,
+            "regressions": 0,
+            "rows": 355
+          },
+          "6": {
+            "changes": 0,
+            "correct": 0,
+            "corrections": 0,
+            "exact": 0.0,
+            "net": 0,
+            "regressions": 0,
+            "rows": 89
+          }
+        },
+        "global_metrics": {
+          "changes": 0,
+          "correct": 48454,
+          "corrections": 0,
+          "exact": 0.8169755011886898,
+          "net": 0,
+          "regressions": 0,
+          "rows": 59309
+        },
+        "poly": {
+          "changes": 0,
+          "correct": 2530,
+          "corrections": 0,
+          "exact": 0.3425863236289777,
+          "net": 0,
+          "regressions": 0,
+          "rows": 7385
+        }
+      },
+      "k3_regressions": 278,
+      "negative_estimated_net_selected": {
+        "corrections": 158,
+        "regressions": 183,
+        "rows": 540
+      },
+      "original_selector": {
+        "by_k": {
+          "0": {
+            "changes": 19,
+            "correct": 38035,
+            "corrections": 0,
+            "exact": 0.9592202158781398,
+            "net": 0,
+            "regressions": 0,
+            "rows": 39652
+          },
+          "1": {
+            "changes": 139,
+            "correct": 7889,
+            "corrections": 0,
+            "exact": 0.6428455019556715,
+            "net": 0,
+            "regressions": 0,
+            "rows": 12272
+          },
+          "2": {
+            "changes": 370,
+            "correct": 1200,
+            "corrections": 115,
+            "exact": 0.3483309143686502,
+            "net": 17,
+            "regressions": 98,
+            "rows": 3445
+          },
+          "3": {
+            "changes": 518,
+            "correct": 785,
+            "corrections": 148,
+            "exact": 0.34294451725644387,
+            "net": -130,
+            "regressions": 278,
+            "rows": 2289
+          },
+          "4": {
+            "changes": 393,
+            "correct": 409,
+            "corrections": 126,
+            "exact": 0.3388566694283347,
+            "net": -8,
+            "regressions": 134,
+            "rows": 1207
+          },
+          "5": {
+            "changes": 199,
+            "correct": 90,
+            "corrections": 75,
+            "exact": 0.2535211267605634,
+            "net": 75,
+            "regressions": 0,
+            "rows": 355
+          },
+          "6": {
+            "changes": 49,
+            "correct": 15,
+            "corrections": 15,
+            "exact": 0.16853932584269662,
+            "net": 15,
+            "regressions": 0,
+            "rows": 89
+          }
+        },
+        "global_metrics": {
+          "changes": 1687,
+          "correct": 48423,
+          "corrections": 479,
+          "exact": 0.8164528149184778,
+          "net": -31,
+          "regressions": 510,
+          "rows": 59309
+        },
+        "poly": {
+          "changes": 1529,
+          "correct": 2499,
+          "corrections": 479,
+          "exact": 0.33838862559241706,
+          "net": -31,
+          "regressions": 510,
+          "rows": 7385
+        }
+      },
+      "replay_decision_changes": 1540,
+      "reproduction_disagreements": 0,
+      "same_event_regression_risk_spread": {
+        "above_point_one": 4418,
+        "median": 0.11445401608943939,
+        "p95": 0.2527168095111847
+      }
+    }
+  }
+}

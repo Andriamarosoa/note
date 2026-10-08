@@ -1,0 +1,90 @@
+name: V27.3 selector design forensic replay
+
+on:
+  push:
+    branches: [codex/v273-selector-design-review, codex/v273-failure-clustering]
+    paths:
+      - 'scripts/audit_v273_selector_design.py'
+      - 'test/test_v273_selector_design_audit.py'
+      - '.github/workflows/v273-selector-design-review.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: '.:src'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install replay dependency
+        run: python -m pip install numpy==1.26.4
+      - name: Check decision logic and event alignment
+        run: python -m unittest -v test.test_v273_selector_design_audit
+      - name: Retrieve archived baseline selector
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37758789956
+          name: v273-audit-aware-selection-baseline
+          path: model/selector-review/baseline
+      - name: Retrieve archived identity and regime selector
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37758789956
+          name: v273-audit-aware-selection-both
+          path: model/selector-review/both
+      - name: Retrieve aligned observable features
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37740493178
+          pattern: v273-harmonic-global-fold-*
+          path: model/selector-review/features
+      - name: Reproduce all archived predictions and export evidence
+        run: |
+          python -m scripts.audit_v273_selector_design \
+            --artifacts model/selector-review \
+            --features model/selector-review/features \
+            --output model/selector-design-review
+      - name: Verify recorded conclusions
+        run: |
+          python - <<'PY'
+          import json
+          import math
+          from pathlib import Path
+          current = json.loads(Path('model/selector-design-review/report.json').read_text())
+          expected = json.loads(Path('analysis/evidence/v273-selector-design-review/report.json').read_text())
+          def check(a, b, path):
+              if isinstance(b, dict):
+                  assert set(a) == set(b), path
+                  for key in b: check(a[key], b[key], path + '.' + key)
+              elif isinstance(b, list):
+                  assert len(a) == len(b), path
+                  for i, (x, y) in enumerate(zip(a, b)): check(x, y, path + '.' + str(i))
+              elif isinstance(b, float):
+                  assert math.isclose(a, b, rel_tol=1e-6, abs_tol=1e-7), path
+              else:
+                  assert a == b, path
+          for key in ('source_sha256', 'source_contract', 'variants', 'inner_audit_producer_dependencies', 'calibrated_posterior_counterexample'):
+              check(current[key], expected[key], key)
+          print('Archived predictions and all recorded review findings reproduced.')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-selector-design-review
+          path: model/selector-design-review/
+          retention-days: 90
