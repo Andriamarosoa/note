@@ -20,6 +20,7 @@ from scripts.v273_group127_contract import (
     assemble_group_outer, choose_groups, outcome_labels,
 )
 from scripts.learn_v273_group127 import train_groups
+from scripts.prepare_v273_group127_producers import FrozenProducerPool
 from scripts.yourmt3_exactk_common import metrics, paired, digest
 
 
@@ -54,6 +55,7 @@ def main():
     parser.add_argument('--features', type=Path, required=True)
     parser.add_argument('--arm', choices=['direct', 'global', 'local'], required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--producer-cache', type=Path)
     args = parser.parse_args()
     require(not args.output.exists(), 'refusing overwrite')
     root = Path(__file__).resolve().parents[1]
@@ -74,7 +76,11 @@ def main():
         recording_folds[name] = r['fold']
     x, raw, context_names = matrices(rows)
     yc, bc, fc = y[pos], base[pos], folds[pos]
-    pool = ProducerPool(x, yc, bc, fc, eligible_ids)
+    if args.producer_cache is not None:
+        require((args.producer_cache/'source-reference-sha256.txt').read_text().strip() == digest(args.reference), 'cache reference mismatch')
+        pool = FrozenProducerPool(x, yc, bc, fc, eligible_ids, args.producer_cache)
+    else:
+        pool = ProducerPool(x, yc, bc, fc, eligible_ids)
     prediction = base.copy(); singleton_prediction = base.copy()
     selection = np.full(len(pos), -1, np.int32)
     single_selection = np.full_like(selection, -1)
@@ -161,6 +167,7 @@ def main():
             seventh_candidate='mean of the same five specialists, not new independent evidence',
             H0='deterministic action encoding; not probability of correctness',
             context_names=context_names, local_neighbors=NEIGHBORS, local_audit_strength=12,
+            producer_cache_sha256=getattr(pool,'cache_sha256',None),
             global_audits_enabled=args.arm!='direct', local_audits_enabled=args.arm=='local', descriptor_dimensions=64,
             epochs=30, seed=27402, learning_rate=.002, batch_size=192,
             objective='unweighted baseline BCE plus per-event averaged conditional joint-correction BCE',

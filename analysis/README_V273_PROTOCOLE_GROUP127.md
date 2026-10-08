@@ -168,3 +168,22 @@ Les folds 0/1/2/4 sont déjà exposés ; aucun player05/fold3 ni jeu inédit ne
 sera évalué ici. Résumés acoustiques inchangés jusqu'à +160 ms. Une perte
 nette interdit le remplacement ; même un gain reste exploratoire jusqu'à
 validation indépendante. `freeze_local_combo` reste la référence.
+
+## Correction de reproductibilité après le premier run
+
+Le run 37776065908 a terminé les trois bras. Le vérificateur a trouvé des
+différences maximales de 1,0133e-6 dans les probabilités logistiques du bras
+local, malgré les mêmes versions et les mêmes IDs de fit. Les propositions
+des 127 groupes et tous les audits étaient identiques ; les bras direct et
+global avaient aussi des votes identiques bit à bit.
+
+Ce résultat initial est conservé : nets +24/+57/+54, respectivement direct,
+global et local. Il n'est pas utilisé pour modifier le réseau, la fusion,
+les voisins, le seed, les epochs ou le critère de décision.
+
+La comparaison est rejouée avec un job préalable qui calcule une fois les
+14 ensembles de producteurs et exporte leurs seules prédictions hors de
+leurs folds de fit. Les trois bras consomment cette même archive vérifiée.
+Le contrôle final exige des votes, propositions et audits identiques bit
+à bit entre bras. Ce changement corrige la reproductibilité des entrées ;
+les résultats du nouveau run seront publiés même s'ils sont moins bons.

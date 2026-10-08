@@ -7,6 +7,7 @@ on:
       - 'scripts/v273_group127_contract.py'
       - 'scripts/learn_v273_group127.py'
       - 'scripts/evaluate_v273_group127.py'
+      - 'scripts/prepare_v273_group127_producers.py'
       - 'test/test_v273_group127_contract.py'
       - 'test/test_v273_group127_neural.py'
       - '.github/workflows/v273-group127-joint-utility.yml'
@@ -27,7 +28,45 @@ env:
   TF_NUM_INTEROP_THREADS: '1'
 
 jobs:
+  producers:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install reference expert numerical versions
+        run: python -m pip install 'numpy<2' scipy==1.17.1 scikit-learn==1.4.2
+      - name: Retrieve archived coherent native reference
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37766719862
+          name: v273-selector-repair-coherent
+          path: model/group127/reference
+      - name: Retrieve identical acoustic observables
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37740493178
+          pattern: v273-harmonic-global-fold-*
+          path: model/group127/features
+      - name: Produce the fourteen independent expert sets once
+        run: |
+          python -m scripts.prepare_v273_group127_producers \
+            --reference model/group127/reference/predictions.npz \
+            --features model/group127/features \
+            --output model/group127-producer-cache
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-group127-producer-cache
+          path: model/group127-producer-cache/
+          retention-days: 90
   experiment:
+    needs: producers
     strategy:
       fail-fast: false
       matrix:
@@ -64,11 +103,17 @@ jobs:
           run-id: 37740493178
           pattern: v273-harmonic-global-fold-*
           path: model/group127/features
+      - name: Retrieve the identical shared producer outputs
+        uses: actions/download-artifact@v4
+        with:
+          name: v273-group127-producer-cache
+          path: model/group127/producer-cache
       - name: Train explicit joint outcomes on the four exposed recording folds
         run: |
           python -m scripts.evaluate_v273_group127 \
             --reference model/group127/reference/predictions.npz \
             --features model/group127/features \
+            --producer-cache model/group127/producer-cache \
             --arm ${{ matrix.arm }} \
             --output model/group127-${{ matrix.arm }}
       - name: Publish the measured native scores

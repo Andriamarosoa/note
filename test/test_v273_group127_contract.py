@@ -1,4 +1,6 @@
 import unittest
+import tempfile
+from pathlib import Path
 import numpy as np
 
 from scripts.v273_group127_contract import (
@@ -7,9 +9,23 @@ from scripts.v273_group127_contract import (
 )
 from scripts.v273_selector_contract import ProducerPool
 from test import test_v273_selector_contract as original_tests
+from scripts.prepare_v273_group127_producers import save_producers, FrozenProducerPool
 
 
 class GroupContractTests(unittest.TestCase):
+    def test_shared_producer_cache_is_exact_and_rejects_forbidden_use(self):
+        x,y,b,f,ids,raw=original_tests.SelectorContractTests().fixture()
+        source=ProducerPool(x,y,b,f,ids)
+        with tempfile.TemporaryDirectory() as tmp:
+            directory=Path(tmp)/'cache';save_producers(source,directory)
+            cached=FrozenProducerPool(x,y,b,f,ids,directory)
+            at=np.flatnonzero(f==1)
+            np.testing.assert_array_equal(source.predict({2,4},at,{0,1}),cached.predict({2,4},at,{0,1}))
+            with self.assertRaises(ValueError):cached.predict({0,2},at,{0,1})
+            with self.assertRaises(ValueError):cached.predict({1},at,{0})
+            altered=y.copy();altered[0]=(altered[0]+1)%7
+            with self.assertRaises(ValueError):FrozenProducerPool(x,altered,b,f,ids,directory)
+
     def test_all_127_groups_and_optional_baseline(self):
         self.assertEqual(len(np.unique(GROUP_MASKS,axis=0)),127)
         np.testing.assert_array_equal(np.bincount(GROUP_SIZES.astype(int),minlength=8),[0,7,21,35,35,21,7,1])
