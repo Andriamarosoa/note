@@ -216,11 +216,19 @@ def main():
                     "Frozen reference is untouched; no model promotion."
                 ])
     for variant,pred in variant_output.items():
-        summary=compare(
-            original_output[elig],pred[elig],
-            np.zeros((len(elig),5,COMBOS),np.float32),
-            np.zeros((len(elig),5,COMBOS),np.float32),
-            yc,bc)
+        # Global decisions are measured from paired predictions.
+        # Attention was measured on real unmodified/modified model
+        # forward outputs per fold. Zero placeholder attention would
+        # produce an invalid empty denominator.
+        origgood=(original_output[elig]==yc)
+        newgood=(pred[elig]==yc)
+        summary=dict(
+            n=int(len(elig)),
+            prediction_changes=int(np.sum(original_output[elig]!=pred[elig])),
+            rescued_errors=int(np.sum(~origgood&newgood)),
+            new_errors=int(np.sum(origgood&~newgood)),
+            net_correct_delta=int(np.sum(newgood)-np.sum(origgood)),
+        )
         # attention_TVD across folds, weighted by number of active candidates
         numer=0.;denom=0.
         for f in FOLDS:
