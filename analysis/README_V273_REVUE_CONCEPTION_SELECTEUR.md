@@ -2,6 +2,13 @@
 
 **8 octobre 2026. Revue terminée ; aucun remplacement de `freeze_local_combo`.**
 
+**Reproduction CI réussie :** [run 37764258101](https://github.com/Andriamarosoa/note/actions/runs/37764258101),
+sur le commit `0cc35b77fc004fe75ac5102caace737e331f4e23`.
+Les six tests et la comparaison automatique aux conclusions versionnées
+réussissent. [Matrices complètes et rapport, artifact 11543453104](https://github.com/Andriamarosoa/note/actions/runs/37764258101/artifacts/11543453104).
+Cette reproduction technique porte sur les mêmes données exposées ; elle
+ne constitue pas une nouvelle validation statistique.
+
 La priorité justifiée par cette revue est de reprendre le contrat d'entrée,
 la signification des risques et la décision du sélecteur. L'examen des K3
 sert à vérifier ces mécanismes. Les éléments ci-dessous établissent des
