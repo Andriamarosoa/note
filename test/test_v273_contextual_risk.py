@@ -20,7 +20,10 @@ class ContextualRiskTests(unittest.TestCase):
         x=dict(group_features=features,baseline=np.eye(7,dtype=np.float32)[[3]],
             context=np.zeros((1,43),np.float32),member_votes=np.full((1,8,5),.2,np.float32),
             proposal=np.full((1,groups),2,np.int32))
-        permuted=features.copy();permuted[...,offset:]=features[:,::-1,offset:]
+        # Reversing this odd alternating pattern would leave it unchanged.
+        permuted=features.copy();permuted[...,offset:]=np.roll(features[...,offset:],1,axis=1)
+        self.assertFalse(np.array_equal(features,permuted))
+        np.testing.assert_array_equal(features[...,offset:].mean(1),permuted[...,offset:].mean(1))
         other=dict(x,group_features=permuted)
         old=CatalogueCritic();old(x)
         np.testing.assert_array_equal(old(x)['baseline_correct'],old(other)['baseline_correct'])
