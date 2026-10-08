@@ -1,0 +1,159 @@
+name: V27.3 Open K0-K6 Full Cohort
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-open-k0-k6.yml'
+      - 'scripts/extract_v273_open_cohort.py'
+      - 'scripts/train_v273_open_cohort.py'
+      - 'scripts/summarize_v273_open_cohort.py'
+      - 'scripts/extract_v273_harmonic_trajectory.py'
+      - 'test/test_v273_open_cohort.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v273-open-k0-k6
+  cancel-in-progress: false
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '2'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  TF_ENABLE_ONEDNN_OPTS: '0'
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - run: python -m pip install tensorflow==2.15.1 numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2
+      - run: python -B -m unittest test.test_v273_open_cohort -v
+  extract:
+    needs: preflight
+    strategy:
+      fail-fast: false
+      matrix:
+        fold: [0, 1, 2, 4]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2
+      - uses: actions/cache@v4
+        id: gs
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+      - if: steps.gs.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+      - name: Verify native audio
+        run: |
+          echo 'b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip' | md5sum -c -
+          echo 'aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip' | md5sum -c -
+      - name: Extract all native fragments without prediction or truth filtering
+        run: >-
+          python -B scripts/extract_v273_open_cohort.py
+          --dataset data/GuitarSet --fold ${{ matrix.fold }}
+          --output model/features-${{ matrix.fold }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-open-features-${{ matrix.fold }}
+          path: model/features-${{ matrix.fold }}/
+          retention-days: 90
+  train:
+    needs: extract
+    strategy:
+      fail-fast: false
+      matrix:
+        fold: [0, 1, 2, 4]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - run: python -m pip install tensorflow==2.15.1 numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v273-open-features-*
+          path: model/features
+      - name: Train four arms and independently replay every checkpoint
+        run: >-
+          python -B scripts/train_v273_open_cohort.py
+          --features model/features --fold ${{ matrix.fold }}
+          --output model/output/fold-${{ matrix.fold }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-open-model-${{ matrix.fold }}
+          path: model/output/
+          retention-days: 90
+  summarize:
+    needs: train
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v273-open-model-*
+          path: model/models
+      - name: Compare all 36 candidates with every native baseline and YourMT3+
+        run: >-
+          python -B scripts/summarize_v273_open_cohort.py
+          --models model/models --output model/summary
+      - run: cat model/summary/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-open-summary
+          path: model/summary/
+          retention-days: 90
+  preserve:
+    needs: summarize
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v273-open-*
+          path: model/evidence
+      - name: Preserve full data, weights, splits and outcomes beyond artifact expiry
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/permanent
+          for directory in model/evidence/v273-open-*; do
+            name=$(basename "$directory")
+            tar -cf "model/permanent/$name.tar" -C "$directory" .
+          done
+          cd model/permanent
+          sha256sum *.tar > SHA256SUMS
+          tag="v273-open-k0-k6-${GITHUB_RUN_ID}"
+          gh release create "$tag" ./*.tar SHA256SUMS --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --title "V27.3 K0-K6 research evidence ${GITHUB_RUN_ID}" --notes "Research evidence only. Full acoustic features, all fitted checkpoints, exclusions and predictions retained. No model promotion; results are on exposed development data."
