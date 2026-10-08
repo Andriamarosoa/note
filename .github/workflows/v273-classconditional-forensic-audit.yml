@@ -1,0 +1,63 @@
+name: V27.3 Neural Class-Conditional Regression Forensics
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - 'scripts/audit_v273_classconditional_regression.py'
+      - '.github/workflows/v273-classconditional-forensic-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  PYTHONUNBUFFERED: '1'
+
+jobs:
+  forensic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install audit numpy only
+        run: python -m pip install numpy==1.26.4
+      - name: Syntax check
+        run: python -m py_compile scripts/audit_v273_classconditional_regression.py
+      - name: Retrieve original 14-head native predictions (no per-K gate)
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37745469151
+          name: v273-native-neural-head-mix-report
+          path: model/old
+      - name: Retrieve class-conditional 14-head native predictions
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37747861591
+          name: v273-native-neural-head-mix-report
+          path: model/conditional
+      - name: Forensic K0-K6 transition, regression, neural risk and class masks
+        run: |
+          python scripts/audit_v273_classconditional_regression.py \
+            --original model/old/neural-heads-predictions.npz \
+            --conditional model/conditional/neural-heads-predictions.npz \
+            --output model/audit
+      - name: Publish forensic report
+        run: cat model/audit/audit.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-classconditional-rootcause-audit
+          path: model/audit/
+          retention-days: 90
