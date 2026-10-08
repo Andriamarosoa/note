@@ -1,0 +1,91 @@
+name: V27.3 Audit-Aware Selection Identity and Context Experiments
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - 'scripts/learn_v273_audit_aware_selection.py'
+      - 'scripts/evaluate_v273_audit_aware_selection.py'
+      - 'scripts/learn_v273_transition_combo_risk.py'
+      - 'test/test_v273_audit_aware_selection.py'
+      - '.github/workflows/v273-audit-aware-selection.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  CUDA_VISIBLE_DEVICES: '-1'
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  TF_NUM_INTRAOP_THREADS: '2'
+  TF_NUM_INTEROP_THREADS: '1'
+
+jobs:
+  ablation:
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [baseline, identity, regimes, both]
+    name: "Learn selector: ${{ matrix.mode }}"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 85
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install compatible experimental ML versions
+        run: |
+          python -m pip install -r requirements-train.txt
+          python -m pip install scipy==1.17.1 scikit-learn==1.4.2
+      - name: Verify explicit head identity, train-only audits and actual neural gradients
+        run: |
+          python -m py_compile scripts/learn_v273_audit_aware_selection.py scripts/evaluate_v273_audit_aware_selection.py
+          python -m unittest -v test.test_v273_audit_aware_selection
+      - name: Retrieve immutable native cohort
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37605163312
+          name: yourmt3-exactk-cohort
+          path: model/cohort
+      - name: Retrieve original audio features
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37740493178
+          pattern: v273-harmonic-global-fold-*
+          path: model/features
+      - name: Retrieve old candidate for strict reproduction control
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37755994598
+          name: v273-source-target-subset-neural-audit
+          path: model/old
+      - name: Measure Exact-K with audited head identity and/or acoustic regimes
+        run: |
+          python -B scripts/evaluate_v273_audit_aware_selection.py \
+            --cohort model/cohort \
+            --features model/features \
+            --reference model/old/predictions-and-selected-combinations.npz \
+            --mode ${{ matrix.mode }} \
+            --output model/audit-aware-${{ matrix.mode }}
+      - name: Append native K0-K6 result
+        run: cat model/audit-aware-${{ matrix.mode }}/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-audit-aware-selection-${{ matrix.mode }}
+          path: model/audit-aware-${{ matrix.mode }}/
+          retention-days: 90
