@@ -1,0 +1,34 @@
+name: V27.3 S23 inspect historical S4 poly donor
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series23-s4-inventory.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Retrieve permanent original open-K0-K6 summary archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/source
+          gh release download v273-open-k0-k6-37837235723 --repo "$GITHUB_REPOSITORY" --pattern v273-open-summary.tar --dir model/source
+          mkdir -p model/summary
+          tar -xf model/source/v273-open-summary.tar -C model/summary
+      - name: Inventory S2/S3/S4/S5 predictions and model provenance
+        run: |
+          echo '# Model series4 donor inventory' >> "$GITHUB_STEP_SUMMARY"
+          find model/summary -maxdepth 6 -type f | sort | grep -E 'series[2345]|predictions.npz|report.json' | head -80 | tee model/series23-inventory.txt
+          cat model/series23-inventory.txt >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-series23-S4-inventory
+          path: model/series23-inventory.txt
+          retention-days: 90
