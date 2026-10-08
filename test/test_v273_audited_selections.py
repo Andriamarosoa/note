@@ -11,7 +11,7 @@ class AuditConditionedTests(unittest.TestCase):
     def test_corrections_regressions_are_counted_separately(self):
         # Same proposal direction K3->K2, but different TRUE K:
         # K2 is corrected; K3 is regressed; K4 stays neutral.
-        y=np.array([2,3,4,2,3,2,3,4])
+        y=np.array([2,3,4,2,3,2,3,5])
         base=np.array([3,3,3,2,3,3,3,4])
         proposal=np.array([2,2,2,2,3,2,2,3])
         a=audit_one(y,base,proposal)
