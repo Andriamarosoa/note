@@ -59,5 +59,20 @@ class RegressionLoopTests(unittest.TestCase):
         self.assertEqual(proof['chosen'], counts(y, b, good))
         self.assertEqual(proof['chosen']['regressions'], 2)
 
+    def test_identity_of_successes_is_a_distinct_constraint(self):
+        from scripts.route_v273_regression_loops import source_search
+        b = np.repeat([2, 3, 4], 16); y = b.copy(); original = b.copy(); alternative = b.copy()
+        for i, source in enumerate([2, 3, 4]):
+            start = 16*i; y[start:start+8] = source+1
+            original[start:start+4] = source+1
+            original[start+8:start+16] = source+1
+            alternative[start+4:start+8] = source+1
+            alternative[start+8] = source+1
+        matrix = np.column_stack([original, alternative])
+        unprotected, _ = source_search(y, b, original, matrix, False)
+        protected, _ = source_search(y, b, original, matrix, True)
+        np.testing.assert_array_equal(unprotected, [1, 1, 1])
+        np.testing.assert_array_equal(protected, [0, 0, 0])
+
 
 if __name__ == '__main__': unittest.main()
