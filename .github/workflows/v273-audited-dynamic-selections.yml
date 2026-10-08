@@ -1,0 +1,64 @@
+name: V27.3 Audit-Conditioned Dynamic Selections
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - 'scripts/evaluate_v273_audited_selections.py'
+      - 'test/test_v273_audited_selections.py'
+      - '.github/workflows/v273-audited-dynamic-selections.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+
+jobs:
+  audit-and-evaluate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install fixed scoring runtime
+        run: python -m pip install numpy==1.26.4 scipy==1.17.1 scikit-learn==1.4.2
+      - name: Compile and run isolated audit reliability tests
+        run: |
+          python -m py_compile scripts/evaluate_v273_audited_selections.py
+          python -B -m unittest -v test.test_v273_audited_selections test.test_v273_dynamic_heads
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37605163312
+          name: yourmt3-exactk-cohort
+          path: model/cohort
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37740493178
+          pattern: v273-harmonic-global-fold-*
+          path: model/features
+      - name: Independent audit per K for each train-fold combination
+        run: |
+          python -B scripts/evaluate_v273_audited_selections.py \
+            --cohort model/cohort \
+            --features model/features \
+            --output model/audited-selection
+      - name: Record all-event K0-K6 Exact-K
+        run: cat model/audited-selection/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-audited-dynamic-selections
+          path: model/audited-selection/
+          retention-days: 90
