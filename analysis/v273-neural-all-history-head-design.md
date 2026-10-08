@@ -28,6 +28,52 @@ explicites de fix/correction** parmi **9 665 entrées de provenance**
 après déduplication par identifiant de provenance, pas par hypothèse unique.
 Ces totaux peuvent évoluer avec l'historique Git.
 
+## Correction importante : une sélection n'est pas ouverte à tous les K
+
+La version précédente produisait un seul poids par tête, identique pour
+toutes les classes. **C'était une erreur de conception.**
+
+Le nouveau `ClassConditionalAuditSelector` produit une matrice
+**[événement, tête, K0..K6]** et un modèle distinct pour KEEP :
+
+- `M(x,h,k)` : compatibilité *structurelle* d'un adaptateur avec une
+  proposition vers Kk (la compatibilité est définie sans vrai K).
+- `S(x,h,k)` : score **appris** de cette tête pour ce K, alimenté par
+  les activations acoustiques, les autres têtes et ses audits OOF.
+- `W(x,h,k) = softmax_h S(x,h,k)` pour les têtes compatibles ;
+  `W=0` pour les couples tête-K structurellement non compatibles.
+- Les représentations et probabilités pondérées sont calculées séparément
+  pour chaque K ; le décodeur neuronal propose K0–K6 ou KEEP.
+- KEEP dispose de sa **propre attention** ; les têtes de conservation/fix
+  n'ont pas à prétendre reconnaître une classe K donnée.
+
+Exemple : pour une prédiction originale **K2**, l'adaptateur `C23`
+peut encore voter **pour une hypothèse K3**. Il est impossible de savoir
+que le vrai K est K3 à l'inférence ; nous ne filtrons donc **jamais**
+les têtes sur la classe réelle et ne verrouillons pas toutes les
+sélections sur le K initial de la référence.
+
+Le masque représente seulement la **possibilité structurelle** d'une
+proposition. Une tête éligible n'obtient aucun privilège garanti :
+**l'utilité est entièrement apprise par le réseau**. Le masque
+`head_mask` continue de contrôler la provenance et l'alignement OOF
+d'une tête, indépendamment du masque `head_k_mask`.
+
+La version actuelle garde H0 comme contexte de repli pour K0..K6,
+H1–H5 avec sorties poly K2..K6, C23 uniquement pour une proposition
+K3, C32 pour K2, C34 pour K4, C43 pour K3, et les quatre fixes
+uniquement pour la branche de KEEP. Cela correspond aux capacités
+actuelles des adaptateurs et **pas à un jugement statique sur leur
+précision**. Les autres anciennes pistes, une fois raccordées,
+pourront définir d'autres compatibilités.
+
+Les audits par vrai K sont produits sur les folds d'entraînement ;
+au moment de prédire, le vrai K n'est jamais disponible.
+Le rapport expérimental exporte désormais les poids conditionnels
+de dimension `[7493, 14, 7]`, et non seulement la moyenne
+`[7493, 14]`. Une amélioration éventuelle doit être mesurée
+sur les 59 309 cas natifs complets.
+
 ## Contrat universel des têtes
 
 Chaque module est accompagné de :
