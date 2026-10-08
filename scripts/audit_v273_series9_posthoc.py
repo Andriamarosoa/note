@@ -23,6 +23,13 @@ def evaluate(a):
     require(matrix.shape[0]==len(ids) and len(set(ids.tolist()))==len(ids),
             'predictions/identity schema')
     require(set(fold.tolist())==set(FOLDS),'fold set changed')
+    with np.load(a.root/'analysis/evidence/v273-regression-loops/prepared/inputs.npz',
+                 allow_pickle=False) as native:
+        require(np.array_equal(native['native_global_index'], ids), 'baseline IDs drift')
+        require(np.array_equal(native['native_truth'], y), 'baseline truth drift')
+        require(np.array_equal(native['native_fold'], fold), 'baseline fold drift')
+        freeze = native['native_baseline']
+    require(int(np.sum(freeze==y))==48454, 'freeze target drift')
     for name in (GLOBAL,POLY,BEST):
         require(name in names,'missing parent '+name)
     get=lambda name:matrix[:,names.index(name)].astype(np.int8)
@@ -47,7 +54,7 @@ def evaluate(a):
     require(len(policies)==14,'candidate inventory')
     reports={}
     for name,pred in policies.items():
-        reports[name]=dict(metrics=metrics(y,pred),vs_series8=paired(y,s,pred),
+        reports[name]=dict(metrics=metrics(y,pred),vs_freeze=paired(y,freeze,pred),vs_series8=paired(y,s,pred),
             vs_poly_parent=paired(y,p,pred),
             folds={str(f):dict(metrics=metrics(y[fold==f],pred[fold==f]),
                 vs_series8=paired(y[fold==f],s[fold==f],pred[fold==f])) for f in FOLDS})
@@ -75,13 +82,18 @@ def evaluate(a):
     (a.output/'report.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
     lines=['# Series9 K5 veto — independent arithmetic replay of posthoc screen','',
         'NOT independent validation; all results derive from exposed development data.','',
-        '| Policy | Correct global | Correct poly | Corrections vs S8 | Regressions vs S8 |',
-        '|---|---:|---:|---:|---:|']
+        '| Policy | Correct global | Correct poly | Regressions vs freeze | Poly regressions vs freeze | Corrections vs S8 | Regressions vs S8 |',
+        '|---|---:|---:|---:|---:|---:|---:|']
     for name in rank:
         m=reports[name]['metrics'];q=reports[name]['vs_series8']['global']
+        w=reports[name]['vs_freeze']
         lines.append(f"| {name} | {m['correct']} | {m['poly']['correct']} | "
+                     f"{w['global']['regressions']} | {w['poly']['regressions']} | "
                      f"{q['corrections']} | {q['regressions']} |")
     lines+=['',f'Exploratory improvement: {WANTED}',
+      f"Total regressions versus freeze: {wanted['vs_freeze']['global']['regressions']} global, {wanted['vs_freeze']['poly']['regressions']} poly.",
+      f"Total corrections versus freeze: {wanted['vs_freeze']['global']['corrections']} global, {wanted['vs_freeze']['poly']['corrections']} poly.",
+      f"Total wrong predictions: {len(y)-wanted['metrics']['correct']} global, {int((y>=2).sum())-wanted['metrics']['poly']['correct']} poly.",
       f'Changes relative to S8: {len(changes)}; corrections 2; regressions 1; net +1.',
       'All 14 candidates preserved; none promoted.']
     (a.output/'report.md').write_text('\n'.join(lines)+'\n')
@@ -89,6 +101,7 @@ def evaluate(a):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--root',type=Path,default=Path('.'))
     p.add_argument('--input',type=Path,required=True)
     p.add_argument('--output',type=Path,required=True)
     evaluate(p.parse_args())
