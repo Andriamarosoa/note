@@ -70,8 +70,10 @@ def verify(a):
             true_k=int(y[i]),freeze_k=int(b[i]),series15_k=int(parent[i]),
             series16_k=int(candidate[i]),prob_freeze=float(
               probs['k23__flow_logistic'][i]),outcome=result))
-    require(len(rows)==4 and all(r['outcome']=='correction' for r in rows),
-            'changed-event count or correctness mismatch')
+    outcome_counts={k:sum(r['outcome']==k for r in rows)
+        for k in ('correction','regression','neutral')}
+    require(outcome_counts['correction']==4 and outcome_counts['regression']==0,
+            'four correct and zero regressed cases did not reproduce')
     report=dict(status='replayed',independent_validation=False,
         already_exposed_data=True,posthoc_selection=True,
         promotion=False,all_108_policies_bitwise_equal=True,
@@ -80,10 +82,10 @@ def verify(a):
         by_fold={str(f):dict(
             vs_s15=paired(y[fold==f],parent[fold==f],candidate[fold==f]),
             metrics=metrics(y[fold==f],candidate[fold==f])) for f in FOLDS},
-        changed_rows=rows)
+        changed_rows=rows,changed_outcome_counts=outcome_counts)
     a.output.mkdir(parents=True)
     (a.output/'report.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
-    with (a.output/'four-corrections.csv').open('w',newline='') as f:
+    with (a.output/'all-changed-decisions.csv').open('w',newline='') as f:
         w=csv.DictWriter(f,fieldnames=list(rows[0]));w.writeheader();w.writerows(rows)
     lines=['# S16 independent arithmetic replay of development decisions','',
         'All 108 policies exactly reproduced from probabilities, with no truth in the decoder.',
@@ -93,12 +95,13 @@ def verify(a):
         f"| {WIN} | {m['correct']} | {m['poly']['correct']} | "
         f"{delta['global']['corrections']} | {delta['global']['regressions']} | "
         f"{freeze['global']['regressions']} |",'',
-        '| Native ID | Fold | Truth | Freeze | S15 | S16 | P(freeze) |',
-        '|---:|---:|---:|---:|---:|---:|---:|']
+        f'Changed decision breakdown: {outcome_counts}', '',
+        '| Native ID | Fold | Truth | Freeze | S15 | S16 | P(freeze) | Outcome |',
+        '|---:|---:|---:|---:|---:|---:|---:|---|']
     for r in rows:
         lines.append(f"| {r['global_id']} | {r['fold']} | {r['true_k']} | "
             f"{r['freeze_k']} | {r['series15_k']} | {r['series16_k']} | "
-            f"{r['prob_freeze']:.6f} |")
+            f"{r['prob_freeze']:.6f} | {r['outcome']} |")
     lines+=['',f'Fitted models SHA256 verified: {len(files)}',
         'Not production promotion, not validation on unseen music.']
     (a.output/'report.md').write_text('\n'.join(lines)+'\n')
