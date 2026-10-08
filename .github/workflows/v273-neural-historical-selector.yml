@@ -1,0 +1,57 @@
+name: V27.3 Neural Historical Heads and Fix Selector
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - 'scripts/build_v273_head_history_registry.py'
+      - 'scripts/learn_v273_neural_head_selector.py'
+      - 'test/test_v273_neural_history_selector.py'
+      - '.github/workflows/v273-neural-historical-selector.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inventory:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Inventory all historical experiments and branches
+        run: |
+          python scripts/build_v273_head_history_registry.py --output model/registry
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-neural-historical-heads-registry
+          path: model/registry
+          retention-days: 90
+
+  neural-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      PYTHONPATH: '.:src'
+      CUDA_VISIBLE_DEVICES: '-1'
+      OMP_NUM_THREADS: '1'
+      TF_NUM_INTRAOP_THREADS: '2'
+      TF_NUM_INTEROP_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install project TensorFlow for an actual neural network
+        run: python -m pip install -r requirements-train.txt
+      - name: Confirm neural model trains and learns interacting heads
+        run: |
+          python -m py_compile scripts/build_v273_head_history_registry.py scripts/learn_v273_neural_head_selector.py
+          python -m unittest -v test.test_v273_neural_history_selector
