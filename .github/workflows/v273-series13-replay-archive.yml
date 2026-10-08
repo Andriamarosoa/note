@@ -1,0 +1,51 @@
+name: V27.3 series13 independent decoder replay and archival
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series13-replay-archive.yml'
+      - 'scripts/verify_v273_series13_birth.py'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Download original series13 models, outputs and split reports
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37854384791 --repo "$GITHUB_REPOSITORY" --name v273-series13-birth-flow --dir model/series13-original
+      - name: Reconstruct all 24 decisions and audit every changed event
+        run: >-
+          python -m scripts.verify_v273_series13_birth
+          --input model/series13-original
+          --output model/series13-verified
+      - run: cat model/series13-verified/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series13-replayed-audit
+          path: model/series13-verified/
+          retention-days: 90
+      - name: Preserve every series13 weight and audit beyond retention expiry
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/archive
+          tar -czf model/archive/v273-series13-evidence.tar.gz -C model series13-original series13-verified
+          (cd model/archive && sha256sum v273-series13-evidence.tar.gz > SHA256SUMS)
+          gh release create "v273-series13-research-${GITHUB_RUN_ID}" \
+            model/archive/v273-series13-evidence.tar.gz model/archive/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "V27.3 series13 harmonic birth regression proof ${GITHUB_RUN_ID}" \
+            --notes "No independent validation or production promotion. All 76 fitted gates, every decision, replay of 24 policies and case-level proof for the three zero-loss fixes."
