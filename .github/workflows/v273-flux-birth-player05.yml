@@ -1,0 +1,119 @@
+name: V27.3 Flux Birth Player05 Transfer
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - 'scripts/validate_v273_flux_birth_player05.py'
+      - '.github/workflows/v273-flux-birth-player05.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '2'
+
+jobs:
+  freeze-predictions:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install extraction libraries
+        run: python -m pip install -r requirements-train.txt numpy==1.26.4 scipy==1.17.1 scikit-learn==1.4.2
+      - name: Compile scripts
+        run: |
+          python -m py_compile scripts/validate_v273_flux_birth_player05.py
+          python -m py_compile scripts/summarize_v273_energy_flux_combined.py
+      - name: Restore internal training feature artifacts
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37731923226
+          pattern: v273-energy-flux-combined-fold-*
+          path: model/train-features
+      - name: Restore frozen label-free player05 predictions ONLY
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/prior
+          gh release download v273-fresh-player05-37552019921 --repo "$GITHUB_REPOSITORY" \
+            --pattern predictions-before-labels.npz --pattern prediction-sha256.txt \
+            --dir model/prior
+      - uses: actions/cache@v4
+        id: gs
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+      - name: Fetch GuitarSet if not cached
+        if: steps.gs.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+      - name: Verify GuitarSet checksums
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Infer player05 and freeze output BEFORE label access
+        run: |
+          python -B scripts/validate_v273_flux_birth_player05.py infer \
+            --input-root model/train-features \
+            --frozen model/prior/predictions-before-labels.npz \
+            --checksum model/prior/prediction-sha256.txt \
+            --dataset data/GuitarSet \
+            --output model/prelabel
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-flux-birth-player05-before-labels
+          path: model/prelabel/
+          retention-days: 90
+
+  score:
+    needs: freeze-predictions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scikit-learn==1.4.2 scipy==1.17.1
+      - uses: actions/download-artifact@v4
+        with:
+          name: v273-flux-birth-player05-before-labels
+          path: model/prelabel
+      - name: Download historical holdout labels only AFTER inference completes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/labels
+          gh release download v273-fresh-player05-37552019921 --repo "$GITHUB_REPOSITORY" \
+            --pattern scored-predictions.npz --dir model/labels
+      - name: Score paired Exact-K effect
+        run: |
+          python -B scripts/validate_v273_flux_birth_player05.py score \
+            --predictions model/prelabel/predictions-before-labels.npz \
+            --checksum model/prelabel/prediction-sha256.txt \
+            --labels model/labels/scored-predictions.npz \
+            --output model/score
+      - name: Publish report
+        run: cat model/score/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-flux-birth-player05-score
+          path: model/score/
+          retention-days: 90
