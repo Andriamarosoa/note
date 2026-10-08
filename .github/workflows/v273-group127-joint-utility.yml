@@ -1,0 +1,126 @@
+name: V27.3 127 joint groups and local outcome supervision
+
+on:
+  push:
+    branches: [codex/v273-group127-joint-utility]
+    paths:
+      - 'scripts/v273_group127_contract.py'
+      - 'scripts/learn_v273_group127.py'
+      - 'scripts/evaluate_v273_group127.py'
+      - 'scripts/prepare_v273_group127_producers.py'
+      - 'test/test_v273_group127_contract.py'
+      - 'test/test_v273_group127_neural.py'
+      - '.github/workflows/v273-group127-joint-utility.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  CUDA_VISIBLE_DEVICES: '-1'
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  TF_NUM_INTRAOP_THREADS: '2'
+  TF_NUM_INTEROP_THREADS: '1'
+
+jobs:
+  producers:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install reference expert numerical versions
+        run: python -m pip install 'numpy<2' scipy==1.17.1 scikit-learn==1.4.2
+      - name: Retrieve archived coherent native reference
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37766719862
+          name: v273-selector-repair-coherent
+          path: model/group127/reference
+      - name: Retrieve identical acoustic observables
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37740493178
+          pattern: v273-harmonic-global-fold-*
+          path: model/group127/features
+      - name: Produce the fourteen independent expert sets once
+        run: |
+          python -m scripts.prepare_v273_group127_producers \
+            --reference model/group127/reference/predictions.npz \
+            --features model/group127/features \
+            --output model/group127-producer-cache
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-group127-producer-cache
+          path: model/group127-producer-cache/
+          retention-days: 90
+  experiment:
+    needs: producers
+    strategy:
+      fail-fast: false
+      matrix:
+        arm: [direct, global, local]
+    name: "Joint group critic: ${{ matrix.arm }}"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install the reference numerical versions
+        run: |
+          python -m pip install -r requirements-train.txt
+          python -m pip install scipy==1.17.1 scikit-learn==1.4.2
+      - name: Verify seven-way synergy, no veto, producer separation and gradients
+        run: python -m unittest -v test.test_v273_group127_contract test.test_v273_group127_neural
+      - name: Retrieve archived coherent reference on the native cohort
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37766719862
+          name: v273-selector-repair-coherent
+          path: model/group127/reference
+      - name: Retrieve identical acoustic observables
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37740493178
+          pattern: v273-harmonic-global-fold-*
+          path: model/group127/features
+      - name: Retrieve the identical shared producer outputs
+        uses: actions/download-artifact@v4
+        with:
+          name: v273-group127-producer-cache
+          path: model/group127/producer-cache
+      - name: Train explicit joint outcomes on the four exposed recording folds
+        run: |
+          python -m scripts.evaluate_v273_group127 \
+            --reference model/group127/reference/predictions.npz \
+            --features model/group127/features \
+            --producer-cache model/group127/producer-cache \
+            --arm ${{ matrix.arm }} \
+            --output model/group127-${{ matrix.arm }}
+      - name: Publish the measured native scores
+        run: cat model/group127-${{ matrix.arm }}/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-group127-${{ matrix.arm }}
+          path: model/group127-${{ matrix.arm }}/
+          retention-days: 90
