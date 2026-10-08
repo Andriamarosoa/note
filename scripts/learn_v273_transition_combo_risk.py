@@ -270,7 +270,7 @@ def objective(pred,target,correct_label,regress_label,keep_label,sample_weight):
             +0.3*tf.reduce_mean(bce(kp,keep_label)))
 
 
-def train_model(train,truth,base,held,seed=SEED,epochs=30):
+def train_model(train,truth,base,held,seed=SEED,epochs=30,return_model=False):
     tf.keras.utils.set_random_seed(seed)
     model=TransitionCombinationArbiter(width=32)
     labels,cor,reg,keep=targets(truth,base)
@@ -299,4 +299,7 @@ def train_model(train,truth,base,held,seed=SEED,epochs=30):
     out=model(held,training=False)
     classes=np.array([2,3,4,5,6,7],int)
     action=classes[np.argmax(out["action_logits"].numpy(),axis=1)]
-    return action,out,histlog
+    result=(action,out,histlog)
+    # Used by forensic feature interventions. The exact SAME trained
+    # checkpoint is reused, avoiding confounding with a second fit.
+    return (*result,model) if return_model else result
