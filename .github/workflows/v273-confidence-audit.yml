@@ -1,0 +1,101 @@
+name: V27.3 frozen confidence audit
+
+on:
+  push:
+    branches: [codex/v273-confidence-audit]
+    paths:
+      - 'scripts/replay_v273_confidence.py'
+      - 'scripts/v273_confidence_metrics.py'
+      - '.github/workflows/v273-confidence-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  CUDA_VISIBLE_DEVICES: '-1'
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  TF_NUM_INTRAOP_THREADS: '2'
+  TF_NUM_INTEROP_THREADS: '1'
+
+jobs:
+  replay:
+    strategy:
+      fail-fast: false
+      matrix:
+        arm: [control7, corrector8]
+    name: "Frozen audit: ${{ matrix.arm }}"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install original numerical versions
+        run: |
+          python -m pip install -r requirements-train.txt
+          python -m pip install scipy==1.17.1 scikit-learn==1.4.2
+      - name: Retrieve native reference
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37766719862
+          name: v273-selector-repair-coherent
+          path: model/confidence/reference
+      - name: Retrieve acoustic observables
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37740493178
+          pattern: v273-harmonic-global-fold-*
+          path: model/confidence/features
+      - name: Retrieve original specialist producers
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37777844182
+          name: v273-group127-producer-cache
+          path: model/confidence/producers
+      - name: Retrieve fixed learned corrector producers
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37789646292
+          name: v273-learned-corrector-cache
+          path: model/confidence/correctors
+      - name: Retrieve original selector weights and predictions
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37789646292
+          name: v273-catalogue-${{ matrix.arm }}
+          path: model/confidence/archive
+      - name: Replay frozen weights on train and excluded folds
+        run: |
+          python -m scripts.replay_v273_confidence \
+            --reference model/confidence/reference/predictions.npz \
+            --features model/confidence/features \
+            --producer-cache model/confidence/producers \
+            --corrector-cache model/confidence/correctors \
+            --archive model/confidence/archive \
+            --arm ${{ matrix.arm }} \
+            --output model/confidence-${{ matrix.arm }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-confidence-${{ matrix.arm }}
+          path: model/confidence-${{ matrix.arm }}/
+          retention-days: 90
