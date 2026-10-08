@@ -37,6 +37,13 @@ jobs:
           import json
           import joblib
           import numpy as np
+          from numpy.random import _pickle as numpy_pickle
+          original_generator_ctor=numpy_pickle.__bit_generator_ctor
+          def compatible_generator_ctor(name):
+              if isinstance(name,type) and issubclass(name,np.random.BitGenerator):
+                  return name()
+              return original_generator_ctor(name)
+          numpy_pickle.__bit_generator_ctor=compatible_generator_ctor
           from pathlib import Path
           dest=Path('model/series23-source-schema.json')
           weights=Path('analysis/evidence/v273-open-k0-k6/series4/models')
