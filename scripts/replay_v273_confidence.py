@@ -128,7 +128,7 @@ def main():
                 out=infer(model,inp);summary=summarize(snapshot(out,inp,yc[val],bc[val],eligible[val],fc[val]))
                 fold_result['regime_diagnostics'].append(dict(regime=regime,omitted_fold=omitted,
                     vote_fit_folds=sorted(permitted) if regime.startswith('votes2') else sorted(set(FOLDS)-{outer}),
-                    audit_reference_folds=sorted(set(fc[refs])),reference_ids_sha256=id_digest(eligible[refs]),
+                    audit_reference_folds=sorted(map(int,set(fc[refs]))),reference_ids_sha256=id_digest(eligible[refs]),
                     summary=summary))
                 save(f'{regime}-omit{omitted}',out,inp,val)
                 del inp,out,audits
