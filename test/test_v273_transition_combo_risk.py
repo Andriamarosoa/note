@@ -19,7 +19,12 @@ class TransitionCombinationRiskTests(unittest.TestCase):
         truth=np.resize(np.array([3,3,2,0,1,4],int),n)
         P=rng.uniform(.1,1.,(n,6,5)).astype("float32")
         P/=P.sum(axis=-1,keepdims=True)
-        folds=np.resize(np.array([0,1,2],int),n)
+        # Do NOT align source class with inner fold: each source
+        # must exist on the other two folds to audit independently.
+        folds=(np.arange(n)//3)%3
+        P[0,1:,:]=.01
+        P[0,1:,1]=.96  # ensure K2->K3 proposes at least once
+        P[0]/=P[0].sum(axis=-1,keepdims=True)
         return P,base,truth,folds
 
     def test_64_subsets_and_structural_masks(self):
