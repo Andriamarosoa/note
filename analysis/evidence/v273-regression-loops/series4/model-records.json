@@ -1,0 +1,2408 @@
+{
+  "assignments": [
+    {
+      "block": 0,
+      "model": "group|0|Jazz3-150-C,Rock2-142-D,Rock3-148-C,SS1-68-E",
+      "representation": "group",
+      "role": "outer",
+      "test_piece": "BN2-166-Ab"
+    },
+    {
+      "block": 0,
+      "model": "group|0|Rock2-142-D,Rock3-148-C,SS1-68-E",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Jazz3-150-C"
+    },
+    {
+      "block": 0,
+      "model": "group|0|Jazz3-150-C,Rock3-148-C,SS1-68-E",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Rock2-142-D"
+    },
+    {
+      "block": 0,
+      "model": "group|0|Jazz3-150-C,Rock2-142-D,SS1-68-E",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Rock3-148-C"
+    },
+    {
+      "block": 0,
+      "model": "group|0|Jazz3-150-C,Rock2-142-D,Rock3-148-C",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "SS1-68-E"
+    },
+    {
+      "block": 1,
+      "model": "group|1|Funk2-119-G,Funk3-112-C#,SS3-98-C",
+      "representation": "group",
+      "role": "outer",
+      "test_piece": "BN3-154-E"
+    },
+    {
+      "block": 1,
+      "model": "group|1|Funk3-112-C#,SS3-98-C",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Funk2-119-G"
+    },
+    {
+      "block": 1,
+      "model": "group|1|Funk2-119-G,SS3-98-C",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Funk3-112-C#"
+    },
+    {
+      "block": 1,
+      "model": "group|1|Funk2-119-G,Funk3-112-C#",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "SS3-98-C"
+    },
+    {
+      "block": 2,
+      "model": "group|2|Jazz1-200-B,Jazz2-110-Bb,Rock1-130-A,Rock2-85-F",
+      "representation": "group",
+      "role": "outer",
+      "test_piece": "Funk1-114-Ab"
+    },
+    {
+      "block": 2,
+      "model": "group|2|Jazz2-110-Bb,Rock1-130-A,Rock2-85-F",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Jazz1-200-B"
+    },
+    {
+      "block": 2,
+      "model": "group|2|Jazz1-200-B,Rock1-130-A,Rock2-85-F",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Jazz2-110-Bb"
+    },
+    {
+      "block": 2,
+      "model": "group|2|Jazz1-200-B,Jazz2-110-Bb,Rock2-85-F",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Rock1-130-A"
+    },
+    {
+      "block": 2,
+      "model": "group|2|Jazz1-200-B,Jazz2-110-Bb,Rock1-130-A",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Rock2-85-F"
+    },
+    {
+      "block": 3,
+      "model": "group|4|Jazz1-130-D,Jazz3-137-Eb,Rock1-90-C#,SS2-107-Ab",
+      "representation": "group",
+      "role": "outer",
+      "test_piece": "Funk2-108-Eb"
+    },
+    {
+      "block": 3,
+      "model": "group|4|Jazz3-137-Eb,Rock1-90-C#,SS2-107-Ab",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Jazz1-130-D"
+    },
+    {
+      "block": 3,
+      "model": "group|4|Jazz1-130-D,Rock1-90-C#,SS2-107-Ab",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Jazz3-137-Eb"
+    },
+    {
+      "block": 3,
+      "model": "group|4|Jazz1-130-D,Jazz3-137-Eb,SS2-107-Ab",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Rock1-90-C#"
+    },
+    {
+      "block": 3,
+      "model": "group|4|Jazz1-130-D,Jazz3-137-Eb,Rock1-90-C#",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "SS2-107-Ab"
+    },
+    {
+      "block": 4,
+      "model": "group|1|BN3-154-E,Funk3-112-C#,SS3-98-C",
+      "representation": "group",
+      "role": "outer",
+      "test_piece": "Funk2-119-G"
+    },
+    {
+      "block": 4,
+      "model": "group|1|Funk3-112-C#,SS3-98-C",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "BN3-154-E"
+    },
+    {
+      "block": 4,
+      "model": "group|1|BN3-154-E,SS3-98-C",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Funk3-112-C#"
+    },
+    {
+      "block": 4,
+      "model": "group|1|BN3-154-E,Funk3-112-C#",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "SS3-98-C"
+    },
+    {
+      "block": 5,
+      "model": "group|1|BN3-154-E,Funk2-119-G,SS3-98-C",
+      "representation": "group",
+      "role": "outer",
+      "test_piece": "Funk3-112-C#"
+    },
+    {
+      "block": 5,
+      "model": "group|1|Funk2-119-G,SS3-98-C",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "BN3-154-E"
+    },
+    {
+      "block": 5,
+      "model": "group|1|BN3-154-E,SS3-98-C",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Funk2-119-G"
+    },
+    {
+      "block": 5,
+      "model": "group|1|BN3-154-E,Funk2-119-G",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "SS3-98-C"
+    },
+    {
+      "block": 6,
+      "model": "group|4|Funk2-108-Eb,Jazz3-137-Eb,Rock1-90-C#,SS2-107-Ab",
+      "representation": "group",
+      "role": "outer",
+      "test_piece": "Jazz1-130-D"
+    },
+    {
+      "block": 6,
+      "model": "group|4|Jazz3-137-Eb,Rock1-90-C#,SS2-107-Ab",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Funk2-108-Eb"
+    },
+    {
+      "block": 6,
+      "model": "group|4|Funk2-108-Eb,Rock1-90-C#,SS2-107-Ab",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Jazz3-137-Eb"
+    },
+    {
+      "block": 6,
+      "model": "group|4|Funk2-108-Eb,Jazz3-137-Eb,SS2-107-Ab",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Rock1-90-C#"
+    },
+    {
+      "block": 6,
+      "model": "group|4|Funk2-108-Eb,Jazz3-137-Eb,Rock1-90-C#",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "SS2-107-Ab"
+    },
+    {
+      "block": 7,
+      "model": "group|2|Funk1-114-Ab,Jazz2-110-Bb,Rock1-130-A,Rock2-85-F",
+      "representation": "group",
+      "role": "outer",
+      "test_piece": "Jazz1-200-B"
+    },
+    {
+      "block": 7,
+      "model": "group|2|Jazz2-110-Bb,Rock1-130-A,Rock2-85-F",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Funk1-114-Ab"
+    },
+    {
+      "block": 7,
+      "model": "group|2|Funk1-114-Ab,Rock1-130-A,Rock2-85-F",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Jazz2-110-Bb"
+    },
+    {
+      "block": 7,
+      "model": "group|2|Funk1-114-Ab,Jazz2-110-Bb,Rock2-85-F",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Rock1-130-A"
+    },
+    {
+      "block": 7,
+      "model": "group|2|Funk1-114-Ab,Jazz2-110-Bb,Rock1-130-A",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Rock2-85-F"
+    },
+    {
+      "block": 8,
+      "model": "group|2|Funk1-114-Ab,Jazz1-200-B,Rock1-130-A,Rock2-85-F",
+      "representation": "group",
+      "role": "outer",
+      "test_piece": "Jazz2-110-Bb"
+    },
+    {
+      "block": 8,
+      "model": "group|2|Jazz1-200-B,Rock1-130-A,Rock2-85-F",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Funk1-114-Ab"
+    },
+    {
+      "block": 8,
+      "model": "group|2|Funk1-114-Ab,Rock1-130-A,Rock2-85-F",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Jazz1-200-B"
+    },
+    {
+      "block": 8,
+      "model": "group|2|Funk1-114-Ab,Jazz1-200-B,Rock2-85-F",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Rock1-130-A"
+    },
+    {
+      "block": 8,
+      "model": "group|2|Funk1-114-Ab,Jazz1-200-B,Rock1-130-A",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Rock2-85-F"
+    },
+    {
+      "block": 9,
+      "model": "group|4|Funk2-108-Eb,Jazz1-130-D,Rock1-90-C#,SS2-107-Ab",
+      "representation": "group",
+      "role": "outer",
+      "test_piece": "Jazz3-137-Eb"
+    },
+    {
+      "block": 9,
+      "model": "group|4|Jazz1-130-D,Rock1-90-C#,SS2-107-Ab",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Funk2-108-Eb"
+    },
+    {
+      "block": 9,
+      "model": "group|4|Funk2-108-Eb,Rock1-90-C#,SS2-107-Ab",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Jazz1-130-D"
+    },
+    {
+      "block": 9,
+      "model": "group|4|Funk2-108-Eb,Jazz1-130-D,SS2-107-Ab",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Rock1-90-C#"
+    },
+    {
+      "block": 9,
+      "model": "group|4|Funk2-108-Eb,Jazz1-130-D,Rock1-90-C#",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "SS2-107-Ab"
+    },
+    {
+      "block": 10,
+      "model": "group|0|BN2-166-Ab,Rock2-142-D,Rock3-148-C,SS1-68-E",
+      "representation": "group",
+      "role": "outer",
+      "test_piece": "Jazz3-150-C"
+    },
+    {
+      "block": 10,
+      "model": "group|0|Rock2-142-D,Rock3-148-C,SS1-68-E",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "BN2-166-Ab"
+    },
+    {
+      "block": 10,
+      "model": "group|0|BN2-166-Ab,Rock3-148-C,SS1-68-E",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Rock2-142-D"
+    },
+    {
+      "block": 10,
+      "model": "group|0|BN2-166-Ab,Rock2-142-D,SS1-68-E",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Rock3-148-C"
+    },
+    {
+      "block": 10,
+      "model": "group|0|BN2-166-Ab,Rock2-142-D,Rock3-148-C",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "SS1-68-E"
+    },
+    {
+      "block": 11,
+      "model": "group|2|Funk1-114-Ab,Jazz1-200-B,Jazz2-110-Bb,Rock2-85-F",
+      "representation": "group",
+      "role": "outer",
+      "test_piece": "Rock1-130-A"
+    },
+    {
+      "block": 11,
+      "model": "group|2|Jazz1-200-B,Jazz2-110-Bb,Rock2-85-F",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Funk1-114-Ab"
+    },
+    {
+      "block": 11,
+      "model": "group|2|Funk1-114-Ab,Jazz2-110-Bb,Rock2-85-F",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Jazz1-200-B"
+    },
+    {
+      "block": 11,
+      "model": "group|2|Funk1-114-Ab,Jazz1-200-B,Rock2-85-F",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Jazz2-110-Bb"
+    },
+    {
+      "block": 11,
+      "model": "group|2|Funk1-114-Ab,Jazz1-200-B,Jazz2-110-Bb",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Rock2-85-F"
+    },
+    {
+      "block": 12,
+      "model": "group|4|Funk2-108-Eb,Jazz1-130-D,Jazz3-137-Eb,SS2-107-Ab",
+      "representation": "group",
+      "role": "outer",
+      "test_piece": "Rock1-90-C#"
+    },
+    {
+      "block": 12,
+      "model": "group|4|Jazz1-130-D,Jazz3-137-Eb,SS2-107-Ab",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Funk2-108-Eb"
+    },
+    {
+      "block": 12,
+      "model": "group|4|Funk2-108-Eb,Jazz3-137-Eb,SS2-107-Ab",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Jazz1-130-D"
+    },
+    {
+      "block": 12,
+      "model": "group|4|Funk2-108-Eb,Jazz1-130-D,SS2-107-Ab",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Jazz3-137-Eb"
+    },
+    {
+      "block": 12,
+      "model": "group|4|Funk2-108-Eb,Jazz1-130-D,Jazz3-137-Eb",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "SS2-107-Ab"
+    },
+    {
+      "block": 13,
+      "model": "group|0|BN2-166-Ab,Jazz3-150-C,Rock3-148-C,SS1-68-E",
+      "representation": "group",
+      "role": "outer",
+      "test_piece": "Rock2-142-D"
+    },
+    {
+      "block": 13,
+      "model": "group|0|Jazz3-150-C,Rock3-148-C,SS1-68-E",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "BN2-166-Ab"
+    },
+    {
+      "block": 13,
+      "model": "group|0|BN2-166-Ab,Rock3-148-C,SS1-68-E",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Jazz3-150-C"
+    },
+    {
+      "block": 13,
+      "model": "group|0|BN2-166-Ab,Jazz3-150-C,SS1-68-E",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Rock3-148-C"
+    },
+    {
+      "block": 13,
+      "model": "group|0|BN2-166-Ab,Jazz3-150-C,Rock3-148-C",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "SS1-68-E"
+    },
+    {
+      "block": 14,
+      "model": "group|2|Funk1-114-Ab,Jazz1-200-B,Jazz2-110-Bb,Rock1-130-A",
+      "representation": "group",
+      "role": "outer",
+      "test_piece": "Rock2-85-F"
+    },
+    {
+      "block": 14,
+      "model": "group|2|Jazz1-200-B,Jazz2-110-Bb,Rock1-130-A",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Funk1-114-Ab"
+    },
+    {
+      "block": 14,
+      "model": "group|2|Funk1-114-Ab,Jazz2-110-Bb,Rock1-130-A",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Jazz1-200-B"
+    },
+    {
+      "block": 14,
+      "model": "group|2|Funk1-114-Ab,Jazz1-200-B,Rock1-130-A",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Jazz2-110-Bb"
+    },
+    {
+      "block": 14,
+      "model": "group|2|Funk1-114-Ab,Jazz1-200-B,Jazz2-110-Bb",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Rock1-130-A"
+    },
+    {
+      "block": 15,
+      "model": "group|0|BN2-166-Ab,Jazz3-150-C,Rock2-142-D,SS1-68-E",
+      "representation": "group",
+      "role": "outer",
+      "test_piece": "Rock3-148-C"
+    },
+    {
+      "block": 15,
+      "model": "group|0|Jazz3-150-C,Rock2-142-D,SS1-68-E",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "BN2-166-Ab"
+    },
+    {
+      "block": 15,
+      "model": "group|0|BN2-166-Ab,Rock2-142-D,SS1-68-E",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Jazz3-150-C"
+    },
+    {
+      "block": 15,
+      "model": "group|0|BN2-166-Ab,Jazz3-150-C,SS1-68-E",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Rock2-142-D"
+    },
+    {
+      "block": 15,
+      "model": "group|0|BN2-166-Ab,Jazz3-150-C,Rock2-142-D",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "SS1-68-E"
+    },
+    {
+      "block": 16,
+      "model": "group|0|BN2-166-Ab,Jazz3-150-C,Rock2-142-D,Rock3-148-C",
+      "representation": "group",
+      "role": "outer",
+      "test_piece": "SS1-68-E"
+    },
+    {
+      "block": 16,
+      "model": "group|0|Jazz3-150-C,Rock2-142-D,Rock3-148-C",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "BN2-166-Ab"
+    },
+    {
+      "block": 16,
+      "model": "group|0|BN2-166-Ab,Rock2-142-D,Rock3-148-C",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Jazz3-150-C"
+    },
+    {
+      "block": 16,
+      "model": "group|0|BN2-166-Ab,Jazz3-150-C,Rock3-148-C",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Rock2-142-D"
+    },
+    {
+      "block": 16,
+      "model": "group|0|BN2-166-Ab,Jazz3-150-C,Rock2-142-D",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Rock3-148-C"
+    },
+    {
+      "block": 17,
+      "model": "group|4|Funk2-108-Eb,Jazz1-130-D,Jazz3-137-Eb,Rock1-90-C#",
+      "representation": "group",
+      "role": "outer",
+      "test_piece": "SS2-107-Ab"
+    },
+    {
+      "block": 17,
+      "model": "group|4|Jazz1-130-D,Jazz3-137-Eb,Rock1-90-C#",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Funk2-108-Eb"
+    },
+    {
+      "block": 17,
+      "model": "group|4|Funk2-108-Eb,Jazz3-137-Eb,Rock1-90-C#",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Jazz1-130-D"
+    },
+    {
+      "block": 17,
+      "model": "group|4|Funk2-108-Eb,Jazz1-130-D,Rock1-90-C#",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Jazz3-137-Eb"
+    },
+    {
+      "block": 17,
+      "model": "group|4|Funk2-108-Eb,Jazz1-130-D,Jazz3-137-Eb",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Rock1-90-C#"
+    },
+    {
+      "block": 18,
+      "model": "group|1|BN3-154-E,Funk2-119-G,Funk3-112-C#",
+      "representation": "group",
+      "role": "outer",
+      "test_piece": "SS3-98-C"
+    },
+    {
+      "block": 18,
+      "model": "group|1|Funk2-119-G,Funk3-112-C#",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "BN3-154-E"
+    },
+    {
+      "block": 18,
+      "model": "group|1|BN3-154-E,Funk3-112-C#",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Funk2-119-G"
+    },
+    {
+      "block": 18,
+      "model": "group|1|BN3-154-E,Funk2-119-G",
+      "representation": "group",
+      "role": "inner",
+      "test_piece": "Funk3-112-C#"
+    },
+    {
+      "block": 0,
+      "model": "acoustic58|0|Jazz3-150-C,Rock2-142-D,Rock3-148-C,SS1-68-E",
+      "representation": "acoustic58",
+      "role": "outer",
+      "test_piece": "BN2-166-Ab"
+    },
+    {
+      "block": 0,
+      "model": "acoustic58|0|Rock2-142-D,Rock3-148-C,SS1-68-E",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Jazz3-150-C"
+    },
+    {
+      "block": 0,
+      "model": "acoustic58|0|Jazz3-150-C,Rock3-148-C,SS1-68-E",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Rock2-142-D"
+    },
+    {
+      "block": 0,
+      "model": "acoustic58|0|Jazz3-150-C,Rock2-142-D,SS1-68-E",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Rock3-148-C"
+    },
+    {
+      "block": 0,
+      "model": "acoustic58|0|Jazz3-150-C,Rock2-142-D,Rock3-148-C",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "SS1-68-E"
+    },
+    {
+      "block": 1,
+      "model": "acoustic58|1|Funk2-119-G,Funk3-112-C#,SS3-98-C",
+      "representation": "acoustic58",
+      "role": "outer",
+      "test_piece": "BN3-154-E"
+    },
+    {
+      "block": 1,
+      "model": "acoustic58|1|Funk3-112-C#,SS3-98-C",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Funk2-119-G"
+    },
+    {
+      "block": 1,
+      "model": "acoustic58|1|Funk2-119-G,SS3-98-C",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Funk3-112-C#"
+    },
+    {
+      "block": 1,
+      "model": "acoustic58|1|Funk2-119-G,Funk3-112-C#",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "SS3-98-C"
+    },
+    {
+      "block": 2,
+      "model": "acoustic58|2|Jazz1-200-B,Jazz2-110-Bb,Rock1-130-A,Rock2-85-F",
+      "representation": "acoustic58",
+      "role": "outer",
+      "test_piece": "Funk1-114-Ab"
+    },
+    {
+      "block": 2,
+      "model": "acoustic58|2|Jazz2-110-Bb,Rock1-130-A,Rock2-85-F",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Jazz1-200-B"
+    },
+    {
+      "block": 2,
+      "model": "acoustic58|2|Jazz1-200-B,Rock1-130-A,Rock2-85-F",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Jazz2-110-Bb"
+    },
+    {
+      "block": 2,
+      "model": "acoustic58|2|Jazz1-200-B,Jazz2-110-Bb,Rock2-85-F",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Rock1-130-A"
+    },
+    {
+      "block": 2,
+      "model": "acoustic58|2|Jazz1-200-B,Jazz2-110-Bb,Rock1-130-A",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Rock2-85-F"
+    },
+    {
+      "block": 3,
+      "model": "acoustic58|4|Jazz1-130-D,Jazz3-137-Eb,Rock1-90-C#,SS2-107-Ab",
+      "representation": "acoustic58",
+      "role": "outer",
+      "test_piece": "Funk2-108-Eb"
+    },
+    {
+      "block": 3,
+      "model": "acoustic58|4|Jazz3-137-Eb,Rock1-90-C#,SS2-107-Ab",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Jazz1-130-D"
+    },
+    {
+      "block": 3,
+      "model": "acoustic58|4|Jazz1-130-D,Rock1-90-C#,SS2-107-Ab",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Jazz3-137-Eb"
+    },
+    {
+      "block": 3,
+      "model": "acoustic58|4|Jazz1-130-D,Jazz3-137-Eb,SS2-107-Ab",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Rock1-90-C#"
+    },
+    {
+      "block": 3,
+      "model": "acoustic58|4|Jazz1-130-D,Jazz3-137-Eb,Rock1-90-C#",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "SS2-107-Ab"
+    },
+    {
+      "block": 4,
+      "model": "acoustic58|1|BN3-154-E,Funk3-112-C#,SS3-98-C",
+      "representation": "acoustic58",
+      "role": "outer",
+      "test_piece": "Funk2-119-G"
+    },
+    {
+      "block": 4,
+      "model": "acoustic58|1|Funk3-112-C#,SS3-98-C",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "BN3-154-E"
+    },
+    {
+      "block": 4,
+      "model": "acoustic58|1|BN3-154-E,SS3-98-C",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Funk3-112-C#"
+    },
+    {
+      "block": 4,
+      "model": "acoustic58|1|BN3-154-E,Funk3-112-C#",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "SS3-98-C"
+    },
+    {
+      "block": 5,
+      "model": "acoustic58|1|BN3-154-E,Funk2-119-G,SS3-98-C",
+      "representation": "acoustic58",
+      "role": "outer",
+      "test_piece": "Funk3-112-C#"
+    },
+    {
+      "block": 5,
+      "model": "acoustic58|1|Funk2-119-G,SS3-98-C",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "BN3-154-E"
+    },
+    {
+      "block": 5,
+      "model": "acoustic58|1|BN3-154-E,SS3-98-C",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Funk2-119-G"
+    },
+    {
+      "block": 5,
+      "model": "acoustic58|1|BN3-154-E,Funk2-119-G",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "SS3-98-C"
+    },
+    {
+      "block": 6,
+      "model": "acoustic58|4|Funk2-108-Eb,Jazz3-137-Eb,Rock1-90-C#,SS2-107-Ab",
+      "representation": "acoustic58",
+      "role": "outer",
+      "test_piece": "Jazz1-130-D"
+    },
+    {
+      "block": 6,
+      "model": "acoustic58|4|Jazz3-137-Eb,Rock1-90-C#,SS2-107-Ab",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Funk2-108-Eb"
+    },
+    {
+      "block": 6,
+      "model": "acoustic58|4|Funk2-108-Eb,Rock1-90-C#,SS2-107-Ab",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Jazz3-137-Eb"
+    },
+    {
+      "block": 6,
+      "model": "acoustic58|4|Funk2-108-Eb,Jazz3-137-Eb,SS2-107-Ab",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Rock1-90-C#"
+    },
+    {
+      "block": 6,
+      "model": "acoustic58|4|Funk2-108-Eb,Jazz3-137-Eb,Rock1-90-C#",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "SS2-107-Ab"
+    },
+    {
+      "block": 7,
+      "model": "acoustic58|2|Funk1-114-Ab,Jazz2-110-Bb,Rock1-130-A,Rock2-85-F",
+      "representation": "acoustic58",
+      "role": "outer",
+      "test_piece": "Jazz1-200-B"
+    },
+    {
+      "block": 7,
+      "model": "acoustic58|2|Jazz2-110-Bb,Rock1-130-A,Rock2-85-F",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Funk1-114-Ab"
+    },
+    {
+      "block": 7,
+      "model": "acoustic58|2|Funk1-114-Ab,Rock1-130-A,Rock2-85-F",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Jazz2-110-Bb"
+    },
+    {
+      "block": 7,
+      "model": "acoustic58|2|Funk1-114-Ab,Jazz2-110-Bb,Rock2-85-F",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Rock1-130-A"
+    },
+    {
+      "block": 7,
+      "model": "acoustic58|2|Funk1-114-Ab,Jazz2-110-Bb,Rock1-130-A",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Rock2-85-F"
+    },
+    {
+      "block": 8,
+      "model": "acoustic58|2|Funk1-114-Ab,Jazz1-200-B,Rock1-130-A,Rock2-85-F",
+      "representation": "acoustic58",
+      "role": "outer",
+      "test_piece": "Jazz2-110-Bb"
+    },
+    {
+      "block": 8,
+      "model": "acoustic58|2|Jazz1-200-B,Rock1-130-A,Rock2-85-F",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Funk1-114-Ab"
+    },
+    {
+      "block": 8,
+      "model": "acoustic58|2|Funk1-114-Ab,Rock1-130-A,Rock2-85-F",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Jazz1-200-B"
+    },
+    {
+      "block": 8,
+      "model": "acoustic58|2|Funk1-114-Ab,Jazz1-200-B,Rock2-85-F",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Rock1-130-A"
+    },
+    {
+      "block": 8,
+      "model": "acoustic58|2|Funk1-114-Ab,Jazz1-200-B,Rock1-130-A",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Rock2-85-F"
+    },
+    {
+      "block": 9,
+      "model": "acoustic58|4|Funk2-108-Eb,Jazz1-130-D,Rock1-90-C#,SS2-107-Ab",
+      "representation": "acoustic58",
+      "role": "outer",
+      "test_piece": "Jazz3-137-Eb"
+    },
+    {
+      "block": 9,
+      "model": "acoustic58|4|Jazz1-130-D,Rock1-90-C#,SS2-107-Ab",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Funk2-108-Eb"
+    },
+    {
+      "block": 9,
+      "model": "acoustic58|4|Funk2-108-Eb,Rock1-90-C#,SS2-107-Ab",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Jazz1-130-D"
+    },
+    {
+      "block": 9,
+      "model": "acoustic58|4|Funk2-108-Eb,Jazz1-130-D,SS2-107-Ab",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Rock1-90-C#"
+    },
+    {
+      "block": 9,
+      "model": "acoustic58|4|Funk2-108-Eb,Jazz1-130-D,Rock1-90-C#",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "SS2-107-Ab"
+    },
+    {
+      "block": 10,
+      "model": "acoustic58|0|BN2-166-Ab,Rock2-142-D,Rock3-148-C,SS1-68-E",
+      "representation": "acoustic58",
+      "role": "outer",
+      "test_piece": "Jazz3-150-C"
+    },
+    {
+      "block": 10,
+      "model": "acoustic58|0|Rock2-142-D,Rock3-148-C,SS1-68-E",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "BN2-166-Ab"
+    },
+    {
+      "block": 10,
+      "model": "acoustic58|0|BN2-166-Ab,Rock3-148-C,SS1-68-E",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Rock2-142-D"
+    },
+    {
+      "block": 10,
+      "model": "acoustic58|0|BN2-166-Ab,Rock2-142-D,SS1-68-E",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Rock3-148-C"
+    },
+    {
+      "block": 10,
+      "model": "acoustic58|0|BN2-166-Ab,Rock2-142-D,Rock3-148-C",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "SS1-68-E"
+    },
+    {
+      "block": 11,
+      "model": "acoustic58|2|Funk1-114-Ab,Jazz1-200-B,Jazz2-110-Bb,Rock2-85-F",
+      "representation": "acoustic58",
+      "role": "outer",
+      "test_piece": "Rock1-130-A"
+    },
+    {
+      "block": 11,
+      "model": "acoustic58|2|Jazz1-200-B,Jazz2-110-Bb,Rock2-85-F",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Funk1-114-Ab"
+    },
+    {
+      "block": 11,
+      "model": "acoustic58|2|Funk1-114-Ab,Jazz2-110-Bb,Rock2-85-F",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Jazz1-200-B"
+    },
+    {
+      "block": 11,
+      "model": "acoustic58|2|Funk1-114-Ab,Jazz1-200-B,Rock2-85-F",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Jazz2-110-Bb"
+    },
+    {
+      "block": 11,
+      "model": "acoustic58|2|Funk1-114-Ab,Jazz1-200-B,Jazz2-110-Bb",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Rock2-85-F"
+    },
+    {
+      "block": 12,
+      "model": "acoustic58|4|Funk2-108-Eb,Jazz1-130-D,Jazz3-137-Eb,SS2-107-Ab",
+      "representation": "acoustic58",
+      "role": "outer",
+      "test_piece": "Rock1-90-C#"
+    },
+    {
+      "block": 12,
+      "model": "acoustic58|4|Jazz1-130-D,Jazz3-137-Eb,SS2-107-Ab",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Funk2-108-Eb"
+    },
+    {
+      "block": 12,
+      "model": "acoustic58|4|Funk2-108-Eb,Jazz3-137-Eb,SS2-107-Ab",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Jazz1-130-D"
+    },
+    {
+      "block": 12,
+      "model": "acoustic58|4|Funk2-108-Eb,Jazz1-130-D,SS2-107-Ab",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Jazz3-137-Eb"
+    },
+    {
+      "block": 12,
+      "model": "acoustic58|4|Funk2-108-Eb,Jazz1-130-D,Jazz3-137-Eb",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "SS2-107-Ab"
+    },
+    {
+      "block": 13,
+      "model": "acoustic58|0|BN2-166-Ab,Jazz3-150-C,Rock3-148-C,SS1-68-E",
+      "representation": "acoustic58",
+      "role": "outer",
+      "test_piece": "Rock2-142-D"
+    },
+    {
+      "block": 13,
+      "model": "acoustic58|0|Jazz3-150-C,Rock3-148-C,SS1-68-E",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "BN2-166-Ab"
+    },
+    {
+      "block": 13,
+      "model": "acoustic58|0|BN2-166-Ab,Rock3-148-C,SS1-68-E",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Jazz3-150-C"
+    },
+    {
+      "block": 13,
+      "model": "acoustic58|0|BN2-166-Ab,Jazz3-150-C,SS1-68-E",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Rock3-148-C"
+    },
+    {
+      "block": 13,
+      "model": "acoustic58|0|BN2-166-Ab,Jazz3-150-C,Rock3-148-C",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "SS1-68-E"
+    },
+    {
+      "block": 14,
+      "model": "acoustic58|2|Funk1-114-Ab,Jazz1-200-B,Jazz2-110-Bb,Rock1-130-A",
+      "representation": "acoustic58",
+      "role": "outer",
+      "test_piece": "Rock2-85-F"
+    },
+    {
+      "block": 14,
+      "model": "acoustic58|2|Jazz1-200-B,Jazz2-110-Bb,Rock1-130-A",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Funk1-114-Ab"
+    },
+    {
+      "block": 14,
+      "model": "acoustic58|2|Funk1-114-Ab,Jazz2-110-Bb,Rock1-130-A",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Jazz1-200-B"
+    },
+    {
+      "block": 14,
+      "model": "acoustic58|2|Funk1-114-Ab,Jazz1-200-B,Rock1-130-A",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Jazz2-110-Bb"
+    },
+    {
+      "block": 14,
+      "model": "acoustic58|2|Funk1-114-Ab,Jazz1-200-B,Jazz2-110-Bb",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Rock1-130-A"
+    },
+    {
+      "block": 15,
+      "model": "acoustic58|0|BN2-166-Ab,Jazz3-150-C,Rock2-142-D,SS1-68-E",
+      "representation": "acoustic58",
+      "role": "outer",
+      "test_piece": "Rock3-148-C"
+    },
+    {
+      "block": 15,
+      "model": "acoustic58|0|Jazz3-150-C,Rock2-142-D,SS1-68-E",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "BN2-166-Ab"
+    },
+    {
+      "block": 15,
+      "model": "acoustic58|0|BN2-166-Ab,Rock2-142-D,SS1-68-E",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Jazz3-150-C"
+    },
+    {
+      "block": 15,
+      "model": "acoustic58|0|BN2-166-Ab,Jazz3-150-C,SS1-68-E",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Rock2-142-D"
+    },
+    {
+      "block": 15,
+      "model": "acoustic58|0|BN2-166-Ab,Jazz3-150-C,Rock2-142-D",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "SS1-68-E"
+    },
+    {
+      "block": 16,
+      "model": "acoustic58|0|BN2-166-Ab,Jazz3-150-C,Rock2-142-D,Rock3-148-C",
+      "representation": "acoustic58",
+      "role": "outer",
+      "test_piece": "SS1-68-E"
+    },
+    {
+      "block": 16,
+      "model": "acoustic58|0|Jazz3-150-C,Rock2-142-D,Rock3-148-C",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "BN2-166-Ab"
+    },
+    {
+      "block": 16,
+      "model": "acoustic58|0|BN2-166-Ab,Rock2-142-D,Rock3-148-C",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Jazz3-150-C"
+    },
+    {
+      "block": 16,
+      "model": "acoustic58|0|BN2-166-Ab,Jazz3-150-C,Rock3-148-C",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Rock2-142-D"
+    },
+    {
+      "block": 16,
+      "model": "acoustic58|0|BN2-166-Ab,Jazz3-150-C,Rock2-142-D",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Rock3-148-C"
+    },
+    {
+      "block": 17,
+      "model": "acoustic58|4|Funk2-108-Eb,Jazz1-130-D,Jazz3-137-Eb,Rock1-90-C#",
+      "representation": "acoustic58",
+      "role": "outer",
+      "test_piece": "SS2-107-Ab"
+    },
+    {
+      "block": 17,
+      "model": "acoustic58|4|Jazz1-130-D,Jazz3-137-Eb,Rock1-90-C#",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Funk2-108-Eb"
+    },
+    {
+      "block": 17,
+      "model": "acoustic58|4|Funk2-108-Eb,Jazz3-137-Eb,Rock1-90-C#",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Jazz1-130-D"
+    },
+    {
+      "block": 17,
+      "model": "acoustic58|4|Funk2-108-Eb,Jazz1-130-D,Rock1-90-C#",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Jazz3-137-Eb"
+    },
+    {
+      "block": 17,
+      "model": "acoustic58|4|Funk2-108-Eb,Jazz1-130-D,Jazz3-137-Eb",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Rock1-90-C#"
+    },
+    {
+      "block": 18,
+      "model": "acoustic58|1|BN3-154-E,Funk2-119-G,Funk3-112-C#",
+      "representation": "acoustic58",
+      "role": "outer",
+      "test_piece": "SS3-98-C"
+    },
+    {
+      "block": 18,
+      "model": "acoustic58|1|Funk2-119-G,Funk3-112-C#",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "BN3-154-E"
+    },
+    {
+      "block": 18,
+      "model": "acoustic58|1|BN3-154-E,Funk3-112-C#",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Funk2-119-G"
+    },
+    {
+      "block": 18,
+      "model": "acoustic58|1|BN3-154-E,Funk2-119-G",
+      "representation": "acoustic58",
+      "role": "inner",
+      "test_piece": "Funk3-112-C#"
+    }
+  ],
+  "configuration": {
+    "early_stopping": false,
+    "l2_regularization": 10.0,
+    "learning_rate": 0.05,
+    "max_depth": 3,
+    "max_iter": 80,
+    "max_leaf_nodes": 7,
+    "min_samples_leaf": 20,
+    "random_state": 27402
+  },
+  "models": {
+    "acoustic58|0|BN2-166-Ab,Jazz3-150-C,Rock2-142-D": {
+      "fold": 0,
+      "pieces": [
+        "BN2-166-Ab",
+        "Jazz3-150-C",
+        "Rock2-142-D"
+      ],
+      "train_ids_sha256": "3ad7b2c0b44ef1e28e10b3d4b0ab0632157cf9c8619cc9730f7d7cdb7e371f91",
+      "train_rows": 250
+    },
+    "acoustic58|0|BN2-166-Ab,Jazz3-150-C,Rock2-142-D,Rock3-148-C": {
+      "fold": 0,
+      "pieces": [
+        "BN2-166-Ab",
+        "Jazz3-150-C",
+        "Rock2-142-D",
+        "Rock3-148-C"
+      ],
+      "train_ids_sha256": "917bb2249da30a2188bd276a1ec400ac197cebe782fe714dbc01fbab62fd9c87",
+      "train_rows": 412
+    },
+    "acoustic58|0|BN2-166-Ab,Jazz3-150-C,Rock2-142-D,SS1-68-E": {
+      "fold": 0,
+      "pieces": [
+        "BN2-166-Ab",
+        "Jazz3-150-C",
+        "Rock2-142-D",
+        "SS1-68-E"
+      ],
+      "train_ids_sha256": "2eda5b23692116f8394f12beb35defc6397c872636649b1b49e309853fa3eef2",
+      "train_rows": 365
+    },
+    "acoustic58|0|BN2-166-Ab,Jazz3-150-C,Rock3-148-C": {
+      "fold": 0,
+      "pieces": [
+        "BN2-166-Ab",
+        "Jazz3-150-C",
+        "Rock3-148-C"
+      ],
+      "train_ids_sha256": "9ce634f2a6dae7b99a7e2061f6c64fcc93c3565df9ee5bc9688c671f91a22a34",
+      "train_rows": 295
+    },
+    "acoustic58|0|BN2-166-Ab,Jazz3-150-C,Rock3-148-C,SS1-68-E": {
+      "fold": 0,
+      "pieces": [
+        "BN2-166-Ab",
+        "Jazz3-150-C",
+        "Rock3-148-C",
+        "SS1-68-E"
+      ],
+      "train_ids_sha256": "cd86280ae334b81bceb448d80a4190897843dfee9c0fc0e69ee010323fc4469a",
+      "train_rows": 410
+    },
+    "acoustic58|0|BN2-166-Ab,Jazz3-150-C,SS1-68-E": {
+      "fold": 0,
+      "pieces": [
+        "BN2-166-Ab",
+        "Jazz3-150-C",
+        "SS1-68-E"
+      ],
+      "train_ids_sha256": "8949ec8500b211b2db277a4c4e6fe2426bc86578cf3a6a1f9aa97e79ed05d0ae",
+      "train_rows": 248
+    },
+    "acoustic58|0|BN2-166-Ab,Rock2-142-D,Rock3-148-C": {
+      "fold": 0,
+      "pieces": [
+        "BN2-166-Ab",
+        "Rock2-142-D",
+        "Rock3-148-C"
+      ],
+      "train_ids_sha256": "4e1d70d66fbd67f401466e2cb2076145053fe7f7944a054dfb043768692723bc",
+      "train_rows": 350
+    },
+    "acoustic58|0|BN2-166-Ab,Rock2-142-D,Rock3-148-C,SS1-68-E": {
+      "fold": 0,
+      "pieces": [
+        "BN2-166-Ab",
+        "Rock2-142-D",
+        "Rock3-148-C",
+        "SS1-68-E"
+      ],
+      "train_ids_sha256": "d5432fecb001ee28e6159cded48d480e90b2d5335e03d12d08f7fb05156c1dcb",
+      "train_rows": 465
+    },
+    "acoustic58|0|BN2-166-Ab,Rock2-142-D,SS1-68-E": {
+      "fold": 0,
+      "pieces": [
+        "BN2-166-Ab",
+        "Rock2-142-D",
+        "SS1-68-E"
+      ],
+      "train_ids_sha256": "397b0b6bf373c7a1989b11f4977ee35769a00fe20f6a9757b107125b0c4569e6",
+      "train_rows": 303
+    },
+    "acoustic58|0|BN2-166-Ab,Rock3-148-C,SS1-68-E": {
+      "fold": 0,
+      "pieces": [
+        "BN2-166-Ab",
+        "Rock3-148-C",
+        "SS1-68-E"
+      ],
+      "train_ids_sha256": "5c66418f09604a3b99f83cf6a143ad28199dfbe36fb6a088c2b5316a6d946592",
+      "train_rows": 348
+    },
+    "acoustic58|0|Jazz3-150-C,Rock2-142-D,Rock3-148-C": {
+      "fold": 0,
+      "pieces": [
+        "Jazz3-150-C",
+        "Rock2-142-D",
+        "Rock3-148-C"
+      ],
+      "train_ids_sha256": "859643a925be3db16da0b8152978685b79cdca8098e54d45fa620376f2634690",
+      "train_rows": 341
+    },
+    "acoustic58|0|Jazz3-150-C,Rock2-142-D,Rock3-148-C,SS1-68-E": {
+      "fold": 0,
+      "pieces": [
+        "Jazz3-150-C",
+        "Rock2-142-D",
+        "Rock3-148-C",
+        "SS1-68-E"
+      ],
+      "train_ids_sha256": "b948b59f730a0390c1deed11332d8e781442ca44ac5cb1f6286f9cf50ffc394d",
+      "train_rows": 456
+    },
+    "acoustic58|0|Jazz3-150-C,Rock2-142-D,SS1-68-E": {
+      "fold": 0,
+      "pieces": [
+        "Jazz3-150-C",
+        "Rock2-142-D",
+        "SS1-68-E"
+      ],
+      "train_ids_sha256": "6b1c57f59153b53f3a8784e6c608fd65b8ac2e3aaa3e3559c945be9b6f08bc1d",
+      "train_rows": 294
+    },
+    "acoustic58|0|Jazz3-150-C,Rock3-148-C,SS1-68-E": {
+      "fold": 0,
+      "pieces": [
+        "Jazz3-150-C",
+        "Rock3-148-C",
+        "SS1-68-E"
+      ],
+      "train_ids_sha256": "93c4e12cfff2363a0407c88b0db98e8f4d83377441781677b53afde647a6d796",
+      "train_rows": 339
+    },
+    "acoustic58|0|Rock2-142-D,Rock3-148-C,SS1-68-E": {
+      "fold": 0,
+      "pieces": [
+        "Rock2-142-D",
+        "Rock3-148-C",
+        "SS1-68-E"
+      ],
+      "train_ids_sha256": "6d885d116e78efb0fdaf0dd7ae29190dfdd9dfe9605559fcc8eba7c19e3f2ee7",
+      "train_rows": 394
+    },
+    "acoustic58|1|BN3-154-E,Funk2-119-G": {
+      "fold": 1,
+      "pieces": [
+        "BN3-154-E",
+        "Funk2-119-G"
+      ],
+      "train_ids_sha256": "f1355fc6b650ce576f527d4ffde833921fc0997675e1022bebaacd4420591725",
+      "train_rows": 178
+    },
+    "acoustic58|1|BN3-154-E,Funk2-119-G,Funk3-112-C#": {
+      "fold": 1,
+      "pieces": [
+        "BN3-154-E",
+        "Funk2-119-G",
+        "Funk3-112-C#"
+      ],
+      "train_ids_sha256": "1627bed89dc4798145594bcd7b7cfa11fbe285a9e353a8eb942df2eae3796d57",
+      "train_rows": 329
+    },
+    "acoustic58|1|BN3-154-E,Funk2-119-G,SS3-98-C": {
+      "fold": 1,
+      "pieces": [
+        "BN3-154-E",
+        "Funk2-119-G",
+        "SS3-98-C"
+      ],
+      "train_ids_sha256": "7da793f0086758b7867297935269dc47da0ecd8c6f738091ce2d63db2b54829e",
+      "train_rows": 370
+    },
+    "acoustic58|1|BN3-154-E,Funk3-112-C#": {
+      "fold": 1,
+      "pieces": [
+        "BN3-154-E",
+        "Funk3-112-C#"
+      ],
+      "train_ids_sha256": "4824552c7ff612a850146c9e5acf60ff97528fed7aae51c23473dd72dfc71a90",
+      "train_rows": 211
+    },
+    "acoustic58|1|BN3-154-E,Funk3-112-C#,SS3-98-C": {
+      "fold": 1,
+      "pieces": [
+        "BN3-154-E",
+        "Funk3-112-C#",
+        "SS3-98-C"
+      ],
+      "train_ids_sha256": "95e5cd6dfcd7ef21141e0eb8a8f8f5257aa1a68bf8026305add533035ecd6b95",
+      "train_rows": 403
+    },
+    "acoustic58|1|BN3-154-E,SS3-98-C": {
+      "fold": 1,
+      "pieces": [
+        "BN3-154-E",
+        "SS3-98-C"
+      ],
+      "train_ids_sha256": "93ee97401540468529667747f649f3623f1504ecd10cce9b23d31d3fe03131ce",
+      "train_rows": 252
+    },
+    "acoustic58|1|Funk2-119-G,Funk3-112-C#": {
+      "fold": 1,
+      "pieces": [
+        "Funk2-119-G",
+        "Funk3-112-C#"
+      ],
+      "train_ids_sha256": "732364c93819af7e167d2a2ee8852250dbe7512368ba2ac8ee5dbae1406715b8",
+      "train_rows": 269
+    },
+    "acoustic58|1|Funk2-119-G,Funk3-112-C#,SS3-98-C": {
+      "fold": 1,
+      "pieces": [
+        "Funk2-119-G",
+        "Funk3-112-C#",
+        "SS3-98-C"
+      ],
+      "train_ids_sha256": "75176d1b55be3360d620d607bc9586e143306a99f4f982df873006741b09dfc1",
+      "train_rows": 461
+    },
+    "acoustic58|1|Funk2-119-G,SS3-98-C": {
+      "fold": 1,
+      "pieces": [
+        "Funk2-119-G",
+        "SS3-98-C"
+      ],
+      "train_ids_sha256": "6abb10a2065e25e5f71cc68c409f0219c2f6b55871f28137f2112950d9aa1176",
+      "train_rows": 310
+    },
+    "acoustic58|1|Funk3-112-C#,SS3-98-C": {
+      "fold": 1,
+      "pieces": [
+        "Funk3-112-C#",
+        "SS3-98-C"
+      ],
+      "train_ids_sha256": "72a26ab096f0b4316cd8b7783e304ceb3d5deb303f0186f967d6f3e824d8bc49",
+      "train_rows": 343
+    },
+    "acoustic58|2|Funk1-114-Ab,Jazz1-200-B,Jazz2-110-Bb": {
+      "fold": 2,
+      "pieces": [
+        "Funk1-114-Ab",
+        "Jazz1-200-B",
+        "Jazz2-110-Bb"
+      ],
+      "train_ids_sha256": "1c8b8862d6280d64befa0f700a0a1facd1f4d04bce2e034ce6a253c20558b818",
+      "train_rows": 155
+    },
+    "acoustic58|2|Funk1-114-Ab,Jazz1-200-B,Jazz2-110-Bb,Rock1-130-A": {
+      "fold": 2,
+      "pieces": [
+        "Funk1-114-Ab",
+        "Jazz1-200-B",
+        "Jazz2-110-Bb",
+        "Rock1-130-A"
+      ],
+      "train_ids_sha256": "fad7acbd87fbdd9854c5e0e09e295c50950e47041939cb5a89a5313f1c14eb24",
+      "train_rows": 240
+    },
+    "acoustic58|2|Funk1-114-Ab,Jazz1-200-B,Jazz2-110-Bb,Rock2-85-F": {
+      "fold": 2,
+      "pieces": [
+        "Funk1-114-Ab",
+        "Jazz1-200-B",
+        "Jazz2-110-Bb",
+        "Rock2-85-F"
+      ],
+      "train_ids_sha256": "6ff07a5c65f16a26de47690a492b6b5734f320f71f441cce4fa85f69c26e8fef",
+      "train_rows": 286
+    },
+    "acoustic58|2|Funk1-114-Ab,Jazz1-200-B,Rock1-130-A": {
+      "fold": 2,
+      "pieces": [
+        "Funk1-114-Ab",
+        "Jazz1-200-B",
+        "Rock1-130-A"
+      ],
+      "train_ids_sha256": "7d84efc67f51ac90c5e5750b590bdd5016b4995e13c85b5fbc89bf31d86e6145",
+      "train_rows": 191
+    },
+    "acoustic58|2|Funk1-114-Ab,Jazz1-200-B,Rock1-130-A,Rock2-85-F": {
+      "fold": 2,
+      "pieces": [
+        "Funk1-114-Ab",
+        "Jazz1-200-B",
+        "Rock1-130-A",
+        "Rock2-85-F"
+      ],
+      "train_ids_sha256": "bf4277e4bd41a37d646210fe7c076bdd086c36e15bdbaca23aad850c82cb6bce",
+      "train_rows": 322
+    },
+    "acoustic58|2|Funk1-114-Ab,Jazz1-200-B,Rock2-85-F": {
+      "fold": 2,
+      "pieces": [
+        "Funk1-114-Ab",
+        "Jazz1-200-B",
+        "Rock2-85-F"
+      ],
+      "train_ids_sha256": "d82ac4132134702a780f7d1835463e4e17a62a40967521a40db847e53787d6ba",
+      "train_rows": 237
+    },
+    "acoustic58|2|Funk1-114-Ab,Jazz2-110-Bb,Rock1-130-A": {
+      "fold": 2,
+      "pieces": [
+        "Funk1-114-Ab",
+        "Jazz2-110-Bb",
+        "Rock1-130-A"
+      ],
+      "train_ids_sha256": "4ecf47d10266a842bed3e623cf6e67f6c39ab94dabbd55ca1794ffb90aec1cb9",
+      "train_rows": 210
+    },
+    "acoustic58|2|Funk1-114-Ab,Jazz2-110-Bb,Rock1-130-A,Rock2-85-F": {
+      "fold": 2,
+      "pieces": [
+        "Funk1-114-Ab",
+        "Jazz2-110-Bb",
+        "Rock1-130-A",
+        "Rock2-85-F"
+      ],
+      "train_ids_sha256": "ac397dd3c1b21f663ee768a3720d1d476c004a9c69a680a05f398ec9f4f018da",
+      "train_rows": 341
+    },
+    "acoustic58|2|Funk1-114-Ab,Jazz2-110-Bb,Rock2-85-F": {
+      "fold": 2,
+      "pieces": [
+        "Funk1-114-Ab",
+        "Jazz2-110-Bb",
+        "Rock2-85-F"
+      ],
+      "train_ids_sha256": "49045cb41c67a880e4e215939f7da4e9c80a7cad3e33406c4257337942795957",
+      "train_rows": 256
+    },
+    "acoustic58|2|Funk1-114-Ab,Rock1-130-A,Rock2-85-F": {
+      "fold": 2,
+      "pieces": [
+        "Funk1-114-Ab",
+        "Rock1-130-A",
+        "Rock2-85-F"
+      ],
+      "train_ids_sha256": "f6b6a3ab0b8da93462411f87b8cea386261766d78693c435d060d6e7ab567ac3",
+      "train_rows": 292
+    },
+    "acoustic58|2|Jazz1-200-B,Jazz2-110-Bb,Rock1-130-A": {
+      "fold": 2,
+      "pieces": [
+        "Jazz1-200-B",
+        "Jazz2-110-Bb",
+        "Rock1-130-A"
+      ],
+      "train_ids_sha256": "91b624782f1dc0d7de192429a500ff70a0ba4429913481f94f74bcc7f92d82b2",
+      "train_rows": 164
+    },
+    "acoustic58|2|Jazz1-200-B,Jazz2-110-Bb,Rock1-130-A,Rock2-85-F": {
+      "fold": 2,
+      "pieces": [
+        "Jazz1-200-B",
+        "Jazz2-110-Bb",
+        "Rock1-130-A",
+        "Rock2-85-F"
+      ],
+      "train_ids_sha256": "d4d0c7d23eb6f34a61e10a6b19ab50be8091f2220fdd6e79ca75b3240e6fe41d",
+      "train_rows": 295
+    },
+    "acoustic58|2|Jazz1-200-B,Jazz2-110-Bb,Rock2-85-F": {
+      "fold": 2,
+      "pieces": [
+        "Jazz1-200-B",
+        "Jazz2-110-Bb",
+        "Rock2-85-F"
+      ],
+      "train_ids_sha256": "bcb172ca91369f341cc3d8a3a7c79e1fcda3fea264f41fe878b5e252b386ba7f",
+      "train_rows": 210
+    },
+    "acoustic58|2|Jazz1-200-B,Rock1-130-A,Rock2-85-F": {
+      "fold": 2,
+      "pieces": [
+        "Jazz1-200-B",
+        "Rock1-130-A",
+        "Rock2-85-F"
+      ],
+      "train_ids_sha256": "a7aa3dcdc8c8d454ee4a9a93469d96664cc21cce0ae5c59344d50cd7bdb7fefb",
+      "train_rows": 246
+    },
+    "acoustic58|2|Jazz2-110-Bb,Rock1-130-A,Rock2-85-F": {
+      "fold": 2,
+      "pieces": [
+        "Jazz2-110-Bb",
+        "Rock1-130-A",
+        "Rock2-85-F"
+      ],
+      "train_ids_sha256": "4cac7922f9510fef1e583ade6e38db3b7112b17d946a301305631d5bab67678b",
+      "train_rows": 265
+    },
+    "acoustic58|4|Funk2-108-Eb,Jazz1-130-D,Jazz3-137-Eb": {
+      "fold": 4,
+      "pieces": [
+        "Funk2-108-Eb",
+        "Jazz1-130-D",
+        "Jazz3-137-Eb"
+      ],
+      "train_ids_sha256": "b2731d31d725d94e66a129bd9d21b87bfa3955a44ef69b3959b9329807f05b27",
+      "train_rows": 217
+    },
+    "acoustic58|4|Funk2-108-Eb,Jazz1-130-D,Jazz3-137-Eb,Rock1-90-C#": {
+      "fold": 4,
+      "pieces": [
+        "Funk2-108-Eb",
+        "Jazz1-130-D",
+        "Jazz3-137-Eb",
+        "Rock1-90-C#"
+      ],
+      "train_ids_sha256": "6d584333ba26bd34ff02c052f17edcdce8d6fde2755cc034139f174a2281bd2f",
+      "train_rows": 329
+    },
+    "acoustic58|4|Funk2-108-Eb,Jazz1-130-D,Jazz3-137-Eb,SS2-107-Ab": {
+      "fold": 4,
+      "pieces": [
+        "Funk2-108-Eb",
+        "Jazz1-130-D",
+        "Jazz3-137-Eb",
+        "SS2-107-Ab"
+      ],
+      "train_ids_sha256": "b979d3c76311ca373fb360fe9588437b38c9e4a78c22f676015a1ef839245fe1",
+      "train_rows": 307
+    },
+    "acoustic58|4|Funk2-108-Eb,Jazz1-130-D,Rock1-90-C#": {
+      "fold": 4,
+      "pieces": [
+        "Funk2-108-Eb",
+        "Jazz1-130-D",
+        "Rock1-90-C#"
+      ],
+      "train_ids_sha256": "5c92af53e6398395bee8917fdb810fe112a34f92d9469cc4de1d86c936345ce9",
+      "train_rows": 251
+    },
+    "acoustic58|4|Funk2-108-Eb,Jazz1-130-D,Rock1-90-C#,SS2-107-Ab": {
+      "fold": 4,
+      "pieces": [
+        "Funk2-108-Eb",
+        "Jazz1-130-D",
+        "Rock1-90-C#",
+        "SS2-107-Ab"
+      ],
+      "train_ids_sha256": "5ce5a386be86b49a6afb009188d7b63a15451cd5c578f1392163aa06d4f7d33d",
+      "train_rows": 341
+    },
+    "acoustic58|4|Funk2-108-Eb,Jazz1-130-D,SS2-107-Ab": {
+      "fold": 4,
+      "pieces": [
+        "Funk2-108-Eb",
+        "Jazz1-130-D",
+        "SS2-107-Ab"
+      ],
+      "train_ids_sha256": "f6e2e9631b7d74923a6e2d19d3777d83a1b40d79bad0165b438c095655769168",
+      "train_rows": 229
+    },
+    "acoustic58|4|Funk2-108-Eb,Jazz3-137-Eb,Rock1-90-C#": {
+      "fold": 4,
+      "pieces": [
+        "Funk2-108-Eb",
+        "Jazz3-137-Eb",
+        "Rock1-90-C#"
+      ],
+      "train_ids_sha256": "3a3090b7e21fdb96a1cf88bf408187ddfbced9776b26d0f0b22f0d07a0e1d23c",
+      "train_rows": 289
+    },
+    "acoustic58|4|Funk2-108-Eb,Jazz3-137-Eb,Rock1-90-C#,SS2-107-Ab": {
+      "fold": 4,
+      "pieces": [
+        "Funk2-108-Eb",
+        "Jazz3-137-Eb",
+        "Rock1-90-C#",
+        "SS2-107-Ab"
+      ],
+      "train_ids_sha256": "4aafbec91fe1e433f1224d6302c986b1f1b65a6df379141d1fa4cbbcc93570a2",
+      "train_rows": 379
+    },
+    "acoustic58|4|Funk2-108-Eb,Jazz3-137-Eb,SS2-107-Ab": {
+      "fold": 4,
+      "pieces": [
+        "Funk2-108-Eb",
+        "Jazz3-137-Eb",
+        "SS2-107-Ab"
+      ],
+      "train_ids_sha256": "ce5c8e0f5c99762040a63b2cfdc4b33ad966fb10fa2246c7eb8884c37d904fa3",
+      "train_rows": 267
+    },
+    "acoustic58|4|Funk2-108-Eb,Rock1-90-C#,SS2-107-Ab": {
+      "fold": 4,
+      "pieces": [
+        "Funk2-108-Eb",
+        "Rock1-90-C#",
+        "SS2-107-Ab"
+      ],
+      "train_ids_sha256": "c31f36dbf323f9f0e707e91e5e1d2d225ad234dc1173f7c9e050cd0310db56b9",
+      "train_rows": 301
+    },
+    "acoustic58|4|Jazz1-130-D,Jazz3-137-Eb,Rock1-90-C#": {
+      "fold": 4,
+      "pieces": [
+        "Jazz1-130-D",
+        "Jazz3-137-Eb",
+        "Rock1-90-C#"
+      ],
+      "train_ids_sha256": "ffd02494dfe35b237412dababb4cc2e311537254b209ba5dff7ad92d403e9949",
+      "train_rows": 230
+    },
+    "acoustic58|4|Jazz1-130-D,Jazz3-137-Eb,Rock1-90-C#,SS2-107-Ab": {
+      "fold": 4,
+      "pieces": [
+        "Jazz1-130-D",
+        "Jazz3-137-Eb",
+        "Rock1-90-C#",
+        "SS2-107-Ab"
+      ],
+      "train_ids_sha256": "a41d0e0d87b4dfdc1d5f8efc9964e11f96a2101d7787fb6498b9719fc8a5d1f1",
+      "train_rows": 320
+    },
+    "acoustic58|4|Jazz1-130-D,Jazz3-137-Eb,SS2-107-Ab": {
+      "fold": 4,
+      "pieces": [
+        "Jazz1-130-D",
+        "Jazz3-137-Eb",
+        "SS2-107-Ab"
+      ],
+      "train_ids_sha256": "ae5e3a25e5ecfc5ede25f782e6af2de0b363e7c2b54b228375915cde43bb97e0",
+      "train_rows": 208
+    },
+    "acoustic58|4|Jazz1-130-D,Rock1-90-C#,SS2-107-Ab": {
+      "fold": 4,
+      "pieces": [
+        "Jazz1-130-D",
+        "Rock1-90-C#",
+        "SS2-107-Ab"
+      ],
+      "train_ids_sha256": "a74b3ec9912add14c6f58ef3f56f6859714172859ac8992a755541a6d8403d22",
+      "train_rows": 242
+    },
+    "acoustic58|4|Jazz3-137-Eb,Rock1-90-C#,SS2-107-Ab": {
+      "fold": 4,
+      "pieces": [
+        "Jazz3-137-Eb",
+        "Rock1-90-C#",
+        "SS2-107-Ab"
+      ],
+      "train_ids_sha256": "697340fd198772f2615a46d415d5f786fa8b6270ab79bc290e37277ec6adbc0a",
+      "train_rows": 280
+    },
+    "group|0|BN2-166-Ab,Jazz3-150-C,Rock2-142-D": {
+      "fold": 0,
+      "pieces": [
+        "BN2-166-Ab",
+        "Jazz3-150-C",
+        "Rock2-142-D"
+      ],
+      "train_ids_sha256": "3ad7b2c0b44ef1e28e10b3d4b0ab0632157cf9c8619cc9730f7d7cdb7e371f91",
+      "train_rows": 250
+    },
+    "group|0|BN2-166-Ab,Jazz3-150-C,Rock2-142-D,Rock3-148-C": {
+      "fold": 0,
+      "pieces": [
+        "BN2-166-Ab",
+        "Jazz3-150-C",
+        "Rock2-142-D",
+        "Rock3-148-C"
+      ],
+      "train_ids_sha256": "917bb2249da30a2188bd276a1ec400ac197cebe782fe714dbc01fbab62fd9c87",
+      "train_rows": 412
+    },
+    "group|0|BN2-166-Ab,Jazz3-150-C,Rock2-142-D,SS1-68-E": {
+      "fold": 0,
+      "pieces": [
+        "BN2-166-Ab",
+        "Jazz3-150-C",
+        "Rock2-142-D",
+        "SS1-68-E"
+      ],
+      "train_ids_sha256": "2eda5b23692116f8394f12beb35defc6397c872636649b1b49e309853fa3eef2",
+      "train_rows": 365
+    },
+    "group|0|BN2-166-Ab,Jazz3-150-C,Rock3-148-C": {
+      "fold": 0,
+      "pieces": [
+        "BN2-166-Ab",
+        "Jazz3-150-C",
+        "Rock3-148-C"
+      ],
+      "train_ids_sha256": "9ce634f2a6dae7b99a7e2061f6c64fcc93c3565df9ee5bc9688c671f91a22a34",
+      "train_rows": 295
+    },
+    "group|0|BN2-166-Ab,Jazz3-150-C,Rock3-148-C,SS1-68-E": {
+      "fold": 0,
+      "pieces": [
+        "BN2-166-Ab",
+        "Jazz3-150-C",
+        "Rock3-148-C",
+        "SS1-68-E"
+      ],
+      "train_ids_sha256": "cd86280ae334b81bceb448d80a4190897843dfee9c0fc0e69ee010323fc4469a",
+      "train_rows": 410
+    },
+    "group|0|BN2-166-Ab,Jazz3-150-C,SS1-68-E": {
+      "fold": 0,
+      "pieces": [
+        "BN2-166-Ab",
+        "Jazz3-150-C",
+        "SS1-68-E"
+      ],
+      "train_ids_sha256": "8949ec8500b211b2db277a4c4e6fe2426bc86578cf3a6a1f9aa97e79ed05d0ae",
+      "train_rows": 248
+    },
+    "group|0|BN2-166-Ab,Rock2-142-D,Rock3-148-C": {
+      "fold": 0,
+      "pieces": [
+        "BN2-166-Ab",
+        "Rock2-142-D",
+        "Rock3-148-C"
+      ],
+      "train_ids_sha256": "4e1d70d66fbd67f401466e2cb2076145053fe7f7944a054dfb043768692723bc",
+      "train_rows": 350
+    },
+    "group|0|BN2-166-Ab,Rock2-142-D,Rock3-148-C,SS1-68-E": {
+      "fold": 0,
+      "pieces": [
+        "BN2-166-Ab",
+        "Rock2-142-D",
+        "Rock3-148-C",
+        "SS1-68-E"
+      ],
+      "train_ids_sha256": "d5432fecb001ee28e6159cded48d480e90b2d5335e03d12d08f7fb05156c1dcb",
+      "train_rows": 465
+    },
+    "group|0|BN2-166-Ab,Rock2-142-D,SS1-68-E": {
+      "fold": 0,
+      "pieces": [
+        "BN2-166-Ab",
+        "Rock2-142-D",
+        "SS1-68-E"
+      ],
+      "train_ids_sha256": "397b0b6bf373c7a1989b11f4977ee35769a00fe20f6a9757b107125b0c4569e6",
+      "train_rows": 303
+    },
+    "group|0|BN2-166-Ab,Rock3-148-C,SS1-68-E": {
+      "fold": 0,
+      "pieces": [
+        "BN2-166-Ab",
+        "Rock3-148-C",
+        "SS1-68-E"
+      ],
+      "train_ids_sha256": "5c66418f09604a3b99f83cf6a143ad28199dfbe36fb6a088c2b5316a6d946592",
+      "train_rows": 348
+    },
+    "group|0|Jazz3-150-C,Rock2-142-D,Rock3-148-C": {
+      "fold": 0,
+      "pieces": [
+        "Jazz3-150-C",
+        "Rock2-142-D",
+        "Rock3-148-C"
+      ],
+      "train_ids_sha256": "859643a925be3db16da0b8152978685b79cdca8098e54d45fa620376f2634690",
+      "train_rows": 341
+    },
+    "group|0|Jazz3-150-C,Rock2-142-D,Rock3-148-C,SS1-68-E": {
+      "fold": 0,
+      "pieces": [
+        "Jazz3-150-C",
+        "Rock2-142-D",
+        "Rock3-148-C",
+        "SS1-68-E"
+      ],
+      "train_ids_sha256": "b948b59f730a0390c1deed11332d8e781442ca44ac5cb1f6286f9cf50ffc394d",
+      "train_rows": 456
+    },
+    "group|0|Jazz3-150-C,Rock2-142-D,SS1-68-E": {
+      "fold": 0,
+      "pieces": [
+        "Jazz3-150-C",
+        "Rock2-142-D",
+        "SS1-68-E"
+      ],
+      "train_ids_sha256": "6b1c57f59153b53f3a8784e6c608fd65b8ac2e3aaa3e3559c945be9b6f08bc1d",
+      "train_rows": 294
+    },
+    "group|0|Jazz3-150-C,Rock3-148-C,SS1-68-E": {
+      "fold": 0,
+      "pieces": [
+        "Jazz3-150-C",
+        "Rock3-148-C",
+        "SS1-68-E"
+      ],
+      "train_ids_sha256": "93c4e12cfff2363a0407c88b0db98e8f4d83377441781677b53afde647a6d796",
+      "train_rows": 339
+    },
+    "group|0|Rock2-142-D,Rock3-148-C,SS1-68-E": {
+      "fold": 0,
+      "pieces": [
+        "Rock2-142-D",
+        "Rock3-148-C",
+        "SS1-68-E"
+      ],
+      "train_ids_sha256": "6d885d116e78efb0fdaf0dd7ae29190dfdd9dfe9605559fcc8eba7c19e3f2ee7",
+      "train_rows": 394
+    },
+    "group|1|BN3-154-E,Funk2-119-G": {
+      "fold": 1,
+      "pieces": [
+        "BN3-154-E",
+        "Funk2-119-G"
+      ],
+      "train_ids_sha256": "f1355fc6b650ce576f527d4ffde833921fc0997675e1022bebaacd4420591725",
+      "train_rows": 178
+    },
+    "group|1|BN3-154-E,Funk2-119-G,Funk3-112-C#": {
+      "fold": 1,
+      "pieces": [
+        "BN3-154-E",
+        "Funk2-119-G",
+        "Funk3-112-C#"
+      ],
+      "train_ids_sha256": "1627bed89dc4798145594bcd7b7cfa11fbe285a9e353a8eb942df2eae3796d57",
+      "train_rows": 329
+    },
+    "group|1|BN3-154-E,Funk2-119-G,SS3-98-C": {
+      "fold": 1,
+      "pieces": [
+        "BN3-154-E",
+        "Funk2-119-G",
+        "SS3-98-C"
+      ],
+      "train_ids_sha256": "7da793f0086758b7867297935269dc47da0ecd8c6f738091ce2d63db2b54829e",
+      "train_rows": 370
+    },
+    "group|1|BN3-154-E,Funk3-112-C#": {
+      "fold": 1,
+      "pieces": [
+        "BN3-154-E",
+        "Funk3-112-C#"
+      ],
+      "train_ids_sha256": "4824552c7ff612a850146c9e5acf60ff97528fed7aae51c23473dd72dfc71a90",
+      "train_rows": 211
+    },
+    "group|1|BN3-154-E,Funk3-112-C#,SS3-98-C": {
+      "fold": 1,
+      "pieces": [
+        "BN3-154-E",
+        "Funk3-112-C#",
+        "SS3-98-C"
+      ],
+      "train_ids_sha256": "95e5cd6dfcd7ef21141e0eb8a8f8f5257aa1a68bf8026305add533035ecd6b95",
+      "train_rows": 403
+    },
+    "group|1|BN3-154-E,SS3-98-C": {
+      "fold": 1,
+      "pieces": [
+        "BN3-154-E",
+        "SS3-98-C"
+      ],
+      "train_ids_sha256": "93ee97401540468529667747f649f3623f1504ecd10cce9b23d31d3fe03131ce",
+      "train_rows": 252
+    },
+    "group|1|Funk2-119-G,Funk3-112-C#": {
+      "fold": 1,
+      "pieces": [
+        "Funk2-119-G",
+        "Funk3-112-C#"
+      ],
+      "train_ids_sha256": "732364c93819af7e167d2a2ee8852250dbe7512368ba2ac8ee5dbae1406715b8",
+      "train_rows": 269
+    },
+    "group|1|Funk2-119-G,Funk3-112-C#,SS3-98-C": {
+      "fold": 1,
+      "pieces": [
+        "Funk2-119-G",
+        "Funk3-112-C#",
+        "SS3-98-C"
+      ],
+      "train_ids_sha256": "75176d1b55be3360d620d607bc9586e143306a99f4f982df873006741b09dfc1",
+      "train_rows": 461
+    },
+    "group|1|Funk2-119-G,SS3-98-C": {
+      "fold": 1,
+      "pieces": [
+        "Funk2-119-G",
+        "SS3-98-C"
+      ],
+      "train_ids_sha256": "6abb10a2065e25e5f71cc68c409f0219c2f6b55871f28137f2112950d9aa1176",
+      "train_rows": 310
+    },
+    "group|1|Funk3-112-C#,SS3-98-C": {
+      "fold": 1,
+      "pieces": [
+        "Funk3-112-C#",
+        "SS3-98-C"
+      ],
+      "train_ids_sha256": "72a26ab096f0b4316cd8b7783e304ceb3d5deb303f0186f967d6f3e824d8bc49",
+      "train_rows": 343
+    },
+    "group|2|Funk1-114-Ab,Jazz1-200-B,Jazz2-110-Bb": {
+      "fold": 2,
+      "pieces": [
+        "Funk1-114-Ab",
+        "Jazz1-200-B",
+        "Jazz2-110-Bb"
+      ],
+      "train_ids_sha256": "1c8b8862d6280d64befa0f700a0a1facd1f4d04bce2e034ce6a253c20558b818",
+      "train_rows": 155
+    },
+    "group|2|Funk1-114-Ab,Jazz1-200-B,Jazz2-110-Bb,Rock1-130-A": {
+      "fold": 2,
+      "pieces": [
+        "Funk1-114-Ab",
+        "Jazz1-200-B",
+        "Jazz2-110-Bb",
+        "Rock1-130-A"
+      ],
+      "train_ids_sha256": "fad7acbd87fbdd9854c5e0e09e295c50950e47041939cb5a89a5313f1c14eb24",
+      "train_rows": 240
+    },
+    "group|2|Funk1-114-Ab,Jazz1-200-B,Jazz2-110-Bb,Rock2-85-F": {
+      "fold": 2,
+      "pieces": [
+        "Funk1-114-Ab",
+        "Jazz1-200-B",
+        "Jazz2-110-Bb",
+        "Rock2-85-F"
+      ],
+      "train_ids_sha256": "6ff07a5c65f16a26de47690a492b6b5734f320f71f441cce4fa85f69c26e8fef",
+      "train_rows": 286
+    },
+    "group|2|Funk1-114-Ab,Jazz1-200-B,Rock1-130-A": {
+      "fold": 2,
+      "pieces": [
+        "Funk1-114-Ab",
+        "Jazz1-200-B",
+        "Rock1-130-A"
+      ],
+      "train_ids_sha256": "7d84efc67f51ac90c5e5750b590bdd5016b4995e13c85b5fbc89bf31d86e6145",
+      "train_rows": 191
+    },
+    "group|2|Funk1-114-Ab,Jazz1-200-B,Rock1-130-A,Rock2-85-F": {
+      "fold": 2,
+      "pieces": [
+        "Funk1-114-Ab",
+        "Jazz1-200-B",
+        "Rock1-130-A",
+        "Rock2-85-F"
+      ],
+      "train_ids_sha256": "bf4277e4bd41a37d646210fe7c076bdd086c36e15bdbaca23aad850c82cb6bce",
+      "train_rows": 322
+    },
+    "group|2|Funk1-114-Ab,Jazz1-200-B,Rock2-85-F": {
+      "fold": 2,
+      "pieces": [
+        "Funk1-114-Ab",
+        "Jazz1-200-B",
+        "Rock2-85-F"
+      ],
+      "train_ids_sha256": "d82ac4132134702a780f7d1835463e4e17a62a40967521a40db847e53787d6ba",
+      "train_rows": 237
+    },
+    "group|2|Funk1-114-Ab,Jazz2-110-Bb,Rock1-130-A": {
+      "fold": 2,
+      "pieces": [
+        "Funk1-114-Ab",
+        "Jazz2-110-Bb",
+        "Rock1-130-A"
+      ],
+      "train_ids_sha256": "4ecf47d10266a842bed3e623cf6e67f6c39ab94dabbd55ca1794ffb90aec1cb9",
+      "train_rows": 210
+    },
+    "group|2|Funk1-114-Ab,Jazz2-110-Bb,Rock1-130-A,Rock2-85-F": {
+      "fold": 2,
+      "pieces": [
+        "Funk1-114-Ab",
+        "Jazz2-110-Bb",
+        "Rock1-130-A",
+        "Rock2-85-F"
+      ],
+      "train_ids_sha256": "ac397dd3c1b21f663ee768a3720d1d476c004a9c69a680a05f398ec9f4f018da",
+      "train_rows": 341
+    },
+    "group|2|Funk1-114-Ab,Jazz2-110-Bb,Rock2-85-F": {
+      "fold": 2,
+      "pieces": [
+        "Funk1-114-Ab",
+        "Jazz2-110-Bb",
+        "Rock2-85-F"
+      ],
+      "train_ids_sha256": "49045cb41c67a880e4e215939f7da4e9c80a7cad3e33406c4257337942795957",
+      "train_rows": 256
+    },
+    "group|2|Funk1-114-Ab,Rock1-130-A,Rock2-85-F": {
+      "fold": 2,
+      "pieces": [
+        "Funk1-114-Ab",
+        "Rock1-130-A",
+        "Rock2-85-F"
+      ],
+      "train_ids_sha256": "f6b6a3ab0b8da93462411f87b8cea386261766d78693c435d060d6e7ab567ac3",
+      "train_rows": 292
+    },
+    "group|2|Jazz1-200-B,Jazz2-110-Bb,Rock1-130-A": {
+      "fold": 2,
+      "pieces": [
+        "Jazz1-200-B",
+        "Jazz2-110-Bb",
+        "Rock1-130-A"
+      ],
+      "train_ids_sha256": "91b624782f1dc0d7de192429a500ff70a0ba4429913481f94f74bcc7f92d82b2",
+      "train_rows": 164
+    },
+    "group|2|Jazz1-200-B,Jazz2-110-Bb,Rock1-130-A,Rock2-85-F": {
+      "fold": 2,
+      "pieces": [
+        "Jazz1-200-B",
+        "Jazz2-110-Bb",
+        "Rock1-130-A",
+        "Rock2-85-F"
+      ],
+      "train_ids_sha256": "d4d0c7d23eb6f34a61e10a6b19ab50be8091f2220fdd6e79ca75b3240e6fe41d",
+      "train_rows": 295
+    },
+    "group|2|Jazz1-200-B,Jazz2-110-Bb,Rock2-85-F": {
+      "fold": 2,
+      "pieces": [
+        "Jazz1-200-B",
+        "Jazz2-110-Bb",
+        "Rock2-85-F"
+      ],
+      "train_ids_sha256": "bcb172ca91369f341cc3d8a3a7c79e1fcda3fea264f41fe878b5e252b386ba7f",
+      "train_rows": 210
+    },
+    "group|2|Jazz1-200-B,Rock1-130-A,Rock2-85-F": {
+      "fold": 2,
+      "pieces": [
+        "Jazz1-200-B",
+        "Rock1-130-A",
+        "Rock2-85-F"
+      ],
+      "train_ids_sha256": "a7aa3dcdc8c8d454ee4a9a93469d96664cc21cce0ae5c59344d50cd7bdb7fefb",
+      "train_rows": 246
+    },
+    "group|2|Jazz2-110-Bb,Rock1-130-A,Rock2-85-F": {
+      "fold": 2,
+      "pieces": [
+        "Jazz2-110-Bb",
+        "Rock1-130-A",
+        "Rock2-85-F"
+      ],
+      "train_ids_sha256": "4cac7922f9510fef1e583ade6e38db3b7112b17d946a301305631d5bab67678b",
+      "train_rows": 265
+    },
+    "group|4|Funk2-108-Eb,Jazz1-130-D,Jazz3-137-Eb": {
+      "fold": 4,
+      "pieces": [
+        "Funk2-108-Eb",
+        "Jazz1-130-D",
+        "Jazz3-137-Eb"
+      ],
+      "train_ids_sha256": "b2731d31d725d94e66a129bd9d21b87bfa3955a44ef69b3959b9329807f05b27",
+      "train_rows": 217
+    },
+    "group|4|Funk2-108-Eb,Jazz1-130-D,Jazz3-137-Eb,Rock1-90-C#": {
+      "fold": 4,
+      "pieces": [
+        "Funk2-108-Eb",
+        "Jazz1-130-D",
+        "Jazz3-137-Eb",
+        "Rock1-90-C#"
+      ],
+      "train_ids_sha256": "6d584333ba26bd34ff02c052f17edcdce8d6fde2755cc034139f174a2281bd2f",
+      "train_rows": 329
+    },
+    "group|4|Funk2-108-Eb,Jazz1-130-D,Jazz3-137-Eb,SS2-107-Ab": {
+      "fold": 4,
+      "pieces": [
+        "Funk2-108-Eb",
+        "Jazz1-130-D",
+        "Jazz3-137-Eb",
+        "SS2-107-Ab"
+      ],
+      "train_ids_sha256": "b979d3c76311ca373fb360fe9588437b38c9e4a78c22f676015a1ef839245fe1",
+      "train_rows": 307
+    },
+    "group|4|Funk2-108-Eb,Jazz1-130-D,Rock1-90-C#": {
+      "fold": 4,
+      "pieces": [
+        "Funk2-108-Eb",
+        "Jazz1-130-D",
+        "Rock1-90-C#"
+      ],
+      "train_ids_sha256": "5c92af53e6398395bee8917fdb810fe112a34f92d9469cc4de1d86c936345ce9",
+      "train_rows": 251
+    },
+    "group|4|Funk2-108-Eb,Jazz1-130-D,Rock1-90-C#,SS2-107-Ab": {
+      "fold": 4,
+      "pieces": [
+        "Funk2-108-Eb",
+        "Jazz1-130-D",
+        "Rock1-90-C#",
+        "SS2-107-Ab"
+      ],
+      "train_ids_sha256": "5ce5a386be86b49a6afb009188d7b63a15451cd5c578f1392163aa06d4f7d33d",
+      "train_rows": 341
+    },
+    "group|4|Funk2-108-Eb,Jazz1-130-D,SS2-107-Ab": {
+      "fold": 4,
+      "pieces": [
+        "Funk2-108-Eb",
+        "Jazz1-130-D",
+        "SS2-107-Ab"
+      ],
+      "train_ids_sha256": "f6e2e9631b7d74923a6e2d19d3777d83a1b40d79bad0165b438c095655769168",
+      "train_rows": 229
+    },
+    "group|4|Funk2-108-Eb,Jazz3-137-Eb,Rock1-90-C#": {
+      "fold": 4,
+      "pieces": [
+        "Funk2-108-Eb",
+        "Jazz3-137-Eb",
+        "Rock1-90-C#"
+      ],
+      "train_ids_sha256": "3a3090b7e21fdb96a1cf88bf408187ddfbced9776b26d0f0b22f0d07a0e1d23c",
+      "train_rows": 289
+    },
+    "group|4|Funk2-108-Eb,Jazz3-137-Eb,Rock1-90-C#,SS2-107-Ab": {
+      "fold": 4,
+      "pieces": [
+        "Funk2-108-Eb",
+        "Jazz3-137-Eb",
+        "Rock1-90-C#",
+        "SS2-107-Ab"
+      ],
+      "train_ids_sha256": "4aafbec91fe1e433f1224d6302c986b1f1b65a6df379141d1fa4cbbcc93570a2",
+      "train_rows": 379
+    },
+    "group|4|Funk2-108-Eb,Jazz3-137-Eb,SS2-107-Ab": {
+      "fold": 4,
+      "pieces": [
+        "Funk2-108-Eb",
+        "Jazz3-137-Eb",
+        "SS2-107-Ab"
+      ],
+      "train_ids_sha256": "ce5c8e0f5c99762040a63b2cfdc4b33ad966fb10fa2246c7eb8884c37d904fa3",
+      "train_rows": 267
+    },
+    "group|4|Funk2-108-Eb,Rock1-90-C#,SS2-107-Ab": {
+      "fold": 4,
+      "pieces": [
+        "Funk2-108-Eb",
+        "Rock1-90-C#",
+        "SS2-107-Ab"
+      ],
+      "train_ids_sha256": "c31f36dbf323f9f0e707e91e5e1d2d225ad234dc1173f7c9e050cd0310db56b9",
+      "train_rows": 301
+    },
+    "group|4|Jazz1-130-D,Jazz3-137-Eb,Rock1-90-C#": {
+      "fold": 4,
+      "pieces": [
+        "Jazz1-130-D",
+        "Jazz3-137-Eb",
+        "Rock1-90-C#"
+      ],
+      "train_ids_sha256": "ffd02494dfe35b237412dababb4cc2e311537254b209ba5dff7ad92d403e9949",
+      "train_rows": 230
+    },
+    "group|4|Jazz1-130-D,Jazz3-137-Eb,Rock1-90-C#,SS2-107-Ab": {
+      "fold": 4,
+      "pieces": [
+        "Jazz1-130-D",
+        "Jazz3-137-Eb",
+        "Rock1-90-C#",
+        "SS2-107-Ab"
+      ],
+      "train_ids_sha256": "a41d0e0d87b4dfdc1d5f8efc9964e11f96a2101d7787fb6498b9719fc8a5d1f1",
+      "train_rows": 320
+    },
+    "group|4|Jazz1-130-D,Jazz3-137-Eb,SS2-107-Ab": {
+      "fold": 4,
+      "pieces": [
+        "Jazz1-130-D",
+        "Jazz3-137-Eb",
+        "SS2-107-Ab"
+      ],
+      "train_ids_sha256": "ae5e3a25e5ecfc5ede25f782e6af2de0b363e7c2b54b228375915cde43bb97e0",
+      "train_rows": 208
+    },
+    "group|4|Jazz1-130-D,Rock1-90-C#,SS2-107-Ab": {
+      "fold": 4,
+      "pieces": [
+        "Jazz1-130-D",
+        "Rock1-90-C#",
+        "SS2-107-Ab"
+      ],
+      "train_ids_sha256": "a74b3ec9912add14c6f58ef3f56f6859714172859ac8992a755541a6d8403d22",
+      "train_rows": 242
+    },
+    "group|4|Jazz3-137-Eb,Rock1-90-C#,SS2-107-Ab": {
+      "fold": 4,
+      "pieces": [
+        "Jazz3-137-Eb",
+        "Rock1-90-C#",
+        "SS2-107-Ab"
+      ],
+      "train_ids_sha256": "697340fd198772f2615a46d415d5f786fa8b6270ab79bc290e37277ec6adbc0a",
+      "train_rows": 280
+    }
+  }
+}

@@ -1,0 +1,72 @@
+name: V27.3 regression loops independent replay
+
+on:
+  push:
+    branches: [codex/v273-regression-loops]
+    paths:
+      - '.github/workflows/v273-regression-loops.yml'
+      - 'scripts/*v273_regression_loops.py'
+      - 'scripts/compare_v273_regression_replay.py'
+      - 'analysis/evidence/v273-regression-loops/prepared/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+
+jobs:
+  replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install fixed numerical environment
+        run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+      - name: Test loss gradients, exclusions, joint combinations and preservation
+        run: python -m unittest -v test.test_v273_regression_loops
+      - name: Refit every linear calibration and nested choice
+        run: |
+          python -m scripts.evaluate_v273_regression_loops run \
+            --prepared analysis/evidence/v273-regression-loops/prepared \
+            --output model/regression-loops/series1
+      - name: Recompute constrained contextual routing
+        run: |
+          python -m scripts.route_v273_regression_loops \
+            --prepared analysis/evidence/v273-regression-loops/prepared \
+            --series model/regression-loops/series1 --output model/regression-loops/series2
+      - name: Refit nonlinear calibration and nested routing
+        run: |
+          python -m scripts.nonlinear_v273_regression_loops \
+            --prepared analysis/evidence/v273-regression-loops/prepared \
+            --series model/regression-loops/series1 --output model/regression-loops/series3
+      - name: Refit proposed-change guards
+        run: |
+          python -m scripts.guard_v273_regression_loops \
+            --prepared analysis/evidence/v273-regression-loops/prepared \
+            --series model/regression-loops/series1 --output model/regression-loops/series4
+      - name: Verify exclusions, probabilities, every native decision and inner choice
+        run: |
+          python -m scripts.verify_v273_regression_loops \
+            --prepared analysis/evidence/v273-regression-loops/prepared \
+            --series1 model/regression-loops/series1 --series2 model/regression-loops/series2 \
+            --series3 model/regression-loops/series3 --series4 model/regression-loops/series4 \
+            --output model/regression-loops/verification.json
+          python -m scripts.compare_v273_regression_replay \
+            --archive analysis/evidence/v273-regression-loops \
+            --replay model/regression-loops --output model/regression-loops/replay-verification.json
+      - name: Publish measured cycles
+        run: cat model/regression-loops/series1/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-regression-loops-replay
+          path: model/regression-loops/
+          retention-days: 90

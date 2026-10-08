@@ -1,0 +1,3403 @@
+{
+  "diagnostics": {
+    "bootstrap_caveat": "19 exposed pieces; overlapping training sets; descriptive intervals, not independent-validation proof.",
+    "descriptive_associations_not_causes": {
+      "2": [
+        {
+          "correction_mean": 0.2183563007485774,
+          "corrections": 120,
+          "feature": "damping__late_mass_fraction",
+          "regression_mean": 0.1848550253529844,
+          "regressions": 165,
+          "standardized_difference": -0.2926915231092524
+        },
+        {
+          "correction_mean": 0.3285359569357703,
+          "corrections": 120,
+          "feature": "source__post_lost_energy_fraction",
+          "regression_mean": 0.36823230597436823,
+          "regressions": 165,
+          "standardized_difference": 0.22105725964939568
+        },
+        {
+          "correction_mean": 0.6714640426274362,
+          "corrections": 120,
+          "feature": "persistence__pre_post_retention",
+          "regression_mean": 0.6317676936394324,
+          "regressions": 165,
+          "standardized_difference": -0.2210572592994472
+        },
+        {
+          "correction_mean": 1.0226601610801258,
+          "corrections": 120,
+          "feature": "spectral__mass_late",
+          "regression_mean": 0.9971120364643273,
+          "regressions": 165,
+          "standardized_difference": -0.16261088442677832
+        },
+        {
+          "correction_mean": 0.17562145617279648,
+          "corrections": 120,
+          "feature": "damping__lost_mass",
+          "regression_mean": 0.2054961888226269,
+          "regressions": 165,
+          "standardized_difference": 0.1605215756692428
+        },
+        {
+          "correction_mean": 4.791703367974504,
+          "corrections": 120,
+          "feature": "coherence__pitch_centroid_late_pre",
+          "regression_mean": 3.7004363637468685,
+          "regressions": 165,
+          "standardized_difference": -0.1550025069250734
+        },
+        {
+          "correction_mean": 5.097916666666666,
+          "corrections": 120,
+          "feature": "spectral__active_pre",
+          "regression_mean": 5.28030303030303,
+          "regressions": 165,
+          "standardized_difference": 0.142708801131725
+        },
+        {
+          "correction_mean": 0.283980811882903,
+          "corrections": 120,
+          "feature": "spectral__dominant_late",
+          "regression_mean": 0.2974570730832581,
+          "regressions": 165,
+          "standardized_difference": 0.14252558154439288
+        },
+        {
+          "correction_mean": 0.11740921214258539,
+          "corrections": 120,
+          "feature": "source__onset_lost_energy_fraction",
+          "regression_mean": 0.1312835970903963,
+          "regressions": 165,
+          "standardized_difference": 0.13779684274012896
+        },
+        {
+          "correction_mean": 0.5505865473681717,
+          "corrections": 120,
+          "feature": "spectral__entropy_pre",
+          "regression_mean": 0.5658053844025496,
+          "regressions": 165,
+          "standardized_difference": 0.13680315894286538
+        },
+        {
+          "correction_mean": 0.27251466138529296,
+          "corrections": 120,
+          "feature": "damping__mid_mass_fraction",
+          "regression_mean": 0.28878522099552734,
+          "regressions": 165,
+          "standardized_difference": 0.13406881441109375
+        },
+        {
+          "correction_mean": 0.4595589214760856,
+          "corrections": 120,
+          "feature": "persistence__mean_survival",
+          "regression_mean": 0.4385894105844294,
+          "regressions": 165,
+          "standardized_difference": -0.13330911146242383
+        },
+        {
+          "correction_mean": 0.9429039602209495,
+          "corrections": 120,
+          "feature": "spectral__late_pre_ratio",
+          "regression_mean": 0.8369375256361359,
+          "regressions": 165,
+          "standardized_difference": -0.1084339281224182
+        },
+        {
+          "correction_mean": 6.585574183746766,
+          "corrections": 120,
+          "feature": "source__effective_late_sources",
+          "regression_mean": 6.3170183009112435,
+          "regressions": 165,
+          "standardized_difference": -0.10729225358113488
+        },
+        {
+          "correction_mean": 0.037228760711017175,
+          "corrections": 120,
+          "feature": "damping__frame_std",
+          "regression_mean": 0.04017285003874055,
+          "regressions": 165,
+          "standardized_difference": 0.10655771289549605
+        },
+        {
+          "correction_mean": 0.5091290377710822,
+          "corrections": 120,
+          "feature": "damping__early_mass_fraction",
+          "regression_mean": 0.5263597535512596,
+          "regressions": 165,
+          "standardized_difference": 0.10334278713607231
+        },
+        {
+          "correction_mean": 0.5374025783236358,
+          "corrections": 120,
+          "feature": "spectral__entropy_late",
+          "regression_mean": 0.5274876157930445,
+          "regressions": 165,
+          "standardized_difference": -0.10280373393353817
+        },
+        {
+          "correction_mean": 0.24319727891156465,
+          "corrections": 120,
+          "feature": "damping__vanishing_track_fraction",
+          "regression_mean": 0.2559059987631416,
+          "regressions": 165,
+          "standardized_difference": 0.09807928212153502
+        },
+        {
+          "correction_mean": 0.5303880857644943,
+          "corrections": 120,
+          "feature": "spectral__mass_pre",
+          "regression_mean": 0.5637108278926806,
+          "regressions": 165,
+          "standardized_difference": 0.09503927639505488
+        },
+        {
+          "correction_mean": 0.48717809901862086,
+          "corrections": 120,
+          "feature": "birth__positive_fraction",
+          "regression_mean": 0.4780277194939854,
+          "regressions": 165,
+          "standardized_difference": -0.09484137668670287
+        },
+        {
+          "correction_mean": 0.5128219009340186,
+          "corrections": 120,
+          "feature": "damping__sink_fraction",
+          "regression_mean": 0.5219722804551967,
+          "regressions": 165,
+          "standardized_difference": 0.09484137665206918
+        },
+        {
+          "correction_mean": 0.12027438071913635,
+          "corrections": 120,
+          "feature": "birth__positive_track_concentration",
+          "regression_mean": 0.12478262422593356,
+          "regressions": 165,
+          "standardized_difference": 0.08127106235530963
+        },
+        {
+          "correction_mean": 5.380555555555556,
+          "corrections": 120,
+          "feature": "spectral__active_late",
+          "regression_mean": 5.2696969696969695,
+          "regressions": 165,
+          "standardized_difference": -0.08016548710095027
+        },
+        {
+          "correction_mean": 0.6037925966002009,
+          "corrections": 120,
+          "feature": "persistence__new_source_retention",
+          "regression_mean": 0.5887239078503145,
+          "regressions": 165,
+          "standardized_difference": -0.07576880318805125
+        },
+        {
+          "correction_mean": 257.23417142573936,
+          "corrections": 120,
+          "feature": "source__spectral_shift_cents",
+          "regression_mean": 232.43702435682556,
+          "regressions": 165,
+          "standardized_difference": -0.07551964372289481
+        },
+        {
+          "correction_mean": 1.1723326128469354,
+          "corrections": 120,
+          "feature": "spectral__on_pre_ratio",
+          "regression_mean": 1.1051832818583214,
+          "regressions": 165,
+          "standardized_difference": -0.07488282275429331
+        },
+        {
+          "correction_mean": 0.5859694834594642,
+          "corrections": 120,
+          "feature": "source__continuation_l1",
+          "regression_mean": 0.6016315261569052,
+          "regressions": 165,
+          "standardized_difference": 0.06829327468204321
+        },
+        {
+          "correction_mean": 1.1855750679834687,
+          "corrections": 120,
+          "feature": "coherence__source_occupancy_var",
+          "regression_mean": 1.2161191282189532,
+          "regressions": 165,
+          "standardized_difference": 0.06748124765112241
+        },
+        {
+          "correction_mean": 0.06775740379226182,
+          "corrections": 120,
+          "feature": "damping__sink_track_concentration",
+          "regression_mean": 0.06973375126952243,
+          "regressions": 165,
+          "standardized_difference": 0.06518370951012521
+        },
+        {
+          "correction_mean": 0.13340752245507825,
+          "corrections": 120,
+          "feature": "damping__frame_max",
+          "regression_mean": 0.1378581545813568,
+          "regressions": 165,
+          "standardized_difference": 0.050109198748989836
+        },
+        {
+          "correction_mean": 0.10540640087949331,
+          "corrections": 120,
+          "feature": "birth__mid_mass_fraction",
+          "regression_mean": 0.10910448487311118,
+          "regressions": 165,
+          "standardized_difference": 0.04994823116561836
+        },
+        {
+          "correction_mean": 0.05709654267194871,
+          "corrections": 120,
+          "feature": "birth__frame_mean",
+          "regression_mean": 0.055511819320803846,
+          "regressions": 165,
+          "standardized_difference": -0.044437768891159544
+        },
+        {
+          "correction_mean": 1.2561239387828715,
+          "corrections": 120,
+          "feature": "birth__positive_flow",
+          "regression_mean": 1.2212600250576846,
+          "regressions": 165,
+          "standardized_difference": -0.044437768891159385
+        },
+        {
+          "correction_mean": 0.0987516272182105,
+          "corrections": 120,
+          "feature": "birth__late_mass_fraction",
+          "regression_mean": 0.09419164409249445,
+          "regressions": 165,
+          "standardized_difference": -0.04436014977260414
+        },
+        {
+          "correction_mean": 1.3181923952452341,
+          "corrections": 120,
+          "feature": "spectral__mass_on",
+          "regression_mean": 1.3383735134027654,
+          "regressions": 165,
+          "standardized_difference": 0.04346253367470753
+        },
+        {
+          "correction_mean": 0.2874149659863946,
+          "corrections": 120,
+          "feature": "birth__novel_track_fraction",
+          "regression_mean": 0.28175633889919605,
+          "regressions": 165,
+          "standardized_difference": -0.042455000291881984
+        },
+        {
+          "correction_mean": 10.44179733232275,
+          "corrections": 120,
+          "feature": "source__effective_onset_sources",
+          "regression_mean": 10.613930262002297,
+          "regressions": 165,
+          "standardized_difference": 0.04197916388498925
+        },
+        {
+          "correction_mean": 0.2908390446549143,
+          "corrections": 120,
+          "feature": "spectral__dominant_pre",
+          "regression_mean": 0.28605726866446973,
+          "regressions": 165,
+          "standardized_difference": -0.038965607435408015
+        },
+        {
+          "correction_mean": 1.3263121809976453,
+          "corrections": 120,
+          "feature": "damping__negative_flow",
+          "regression_mean": 1.3622388470783482,
+          "regressions": 165,
+          "standardized_difference": 0.03785262825911802
+        },
+        {
+          "correction_mean": 0.060286917318074784,
+          "corrections": 120,
+          "feature": "damping__frame_mean",
+          "regression_mean": 0.06191994759447035,
+          "regressions": 165,
+          "standardized_difference": 0.03785262825911752
+        },
+        {
+          "correction_mean": 5.590833333333334,
+          "corrections": 120,
+          "feature": "spectral__active_on",
+          "regression_mean": 5.63090909090909,
+          "regressions": 165,
+          "standardized_difference": 0.035654504438288555
+        },
+        {
+          "correction_mean": 0.663856883735335,
+          "corrections": 120,
+          "feature": "persistence__retention_10",
+          "regression_mean": 0.6596867848087523,
+          "regressions": 165,
+          "standardized_difference": -0.034848966042779324
+        },
+        {
+          "correction_mean": 0.7803549815511357,
+          "corrections": 120,
+          "feature": "persistence__retention_5",
+          "regression_mean": 0.7782306542738154,
+          "regressions": 165,
+          "standardized_difference": -0.02932388716495909
+        },
+        {
+          "correction_mean": 0.9950757575757575,
+          "corrections": 120,
+          "feature": "coherence__simultaneous_birth_death",
+          "regression_mean": 0.9958677685950413,
+          "regressions": 165,
+          "standardized_difference": 0.02764132844393228
+        },
+        {
+          "correction_mean": 0.9605573851106306,
+          "corrections": 120,
+          "feature": "coherence__temporal_cos_2",
+          "regression_mean": 0.9615389153871793,
+          "regressions": 165,
+          "standardized_difference": 0.021212268321408552
+        },
+        {
+          "correction_mean": 0.5259705776933189,
+          "corrections": 120,
+          "feature": "source__stable_presence_fraction",
+          "regression_mean": 0.522182956754843,
+          "regressions": 165,
+          "standardized_difference": -0.020742292098142462
+        },
+        {
+          "correction_mean": 0.8991390254541014,
+          "corrections": 120,
+          "feature": "persistence__retention_2",
+          "regression_mean": 0.8985911609306385,
+          "regressions": 165,
+          "standardized_difference": -0.01808146115249691
+        },
+        {
+          "correction_mean": 0.6665639907170653,
+          "corrections": 120,
+          "feature": "spectral__entropy_on",
+          "regression_mean": 0.6651446769518478,
+          "regressions": 165,
+          "standardized_difference": -0.01731010976244935
+        },
+        {
+          "correction_mean": 0.789657494899491,
+          "corrections": 120,
+          "feature": "coherence__temporal_cos_10",
+          "regression_mean": 0.7879078530535313,
+          "regressions": 165,
+          "standardized_difference": -0.015533801572310817
+        },
+        {
+          "correction_mean": 0.06130596823491101,
+          "corrections": 120,
+          "feature": "birth__frame_std",
+          "regression_mean": 0.061736480453546703,
+          "regressions": 165,
+          "standardized_difference": 0.012250715879559629
+        },
+        {
+          "correction_mean": 0.793530988201132,
+          "corrections": 120,
+          "feature": "source__novelty_l1",
+          "regression_mean": 0.7962890587173271,
+          "regressions": 165,
+          "standardized_difference": 0.010930228192742692
+        },
+        {
+          "correction_mean": 0.8849973556312197,
+          "corrections": 120,
+          "feature": "coherence__temporal_cos_5",
+          "regression_mean": 0.885634887235828,
+          "regressions": 165,
+          "standardized_difference": 0.009088603454831694
+        },
+        {
+          "correction_mean": 0.2192228487248703,
+          "corrections": 120,
+          "feature": "spectral__dominant_on",
+          "regression_mean": 0.2186623707679512,
+          "regressions": 165,
+          "standardized_difference": -0.008027556446111936
+        },
+        {
+          "correction_mean": 0.79584197180036,
+          "corrections": 120,
+          "feature": "birth__early_mass_fraction",
+          "regression_mean": 0.7967038709228644,
+          "regressions": 165,
+          "standardized_difference": 0.006880482788205819
+        },
+        {
+          "correction_mean": 0.866611583929869,
+          "corrections": 120,
+          "feature": "birth__novel_mass",
+          "regression_mean": 0.8702256440709748,
+          "regressions": 165,
+          "standardized_difference": 0.006844264424975914
+        },
+        {
+          "correction_mean": 0.08877551020408164,
+          "corrections": 120,
+          "feature": "persistence__stable_track_fraction",
+          "regression_mean": 0.08868274582560295,
+          "regressions": 165,
+          "standardized_difference": -0.0023430347072860617
+        },
+        {
+          "correction_mean": 0.19390458618484896,
+          "corrections": 120,
+          "feature": "birth__frame_max",
+          "regression_mean": 0.19415109321520904,
+          "regressions": 165,
+          "standardized_difference": 0.002326239446783271
+        },
+        {
+          "correction_mean": 0.4498498669338909,
+          "corrections": 120,
+          "feature": "coherence__pitch_centroid_drift",
+          "regression_mean": 0.4508657206769345,
+          "regressions": 165,
+          "standardized_difference": 0.0022103219308190264
+        }
+      ],
+      "3": [
+        {
+          "correction_mean": 1.2638530564778745,
+          "corrections": 292,
+          "feature": "spectral__mass_on",
+          "regression_mean": 1.4537038375590945,
+          "regressions": 233,
+          "standardized_difference": 0.2537134628711211
+        },
+        {
+          "correction_mean": 0.8339689168720078,
+          "corrections": 292,
+          "feature": "birth__novel_mass",
+          "regression_mean": 0.999707911556625,
+          "regressions": 233,
+          "standardized_difference": 0.22434362943816433
+        },
+        {
+          "correction_mean": 0.1263456316889433,
+          "corrections": 292,
+          "feature": "birth__mid_mass_fraction",
+          "regression_mean": 0.10787930222540441,
+          "regressions": 233,
+          "standardized_difference": -0.21445042909431733
+        },
+        {
+          "correction_mean": 0.05837225582276072,
+          "corrections": 292,
+          "feature": "damping__frame_mean",
+          "regression_mean": 0.07120884819579616,
+          "regressions": 233,
+          "standardized_difference": 0.21310798386810506
+        },
+        {
+          "correction_mean": 1.2841896281007361,
+          "corrections": 292,
+          "feature": "damping__negative_flow",
+          "regression_mean": 1.5665946603075158,
+          "regressions": 233,
+          "standardized_difference": 0.21310798386810503
+        },
+        {
+          "correction_mean": 0.19354897453959582,
+          "corrections": 292,
+          "feature": "birth__frame_max",
+          "regression_mean": 0.22473351027902855,
+          "regressions": 233,
+          "standardized_difference": 0.20888833267746185
+        },
+        {
+          "correction_mean": 0.7478372246024114,
+          "corrections": 292,
+          "feature": "birth__early_mass_fraction",
+          "regression_mean": 0.7839692181563216,
+          "regressions": 233,
+          "standardized_difference": 0.208601276855705
+        },
+        {
+          "correction_mean": 0.06277311908314799,
+          "corrections": 292,
+          "feature": "birth__frame_std",
+          "regression_mean": 0.07248521748568615,
+          "regressions": 233,
+          "standardized_difference": 0.2078801107650225
+        },
+        {
+          "correction_mean": 0.1267830098796488,
+          "corrections": 292,
+          "feature": "damping__frame_max",
+          "regression_mean": 0.15018423512205326,
+          "regressions": 233,
+          "standardized_difference": 0.19726392615687757
+        },
+        {
+          "correction_mean": 0.48451277128852555,
+          "corrections": 292,
+          "feature": "damping__sink_fraction",
+          "regression_mean": 0.50348406736434,
+          "regressions": 233,
+          "standardized_difference": 0.19309614354734927
+        },
+        {
+          "correction_mean": 0.5154872286633901,
+          "corrections": 292,
+          "feature": "birth__positive_fraction",
+          "regression_mean": 0.496515932589616,
+          "regressions": 233,
+          "standardized_difference": -0.19309614352409726
+        },
+        {
+          "correction_mean": 0.034873381536396,
+          "corrections": 292,
+          "feature": "damping__frame_std",
+          "regression_mean": 0.041395145364681606,
+          "regressions": 233,
+          "standardized_difference": 0.17949349835843373
+        },
+        {
+          "correction_mean": 0.4638515592632391,
+          "corrections": 292,
+          "feature": "damping__early_mass_fraction",
+          "regression_mean": 0.4903727451784748,
+          "regressions": 233,
+          "standardized_difference": 0.17812338393366312
+        },
+        {
+          "correction_mean": 0.3479723274871095,
+          "corrections": 292,
+          "feature": "source__post_lost_energy_fraction",
+          "regression_mean": 0.3792150919504698,
+          "regressions": 233,
+          "standardized_difference": 0.15712648175773136
+        },
+        {
+          "correction_mean": 0.6520276719931167,
+          "corrections": 292,
+          "feature": "persistence__pre_post_retention",
+          "regression_mean": 0.6207849075658987,
+          "regressions": 233,
+          "standardized_difference": -0.15712648161431889
+        },
+        {
+          "correction_mean": 0.2198485414460451,
+          "corrections": 292,
+          "feature": "damping__late_mass_fraction",
+          "regression_mean": 0.20378289295025862,
+          "regressions": 233,
+          "standardized_difference": -0.14510475245731552
+        },
+        {
+          "correction_mean": 0.1902954662735121,
+          "corrections": 292,
+          "feature": "damping__lost_mass",
+          "regression_mean": 0.21919318400660953,
+          "regressions": 233,
+          "standardized_difference": 0.13702682641240185
+        },
+        {
+          "correction_mean": 0.9967310087173101,
+          "corrections": 292,
+          "feature": "coherence__simultaneous_birth_death",
+          "regression_mean": 0.9939523995317987,
+          "regressions": 233,
+          "standardized_difference": -0.13425069197092687
+        },
+        {
+          "correction_mean": 0.6644801817561151,
+          "corrections": 292,
+          "feature": "persistence__retention_10",
+          "regression_mean": 0.6498189449711426,
+          "regressions": 233,
+          "standardized_difference": -0.1157126227526602
+        },
+        {
+          "correction_mean": 0.462024345272692,
+          "corrections": 292,
+          "feature": "persistence__mean_survival",
+          "regression_mean": 0.444772999936094,
+          "regressions": 233,
+          "standardized_difference": -0.11173982113517444
+        },
+        {
+          "correction_mean": 0.7789957117545778,
+          "corrections": 292,
+          "feature": "persistence__retention_5",
+          "regression_mean": 0.770110916335473,
+          "regressions": 233,
+          "standardized_difference": -0.11171473168633451
+        },
+        {
+          "correction_mean": 0.12581714360939897,
+          "corrections": 292,
+          "feature": "birth__late_mass_fraction",
+          "regression_mean": 0.10815147952223436,
+          "regressions": 233,
+          "standardized_difference": -0.1113437694477224
+        },
+        {
+          "correction_mean": 0.8980686214521887,
+          "corrections": 292,
+          "feature": "persistence__retention_2",
+          "regression_mean": 0.8943042558673007,
+          "regressions": 233,
+          "standardized_difference": -0.11105240486146434
+        },
+        {
+          "correction_mean": 1.3103204285972359,
+          "corrections": 292,
+          "feature": "birth__positive_flow",
+          "regression_mean": 1.3914852375387547,
+          "regressions": 233,
+          "standardized_difference": 0.10669985763802642
+        },
+        {
+          "correction_mean": 0.059560019481692546,
+          "corrections": 292,
+          "feature": "birth__frame_mean",
+          "regression_mean": 0.06324932897903429,
+          "regressions": 233,
+          "standardized_difference": 0.1066998576380258
+        },
+        {
+          "correction_mean": 0.9588680830399806,
+          "corrections": 292,
+          "feature": "spectral__late_pre_ratio",
+          "regression_mean": 0.8549645272225809,
+          "regressions": 233,
+          "standardized_difference": -0.10521354472872335
+        },
+        {
+          "correction_mean": 1.191778696833065,
+          "corrections": 292,
+          "feature": "coherence__source_occupancy_var",
+          "regression_mean": 1.2358425369665826,
+          "regressions": 233,
+          "standardized_difference": 0.09522640745631429
+        },
+        {
+          "correction_mean": 0.6146991044157932,
+          "corrections": 292,
+          "feature": "persistence__new_source_retention",
+          "regression_mean": 0.597545138340191,
+          "regressions": 233,
+          "standardized_difference": -0.08869563847721698
+        },
+        {
+          "correction_mean": 1.0154266087104764,
+          "corrections": 292,
+          "feature": "spectral__mass_late",
+          "regression_mean": 0.9999812173741287,
+          "regressions": 233,
+          "standardized_difference": -0.08721923093183093
+        },
+        {
+          "correction_mean": 0.5185092973937712,
+          "corrections": 292,
+          "feature": "spectral__mass_pre",
+          "regression_mean": 0.5481396335291967,
+          "regressions": 233,
+          "standardized_difference": 0.08700962057874563
+        },
+        {
+          "correction_mean": 0.31629989918870854,
+          "corrections": 292,
+          "feature": "damping__mid_mass_fraction",
+          "regression_mean": 0.30584436177583635,
+          "regressions": 233,
+          "standardized_difference": -0.07932480617844544
+        },
+        {
+          "correction_mean": 10.784973313359453,
+          "corrections": 292,
+          "feature": "source__effective_onset_sources",
+          "regression_mean": 10.507037676262446,
+          "regressions": 233,
+          "standardized_difference": -0.06451821460447053
+        },
+        {
+          "correction_mean": 0.781704928029613,
+          "corrections": 292,
+          "feature": "coherence__temporal_cos_10",
+          "regression_mean": 0.7746091382535919,
+          "regressions": 233,
+          "standardized_difference": -0.06117313689962213
+        },
+        {
+          "correction_mean": 0.8840866349607844,
+          "corrections": 292,
+          "feature": "coherence__temporal_cos_5",
+          "regression_mean": 0.8799009937456147,
+          "regressions": 233,
+          "standardized_difference": -0.05957590464153679
+        },
+        {
+          "correction_mean": 0.5023008200428577,
+          "corrections": 292,
+          "feature": "source__stable_presence_fraction",
+          "regression_mean": 0.4918914738190581,
+          "regressions": 233,
+          "standardized_difference": -0.05825935533089904
+        },
+        {
+          "correction_mean": 0.13090057437992947,
+          "corrections": 292,
+          "feature": "source__onset_lost_energy_fraction",
+          "regression_mean": 0.13721196651521733,
+          "regressions": 233,
+          "standardized_difference": 0.05260183228734353
+        },
+        {
+          "correction_mean": 0.6395903086926034,
+          "corrections": 292,
+          "feature": "source__continuation_l1",
+          "regression_mean": 0.6282748489324089,
+          "regressions": 233,
+          "standardized_difference": -0.04598173139272441
+        },
+        {
+          "correction_mean": 0.5613913287167869,
+          "corrections": 292,
+          "feature": "spectral__entropy_pre",
+          "regression_mean": 0.5658331316792619,
+          "regressions": 233,
+          "standardized_difference": 0.04102894971252989
+        },
+        {
+          "correction_mean": 5.744520547945206,
+          "corrections": 292,
+          "feature": "spectral__active_on",
+          "regression_mean": 5.702575107296139,
+          "regressions": 233,
+          "standardized_difference": -0.03820512932427808
+        },
+        {
+          "correction_mean": 0.2651663405088063,
+          "corrections": 292,
+          "feature": "damping__vanishing_track_fraction",
+          "regression_mean": 0.27021108872733646,
+          "regressions": 233,
+          "standardized_difference": 0.035798397482700466
+        },
+        {
+          "correction_mean": 0.22272746978449276,
+          "corrections": 292,
+          "feature": "spectral__dominant_on",
+          "regression_mean": 0.22063313850370925,
+          "regressions": 233,
+          "standardized_difference": -0.027091598384685032
+        },
+        {
+          "correction_mean": 0.2814404018045302,
+          "corrections": 292,
+          "feature": "spectral__dominant_pre",
+          "regression_mean": 0.2845267734057235,
+          "regressions": 233,
+          "standardized_difference": 0.0270617556961231
+        },
+        {
+          "correction_mean": 0.08421861895443108,
+          "corrections": 292,
+          "feature": "persistence__stable_track_fraction",
+          "regression_mean": 0.08338442673206622,
+          "regressions": 233,
+          "standardized_difference": -0.02296785129732379
+        },
+        {
+          "correction_mean": 0.4355031160057036,
+          "corrections": 292,
+          "feature": "coherence__pitch_centroid_drift",
+          "regression_mean": 0.4449994922263179,
+          "regressions": 233,
+          "standardized_difference": 0.020546908099479184
+        },
+        {
+          "correction_mean": 0.12851558529440402,
+          "corrections": 292,
+          "feature": "birth__positive_track_concentration",
+          "regression_mean": 0.127120360143887,
+          "regressions": 233,
+          "standardized_difference": -0.018952227854173172
+        },
+        {
+          "correction_mean": 5.261130136986301,
+          "corrections": 292,
+          "feature": "spectral__active_pre",
+          "regression_mean": 5.282725321888412,
+          "regressions": 233,
+          "standardized_difference": 0.017384671819691302
+        },
+        {
+          "correction_mean": 5.215753424657534,
+          "corrections": 292,
+          "feature": "spectral__active_late",
+          "regression_mean": 5.234978540772532,
+          "regressions": 233,
+          "standardized_difference": 0.014307178009678862
+        },
+        {
+          "correction_mean": 0.2993430248811853,
+          "corrections": 292,
+          "feature": "birth__novel_track_fraction",
+          "regression_mean": 0.29736358062538315,
+          "regressions": 233,
+          "standardized_difference": -0.013123099276835522
+        },
+        {
+          "correction_mean": 4.455786942431626,
+          "corrections": 292,
+          "feature": "coherence__pitch_centroid_late_pre",
+          "regression_mean": 4.546610218949532,
+          "regressions": 233,
+          "standardized_difference": 0.011128576441244247
+        },
+        {
+          "correction_mean": 0.5327778527575331,
+          "corrections": 292,
+          "feature": "spectral__entropy_late",
+          "regression_mean": 0.5316114900293236,
+          "regressions": 233,
+          "standardized_difference": -0.010754977911150768
+        },
+        {
+          "correction_mean": 0.8274594283598885,
+          "corrections": 292,
+          "feature": "source__novelty_l1",
+          "regression_mean": 0.8257030328532806,
+          "regressions": 233,
+          "standardized_difference": -0.006609097999801028
+        },
+        {
+          "correction_mean": 0.9610021020160856,
+          "corrections": 292,
+          "feature": "coherence__temporal_cos_2",
+          "regression_mean": 0.9613114218099095,
+          "regressions": 233,
+          "standardized_difference": 0.006608964484974443
+        },
+        {
+          "correction_mean": 274.2568070855015,
+          "corrections": 292,
+          "feature": "source__spectral_shift_cents",
+          "regression_mean": 276.22161821104623,
+          "regressions": 233,
+          "standardized_difference": 0.005697427813503225
+        },
+        {
+          "correction_mean": 0.06528169500698011,
+          "corrections": 292,
+          "feature": "damping__sink_track_concentration",
+          "regression_mean": 0.06521477709233521,
+          "regressions": 233,
+          "standardized_difference": -0.0026897141403036634
+        },
+        {
+          "correction_mean": 6.589119863378529,
+          "corrections": 292,
+          "feature": "source__effective_late_sources",
+          "regression_mean": 6.595740837802191,
+          "regressions": 233,
+          "standardized_difference": 0.0021406088878411626
+        },
+        {
+          "correction_mean": 1.1486514960322365,
+          "corrections": 292,
+          "feature": "spectral__on_pre_ratio",
+          "regression_mean": 1.1481743185185078,
+          "regressions": 233,
+          "standardized_difference": -0.000545736005892805
+        },
+        {
+          "correction_mean": 0.3069346701267487,
+          "corrections": 292,
+          "feature": "spectral__dominant_late",
+          "regression_mean": 0.30688782659912456,
+          "regressions": 233,
+          "standardized_difference": -0.0004037489662336192
+        },
+        {
+          "correction_mean": 0.6673624154939589,
+          "corrections": 292,
+          "feature": "spectral__entropy_on",
+          "regression_mean": 0.6673750692641963,
+          "regressions": 233,
+          "standardized_difference": 0.00013958599684989656
+        }
+      ],
+      "4": [
+        {
+          "correction_mean": 0.1363047679164068,
+          "corrections": 154,
+          "feature": "source__onset_lost_energy_fraction",
+          "regression_mean": 0.08810716064446329,
+          "regressions": 120,
+          "standardized_difference": -0.4152505000953949
+        },
+        {
+          "correction_mean": 1.3780762788855674,
+          "corrections": 154,
+          "feature": "spectral__on_pre_ratio",
+          "regression_mean": 1.7385654868115485,
+          "regressions": 120,
+          "standardized_difference": 0.39236924032215165
+        },
+        {
+          "correction_mean": 1.1138813305210349,
+          "corrections": 154,
+          "feature": "spectral__late_pre_ratio",
+          "regression_mean": 1.4638058482164407,
+          "regressions": 120,
+          "standardized_difference": 0.3247796879235701
+        },
+        {
+          "correction_mean": 1.2491489333557677,
+          "corrections": 154,
+          "feature": "coherence__source_occupancy_var",
+          "regression_mean": 1.4075633217428398,
+          "regressions": 120,
+          "standardized_difference": 0.3103924229244535
+        },
+        {
+          "correction_mean": 0.1789570538708483,
+          "corrections": 154,
+          "feature": "damping__lost_mass",
+          "regression_mean": 0.1290689065234602,
+          "regressions": 120,
+          "standardized_difference": -0.30740332867898534
+        },
+        {
+          "correction_mean": 0.44663640314653935,
+          "corrections": 154,
+          "feature": "spectral__mass_pre",
+          "regression_mean": 0.3608234347995942,
+          "regressions": 120,
+          "standardized_difference": -0.29127183036936916
+        },
+        {
+          "correction_mean": 0.8739562666989905,
+          "corrections": 154,
+          "feature": "coherence__temporal_cos_5",
+          "regression_mean": 0.8567672342298759,
+          "regressions": 120,
+          "standardized_difference": -0.26559894196543843
+        },
+        {
+          "correction_mean": 0.9608773251678903,
+          "corrections": 154,
+          "feature": "coherence__temporal_cos_2",
+          "regression_mean": 0.9496080711170615,
+          "regressions": 120,
+          "standardized_difference": -0.25271240020427405
+        },
+        {
+          "correction_mean": 0.11184375008195595,
+          "corrections": 154,
+          "feature": "birth__mid_mass_fraction",
+          "regression_mean": 0.09352739378521392,
+          "regressions": 120,
+          "standardized_difference": -0.2449309034012122
+        },
+        {
+          "correction_mean": 0.7617303196342541,
+          "corrections": 154,
+          "feature": "coherence__temporal_cos_10",
+          "regression_mean": 0.7377735010605208,
+          "regressions": 120,
+          "standardized_difference": -0.23547678083266083
+        },
+        {
+          "correction_mean": 0.3181818181818182,
+          "corrections": 154,
+          "feature": "birth__novel_track_fraction",
+          "regression_mean": 0.342687074829932,
+          "regressions": 120,
+          "standardized_difference": 0.17432294384852984
+        },
+        {
+          "correction_mean": 0.5630631491263266,
+          "corrections": 154,
+          "feature": "spectral__entropy_pre",
+          "regression_mean": 0.5439662594315604,
+          "regressions": 120,
+          "standardized_difference": -0.17149289970221718
+        },
+        {
+          "correction_mean": 0.4624247925862793,
+          "corrections": 154,
+          "feature": "coherence__pitch_centroid_drift",
+          "regression_mean": 0.5365509225156406,
+          "regressions": 120,
+          "standardized_difference": 0.1694922490213713
+        },
+        {
+          "correction_mean": 0.1933757271262856,
+          "corrections": 154,
+          "feature": "damping__late_mass_fraction",
+          "regression_mean": 0.21042699534395373,
+          "regressions": 120,
+          "standardized_difference": 0.1666724584127508
+        },
+        {
+          "correction_mean": 1.002972736597,
+          "corrections": 154,
+          "feature": "spectral__mass_late",
+          "regression_mean": 1.0182729581195487,
+          "regressions": 120,
+          "standardized_difference": 0.16509613220632627
+        },
+        {
+          "correction_mean": 0.8150331215124351,
+          "corrections": 154,
+          "feature": "birth__early_mass_fraction",
+          "regression_mean": 0.8324021727384631,
+          "regressions": 120,
+          "standardized_difference": 0.15743449918003016
+        },
+        {
+          "correction_mean": 4.768419401369032,
+          "corrections": 154,
+          "feature": "coherence__pitch_centroid_late_pre",
+          "regression_mean": 5.867630074250707,
+          "regressions": 120,
+          "standardized_difference": 0.1411260568224062
+        },
+        {
+          "correction_mean": 5.653896103896104,
+          "corrections": 154,
+          "feature": "spectral__active_on",
+          "regression_mean": 5.795,
+          "regressions": 120,
+          "standardized_difference": 0.13574460323797982
+        },
+        {
+          "correction_mean": 5.207792207792208,
+          "corrections": 154,
+          "feature": "spectral__active_late",
+          "regression_mean": 5.045138888888889,
+          "regressions": 120,
+          "standardized_difference": -0.1300939279767746
+        },
+        {
+          "correction_mean": 0.29949642194540155,
+          "corrections": 154,
+          "feature": "damping__vanishing_track_fraction",
+          "regression_mean": 0.2833333333333333,
+          "regressions": 120,
+          "standardized_difference": -0.12638069562344556
+        },
+        {
+          "correction_mean": 371.2029756996087,
+          "corrections": 154,
+          "feature": "source__spectral_shift_cents",
+          "regression_mean": 326.06508564079024,
+          "regressions": 120,
+          "standardized_difference": -0.12536051498562814
+        },
+        {
+          "correction_mean": 1.0097016998249886,
+          "corrections": 154,
+          "feature": "birth__novel_mass",
+          "regression_mean": 1.0578595845167214,
+          "regressions": 120,
+          "standardized_difference": 0.11220285873759184
+        },
+        {
+          "correction_mean": 0.21933525982066232,
+          "corrections": 154,
+          "feature": "spectral__dominant_on",
+          "regression_mean": 0.21124432641572471,
+          "regressions": 120,
+          "standardized_difference": -0.10634262017019645
+        },
+        {
+          "correction_mean": 0.4544796544631784,
+          "corrections": 154,
+          "feature": "source__stable_presence_fraction",
+          "regression_mean": 0.4356420768560715,
+          "regressions": 120,
+          "standardized_difference": -0.10425939225329489
+        },
+        {
+          "correction_mean": 0.32293584637689904,
+          "corrections": 154,
+          "feature": "damping__mid_mass_fraction",
+          "regression_mean": 0.310431228102692,
+          "regressions": 120,
+          "standardized_difference": -0.10377311896385011
+        },
+        {
+          "correction_mean": 0.0607246957193169,
+          "corrections": 154,
+          "feature": "damping__sink_track_concentration",
+          "regression_mean": 0.06243434196489309,
+          "regressions": 120,
+          "standardized_difference": 0.08724395481350439
+        },
+        {
+          "correction_mean": 0.3959158111666466,
+          "corrections": 154,
+          "feature": "source__post_lost_energy_fraction",
+          "regression_mean": 0.3809618081951119,
+          "regressions": 120,
+          "standardized_difference": -0.08242469665092708
+        },
+        {
+          "correction_mean": 0.6040841883291466,
+          "corrections": 154,
+          "feature": "persistence__pre_post_retention",
+          "regression_mean": 0.6190381902710267,
+          "regressions": 120,
+          "standardized_difference": 0.08242469103213501
+        },
+        {
+          "correction_mean": 0.9970484061393153,
+          "corrections": 154,
+          "feature": "coherence__simultaneous_birth_death",
+          "regression_mean": 0.9981060606060606,
+          "regressions": 120,
+          "standardized_difference": 0.0752777510828625
+        },
+        {
+          "correction_mean": 0.07107920980214222,
+          "corrections": 154,
+          "feature": "birth__frame_std",
+          "regression_mean": 0.07292264797050314,
+          "regressions": 120,
+          "standardized_difference": 0.06498811656609964
+        },
+        {
+          "correction_mean": 1.4745026344197083,
+          "corrections": 154,
+          "feature": "damping__negative_flow",
+          "regression_mean": 1.4222701328783922,
+          "regressions": 120,
+          "standardized_difference": -0.05454348844559819
+        },
+        {
+          "correction_mean": 0.06702284701907765,
+          "corrections": 154,
+          "feature": "damping__frame_mean",
+          "regression_mean": 0.06464864240356329,
+          "regressions": 120,
+          "standardized_difference": -0.054543488445598164
+        },
+        {
+          "correction_mean": 5.97307036380344,
+          "corrections": 154,
+          "feature": "source__effective_late_sources",
+          "regression_mean": 5.842060310208753,
+          "regressions": 120,
+          "standardized_difference": -0.05291490315238476
+        },
+        {
+          "correction_mean": 0.6432872102594804,
+          "corrections": 154,
+          "feature": "source__continuation_l1",
+          "regression_mean": 0.6549869065685011,
+          "regressions": 120,
+          "standardized_difference": 0.051779263044872396
+        },
+        {
+          "correction_mean": 0.5154823591644766,
+          "corrections": 154,
+          "feature": "spectral__entropy_late",
+          "regression_mean": 0.5106202626145272,
+          "regressions": 120,
+          "standardized_difference": -0.050583541312552195
+        },
+        {
+          "correction_mean": 0.1342885096121685,
+          "corrections": 154,
+          "feature": "birth__positive_track_concentration",
+          "regression_mean": 0.1313451998356909,
+          "regressions": 120,
+          "standardized_difference": -0.04461969822463171
+        },
+        {
+          "correction_mean": 0.21687812418276115,
+          "corrections": 154,
+          "feature": "birth__frame_max",
+          "regression_mean": 0.22005443442543726,
+          "regressions": 120,
+          "standardized_difference": 0.03720353219430618
+        },
+        {
+          "correction_mean": 5.209415584415584,
+          "corrections": 154,
+          "feature": "spectral__active_pre",
+          "regression_mean": 5.16875,
+          "regressions": 120,
+          "standardized_difference": -0.03269623691993005
+        },
+        {
+          "correction_mean": 0.4836884264041742,
+          "corrections": 154,
+          "feature": "damping__early_mass_fraction",
+          "regression_mean": 0.47914177646672906,
+          "regressions": 120,
+          "standardized_difference": -0.030910817765999545
+        },
+        {
+          "correction_mean": 0.64392674635739,
+          "corrections": 154,
+          "feature": "persistence__retention_10",
+          "regression_mean": 0.6406319550845996,
+          "regressions": 120,
+          "standardized_difference": -0.028335176727115455
+        },
+        {
+          "correction_mean": 0.5934593492456235,
+          "corrections": 154,
+          "feature": "persistence__new_source_retention",
+          "regression_mean": 0.5982665568007711,
+          "regressions": 120,
+          "standardized_difference": 0.02719280243270751
+        },
+        {
+          "correction_mean": 0.422331827005792,
+          "corrections": 154,
+          "feature": "persistence__mean_survival",
+          "regression_mean": 0.4189609198932974,
+          "regressions": 120,
+          "standardized_difference": -0.024720541000140997
+        },
+        {
+          "correction_mean": 0.30134416878273385,
+          "corrections": 154,
+          "feature": "spectral__dominant_pre",
+          "regression_mean": 0.3042818632827199,
+          "regressions": 120,
+          "standardized_difference": 0.023270102344095395
+        },
+        {
+          "correction_mean": 0.4904478554850719,
+          "corrections": 154,
+          "feature": "damping__sink_fraction",
+          "regression_mean": 0.49240807291974964,
+          "regressions": 120,
+          "standardized_difference": 0.022223028894647227
+        },
+        {
+          "correction_mean": 0.5095521444718931,
+          "corrections": 154,
+          "feature": "birth__positive_fraction",
+          "regression_mean": 0.5075919270393687,
+          "regressions": 120,
+          "standardized_difference": -0.02222302887120869
+        },
+        {
+          "correction_mean": 0.3244247087764063,
+          "corrections": 154,
+          "feature": "spectral__dominant_late",
+          "regression_mean": 0.3222623388517406,
+          "regressions": 120,
+          "standardized_difference": -0.019585367044087185
+        },
+        {
+          "correction_mean": 0.9180873731171153,
+          "corrections": 154,
+          "feature": "source__novelty_l1",
+          "regression_mean": 0.922286633609357,
+          "regressions": 120,
+          "standardized_difference": 0.017631062570113435
+        },
+        {
+          "correction_mean": 0.7686604426032859,
+          "corrections": 154,
+          "feature": "persistence__retention_5",
+          "regression_mean": 0.7675493843322331,
+          "regressions": 120,
+          "standardized_difference": -0.015361428564153963
+        },
+        {
+          "correction_mean": 0.075139146567718,
+          "corrections": 154,
+          "feature": "persistence__stable_track_fraction",
+          "regression_mean": 0.07568027210884352,
+          "regressions": 120,
+          "standardized_difference": 0.015232298075876647
+        },
+        {
+          "correction_mean": 0.03772860033542636,
+          "corrections": 154,
+          "feature": "damping__frame_std",
+          "regression_mean": 0.03800688367607949,
+          "regressions": 120,
+          "standardized_difference": 0.012819367273616156
+        },
+        {
+          "correction_mean": 0.07312312832019346,
+          "corrections": 154,
+          "feature": "birth__late_mass_fraction",
+          "regression_mean": 0.0740704333946909,
+          "regressions": 120,
+          "standardized_difference": 0.012774629916811407
+        },
+        {
+          "correction_mean": 0.13916941500995858,
+          "corrections": 154,
+          "feature": "damping__frame_max",
+          "regression_mean": 0.13855352649209512,
+          "regressions": 120,
+          "standardized_difference": -0.00811508287951781
+        },
+        {
+          "correction_mean": 0.063613517459536,
+          "corrections": 154,
+          "feature": "birth__frame_mean",
+          "regression_mean": 0.06378206916370131,
+          "regressions": 120,
+          "standardized_difference": 0.006369652075110418
+        },
+        {
+          "correction_mean": 1.3994973841097924,
+          "corrections": 154,
+          "feature": "birth__positive_flow",
+          "regression_mean": 1.403205521601429,
+          "regressions": 120,
+          "standardized_difference": 0.006369652075109894
+        },
+        {
+          "correction_mean": 1.3811663592193208,
+          "corrections": 154,
+          "feature": "spectral__mass_on",
+          "regression_mean": 1.378300317020781,
+          "regressions": 120,
+          "standardized_difference": -0.005870905652539278
+        },
+        {
+          "correction_mean": 10.969599281713574,
+          "corrections": 154,
+          "feature": "source__effective_onset_sources",
+          "regression_mean": 10.945185965986514,
+          "regressions": 120,
+          "standardized_difference": -0.0055752929510561565
+        },
+        {
+          "correction_mean": 0.6783394048431892,
+          "corrections": 154,
+          "feature": "spectral__entropy_on",
+          "regression_mean": 0.6787648980246679,
+          "regressions": 120,
+          "standardized_difference": 0.004900413192108248
+        },
+        {
+          "correction_mean": 0.8943611715599363,
+          "corrections": 154,
+          "feature": "persistence__retention_2",
+          "regression_mean": 0.8943372699771017,
+          "regressions": 120,
+          "standardized_difference": -0.0007781137865549817
+        }
+      ]
+    },
+    "final_nested": {
+      "profiles": {
+        "keep": {
+          "outcomes": {
+            "changes": 30,
+            "corrections": 5,
+            "net": -5,
+            "regressions": 10
+          },
+          "retention": {
+            "corrections_added": 5,
+            "corrections_lost": 0,
+            "corrections_retained": 0,
+            "corrections_union": 5,
+            "oracle_union_not_prediction": true,
+            "paired": {
+              "by_k": {
+                "0": {
+                  "changed": 6,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 8,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 7,
+                  "corrections": 1,
+                  "net": -4,
+                  "regressions": 5
+                },
+                "3": {
+                  "changed": 8,
+                  "corrections": 4,
+                  "net": 0,
+                  "regressions": 4
+                },
+                "4": {
+                  "changed": 1,
+                  "corrections": 0,
+                  "net": -1,
+                  "regressions": 1
+                },
+                "5": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "6": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 30,
+                "corrections": 5,
+                "net": -5,
+                "regressions": 10
+              },
+              "poly": {
+                "changed": 16,
+                "corrections": 5,
+                "net": -5,
+                "regressions": 10
+              }
+            },
+            "regressions_added": 10,
+            "regressions_avoided": 0,
+            "regressions_retained": 0
+          },
+          "rows": 5655
+        },
+        "local_rates_favor_correction_for_all_groups": {
+          "outcomes": {
+            "changes": 300,
+            "corrections": 87,
+            "net": 1,
+            "regressions": 86
+          },
+          "retention": {
+            "corrections_added": 1,
+            "corrections_lost": 14,
+            "corrections_retained": 86,
+            "corrections_union": 101,
+            "oracle_union_not_prediction": true,
+            "paired": {
+              "by_k": {
+                "0": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 2,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 12,
+                  "corrections": 8,
+                  "net": 4,
+                  "regressions": 4
+                },
+                "3": {
+                  "changed": 14,
+                  "corrections": 3,
+                  "net": -6,
+                  "regressions": 9
+                },
+                "4": {
+                  "changed": 11,
+                  "corrections": 7,
+                  "net": 6,
+                  "regressions": 1
+                },
+                "5": {
+                  "changed": 1,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "6": {
+                  "changed": 1,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 41,
+                "corrections": 18,
+                "net": 4,
+                "regressions": 14
+              },
+              "poly": {
+                "changed": 39,
+                "corrections": 18,
+                "net": 4,
+                "regressions": 14
+              }
+            },
+            "regressions_added": 0,
+            "regressions_avoided": 17,
+            "regressions_retained": 86
+          },
+          "rows": 340
+        },
+        "local_rates_favor_regression_for_all_groups": {
+          "outcomes": {
+            "changes": 283,
+            "corrections": 75,
+            "net": -14,
+            "regressions": 89
+          },
+          "retention": {
+            "corrections_added": 0,
+            "corrections_lost": 20,
+            "corrections_retained": 75,
+            "corrections_union": 95,
+            "oracle_union_not_prediction": true,
+            "paired": {
+              "by_k": {
+                "0": {
+                  "changed": 3,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 11,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 16,
+                  "corrections": 12,
+                  "net": 9,
+                  "regressions": 3
+                },
+                "3": {
+                  "changed": 19,
+                  "corrections": 4,
+                  "net": -9,
+                  "regressions": 13
+                },
+                "4": {
+                  "changed": 12,
+                  "corrections": 6,
+                  "net": 2,
+                  "regressions": 4
+                },
+                "5": {
+                  "changed": 3,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "6": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 64,
+                "corrections": 22,
+                "net": 2,
+                "regressions": 20
+              },
+              "poly": {
+                "changed": 50,
+                "corrections": 22,
+                "net": 2,
+                "regressions": 20
+              }
+            },
+            "regressions_added": 0,
+            "regressions_avoided": 22,
+            "regressions_retained": 89
+          },
+          "rows": 347
+        },
+        "mixed_by_complete_group": {
+          "outcomes": {
+            "changes": 997,
+            "corrections": 323,
+            "net": 71,
+            "regressions": 252
+          },
+          "retention": {
+            "corrections_added": 1,
+            "corrections_lost": 49,
+            "corrections_retained": 322,
+            "corrections_union": 372,
+            "oracle_union_not_prediction": true,
+            "paired": {
+              "by_k": {
+                "0": {
+                  "changed": 2,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 14,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 42,
+                  "corrections": 23,
+                  "net": 16,
+                  "regressions": 7
+                },
+                "3": {
+                  "changed": 50,
+                  "corrections": 7,
+                  "net": -29,
+                  "regressions": 36
+                },
+                "4": {
+                  "changed": 32,
+                  "corrections": 21,
+                  "net": 17,
+                  "regressions": 4
+                },
+                "5": {
+                  "changed": 13,
+                  "corrections": 0,
+                  "net": -2,
+                  "regressions": 2
+                },
+                "6": {
+                  "changed": 6,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 159,
+                "corrections": 51,
+                "net": 2,
+                "regressions": 49
+              },
+              "poly": {
+                "changed": 143,
+                "corrections": 51,
+                "net": 2,
+                "regressions": 49
+              }
+            },
+            "regressions_added": 0,
+            "regressions_avoided": 50,
+            "regressions_retained": 252
+          },
+          "rows": 1149
+        },
+        "no_matching_local_support": {
+          "outcomes": {
+            "changes": 1,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          },
+          "retention": {
+            "corrections_added": 0,
+            "corrections_lost": 0,
+            "corrections_retained": 0,
+            "corrections_union": 0,
+            "oracle_union_not_prediction": true,
+            "paired": {
+              "by_k": {
+                "0": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "3": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "4": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "5": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "6": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "poly": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "regressions_added": 0,
+            "regressions_avoided": 0,
+            "regressions_retained": 1
+          },
+          "rows": 1
+        },
+        "tied_local_rates": {
+          "outcomes": {
+            "changes": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "retention": {
+            "corrections_added": 0,
+            "corrections_lost": 0,
+            "corrections_retained": 0,
+            "corrections_union": 0,
+            "oracle_union_not_prediction": true,
+            "paired": {
+              "by_k": {
+                "0": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "3": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "4": {
+                  "changed": 1,
+                  "corrections": 1,
+                  "net": 1,
+                  "regressions": 0
+                },
+                "5": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "6": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 1,
+                "corrections": 1,
+                "net": 1,
+                "regressions": 0
+              },
+              "poly": {
+                "changed": 1,
+                "corrections": 1,
+                "net": 1,
+                "regressions": 0
+              }
+            },
+            "regressions_added": 0,
+            "regressions_avoided": 1,
+            "regressions_retained": 0
+          },
+          "rows": 1
+        }
+      },
+      "transitions": {
+        "2->3": {
+          "changes": 330,
+          "corrections": 87,
+          "net": -35,
+          "regressions": 122
+        },
+        "2->4": {
+          "changes": 21,
+          "corrections": 2,
+          "net": -3,
+          "regressions": 5
+        },
+        "2->5": {
+          "changes": 1,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "3->2": {
+          "changes": 650,
+          "corrections": 204,
+          "net": 44,
+          "regressions": 160
+        },
+        "3->4": {
+          "changes": 186,
+          "corrections": 65,
+          "net": 11,
+          "regressions": 54
+        },
+        "3->5": {
+          "changes": 46,
+          "corrections": 11,
+          "net": 0,
+          "regressions": 11
+        },
+        "4->2": {
+          "changes": 150,
+          "corrections": 50,
+          "net": 31,
+          "regressions": 19
+        },
+        "4->3": {
+          "changes": 200,
+          "corrections": 61,
+          "net": 4,
+          "regressions": 57
+        },
+        "4->5": {
+          "changes": 27,
+          "corrections": 10,
+          "net": 0,
+          "regressions": 10
+        }
+      }
+    },
+    "original": {
+      "profiles": {
+        "keep": {
+          "outcomes": {
+            "changes": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "retention": {
+            "corrections_added": 0,
+            "corrections_lost": 0,
+            "corrections_retained": 0,
+            "corrections_union": 0,
+            "oracle_union_not_prediction": true,
+            "paired": {
+              "by_k": {
+                "0": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "3": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "4": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "5": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "6": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "poly": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "regressions_added": 0,
+            "regressions_avoided": 0,
+            "regressions_retained": 0
+          },
+          "rows": 5655
+        },
+        "local_rates_favor_correction_for_all_groups": {
+          "outcomes": {
+            "changes": 340,
+            "corrections": 100,
+            "net": -3,
+            "regressions": 103
+          },
+          "retention": {
+            "corrections_added": 0,
+            "corrections_lost": 0,
+            "corrections_retained": 100,
+            "corrections_union": 100,
+            "oracle_union_not_prediction": true,
+            "paired": {
+              "by_k": {
+                "0": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "3": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "4": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "5": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "6": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "poly": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "regressions_added": 0,
+            "regressions_avoided": 0,
+            "regressions_retained": 103
+          },
+          "rows": 340
+        },
+        "local_rates_favor_regression_for_all_groups": {
+          "outcomes": {
+            "changes": 347,
+            "corrections": 95,
+            "net": -16,
+            "regressions": 111
+          },
+          "retention": {
+            "corrections_added": 0,
+            "corrections_lost": 0,
+            "corrections_retained": 95,
+            "corrections_union": 95,
+            "oracle_union_not_prediction": true,
+            "paired": {
+              "by_k": {
+                "0": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "3": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "4": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "5": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "6": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "poly": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "regressions_added": 0,
+            "regressions_avoided": 0,
+            "regressions_retained": 111
+          },
+          "rows": 347
+        },
+        "mixed_by_complete_group": {
+          "outcomes": {
+            "changes": 1149,
+            "corrections": 371,
+            "net": 69,
+            "regressions": 302
+          },
+          "retention": {
+            "corrections_added": 0,
+            "corrections_lost": 0,
+            "corrections_retained": 371,
+            "corrections_union": 371,
+            "oracle_union_not_prediction": true,
+            "paired": {
+              "by_k": {
+                "0": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "3": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "4": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "5": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "6": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "poly": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "regressions_added": 0,
+            "regressions_avoided": 0,
+            "regressions_retained": 302
+          },
+          "rows": 1149
+        },
+        "no_matching_local_support": {
+          "outcomes": {
+            "changes": 1,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          },
+          "retention": {
+            "corrections_added": 0,
+            "corrections_lost": 0,
+            "corrections_retained": 0,
+            "corrections_union": 0,
+            "oracle_union_not_prediction": true,
+            "paired": {
+              "by_k": {
+                "0": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "3": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "4": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "5": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "6": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "poly": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "regressions_added": 0,
+            "regressions_avoided": 0,
+            "regressions_retained": 1
+          },
+          "rows": 1
+        },
+        "tied_local_rates": {
+          "outcomes": {
+            "changes": 1,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          },
+          "retention": {
+            "corrections_added": 0,
+            "corrections_lost": 0,
+            "corrections_retained": 0,
+            "corrections_union": 0,
+            "oracle_union_not_prediction": true,
+            "paired": {
+              "by_k": {
+                "0": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "3": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "4": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "5": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "6": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "poly": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "regressions_added": 0,
+            "regressions_avoided": 0,
+            "regressions_retained": 1
+          },
+          "rows": 1
+        }
+      },
+      "transitions": {
+        "2->3": {
+          "changes": 421,
+          "corrections": 116,
+          "net": -35,
+          "regressions": 151
+        },
+        "2->4": {
+          "changes": 40,
+          "corrections": 4,
+          "net": -10,
+          "regressions": 14
+        },
+        "2->5": {
+          "changes": 2,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "3->2": {
+          "changes": 653,
+          "corrections": 209,
+          "net": 46,
+          "regressions": 163
+        },
+        "3->4": {
+          "changes": 200,
+          "corrections": 72,
+          "net": 14,
+          "regressions": 58
+        },
+        "3->5": {
+          "changes": 47,
+          "corrections": 11,
+          "net": -1,
+          "regressions": 12
+        },
+        "4->2": {
+          "changes": 173,
+          "corrections": 58,
+          "net": 33,
+          "regressions": 25
+        },
+        "4->3": {
+          "changes": 264,
+          "corrections": 84,
+          "net": 3,
+          "regressions": 81
+        },
+        "4->5": {
+          "changes": 38,
+          "corrections": 12,
+          "net": -2,
+          "regressions": 14
+        }
+      }
+    },
+    "piece_bootstrap_descriptive_95pct": {
+      "corrections_delta": [
+        -101.0,
+        -52.0
+      ],
+      "net_delta": [
+        -19.0,
+        29.0
+      ],
+      "regressions_avoided_net": [
+        57.0,
+        104.0
+      ]
+    }
+  },
+  "entire_outer_fold_label_free": false,
+  "files": {
+    "predictions.npz": "b7339edcb3249d1557c7943426e3f74bc0c024f013ae41a2df39a224e8eebb6d",
+    "router-proofs.json": "8ff742d248dfe4bc2f166e9466f4318488580fe3bb1c9ef7fc6dae68786535cb"
+  },
+  "independent_validation": false,
+  "inner_evidence_sha256": "6a52f448b621b94f7eb25b286fbae2a4fe639b71a38ec6c2698cc1808eac9f8a",
+  "inputs_sha256": "5bab1ef2caee7d320d1317e22de8e9758ae8bd7c8025b7891de0349c4a551760",
+  "policies": {
+    "source_count90": {
+      "combination_only": {
+        "corrected": 4,
+        "events": 17
+      },
+      "confidence": {
+        "event_nll": 0.9892968208920782,
+        "expected_corrections": 582.9778498125934,
+        "expected_net": 275.1820200736029,
+        "expected_regressions": 307.79582973899045,
+        "optimism": 123.18202007360293
+      },
+      "eligible": {
+        "changes": 1469,
+        "corrections": 506,
+        "net": 152,
+        "regressions": 354
+      },
+      "failures": {
+        "correction": 506,
+        "keep": 6024,
+        "no_correct_alternative": 485,
+        "regression": 354,
+        "wrong_choice_despite_correct_alternative": 124
+      },
+      "folds": {
+        "0": {
+          "changes": 385,
+          "corrections": 133,
+          "net": 48,
+          "regressions": 85
+        },
+        "1": {
+          "changes": 469,
+          "corrections": 160,
+          "net": 29,
+          "regressions": 131
+        },
+        "2": {
+          "changes": 262,
+          "corrections": 92,
+          "net": 35,
+          "regressions": 57
+        },
+        "4": {
+          "changes": 353,
+          "corrections": 121,
+          "net": 40,
+          "regressions": 81
+        }
+      },
+      "native": {
+        "by_k": {
+          "0": {
+            "correct": 38035,
+            "exact": 0.9592202158781398,
+            "over": 1617,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7889,
+            "exact": 0.6428455019556715,
+            "over": 1474,
+            "rows": 12272,
+            "under": 2909
+          },
+          "2": {
+            "correct": 1346,
+            "exact": 0.390711175616836,
+            "over": 691,
+            "rows": 3445,
+            "under": 1408
+          },
+          "3": {
+            "correct": 847,
+            "exact": 0.37003058103975534,
+            "over": 321,
+            "rows": 2289,
+            "under": 1121
+          },
+          "4": {
+            "correct": 452,
+            "exact": 0.3744821872410936,
+            "over": 38,
+            "rows": 1207,
+            "under": 717
+          },
+          "5": {
+            "correct": 36,
+            "exact": 0.10140845070422536,
+            "over": 0,
+            "rows": 355,
+            "under": 319
+          },
+          "6": {
+            "correct": 1,
+            "exact": 0.011235955056179775,
+            "over": 0,
+            "rows": 89,
+            "under": 88
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38035,
+            1047,
+            512,
+            50,
+            8,
+            0,
+            0
+          ],
+          [
+            2909,
+            7889,
+            1239,
+            207,
+            23,
+            5,
+            0
+          ],
+          [
+            666,
+            742,
+            1346,
+            551,
+            133,
+            7,
+            0
+          ],
+          [
+            211,
+            170,
+            740,
+            847,
+            293,
+            28,
+            0
+          ],
+          [
+            47,
+            34,
+            238,
+            398,
+            452,
+            38,
+            0
+          ],
+          [
+            7,
+            8,
+            50,
+            116,
+            138,
+            36,
+            0
+          ],
+          [
+            0,
+            4,
+            10,
+            24,
+            40,
+            10,
+            1
+          ]
+        ],
+        "correct": 48606,
+        "exact": 0.8195383499974709,
+        "over": 4141,
+        "poly": {
+          "correct": 2682,
+          "exact": 0.36316858496953286,
+          "over": 1050,
+          "rows": 7385,
+          "under": 3653
+        },
+        "rows": 59309,
+        "under": 6562
+      },
+      "versus_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 58,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 245,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 394,
+            "corrections": 245,
+            "net": 163,
+            "regressions": 82
+          },
+          "3": {
+            "changed": 371,
+            "corrections": 128,
+            "net": -68,
+            "regressions": 196
+          },
+          "4": {
+            "changed": 264,
+            "corrections": 111,
+            "net": 35,
+            "regressions": 76
+          },
+          "5": {
+            "changed": 112,
+            "corrections": 21,
+            "net": 21,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 25,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1469,
+          "corrections": 506,
+          "net": 152,
+          "regressions": 354
+        },
+        "poly": {
+          "changed": 1166,
+          "corrections": 506,
+          "net": 152,
+          "regressions": 354
+        }
+      },
+      "versus_original": {
+        "corrections_added": 153,
+        "corrections_lost": 213,
+        "corrections_retained": 353,
+        "corrections_union": 719,
+        "oracle_union_not_prediction": true,
+        "paired": {
+          "by_k": {
+            "0": {
+              "changed": 41,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 162,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 306,
+              "corrections": 151,
+              "net": 61,
+              "regressions": 90
+            },
+            "3": {
+              "changed": 324,
+              "corrections": 129,
+              "net": -35,
+              "regressions": 164
+            },
+            "4": {
+              "changed": 242,
+              "corrections": 123,
+              "net": 79,
+              "regressions": 44
+            },
+            "5": {
+              "changed": 85,
+              "corrections": 7,
+              "net": -2,
+              "regressions": 9
+            },
+            "6": {
+              "changed": 25,
+              "corrections": 1,
+              "net": 1,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 1185,
+            "corrections": 411,
+            "net": 104,
+            "regressions": 307
+          },
+          "poly": {
+            "changed": 982,
+            "corrections": 411,
+            "net": 104,
+            "regressions": 307
+          }
+        },
+        "regressions_added": 94,
+        "regressions_avoided": 258,
+        "regressions_retained": 260
+      }
+    },
+    "source_success90": {
+      "combination_only": {
+        "corrected": 0,
+        "events": 17
+      },
+      "confidence": {
+        "event_nll": 1.0409789940637102,
+        "expected_corrections": 701.164147542727,
+        "expected_net": 323.82561836585256,
+        "expected_regressions": 377.33852917687443,
+        "optimism": 270.82561836585256
+      },
+      "eligible": {
+        "changes": 1611,
+        "corrections": 491,
+        "net": 53,
+        "regressions": 438
+      },
+      "failures": {
+        "correction": 491,
+        "keep": 5882,
+        "no_correct_alternative": 554,
+        "regression": 438,
+        "wrong_choice_despite_correct_alternative": 128
+      },
+      "folds": {
+        "0": {
+          "changes": 454,
+          "corrections": 138,
+          "net": 15,
+          "regressions": 123
+        },
+        "1": {
+          "changes": 474,
+          "corrections": 148,
+          "net": 13,
+          "regressions": 135
+        },
+        "2": {
+          "changes": 333,
+          "corrections": 94,
+          "net": 8,
+          "regressions": 86
+        },
+        "4": {
+          "changes": 350,
+          "corrections": 111,
+          "net": 17,
+          "regressions": 94
+        }
+      },
+      "native": {
+        "by_k": {
+          "0": {
+            "correct": 38035,
+            "exact": 0.9592202158781398,
+            "over": 1617,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7889,
+            "exact": 0.6428455019556715,
+            "over": 1474,
+            "rows": 12272,
+            "under": 2909
+          },
+          "2": {
+            "correct": 1313,
+            "exact": 0.38113207547169814,
+            "over": 724,
+            "rows": 3445,
+            "under": 1408
+          },
+          "3": {
+            "correct": 833,
+            "exact": 0.363914373088685,
+            "over": 338,
+            "rows": 2289,
+            "under": 1118
+          },
+          "4": {
+            "correct": 401,
+            "exact": 0.33222866611433305,
+            "over": 42,
+            "rows": 1207,
+            "under": 764
+          },
+          "5": {
+            "correct": 36,
+            "exact": 0.10140845070422536,
+            "over": 0,
+            "rows": 355,
+            "under": 319
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38035,
+            1047,
+            494,
+            68,
+            8,
+            0,
+            0
+          ],
+          [
+            2909,
+            7889,
+            1214,
+            227,
+            29,
+            4,
+            0
+          ],
+          [
+            666,
+            742,
+            1313,
+            581,
+            138,
+            5,
+            0
+          ],
+          [
+            211,
+            170,
+            737,
+            833,
+            310,
+            28,
+            0
+          ],
+          [
+            47,
+            34,
+            254,
+            429,
+            401,
+            42,
+            0
+          ],
+          [
+            7,
+            8,
+            54,
+            122,
+            128,
+            36,
+            0
+          ],
+          [
+            0,
+            4,
+            13,
+            23,
+            43,
+            6,
+            0
+          ]
+        ],
+        "correct": 48507,
+        "exact": 0.8178691261022779,
+        "over": 4195,
+        "poly": {
+          "correct": 2583,
+          "exact": 0.34976303317535545,
+          "over": 1104,
+          "rows": 7385,
+          "under": 3698
+        },
+        "rows": 59309,
+        "under": 6607
+      },
+      "versus_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 65,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 271,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 460,
+            "corrections": 257,
+            "net": 130,
+            "regressions": 127
+          },
+          "3": {
+            "changed": 421,
+            "corrections": 145,
+            "net": -82,
+            "regressions": 227
+          },
+          "4": {
+            "changed": 261,
+            "corrections": 68,
+            "net": -16,
+            "regressions": 84
+          },
+          "5": {
+            "changed": 105,
+            "corrections": 21,
+            "net": 21,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 28,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1611,
+          "corrections": 491,
+          "net": 53,
+          "regressions": 438
+        },
+        "poly": {
+          "changed": 1275,
+          "corrections": 491,
+          "net": 53,
+          "regressions": 438
+        }
+      },
+      "versus_original": {
+        "corrections_added": 6,
+        "corrections_lost": 81,
+        "corrections_retained": 485,
+        "corrections_union": 572,
+        "oracle_union_not_prediction": true,
+        "paired": {
+          "by_k": {
+            "0": {
+              "changed": 9,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 30,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 76,
+              "corrections": 44,
+              "net": 28,
+              "regressions": 16
+            },
+            "3": {
+              "changed": 86,
+              "corrections": 14,
+              "net": -49,
+              "regressions": 63
+            },
+            "4": {
+              "changed": 55,
+              "corrections": 36,
+              "net": 28,
+              "regressions": 8
+            },
+            "5": {
+              "changed": 18,
+              "corrections": 0,
+              "net": -2,
+              "regressions": 2
+            },
+            "6": {
+              "changed": 7,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 281,
+            "corrections": 94,
+            "net": 5,
+            "regressions": 89
+          },
+          "poly": {
+            "changed": 242,
+            "corrections": 94,
+            "net": 5,
+            "regressions": 89
+          }
+        },
+        "regressions_added": 8,
+        "regressions_avoided": 88,
+        "regressions_retained": 430
+      }
+    },
+    "transition_success90": {
+      "combination_only": {
+        "corrected": 0,
+        "events": 17
+      },
+      "confidence": {
+        "event_nll": 1.037302785229498,
+        "expected_corrections": 695.5995423084605,
+        "expected_net": 320.7204098291097,
+        "expected_regressions": 374.8791324793509,
+        "optimism": 268.7204098291097
+      },
+      "eligible": {
+        "changes": 1611,
+        "corrections": 490,
+        "net": 52,
+        "regressions": 438
+      },
+      "failures": {
+        "correction": 490,
+        "keep": 5882,
+        "no_correct_alternative": 552,
+        "regression": 438,
+        "wrong_choice_despite_correct_alternative": 131
+      },
+      "folds": {
+        "0": {
+          "changes": 452,
+          "corrections": 135,
+          "net": 13,
+          "regressions": 122
+        },
+        "1": {
+          "changes": 471,
+          "corrections": 147,
+          "net": 13,
+          "regressions": 134
+        },
+        "2": {
+          "changes": 338,
+          "corrections": 97,
+          "net": 9,
+          "regressions": 88
+        },
+        "4": {
+          "changes": 350,
+          "corrections": 111,
+          "net": 17,
+          "regressions": 94
+        }
+      },
+      "native": {
+        "by_k": {
+          "0": {
+            "correct": 38035,
+            "exact": 0.9592202158781398,
+            "over": 1617,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7889,
+            "exact": 0.6428455019556715,
+            "over": 1474,
+            "rows": 12272,
+            "under": 2909
+          },
+          "2": {
+            "correct": 1310,
+            "exact": 0.3802612481857765,
+            "over": 727,
+            "rows": 3445,
+            "under": 1408
+          },
+          "3": {
+            "correct": 838,
+            "exact": 0.36609873307121016,
+            "over": 337,
+            "rows": 2289,
+            "under": 1114
+          },
+          "4": {
+            "correct": 398,
+            "exact": 0.32974316487158245,
+            "over": 42,
+            "rows": 1207,
+            "under": 767
+          },
+          "5": {
+            "correct": 36,
+            "exact": 0.10140845070422536,
+            "over": 0,
+            "rows": 355,
+            "under": 319
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38035,
+            1047,
+            492,
+            70,
+            8,
+            0,
+            0
+          ],
+          [
+            2909,
+            7889,
+            1216,
+            224,
+            30,
+            4,
+            0
+          ],
+          [
+            666,
+            742,
+            1310,
+            585,
+            137,
+            5,
+            0
+          ],
+          [
+            211,
+            170,
+            733,
+            838,
+            309,
+            28,
+            0
+          ],
+          [
+            47,
+            34,
+            253,
+            433,
+            398,
+            42,
+            0
+          ],
+          [
+            7,
+            8,
+            54,
+            123,
+            127,
+            36,
+            0
+          ],
+          [
+            0,
+            4,
+            13,
+            23,
+            43,
+            6,
+            0
+          ]
+        ],
+        "correct": 48506,
+        "exact": 0.8178522652548517,
+        "over": 4197,
+        "poly": {
+          "correct": 2582,
+          "exact": 0.34962762356127286,
+          "over": 1106,
+          "rows": 7385,
+          "under": 3697
+        },
+        "rows": 59309,
+        "under": 6606
+      },
+      "versus_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 63,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 272,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 461,
+            "corrections": 254,
+            "net": 127,
+            "regressions": 127
+          },
+          "3": {
+            "changed": 420,
+            "corrections": 148,
+            "net": -77,
+            "regressions": 225
+          },
+          "4": {
+            "changed": 261,
+            "corrections": 67,
+            "net": -19,
+            "regressions": 86
+          },
+          "5": {
+            "changed": 106,
+            "corrections": 21,
+            "net": 21,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 28,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1611,
+          "corrections": 490,
+          "net": 52,
+          "regressions": 438
+        },
+        "poly": {
+          "changed": 1276,
+          "corrections": 490,
+          "net": 52,
+          "regressions": 438
+        }
+      },
+      "versus_original": {
+        "corrections_added": 7,
+        "corrections_lost": 83,
+        "corrections_retained": 483,
+        "corrections_union": 573,
+        "oracle_union_not_prediction": true,
+        "paired": {
+          "by_k": {
+            "0": {
+              "changed": 11,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 35,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 77,
+              "corrections": 44,
+              "net": 25,
+              "regressions": 19
+            },
+            "3": {
+              "changed": 91,
+              "corrections": 18,
+              "net": -44,
+              "regressions": 62
+            },
+            "4": {
+              "changed": 57,
+              "corrections": 35,
+              "net": 25,
+              "regressions": 10
+            },
+            "5": {
+              "changed": 17,
+              "corrections": 0,
+              "net": -2,
+              "regressions": 2
+            },
+            "6": {
+              "changed": 7,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 295,
+            "corrections": 97,
+            "net": 4,
+            "regressions": 93
+          },
+          "poly": {
+            "changed": 249,
+            "corrections": 97,
+            "net": 4,
+            "regressions": 93
+          }
+        },
+        "regressions_added": 10,
+        "regressions_avoided": 90,
+        "regressions_retained": 428
+      }
+    }
+  },
+  "previous_candidates": 102,
+  "previous_series_predictions_sha256": "4c89db11c31fb29cfab6ccb6b0814f45e47b1f8a8b7da65cbf240eece6ca7f5d",
+  "promotion": false,
+  "status": "completed",
+  "test_labels_used_in_selection": false,
+  "total_candidates": 105
+}
