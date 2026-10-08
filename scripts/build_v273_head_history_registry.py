@@ -67,6 +67,44 @@ def tracked(path):
         return True
     return False
 
+def historical_fix_commits():
+    """Every reachable Git commit explicitly labeled as a correction or fix.
+
+    A historical *patch* can later become an action/head candidate. A patch
+    alone is not a runnable neural head, so it remains inactive pending an
+    adapted, aligned prediction and independent training-only audit.
+    """
+    command=("log","--all","--no-merges","--extended-regexp",
+             "--regexp-ignore-case",
+             "--grep=(fix|correct|rescue|guard|transplant|repair|patch|veto|rollback)",
+             "--name-only","--pretty=format:COMMIT\\t%H\\t%s")
+    lines=git(*command).splitlines()
+    commit=None
+    records=[]
+    seen=set()
+    for line in lines:
+        if line.startswith("COMMIT\\t"):
+            parts=line.split("\\t",2)
+            commit=(parts[1],parts[2]) if len(parts)==3 else None
+        elif commit and line.startswith(("scripts/","src/")) and line.endswith(".py"):
+            revision,subject=commit
+            key=(revision,line)
+            if key in seen:continue
+            seen.add(key)
+            id_=hashlib.sha256(("PATCH\\0"+revision+"\\0"+line).encode()).hexdigest()[:16]
+            records.append(dict(
+                head_id="PATCH-"+id_,
+                source_branch="historical_git_commit",
+                commit=revision,source_path=line,
+                commit_subject=subject,source_type="correction_or_fix_candidate",
+                research_families=family(line),
+                implementation_status="historical_patch_not_activated",
+                aligned_oof_predictions=False,train_only_k_audit=False,
+                adapter=None,selection_eligible=False,
+                provenance="commit-level fix/correction patch; adapter and alignment required",
+            ))
+    return records
+
 def collect(refs):
     registry={}
     inaccessible=[]
@@ -89,7 +127,10 @@ def collect(refs):
                 adapter=None,selection_eligible=False,
                 provenance="tracked branch file; no automatic performance claim",
             )
-    return list(registry.values()),inaccessible
+    # Preserve fixes/repair patches in their OWN right, even when they
+    # modify a model file that otherwise appears only as one head source.
+    patches=historical_fix_commits()
+    return list(registry.values())+patches,inaccessible,len(patches)
 
 def main():
     p=argparse.ArgumentParser()
@@ -97,14 +138,14 @@ def main():
     a=p.parse_args()
     if a.output.exists():raise ValueError("refuse overwriting existing registry")
     refs=branches()
-    entries,missing=collect(refs)
+    entries,missing,patch_count=collect(refs)
     if len(entries)<100:raise RuntimeError("historical inventory suspiciously small")
     by_role=dict(Counter(x["source_type"] for x in entries))
     by_family=dict(Counter(f for x in entries for f in x["research_families"]))
     report=dict(
         scope="all fetched local and remote git refs; NOT proof all remote history has been fetched",
         refs=refs,unreadable_refs=missing,
-        entries=len(entries),counts_by_role=by_role,
+        entries=len(entries),fix_patch_entries=patch_count,counts_by_role=by_role,
         counts_by_family=by_family,
         note=(
             "Each entry is an EXPERIMENT or EVIDENCE source, not a runnable neural head. "
@@ -117,7 +158,7 @@ def main():
         json.dumps(entries,indent=2,sort_keys=True)+"\n"
     )
     (a.output/"summary.json").write_text(json.dumps(report,indent=2)+"\n")
-    print(json.dumps({k:report[k] for k in ("entries","counts_by_role","counts_by_family","unreadable_refs")},
+    print(json.dumps({k:report[k] for k in ("entries","fix_patch_entries","counts_by_role","counts_by_family","unreadable_refs")},
                      sort_keys=True),flush=True)
 
 if __name__=="__main__":
