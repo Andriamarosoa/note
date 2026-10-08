@@ -177,7 +177,9 @@ def features_from_spectrogram(spec, times, bank=None):
             np.mean(np.sum(aa * bb, axis=1) /
                     ((np.linalg.norm(aa, axis=1) * np.linalg.norm(bb, axis=1)) + EPS))
         )
-    both = np.sum((birth > 0.) & (sink > 0.), axis=1)
+    # Coexistence means that *different* candidate tracks grow and decay
+    # in the same frame. Growth and loss cannot coexist for one dA entry.
+    both = (np.sum(birth, axis=1) > EPS) & (np.sum(sink, axis=1) > EPS)
     out["coherence__simultaneous_birth_death"] = float(np.mean(both))
     out["coherence__source_occupancy_var"] = float(np.std(np.sum(norm > 0.05, axis=1)))
     # A trajectory must be stable in absolute note-pitch ordering.
