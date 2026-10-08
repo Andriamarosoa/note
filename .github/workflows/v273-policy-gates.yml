@@ -1,0 +1,38 @@
+name: V27.3 series6 poly/global gate regression audit
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-policy-gates.yml'
+      - 'scripts/loop_v273_policy_gate.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v273-series6-policy-gates
+  cancel-in-progress: false
+jobs:
+  series6:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Pin numpy for exact audit replay
+        run: python -m pip install numpy==1.26.4
+      - name: Check predeclared gates are deterministic
+        run: python -m scripts.loop_v273_policy_gate --self-test
+      - name: Recompute K0-K6 native corrections and regressions
+        run: >-
+          python -m scripts.loop_v273_policy_gate
+          --output model/v273-policy-loop
+      - name: Publish paired results
+        run: cat model/v273-policy-loop/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series6-policy-gates
+          path: model/v273-policy-loop/
+          retention-days: 90
