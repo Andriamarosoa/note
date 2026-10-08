@@ -1,0 +1,34 @@
+name: V27.3 preserve S22 complete agreement audit
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series22-preserve.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  preserve:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore 108 consensus variants and all paired regressions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37859786345 --repo "$GITHUB_REPOSITORY" --name v273-series22-consensus --dir model/S22
+      - name: Verify no outcome discarded and archive permanently
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test -s model/S22/predictions.npz
+          test -s model/S22/report.json
+          mkdir -p model/archive
+          tar -czf model/archive/v273-series22-consensus-research.tar.gz -C model/S22 .
+          (cd model/archive && sha256sum v273-series22-consensus-research.tar.gz > SHA256SUMS)
+          gh release create "v273-series22-research-${GITHUB_RUN_ID}" \
+            model/archive/v273-series22-consensus-research.tar.gz model/archive/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "V27.3 S22 full consensus evidence ${GITHUB_RUN_ID}" \
+            --notes "Experimental 108 A-B-A consensus policies, all negative cases, paired K0-K6 regressions and 59309 native predictions. No production promotion or independent validation."
