@@ -13,7 +13,7 @@ class AuditConditionedTests(unittest.TestCase):
         # K2 is corrected; K3 is regressed; K4 stays neutral.
         y=np.array([2,3,4,2,3,2,3,4])
         base=np.array([3,3,3,2,3,3,3,4])
-        proposal=np.array([2,2,2,3,3,2,2,3])
+        proposal=np.array([2,2,2,2,3,2,2,3])
         a=audit_one(y,base,proposal)
         self.assertEqual(a["total"]["corrections"],2)
         self.assertEqual(a["total"]["regressions"],2)
