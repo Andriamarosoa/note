@@ -1,0 +1,52 @@
+name: V27.3 S18 verified decoder and archive
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series18-verify.yml'
+      - 'scripts/verify_v273_series18.py'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Recover the full S18 original predictions and fitted gates
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37856499212 --repo "$GITHUB_REPOSITORY" --name v273-series18-k43-k21 --dir model/series18-original
+      - name: Verify all 108 policy decisions and all native changed cases
+        run: >-
+          python -m scripts.verify_v273_series18
+          --input model/series18-original
+          --output model/series18-replayed
+      - name: Publish native K0-K6 case proof
+        run: cat model/series18-replayed/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series18-replayed
+          path: model/series18-replayed/
+          retention-days: 90
+      - name: Make a permanent checksum release of all research artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/archive
+          tar -czf model/archive/v273-series18-research.tar.gz -C model series18-original series18-replayed
+          (cd model/archive && sha256sum v273-series18-research.tar.gz > SHA256SUMS)
+          gh release create "v273-series18-research-${GITHUB_RUN_ID}" \
+            model/archive/v273-series18-research.tar.gz model/archive/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "V27.3 S18 K4/K2 regression research ${GITHUB_RUN_ID}" \
+            --notes "Research only; comprehensive audit of 108 variants, native four corrections, model checksums. Not an independent unseen evaluation or production promotion."
