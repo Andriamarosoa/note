@@ -7,7 +7,7 @@ on:
       - 'scripts/audit_v273_series9_posthoc.py'
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
   actions: read
 jobs:
   replay:
@@ -38,3 +38,15 @@ jobs:
           name: v273-series9-posthoc-audit
           path: model/series9-audit/
           retention-days: 90
+      - name: Preserve both full research archives permanently
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tar -czf "model/v273-series8-series9-${GITHUB_RUN_ID}.tar.gz" -C model series8-input series9-audit
+          gh release create "v273-series8-series9-research-${GITHUB_RUN_ID}" \
+            "model/v273-series8-series9-${GITHUB_RUN_ID}.tar.gz" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --prerelease \
+            --title "V27.3 series8 series9 research evidence ${GITHUB_RUN_ID}" \
+            --notes "Permanent research archive: exposed-data scores, full candidate predictions, fitted gates, and case-level proof. NOT promotion or independent validation."
