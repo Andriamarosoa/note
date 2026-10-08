@@ -69,7 +69,7 @@ def verify(a):
         rows.append(dict(global_id=int(ids[i]),fold=int(fold[i]),
             true_k=int(y[i]),freeze_k=int(b[i]),series15_k=int(parent[i]),
             series16_k=int(candidate[i]),prob_freeze=float(
-              probs['k23__flow_logistic'][i]),outcome=result))
+              probs['k32__flow_logistic'][i]),outcome=result))
     outcome_counts={k:sum(r['outcome']==k for r in rows)
         for k in ('correction','regression','neutral')}
     require(outcome_counts['correction']==1 and outcome_counts['regression']==0,
