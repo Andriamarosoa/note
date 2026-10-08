@@ -1,0 +1,75 @@
+name: V27.3 Learned Risk-Coupled Per-K Neural Selector
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - 'scripts/learn_v273_risk_coupled_selector.py'
+      - 'scripts/evaluate_v273_risk_coupled_selector.py'
+      - 'test/test_v273_risk_coupled_selector.py'
+      - '.github/workflows/v273-risk-coupled-neural.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  CUDA_VISIBLE_DEVICES: '-1'
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  TF_NUM_INTRAOP_THREADS: '2'
+  TF_NUM_INTEROP_THREADS: '1'
+
+jobs:
+  risk-gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install frozen scoring dependencies
+        run: |
+          python -m pip install -r requirements-train.txt
+          python -m pip install scipy==1.17.1 scikit-learn==1.4.2
+      - name: Verify risk is coupled to final neural action
+        run: |
+          python -m py_compile scripts/learn_v273_risk_coupled_selector.py scripts/evaluate_v273_risk_coupled_selector.py
+          python -m unittest -v test.test_v273_risk_coupled_selector
+      - name: Retrieve frozen native cohort
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37605163312
+          name: yourmt3-exactk-cohort
+          path: model/cohort
+      - name: Retrieve specialist audio feature artifacts
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37740493178
+          pattern: v273-harmonic-global-fold-*
+          path: model/features
+      - name: Train OOF risk-calibrated class heads and evaluate native Exact-K
+        run: |
+          python -B scripts/evaluate_v273_risk_coupled_selector.py \
+            --cohort model/cohort \
+            --features model/features \
+            --output model/risk-coupled
+      - name: Publish true K confusion and full regression audit
+        run: cat model/risk-coupled/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-risk-coupled-class-conditional-evaluation
+          path: model/risk-coupled/
+          retention-days: 90
