@@ -1,0 +1,83 @@
+name: V27.3 Real Neural Head Ablations and 64 Subset Interventions
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - 'scripts/audit_v273_neural_head_ablations.py'
+      - 'test/test_v273_neural_head_ablations.py'
+      - '.github/workflows/v273-real-neural-head-ablations.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  CUDA_VISIBLE_DEVICES: '-1'
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  TF_NUM_INTRAOP_THREADS: '2'
+  TF_NUM_INTEROP_THREADS: '1'
+
+jobs:
+  real-ablations:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install frozen tensorflow scoring dependencies
+        run: |
+          python -m pip install -r requirements-train.txt
+          python -m pip install scipy==1.17.1 scikit-learn==1.4.2
+      - name: Test intervention on a real neural attention forward pass
+        run: |
+          python -m py_compile scripts/audit_v273_neural_head_ablations.py
+          python -m unittest -v test.test_v273_neural_head_ablations
+      - name: Retrieve unchanged cohort
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37605163312
+          name: yourmt3-exactk-cohort
+          path: model/cohort
+      - name: Retrieve original real acoustic inputs
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37740493178
+          pattern: v273-harmonic-global-fold-*
+          path: model/features
+      - name: Retrieve previous K-conditional full native predictions
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37747861591
+          name: v273-native-neural-head-mix-report
+          path: model/reference
+      - name: Same-checkpoint ablate each head and 64 feasible subsets per K transition
+        run: |
+          python -B scripts/audit_v273_neural_head_ablations.py \
+            --cohort model/cohort \
+            --features model/features \
+            --reference-predictions model/reference/neural-heads-predictions.npz \
+            --output model/ablation
+      - name: Present full forensic results
+        run: cat model/ablation/verdict.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-actual-neural-head-ablation-results
+          path: model/ablation/
+          retention-days: 90
