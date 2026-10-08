@@ -1,0 +1,59 @@
+name: V27.3 S17 K32 K34 regression gates
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series17-k32-k34.yml'
+      - 'scripts/loop_v273_k32_k34.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v273-series17-k32-k34
+  cancel-in-progress: false
+jobs:
+  evaluate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Validate fixed K3 risk and 108 prediction contracts
+        run: python -m scripts.loop_v273_k32_k34 --self-test
+      - name: Recover acoustics with original SHA256
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/audio
+          gh release download v273-open-k0-k6-37837235723 --repo "$GITHUB_REPOSITORY" --pattern 'v273-open-features-*.tar' --dir model/audio
+          for fold in 0 1 2 4; do
+            mkdir -p "model/full-audio/fold-$fold"
+            tar -xf "model/audio/v273-open-features-$fold.tar" -C "model/full-audio/fold-$fold"
+          done
+      - name: Retrieve four-correction parent from verified S16
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37855705158 --repo "$GITHUB_REPOSITORY" --name v273-series16-k12-k23 --dir model/series16-parent
+      - name: Fit and audit K3 downcounts and upcounts with piece exclusion
+        run: >-
+          python -m scripts.loop_v273_k32_k34
+          --features model/full-audio
+          --series16 model/series16-parent/predictions.npz
+          --output model/series17-k32-k34
+      - name: Full table of losses and regressions
+        run: cat model/series17-k32-k34/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series17-k32-k34
+          path: model/series17-k32-k34/
+          retention-days: 90
