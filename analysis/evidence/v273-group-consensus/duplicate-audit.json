@@ -1,0 +1,231 @@
+{
+  "arms": {
+    "direct": {
+      "added_corrections": 67,
+      "added_regressions": 93,
+      "added_regressions_with_target_already_available_as_singleton": 89,
+      "diagnostic_mean_probability_redecode": {
+        "by_k": {
+          "0": {
+            "changed": 52,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 268,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 485,
+            "corrections": 267,
+            "net": 116,
+            "regressions": 151
+          },
+          "3": {
+            "changed": 505,
+            "corrections": 224,
+            "net": -23,
+            "regressions": 247
+          },
+          "4": {
+            "changed": 331,
+            "corrections": 69,
+            "net": -68,
+            "regressions": 137
+          },
+          "5": {
+            "changed": 112,
+            "corrections": 15,
+            "net": 15,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 40,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1793,
+          "corrections": 575,
+          "net": 40,
+          "regressions": 535
+        },
+        "poly": {
+          "changed": 1473,
+          "corrections": 575,
+          "net": 40,
+          "regressions": 535
+        }
+      },
+      "duplicate_action_events": 4438,
+      "eligible_rows": 7493,
+      "events_with_positive_and_negative_gain_for_same_verdict": 957,
+      "predictions_sha256": "b35eb5801c82fb18aa811719468452bb4a7222626a924ae3ebe3581599d75209",
+      "same_action_correction_probability_range_quantiles": {
+        "max": 0.6111053824424744,
+        "median": 0.0958566665649414,
+        "p90": 0.23270305395126342
+      },
+      "summed_max_action_correction_probability_exceeds_base_wrong_probability": 372
+    },
+    "global": {
+      "added_corrections": 66,
+      "added_regressions": 77,
+      "added_regressions_with_target_already_available_as_singleton": 75,
+      "diagnostic_mean_probability_redecode": {
+        "by_k": {
+          "0": {
+            "changed": 56,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 266,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 477,
+            "corrections": 261,
+            "net": 112,
+            "regressions": 149
+          },
+          "3": {
+            "changed": 480,
+            "corrections": 215,
+            "net": -13,
+            "regressions": 228
+          },
+          "4": {
+            "changed": 316,
+            "corrections": 74,
+            "net": -48,
+            "regressions": 122
+          },
+          "5": {
+            "changed": 115,
+            "corrections": 18,
+            "net": 18,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 35,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1745,
+          "corrections": 568,
+          "net": 69,
+          "regressions": 499
+        },
+        "poly": {
+          "changed": 1423,
+          "corrections": 568,
+          "net": 69,
+          "regressions": 499
+        }
+      },
+      "duplicate_action_events": 4438,
+      "eligible_rows": 7493,
+      "events_with_positive_and_negative_gain_for_same_verdict": 942,
+      "predictions_sha256": "29758e90675918844c8eea01fcb9816f830dd3837bae02e79e56b0d57e6af038",
+      "same_action_correction_probability_range_quantiles": {
+        "max": 0.6276865601539612,
+        "median": 0.09437260776758194,
+        "p90": 0.23575991690158823
+      },
+      "summed_max_action_correction_probability_exceeds_base_wrong_probability": 375
+    },
+    "local": {
+      "added_corrections": 80,
+      "added_regressions": 90,
+      "added_regressions_with_target_already_available_as_singleton": 85,
+      "diagnostic_mean_probability_redecode": {
+        "by_k": {
+          "0": {
+            "changed": 58,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 251,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 463,
+            "corrections": 254,
+            "net": 107,
+            "regressions": 147
+          },
+          "3": {
+            "changed": 443,
+            "corrections": 189,
+            "net": -26,
+            "regressions": 215
+          },
+          "4": {
+            "changed": 297,
+            "corrections": 71,
+            "net": -39,
+            "regressions": 110
+          },
+          "5": {
+            "changed": 100,
+            "corrections": 16,
+            "net": 16,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 32,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1644,
+          "corrections": 530,
+          "net": 58,
+          "regressions": 472
+        },
+        "poly": {
+          "changed": 1335,
+          "corrections": 530,
+          "net": 58,
+          "regressions": 472
+        }
+      },
+      "duplicate_action_events": 4438,
+      "eligible_rows": 7493,
+      "events_with_positive_and_negative_gain_for_same_verdict": 932,
+      "predictions_sha256": "47f3ea38063ade88db8a21f0dbe47952315f1adbb7a1a571c77d02031281c91f",
+      "same_action_correction_probability_range_quantiles": {
+        "max": 0.7122582197189331,
+        "median": 0.09535253047943115,
+        "p90": 0.23534807860851287
+      },
+      "summed_max_action_correction_probability_exceeds_base_wrong_probability": 378
+    }
+  },
+  "case_file": {
+    "path": "global-groups-vs-singletons.csv",
+    "rows": 143,
+    "sha256": "818877892099c3f86562da7db8da678d1548487d7c75c6e932abd4b1102dc8e3"
+  },
+  "diagnostic_mean_pool_is_not_retrained": true,
+  "independent_validation": false,
+  "source_run": 37777844182
+}

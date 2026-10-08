@@ -1,0 +1,97 @@
+name: V27.3 shared verdict consensus
+
+on:
+  push:
+    branches: [codex/v273-group-verdict-consensus]
+    paths:
+      - 'scripts/learn_v273_group_consensus.py'
+      - 'scripts/evaluate_v273_group_consensus.py'
+      - 'test/test_v273_group_consensus.py'
+      - '.github/workflows/v273-group-verdict-consensus.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  CUDA_VISIBLE_DEVICES: '-1'
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  TF_NUM_INTRAOP_THREADS: '2'
+  TF_NUM_INTEROP_THREADS: '1'
+
+jobs:
+  experiment:
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [pooled_bce, pooled_ce]
+    name: "Shared verdict: ${{ matrix.mode }}"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install the reference numerical versions
+        run: |
+          python -m pip install -r requirements-train.txt
+          python -m pip install scipy==1.17.1 scikit-learn==1.4.2
+      - name: Verify equal-verdict scores, OTHER, synergy, exclusions and gradients
+        run: python -m unittest -v test.test_v273_group127_contract test.test_v273_group127_neural test.test_v273_group_consensus
+      - name: Retrieve archived coherent reference on the native cohort
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37766719862
+          name: v273-selector-repair-coherent
+          path: model/group127/reference
+      - name: Retrieve identical acoustic observables
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37740493178
+          pattern: v273-harmonic-global-fold-*
+          path: model/group127/features
+      - name: Retrieve the identical shared producer outputs
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37777844182
+          name: v273-group127-producer-cache
+          path: model/group127/producer-cache
+      - name: Retrieve the verified global arm and singleton comparator
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37777844182
+          name: v273-group127-global
+          path: model/group127/archived-global
+      - name: Train shared verdicts on the four exposed recording folds
+        run: |
+          python -m scripts.evaluate_v273_group_consensus \
+            --reference model/group127/reference/predictions.npz \
+            --features model/group127/features \
+            --producer-cache model/group127/producer-cache \
+            --archived-global model/group127/archived-global \
+            --mode ${{ matrix.mode }} \
+            --output model/group-consensus-${{ matrix.mode }}
+      - name: Publish the measured native scores
+        run: cat model/group-consensus-${{ matrix.mode }}/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-group-consensus-${{ matrix.mode }}
+          path: model/group-consensus-${{ matrix.mode }}/
+          retention-days: 90
