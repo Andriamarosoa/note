@@ -1,0 +1,2665 @@
+{
+  "archived_coherent": {
+    "by_k": {
+      "0": {
+        "correct": 38035,
+        "exact": 0.9592202158781398,
+        "over": 1617,
+        "rows": 39652,
+        "under": 0
+      },
+      "1": {
+        "correct": 7889,
+        "exact": 0.6428455019556715,
+        "over": 1474,
+        "rows": 12272,
+        "under": 2909
+      },
+      "2": {
+        "correct": 1308,
+        "exact": 0.37968069666182874,
+        "over": 729,
+        "rows": 3445,
+        "under": 1408
+      },
+      "3": {
+        "correct": 818,
+        "exact": 0.35736129314110965,
+        "over": 370,
+        "rows": 2289,
+        "under": 1101
+      },
+      "4": {
+        "correct": 391,
+        "exact": 0.323943661971831,
+        "over": 54,
+        "rows": 1207,
+        "under": 762
+      },
+      "5": {
+        "correct": 43,
+        "exact": 0.12112676056338029,
+        "over": 2,
+        "rows": 355,
+        "under": 310
+      },
+      "6": {
+        "correct": 1,
+        "exact": 0.011235955056179775,
+        "over": 0,
+        "rows": 89,
+        "under": 88
+      }
+    },
+    "confusion_true_by_predicted": [
+      [
+        38035,
+        1047,
+        499,
+        61,
+        10,
+        0,
+        0
+      ],
+      [
+        2909,
+        7889,
+        1229,
+        207,
+        31,
+        7,
+        0
+      ],
+      [
+        666,
+        742,
+        1308,
+        584,
+        141,
+        4,
+        0
+      ],
+      [
+        211,
+        170,
+        720,
+        818,
+        341,
+        29,
+        0
+      ],
+      [
+        47,
+        34,
+        240,
+        441,
+        391,
+        54,
+        0
+      ],
+      [
+        7,
+        8,
+        55,
+        105,
+        135,
+        43,
+        2
+      ],
+      [
+        0,
+        4,
+        12,
+        26,
+        28,
+        18,
+        1
+      ]
+    ],
+    "correct": 48485,
+    "exact": 0.8174981874589017,
+    "over": 4246,
+    "poly": {
+      "correct": 2561,
+      "exact": 0.34678402166553823,
+      "over": 1155,
+      "rows": 7385,
+      "under": 3669
+    },
+    "rows": 59309,
+    "under": 6578
+  },
+  "archived_global": {
+    "all_seven_singletons_wrong": {
+      "events": 16,
+      "global_ids": [
+        9927,
+        12762,
+        25645,
+        48217,
+        61509,
+        67320,
+        71649,
+        72111,
+        3021,
+        31759,
+        32041,
+        46620,
+        63436,
+        8837,
+        8909,
+        9255
+      ],
+      "recovered": 6,
+      "true_k_counts": {
+        "0": 0,
+        "1": 0,
+        "2": 1,
+        "3": 6,
+        "4": 9,
+        "5": 0,
+        "6": 0
+      }
+    },
+    "archive_sha256": "15514adb259c8c65580e97ae963fba0e886abe2a53566c1dba64fed554b5f19a",
+    "artifact_id": 11550932225,
+    "candidate": {
+      "by_k": {
+        "0": {
+          "correct": 38035,
+          "exact": 0.9592202158781398,
+          "over": 1617,
+          "rows": 39652,
+          "under": 0
+        },
+        "1": {
+          "correct": 7889,
+          "exact": 0.6428455019556715,
+          "over": 1474,
+          "rows": 12272,
+          "under": 2909
+        },
+        "2": {
+          "correct": 1303,
+          "exact": 0.37822931785195935,
+          "over": 734,
+          "rows": 3445,
+          "under": 1408
+        },
+        "3": {
+          "correct": 897,
+          "exact": 0.3918741808650065,
+          "over": 271,
+          "rows": 2289,
+          "under": 1121
+        },
+        "4": {
+          "correct": 353,
+          "exact": 0.29246064623032314,
+          "over": 39,
+          "rows": 1207,
+          "under": 815
+        },
+        "5": {
+          "correct": 34,
+          "exact": 0.09577464788732394,
+          "over": 0,
+          "rows": 355,
+          "under": 321
+        },
+        "6": {
+          "correct": 0,
+          "exact": 0.0,
+          "over": 0,
+          "rows": 89,
+          "under": 89
+        }
+      },
+      "confusion_true_by_predicted": [
+        [
+          38035,
+          1047,
+          496,
+          67,
+          7,
+          0,
+          0
+        ],
+        [
+          2909,
+          7889,
+          1213,
+          233,
+          25,
+          3,
+          0
+        ],
+        [
+          666,
+          742,
+          1303,
+          619,
+          110,
+          5,
+          0
+        ],
+        [
+          211,
+          170,
+          740,
+          897,
+          250,
+          21,
+          0
+        ],
+        [
+          47,
+          34,
+          241,
+          493,
+          353,
+          39,
+          0
+        ],
+        [
+          7,
+          8,
+          52,
+          143,
+          111,
+          34,
+          0
+        ],
+        [
+          0,
+          4,
+          10,
+          36,
+          28,
+          11,
+          0
+        ]
+      ],
+      "correct": 48511,
+      "exact": 0.8179365694919827,
+      "over": 4135,
+      "poly": {
+        "correct": 2587,
+        "exact": 0.3503046716316858,
+        "over": 1044,
+        "rows": 7385,
+        "under": 3754
+      },
+      "rows": 59309,
+      "under": 6663
+    },
+    "configuration": {
+      "H0": "deterministic action encoding; not probability of correctness",
+      "batch_size": 192,
+      "candidate_count": 7,
+      "candidates": [
+        "frozen_action",
+        "spectral",
+        "lifecycle",
+        "harmonic_full",
+        "fundamentals",
+        "sources",
+        "five_specialist_mean"
+      ],
+      "context_names": [
+        "birth__early_mass_fraction",
+        "birth__frame_max",
+        "birth__frame_mean",
+        "birth__frame_std",
+        "birth__late_mass_fraction",
+        "birth__mid_mass_fraction",
+        "birth__novel_mass",
+        "birth__novel_track_fraction",
+        "birth__positive_flow",
+        "birth__positive_fraction",
+        "birth__positive_track_concentration",
+        "damping__early_mass_fraction",
+        "damping__frame_max",
+        "damping__frame_mean",
+        "damping__frame_std",
+        "damping__late_mass_fraction",
+        "damping__lost_mass",
+        "damping__mid_mass_fraction",
+        "damping__negative_flow",
+        "damping__sink_fraction",
+        "damping__sink_track_concentration",
+        "damping__vanishing_track_fraction",
+        "persistence__mean_survival",
+        "persistence__new_source_retention",
+        "persistence__pre_post_retention",
+        "persistence__retention_10",
+        "persistence__retention_2",
+        "persistence__retention_5",
+        "persistence__stable_track_fraction",
+        "spectral__active_late",
+        "spectral__active_on",
+        "spectral__active_pre",
+        "spectral__dominant_late",
+        "spectral__dominant_on",
+        "spectral__dominant_pre",
+        "spectral__entropy_late",
+        "spectral__entropy_on",
+        "spectral__entropy_pre",
+        "spectral__late_pre_ratio",
+        "spectral__mass_late",
+        "spectral__mass_on",
+        "spectral__mass_pre",
+        "spectral__on_pre_ratio"
+      ],
+      "descriptor_dimensions": 64,
+      "eligible_rows": 7493,
+      "epochs": 30,
+      "extra_KEEP": 1,
+      "fold3_used": false,
+      "folds": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "fusion": "fixed arithmetic mean of candidate vote vectors; tie keeps frozen class",
+      "global_audits_enabled": true,
+      "groups": 127,
+      "individual_veto": false,
+      "learning_rate": 0.002,
+      "local_audit_strength": 12,
+      "local_audits_enabled": false,
+      "local_neighbors": 64,
+      "native_rows": 59309,
+      "no_posthoc_threshold": true,
+      "objective": "unweighted baseline BCE plus per-event averaged conditional joint-correction BCE",
+      "optional_frozen_action": true,
+      "player05_used": false,
+      "producer_cache_sha256": "836b07f9ae062160508c63a7c9ab4f72b65e8458c7e24c5e4e92f17567fde914",
+      "seed": 27402,
+      "seventh_candidate": "mean of the same five specialists, not new independent evidence",
+      "shared_baseline_correctness": true
+    },
+    "fold_nets": {
+      "0": 18,
+      "1": 26,
+      "2": -20,
+      "4": 33
+    },
+    "input_sha256": {
+      "group_proposal": "94502c499e5fa095142d15a0701ed9ca1d917d0add4098498bc331b3891da094",
+      "local_audit_features": "e19dc436b6d4842bb7a06b95f0db690cf57a66069e2db747ea12a7ffa149740c",
+      "member_votes": "f05c0d830d3c18a64ce2808d45fd9e01a3913cebf37f2e2df553e35c82c05198"
+    },
+    "keep_rows": 5352,
+    "oracle": {
+      "correctable_errors_with_some_group": 1624,
+      "global_exact_upper_bound": 0.8443575174088249,
+      "mean_distinct_verdicts_per_event": 1.836647537701855,
+      "not_a_prediction": true,
+      "poly_exact_upper_bound": 0.5624915368991198,
+      "true_k_counts": {
+        "0": 0,
+        "1": 0,
+        "2": 636,
+        "3": 715,
+        "4": 227,
+        "5": 46,
+        "6": 0
+      }
+    },
+    "paired": {
+      "by_k": {
+        "0": {
+          "changed": 71,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "1": {
+          "changed": 325,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "2": {
+          "changed": 589,
+          "corrections": 309,
+          "net": 120,
+          "regressions": 189
+        },
+        "3": {
+          "changed": 586,
+          "corrections": 261,
+          "net": -18,
+          "regressions": 279
+        },
+        "4": {
+          "changed": 383,
+          "corrections": 86,
+          "net": -64,
+          "regressions": 150
+        },
+        "5": {
+          "changed": 144,
+          "corrections": 19,
+          "net": 19,
+          "regressions": 0
+        },
+        "6": {
+          "changed": 43,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        }
+      },
+      "global": {
+        "changed": 2141,
+        "corrections": 675,
+        "net": 57,
+        "regressions": 618
+      },
+      "poly": {
+        "changed": 1745,
+        "corrections": 675,
+        "net": 57,
+        "regressions": 618
+      }
+    },
+    "paired_vs_coherent": {
+      "by_k": {
+        "0": {
+          "changed": 56,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "1": {
+          "changed": 224,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "2": {
+          "changed": 497,
+          "corrections": 200,
+          "net": -5,
+          "regressions": 205
+        },
+        "3": {
+          "changed": 558,
+          "corrections": 298,
+          "net": 79,
+          "regressions": 219
+        },
+        "4": {
+          "changed": 360,
+          "corrections": 108,
+          "net": -38,
+          "regressions": 146
+        },
+        "5": {
+          "changed": 134,
+          "corrections": 11,
+          "net": -9,
+          "regressions": 20
+        },
+        "6": {
+          "changed": 35,
+          "corrections": 0,
+          "net": -1,
+          "regressions": 1
+        }
+      },
+      "global": {
+        "changed": 1864,
+        "corrections": 617,
+        "net": 26,
+        "regressions": 591
+      },
+      "poly": {
+        "changed": 1584,
+        "corrections": 617,
+        "net": 26,
+        "regressions": 591
+      }
+    },
+    "parameters": [
+      12994,
+      12994,
+      12994,
+      12994
+    ],
+    "predictions_sha256": "29758e90675918844c8eea01fcb9816f830dd3837bae02e79e56b0d57e6af038",
+    "provenance_verification": {
+      "distinct_producers": 14,
+      "forbidden_id_overlap": 0,
+      "nested_paths": 24
+    },
+    "raw_audits_exported_before_arm_mask": true,
+    "selected_expected_net": 488.94244384765625,
+    "selected_group_sizes": {
+      "1": 554,
+      "2": 515,
+      "3": 442,
+      "4": 338,
+      "5": 188,
+      "6": 77,
+      "7": 27
+    },
+    "singletons_only": {
+      "comparison_with_all_groups": {
+        "by_k": {
+          "0": {
+            "changed": 8,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 47,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 73,
+            "corrections": 22,
+            "net": -11,
+            "regressions": 33
+          },
+          "3": {
+            "changed": 66,
+            "corrections": 32,
+            "net": 5,
+            "regressions": 27
+          },
+          "4": {
+            "changed": 41,
+            "corrections": 10,
+            "net": -5,
+            "regressions": 15
+          },
+          "5": {
+            "changed": 25,
+            "corrections": 2,
+            "net": 0,
+            "regressions": 2
+          },
+          "6": {
+            "changed": 4,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 264,
+          "corrections": 66,
+          "net": -11,
+          "regressions": 77
+        },
+        "poly": {
+          "changed": 209,
+          "corrections": 66,
+          "net": -11,
+          "regressions": 77
+        }
+      },
+      "metrics": {
+        "by_k": {
+          "0": {
+            "correct": 38035,
+            "exact": 0.9592202158781398,
+            "over": 1617,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7889,
+            "exact": 0.6428455019556715,
+            "over": 1474,
+            "rows": 12272,
+            "under": 2909
+          },
+          "2": {
+            "correct": 1314,
+            "exact": 0.38142235123367196,
+            "over": 723,
+            "rows": 3445,
+            "under": 1408
+          },
+          "3": {
+            "correct": 892,
+            "exact": 0.38968982088248144,
+            "over": 287,
+            "rows": 2289,
+            "under": 1110
+          },
+          "4": {
+            "correct": 358,
+            "exact": 0.29660314830157414,
+            "over": 41,
+            "rows": 1207,
+            "under": 808
+          },
+          "5": {
+            "correct": 34,
+            "exact": 0.09577464788732394,
+            "over": 0,
+            "rows": 355,
+            "under": 321
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38035,
+            1047,
+            492,
+            70,
+            8,
+            0,
+            0
+          ],
+          [
+            2909,
+            7889,
+            1214,
+            226,
+            31,
+            3,
+            0
+          ],
+          [
+            666,
+            742,
+            1314,
+            599,
+            119,
+            5,
+            0
+          ],
+          [
+            211,
+            170,
+            729,
+            892,
+            265,
+            22,
+            0
+          ],
+          [
+            47,
+            34,
+            237,
+            490,
+            358,
+            41,
+            0
+          ],
+          [
+            7,
+            8,
+            49,
+            141,
+            116,
+            34,
+            0
+          ],
+          [
+            0,
+            4,
+            11,
+            36,
+            27,
+            11,
+            0
+          ]
+        ],
+        "correct": 48522,
+        "exact": 0.8181220388136707,
+        "over": 4142,
+        "poly": {
+          "correct": 2598,
+          "exact": 0.35179417738659446,
+          "over": 1051,
+          "rows": 7385,
+          "under": 3736
+        },
+        "rows": 59309,
+        "under": 6645
+      },
+      "paired": {
+        "by_k": {
+          "0": {
+            "changed": 64,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 286,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 530,
+            "corrections": 292,
+            "net": 131,
+            "regressions": 161
+          },
+          "3": {
+            "changed": 535,
+            "corrections": 236,
+            "net": -23,
+            "regressions": 259
+          },
+          "4": {
+            "changed": 353,
+            "corrections": 77,
+            "net": -59,
+            "regressions": 136
+          },
+          "5": {
+            "changed": 122,
+            "corrections": 19,
+            "net": 19,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 39,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1929,
+          "corrections": 624,
+          "net": 68,
+          "regressions": 556
+        },
+        "poly": {
+          "changed": 1579,
+          "corrections": 624,
+          "net": 68,
+          "regressions": 556
+        }
+      },
+      "retrained": false
+    },
+    "synergy": {
+      "among_initially_correct": 60,
+      "among_initially_wrong": 87,
+      "events_with_correct_group_and_all_its_members_wrong": 147,
+      "selected_correct_joint_groups_with_all_members_wrong": 6
+    }
+  },
+  "arms": {
+    "pooled_bce": {
+      "all_seven_singletons_wrong": {
+        "events": 16,
+        "global_ids": [
+          9927,
+          12762,
+          25645,
+          48217,
+          61509,
+          67320,
+          71649,
+          72111,
+          3021,
+          31759,
+          32041,
+          46620,
+          63436,
+          8837,
+          8909,
+          9255
+        ],
+        "recovered": 5,
+        "true_k_counts": {
+          "0": 0,
+          "1": 0,
+          "2": 1,
+          "3": 6,
+          "4": 9,
+          "5": 0,
+          "6": 0
+        }
+      },
+      "archive_sha256": "2a7e933bab44873716b52aa2003ff768213f9e747742fbc0a13e9a6bcd4e91db",
+      "artifact_id": 11552972654,
+      "baseline_probability_bit_identical_to_archived": true,
+      "baseline_probability_max_difference": 0.0,
+      "candidate": {
+        "by_k": {
+          "0": {
+            "correct": 38035,
+            "exact": 0.9592202158781398,
+            "over": 1617,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7889,
+            "exact": 0.6428455019556715,
+            "over": 1474,
+            "rows": 12272,
+            "under": 2909
+          },
+          "2": {
+            "correct": 1291,
+            "exact": 0.37474600870827285,
+            "over": 746,
+            "rows": 3445,
+            "under": 1408
+          },
+          "3": {
+            "correct": 885,
+            "exact": 0.38663171690694625,
+            "over": 296,
+            "rows": 2289,
+            "under": 1108
+          },
+          "4": {
+            "correct": 364,
+            "exact": 0.3015741507870754,
+            "over": 40,
+            "rows": 1207,
+            "under": 803
+          },
+          "5": {
+            "correct": 35,
+            "exact": 0.09859154929577464,
+            "over": 0,
+            "rows": 355,
+            "under": 320
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38035,
+            1047,
+            485,
+            77,
+            8,
+            0,
+            0
+          ],
+          [
+            2909,
+            7889,
+            1206,
+            237,
+            28,
+            3,
+            0
+          ],
+          [
+            666,
+            742,
+            1291,
+            618,
+            125,
+            3,
+            0
+          ],
+          [
+            211,
+            170,
+            727,
+            885,
+            273,
+            23,
+            0
+          ],
+          [
+            47,
+            34,
+            240,
+            482,
+            364,
+            40,
+            0
+          ],
+          [
+            7,
+            8,
+            47,
+            135,
+            123,
+            35,
+            0
+          ],
+          [
+            0,
+            4,
+            11,
+            32,
+            30,
+            12,
+            0
+          ]
+        ],
+        "correct": 48499,
+        "exact": 0.8177342393228684,
+        "over": 4173,
+        "poly": {
+          "correct": 2575,
+          "exact": 0.34867975626269465,
+          "over": 1082,
+          "rows": 7385,
+          "under": 3728
+        },
+        "rows": 59309,
+        "under": 6637
+      },
+      "class_probability_mass": {
+        "max": 1.9241385459899902,
+        "min": 6.756636139471084e-05
+      },
+      "configuration": {
+        "H0": "deterministic action encoding; not probability of correctness",
+        "archived_group127_run": 37777844182,
+        "audit_arm": "global",
+        "batch_size": 192,
+        "candidate_count": 7,
+        "candidates": [
+          "frozen_action",
+          "spectral",
+          "lifecycle",
+          "harmonic_full",
+          "fundamentals",
+          "sources",
+          "five_specialist_mean"
+        ],
+        "context_names": [
+          "birth__early_mass_fraction",
+          "birth__frame_max",
+          "birth__frame_mean",
+          "birth__frame_std",
+          "birth__late_mass_fraction",
+          "birth__mid_mass_fraction",
+          "birth__novel_mass",
+          "birth__novel_track_fraction",
+          "birth__positive_flow",
+          "birth__positive_fraction",
+          "birth__positive_track_concentration",
+          "damping__early_mass_fraction",
+          "damping__frame_max",
+          "damping__frame_mean",
+          "damping__frame_std",
+          "damping__late_mass_fraction",
+          "damping__lost_mass",
+          "damping__mid_mass_fraction",
+          "damping__negative_flow",
+          "damping__sink_fraction",
+          "damping__sink_track_concentration",
+          "damping__vanishing_track_fraction",
+          "persistence__mean_survival",
+          "persistence__new_source_retention",
+          "persistence__pre_post_retention",
+          "persistence__retention_10",
+          "persistence__retention_2",
+          "persistence__retention_5",
+          "persistence__stable_track_fraction",
+          "spectral__active_late",
+          "spectral__active_on",
+          "spectral__active_pre",
+          "spectral__dominant_late",
+          "spectral__dominant_on",
+          "spectral__dominant_pre",
+          "spectral__entropy_late",
+          "spectral__entropy_on",
+          "spectral__entropy_pre",
+          "spectral__late_pre_ratio",
+          "spectral__mass_late",
+          "spectral__mass_on",
+          "spectral__mass_pre",
+          "spectral__on_pre_ratio"
+        ],
+        "descriptor_dimensions": 64,
+        "eligible_rows": 7493,
+        "epochs": 30,
+        "extra_KEEP": 1,
+        "fold3_used": false,
+        "folds": [
+          0,
+          1,
+          2,
+          4
+        ],
+        "fusion": "fixed arithmetic mean of candidate vote vectors; tie keeps frozen class",
+        "global_audits_enabled": true,
+        "groups": 127,
+        "individual_veto": false,
+        "learning_rate": 0.002,
+        "local_audit_strength": 12,
+        "local_audits_enabled": false,
+        "local_neighbors": 64,
+        "mode": "pooled_bce",
+        "native_rows": 59309,
+        "no_posthoc_threshold": true,
+        "objective": "baseline BCE plus original per-event averaged group BCE",
+        "optional_frozen_action": true,
+        "other": "not modeled in BCE control",
+        "parameter_budget": 12994,
+        "player05_used": false,
+        "pool": "mean conditional logits by proposed K before probability",
+        "producer_cache_sha256": "836b07f9ae062160508c63a7c9ab4f72b65e8458c7e24c5e4e92f17567fde914",
+        "seed": 27402,
+        "seventh_candidate": "mean of the same five specialists, not new independent evidence",
+        "shared_baseline_correctness": true
+      },
+      "fold_expected_nets": {
+        "0": 120.74488830566406,
+        "1": 82.49693298339844,
+        "2": 81.41503143310547,
+        "4": 69.22551727294922
+      },
+      "fold_nets": {
+        "0": 11,
+        "1": 24,
+        "2": -25,
+        "4": 35
+      },
+      "input_sha256": {
+        "group_proposal": "94502c499e5fa095142d15a0701ed9ca1d917d0add4098498bc331b3891da094",
+        "local_audit_features": "e19dc436b6d4842bb7a06b95f0db690cf57a66069e2db747ea12a7ffa149740c",
+        "member_votes": "f05c0d830d3c18a64ce2808d45fd9e01a3913cebf37f2e2df553e35c82c05198"
+      },
+      "keep_rows": 5738,
+      "oracle": {
+        "correctable_errors_with_some_group": 1624,
+        "global_exact_upper_bound": 0.8443575174088249,
+        "mean_distinct_verdicts_per_event": 1.836647537701855,
+        "not_a_prediction": true,
+        "poly_exact_upper_bound": 0.5624915368991198,
+        "true_k_counts": {
+          "0": 0,
+          "1": 0,
+          "2": 636,
+          "3": 715,
+          "4": 227,
+          "5": 46,
+          "6": 0
+        }
+      },
+      "original_case_followup": {
+        "recovered_of_77_prior_added_regressions": 50,
+        "retained_of_66_prior_added_corrections": 26
+      },
+      "paired": {
+        "by_k": {
+          "0": {
+            "changed": 52,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 266,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 479,
+            "corrections": 260,
+            "net": 108,
+            "regressions": 152
+          },
+          "3": {
+            "changed": 497,
+            "corrections": 212,
+            "net": -30,
+            "regressions": 242
+          },
+          "4": {
+            "changed": 308,
+            "corrections": 66,
+            "net": -53,
+            "regressions": 119
+          },
+          "5": {
+            "changed": 117,
+            "corrections": 20,
+            "net": 20,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 36,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1755,
+          "corrections": 558,
+          "net": 45,
+          "regressions": 513
+        },
+        "poly": {
+          "changed": 1437,
+          "corrections": 558,
+          "net": 45,
+          "regressions": 513
+        }
+      },
+      "paired_vs_archived_global": {
+        "by_k": {
+          "0": {
+            "changed": 19,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 77,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 154,
+            "corrections": 57,
+            "net": -12,
+            "regressions": 69
+          },
+          "3": {
+            "changed": 143,
+            "corrections": 62,
+            "net": -12,
+            "regressions": 74
+          },
+          "4": {
+            "changed": 104,
+            "corrections": 34,
+            "net": 11,
+            "regressions": 23
+          },
+          "5": {
+            "changed": 44,
+            "corrections": 4,
+            "net": 1,
+            "regressions": 3
+          },
+          "6": {
+            "changed": 10,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 551,
+          "corrections": 157,
+          "net": -12,
+          "regressions": 169
+        },
+        "poly": {
+          "changed": 455,
+          "corrections": 157,
+          "net": -12,
+          "regressions": 169
+        }
+      },
+      "paired_vs_archived_singletons": {
+        "by_k": {
+          "0": {
+            "changed": 14,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 64,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 138,
+            "corrections": 45,
+            "net": -23,
+            "regressions": 68
+          },
+          "3": {
+            "changed": 137,
+            "corrections": 62,
+            "net": -7,
+            "regressions": 69
+          },
+          "4": {
+            "changed": 82,
+            "corrections": 24,
+            "net": 6,
+            "regressions": 18
+          },
+          "5": {
+            "changed": 38,
+            "corrections": 2,
+            "net": 1,
+            "regressions": 1
+          },
+          "6": {
+            "changed": 6,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 479,
+          "corrections": 133,
+          "net": -23,
+          "regressions": 156
+        },
+        "poly": {
+          "changed": 401,
+          "corrections": 133,
+          "net": -23,
+          "regressions": 156
+        }
+      },
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 63,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 227,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 524,
+            "corrections": 201,
+            "net": -17,
+            "regressions": 218
+          },
+          "3": {
+            "changed": 567,
+            "corrections": 294,
+            "net": 67,
+            "regressions": 227
+          },
+          "4": {
+            "changed": 389,
+            "corrections": 119,
+            "net": -27,
+            "regressions": 146
+          },
+          "5": {
+            "changed": 140,
+            "corrections": 14,
+            "net": -8,
+            "regressions": 22
+          },
+          "6": {
+            "changed": 38,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          }
+        },
+        "global": {
+          "changed": 1948,
+          "corrections": 628,
+          "net": 14,
+          "regressions": 614
+        },
+        "poly": {
+          "changed": 1658,
+          "corrections": 628,
+          "net": 14,
+          "regressions": 614
+        }
+      },
+      "parameters": [
+        12994,
+        12994,
+        12994,
+        12994
+      ],
+      "predictions_sha256": "7d078beb2678fe1d787b734f4171b10c9bb1667c94a4c67a4ec7564165b9e511",
+      "probability_budget_exceeded_events": 265,
+      "provenance_verification": {
+        "distinct_producers": 14,
+        "forbidden_id_overlap": 0,
+        "nested_paths": 24
+      },
+      "raw_audits_exported_before_arm_mask": true,
+      "same_verdict_max_gain_difference": 0.0,
+      "selected_expected_net": 353.8823547363281,
+      "selected_group_sizes": {
+        "1": 1726,
+        "2": 26,
+        "3": 3,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0
+      },
+      "singletons_only": {
+        "comparison_with_all_groups": {
+          "by_k": {
+            "0": {
+              "changed": 0,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 0,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 7,
+              "corrections": 0,
+              "net": -3,
+              "regressions": 3
+            },
+            "3": {
+              "changed": 5,
+              "corrections": 3,
+              "net": 3,
+              "regressions": 0
+            },
+            "4": {
+              "changed": 2,
+              "corrections": 2,
+              "net": 2,
+              "regressions": 0
+            },
+            "5": {
+              "changed": 2,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 0,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 16,
+            "corrections": 5,
+            "net": 2,
+            "regressions": 3
+          },
+          "poly": {
+            "changed": 16,
+            "corrections": 5,
+            "net": 2,
+            "regressions": 3
+          }
+        },
+        "metrics": {
+          "by_k": {
+            "0": {
+              "correct": 38035,
+              "exact": 0.9592202158781398,
+              "over": 1617,
+              "rows": 39652,
+              "under": 0
+            },
+            "1": {
+              "correct": 7889,
+              "exact": 0.6428455019556715,
+              "over": 1474,
+              "rows": 12272,
+              "under": 2909
+            },
+            "2": {
+              "correct": 1294,
+              "exact": 0.3756168359941945,
+              "over": 743,
+              "rows": 3445,
+              "under": 1408
+            },
+            "3": {
+              "correct": 882,
+              "exact": 0.3853211009174312,
+              "over": 297,
+              "rows": 2289,
+              "under": 1110
+            },
+            "4": {
+              "correct": 362,
+              "exact": 0.299917149958575,
+              "over": 42,
+              "rows": 1207,
+              "under": 803
+            },
+            "5": {
+              "correct": 35,
+              "exact": 0.09859154929577464,
+              "over": 0,
+              "rows": 355,
+              "under": 320
+            },
+            "6": {
+              "correct": 0,
+              "exact": 0.0,
+              "over": 0,
+              "rows": 89,
+              "under": 89
+            }
+          },
+          "confusion_true_by_predicted": [
+            [
+              38035,
+              1047,
+              485,
+              77,
+              8,
+              0,
+              0
+            ],
+            [
+              2909,
+              7889,
+              1206,
+              237,
+              28,
+              3,
+              0
+            ],
+            [
+              666,
+              742,
+              1294,
+              612,
+              128,
+              3,
+              0
+            ],
+            [
+              211,
+              170,
+              729,
+              882,
+              272,
+              25,
+              0
+            ],
+            [
+              47,
+              34,
+              240,
+              482,
+              362,
+              42,
+              0
+            ],
+            [
+              7,
+              8,
+              49,
+              133,
+              123,
+              35,
+              0
+            ],
+            [
+              0,
+              4,
+              11,
+              32,
+              30,
+              12,
+              0
+            ]
+          ],
+          "correct": 48497,
+          "exact": 0.817700517628016,
+          "over": 4173,
+          "poly": {
+            "correct": 2573,
+            "exact": 0.34840893703452946,
+            "over": 1082,
+            "rows": 7385,
+            "under": 3730
+          },
+          "rows": 59309,
+          "under": 6639
+        },
+        "paired": {
+          "by_k": {
+            "0": {
+              "changed": 52,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 266,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 475,
+              "corrections": 261,
+              "net": 111,
+              "regressions": 150
+            },
+            "3": {
+              "changed": 494,
+              "corrections": 209,
+              "net": -33,
+              "regressions": 242
+            },
+            "4": {
+              "changed": 308,
+              "corrections": 64,
+              "net": -55,
+              "regressions": 119
+            },
+            "5": {
+              "changed": 115,
+              "corrections": 20,
+              "net": 20,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 36,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 1746,
+            "corrections": 554,
+            "net": 43,
+            "regressions": 511
+          },
+          "poly": {
+            "changed": 1428,
+            "corrections": 554,
+            "net": 43,
+            "regressions": 511
+          }
+        },
+        "retrained": false
+      },
+      "synergy": {
+        "among_initially_correct": 60,
+        "among_initially_wrong": 87,
+        "events_with_correct_group_and_all_its_members_wrong": 147,
+        "selected_correct_joint_groups_with_all_members_wrong": 9
+      }
+    },
+    "pooled_ce": {
+      "all_seven_singletons_wrong": {
+        "events": 16,
+        "global_ids": [
+          9927,
+          12762,
+          25645,
+          48217,
+          61509,
+          67320,
+          71649,
+          72111,
+          3021,
+          31759,
+          32041,
+          46620,
+          63436,
+          8837,
+          8909,
+          9255
+        ],
+        "recovered": 6,
+        "true_k_counts": {
+          "0": 0,
+          "1": 0,
+          "2": 1,
+          "3": 6,
+          "4": 9,
+          "5": 0,
+          "6": 0
+        }
+      },
+      "archive_sha256": "7506a5c680367e20c0580aff76abafbb03c8912de5bc2fde0fef42decafa7174",
+      "artifact_id": 11552267704,
+      "baseline_probability_bit_identical_to_archived": true,
+      "baseline_probability_max_difference": 0.0,
+      "candidate": {
+        "by_k": {
+          "0": {
+            "correct": 38035,
+            "exact": 0.9592202158781398,
+            "over": 1617,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7889,
+            "exact": 0.6428455019556715,
+            "over": 1474,
+            "rows": 12272,
+            "under": 2909
+          },
+          "2": {
+            "correct": 1284,
+            "exact": 0.37271407837445575,
+            "over": 753,
+            "rows": 3445,
+            "under": 1408
+          },
+          "3": {
+            "correct": 909,
+            "exact": 0.39711664482306686,
+            "over": 292,
+            "rows": 2289,
+            "under": 1088
+          },
+          "4": {
+            "correct": 367,
+            "exact": 0.304059652029826,
+            "over": 30,
+            "rows": 1207,
+            "under": 810
+          },
+          "5": {
+            "correct": 30,
+            "exact": 0.08450704225352113,
+            "over": 0,
+            "rows": 355,
+            "under": 325
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38035,
+            1047,
+            490,
+            73,
+            7,
+            0,
+            0
+          ],
+          [
+            2909,
+            7889,
+            1201,
+            242,
+            28,
+            3,
+            0
+          ],
+          [
+            666,
+            742,
+            1284,
+            626,
+            125,
+            2,
+            0
+          ],
+          [
+            211,
+            170,
+            707,
+            909,
+            273,
+            19,
+            0
+          ],
+          [
+            47,
+            34,
+            237,
+            492,
+            367,
+            30,
+            0
+          ],
+          [
+            7,
+            8,
+            49,
+            152,
+            109,
+            30,
+            0
+          ],
+          [
+            0,
+            4,
+            10,
+            30,
+            34,
+            11,
+            0
+          ]
+        ],
+        "correct": 48514,
+        "exact": 0.8179871520342612,
+        "over": 4166,
+        "poly": {
+          "correct": 2590,
+          "exact": 0.35071090047393366,
+          "over": 1075,
+          "rows": 7385,
+          "under": 3720
+        },
+        "rows": 59309,
+        "under": 6629
+      },
+      "class_probability_mass": {
+        "max": 1.0000001192092896,
+        "min": 0.9999998211860657
+      },
+      "configuration": {
+        "H0": "deterministic action encoding; not probability of correctness",
+        "archived_group127_run": 37777844182,
+        "audit_arm": "global",
+        "batch_size": 192,
+        "candidate_count": 7,
+        "candidates": [
+          "frozen_action",
+          "spectral",
+          "lifecycle",
+          "harmonic_full",
+          "fundamentals",
+          "sources",
+          "five_specialist_mean"
+        ],
+        "context_names": [
+          "birth__early_mass_fraction",
+          "birth__frame_max",
+          "birth__frame_mean",
+          "birth__frame_std",
+          "birth__late_mass_fraction",
+          "birth__mid_mass_fraction",
+          "birth__novel_mass",
+          "birth__novel_track_fraction",
+          "birth__positive_flow",
+          "birth__positive_fraction",
+          "birth__positive_track_concentration",
+          "damping__early_mass_fraction",
+          "damping__frame_max",
+          "damping__frame_mean",
+          "damping__frame_std",
+          "damping__late_mass_fraction",
+          "damping__lost_mass",
+          "damping__mid_mass_fraction",
+          "damping__negative_flow",
+          "damping__sink_fraction",
+          "damping__sink_track_concentration",
+          "damping__vanishing_track_fraction",
+          "persistence__mean_survival",
+          "persistence__new_source_retention",
+          "persistence__pre_post_retention",
+          "persistence__retention_10",
+          "persistence__retention_2",
+          "persistence__retention_5",
+          "persistence__stable_track_fraction",
+          "spectral__active_late",
+          "spectral__active_on",
+          "spectral__active_pre",
+          "spectral__dominant_late",
+          "spectral__dominant_on",
+          "spectral__dominant_pre",
+          "spectral__entropy_late",
+          "spectral__entropy_on",
+          "spectral__entropy_pre",
+          "spectral__late_pre_ratio",
+          "spectral__mass_late",
+          "spectral__mass_on",
+          "spectral__mass_pre",
+          "spectral__on_pre_ratio"
+        ],
+        "descriptor_dimensions": 64,
+        "eligible_rows": 7493,
+        "epochs": 30,
+        "extra_KEEP": 1,
+        "fold3_used": false,
+        "folds": [
+          0,
+          1,
+          2,
+          4
+        ],
+        "fusion": "fixed arithmetic mean of candidate vote vectors; tie keeps frozen class",
+        "global_audits_enabled": true,
+        "groups": 127,
+        "individual_veto": false,
+        "learning_rate": 0.002,
+        "local_audit_strength": 12,
+        "local_audits_enabled": false,
+        "local_neighbors": 64,
+        "mode": "pooled_ce",
+        "native_rows": 59309,
+        "no_posthoc_threshold": true,
+        "objective": "baseline BCE plus one conditional categorical CE per baseline-wrong event",
+        "optional_frozen_action": true,
+        "other": "fixed zero logit for no available changing proposal correct",
+        "parameter_budget": 12994,
+        "player05_used": false,
+        "pool": "mean conditional logits by proposed K before probability",
+        "producer_cache_sha256": "836b07f9ae062160508c63a7c9ab4f72b65e8458c7e24c5e4e92f17567fde914",
+        "seed": 27402,
+        "seventh_candidate": "mean of the same five specialists, not new independent evidence",
+        "shared_baseline_correctness": true
+      },
+      "fold_expected_nets": {
+        "0": 121.84225463867188,
+        "1": 100.5530776977539,
+        "2": 85.1280517578125,
+        "4": 75.67184448242188
+      },
+      "fold_nets": {
+        "0": 16,
+        "1": 23,
+        "2": 1,
+        "4": 20
+      },
+      "input_sha256": {
+        "group_proposal": "94502c499e5fa095142d15a0701ed9ca1d917d0add4098498bc331b3891da094",
+        "local_audit_features": "e19dc436b6d4842bb7a06b95f0db690cf57a66069e2db747ea12a7ffa149740c",
+        "member_votes": "f05c0d830d3c18a64ce2808d45fd9e01a3913cebf37f2e2df553e35c82c05198"
+      },
+      "keep_rows": 5693,
+      "oracle": {
+        "correctable_errors_with_some_group": 1624,
+        "global_exact_upper_bound": 0.8443575174088249,
+        "mean_distinct_verdicts_per_event": 1.836647537701855,
+        "not_a_prediction": true,
+        "poly_exact_upper_bound": 0.5624915368991198,
+        "true_k_counts": {
+          "0": 0,
+          "1": 0,
+          "2": 636,
+          "3": 715,
+          "4": 227,
+          "5": 46,
+          "6": 0
+        }
+      },
+      "original_case_followup": {
+        "recovered_of_77_prior_added_regressions": 43,
+        "retained_of_66_prior_added_corrections": 25
+      },
+      "paired": {
+        "by_k": {
+          "0": {
+            "changed": 51,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 250,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 515,
+            "corrections": 274,
+            "net": 101,
+            "regressions": 173
+          },
+          "3": {
+            "changed": 502,
+            "corrections": 217,
+            "net": -6,
+            "regressions": 223
+          },
+          "4": {
+            "changed": 324,
+            "corrections": 76,
+            "net": -50,
+            "regressions": 126
+          },
+          "5": {
+            "changed": 123,
+            "corrections": 15,
+            "net": 15,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 35,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1800,
+          "corrections": 582,
+          "net": 60,
+          "regressions": 522
+        },
+        "poly": {
+          "changed": 1499,
+          "corrections": 582,
+          "net": 60,
+          "regressions": 522
+        }
+      },
+      "paired_vs_archived_global": {
+        "by_k": {
+          "0": {
+            "changed": 33,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 135,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 219,
+            "corrections": 82,
+            "net": -19,
+            "regressions": 101
+          },
+          "3": {
+            "changed": 244,
+            "corrections": 119,
+            "net": 12,
+            "regressions": 107
+          },
+          "4": {
+            "changed": 137,
+            "corrections": 44,
+            "net": 14,
+            "regressions": 30
+          },
+          "5": {
+            "changed": 63,
+            "corrections": 4,
+            "net": -4,
+            "regressions": 8
+          },
+          "6": {
+            "changed": 12,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 843,
+          "corrections": 249,
+          "net": 3,
+          "regressions": 246
+        },
+        "poly": {
+          "changed": 675,
+          "corrections": 249,
+          "net": 3,
+          "regressions": 246
+        }
+      },
+      "paired_vs_archived_singletons": {
+        "by_k": {
+          "0": {
+            "changed": 27,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 121,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 214,
+            "corrections": 74,
+            "net": -30,
+            "regressions": 104
+          },
+          "3": {
+            "changed": 229,
+            "corrections": 113,
+            "net": 17,
+            "regressions": 96
+          },
+          "4": {
+            "changed": 130,
+            "corrections": 41,
+            "net": 9,
+            "regressions": 32
+          },
+          "5": {
+            "changed": 59,
+            "corrections": 3,
+            "net": -4,
+            "regressions": 7
+          },
+          "6": {
+            "changed": 12,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 792,
+          "corrections": 231,
+          "net": -8,
+          "regressions": 239
+        },
+        "poly": {
+          "changed": 644,
+          "corrections": 231,
+          "net": -8,
+          "regressions": 239
+        }
+      },
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 57,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 228,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 511,
+            "corrections": 193,
+            "net": -24,
+            "regressions": 217
+          },
+          "3": {
+            "changed": 581,
+            "corrections": 312,
+            "net": 91,
+            "regressions": 221
+          },
+          "4": {
+            "changed": 383,
+            "corrections": 117,
+            "net": -24,
+            "regressions": 141
+          },
+          "5": {
+            "changed": 132,
+            "corrections": 8,
+            "net": -13,
+            "regressions": 21
+          },
+          "6": {
+            "changed": 37,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          }
+        },
+        "global": {
+          "changed": 1929,
+          "corrections": 630,
+          "net": 29,
+          "regressions": 601
+        },
+        "poly": {
+          "changed": 1644,
+          "corrections": 630,
+          "net": 29,
+          "regressions": 601
+        }
+      },
+      "parameters": [
+        12994,
+        12994,
+        12994,
+        12994
+      ],
+      "predictions_sha256": "2444d21599e60cdd0a03654fb304c25645b5397002f0e88688eb193ece99de34",
+      "probability_budget_exceeded_events": 0,
+      "provenance_verification": {
+        "distinct_producers": 14,
+        "forbidden_id_overlap": 0,
+        "nested_paths": 24
+      },
+      "raw_audits_exported_before_arm_mask": true,
+      "same_verdict_max_gain_difference": 0.0,
+      "selected_expected_net": 383.19525146484375,
+      "selected_group_sizes": {
+        "1": 1766,
+        "2": 31,
+        "3": 3,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0
+      },
+      "singletons_only": {
+        "comparison_with_all_groups": {
+          "by_k": {
+            "0": {
+              "changed": 1,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 0,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 7,
+              "corrections": 1,
+              "net": -4,
+              "regressions": 5
+            },
+            "3": {
+              "changed": 5,
+              "corrections": 2,
+              "net": 0,
+              "regressions": 2
+            },
+            "4": {
+              "changed": 3,
+              "corrections": 3,
+              "net": 3,
+              "regressions": 0
+            },
+            "5": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 0,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 19,
+            "corrections": 6,
+            "net": -1,
+            "regressions": 7
+          },
+          "poly": {
+            "changed": 18,
+            "corrections": 6,
+            "net": -1,
+            "regressions": 7
+          }
+        },
+        "metrics": {
+          "by_k": {
+            "0": {
+              "correct": 38035,
+              "exact": 0.9592202158781398,
+              "over": 1617,
+              "rows": 39652,
+              "under": 0
+            },
+            "1": {
+              "correct": 7889,
+              "exact": 0.6428455019556715,
+              "over": 1474,
+              "rows": 12272,
+              "under": 2909
+            },
+            "2": {
+              "correct": 1288,
+              "exact": 0.3738751814223512,
+              "over": 749,
+              "rows": 3445,
+              "under": 1408
+            },
+            "3": {
+              "correct": 909,
+              "exact": 0.39711664482306686,
+              "over": 290,
+              "rows": 2289,
+              "under": 1090
+            },
+            "4": {
+              "correct": 364,
+              "exact": 0.3015741507870754,
+              "over": 30,
+              "rows": 1207,
+              "under": 813
+            },
+            "5": {
+              "correct": 30,
+              "exact": 0.08450704225352113,
+              "over": 0,
+              "rows": 355,
+              "under": 325
+            },
+            "6": {
+              "correct": 0,
+              "exact": 0.0,
+              "over": 0,
+              "rows": 89,
+              "under": 89
+            }
+          },
+          "confusion_true_by_predicted": [
+            [
+              38035,
+              1047,
+              491,
+              72,
+              7,
+              0,
+              0
+            ],
+            [
+              2909,
+              7889,
+              1201,
+              242,
+              28,
+              3,
+              0
+            ],
+            [
+              666,
+              742,
+              1288,
+              620,
+              127,
+              2,
+              0
+            ],
+            [
+              211,
+              170,
+              709,
+              909,
+              271,
+              19,
+              0
+            ],
+            [
+              47,
+              34,
+              238,
+              494,
+              364,
+              30,
+              0
+            ],
+            [
+              7,
+              8,
+              51,
+              149,
+              110,
+              30,
+              0
+            ],
+            [
+              0,
+              4,
+              10,
+              30,
+              34,
+              11,
+              0
+            ]
+          ],
+          "correct": 48515,
+          "exact": 0.8180040128816874,
+          "over": 4160,
+          "poly": {
+            "correct": 2591,
+            "exact": 0.35084631008801626,
+            "over": 1069,
+            "rows": 7385,
+            "under": 3725
+          },
+          "rows": 59309,
+          "under": 6634
+        },
+        "paired": {
+          "by_k": {
+            "0": {
+              "changed": 50,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 250,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 511,
+              "corrections": 275,
+              "net": 105,
+              "regressions": 170
+            },
+            "3": {
+              "changed": 497,
+              "corrections": 215,
+              "net": -6,
+              "regressions": 221
+            },
+            "4": {
+              "changed": 322,
+              "corrections": 73,
+              "net": -53,
+              "regressions": 126
+            },
+            "5": {
+              "changed": 120,
+              "corrections": 15,
+              "net": 15,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 35,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 1785,
+            "corrections": 578,
+            "net": 61,
+            "regressions": 517
+          },
+          "poly": {
+            "changed": 1485,
+            "corrections": 578,
+            "net": 61,
+            "regressions": 517
+          }
+        },
+        "retrained": false
+      },
+      "synergy": {
+        "among_initially_correct": 60,
+        "among_initially_wrong": 87,
+        "events_with_correct_group_and_all_its_members_wrong": 147,
+        "selected_correct_joint_groups_with_all_members_wrong": 10
+      }
+    }
+  },
+  "artifact_manifest": {
+    "arms": {
+      "pooled_bce": {
+        "id": 11552972654,
+        "sha256": "2a7e933bab44873716b52aa2003ff768213f9e747742fbc0a13e9a6bcd4e91db",
+        "size_in_bytes": 12348452
+      },
+      "pooled_ce": {
+        "id": 11552267704,
+        "sha256": "7506a5c680367e20c0580aff76abafbb03c8912de5bc2fde0fef42decafa7174",
+        "size_in_bytes": 12375309
+      }
+    },
+    "run_id": 37781750476,
+    "source_commit": "2caa02556eec3896f896509ebb0b9c401d83e6b1"
+  },
+  "comparison_inputs_bit_identical": true,
+  "freeze_reference": {
+    "by_k": {
+      "0": {
+        "correct": 38035,
+        "exact": 0.9592202158781398,
+        "over": 1617,
+        "rows": 39652,
+        "under": 0
+      },
+      "1": {
+        "correct": 7889,
+        "exact": 0.6428455019556715,
+        "over": 1474,
+        "rows": 12272,
+        "under": 2909
+      },
+      "2": {
+        "correct": 1183,
+        "exact": 0.3433962264150943,
+        "over": 854,
+        "rows": 3445,
+        "under": 1408
+      },
+      "3": {
+        "correct": 915,
+        "exact": 0.399737876802097,
+        "over": 358,
+        "rows": 2289,
+        "under": 1016
+      },
+      "4": {
+        "correct": 417,
+        "exact": 0.34548467274233635,
+        "over": 13,
+        "rows": 1207,
+        "under": 777
+      },
+      "5": {
+        "correct": 15,
+        "exact": 0.04225352112676056,
+        "over": 0,
+        "rows": 355,
+        "under": 340
+      },
+      "6": {
+        "correct": 0,
+        "exact": 0.0,
+        "over": 0,
+        "rows": 89,
+        "under": 89
+      }
+    },
+    "confusion_true_by_predicted": [
+      [
+        38035,
+        1047,
+        465,
+        94,
+        11,
+        0,
+        0
+      ],
+      [
+        2909,
+        7889,
+        1097,
+        298,
+        76,
+        3,
+        0
+      ],
+      [
+        666,
+        742,
+        1183,
+        659,
+        193,
+        2,
+        0
+      ],
+      [
+        211,
+        170,
+        635,
+        915,
+        346,
+        12,
+        0
+      ],
+      [
+        47,
+        34,
+        199,
+        497,
+        417,
+        13,
+        0
+      ],
+      [
+        7,
+        8,
+        39,
+        152,
+        134,
+        15,
+        0
+      ],
+      [
+        0,
+        4,
+        5,
+        33,
+        45,
+        2,
+        0
+      ]
+    ],
+    "correct": 48454,
+    "exact": 0.8169755011886898,
+    "over": 4316,
+    "poly": {
+      "correct": 2530,
+      "exact": 0.3425863236289777,
+      "over": 1225,
+      "rows": 7385,
+      "under": 3630
+    },
+    "rows": 59309,
+    "under": 6539
+  },
+  "group_outcome_file": {
+    "path": "group-outcomes.csv",
+    "rows": 254,
+    "sha256": "96adbe4b801077e30f7661f7ed75bad20895b8ee302744db3ada5383e24bed8a"
+  },
+  "independent_validation": false,
+  "original_case_followup_file": {
+    "path": "followup-original-143-cases.csv",
+    "rows": 143,
+    "sha256": "cded58a6889520a435ae8300682800db78b2391a6ba3d1f00882b74b0d749be5"
+  },
+  "paired_between_arms": {
+    "pooled_bce_to_pooled_ce": {
+      "by_k": {
+        "0": {
+          "changed": 23,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "1": {
+          "changed": 104,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "2": {
+          "changed": 183,
+          "corrections": 74,
+          "net": -7,
+          "regressions": 81
+        },
+        "3": {
+          "changed": 213,
+          "corrections": 108,
+          "net": 24,
+          "regressions": 84
+        },
+        "4": {
+          "changed": 137,
+          "corrections": 40,
+          "net": 3,
+          "regressions": 37
+        },
+        "5": {
+          "changed": 53,
+          "corrections": 2,
+          "net": -5,
+          "regressions": 7
+        },
+        "6": {
+          "changed": 15,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        }
+      },
+      "global": {
+        "changed": 728,
+        "corrections": 224,
+        "net": 15,
+        "regressions": 209
+      },
+      "poly": {
+        "changed": 601,
+        "corrections": 224,
+        "net": 15,
+        "regressions": 209
+      }
+    }
+  },
+  "promotion": false,
+  "run_id": 37781750476,
+  "shared_producer_cache_sha256": "836b07f9ae062160508c63a7c9ab4f72b65e8458c7e24c5e4e92f17567fde914",
+  "source_commit": "2caa02556eec3896f896509ebb0b9c401d83e6b1",
+  "source_reference_sha256": "707fc1681e2b0b1ef01805710186c4119ad697a0b52ed3330698e48f34c2f77b",
+  "status": "verified",
+  "synergy_case_file": {
+    "path": "synergy-all-seven-wrong.csv",
+    "rows": 16,
+    "sha256": "a2c185383615803f8ea427293fc8a908511b7ec6be8414911038f22991ac4848"
+  }
+}
