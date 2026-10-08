@@ -11,7 +11,9 @@ from pathlib import Path
 import numpy as np
 
 from scripts.yourmt3_exactk_common import FOLDS,metrics,paired,require
-from scripts.loop_v273_native_risk import read
+def read(path):
+    with np.load(path,allow_pickle=False) as z:
+        return {k:z[k] for k in z.files}
 
 PASS_ID=dict(A1=0,ABA2=1,ABA4=3,A4_noB=4)
 FAMILIES={
