@@ -43,7 +43,7 @@ POLICIES = ("audit_soft", "audit_conservative", "audit_subset")
 def combo_probabilities(P):
     """All 63 subset means; (rows,63,5), no true K dependency."""
     require(P.ndim == 3 and P.shape[1:] == (N_HEADS,5), "bad expert shapes")
-    combo = np.einsum("seh,ch->sce",P,MASKS, optimize=True)
+    combo = np.einsum("she,ch->sce",P,MASKS, optimize=True)
     combo /= SIZES[None,:,None]
     require(np.isfinite(combo).all() and np.allclose(combo.sum(axis=2),1), "bad combination normalization")
     return combo
