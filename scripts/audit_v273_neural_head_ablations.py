@@ -156,7 +156,7 @@ def process_fold(model,val,y,b,indices,fold_id):
     allpred={}
     for label,drop in INTERVENTIONS.items():
         active_drop=np.any(val["head_mask"][:,list(drop)],axis=1)
-        if not active_drop:
+        if not np.any(active_drop):
             candidate=original.copy()
         else:
             candidate=observe(model,mask_drop(val,drop),b)
