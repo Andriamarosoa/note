@@ -1,0 +1,65 @@
+name: V27.3 Audit of 127 K-Conditional Selection Combinations
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - 'scripts/audit_v273_kconditional_127_subsets.py'
+      - 'test/test_v273_kconditional_127_subsets.py'
+      - '.github/workflows/v273-kconditional-127-subset-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install stable scoring dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.17.1 scikit-learn==1.4.2
+      - name: Compile and verify exact K-specific subset enumeration
+        run: |
+          python -m py_compile scripts/audit_v273_kconditional_127_subsets.py
+          python -m unittest -v test.test_v273_kconditional_127_subsets
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37605163312
+          name: yourmt3-exactk-cohort
+          path: model/cohort
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37740493178
+          pattern: v273-harmonic-global-fold-*
+          path: model/features
+      - name: OOF plus heldout audits for all class-specific head subsets
+        run: |
+          python -B scripts/audit_v273_kconditional_127_subsets.py \
+            --cohort model/cohort \
+            --features model/features \
+            --output model/selection-audit
+      - name: Publish exhaustive subset diagnostic
+        run: cat model/selection-audit/verdict.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-127-kconditional-selection-audit
+          path: model/selection-audit/
+          retention-days: 90
