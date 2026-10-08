@@ -1,5 +1,12 @@
 # V27.3 — Régressions : quatre séries, résultats et limites
 
+**Critère de réussite précisé : battre YourMT3+ en Exact-K global et poly.**
+Le meilleur résultat ci-dessous atteint 81,9724 % / 36,4658 %, contre
+86,5434 % / 54,5430 % pour YourMT3+ sur les mêmes 59 309 lignes.
+Même le choix parfait parmi les 255 groupes et les 211 politiques conservées
+plafonne à 85,0394 % global. Il faut donc élargir les propositions du système.
+Voir la [comparaison vérifiée et la preuve du plafond](README_V273_OBJECTIF_YOURMT3.md).
+
 ## Résultat mesuré
 
 Le croisement de départ réalisait **566 corrections et 518 régressions**,
