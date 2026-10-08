@@ -24,12 +24,12 @@ EPS = 1e-10
 EXPERIMENT = "v273_harmonic_trajectory_extract"
 GROUPS = ("spectral", "source", "birth", "persistence", "damping", "coherence")
 
-def _template_bank(detuned=False):
+def _template_bank(detuned=False, fundamental_only=False):
     freq = np.fft.rfftfreq(FFT, 1.0 / SAMPLE_RATE)
     T = np.zeros((len(PITCHES), len(freq)), np.float64)
     for i, pitch in enumerate(PITCHES):
         f0 = 440.0 * 2 ** ((int(pitch) - 69) / 12.0)
-        for h in range(1, PARTIALS + 1):
+        for h in range(1, 2 if fundamental_only else PARTIALS + 1):
             center = f0 * h
             if detuned and h > 1:
                 center *= (1.06 if h % 2 == 0 else 0.94)
@@ -43,6 +43,7 @@ def _template_bank(detuned=False):
 
 HARMONIC_BANK = _template_bank()
 DETUNED_BANK = _template_bank(detuned=True)
+FUNDAMENTAL_BANK = _template_bank(fundamental_only=True)
 
 def _frames(samples, start):
     pre = int(round(PRE_MS * SAMPLE_RATE / 1000.0))
@@ -207,9 +208,11 @@ def trajectory_features(samples, start, perturb=None, seed=0):
         idx = np.flatnonzero((t >= -12) & (t <= 120))
         spec = spec.copy()
         spec[idx] = spec[np.random.default_rng(seed).permutation(idx)]
-    elif perturb not in (None,"detuned"):
+    elif perturb not in (None, "detuned", "fundamental"):
         raise ValueError("unknown perturbation")
-    return features_from_spectrogram(spec,t,DETUNED_BANK if perturb=="detuned" else None)
+    bank = (DETUNED_BANK if perturb=="detuned" else
+            FUNDAMENTAL_BANK if perturb=="fundamental" else None)
+    return features_from_spectrogram(spec,t,bank)
 
 def main():
     p=argparse.ArgumentParser()
@@ -254,9 +257,10 @@ def main():
                            true_k=int(truth[i]),base_pred=int(base[i]),
                            features=trajectory_features(x,s),
                            scrambled=trajectory_features(x,s,"scramble-time",seed=ident+27084),
-                           detuned=trajectory_features(x,s,"detuned")))
+                           detuned=trajectory_features(x,s,"detuned"),
+                           fundamental=trajectory_features(x,s,"fundamental")))
     keys=sorted(output[0]["features"])
-    require(all(sorted(r[z])==keys for r in output for z in ("features","scrambled","detuned")),"schema drift")
+    require(all(sorted(r[z])==keys for r in output for z in ("features","scrambled","detuned","fundamental")),"schema drift")
     a.output.mkdir(parents=True)
     (a.output/"rows.jsonl").write_text("".join(json.dumps(r,sort_keys=True)+"\n" for r in output))
     report=dict(status="completed",experiment=EXPERIMENT,fold=a.fold,
