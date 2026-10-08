@@ -1,0 +1,6273 @@
+{
+  "all_changes": {
+    "corrections": 828,
+    "margin_corrections": {
+      "mean": 0.2420385777950287,
+      "median": 0.2079898715019226,
+      "n": 828,
+      "q25": 0.09016399830579758,
+      "q75": 0.35705777257680893
+    },
+    "margin_regressions": {
+      "mean": 0.20731061697006226,
+      "median": 0.16326764225959778,
+      "n": 797,
+      "q25": 0.07538449764251709,
+      "q75": 0.3023597002029419
+    },
+    "net": 31,
+    "neutral": 986,
+    "probability_expected_corrections": 1200.728515625,
+    "probability_expected_net": 582.190185546875,
+    "probability_expected_regressions": 618.5383911132812,
+    "regressions": 797,
+    "rows": 2611
+  },
+  "archive_sha256": "5979dc1b465f467a8b463035fbfb1c1c41d91fb9362549e73bd58c69f7eb3043",
+  "artifact_id": 11546734202,
+  "count_shift_summary": {
+    "context_count": {
+      "selected_above_train_max": 0,
+      "selected_rows": 2611
+    },
+    "global_count": {
+      "selected_above_train_max": 0,
+      "selected_rows": 2611
+    }
+  },
+  "files_sha256": {
+    "diagnostic-replays.npz": "35da0021ab5441f507e550070e5c70f0f4ae69d384db01fd9393fef5111fa4ce",
+    "event-audit.csv": "10bc17eff76070eddf227350ae9d2d51ff47def6a53f1a2c4ccd545f41c8b8c7",
+    "feature-contrasts.csv": "8165e262d5e3ef00afbcaa13818bfa2c89c9096ef8384d94e7a9e5c2a578533b",
+    "k3k4-regressions.csv": "d7fb0b2ef8bd4af66ffa588cea56a2985140aa27c8586b8337af767bc096229b",
+    "report.json": "4860a7946ceedc119abda0811fa54e9c77ebf2ab8f942499473a3cac1de6c255"
+  },
+  "independent_validation": false,
+  "interventions": {
+    "audit_rates:27403": {
+      "by_fold": {
+        "0": {
+          "changed": 7,
+          "corrections": 4,
+          "net": 3,
+          "regressions": 1
+        },
+        "1": {
+          "changed": 20,
+          "corrections": 6,
+          "net": 1,
+          "regressions": 5
+        },
+        "2": {
+          "changed": 11,
+          "corrections": 4,
+          "net": 1,
+          "regressions": 3
+        },
+        "4": {
+          "changed": 6,
+          "corrections": 2,
+          "net": 1,
+          "regressions": 1
+        }
+      },
+      "original_corrections_lost": 5,
+      "original_k34_regressions_restored": 4,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 2,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 7,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 9,
+            "corrections": 6,
+            "net": 4,
+            "regressions": 2
+          },
+          "3": {
+            "changed": 18,
+            "corrections": 7,
+            "net": -1,
+            "regressions": 8
+          },
+          "4": {
+            "changed": 6,
+            "corrections": 3,
+            "net": 3,
+            "regressions": 0
+          },
+          "5": {
+            "changed": 2,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 44,
+          "corrections": 16,
+          "net": 6,
+          "regressions": 10
+        },
+        "poly": {
+          "changed": 35,
+          "corrections": 16,
+          "net": 6,
+          "regressions": 10
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 69,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 323,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 689,
+            "corrections": 332,
+            "net": 129,
+            "regressions": 203
+          },
+          "3": {
+            "changed": 766,
+            "corrections": 308,
+            "net": -98,
+            "regressions": 406
+          },
+          "4": {
+            "changed": 525,
+            "corrections": 166,
+            "net": -23,
+            "regressions": 189
+          },
+          "5": {
+            "changed": 191,
+            "corrections": 28,
+            "net": 28,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 58,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2621,
+          "corrections": 835,
+          "net": 37,
+          "regressions": 798
+        },
+        "poly": {
+          "changed": 2229,
+          "corrections": 835,
+          "net": 37,
+          "regressions": 798
+        }
+      }
+    },
+    "audit_rates:27404": {
+      "by_fold": {
+        "0": {
+          "changed": 7,
+          "corrections": 4,
+          "net": 3,
+          "regressions": 1
+        },
+        "1": {
+          "changed": 21,
+          "corrections": 7,
+          "net": 0,
+          "regressions": 7
+        },
+        "2": {
+          "changed": 8,
+          "corrections": 2,
+          "net": 1,
+          "regressions": 1
+        },
+        "4": {
+          "changed": 6,
+          "corrections": 1,
+          "net": -1,
+          "regressions": 2
+        }
+      },
+      "original_corrections_lost": 4,
+      "original_k34_regressions_restored": 4,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 1,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 6,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 11,
+            "corrections": 7,
+            "net": 5,
+            "regressions": 2
+          },
+          "3": {
+            "changed": 15,
+            "corrections": 3,
+            "net": -6,
+            "regressions": 9
+          },
+          "4": {
+            "changed": 6,
+            "corrections": 4,
+            "net": 4,
+            "regressions": 0
+          },
+          "5": {
+            "changed": 2,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 1,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 42,
+          "corrections": 14,
+          "net": 3,
+          "regressions": 11
+        },
+        "poly": {
+          "changed": 35,
+          "corrections": 14,
+          "net": 3,
+          "regressions": 11
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 68,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 322,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 688,
+            "corrections": 332,
+            "net": 130,
+            "regressions": 202
+          },
+          "3": {
+            "changed": 768,
+            "corrections": 307,
+            "net": -103,
+            "regressions": 410
+          },
+          "4": {
+            "changed": 521,
+            "corrections": 165,
+            "net": -22,
+            "regressions": 187
+          },
+          "5": {
+            "changed": 191,
+            "corrections": 28,
+            "net": 28,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 59,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2617,
+          "corrections": 833,
+          "net": 34,
+          "regressions": 799
+        },
+        "poly": {
+          "changed": 2227,
+          "corrections": 833,
+          "net": 34,
+          "regressions": 799
+        }
+      }
+    },
+    "audit_rates:27405": {
+      "by_fold": {
+        "0": {
+          "changed": 6,
+          "corrections": 2,
+          "net": 0,
+          "regressions": 2
+        },
+        "1": {
+          "changed": 15,
+          "corrections": 5,
+          "net": 2,
+          "regressions": 3
+        },
+        "2": {
+          "changed": 7,
+          "corrections": 2,
+          "net": 1,
+          "regressions": 1
+        },
+        "4": {
+          "changed": 6,
+          "corrections": 2,
+          "net": 0,
+          "regressions": 2
+        }
+      },
+      "original_corrections_lost": 4,
+      "original_k34_regressions_restored": 6,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 2,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 5,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 8,
+            "corrections": 5,
+            "net": 4,
+            "regressions": 1
+          },
+          "3": {
+            "changed": 12,
+            "corrections": 4,
+            "net": -3,
+            "regressions": 7
+          },
+          "4": {
+            "changed": 7,
+            "corrections": 2,
+            "net": 2,
+            "regressions": 0
+          },
+          "5": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 34,
+          "corrections": 11,
+          "net": 3,
+          "regressions": 8
+        },
+        "poly": {
+          "changed": 27,
+          "corrections": 11,
+          "net": 3,
+          "regressions": 8
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 69,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 323,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 687,
+            "corrections": 332,
+            "net": 129,
+            "regressions": 203
+          },
+          "3": {
+            "changed": 762,
+            "corrections": 305,
+            "net": -100,
+            "regressions": 405
+          },
+          "4": {
+            "changed": 520,
+            "corrections": 163,
+            "net": -24,
+            "regressions": 187
+          },
+          "5": {
+            "changed": 191,
+            "corrections": 28,
+            "net": 28,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 58,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2610,
+          "corrections": 829,
+          "net": 34,
+          "regressions": 795
+        },
+        "poly": {
+          "changed": 2218,
+          "corrections": 829,
+          "net": 34,
+          "regressions": 795
+        }
+      }
+    },
+    "birth:27403": {
+      "by_fold": {
+        "0": {
+          "changed": 637,
+          "corrections": 162,
+          "net": -40,
+          "regressions": 202
+        },
+        "1": {
+          "changed": 513,
+          "corrections": 126,
+          "net": -55,
+          "regressions": 181
+        },
+        "2": {
+          "changed": 470,
+          "corrections": 115,
+          "net": -45,
+          "regressions": 160
+        },
+        "4": {
+          "changed": 598,
+          "corrections": 166,
+          "net": -31,
+          "regressions": 197
+        }
+      },
+      "original_corrections_lost": 377,
+      "original_k34_regressions_restored": 178,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 85,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 315,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 573,
+            "corrections": 140,
+            "net": -185,
+            "regressions": 325
+          },
+          "3": {
+            "changed": 675,
+            "corrections": 279,
+            "net": -10,
+            "regressions": 289
+          },
+          "4": {
+            "changed": 406,
+            "corrections": 128,
+            "net": 18,
+            "regressions": 110
+          },
+          "5": {
+            "changed": 129,
+            "corrections": 22,
+            "net": 7,
+            "regressions": 15
+          },
+          "6": {
+            "changed": 35,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          }
+        },
+        "global": {
+          "changed": 2218,
+          "corrections": 569,
+          "net": -171,
+          "regressions": 740
+        },
+        "poly": {
+          "changed": 1818,
+          "corrections": 569,
+          "net": -171,
+          "regressions": 740
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 101,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 357,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 712,
+            "corrections": 209,
+            "net": -60,
+            "regressions": 269
+          },
+          "3": {
+            "changed": 840,
+            "corrections": 330,
+            "net": -107,
+            "regressions": 437
+          },
+          "4": {
+            "changed": 571,
+            "corrections": 189,
+            "net": -8,
+            "regressions": 197
+          },
+          "5": {
+            "changed": 211,
+            "corrections": 35,
+            "net": 35,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 63,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2855,
+          "corrections": 763,
+          "net": -140,
+          "regressions": 903
+        },
+        "poly": {
+          "changed": 2397,
+          "corrections": 763,
+          "net": -140,
+          "regressions": 903
+        }
+      }
+    },
+    "birth:27404": {
+      "by_fold": {
+        "0": {
+          "changed": 659,
+          "corrections": 176,
+          "net": -39,
+          "regressions": 215
+        },
+        "1": {
+          "changed": 507,
+          "corrections": 122,
+          "net": -58,
+          "regressions": 180
+        },
+        "2": {
+          "changed": 484,
+          "corrections": 127,
+          "net": -32,
+          "regressions": 159
+        },
+        "4": {
+          "changed": 541,
+          "corrections": 160,
+          "net": -11,
+          "regressions": 171
+        }
+      },
+      "original_corrections_lost": 353,
+      "original_k34_regressions_restored": 197,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 93,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 313,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 578,
+            "corrections": 153,
+            "net": -175,
+            "regressions": 328
+          },
+          "3": {
+            "changed": 620,
+            "corrections": 282,
+            "net": 26,
+            "regressions": 256
+          },
+          "4": {
+            "changed": 422,
+            "corrections": 133,
+            "net": 8,
+            "regressions": 125
+          },
+          "5": {
+            "changed": 122,
+            "corrections": 16,
+            "net": 1,
+            "regressions": 15
+          },
+          "6": {
+            "changed": 43,
+            "corrections": 1,
+            "net": 0,
+            "regressions": 1
+          }
+        },
+        "global": {
+          "changed": 2191,
+          "corrections": 585,
+          "net": -140,
+          "regressions": 725
+        },
+        "poly": {
+          "changed": 1785,
+          "corrections": 585,
+          "net": -140,
+          "regressions": 725
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 103,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 362,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 730,
+            "corrections": 231,
+            "net": -50,
+            "regressions": 281
+          },
+          "3": {
+            "changed": 795,
+            "corrections": 326,
+            "net": -71,
+            "regressions": 397
+          },
+          "4": {
+            "changed": 598,
+            "corrections": 187,
+            "net": -18,
+            "regressions": 205
+          },
+          "5": {
+            "changed": 209,
+            "corrections": 29,
+            "net": 29,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 61,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2858,
+          "corrections": 774,
+          "net": -109,
+          "regressions": 883
+        },
+        "poly": {
+          "changed": 2393,
+          "corrections": 774,
+          "net": -109,
+          "regressions": 883
+        }
+      }
+    },
+    "birth:27405": {
+      "by_fold": {
+        "0": {
+          "changed": 648,
+          "corrections": 171,
+          "net": -24,
+          "regressions": 195
+        },
+        "1": {
+          "changed": 511,
+          "corrections": 124,
+          "net": -52,
+          "regressions": 176
+        },
+        "2": {
+          "changed": 471,
+          "corrections": 126,
+          "net": -21,
+          "regressions": 147
+        },
+        "4": {
+          "changed": 537,
+          "corrections": 151,
+          "net": -31,
+          "regressions": 182
+        }
+      },
+      "original_corrections_lost": 346,
+      "original_k34_regressions_restored": 182,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 106,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 306,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 545,
+            "corrections": 147,
+            "net": -159,
+            "regressions": 306
+          },
+          "3": {
+            "changed": 639,
+            "corrections": 287,
+            "net": 31,
+            "regressions": 256
+          },
+          "4": {
+            "changed": 393,
+            "corrections": 118,
+            "net": -2,
+            "regressions": 120
+          },
+          "5": {
+            "changed": 135,
+            "corrections": 20,
+            "net": 3,
+            "regressions": 17
+          },
+          "6": {
+            "changed": 43,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          }
+        },
+        "global": {
+          "changed": 2167,
+          "corrections": 572,
+          "net": -128,
+          "regressions": 700
+        },
+        "poly": {
+          "changed": 1755,
+          "corrections": 572,
+          "net": -128,
+          "regressions": 700
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 113,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 368,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 726,
+            "corrections": 245,
+            "net": -34,
+            "regressions": 279
+          },
+          "3": {
+            "changed": 827,
+            "corrections": 346,
+            "net": -66,
+            "regressions": 412
+          },
+          "4": {
+            "changed": 577,
+            "corrections": 174,
+            "net": -28,
+            "regressions": 202
+          },
+          "5": {
+            "changed": 208,
+            "corrections": 31,
+            "net": 31,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 61,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2880,
+          "corrections": 796,
+          "net": -97,
+          "regressions": 893
+        },
+        "poly": {
+          "changed": 2399,
+          "corrections": 796,
+          "net": -97,
+          "regressions": 893
+        }
+      }
+    },
+    "context_all:27403": {
+      "by_fold": {
+        "0": {
+          "changed": 946,
+          "corrections": 230,
+          "net": -63,
+          "regressions": 293
+        },
+        "1": {
+          "changed": 798,
+          "corrections": 200,
+          "net": -93,
+          "regressions": 293
+        },
+        "2": {
+          "changed": 607,
+          "corrections": 135,
+          "net": -69,
+          "regressions": 204
+        },
+        "4": {
+          "changed": 860,
+          "corrections": 207,
+          "net": -89,
+          "regressions": 296
+        }
+      },
+      "original_corrections_lost": 599,
+      "original_k34_regressions_restored": 271,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 114,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 433,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 793,
+            "corrections": 285,
+            "net": -68,
+            "regressions": 353
+          },
+          "3": {
+            "changed": 964,
+            "corrections": 331,
+            "net": -142,
+            "regressions": 473
+          },
+          "4": {
+            "changed": 651,
+            "corrections": 153,
+            "net": -79,
+            "regressions": 232
+          },
+          "5": {
+            "changed": 199,
+            "corrections": 3,
+            "net": -24,
+            "regressions": 27
+          },
+          "6": {
+            "changed": 57,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          }
+        },
+        "global": {
+          "changed": 3211,
+          "corrections": 772,
+          "net": -314,
+          "regressions": 1086
+        },
+        "poly": {
+          "changed": 2664,
+          "corrections": 772,
+          "net": -314,
+          "regressions": 1086
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 111,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 351,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 614,
+            "corrections": 228,
+            "net": 57,
+            "regressions": 171
+          },
+          "3": {
+            "changed": 776,
+            "corrections": 228,
+            "net": -239,
+            "regressions": 467
+          },
+          "4": {
+            "changed": 499,
+            "corrections": 114,
+            "net": -105,
+            "regressions": 219
+          },
+          "5": {
+            "changed": 145,
+            "corrections": 4,
+            "net": 4,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 41,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2537,
+          "corrections": 574,
+          "net": -283,
+          "regressions": 857
+        },
+        "poly": {
+          "changed": 2075,
+          "corrections": 574,
+          "net": -283,
+          "regressions": 857
+        }
+      }
+    },
+    "context_all:27404": {
+      "by_fold": {
+        "0": {
+          "changed": 966,
+          "corrections": 252,
+          "net": -60,
+          "regressions": 312
+        },
+        "1": {
+          "changed": 790,
+          "corrections": 193,
+          "net": -100,
+          "regressions": 293
+        },
+        "2": {
+          "changed": 604,
+          "corrections": 139,
+          "net": -67,
+          "regressions": 206
+        },
+        "4": {
+          "changed": 893,
+          "corrections": 216,
+          "net": -109,
+          "regressions": 325
+        }
+      },
+      "original_corrections_lost": 614,
+      "original_k34_regressions_restored": 274,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 118,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 413,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 820,
+            "corrections": 296,
+            "net": -67,
+            "regressions": 363
+          },
+          "3": {
+            "changed": 979,
+            "corrections": 335,
+            "net": -160,
+            "regressions": 495
+          },
+          "4": {
+            "changed": 659,
+            "corrections": 163,
+            "net": -87,
+            "regressions": 250
+          },
+          "5": {
+            "changed": 206,
+            "corrections": 6,
+            "net": -21,
+            "regressions": 27
+          },
+          "6": {
+            "changed": 58,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          }
+        },
+        "global": {
+          "changed": 3253,
+          "corrections": 800,
+          "net": -336,
+          "regressions": 1136
+        },
+        "poly": {
+          "changed": 2722,
+          "corrections": 800,
+          "net": -336,
+          "regressions": 1136
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 99,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 336,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 636,
+            "corrections": 232,
+            "net": 58,
+            "regressions": 174
+          },
+          "3": {
+            "changed": 754,
+            "corrections": 216,
+            "net": -257,
+            "regressions": 473
+          },
+          "4": {
+            "changed": 526,
+            "corrections": 118,
+            "net": -113,
+            "regressions": 231
+          },
+          "5": {
+            "changed": 136,
+            "corrections": 7,
+            "net": 7,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 48,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2535,
+          "corrections": 573,
+          "net": -305,
+          "regressions": 878
+        },
+        "poly": {
+          "changed": 2100,
+          "corrections": 573,
+          "net": -305,
+          "regressions": 878
+        }
+      }
+    },
+    "context_all:27405": {
+      "by_fold": {
+        "0": {
+          "changed": 930,
+          "corrections": 228,
+          "net": -78,
+          "regressions": 306
+        },
+        "1": {
+          "changed": 788,
+          "corrections": 194,
+          "net": -105,
+          "regressions": 299
+        },
+        "2": {
+          "changed": 626,
+          "corrections": 151,
+          "net": -65,
+          "regressions": 216
+        },
+        "4": {
+          "changed": 861,
+          "corrections": 221,
+          "net": -78,
+          "regressions": 299
+        }
+      },
+      "original_corrections_lost": 606,
+      "original_k34_regressions_restored": 274,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 136,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 401,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 821,
+            "corrections": 307,
+            "net": -48,
+            "regressions": 355
+          },
+          "3": {
+            "changed": 973,
+            "corrections": 352,
+            "net": -136,
+            "regressions": 488
+          },
+          "4": {
+            "changed": 623,
+            "corrections": 131,
+            "net": -117,
+            "regressions": 248
+          },
+          "5": {
+            "changed": 192,
+            "corrections": 4,
+            "net": -24,
+            "regressions": 28
+          },
+          "6": {
+            "changed": 59,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          }
+        },
+        "global": {
+          "changed": 3205,
+          "corrections": 794,
+          "net": -326,
+          "regressions": 1120
+        },
+        "poly": {
+          "changed": 2668,
+          "corrections": 794,
+          "net": -326,
+          "regressions": 1120
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 106,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 327,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 635,
+            "corrections": 248,
+            "net": 77,
+            "regressions": 171
+          },
+          "3": {
+            "changed": 790,
+            "corrections": 241,
+            "net": -233,
+            "regressions": 474
+          },
+          "4": {
+            "changed": 500,
+            "corrections": 84,
+            "net": -143,
+            "regressions": 227
+          },
+          "5": {
+            "changed": 130,
+            "corrections": 4,
+            "net": 4,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 42,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2530,
+          "corrections": 577,
+          "net": -295,
+          "regressions": 872
+        },
+        "poly": {
+          "changed": 2097,
+          "corrections": 577,
+          "net": -295,
+          "regressions": 872
+        }
+      }
+    },
+    "count_reference_size:0": {
+      "by_fold": {
+        "0": {
+          "changed": 77,
+          "corrections": 27,
+          "net": 1,
+          "regressions": 26
+        },
+        "1": {
+          "changed": 59,
+          "corrections": 18,
+          "net": 0,
+          "regressions": 18
+        },
+        "2": {
+          "changed": 32,
+          "corrections": 11,
+          "net": 2,
+          "regressions": 9
+        },
+        "4": {
+          "changed": 39,
+          "corrections": 14,
+          "net": 3,
+          "regressions": 11
+        }
+      },
+      "original_corrections_lost": 17,
+      "original_k34_regressions_restored": 8,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 6,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 11,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 42,
+            "corrections": 25,
+            "net": 18,
+            "regressions": 7
+          },
+          "3": {
+            "changed": 64,
+            "corrections": 32,
+            "net": 3,
+            "regressions": 29
+          },
+          "4": {
+            "changed": 59,
+            "corrections": 13,
+            "net": -12,
+            "regressions": 25
+          },
+          "5": {
+            "changed": 18,
+            "corrections": 0,
+            "net": -3,
+            "regressions": 3
+          },
+          "6": {
+            "changed": 7,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 207,
+          "corrections": 70,
+          "net": 6,
+          "regressions": 64
+        },
+        "poly": {
+          "changed": 190,
+          "corrections": 70,
+          "net": 6,
+          "regressions": 64
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 66,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 323,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 695,
+            "corrections": 340,
+            "net": 143,
+            "regressions": 197
+          },
+          "3": {
+            "changed": 796,
+            "corrections": 328,
+            "net": -94,
+            "regressions": 422
+          },
+          "4": {
+            "changed": 550,
+            "corrections": 170,
+            "net": -38,
+            "regressions": 208
+          },
+          "5": {
+            "changed": 197,
+            "corrections": 25,
+            "net": 25,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 62,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2689,
+          "corrections": 864,
+          "net": 37,
+          "regressions": 827
+        },
+        "poly": {
+          "changed": 2300,
+          "corrections": 864,
+          "net": 37,
+          "regressions": 827
+        }
+      }
+    },
+    "damping:27403": {
+      "by_fold": {
+        "0": {
+          "changed": 601,
+          "corrections": 180,
+          "net": 3,
+          "regressions": 177
+        },
+        "1": {
+          "changed": 517,
+          "corrections": 138,
+          "net": -51,
+          "regressions": 189
+        },
+        "2": {
+          "changed": 475,
+          "corrections": 128,
+          "net": -36,
+          "regressions": 164
+        },
+        "4": {
+          "changed": 504,
+          "corrections": 139,
+          "net": -23,
+          "regressions": 162
+        }
+      },
+      "original_corrections_lost": 332,
+      "original_k34_regressions_restored": 199,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 89,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 292,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 560,
+            "corrections": 162,
+            "net": -133,
+            "regressions": 295
+          },
+          "3": {
+            "changed": 622,
+            "corrections": 291,
+            "net": 17,
+            "regressions": 274
+          },
+          "4": {
+            "changed": 381,
+            "corrections": 117,
+            "net": 7,
+            "regressions": 110
+          },
+          "5": {
+            "changed": 115,
+            "corrections": 15,
+            "net": 3,
+            "regressions": 12
+          },
+          "6": {
+            "changed": 38,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          }
+        },
+        "global": {
+          "changed": 2097,
+          "corrections": 585,
+          "net": -107,
+          "regressions": 692
+        },
+        "poly": {
+          "changed": 1716,
+          "corrections": 585,
+          "net": -107,
+          "regressions": 692
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 133,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 391,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 711,
+            "corrections": 260,
+            "net": -8,
+            "regressions": 268
+          },
+          "3": {
+            "changed": 803,
+            "corrections": 335,
+            "net": -80,
+            "regressions": 415
+          },
+          "4": {
+            "changed": 500,
+            "corrections": 166,
+            "net": -19,
+            "regressions": 185
+          },
+          "5": {
+            "changed": 181,
+            "corrections": 31,
+            "net": 31,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 38,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2757,
+          "corrections": 792,
+          "net": -76,
+          "regressions": 868
+        },
+        "poly": {
+          "changed": 2233,
+          "corrections": 792,
+          "net": -76,
+          "regressions": 868
+        }
+      }
+    },
+    "damping:27404": {
+      "by_fold": {
+        "0": {
+          "changed": 620,
+          "corrections": 172,
+          "net": -17,
+          "regressions": 189
+        },
+        "1": {
+          "changed": 516,
+          "corrections": 161,
+          "net": -18,
+          "regressions": 179
+        },
+        "2": {
+          "changed": 447,
+          "corrections": 111,
+          "net": -51,
+          "regressions": 162
+        },
+        "4": {
+          "changed": 531,
+          "corrections": 152,
+          "net": -25,
+          "regressions": 177
+        }
+      },
+      "original_corrections_lost": 320,
+      "original_k34_regressions_restored": 215,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 90,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 270,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 578,
+            "corrections": 151,
+            "net": -154,
+            "regressions": 305
+          },
+          "3": {
+            "changed": 630,
+            "corrections": 299,
+            "net": 27,
+            "regressions": 272
+          },
+          "4": {
+            "changed": 402,
+            "corrections": 134,
+            "net": 16,
+            "regressions": 118
+          },
+          "5": {
+            "changed": 111,
+            "corrections": 12,
+            "net": 1,
+            "regressions": 11
+          },
+          "6": {
+            "changed": 33,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          }
+        },
+        "global": {
+          "changed": 2114,
+          "corrections": 596,
+          "net": -111,
+          "regressions": 707
+        },
+        "poly": {
+          "changed": 1754,
+          "corrections": 596,
+          "net": -111,
+          "regressions": 707
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 131,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 391,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 746,
+            "corrections": 262,
+            "net": -29,
+            "regressions": 291
+          },
+          "3": {
+            "changed": 812,
+            "corrections": 339,
+            "net": -70,
+            "regressions": 409
+          },
+          "4": {
+            "changed": 517,
+            "corrections": 171,
+            "net": -10,
+            "regressions": 181
+          },
+          "5": {
+            "changed": 172,
+            "corrections": 29,
+            "net": 29,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 41,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2810,
+          "corrections": 801,
+          "net": -80,
+          "regressions": 881
+        },
+        "poly": {
+          "changed": 2288,
+          "corrections": 801,
+          "net": -80,
+          "regressions": 881
+        }
+      }
+    },
+    "damping:27405": {
+      "by_fold": {
+        "0": {
+          "changed": 643,
+          "corrections": 165,
+          "net": -39,
+          "regressions": 204
+        },
+        "1": {
+          "changed": 510,
+          "corrections": 135,
+          "net": -57,
+          "regressions": 192
+        },
+        "2": {
+          "changed": 470,
+          "corrections": 121,
+          "net": -41,
+          "regressions": 162
+        },
+        "4": {
+          "changed": 502,
+          "corrections": 152,
+          "net": -12,
+          "regressions": 164
+        }
+      },
+      "original_corrections_lost": 346,
+      "original_k34_regressions_restored": 182,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 84,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 309,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 563,
+            "corrections": 163,
+            "net": -141,
+            "regressions": 304
+          },
+          "3": {
+            "changed": 626,
+            "corrections": 271,
+            "net": -9,
+            "regressions": 280
+          },
+          "4": {
+            "changed": 404,
+            "corrections": 122,
+            "net": -9,
+            "regressions": 131
+          },
+          "5": {
+            "changed": 103,
+            "corrections": 17,
+            "net": 10,
+            "regressions": 7
+          },
+          "6": {
+            "changed": 36,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2125,
+          "corrections": 573,
+          "net": -149,
+          "regressions": 722
+        },
+        "poly": {
+          "changed": 1732,
+          "corrections": 573,
+          "net": -149,
+          "regressions": 722
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 123,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 394,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 724,
+            "corrections": 253,
+            "net": -16,
+            "regressions": 269
+          },
+          "3": {
+            "changed": 829,
+            "corrections": 332,
+            "net": -106,
+            "regressions": 438
+          },
+          "4": {
+            "changed": 527,
+            "corrections": 158,
+            "net": -35,
+            "regressions": 193
+          },
+          "5": {
+            "changed": 186,
+            "corrections": 38,
+            "net": 38,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 39,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2822,
+          "corrections": 782,
+          "net": -118,
+          "regressions": 900
+        },
+        "poly": {
+          "changed": 2305,
+          "corrections": 782,
+          "net": -118,
+          "regressions": 900
+        }
+      }
+    },
+    "direct_votes:27403": {
+      "by_fold": {
+        "0": {
+          "changed": 30,
+          "corrections": 10,
+          "net": 1,
+          "regressions": 9
+        },
+        "1": {
+          "changed": 69,
+          "corrections": 23,
+          "net": 4,
+          "regressions": 19
+        },
+        "2": {
+          "changed": 38,
+          "corrections": 12,
+          "net": 3,
+          "regressions": 9
+        },
+        "4": {
+          "changed": 43,
+          "corrections": 18,
+          "net": 13,
+          "regressions": 5
+        }
+      },
+      "original_corrections_lost": 30,
+      "original_k34_regressions_restored": 24,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 10,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 29,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 38,
+            "corrections": 23,
+            "net": 14,
+            "regressions": 9
+          },
+          "3": {
+            "changed": 53,
+            "corrections": 24,
+            "net": 2,
+            "regressions": 22
+          },
+          "4": {
+            "changed": 34,
+            "corrections": 15,
+            "net": 5,
+            "regressions": 10
+          },
+          "5": {
+            "changed": 11,
+            "corrections": 1,
+            "net": 0,
+            "regressions": 1
+          },
+          "6": {
+            "changed": 5,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 180,
+          "corrections": 63,
+          "net": 21,
+          "regressions": 42
+        },
+        "poly": {
+          "changed": 141,
+          "corrections": 63,
+          "net": 21,
+          "regressions": 42
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 70,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 317,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 682,
+            "corrections": 332,
+            "net": 139,
+            "regressions": 193
+          },
+          "3": {
+            "changed": 742,
+            "corrections": 299,
+            "net": -95,
+            "regressions": 394
+          },
+          "4": {
+            "changed": 519,
+            "corrections": 163,
+            "net": -21,
+            "regressions": 184
+          },
+          "5": {
+            "changed": 189,
+            "corrections": 28,
+            "net": 28,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 54,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2573,
+          "corrections": 823,
+          "net": 52,
+          "regressions": 771
+        },
+        "poly": {
+          "changed": 2186,
+          "corrections": 823,
+          "net": 52,
+          "regressions": 771
+        }
+      }
+    },
+    "direct_votes:27404": {
+      "by_fold": {
+        "0": {
+          "changed": 32,
+          "corrections": 9,
+          "net": 3,
+          "regressions": 6
+        },
+        "1": {
+          "changed": 77,
+          "corrections": 27,
+          "net": 5,
+          "regressions": 22
+        },
+        "2": {
+          "changed": 40,
+          "corrections": 14,
+          "net": 4,
+          "regressions": 10
+        },
+        "4": {
+          "changed": 37,
+          "corrections": 14,
+          "net": 7,
+          "regressions": 7
+        }
+      },
+      "original_corrections_lost": 33,
+      "original_k34_regressions_restored": 25,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 6,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 24,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 51,
+            "corrections": 26,
+            "net": 11,
+            "regressions": 15
+          },
+          "3": {
+            "changed": 52,
+            "corrections": 24,
+            "net": 1,
+            "regressions": 23
+          },
+          "4": {
+            "changed": 37,
+            "corrections": 14,
+            "net": 8,
+            "regressions": 6
+          },
+          "5": {
+            "changed": 11,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          },
+          "6": {
+            "changed": 5,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 186,
+          "corrections": 64,
+          "net": 19,
+          "regressions": 45
+        },
+        "poly": {
+          "changed": 156,
+          "corrections": 64,
+          "net": 19,
+          "regressions": 45
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 70,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 325,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 677,
+            "corrections": 331,
+            "net": 136,
+            "regressions": 195
+          },
+          "3": {
+            "changed": 744,
+            "corrections": 299,
+            "net": -96,
+            "regressions": 395
+          },
+          "4": {
+            "changed": 504,
+            "corrections": 162,
+            "net": -18,
+            "regressions": 180
+          },
+          "5": {
+            "changed": 190,
+            "corrections": 27,
+            "net": 27,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 55,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2565,
+          "corrections": 820,
+          "net": 50,
+          "regressions": 770
+        },
+        "poly": {
+          "changed": 2170,
+          "corrections": 820,
+          "net": 50,
+          "regressions": 770
+        }
+      }
+    },
+    "direct_votes:27405": {
+      "by_fold": {
+        "0": {
+          "changed": 26,
+          "corrections": 6,
+          "net": -3,
+          "regressions": 9
+        },
+        "1": {
+          "changed": 79,
+          "corrections": 27,
+          "net": 1,
+          "regressions": 26
+        },
+        "2": {
+          "changed": 36,
+          "corrections": 16,
+          "net": 8,
+          "regressions": 8
+        },
+        "4": {
+          "changed": 36,
+          "corrections": 14,
+          "net": 6,
+          "regressions": 8
+        }
+      },
+      "original_corrections_lost": 42,
+      "original_k34_regressions_restored": 22,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 6,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 23,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 44,
+            "corrections": 24,
+            "net": 13,
+            "regressions": 11
+          },
+          "3": {
+            "changed": 52,
+            "corrections": 22,
+            "net": -6,
+            "regressions": 28
+          },
+          "4": {
+            "changed": 39,
+            "corrections": 17,
+            "net": 7,
+            "regressions": 10
+          },
+          "5": {
+            "changed": 8,
+            "corrections": 0,
+            "net": -2,
+            "regressions": 2
+          },
+          "6": {
+            "changed": 5,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 177,
+          "corrections": 63,
+          "net": 12,
+          "regressions": 51
+        },
+        "poly": {
+          "changed": 148,
+          "corrections": 63,
+          "net": 12,
+          "regressions": 51
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 69,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 324,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 683,
+            "corrections": 333,
+            "net": 138,
+            "regressions": 195
+          },
+          "3": {
+            "changed": 734,
+            "corrections": 292,
+            "net": -103,
+            "regressions": 395
+          },
+          "4": {
+            "changed": 512,
+            "corrections": 163,
+            "net": -19,
+            "regressions": 182
+          },
+          "5": {
+            "changed": 188,
+            "corrections": 26,
+            "net": 26,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 56,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2566,
+          "corrections": 815,
+          "net": 43,
+          "regressions": 772
+        },
+        "poly": {
+          "changed": 2173,
+          "corrections": 815,
+          "net": 43,
+          "regressions": 772
+        }
+      }
+    },
+    "identity_control:27403": {
+      "by_fold": {
+        "0": {
+          "changed": 0,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "1": {
+          "changed": 0,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "2": {
+          "changed": 0,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "4": {
+          "changed": 0,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        }
+      },
+      "original_corrections_lost": 0,
+      "original_k34_regressions_restored": 0,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "3": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "4": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "5": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 0,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "poly": {
+          "changed": 0,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 69,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 324,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 685,
+            "corrections": 328,
+            "net": 125,
+            "regressions": 203
+          },
+          "3": {
+            "changed": 764,
+            "corrections": 308,
+            "net": -97,
+            "regressions": 405
+          },
+          "4": {
+            "changed": 520,
+            "corrections": 163,
+            "net": -26,
+            "regressions": 189
+          },
+          "5": {
+            "changed": 191,
+            "corrections": 28,
+            "net": 28,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 58,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2611,
+          "corrections": 828,
+          "net": 31,
+          "regressions": 797
+        },
+        "poly": {
+          "changed": 2218,
+          "corrections": 828,
+          "net": 31,
+          "regressions": 797
+        }
+      }
+    },
+    "identity_control:27404": {
+      "by_fold": {
+        "0": {
+          "changed": 0,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "1": {
+          "changed": 0,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "2": {
+          "changed": 0,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "4": {
+          "changed": 0,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        }
+      },
+      "original_corrections_lost": 0,
+      "original_k34_regressions_restored": 0,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "3": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "4": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "5": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 0,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "poly": {
+          "changed": 0,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 69,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 324,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 685,
+            "corrections": 328,
+            "net": 125,
+            "regressions": 203
+          },
+          "3": {
+            "changed": 764,
+            "corrections": 308,
+            "net": -97,
+            "regressions": 405
+          },
+          "4": {
+            "changed": 520,
+            "corrections": 163,
+            "net": -26,
+            "regressions": 189
+          },
+          "5": {
+            "changed": 191,
+            "corrections": 28,
+            "net": 28,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 58,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2611,
+          "corrections": 828,
+          "net": 31,
+          "regressions": 797
+        },
+        "poly": {
+          "changed": 2218,
+          "corrections": 828,
+          "net": 31,
+          "regressions": 797
+        }
+      }
+    },
+    "identity_control:27405": {
+      "by_fold": {
+        "0": {
+          "changed": 0,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "1": {
+          "changed": 0,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "2": {
+          "changed": 0,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "4": {
+          "changed": 0,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        }
+      },
+      "original_corrections_lost": 0,
+      "original_k34_regressions_restored": 0,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "3": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "4": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "5": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 0,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "poly": {
+          "changed": 0,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 69,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 324,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 685,
+            "corrections": 328,
+            "net": 125,
+            "regressions": 203
+          },
+          "3": {
+            "changed": 764,
+            "corrections": 308,
+            "net": -97,
+            "regressions": 405
+          },
+          "4": {
+            "changed": 520,
+            "corrections": 163,
+            "net": -26,
+            "regressions": 189
+          },
+          "5": {
+            "changed": 191,
+            "corrections": 28,
+            "net": 28,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 58,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2611,
+          "corrections": 828,
+          "net": 31,
+          "regressions": 797
+        },
+        "poly": {
+          "changed": 2218,
+          "corrections": 828,
+          "net": 31,
+          "regressions": 797
+        }
+      }
+    },
+    "keep_metadata:27403": {
+      "by_fold": {
+        "0": {
+          "changed": 43,
+          "corrections": 17,
+          "net": 7,
+          "regressions": 10
+        },
+        "1": {
+          "changed": 97,
+          "corrections": 29,
+          "net": -13,
+          "regressions": 42
+        },
+        "2": {
+          "changed": 42,
+          "corrections": 14,
+          "net": 5,
+          "regressions": 9
+        },
+        "4": {
+          "changed": 53,
+          "corrections": 23,
+          "net": 9,
+          "regressions": 14
+        }
+      },
+      "original_corrections_lost": 37,
+      "original_k34_regressions_restored": 29,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 7,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 25,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 65,
+            "corrections": 38,
+            "net": 24,
+            "regressions": 14
+          },
+          "3": {
+            "changed": 74,
+            "corrections": 27,
+            "net": -16,
+            "regressions": 43
+          },
+          "4": {
+            "changed": 45,
+            "corrections": 16,
+            "net": -1,
+            "regressions": 17
+          },
+          "5": {
+            "changed": 11,
+            "corrections": 2,
+            "net": 1,
+            "regressions": 1
+          },
+          "6": {
+            "changed": 8,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 235,
+          "corrections": 83,
+          "net": 8,
+          "regressions": 75
+        },
+        "poly": {
+          "changed": 203,
+          "corrections": 83,
+          "net": 8,
+          "regressions": 75
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 66,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 307,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 660,
+            "corrections": 330,
+            "net": 149,
+            "regressions": 181
+          },
+          "3": {
+            "changed": 750,
+            "corrections": 293,
+            "net": -113,
+            "regressions": 406
+          },
+          "4": {
+            "changed": 517,
+            "corrections": 163,
+            "net": -27,
+            "regressions": 190
+          },
+          "5": {
+            "changed": 188,
+            "corrections": 29,
+            "net": 29,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 56,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2544,
+          "corrections": 816,
+          "net": 39,
+          "regressions": 777
+        },
+        "poly": {
+          "changed": 2171,
+          "corrections": 816,
+          "net": 39,
+          "regressions": 777
+        }
+      }
+    },
+    "keep_metadata:27404": {
+      "by_fold": {
+        "0": {
+          "changed": 37,
+          "corrections": 10,
+          "net": -1,
+          "regressions": 11
+        },
+        "1": {
+          "changed": 100,
+          "corrections": 29,
+          "net": -9,
+          "regressions": 38
+        },
+        "2": {
+          "changed": 47,
+          "corrections": 14,
+          "net": -2,
+          "regressions": 16
+        },
+        "4": {
+          "changed": 63,
+          "corrections": 31,
+          "net": 14,
+          "regressions": 17
+        }
+      },
+      "original_corrections_lost": 43,
+      "original_k34_regressions_restored": 27,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 7,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 29,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 65,
+            "corrections": 39,
+            "net": 26,
+            "regressions": 13
+          },
+          "3": {
+            "changed": 80,
+            "corrections": 28,
+            "net": -19,
+            "regressions": 47
+          },
+          "4": {
+            "changed": 49,
+            "corrections": 14,
+            "net": -8,
+            "regressions": 22
+          },
+          "5": {
+            "changed": 14,
+            "corrections": 3,
+            "net": 3,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 3,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 247,
+          "corrections": 84,
+          "net": 2,
+          "regressions": 82
+        },
+        "poly": {
+          "changed": 211,
+          "corrections": 84,
+          "net": 2,
+          "regressions": 82
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 66,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 311,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 674,
+            "corrections": 336,
+            "net": 151,
+            "regressions": 185
+          },
+          "3": {
+            "changed": 740,
+            "corrections": 287,
+            "net": -116,
+            "regressions": 403
+          },
+          "4": {
+            "changed": 519,
+            "corrections": 161,
+            "net": -34,
+            "regressions": 195
+          },
+          "5": {
+            "changed": 191,
+            "corrections": 31,
+            "net": 31,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 57,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2558,
+          "corrections": 816,
+          "net": 33,
+          "regressions": 783
+        },
+        "poly": {
+          "changed": 2181,
+          "corrections": 816,
+          "net": 33,
+          "regressions": 783
+        }
+      }
+    },
+    "keep_metadata:27405": {
+      "by_fold": {
+        "0": {
+          "changed": 47,
+          "corrections": 10,
+          "net": -6,
+          "regressions": 16
+        },
+        "1": {
+          "changed": 97,
+          "corrections": 30,
+          "net": -7,
+          "regressions": 37
+        },
+        "2": {
+          "changed": 48,
+          "corrections": 15,
+          "net": 1,
+          "regressions": 14
+        },
+        "4": {
+          "changed": 67,
+          "corrections": 31,
+          "net": 16,
+          "regressions": 15
+        }
+      },
+      "original_corrections_lost": 46,
+      "original_k34_regressions_restored": 30,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 6,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 35,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 69,
+            "corrections": 42,
+            "net": 25,
+            "regressions": 17
+          },
+          "3": {
+            "changed": 82,
+            "corrections": 29,
+            "net": -20,
+            "regressions": 49
+          },
+          "4": {
+            "changed": 47,
+            "corrections": 14,
+            "net": -1,
+            "regressions": 15
+          },
+          "5": {
+            "changed": 15,
+            "corrections": 1,
+            "net": 0,
+            "regressions": 1
+          },
+          "6": {
+            "changed": 5,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 259,
+          "corrections": 86,
+          "net": 4,
+          "regressions": 82
+        },
+        "poly": {
+          "changed": 218,
+          "corrections": 86,
+          "net": 4,
+          "regressions": 82
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 69,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 319,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 654,
+            "corrections": 326,
+            "net": 150,
+            "regressions": 176
+          },
+          "3": {
+            "changed": 740,
+            "corrections": 287,
+            "net": -117,
+            "regressions": 404
+          },
+          "4": {
+            "changed": 513,
+            "corrections": 163,
+            "net": -27,
+            "regressions": 190
+          },
+          "5": {
+            "changed": 192,
+            "corrections": 28,
+            "net": 28,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 55,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2542,
+          "corrections": 805,
+          "net": 35,
+          "regressions": 770
+        },
+        "poly": {
+          "changed": 2154,
+          "corrections": 805,
+          "net": 35,
+          "regressions": 770
+        }
+      }
+    },
+    "persistence:27403": {
+      "by_fold": {
+        "0": {
+          "changed": 559,
+          "corrections": 152,
+          "net": -28,
+          "regressions": 180
+        },
+        "1": {
+          "changed": 598,
+          "corrections": 143,
+          "net": -91,
+          "regressions": 234
+        },
+        "2": {
+          "changed": 392,
+          "corrections": 98,
+          "net": -25,
+          "regressions": 123
+        },
+        "4": {
+          "changed": 651,
+          "corrections": 169,
+          "net": -61,
+          "regressions": 230
+        }
+      },
+      "original_corrections_lost": 389,
+      "original_k34_regressions_restored": 210,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 66,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 276,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 586,
+            "corrections": 152,
+            "net": -131,
+            "regressions": 283
+          },
+          "3": {
+            "changed": 663,
+            "corrections": 259,
+            "net": -77,
+            "regressions": 336
+          },
+          "4": {
+            "changed": 426,
+            "corrections": 143,
+            "net": 20,
+            "regressions": 123
+          },
+          "5": {
+            "changed": 145,
+            "corrections": 7,
+            "net": -17,
+            "regressions": 24
+          },
+          "6": {
+            "changed": 38,
+            "corrections": 1,
+            "net": 0,
+            "regressions": 1
+          }
+        },
+        "global": {
+          "changed": 2200,
+          "corrections": 562,
+          "net": -205,
+          "regressions": 767
+        },
+        "poly": {
+          "changed": 1858,
+          "corrections": 562,
+          "net": -205,
+          "regressions": 767
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 94,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 394,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 713,
+            "corrections": 252,
+            "net": -6,
+            "regressions": 258
+          },
+          "3": {
+            "changed": 801,
+            "corrections": 278,
+            "net": -174,
+            "regressions": 452
+          },
+          "4": {
+            "changed": 456,
+            "corrections": 152,
+            "net": -6,
+            "regressions": 158
+          },
+          "5": {
+            "changed": 140,
+            "corrections": 11,
+            "net": 11,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 44,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2642,
+          "corrections": 694,
+          "net": -174,
+          "regressions": 868
+        },
+        "poly": {
+          "changed": 2154,
+          "corrections": 694,
+          "net": -174,
+          "regressions": 868
+        }
+      }
+    },
+    "persistence:27404": {
+      "by_fold": {
+        "0": {
+          "changed": 567,
+          "corrections": 146,
+          "net": -25,
+          "regressions": 171
+        },
+        "1": {
+          "changed": 619,
+          "corrections": 162,
+          "net": -67,
+          "regressions": 229
+        },
+        "2": {
+          "changed": 390,
+          "corrections": 100,
+          "net": -15,
+          "regressions": 115
+        },
+        "4": {
+          "changed": 658,
+          "corrections": 191,
+          "net": -33,
+          "regressions": 224
+        }
+      },
+      "original_corrections_lost": 377,
+      "original_k34_regressions_restored": 219,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 73,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 300,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 581,
+            "corrections": 166,
+            "net": -110,
+            "regressions": 276
+          },
+          "3": {
+            "changed": 667,
+            "corrections": 273,
+            "net": -40,
+            "regressions": 313
+          },
+          "4": {
+            "changed": 432,
+            "corrections": 151,
+            "net": 20,
+            "regressions": 131
+          },
+          "5": {
+            "changed": 140,
+            "corrections": 9,
+            "net": -10,
+            "regressions": 19
+          },
+          "6": {
+            "changed": 41,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2234,
+          "corrections": 599,
+          "net": -140,
+          "regressions": 739
+        },
+        "poly": {
+          "changed": 1861,
+          "corrections": 599,
+          "net": -140,
+          "regressions": 739
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 101,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 405,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 756,
+            "corrections": 283,
+            "net": 15,
+            "regressions": 268
+          },
+          "3": {
+            "changed": 793,
+            "corrections": 294,
+            "net": -137,
+            "regressions": 431
+          },
+          "4": {
+            "changed": 455,
+            "corrections": 141,
+            "net": -6,
+            "regressions": 147
+          },
+          "5": {
+            "changed": 153,
+            "corrections": 18,
+            "net": 18,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 41,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2704,
+          "corrections": 737,
+          "net": -109,
+          "regressions": 846
+        },
+        "poly": {
+          "changed": 2198,
+          "corrections": 737,
+          "net": -109,
+          "regressions": 846
+        }
+      }
+    },
+    "persistence:27405": {
+      "by_fold": {
+        "0": {
+          "changed": 560,
+          "corrections": 144,
+          "net": -25,
+          "regressions": 169
+        },
+        "1": {
+          "changed": 584,
+          "corrections": 158,
+          "net": -58,
+          "regressions": 216
+        },
+        "2": {
+          "changed": 409,
+          "corrections": 107,
+          "net": -8,
+          "regressions": 115
+        },
+        "4": {
+          "changed": 610,
+          "corrections": 158,
+          "net": -75,
+          "regressions": 233
+        }
+      },
+      "original_corrections_lost": 367,
+      "original_k34_regressions_restored": 211,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 74,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 302,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 544,
+            "corrections": 167,
+            "net": -77,
+            "regressions": 244
+          },
+          "3": {
+            "changed": 670,
+            "corrections": 262,
+            "net": -73,
+            "regressions": 335
+          },
+          "4": {
+            "changed": 411,
+            "corrections": 129,
+            "net": -5,
+            "regressions": 134
+          },
+          "5": {
+            "changed": 128,
+            "corrections": 9,
+            "net": -10,
+            "regressions": 19
+          },
+          "6": {
+            "changed": 34,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          }
+        },
+        "global": {
+          "changed": 2163,
+          "corrections": 567,
+          "net": -166,
+          "regressions": 733
+        },
+        "poly": {
+          "changed": 1787,
+          "corrections": 567,
+          "net": -166,
+          "regressions": 733
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 109,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 407,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 725,
+            "corrections": 295,
+            "net": 48,
+            "regressions": 247
+          },
+          "3": {
+            "changed": 796,
+            "corrections": 280,
+            "net": -170,
+            "regressions": 450
+          },
+          "4": {
+            "changed": 444,
+            "corrections": 126,
+            "net": -31,
+            "regressions": 157
+          },
+          "5": {
+            "changed": 167,
+            "corrections": 18,
+            "net": 18,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 51,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2699,
+          "corrections": 719,
+          "net": -135,
+          "regressions": 854
+        },
+        "poly": {
+          "changed": 2183,
+          "corrections": 719,
+          "net": -135,
+          "regressions": 854
+        }
+      }
+    },
+    "spectral:27403": {
+      "by_fold": {
+        "0": {
+          "changed": 684,
+          "corrections": 177,
+          "net": -51,
+          "regressions": 228
+        },
+        "1": {
+          "changed": 541,
+          "corrections": 144,
+          "net": -53,
+          "regressions": 197
+        },
+        "2": {
+          "changed": 451,
+          "corrections": 117,
+          "net": -34,
+          "regressions": 151
+        },
+        "4": {
+          "changed": 605,
+          "corrections": 182,
+          "net": -13,
+          "regressions": 195
+        }
+      },
+      "original_corrections_lost": 437,
+      "original_k34_regressions_restored": 264,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 70,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 298,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 583,
+            "corrections": 201,
+            "net": -63,
+            "regressions": 264
+          },
+          "3": {
+            "changed": 698,
+            "corrections": 283,
+            "net": -48,
+            "regressions": 331
+          },
+          "4": {
+            "changed": 448,
+            "corrections": 123,
+            "net": -30,
+            "regressions": 153
+          },
+          "5": {
+            "changed": 149,
+            "corrections": 13,
+            "net": -9,
+            "regressions": 22
+          },
+          "6": {
+            "changed": 35,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          }
+        },
+        "global": {
+          "changed": 2281,
+          "corrections": 620,
+          "net": -151,
+          "regressions": 771
+        },
+        "poly": {
+          "changed": 1913,
+          "corrections": 620,
+          "net": -151,
+          "regressions": 771
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 74,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 356,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 603,
+            "corrections": 240,
+            "net": 62,
+            "regressions": 178
+          },
+          "3": {
+            "changed": 673,
+            "corrections": 230,
+            "net": -145,
+            "regressions": 375
+          },
+          "4": {
+            "changed": 460,
+            "corrections": 131,
+            "net": -56,
+            "regressions": 187
+          },
+          "5": {
+            "changed": 137,
+            "corrections": 19,
+            "net": 19,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 32,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2335,
+          "corrections": 620,
+          "net": -120,
+          "regressions": 740
+        },
+        "poly": {
+          "changed": 1905,
+          "corrections": 620,
+          "net": -120,
+          "regressions": 740
+        }
+      }
+    },
+    "spectral:27404": {
+      "by_fold": {
+        "0": {
+          "changed": 651,
+          "corrections": 191,
+          "net": -29,
+          "regressions": 220
+        },
+        "1": {
+          "changed": 586,
+          "corrections": 152,
+          "net": -71,
+          "regressions": 223
+        },
+        "2": {
+          "changed": 467,
+          "corrections": 124,
+          "net": -40,
+          "regressions": 164
+        },
+        "4": {
+          "changed": 603,
+          "corrections": 187,
+          "net": -23,
+          "regressions": 210
+        }
+      },
+      "original_corrections_lost": 466,
+      "original_k34_regressions_restored": 265,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 64,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 252,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 618,
+            "corrections": 208,
+            "net": -86,
+            "regressions": 294
+          },
+          "3": {
+            "changed": 709,
+            "corrections": 284,
+            "net": -55,
+            "regressions": 339
+          },
+          "4": {
+            "changed": 480,
+            "corrections": 150,
+            "net": -12,
+            "regressions": 162
+          },
+          "5": {
+            "changed": 143,
+            "corrections": 12,
+            "net": -9,
+            "regressions": 21
+          },
+          "6": {
+            "changed": 41,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          }
+        },
+        "global": {
+          "changed": 2307,
+          "corrections": 654,
+          "net": -163,
+          "regressions": 817
+        },
+        "poly": {
+          "changed": 1991,
+          "corrections": 654,
+          "net": -163,
+          "regressions": 817
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 71,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 326,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 617,
+            "corrections": 249,
+            "net": 39,
+            "regressions": 210
+          },
+          "3": {
+            "changed": 670,
+            "corrections": 229,
+            "net": -152,
+            "regressions": 381
+          },
+          "4": {
+            "changed": 439,
+            "corrections": 130,
+            "net": -38,
+            "regressions": 168
+          },
+          "5": {
+            "changed": 146,
+            "corrections": 19,
+            "net": 19,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 32,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2301,
+          "corrections": 627,
+          "net": -132,
+          "regressions": 759
+        },
+        "poly": {
+          "changed": 1904,
+          "corrections": 627,
+          "net": -132,
+          "regressions": 759
+        }
+      }
+    },
+    "spectral:27405": {
+      "by_fold": {
+        "0": {
+          "changed": 706,
+          "corrections": 195,
+          "net": -38,
+          "regressions": 233
+        },
+        "1": {
+          "changed": 606,
+          "corrections": 167,
+          "net": -50,
+          "regressions": 217
+        },
+        "2": {
+          "changed": 459,
+          "corrections": 117,
+          "net": -42,
+          "regressions": 159
+        },
+        "4": {
+          "changed": 575,
+          "corrections": 177,
+          "net": -33,
+          "regressions": 210
+        }
+      },
+      "original_corrections_lost": 453,
+      "original_k34_regressions_restored": 246,
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 72,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 290,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 618,
+            "corrections": 226,
+            "net": -39,
+            "regressions": 265
+          },
+          "3": {
+            "changed": 719,
+            "corrections": 286,
+            "net": -69,
+            "regressions": 355
+          },
+          "4": {
+            "changed": 479,
+            "corrections": 129,
+            "net": -49,
+            "regressions": 178
+          },
+          "5": {
+            "changed": 130,
+            "corrections": 15,
+            "net": -5,
+            "regressions": 20
+          },
+          "6": {
+            "changed": 38,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          }
+        },
+        "global": {
+          "changed": 2346,
+          "corrections": 656,
+          "net": -163,
+          "regressions": 819
+        },
+        "poly": {
+          "changed": 1984,
+          "corrections": 656,
+          "net": -163,
+          "regressions": 819
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 71,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 336,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 608,
+            "corrections": 268,
+            "net": 86,
+            "regressions": 182
+          },
+          "3": {
+            "changed": 690,
+            "corrections": 236,
+            "net": -166,
+            "regressions": 402
+          },
+          "4": {
+            "changed": 471,
+            "corrections": 121,
+            "net": -75,
+            "regressions": 196
+          },
+          "5": {
+            "changed": 158,
+            "corrections": 23,
+            "net": 23,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 38,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2372,
+          "corrections": 648,
+          "net": -132,
+          "regressions": 780
+        },
+        "poly": {
+          "changed": 1965,
+          "corrections": 648,
+          "net": -132,
+          "regressions": 780
+        }
+      }
+    }
+  },
+  "margin_bins": [
+    {
+      "corrections": 107,
+      "lower": 0.0,
+      "margin_corrections": {
+        "mean": 0.02693047747015953,
+        "median": 0.027904421091079712,
+        "n": 107,
+        "q25": 0.01357915997505188,
+        "q75": 0.03952482342720032
+      },
+      "margin_regressions": {
+        "mean": 0.025326315313577652,
+        "median": 0.02365899085998535,
+        "n": 141,
+        "q25": 0.012885719537734985,
+        "q75": 0.03871908783912659
+      },
+      "net": -34,
+      "neutral": 156,
+      "probability_expected_corrections": 129.6448974609375,
+      "probability_expected_net": 9.756887435913086,
+      "probability_expected_regressions": 119.88801574707031,
+      "regressions": 141,
+      "rows": 404,
+      "source": null,
+      "upper": 0.05
+    },
+    {
+      "corrections": 112,
+      "lower": 0.05,
+      "margin_corrections": {
+        "mean": 0.07442828267812729,
+        "median": 0.07423941791057587,
+        "n": 112,
+        "q25": 0.06294303387403488,
+        "q75": 0.0853001307696104
+      },
+      "margin_regressions": {
+        "mean": 0.07546769082546234,
+        "median": 0.07533125579357147,
+        "n": 116,
+        "q25": 0.06412814930081367,
+        "q75": 0.08814108371734619
+      },
+      "net": -4,
+      "neutral": 136,
+      "probability_expected_corrections": 134.08547973632812,
+      "probability_expected_net": 27.19927215576172,
+      "probability_expected_regressions": 106.88621520996094,
+      "regressions": 116,
+      "rows": 364,
+      "source": null,
+      "upper": 0.1
+    },
+    {
+      "corrections": 181,
+      "lower": 0.1,
+      "margin_corrections": {
+        "mean": 0.1497935801744461,
+        "median": 0.14752785861492157,
+        "n": 181,
+        "q25": 0.12608981132507324,
+        "q75": 0.17386677861213684
+      },
+      "margin_regressions": {
+        "mean": 0.14538536965847015,
+        "median": 0.1439366340637207,
+        "n": 203,
+        "q25": 0.12061896920204163,
+        "q75": 0.1682863011956215
+      },
+      "net": -22,
+      "neutral": 219,
+      "probability_expected_corrections": 249.68060302734375,
+      "probability_expected_net": 89.53709411621094,
+      "probability_expected_regressions": 160.14349365234375,
+      "regressions": 203,
+      "rows": 603,
+      "source": null,
+      "upper": 0.2
+    },
+    {
+      "corrections": 273,
+      "lower": 0.2,
+      "margin_corrections": {
+        "mean": 0.29082542657852173,
+        "median": 0.2830333113670349,
+        "n": 273,
+        "q25": 0.24165251851081848,
+        "q75": 0.34389054775238037
+      },
+      "margin_regressions": {
+        "mean": 0.2869280278682709,
+        "median": 0.279355525970459,
+        "n": 225,
+        "q25": 0.24223116040229797,
+        "q75": 0.3317428231239319
+      },
+      "net": 48,
+      "neutral": 324,
+      "probability_expected_corrections": 410.4437255859375,
+      "probability_expected_net": 236.98770141601562,
+      "probability_expected_regressions": 173.45602416992188,
+      "regressions": 225,
+      "rows": 822,
+      "source": null,
+      "upper": 0.4
+    },
+    {
+      "corrections": 155,
+      "lower": 0.4,
+      "margin_corrections": {
+        "mean": 0.533435046672821,
+        "median": 0.5171754360198975,
+        "n": 155,
+        "q25": 0.436032235622406,
+        "q75": 0.5874901413917542
+      },
+      "margin_regressions": {
+        "mean": 0.5252612233161926,
+        "median": 0.4899083971977234,
+        "n": 112,
+        "q25": 0.44729308038949966,
+        "q75": 0.5738019943237305
+      },
+      "net": 43,
+      "neutral": 151,
+      "probability_expected_corrections": 276.8738708496094,
+      "probability_expected_net": 218.70919799804688,
+      "probability_expected_regressions": 58.1646614074707,
+      "regressions": 112,
+      "rows": 418,
+      "source": null,
+      "upper": 1.000001
+    },
+    {
+      "corrections": 16,
+      "lower": 0.0,
+      "margin_corrections": {
+        "mean": 0.029901333153247833,
+        "median": 0.032192640006542206,
+        "n": 16,
+        "q25": 0.01587432622909546,
+        "q75": 0.04313153773546219
+      },
+      "margin_regressions": {
+        "mean": 0.024014074355363846,
+        "median": 0.026652008295059204,
+        "n": 32,
+        "q25": 0.010902255773544312,
+        "q75": 0.032798200845718384
+      },
+      "net": -16,
+      "neutral": 28,
+      "probability_expected_corrections": 26.792043685913086,
+      "probability_expected_net": 1.9648749828338623,
+      "probability_expected_regressions": 24.827167510986328,
+      "regressions": 32,
+      "rows": 76,
+      "source": 2,
+      "upper": 0.05
+    },
+    {
+      "corrections": 17,
+      "lower": 0.05,
+      "margin_corrections": {
+        "mean": 0.07192251831293106,
+        "median": 0.07222521305084229,
+        "n": 17,
+        "q25": 0.06403997540473938,
+        "q75": 0.07926192879676819
+      },
+      "margin_regressions": {
+        "mean": 0.07365823537111282,
+        "median": 0.07293406128883362,
+        "n": 30,
+        "q25": 0.05863884836435318,
+        "q75": 0.0888512097299099
+      },
+      "net": -13,
+      "neutral": 26,
+      "probability_expected_corrections": 27.419816970825195,
+      "probability_expected_net": 5.3913984298706055,
+      "probability_expected_regressions": 22.028419494628906,
+      "regressions": 30,
+      "rows": 73,
+      "source": 2,
+      "upper": 0.1
+    },
+    {
+      "corrections": 47,
+      "lower": 0.1,
+      "margin_corrections": {
+        "mean": 0.14816993474960327,
+        "median": 0.1473897099494934,
+        "n": 47,
+        "q25": 0.12691709399223328,
+        "q75": 0.17378206551074982
+      },
+      "margin_regressions": {
+        "mean": 0.14566443860530853,
+        "median": 0.14648565649986267,
+        "n": 46,
+        "q25": 0.11652906239032745,
+        "q75": 0.16802801191806793
+      },
+      "net": 1,
+      "neutral": 47,
+      "probability_expected_corrections": 57.890838623046875,
+      "probability_expected_net": 20.28005027770996,
+      "probability_expected_regressions": 37.610782623291016,
+      "regressions": 46,
+      "rows": 140,
+      "source": 2,
+      "upper": 0.2
+    },
+    {
+      "corrections": 63,
+      "lower": 0.2,
+      "margin_corrections": {
+        "mean": 0.2982144355773926,
+        "median": 0.2943485975265503,
+        "n": 63,
+        "q25": 0.2544391602277756,
+        "q75": 0.34904158115386963
+      },
+      "margin_regressions": {
+        "mean": 0.2833920419216156,
+        "median": 0.27516046166419983,
+        "n": 59,
+        "q25": 0.2339455634355545,
+        "q75": 0.31706705689430237
+      },
+      "net": 4,
+      "neutral": 64,
+      "probability_expected_corrections": 94.9727554321289,
+      "probability_expected_net": 54.178916931152344,
+      "probability_expected_regressions": 40.7938346862793,
+      "regressions": 59,
+      "rows": 186,
+      "source": 2,
+      "upper": 0.4
+    },
+    {
+      "corrections": 29,
+      "lower": 0.4,
+      "margin_corrections": {
+        "mean": 0.5128743648529053,
+        "median": 0.4971126317977905,
+        "n": 29,
+        "q25": 0.42674577236175537,
+        "q75": 0.5672876834869385
+      },
+      "margin_regressions": {
+        "mean": 0.5418980121612549,
+        "median": 0.5066315531730652,
+        "n": 36,
+        "q25": 0.4699706882238388,
+        "q75": 0.5955240577459335
+      },
+      "net": -7,
+      "neutral": 28,
+      "probability_expected_corrections": 61.57448959350586,
+      "probability_expected_net": 47.954227447509766,
+      "probability_expected_regressions": 13.620261192321777,
+      "regressions": 36,
+      "rows": 93,
+      "source": 2,
+      "upper": 1.000001
+    },
+    {
+      "corrections": 57,
+      "lower": 0.0,
+      "margin_corrections": {
+        "mean": 0.027668872848153114,
+        "median": 0.03039991855621338,
+        "n": 57,
+        "q25": 0.01390199176967144,
+        "q75": 0.03969120979309082
+      },
+      "margin_regressions": {
+        "mean": 0.02610602229833603,
+        "median": 0.025691360235214233,
+        "n": 67,
+        "q25": 0.012814417481422424,
+        "q75": 0.04040619730949402
+      },
+      "net": -10,
+      "neutral": 87,
+      "probability_expected_corrections": 65.18734741210938,
+      "probability_expected_net": 4.987151145935059,
+      "probability_expected_regressions": 60.200191497802734,
+      "regressions": 67,
+      "rows": 211,
+      "source": 3,
+      "upper": 0.05
+    },
+    {
+      "corrections": 59,
+      "lower": 0.05,
+      "margin_corrections": {
+        "mean": 0.07673085480928421,
+        "median": 0.07796421647071838,
+        "n": 59,
+        "q25": 0.0658109188079834,
+        "q75": 0.08798357844352722
+      },
+      "margin_regressions": {
+        "mean": 0.07548671960830688,
+        "median": 0.07538449764251709,
+        "n": 59,
+        "q25": 0.06401961296796799,
+        "q75": 0.08748254179954529
+      },
+      "net": 0,
+      "neutral": 76,
+      "probability_expected_corrections": 72.21392822265625,
+      "probability_expected_net": 14.62643814086914,
+      "probability_expected_regressions": 57.58749771118164,
+      "regressions": 59,
+      "rows": 194,
+      "source": 3,
+      "upper": 0.1
+    },
+    {
+      "corrections": 95,
+      "lower": 0.1,
+      "margin_corrections": {
+        "mean": 0.14906467497348785,
+        "median": 0.14552628993988037,
+        "n": 95,
+        "q25": 0.12410871684551239,
+        "q75": 0.17493250221014023
+      },
+      "margin_regressions": {
+        "mean": 0.1461130827665329,
+        "median": 0.1477656364440918,
+        "n": 103,
+        "q25": 0.12106183171272278,
+        "q75": 0.1682863011956215
+      },
+      "net": -8,
+      "neutral": 103,
+      "probability_expected_corrections": 125.70091247558594,
+      "probability_expected_net": 45.10871887207031,
+      "probability_expected_regressions": 80.59217834472656,
+      "regressions": 103,
+      "rows": 301,
+      "source": 3,
+      "upper": 0.2
+    },
+    {
+      "corrections": 141,
+      "lower": 0.2,
+      "margin_corrections": {
+        "mean": 0.29247355461120605,
+        "median": 0.28867107629776,
+        "n": 141,
+        "q25": 0.23177333176136017,
+        "q75": 0.34743571281433105
+      },
+      "margin_regressions": {
+        "mean": 0.29306095838546753,
+        "median": 0.28382423520088196,
+        "n": 121,
+        "q25": 0.24923750758171082,
+        "q75": 0.3356952965259552
+      },
+      "net": 20,
+      "neutral": 176,
+      "probability_expected_corrections": 221.99514770507812,
+      "probability_expected_net": 126.52168273925781,
+      "probability_expected_regressions": 95.47346496582031,
+      "regressions": 121,
+      "rows": 438,
+      "source": 3,
+      "upper": 0.4
+    },
+    {
+      "corrections": 86,
+      "lower": 0.4,
+      "margin_corrections": {
+        "mean": 0.541793704032898,
+        "median": 0.5086753368377686,
+        "n": 86,
+        "q25": 0.4346996545791626,
+        "q75": 0.6318342536687851
+      },
+      "margin_regressions": {
+        "mean": 0.5244995355606079,
+        "median": 0.47636809945106506,
+        "n": 55,
+        "q25": 0.4323311150074005,
+        "q75": 0.5633781254291534
+      },
+      "net": 31,
+      "neutral": 84,
+      "probability_expected_corrections": 152.3407440185547,
+      "probability_expected_net": 119.0162353515625,
+      "probability_expected_regressions": 33.32450866699219,
+      "regressions": 55,
+      "rows": 225,
+      "source": 3,
+      "upper": 1.000001
+    },
+    {
+      "corrections": 34,
+      "lower": 0.0,
+      "margin_corrections": {
+        "mean": 0.024294527247548103,
+        "median": 0.027602333575487137,
+        "n": 34,
+        "q25": 0.010440587997436523,
+        "q75": 0.03720103204250336
+      },
+      "margin_regressions": {
+        "mean": 0.02508229948580265,
+        "median": 0.022514894604682922,
+        "n": 42,
+        "q25": 0.014605686068534851,
+        "q75": 0.03488267958164215
+      },
+      "net": -8,
+      "neutral": 41,
+      "probability_expected_corrections": 37.665523529052734,
+      "probability_expected_net": 2.8048617839813232,
+      "probability_expected_regressions": 34.86065673828125,
+      "regressions": 42,
+      "rows": 117,
+      "source": 4,
+      "upper": 0.05
+    },
+    {
+      "corrections": 36,
+      "lower": 0.05,
+      "margin_corrections": {
+        "mean": 0.07183791697025299,
+        "median": 0.06851145625114441,
+        "n": 36,
+        "q25": 0.06141725182533264,
+        "q75": 0.08384303376078606
+      },
+      "margin_regressions": {
+        "mean": 0.07743661850690842,
+        "median": 0.07899495959281921,
+        "n": 27,
+        "q25": 0.0682980865240097,
+        "q75": 0.08891847729682922
+      },
+      "net": 9,
+      "neutral": 34,
+      "probability_expected_corrections": 34.45173263549805,
+      "probability_expected_net": 7.181435585021973,
+      "probability_expected_regressions": 27.270292282104492,
+      "regressions": 27,
+      "rows": 97,
+      "source": 4,
+      "upper": 0.1
+    },
+    {
+      "corrections": 39,
+      "lower": 0.1,
+      "margin_corrections": {
+        "mean": 0.15352587401866913,
+        "median": 0.1537601351737976,
+        "n": 39,
+        "q25": 0.13492859154939651,
+        "q75": 0.17230654507875443
+      },
+      "margin_regressions": {
+        "mean": 0.1437595933675766,
+        "median": 0.13887739181518555,
+        "n": 54,
+        "q25": 0.12311293929815292,
+        "q75": 0.16790198907256126
+      },
+      "net": -15,
+      "neutral": 69,
+      "probability_expected_corrections": 66.08885955810547,
+      "probability_expected_net": 24.148324966430664,
+      "probability_expected_regressions": 41.940528869628906,
+      "regressions": 54,
+      "rows": 162,
+      "source": 4,
+      "upper": 0.2
+    },
+    {
+      "corrections": 69,
+      "lower": 0.2,
+      "margin_corrections": {
+        "mean": 0.2807110846042633,
+        "median": 0.26679763197898865,
+        "n": 69,
+        "q25": 0.23678362369537354,
+        "q75": 0.326260507106781
+      },
+      "margin_regressions": {
+        "mean": 0.2750732898712158,
+        "median": 0.2642372250556946,
+        "n": 45,
+        "q25": 0.23346899449825287,
+        "q75": 0.31368082761764526
+      },
+      "net": 24,
+      "neutral": 84,
+      "probability_expected_corrections": 93.475830078125,
+      "probability_expected_net": 56.28710174560547,
+      "probability_expected_regressions": 37.18872833251953,
+      "regressions": 45,
+      "rows": 198,
+      "source": 4,
+      "upper": 0.4
+    },
+    {
+      "corrections": 40,
+      "lower": 0.4,
+      "margin_corrections": {
+        "mean": 0.5303704738616943,
+        "median": 0.527292013168335,
+        "n": 40,
+        "q25": 0.4514721482992172,
+        "q75": 0.5686833709478378
+      },
+      "margin_regressions": {
+        "mean": 0.49873578548431396,
+        "median": 0.4713785648345947,
+        "n": 21,
+        "q25": 0.44771143794059753,
+        "q75": 0.5461768507957458
+      },
+      "net": 19,
+      "neutral": 39,
+      "probability_expected_corrections": 62.95862579345703,
+      "probability_expected_net": 51.738739013671875,
+      "probability_expected_regressions": 11.219892501831055,
+      "regressions": 21,
+      "rows": 100,
+      "source": 4,
+      "upper": 1.000001
+    }
+  ],
+  "original_paired": {
+    "by_k": {
+      "0": {
+        "changed": 69,
+        "corrections": 0,
+        "net": 0,
+        "regressions": 0
+      },
+      "1": {
+        "changed": 324,
+        "corrections": 0,
+        "net": 0,
+        "regressions": 0
+      },
+      "2": {
+        "changed": 685,
+        "corrections": 328,
+        "net": 125,
+        "regressions": 203
+      },
+      "3": {
+        "changed": 764,
+        "corrections": 308,
+        "net": -97,
+        "regressions": 405
+      },
+      "4": {
+        "changed": 520,
+        "corrections": 163,
+        "net": -26,
+        "regressions": 189
+      },
+      "5": {
+        "changed": 191,
+        "corrections": 28,
+        "net": 28,
+        "regressions": 0
+      },
+      "6": {
+        "changed": 58,
+        "corrections": 1,
+        "net": 1,
+        "regressions": 0
+      }
+    },
+    "global": {
+      "changed": 2611,
+      "corrections": 828,
+      "net": 31,
+      "regressions": 797
+    },
+    "poly": {
+      "changed": 2218,
+      "corrections": 828,
+      "net": 31,
+      "regressions": 797
+    }
+  },
+  "promotion": false,
+  "regression_cases": 594,
+  "regression_overlap": {
+    "3": {
+      "also_legacy_regression": 200,
+      "newly_broken": 205,
+      "total": 405
+    },
+    "4": {
+      "also_legacy_regression": 88,
+      "newly_broken": 101,
+      "total": 189
+    }
+  },
+  "replay_checks": [
+    {
+      "fold": 0,
+      "max_attention_error": 1.1920928955078125e-07,
+      "max_probability_error": 3.8743019104003906e-07,
+      "prediction_mismatches": 0,
+      "rows": 1998
+    },
+    {
+      "fold": 1,
+      "max_attention_error": 1.4901161193847656e-07,
+      "max_probability_error": 4.172325134277344e-07,
+      "prediction_mismatches": 0,
+      "rows": 1781
+    },
+    {
+      "fold": 2,
+      "max_attention_error": 9.685754776000977e-08,
+      "max_probability_error": 3.5762786865234375e-07,
+      "prediction_mismatches": 0,
+      "rows": 1596
+    },
+    {
+      "fold": 4,
+      "max_attention_error": 1.1175870895385742e-07,
+      "max_probability_error": 7.152557373046875e-07,
+      "prediction_mismatches": 0,
+      "rows": 2118
+    }
+  ],
+  "run_id": 37769970667,
+  "source_commit": "4329829cf9953363b95f6e13dab68c42eaa2367c",
+  "status": "verified",
+  "transitions": [
+    {
+      "by_fold": {
+        "0": {
+          "corrections": 61,
+          "margin_corrections": {
+            "mean": 0.28508761525154114,
+            "median": 0.24474895000457764,
+            "n": 61,
+            "q25": 0.14262127876281738,
+            "q75": 0.4048473834991455
+          },
+          "margin_regressions": {
+            "mean": 0.2653767764568329,
+            "median": 0.23858687281608582,
+            "n": 96,
+            "q25": 0.10923512652516365,
+            "q75": 0.3854033723473549
+          },
+          "net": -35,
+          "neutral": 89,
+          "probability_expected_corrections": 120.80062866210938,
+          "probability_expected_net": 64.09210205078125,
+          "probability_expected_regressions": 56.70853042602539,
+          "regressions": 96,
+          "rows": 246
+        },
+        "1": {
+          "corrections": 60,
+          "margin_corrections": {
+            "mean": 0.22358903288841248,
+            "median": 0.22193126380443573,
+            "n": 60,
+            "q25": 0.12435026466846466,
+            "q75": 0.3249717205762863
+          },
+          "margin_regressions": {
+            "mean": 0.18979708850383759,
+            "median": 0.14648565649986267,
+            "n": 48,
+            "q25": 0.08984684944152832,
+            "q75": 0.21759147197008133
+          },
+          "net": 12,
+          "neutral": 39,
+          "probability_expected_corrections": 66.21542358398438,
+          "probability_expected_net": 29.55902862548828,
+          "probability_expected_regressions": 36.656394958496094,
+          "regressions": 48,
+          "rows": 147
+        },
+        "2": {
+          "corrections": 28,
+          "margin_corrections": {
+            "mean": 0.23091872036457062,
+            "median": 0.18449170887470245,
+            "n": 28,
+            "q25": 0.10156922042369843,
+            "q75": 0.2987118735909462
+          },
+          "margin_regressions": {
+            "mean": 0.195865660905838,
+            "median": 0.1669922173023224,
+            "n": 18,
+            "q25": 0.06641953065991402,
+            "q75": 0.27967794984579086
+          },
+          "net": 10,
+          "neutral": 20,
+          "probability_expected_corrections": 30.877763748168945,
+          "probability_expected_net": 14.95478343963623,
+          "probability_expected_regressions": 15.922982215881348,
+          "regressions": 18,
+          "rows": 66
+        },
+        "4": {
+          "corrections": 23,
+          "margin_corrections": {
+            "mean": 0.21976284682750702,
+            "median": 0.19154340028762817,
+            "n": 23,
+            "q25": 0.1282569169998169,
+            "q75": 0.2864047884941101
+          },
+          "margin_regressions": {
+            "mean": 0.20162484049797058,
+            "median": 0.14119136333465576,
+            "n": 36,
+            "q25": 0.042819224298000336,
+            "q75": 0.36083224415779114
+          },
+          "net": -13,
+          "neutral": 40,
+          "probability_expected_corrections": 47.582984924316406,
+          "probability_expected_net": 19.903043746948242,
+          "probability_expected_regressions": 27.679935455322266,
+          "regressions": 36,
+          "rows": 99
+        }
+      },
+      "corrections": 172,
+      "margin_corrections": {
+        "mean": 0.2460811287164688,
+        "median": 0.21950305998325348,
+        "n": 172,
+        "q25": 0.12379878014326096,
+        "q75": 0.35098903626203537
+      },
+      "margin_regressions": {
+        "mean": 0.22914397716522217,
+        "median": 0.19230866432189941,
+        "n": 198,
+        "q25": 0.08339877426624298,
+        "q75": 0.32053691148757935
+      },
+      "net": -26,
+      "neutral": 188,
+      "probability_expected_corrections": 265.476806640625,
+      "probability_expected_net": 128.5089569091797,
+      "probability_expected_regressions": 136.96783447265625,
+      "regressions": 198,
+      "rows": 558,
+      "source": 2,
+      "target": 3
+    },
+    {
+      "by_fold": {
+        "0": {
+          "corrections": 0,
+          "margin_corrections": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "margin_regressions": {
+            "mean": 0.10349678993225098,
+            "median": 0.10349678993225098,
+            "n": 2,
+            "q25": 0.09840076416730881,
+            "q75": 0.10859281569719315
+          },
+          "net": -2,
+          "neutral": 0,
+          "probability_expected_corrections": 0.5938551425933838,
+          "probability_expected_net": 0.20699357986450195,
+          "probability_expected_regressions": 0.38686153292655945,
+          "regressions": 2,
+          "rows": 2
+        },
+        "1": {
+          "corrections": 0,
+          "margin_corrections": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "margin_regressions": {
+            "mean": 0.12917277216911316,
+            "median": 0.12917277216911316,
+            "n": 1,
+            "q25": 0.12917277216911316,
+            "q75": 0.12917277216911316
+          },
+          "net": -1,
+          "neutral": 2,
+          "probability_expected_corrections": 0.8646238446235657,
+          "probability_expected_net": 0.2810722291469574,
+          "probability_expected_regressions": 0.5835515856742859,
+          "regressions": 1,
+          "rows": 3
+        },
+        "2": {
+          "corrections": 0,
+          "margin_corrections": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "margin_regressions": {
+            "mean": 0.10027481615543365,
+            "median": 0.10027481615543365,
+            "n": 2,
+            "q25": 0.06418129056692123,
+            "q75": 0.13636834174394608
+          },
+          "net": -2,
+          "neutral": 0,
+          "probability_expected_corrections": 0.5961378812789917,
+          "probability_expected_net": 0.2005496323108673,
+          "probability_expected_regressions": 0.3955882787704468,
+          "regressions": 2,
+          "rows": 2
+        },
+        "4": {
+          "corrections": 0,
+          "margin_corrections": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "margin_regressions": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "net": 0,
+          "neutral": 2,
+          "probability_expected_corrections": 0.6713845133781433,
+          "probability_expected_net": 0.17823800444602966,
+          "probability_expected_regressions": 0.49314650893211365,
+          "regressions": 0,
+          "rows": 2
+        }
+      },
+      "corrections": 0,
+      "margin_corrections": {
+        "mean": null,
+        "median": null,
+        "n": 0,
+        "q25": null,
+        "q75": null
+      },
+      "margin_regressions": {
+        "mean": 0.10734319686889648,
+        "median": 0.11368884146213531,
+        "n": 5,
+        "q25": 0.09330473840236664,
+        "q75": 0.12917277216911316
+      },
+      "net": -5,
+      "neutral": 4,
+      "probability_expected_corrections": 2.726001501083374,
+      "probability_expected_net": 0.8668534159660339,
+      "probability_expected_regressions": 1.8591480255126953,
+      "regressions": 5,
+      "rows": 9,
+      "source": 2,
+      "target": 4
+    },
+    {
+      "by_fold": {
+        "0": {
+          "corrections": 0,
+          "margin_corrections": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "margin_regressions": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "net": 0,
+          "neutral": 1,
+          "probability_expected_corrections": 0.44714561104774475,
+          "probability_expected_net": 0.3936624526977539,
+          "probability_expected_regressions": 0.05348314344882965,
+          "regressions": 0,
+          "rows": 1
+        },
+        "1": {
+          "corrections": 0,
+          "margin_corrections": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "margin_regressions": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "net": 0,
+          "neutral": 0,
+          "probability_expected_corrections": 0.0,
+          "probability_expected_net": 0.0,
+          "probability_expected_regressions": 0.0,
+          "regressions": 0,
+          "rows": 0
+        },
+        "2": {
+          "corrections": 0,
+          "margin_corrections": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "margin_regressions": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "net": 0,
+          "neutral": 0,
+          "probability_expected_corrections": 0.0,
+          "probability_expected_net": 0.0,
+          "probability_expected_regressions": 0.0,
+          "regressions": 0,
+          "rows": 0
+        },
+        "4": {
+          "corrections": 0,
+          "margin_corrections": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "margin_regressions": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "net": 0,
+          "neutral": 0,
+          "probability_expected_corrections": 0.0,
+          "probability_expected_net": 0.0,
+          "probability_expected_regressions": 0.0,
+          "regressions": 0,
+          "rows": 0
+        }
+      },
+      "corrections": 0,
+      "margin_corrections": {
+        "mean": null,
+        "median": null,
+        "n": 0,
+        "q25": null,
+        "q75": null
+      },
+      "margin_regressions": {
+        "mean": null,
+        "median": null,
+        "n": 0,
+        "q25": null,
+        "q75": null
+      },
+      "net": 0,
+      "neutral": 1,
+      "probability_expected_corrections": 0.44714561104774475,
+      "probability_expected_net": 0.3936624526977539,
+      "probability_expected_regressions": 0.05348314344882965,
+      "regressions": 0,
+      "rows": 1,
+      "source": 2,
+      "target": 5
+    },
+    {
+      "by_fold": {
+        "0": {
+          "corrections": 0,
+          "margin_corrections": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "margin_regressions": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "net": 0,
+          "neutral": 0,
+          "probability_expected_corrections": 0.0,
+          "probability_expected_net": 0.0,
+          "probability_expected_regressions": 0.0,
+          "regressions": 0,
+          "rows": 0
+        },
+        "1": {
+          "corrections": 0,
+          "margin_corrections": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "margin_regressions": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "net": 0,
+          "neutral": 0,
+          "probability_expected_corrections": 0.0,
+          "probability_expected_net": 0.0,
+          "probability_expected_regressions": 0.0,
+          "regressions": 0,
+          "rows": 0
+        },
+        "2": {
+          "corrections": 0,
+          "margin_corrections": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "margin_regressions": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "net": 0,
+          "neutral": 0,
+          "probability_expected_corrections": 0.0,
+          "probability_expected_net": 0.0,
+          "probability_expected_regressions": 0.0,
+          "regressions": 0,
+          "rows": 0
+        },
+        "4": {
+          "corrections": 0,
+          "margin_corrections": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "margin_regressions": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "net": 0,
+          "neutral": 0,
+          "probability_expected_corrections": 0.0,
+          "probability_expected_net": 0.0,
+          "probability_expected_regressions": 0.0,
+          "regressions": 0,
+          "rows": 0
+        }
+      },
+      "corrections": 0,
+      "margin_corrections": {
+        "mean": null,
+        "median": null,
+        "n": 0,
+        "q25": null,
+        "q75": null
+      },
+      "margin_regressions": {
+        "mean": null,
+        "median": null,
+        "n": 0,
+        "q25": null,
+        "q75": null
+      },
+      "net": 0,
+      "neutral": 0,
+      "probability_expected_corrections": 0.0,
+      "probability_expected_net": 0.0,
+      "probability_expected_regressions": 0.0,
+      "regressions": 0,
+      "rows": 0,
+      "source": 2,
+      "target": 6
+    },
+    {
+      "by_fold": {
+        "0": {
+          "corrections": 58,
+          "margin_corrections": {
+            "mean": 0.27307820320129395,
+            "median": 0.23893782496452332,
+            "n": 58,
+            "q25": 0.1435191035270691,
+            "q75": 0.3973708599805832
+          },
+          "margin_regressions": {
+            "mean": 0.20100370049476624,
+            "median": 0.15596237778663635,
+            "n": 59,
+            "q25": 0.06410077959299088,
+            "q75": 0.29833845794200897
+          },
+          "net": -1,
+          "neutral": 94,
+          "probability_expected_corrections": 94.4994888305664,
+          "probability_expected_net": 49.13615798950195,
+          "probability_expected_regressions": 45.36333465576172,
+          "regressions": 59,
+          "rows": 211
+        },
+        "1": {
+          "corrections": 92,
+          "margin_corrections": {
+            "mean": 0.2666696310043335,
+            "median": 0.21464556455612183,
+            "n": 92,
+            "q25": 0.11692576482892036,
+            "q75": 0.3779873624444008
+          },
+          "margin_regressions": {
+            "mean": 0.22910481691360474,
+            "median": 0.19461049139499664,
+            "n": 59,
+            "q25": 0.0844472087919712,
+            "q75": 0.35301268100738525
+          },
+          "net": 33,
+          "neutral": 84,
+          "probability_expected_corrections": 105.9498291015625,
+          "probability_expected_net": 56.518028259277344,
+          "probability_expected_regressions": 49.431800842285156,
+          "regressions": 59,
+          "rows": 235
+        },
+        "2": {
+          "corrections": 49,
+          "margin_corrections": {
+            "mean": 0.28731632232666016,
+            "median": 0.2661660611629486,
+            "n": 49,
+            "q25": 0.11695615947246552,
+            "q75": 0.41966915130615234
+          },
+          "margin_regressions": {
+            "mean": 0.31185489892959595,
+            "median": 0.2837303578853607,
+            "n": 53,
+            "q25": 0.11125358939170837,
+            "q75": 0.43211740255355835
+          },
+          "net": -4,
+          "neutral": 75,
+          "probability_expected_corrections": 86.01104736328125,
+          "probability_expected_net": 48.4217529296875,
+          "probability_expected_regressions": 37.589290618896484,
+          "regressions": 53,
+          "rows": 177
+        },
+        "4": {
+          "corrections": 72,
+          "margin_corrections": {
+            "mean": 0.22517159581184387,
+            "median": 0.17721141874790192,
+            "n": 72,
+            "q25": 0.05917121469974518,
+            "q75": 0.35140249878168106
+          },
+          "margin_regressions": {
+            "mean": 0.18961496651172638,
+            "median": 0.147088885307312,
+            "n": 51,
+            "q25": 0.05867709219455719,
+            "q75": 0.26049087941646576
+          },
+          "net": 21,
+          "neutral": 79,
+          "probability_expected_corrections": 91.01773071289062,
+          "probability_expected_net": 42.17354202270508,
+          "probability_expected_regressions": 48.844200134277344,
+          "regressions": 51,
+          "rows": 202
+        }
+      },
+      "corrections": 271,
+      "margin_corrections": {
+        "mean": 0.26074904203414917,
+        "median": 0.21302929520606995,
+        "n": 271,
+        "q25": 0.10995452105998993,
+        "q75": 0.38616517186164856
+      },
+      "margin_regressions": {
+        "mean": 0.2323201298713684,
+        "median": 0.17964699864387512,
+        "n": 222,
+        "q25": 0.08468732982873917,
+        "q75": 0.3352244794368744
+      },
+      "net": 49,
+      "neutral": 332,
+      "probability_expected_corrections": 377.47808837890625,
+      "probability_expected_net": 196.24948120117188,
+      "probability_expected_regressions": 181.22862243652344,
+      "regressions": 222,
+      "rows": 825,
+      "source": 3,
+      "target": 2
+    },
+    {
+      "by_fold": {
+        "0": {
+          "corrections": 28,
+          "margin_corrections": {
+            "mean": 0.14572317898273468,
+            "median": 0.12159876525402069,
+            "n": 28,
+            "q25": 0.07830121368169785,
+            "q75": 0.15432796254754066
+          },
+          "margin_regressions": {
+            "mean": 0.15711726248264313,
+            "median": 0.13859187066555023,
+            "n": 22,
+            "q25": 0.04825880378484726,
+            "q75": 0.24540074914693832
+          },
+          "net": 6,
+          "neutral": 21,
+          "probability_expected_corrections": 31.05109405517578,
+          "probability_expected_net": 11.29507827758789,
+          "probability_expected_regressions": 19.756013870239258,
+          "regressions": 22,
+          "rows": 71
+        },
+        "1": {
+          "corrections": 27,
+          "margin_corrections": {
+            "mean": 0.2555125057697296,
+            "median": 0.2307220697402954,
+            "n": 27,
+            "q25": 0.11829367280006409,
+            "q75": 0.38631531596183777
+          },
+          "margin_regressions": {
+            "mean": 0.19280461966991425,
+            "median": 0.17380088567733765,
+            "n": 50,
+            "q25": 0.08376765251159668,
+            "q75": 0.2961476519703865
+          },
+          "net": -23,
+          "neutral": 42,
+          "probability_expected_corrections": 56.72856521606445,
+          "probability_expected_net": 26.916765213012695,
+          "probability_expected_regressions": 29.811798095703125,
+          "regressions": 50,
+          "rows": 119
+        },
+        "2": {
+          "corrections": 13,
+          "margin_corrections": {
+            "mean": 0.16433429718017578,
+            "median": 0.1365620195865631,
+            "n": 13,
+            "q25": 0.08723065257072449,
+            "q75": 0.2479729801416397
+          },
+          "margin_regressions": {
+            "mean": 0.13703611493110657,
+            "median": 0.10644102096557617,
+            "n": 15,
+            "q25": 0.07121382653713226,
+            "q75": 0.14007338881492615
+          },
+          "net": -2,
+          "neutral": 25,
+          "probability_expected_corrections": 22.71092414855957,
+          "probability_expected_net": 9.199503898620605,
+          "probability_expected_regressions": 13.511418342590332,
+          "regressions": 15,
+          "rows": 53
+        },
+        "4": {
+          "corrections": 95,
+          "margin_corrections": {
+            "mean": 0.24648579955101013,
+            "median": 0.22170254588127136,
+            "n": 95,
+            "q25": 0.08315359055995941,
+            "q75": 0.3743138611316681
+          },
+          "margin_regressions": {
+            "mean": 0.19245153665542603,
+            "median": 0.15935984253883362,
+            "n": 90,
+            "q25": 0.08474424481391907,
+            "q75": 0.29108889400959015
+          },
+          "net": 5,
+          "neutral": 92,
+          "probability_expected_corrections": 139.96038818359375,
+          "probability_expected_net": 61.59069061279297,
+          "probability_expected_regressions": 78.36970520019531,
+          "regressions": 90,
+          "rows": 277
+        }
+      },
+      "corrections": 163,
+      "margin_corrections": {
+        "mean": 0.2241201400756836,
+        "median": 0.19555944204330444,
+        "n": 163,
+        "q25": 0.08315359055995941,
+        "q75": 0.3360542058944702
+      },
+      "margin_regressions": {
+        "mean": 0.1834632307291031,
+        "median": 0.15641427040100098,
+        "n": 177,
+        "q25": 0.07538449764251709,
+        "q75": 0.279355525970459
+      },
+      "net": -14,
+      "neutral": 180,
+      "probability_expected_corrections": 250.4509735107422,
+      "probability_expected_net": 109.00203704833984,
+      "probability_expected_regressions": 141.44894409179688,
+      "regressions": 177,
+      "rows": 520,
+      "source": 3,
+      "target": 4
+    },
+    {
+      "by_fold": {
+        "0": {
+          "corrections": 3,
+          "margin_corrections": {
+            "mean": 0.215863898396492,
+            "median": 0.15843506157398224,
+            "n": 3,
+            "q25": 0.11425589770078659,
+            "q75": 0.28875747323036194
+          },
+          "margin_regressions": {
+            "mean": 0.2238408476114273,
+            "median": 0.1366962343454361,
+            "n": 4,
+            "q25": 0.09703214094042778,
+            "q75": 0.2635049372911453
+          },
+          "net": -1,
+          "neutral": 8,
+          "probability_expected_corrections": 5.931265354156494,
+          "probability_expected_net": 2.4992802143096924,
+          "probability_expected_regressions": 3.4319849014282227,
+          "regressions": 4,
+          "rows": 15
+        },
+        "1": {
+          "corrections": 0,
+          "margin_corrections": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "margin_regressions": {
+            "mean": 0.2805728018283844,
+            "median": 0.2805728018283844,
+            "n": 1,
+            "q25": 0.2805728018283844,
+            "q75": 0.2805728018283844
+          },
+          "net": -1,
+          "neutral": 4,
+          "probability_expected_corrections": 1.9632912874221802,
+          "probability_expected_net": 1.5233240127563477,
+          "probability_expected_regressions": 0.43996718525886536,
+          "regressions": 1,
+          "rows": 5
+        },
+        "2": {
+          "corrections": 0,
+          "margin_corrections": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "margin_regressions": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "net": 0,
+          "neutral": 0,
+          "probability_expected_corrections": 0.0,
+          "probability_expected_net": 0.0,
+          "probability_expected_regressions": 0.0,
+          "regressions": 0,
+          "rows": 0
+        },
+        "4": {
+          "corrections": 1,
+          "margin_corrections": {
+            "mean": 0.2562454640865326,
+            "median": 0.2562454640865326,
+            "n": 1,
+            "q25": 0.2562454640865326,
+            "q75": 0.2562454640865326
+          },
+          "margin_regressions": {
+            "mean": 0.33631831407546997,
+            "median": 0.33631831407546997,
+            "n": 1,
+            "q25": 0.33631831407546997,
+            "q75": 0.33631831407546997
+          },
+          "net": 0,
+          "neutral": 2,
+          "probability_expected_corrections": 1.6144275665283203,
+          "probability_expected_net": 0.9860966801643372,
+          "probability_expected_regressions": 0.6283309459686279,
+          "regressions": 1,
+          "rows": 4
+        }
+      },
+      "corrections": 4,
+      "margin_corrections": {
+        "mean": 0.22595930099487305,
+        "median": 0.207340270280838,
+        "n": 4,
+        "q25": 0.13634547963738441,
+        "q75": 0.29695407301187515
+      },
+      "margin_regressions": {
+        "mean": 0.25204241275787354,
+        "median": 0.22813773155212402,
+        "n": 6,
+        "q25": 0.11719301342964172,
+        "q75": 0.3223819360136986
+      },
+      "net": -2,
+      "neutral": 14,
+      "probability_expected_corrections": 9.508983612060547,
+      "probability_expected_net": 5.008701324462891,
+      "probability_expected_regressions": 4.500283241271973,
+      "regressions": 6,
+      "rows": 24,
+      "source": 3,
+      "target": 5
+    },
+    {
+      "by_fold": {
+        "0": {
+          "corrections": 0,
+          "margin_corrections": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "margin_regressions": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "net": 0,
+          "neutral": 0,
+          "probability_expected_corrections": 0.0,
+          "probability_expected_net": 0.0,
+          "probability_expected_regressions": 0.0,
+          "regressions": 0,
+          "rows": 0
+        },
+        "1": {
+          "corrections": 0,
+          "margin_corrections": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "margin_regressions": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "net": 0,
+          "neutral": 0,
+          "probability_expected_corrections": 0.0,
+          "probability_expected_net": 0.0,
+          "probability_expected_regressions": 0.0,
+          "regressions": 0,
+          "rows": 0
+        },
+        "2": {
+          "corrections": 0,
+          "margin_corrections": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "margin_regressions": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "net": 0,
+          "neutral": 0,
+          "probability_expected_corrections": 0.0,
+          "probability_expected_net": 0.0,
+          "probability_expected_regressions": 0.0,
+          "regressions": 0,
+          "rows": 0
+        },
+        "4": {
+          "corrections": 0,
+          "margin_corrections": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "margin_regressions": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "net": 0,
+          "neutral": 0,
+          "probability_expected_corrections": 0.0,
+          "probability_expected_net": 0.0,
+          "probability_expected_regressions": 0.0,
+          "regressions": 0,
+          "rows": 0
+        }
+      },
+      "corrections": 0,
+      "margin_corrections": {
+        "mean": null,
+        "median": null,
+        "n": 0,
+        "q25": null,
+        "q75": null
+      },
+      "margin_regressions": {
+        "mean": null,
+        "median": null,
+        "n": 0,
+        "q25": null,
+        "q75": null
+      },
+      "net": 0,
+      "neutral": 0,
+      "probability_expected_corrections": 0.0,
+      "probability_expected_net": 0.0,
+      "probability_expected_regressions": 0.0,
+      "regressions": 0,
+      "rows": 0,
+      "source": 3,
+      "target": 6
+    },
+    {
+      "by_fold": {
+        "0": {
+          "corrections": 17,
+          "margin_corrections": {
+            "mean": 0.36194220185279846,
+            "median": 0.37164169549942017,
+            "n": 17,
+            "q25": 0.23001700639724731,
+            "q75": 0.5306181311607361
+          },
+          "margin_regressions": {
+            "mean": 0.25280332565307617,
+            "median": 0.14947877824306488,
+            "n": 8,
+            "q25": 0.11824468895792961,
+            "q75": 0.29112084954977036
+          },
+          "net": 9,
+          "neutral": 24,
+          "probability_expected_corrections": 21.23719596862793,
+          "probability_expected_net": 14.84935188293457,
+          "probability_expected_regressions": 6.387843608856201,
+          "regressions": 8,
+          "rows": 49
+        },
+        "1": {
+          "corrections": 14,
+          "margin_corrections": {
+            "mean": 0.26184603571891785,
+            "median": 0.203179270029068,
+            "n": 14,
+            "q25": 0.06442651338875294,
+            "q75": 0.3944275230169296
+          },
+          "margin_regressions": {
+            "mean": 0.10106968879699707,
+            "median": 0.10255256295204163,
+            "n": 7,
+            "q25": 0.02501865290105343,
+            "q75": 0.11705176904797554
+          },
+          "net": 7,
+          "neutral": 19,
+          "probability_expected_corrections": 15.629951477050781,
+          "probability_expected_net": 8.84949016571045,
+          "probability_expected_regressions": 6.780460834503174,
+          "regressions": 7,
+          "rows": 40
+        },
+        "2": {
+          "corrections": 21,
+          "margin_corrections": {
+            "mean": 0.3494201898574829,
+            "median": 0.35344749689102173,
+            "n": 21,
+            "q25": 0.23276692628860474,
+            "q75": 0.452109158039093
+          },
+          "margin_regressions": {
+            "mean": 0.22759731113910675,
+            "median": 0.22109508514404297,
+            "n": 16,
+            "q25": 0.13129102438688278,
+            "q75": 0.2877750024199486
+          },
+          "net": 5,
+          "neutral": 49,
+          "probability_expected_corrections": 38.17734909057617,
+          "probability_expected_net": 23.288549423217773,
+          "probability_expected_regressions": 14.888802528381348,
+          "regressions": 16,
+          "rows": 86
+        },
+        "4": {
+          "corrections": 5,
+          "margin_corrections": {
+            "mean": 0.19234278798103333,
+            "median": 0.2565309405326843,
+            "n": 5,
+            "q25": 0.14738626778125763,
+            "q75": 0.2640005052089691
+          },
+          "margin_regressions": {
+            "mean": 0.22353018820285797,
+            "median": 0.22353018820285797,
+            "n": 2,
+            "q25": 0.20691274851560593,
+            "q75": 0.24014762789011002
+          },
+          "net": 3,
+          "neutral": 1,
+          "probability_expected_corrections": 2.9969797134399414,
+          "probability_expected_net": 1.6250165700912476,
+          "probability_expected_regressions": 1.3719632625579834,
+          "regressions": 2,
+          "rows": 8
+        }
+      },
+      "corrections": 57,
+      "margin_corrections": {
+        "mean": 0.31786665320396423,
+        "median": 0.27680492401123047,
+        "n": 57,
+        "q25": 0.1926318109035492,
+        "q75": 0.452109158039093
+      },
+      "margin_regressions": {
+        "mean": 0.2066221684217453,
+        "median": 0.1505386233329773,
+        "n": 33,
+        "q25": 0.10868863016366959,
+        "q75": 0.2663024365901947
+      },
+      "net": 24,
+      "neutral": 93,
+      "probability_expected_corrections": 78.04147338867188,
+      "probability_expected_net": 48.612403869628906,
+      "probability_expected_regressions": 29.4290714263916,
+      "regressions": 33,
+      "rows": 183,
+      "source": 4,
+      "target": 2
+    },
+    {
+      "by_fold": {
+        "0": {
+          "corrections": 61,
+          "margin_corrections": {
+            "mean": 0.25064513087272644,
+            "median": 0.22077834606170654,
+            "n": 61,
+            "q25": 0.09272068738937378,
+            "q75": 0.36265483498573303
+          },
+          "margin_regressions": {
+            "mean": 0.21106937527656555,
+            "median": 0.1726716160774231,
+            "n": 50,
+            "q25": 0.09196627885103226,
+            "q75": 0.29578135907649994
+          },
+          "net": 11,
+          "neutral": 70,
+          "probability_expected_corrections": 84.9822998046875,
+          "probability_expected_net": 42.63257598876953,
+          "probability_expected_regressions": 42.34971618652344,
+          "regressions": 50,
+          "rows": 181
+        },
+        "1": {
+          "corrections": 41,
+          "margin_corrections": {
+            "mean": 0.1994771957397461,
+            "median": 0.19517882168293,
+            "n": 41,
+            "q25": 0.06567484140396118,
+            "q75": 0.28870320320129395
+          },
+          "margin_regressions": {
+            "mean": 0.16166986525058746,
+            "median": 0.13654792308807373,
+            "n": 37,
+            "q25": 0.06892305612564087,
+            "q75": 0.2168309986591339
+          },
+          "net": 4,
+          "neutral": 45,
+          "probability_expected_corrections": 56.04450225830078,
+          "probability_expected_net": 22.283132553100586,
+          "probability_expected_regressions": 33.76136779785156,
+          "regressions": 37,
+          "rows": 123
+        },
+        "2": {
+          "corrections": 25,
+          "margin_corrections": {
+            "mean": 0.13196241855621338,
+            "median": 0.08069488406181335,
+            "n": 25,
+            "q25": 0.04881703853607178,
+            "q75": 0.19064897298812866
+          },
+          "margin_regressions": {
+            "mean": 0.14291299879550934,
+            "median": 0.10496194660663605,
+            "n": 24,
+            "q25": 0.043583616614341736,
+            "q75": 0.21706946566700935
+          },
+          "net": 1,
+          "neutral": 25,
+          "probability_expected_corrections": 29.872350692749023,
+          "probability_expected_net": 10.67982006072998,
+          "probability_expected_regressions": 19.192529678344727,
+          "regressions": 24,
+          "rows": 74
+        },
+        "4": {
+          "corrections": 9,
+          "margin_corrections": {
+            "mean": 0.10492530465126038,
+            "median": 0.0987861156463623,
+            "n": 9,
+            "q25": 0.04432764649391174,
+            "q75": 0.15149334073066711
+          },
+          "margin_regressions": {
+            "mean": 0.11337941884994507,
+            "median": 0.08004379272460938,
+            "n": 14,
+            "q25": 0.028649277985095978,
+            "q75": 0.13203058391809464
+          },
+          "net": -5,
+          "neutral": 4,
+          "probability_expected_corrections": 11.657781600952148,
+          "probability_expected_net": 3.1173954010009766,
+          "probability_expected_regressions": 8.540386199951172,
+          "regressions": 14,
+          "rows": 27
+        }
+      },
+      "corrections": 136,
+      "margin_corrections": {
+        "mean": 0.2037595957517624,
+        "median": 0.1708139181137085,
+        "n": 136,
+        "q25": 0.06547162681818008,
+        "q75": 0.28631827235221863
+      },
+      "margin_regressions": {
+        "mean": 0.17241983115673065,
+        "median": 0.1366104781627655,
+        "n": 125,
+        "q25": 0.06436789035797119,
+        "q75": 0.23635908961296082
+      },
+      "net": 11,
+      "neutral": 144,
+      "probability_expected_corrections": 182.55694580078125,
+      "probability_expected_net": 78.71292114257812,
+      "probability_expected_regressions": 103.84400177001953,
+      "regressions": 125,
+      "rows": 405,
+      "source": 4,
+      "target": 3
+    },
+    {
+      "by_fold": {
+        "0": {
+          "corrections": 9,
+          "margin_corrections": {
+            "mean": 0.19498872756958008,
+            "median": 0.2002485692501068,
+            "n": 9,
+            "q25": 0.027370721101760864,
+            "q75": 0.23678362369537354
+          },
+          "margin_regressions": {
+            "mean": 0.2904872000217438,
+            "median": 0.30505380034446716,
+            "n": 12,
+            "q25": 0.1207471452653408,
+            "q75": 0.4527297765016556
+          },
+          "net": -3,
+          "neutral": 10,
+          "probability_expected_corrections": 13.334228515625,
+          "probability_expected_net": 7.580526828765869,
+          "probability_expected_regressions": 5.753702640533447,
+          "regressions": 12,
+          "rows": 31
+        },
+        "1": {
+          "corrections": 4,
+          "margin_corrections": {
+            "mean": 0.28981339931488037,
+            "median": 0.23162941634655,
+            "n": 4,
+            "q25": 0.1744687631726265,
+            "q75": 0.34697404503822327
+          },
+          "margin_regressions": {
+            "mean": 0.11220516264438629,
+            "median": 0.08563581109046936,
+            "n": 7,
+            "q25": 0.01597428321838379,
+            "q75": 0.1644623652100563
+          },
+          "net": -3,
+          "neutral": 7,
+          "probability_expected_corrections": 7.301625728607178,
+          "probability_expected_net": 2.901543378829956,
+          "probability_expected_regressions": 4.400082111358643,
+          "regressions": 7,
+          "rows": 18
+        },
+        "2": {
+          "corrections": 7,
+          "margin_corrections": {
+            "mean": 0.08440184593200684,
+            "median": 0.08630101382732391,
+            "n": 7,
+            "q25": 0.03356018662452698,
+            "q75": 0.11975649744272232
+          },
+          "margin_regressions": {
+            "mean": 0.07020218670368195,
+            "median": 0.06767311692237854,
+            "n": 5,
+            "q25": 0.030668199062347412,
+            "q75": 0.0805819034576416
+          },
+          "net": 2,
+          "neutral": 8,
+          "probability_expected_corrections": 6.995972633361816,
+          "probability_expected_net": 1.681203842163086,
+          "probability_expected_regressions": 5.3147687911987305,
+          "regressions": 5,
+          "rows": 20
+        },
+        "4": {
+          "corrections": 4,
+          "margin_corrections": {
+            "mean": 0.12378519028425217,
+            "median": 0.1151101365685463,
+            "n": 4,
+            "q25": 0.0739896111190319,
+            "q75": 0.16490570828318596
+          },
+          "margin_regressions": {
+            "mean": 0.10938727110624313,
+            "median": 0.1001952588558197,
+            "n": 7,
+            "q25": 0.026188701391220093,
+            "q75": 0.18071861565113068
+          },
+          "net": -3,
+          "neutral": 3,
+          "probability_expected_corrections": 5.246449947357178,
+          "probability_expected_net": 1.8731908798217773,
+          "probability_expected_regressions": 3.3732593059539795,
+          "regressions": 7,
+          "rows": 14
+        }
+      },
+      "corrections": 24,
+      "margin_corrections": {
+        "mean": 0.16667108237743378,
+        "median": 0.14396648108959198,
+        "n": 24,
+        "q25": 0.04829030483961105,
+        "q75": 0.21568331122398376
+      },
+      "margin_regressions": {
+        "mean": 0.17380660772323608,
+        "median": 0.1001952588558197,
+        "n": 31,
+        "q25": 0.034452348947525024,
+        "q75": 0.25599052011966705
+      },
+      "net": -7,
+      "neutral": 28,
+      "probability_expected_corrections": 32.87827682495117,
+      "probability_expected_net": 14.036462783813477,
+      "probability_expected_regressions": 18.841812133789062,
+      "regressions": 31,
+      "rows": 83,
+      "source": 4,
+      "target": 5
+    },
+    {
+      "by_fold": {
+        "0": {
+          "corrections": 0,
+          "margin_corrections": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "margin_regressions": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "net": 0,
+          "neutral": 0,
+          "probability_expected_corrections": 0.0,
+          "probability_expected_net": 0.0,
+          "probability_expected_regressions": 0.0,
+          "regressions": 0,
+          "rows": 0
+        },
+        "1": {
+          "corrections": 0,
+          "margin_corrections": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "margin_regressions": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "net": 0,
+          "neutral": 1,
+          "probability_expected_corrections": 0.358851820230484,
+          "probability_expected_net": 0.2523356080055237,
+          "probability_expected_regressions": 0.10651621222496033,
+          "regressions": 0,
+          "rows": 1
+        },
+        "2": {
+          "corrections": 1,
+          "margin_corrections": {
+            "mean": 0.1537601351737976,
+            "median": 0.1537601351737976,
+            "n": 1,
+            "q25": 0.1537601351737976,
+            "q75": 0.1537601351737976
+          },
+          "margin_regressions": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "net": 1,
+          "neutral": 1,
+          "probability_expected_corrections": 0.805029034614563,
+          "probability_expected_net": 0.5463236570358276,
+          "probability_expected_regressions": 0.25870537757873535,
+          "regressions": 0,
+          "rows": 2
+        },
+        "4": {
+          "corrections": 0,
+          "margin_corrections": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "margin_regressions": {
+            "mean": null,
+            "median": null,
+            "n": 0,
+            "q25": null,
+            "q75": null
+          },
+          "net": 0,
+          "neutral": 0,
+          "probability_expected_corrections": 0.0,
+          "probability_expected_net": 0.0,
+          "probability_expected_regressions": 0.0,
+          "regressions": 0,
+          "rows": 0
+        }
+      },
+      "corrections": 1,
+      "margin_corrections": {
+        "mean": 0.1537601351737976,
+        "median": 0.1537601351737976,
+        "n": 1,
+        "q25": 0.1537601351737976,
+        "q75": 0.1537601351737976
+      },
+      "margin_regressions": {
+        "mean": null,
+        "median": null,
+        "n": 0,
+        "q25": null,
+        "q75": null
+      },
+      "net": 1,
+      "neutral": 2,
+      "probability_expected_corrections": 1.1638808250427246,
+      "probability_expected_net": 0.7986593246459961,
+      "probability_expected_regressions": 0.3652215898036957,
+      "regressions": 0,
+      "rows": 3,
+      "source": 4,
+      "target": 6
+    }
+  ]
+}

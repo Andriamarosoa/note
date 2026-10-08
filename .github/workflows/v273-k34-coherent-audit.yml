@@ -1,0 +1,79 @@
+name: V27.3 coherent selector K3 K4 forensic audit
+
+on:
+  push:
+    branches: [codex/v273-selector-contract-repair]
+    paths:
+      - 'scripts/audit_v273_k34_coherent.py'
+      - 'test/test_v273_k34_audit.py'
+      - '.github/workflows/v273-k34-coherent-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  CUDA_VISIBLE_DEVICES: '-1'
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  TF_NUM_INTRAOP_THREADS: '2'
+  TF_NUM_INTEROP_THREADS: '1'
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install the original numerical environment
+        run: |
+          python -m pip install -r requirements-train.txt
+          python -m pip install scipy==1.17.1 scikit-learn==1.4.2
+      - name: Check label-blind interventions and original contracts
+        run: python -m unittest -v test.test_v273_k34_audit test.test_v273_selector_contract test.test_v273_coherent_selector
+      - name: Retrieve frozen coherent models and predictions
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37766719862
+          name: v273-selector-repair-coherent
+          path: model/k34-audit/coherent
+      - name: Retrieve legacy comparison
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37766719862
+          name: v273-selector-repair-legacy
+          path: model/k34-audit/legacy
+      - name: Retrieve identical acoustic feature rows
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37740493178
+          pattern: v273-harmonic-global-fold-*
+          path: model/k34-audit/features
+      - name: Reproduce frozen predictions and audit decisions
+        run: |
+          python -m scripts.audit_v273_k34_coherent \
+            --coherent model/k34-audit/coherent \
+            --legacy model/k34-audit/legacy \
+            --features model/k34-audit/features \
+            --output model/v273-k34-coherent-audit --replay
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-k34-coherent-audit
+          path: model/v273-k34-coherent-audit/
+          retention-days: 90
