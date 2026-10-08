@@ -1,0 +1,59 @@
+name: V27.3 S18 K43 K21 regression risk gates
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series18-k43-k21.yml'
+      - 'scripts/loop_v273_k43_k21.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v273-series18-k43-k21
+  cancel-in-progress: false
+jobs:
+  evaluate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Test strictly limited K43/K21 decoder and head inventory
+        run: python -m scripts.loop_v273_k43_k21 --self-test
+      - name: Download independent no-label acoustics and time profiles
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/sources
+          gh release download v273-open-k0-k6-37837235723 --repo "$GITHUB_REPOSITORY" --pattern 'v273-open-features-*.tar' --dir model/sources
+          for fold in 0 1 2 4; do
+            mkdir -p "model/features/fold-$fold"
+            tar -xf "model/sources/v273-open-features-$fold.tar" -C "model/features/fold-$fold"
+          done
+      - name: Recover verified S17 conservative baseline policy
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37856164138 --repo "$GITHUB_REPOSITORY" --name v273-series17-k32-k34 --dir model/series17
+      - name: Run cross-piece K4/2 regressions and preserve the complete audit
+        run: >-
+          python -m scripts.loop_v273_k43_k21
+          --features model/features
+          --series17 model/series17/predictions.npz
+          --output model/series18
+      - name: Publish full per-policy evidence
+        run: cat model/series18/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series18-k43-k21
+          path: model/series18/
+          retention-days: 90
