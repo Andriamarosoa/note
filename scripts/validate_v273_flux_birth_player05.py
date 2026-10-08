@@ -66,7 +66,16 @@ def infer(args):
     require(np.all(base[ids]==3),"holdout must be base K3 candidates")
     require(set(m[:2] for m in members)=={"05"},"wrong performer")
     wanted=set(members[ids])
-    tracks={t.annotation_member:t for t in index_guitarset(args.dataset) if t.annotation_member in wanted}
+    # GuitarSet's default index excludes player 05. Restore the global filter
+    # immediately afterwards so all other experiment code remains untouched.
+    import causal_note.guitarset as gs
+    previous_players=gs.ALLOWED_PLAYERS
+    gs.ALLOWED_PLAYERS=frozenset(("05",))
+    try:
+        tracks={t.annotation_member:t for t in gs.index_guitarset(args.dataset)
+                if t.annotation_member in wanted}
+    finally:
+        gs.ALLOWED_PLAYERS=previous_players
     require(set(tracks)==wanted,"holdout audio coverage missing")
     audio={}
     for member,track in tracks.items():
