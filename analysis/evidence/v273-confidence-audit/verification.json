@@ -1,0 +1,3584 @@
+{
+  "arms": {
+    "control7": {
+      "aggregate": {
+        "held": {
+          "alternative_count": {
+            "0": 2438,
+            "1": 3921,
+            "2": 1054,
+            "3": 80,
+            "4": 0
+          },
+          "baseline_accuracy": 0.3356466034965968,
+          "baseline_brier": 0.2199411291659606,
+          "baseline_correct": 2515,
+          "best_gain_bins": [
+            {
+              "lower": -1,
+              "observed_mean_gain": -0.22926829268292684,
+              "optimism_per_row": -0.35333904376006636,
+              "predicted_mean_gain": -0.5826073364429933,
+              "rows": 205,
+              "upper": -0.5
+            },
+            {
+              "lower": -0.5,
+              "observed_mean_gain": -0.1490222521915037,
+              "optimism_per_row": -0.17117604748042478,
+              "predicted_mean_gain": -0.3201982996719285,
+              "rows": 1483,
+              "upper": -0.2
+            },
+            {
+              "lower": -0.2,
+              "observed_mean_gain": -0.06675062972292191,
+              "optimism_per_row": -0.08252619644844364,
+              "predicted_mean_gain": -0.14927682617136556,
+              "rows": 794,
+              "upper": -0.1
+            },
+            {
+              "lower": -0.1,
+              "observed_mean_gain": -0.06985769728331177,
+              "optimism_per_row": 0.019265681723452992,
+              "predicted_mean_gain": -0.05059201555985877,
+              "rows": 773,
+              "upper": 0
+            },
+            {
+              "lower": 0,
+              "observed_mean_gain": -0.07046979865771812,
+              "optimism_per_row": 0.09437990706517346,
+              "predicted_mean_gain": 0.023910108407455354,
+              "rows": 298,
+              "upper": 0.05
+            },
+            {
+              "lower": 0.05,
+              "observed_mean_gain": 0.07857142857142857,
+              "optimism_per_row": -0.004600885817579723,
+              "predicted_mean_gain": 0.07397054275384884,
+              "rows": 280,
+              "upper": 0.1
+            },
+            {
+              "lower": 0.1,
+              "observed_mean_gain": 0.01818181818181818,
+              "optimism_per_row": 0.12776844259693948,
+              "predicted_mean_gain": 0.1459502607787577,
+              "rows": 440,
+              "upper": 0.2
+            },
+            {
+              "lower": 0.2,
+              "observed_mean_gain": -0.009523809523809525,
+              "optimism_per_row": 0.2567746163925671,
+              "predicted_mean_gain": 0.2472508068687576,
+              "rows": 315,
+              "upper": 0.3
+            },
+            {
+              "lower": 0.3,
+              "observed_mean_gain": 0.09538461538461539,
+              "optimism_per_row": 0.2923751063466563,
+              "predicted_mean_gain": 0.38775972173127166,
+              "rows": 325,
+              "upper": 0.5
+            },
+            {
+              "lower": 0.5,
+              "observed_mean_gain": 0.1619718309859155,
+              "optimism_per_row": 0.4523538279135755,
+              "predicted_mean_gain": 0.614325658899491,
+              "rows": 142,
+              "upper": 1
+            }
+          ],
+          "changes": 1800,
+          "conditional_brier_on_baseline_wrong": 0.3881354934671974,
+          "conditional_selected_baseline_wrong": {
+            "observed": 0.45539906103286387,
+            "predicted": 0.6195703346586632,
+            "rows": 1278
+          },
+          "corrections": 582,
+          "evaluations_per_native_eligible_event": 1,
+          "expected_corrections": 832.7896591192111,
+          "expected_net": 383.1952280732803,
+          "expected_regressions": 449.59443104593083,
+          "net": 60,
+          "nll": {
+            "baseline": 0.6313576018249387,
+            "conditional_on_baseline_wrong": 0.6234268912813831,
+            "conditional_weighted_by_all_events": 0.4141757726943447,
+            "event": 1.0455333745192834
+          },
+          "optimism": 323.1952280732803,
+          "other_baseline_wrong": {
+            "observed": 0.6737645640819606,
+            "predicted": 0.6931519592446357
+          },
+          "other_selected_baseline_wrong": {
+            "observed": 0.4491392801251956,
+            "predicted": 0.333349457772714
+          },
+          "policies": {
+            "accepted_best": {
+              "observed_mean_gain": 0.03333333333333333,
+              "optimism_per_row": 0.179552909060668,
+              "predicted_mean_gain": 0.21288624239400133,
+              "rows": 1800
+            },
+            "best_without_acceptance_gate": {
+              "observed_mean_gain": -0.06231454005934718,
+              "optimism_per_row": -0.010628441955077393,
+              "predicted_mean_gain": -0.07294298201442458,
+              "rows": 5055
+            },
+            "rejected_best": {
+              "observed_mean_gain": -0.1152073732718894,
+              "optimism_per_row": -0.11579785265502876,
+              "predicted_mean_gain": -0.23100522592691816,
+              "rows": 3255
+            },
+            "uniform_over_distinct_alternatives": {
+              "observed_mean_gain": -0.07365644576327068,
+              "optimism_per_row": -0.02433636672355501,
+              "predicted_mean_gain": -0.09799281248682569,
+              "rows": 5055
+            }
+          },
+          "reference_all": {
+            "observed": 0.3356466034965968,
+            "predicted": 0.34799058063106186
+          },
+          "reference_selected": {
+            "observed": 0.29,
+            "predicted": 0.24977468391440602
+          },
+          "regressions": 522,
+          "rows": 7493,
+          "selected_by_alternative_count": {
+            "1": {
+              "observed_mean_gain": 0.01584786053882726,
+              "optimism_per_row": 0.1967069119644208,
+              "predicted_mean_gain": 0.21255477250324809,
+              "rows": 1262
+            },
+            "2": {
+              "observed_mean_gain": 0.07128309572301425,
+              "optimism_per_row": 0.14362718727941778,
+              "predicted_mean_gain": 0.21491028300243206,
+              "rows": 491
+            },
+            "3": {
+              "observed_mean_gain": 0.10638297872340426,
+              "optimism_per_row": 0.09425881821083468,
+              "predicted_mean_gain": 0.20064179693423886,
+              "rows": 47
+            },
+            "4": {
+              "observed_mean_gain": null,
+              "optimism_per_row": null,
+              "predicted_mean_gain": null,
+              "rows": 0
+            }
+          },
+          "selected_optimism_decomposition": {
+            "baseline_component": 113.38434861543081,
+            "conditional_component": 209.8108876937716,
+            "formula": "(B-r)*(1+q) + (1-B)*(q-I(selected_K=true_K)); a fixed algebraic decomposition, not causal attribution"
+          },
+          "selected_wrong_baseline_with_correct_alternative_but_wrong_choice": 122,
+          "selected_wrong_baseline_without_correct_alternative": 574
+        },
+        "train": {
+          "alternative_count": {
+            "0": 6876,
+            "1": 11976,
+            "2": 3414,
+            "3": 212,
+            "4": 1
+          },
+          "baseline_accuracy": 0.3356466034965968,
+          "baseline_brier": 0.19072974410708032,
+          "baseline_correct": 7545,
+          "best_gain_bins": [
+            {
+              "lower": -1,
+              "observed_mean_gain": -0.6614853195164075,
+              "optimism_per_row": 0.08033729045733241,
+              "predicted_mean_gain": -0.5811480290590751,
+              "rows": 579,
+              "upper": -0.5
+            },
+            {
+              "lower": -0.5,
+              "observed_mean_gain": -0.3488213961922031,
+              "optimism_per_row": 0.03017790081867371,
+              "predicted_mean_gain": -0.3186434953735294,
+              "rows": 4412,
+              "upper": -0.2
+            },
+            {
+              "lower": -0.2,
+              "observed_mean_gain": -0.16501650165016502,
+              "optimism_per_row": 0.015654236847028106,
+              "predicted_mean_gain": -0.14936226480313694,
+              "rows": 2424,
+              "upper": -0.1
+            },
+            {
+              "lower": -0.1,
+              "observed_mean_gain": -0.027666399358460304,
+              "optimism_per_row": -0.021973220764441626,
+              "predicted_mean_gain": -0.04963962012290193,
+              "rows": 2494,
+              "upper": 0
+            },
+            {
+              "lower": 0,
+              "observed_mean_gain": 0.03067484662576687,
+              "optimism_per_row": -0.00623037304771816,
+              "predicted_mean_gain": 0.024444473578048707,
+              "rows": 978,
+              "upper": 0.05
+            },
+            {
+              "lower": 0.05,
+              "observed_mean_gain": 0.11566265060240964,
+              "optimism_per_row": -0.04167840016652663,
+              "predicted_mean_gain": 0.07398425043588301,
+              "rows": 830,
+              "upper": 0.1
+            },
+            {
+              "lower": 0.1,
+              "observed_mean_gain": 0.24008651766402306,
+              "optimism_per_row": -0.09177892980795704,
+              "predicted_mean_gain": 0.14830758785606601,
+              "rows": 1387,
+              "upper": 0.2
+            },
+            {
+              "lower": 0.2,
+              "observed_mean_gain": 0.3492063492063492,
+              "optimism_per_row": -0.10253690490572269,
+              "predicted_mean_gain": 0.2466694443006265,
+              "rows": 945,
+              "upper": 0.3
+            },
+            {
+              "lower": 0.3,
+              "observed_mean_gain": 0.5707844905320109,
+              "optimism_per_row": -0.18534357464416842,
+              "predicted_mean_gain": 0.3854409158878424,
+              "rows": 1109,
+              "upper": 0.5
+            },
+            {
+              "lower": 0.5,
+              "observed_mean_gain": 0.8112359550561797,
+              "optimism_per_row": -0.19028036520325645,
+              "predicted_mean_gain": 0.6209555898529233,
+              "rows": 445,
+              "upper": 1
+            }
+          ],
+          "changes": 5694,
+          "conditional_brier_on_baseline_wrong": 0.176014527064041,
+          "conditional_selected_baseline_wrong": {
+            "observed": 0.7090285714285715,
+            "predicted": 0.6411641488439191,
+            "rows": 4375
+          },
+          "corrections": 3102,
+          "evaluations_per_native_eligible_event": 3,
+          "expected_corrections": 2688.2917424919433,
+          "expected_net": 1227.8980628718928,
+          "expected_regressions": 1460.3936796200505,
+          "net": 1783,
+          "nll": {
+            "baseline": 0.5597121479911978,
+            "conditional_on_baseline_wrong": 0.28806260188503197,
+            "conditional_weighted_by_all_events": 0.19137536796792862,
+            "event": 0.7510875159591265
+          },
+          "optimism": -555.1019371281072,
+          "other_baseline_wrong": {
+            "observed": 0.6713539574126155,
+            "predicted": 0.6816607904110028
+          },
+          "other_selected_baseline_wrong": {
+            "observed": 0.256,
+            "predicted": 0.3105523818753342
+          },
+          "policies": {
+            "accepted_best": {
+              "observed_mean_gain": 0.3131366350544433,
+              "optimism_per_row": -0.09748892071553596,
+              "predicted_mean_gain": 0.2156477143389073,
+              "rows": 5694
+            },
+            "best_without_acceptance_gate": {
+              "observed_mean_gain": -0.03896686534640774,
+              "optimism_per_row": -0.025142412833224322,
+              "predicted_mean_gain": -0.06410927817963206,
+              "rows": 15603
+            },
+            "rejected_best": {
+              "observed_mean_gain": -0.24129579170451104,
+              "optimism_per_row": 0.01642999769073192,
+              "predicted_mean_gain": -0.22486579401377915,
+              "rows": 9909
+            },
+            "uniform_over_distinct_alternatives": {
+              "observed_mean_gain": -0.07863338246918326,
+              "optimism_per_row": -0.013257147931059914,
+              "predicted_mean_gain": -0.09189053040024318,
+              "rows": 15603
+            }
+          },
+          "reference_all": {
+            "observed": 0.3356466034965968,
+            "predicted": 0.3426463244957393
+          },
+          "reference_selected": {
+            "observed": 0.23164734808570425,
+            "predicted": 0.2564793957885582
+          },
+          "regressions": 1319,
+          "rows": 22479,
+          "selected_by_alternative_count": {
+            "1": {
+              "observed_mean_gain": 0.27522236340533673,
+              "optimism_per_row": -0.06483882945798046,
+              "predicted_mean_gain": 0.21038353394735626,
+              "rows": 3935
+            },
+            "2": {
+              "observed_mean_gain": 0.39779005524861877,
+              "optimism_per_row": -0.16881733635294233,
+              "predicted_mean_gain": 0.22897271889567644,
+              "rows": 1629
+            },
+            "3": {
+              "observed_mean_gain": 0.40310077519379844,
+              "optimism_per_row": -0.19430850187979834,
+              "predicted_mean_gain": 0.2087922733140001,
+              "rows": 129
+            },
+            "4": {
+              "observed_mean_gain": 0.0,
+              "optimism_per_row": 0.10811702432840403,
+              "predicted_mean_gain": 0.10811702432840403,
+              "rows": 1
+            }
+          },
+          "selected_optimism_decomposition": {
+            "baseline_component": -258.1950657464078,
+            "conditional_component": -296.906848807854,
+            "formula": "(B-r)*(1+q) + (1-B)*(q-I(selected_K=true_K)); a fixed algebraic decomposition, not causal attribution"
+          },
+          "selected_wrong_baseline_with_correct_alternative_but_wrong_choice": 153,
+          "selected_wrong_baseline_without_correct_alternative": 1120
+        },
+        "votes2_audits2": {
+          "alternative_count": {
+            "0": 6876,
+            "1": 11976,
+            "2": 3414,
+            "3": 212,
+            "4": 1
+          },
+          "baseline_accuracy": 0.3356466034965968,
+          "baseline_brier": 0.22025712943131465,
+          "baseline_correct": 7545,
+          "best_gain_bins": [
+            {
+              "lower": -1,
+              "observed_mean_gain": -0.23190546528803546,
+              "optimism_per_row": -0.35736777971151407,
+              "predicted_mean_gain": -0.5892732449995496,
+              "rows": 677,
+              "upper": -0.5
+            },
+            {
+              "lower": -0.5,
+              "observed_mean_gain": -0.13666312433581296,
+              "optimism_per_row": -0.18508421138566605,
+              "predicted_mean_gain": -0.321747335721479,
+              "rows": 4705,
+              "upper": -0.2
+            },
+            {
+              "lower": -0.2,
+              "observed_mean_gain": -0.10980551053484602,
+              "optimism_per_row": -0.03845990989399857,
+              "predicted_mean_gain": -0.1482654204288446,
+              "rows": 2468,
+              "upper": -0.1
+            },
+            {
+              "lower": -0.1,
+              "observed_mean_gain": -0.05500644606789858,
+              "optimism_per_row": 0.005144747168394986,
+              "predicted_mean_gain": -0.0498616988995036,
+              "rows": 2327,
+              "upper": 0
+            },
+            {
+              "lower": 0,
+              "observed_mean_gain": -0.027979274611398965,
+              "optimism_per_row": 0.05281511846360975,
+              "predicted_mean_gain": 0.02483584385221078,
+              "rows": 965,
+              "upper": 0.05
+            },
+            {
+              "lower": 0.05,
+              "observed_mean_gain": -0.013480392156862746,
+              "optimism_per_row": 0.0881110445767111,
+              "predicted_mean_gain": 0.07463065241984833,
+              "rows": 816,
+              "upper": 0.1
+            },
+            {
+              "lower": 0.1,
+              "observed_mean_gain": 0.012112036336109008,
+              "optimism_per_row": 0.13387776883481428,
+              "predicted_mean_gain": 0.14598980517092328,
+              "rows": 1321,
+              "upper": 0.2
+            },
+            {
+              "lower": 0.2,
+              "observed_mean_gain": 0.03271537622682661,
+              "optimism_per_row": 0.21522182961966557,
+              "predicted_mean_gain": 0.2479372058464922,
+              "rows": 917,
+              "upper": 0.3
+            },
+            {
+              "lower": 0.3,
+              "observed_mean_gain": 0.08483033932135728,
+              "optimism_per_row": 0.30264007625986555,
+              "predicted_mean_gain": 0.3874704155812228,
+              "rows": 1002,
+              "upper": 0.5
+            },
+            {
+              "lower": 0.5,
+              "observed_mean_gain": 0.15308641975308643,
+              "optimism_per_row": 0.46375538030282865,
+              "predicted_mean_gain": 0.616841800055915,
+              "rows": 405,
+              "upper": 1
+            }
+          ],
+          "changes": 5426,
+          "conditional_brier_on_baseline_wrong": 0.3970111997573819,
+          "conditional_selected_baseline_wrong": {
+            "observed": 0.4439844760672704,
+            "predicted": 0.6200587976201983,
+            "rows": 3865
+          },
+          "corrections": 1716,
+          "evaluations_per_native_eligible_event": 3,
+          "expected_corrections": 2505.2399360253476,
+          "expected_net": 1143.1424076906405,
+          "expected_regressions": 1362.097528334707,
+          "net": 155,
+          "nll": {
+            "baseline": 0.6321321474115286,
+            "conditional_on_baseline_wrong": 0.6405376960071365,
+            "conditional_weighted_by_all_events": 0.4255433939308055,
+            "event": 1.0576755413423342
+          },
+          "optimism": 988.1424076906405,
+          "other_baseline_wrong": {
+            "observed": 0.6713539574126155,
+            "predicted": 0.6893074843130499
+          },
+          "other_selected_baseline_wrong": {
+            "observed": 0.45821474773609316,
+            "predicted": 0.33269724572223974
+          },
+          "policies": {
+            "accepted_best": {
+              "observed_mean_gain": 0.028566162919277552,
+              "optimism_per_row": 0.1821125023072306,
+              "predicted_mean_gain": 0.2106786652265082,
+              "rows": 5426
+            },
+            "best_without_acceptance_gate": {
+              "observed_mean_gain": -0.06691020957508172,
+              "optimism_per_row": -0.013302826050935957,
+              "predicted_mean_gain": -0.08021303562601768,
+              "rows": 15603
+            },
+            "rejected_best": {
+              "observed_mean_gain": -0.11781468016114768,
+              "optimism_per_row": -0.11749105162540899,
+              "predicted_mean_gain": -0.2353057317865567,
+              "rows": 10177
+            },
+            "uniform_over_distinct_alternatives": {
+              "observed_mean_gain": -0.07863338246918326,
+              "optimism_per_row": -0.02744908489457247,
+              "predicted_mean_gain": -0.10608246736375575,
+              "rows": 15603
+            }
+          },
+          "reference_all": {
+            "observed": 0.3356466034965968,
+            "predicted": 0.34869009448529603
+          },
+          "reference_selected": {
+            "observed": 0.2876889052709178,
+            "predicted": 0.2510316122990614
+          },
+          "regressions": 1561,
+          "rows": 22479,
+          "selected_by_alternative_count": {
+            "1": {
+              "observed_mean_gain": 0.01648936170212766,
+              "optimism_per_row": 0.19165921534973468,
+              "predicted_mean_gain": 0.20814857705186235,
+              "rows": 3760
+            },
+            "2": {
+              "observed_mean_gain": 0.06088082901554404,
+              "optimism_per_row": 0.1558476944125368,
+              "predicted_mean_gain": 0.2167285234280808,
+              "rows": 1544
+            },
+            "3": {
+              "observed_mean_gain": -0.008264462809917356,
+              "optimism_per_row": 0.21818597451549387,
+              "predicted_mean_gain": 0.20992151170557652,
+              "rows": 121
+            },
+            "4": {
+              "observed_mean_gain": 0.0,
+              "optimism_per_row": 0.4744447146995564,
+              "predicted_mean_gain": 0.4744447146995564,
+              "rows": 1
+            }
+          },
+          "selected_optimism_decomposition": {
+            "baseline_component": 307.61518471696706,
+            "conditional_component": 680.5272528020664,
+            "formula": "(B-r)*(1+q) + (1-B)*(q-I(selected_K=true_K)); a fixed algebraic decomposition, not causal attribution"
+          },
+          "selected_wrong_baseline_with_correct_alternative_but_wrong_choice": 378,
+          "selected_wrong_baseline_without_correct_alternative": 1771
+        },
+        "votes2_audits3": {
+          "alternative_count": {
+            "0": 6876,
+            "1": 11976,
+            "2": 3414,
+            "3": 212,
+            "4": 1
+          },
+          "baseline_accuracy": 0.3356466034965968,
+          "baseline_brier": 0.22019844214751563,
+          "baseline_correct": 7545,
+          "best_gain_bins": [
+            {
+              "lower": -1,
+              "observed_mean_gain": -0.23432835820895523,
+              "optimism_per_row": -0.35521539066062674,
+              "predicted_mean_gain": -0.5895437488695819,
+              "rows": 670,
+              "upper": -0.5
+            },
+            {
+              "lower": -0.5,
+              "observed_mean_gain": -0.14207419898819562,
+              "optimism_per_row": -0.17928541777771248,
+              "predicted_mean_gain": -0.32135961676590813,
+              "rows": 4744,
+              "upper": -0.2
+            },
+            {
+              "lower": -0.2,
+              "observed_mean_gain": -0.0984754841367944,
+              "optimism_per_row": -0.05054177172415041,
+              "predicted_mean_gain": -0.1490172558609448,
+              "rows": 2427,
+              "upper": -0.1
+            },
+            {
+              "lower": -0.1,
+              "observed_mean_gain": -0.06316688006828852,
+              "optimism_per_row": 0.01264484895616771,
+              "predicted_mean_gain": -0.050522031112120815,
+              "rows": 2343,
+              "upper": 0
+            },
+            {
+              "lower": 0,
+              "observed_mean_gain": -0.01710261569416499,
+              "optimism_per_row": 0.04196710432841162,
+              "predicted_mean_gain": 0.024864488634246625,
+              "rows": 994,
+              "upper": 0.05
+            },
+            {
+              "lower": 0.05,
+              "observed_mean_gain": -0.011235955056179775,
+              "optimism_per_row": 0.08598120277303281,
+              "predicted_mean_gain": 0.07474524771685304,
+              "rows": 801,
+              "upper": 0.1
+            },
+            {
+              "lower": 0.1,
+              "observed_mean_gain": 0.029298380878951428,
+              "optimism_per_row": 0.11619038262299988,
+              "predicted_mean_gain": 0.1454887635019513,
+              "rows": 1297,
+              "upper": 0.2
+            },
+            {
+              "lower": 0.2,
+              "observed_mean_gain": 0.02478448275862069,
+              "optimism_per_row": 0.22329455373742854,
+              "predicted_mean_gain": 0.24807903649604923,
+              "rows": 928,
+              "upper": 0.3
+            },
+            {
+              "lower": 0.3,
+              "observed_mean_gain": 0.07467204843592332,
+              "optimism_per_row": 0.3127506307856773,
+              "predicted_mean_gain": 0.38742267922160056,
+              "rows": 991,
+              "upper": 0.5
+            },
+            {
+              "lower": 0.5,
+              "observed_mean_gain": 0.1642156862745098,
+              "optimism_per_row": 0.4521489700759599,
+              "predicted_mean_gain": 0.6163646563504697,
+              "rows": 408,
+              "upper": 1
+            }
+          ],
+          "changes": 5419,
+          "conditional_brier_on_baseline_wrong": 0.39662641474445154,
+          "conditional_selected_baseline_wrong": {
+            "observed": 0.44798136645962733,
+            "predicted": 0.6173648409539689,
+            "rows": 3864
+          },
+          "corrections": 1731,
+          "evaluations_per_native_eligible_event": 3,
+          "expected_corrections": 2494.540232521482,
+          "expected_net": 1138.915151634952,
+          "expected_regressions": 1355.6250808865298,
+          "net": 176,
+          "nll": {
+            "baseline": 0.6320385023394504,
+            "conditional_on_baseline_wrong": 0.6402906207059316,
+            "conditional_weighted_by_all_events": 0.425379248615258,
+            "event": 1.0574177509547085
+          },
+          "optimism": 962.915151634952,
+          "other_baseline_wrong": {
+            "observed": 0.6713539574126155,
+            "predicted": 0.6907151000638365
+          },
+          "other_selected_baseline_wrong": {
+            "observed": 0.45471014492753625,
+            "predicted": 0.3349442932032713
+          },
+          "policies": {
+            "accepted_best": {
+              "observed_mean_gain": 0.03247831703266285,
+              "optimism_per_row": 0.17769241043616954,
+              "predicted_mean_gain": 0.2101707274688324,
+              "rows": 5419
+            },
+            "best_without_acceptance_gate": {
+              "observed_mean_gain": -0.06678202909696854,
+              "optimism_per_row": -0.014013148778869278,
+              "predicted_mean_gain": -0.08079517787583781,
+              "rows": 15603
+            },
+            "rejected_best": {
+              "observed_mean_gain": -0.11959937156323645,
+              "optimism_per_row": -0.11602143878145131,
+              "predicted_mean_gain": -0.23562081034468776,
+              "rows": 10184
+            },
+            "uniform_over_distinct_alternatives": {
+              "observed_mean_gain": -0.07863338246918326,
+              "optimism_per_row": -0.02781644434334473,
+              "predicted_mean_gain": -0.10644982681252801,
+              "rows": 15603
+            }
+          },
+          "reference_all": {
+            "observed": 0.3356466034965968,
+            "predicted": 0.3482419698078299
+          },
+          "reference_selected": {
+            "observed": 0.2869533124192655,
+            "predicted": 0.2501614838321701
+          },
+          "regressions": 1555,
+          "rows": 22479,
+          "selected_by_alternative_count": {
+            "1": {
+              "observed_mean_gain": 0.020833333333333332,
+              "optimism_per_row": 0.1879323771502268,
+              "predicted_mean_gain": 0.20876571048356013,
+              "rows": 3744
+            },
+            "2": {
+              "observed_mean_gain": 0.062339331619537273,
+              "optimism_per_row": 0.15082766589673427,
+              "predicted_mean_gain": 0.21316699751627155,
+              "rows": 1556
+            },
+            "3": {
+              "observed_mean_gain": 0.00847457627118644,
+              "optimism_per_row": 0.20451383472946014,
+              "predicted_mean_gain": 0.21298841100064658,
+              "rows": 118
+            },
+            "4": {
+              "observed_mean_gain": 0.0,
+              "optimism_per_row": 0.47587146975881267,
+              "predicted_mean_gain": 0.47587146975881267,
+              "rows": 1
+            }
+          },
+          "selected_optimism_decomposition": {
+            "baseline_component": 308.41742670746703,
+            "conditional_component": 654.4977454461357,
+            "formula": "(B-r)*(1+q) + (1-B)*(q-I(selected_K=true_K)); a fixed algebraic decomposition, not causal attribution"
+          },
+          "selected_wrong_baseline_with_correct_alternative_but_wrong_choice": 376,
+          "selected_wrong_baseline_without_correct_alternative": 1757
+        },
+        "votes3_audits2": {
+          "alternative_count": {
+            "0": 7314,
+            "1": 11763,
+            "2": 3162,
+            "3": 240,
+            "4": 0
+          },
+          "baseline_accuracy": 0.3356466034965968,
+          "baseline_brier": 0.21996983045953325,
+          "baseline_correct": 7545,
+          "best_gain_bins": [
+            {
+              "lower": -1,
+              "observed_mean_gain": -0.24207011686143573,
+              "optimism_per_row": -0.3415090165027687,
+              "predicted_mean_gain": -0.5835791333642044,
+              "rows": 599,
+              "upper": -0.5
+            },
+            {
+              "lower": -0.5,
+              "observed_mean_gain": -0.14904171364148816,
+              "optimism_per_row": -0.17094511201267232,
+              "predicted_mean_gain": -0.31998682565416053,
+              "rows": 4435,
+              "upper": -0.2
+            },
+            {
+              "lower": -0.2,
+              "observed_mean_gain": -0.06723044397463002,
+              "optimism_per_row": -0.08148188565261513,
+              "predicted_mean_gain": -0.14871232962724515,
+              "rows": 2365,
+              "upper": -0.1
+            },
+            {
+              "lower": -0.1,
+              "observed_mean_gain": -0.06733712286838653,
+              "optimism_per_row": 0.015814591558419622,
+              "predicted_mean_gain": -0.05152253130996691,
+              "rows": 2287,
+              "upper": 0
+            },
+            {
+              "lower": 0,
+              "observed_mean_gain": -0.039790575916230364,
+              "optimism_per_row": 0.06444379255861758,
+              "predicted_mean_gain": 0.024653216642387225,
+              "rows": 955,
+              "upper": 0.05
+            },
+            {
+              "lower": 0.05,
+              "observed_mean_gain": 0.04523809523809524,
+              "optimism_per_row": 0.02864844668911527,
+              "predicted_mean_gain": 0.0738865419272105,
+              "rows": 840,
+              "upper": 0.1
+            },
+            {
+              "lower": 0.1,
+              "observed_mean_gain": 0.015015015015015015,
+              "optimism_per_row": 0.13169596993729035,
+              "predicted_mean_gain": 0.14671098495230536,
+              "rows": 1332,
+              "upper": 0.2
+            },
+            {
+              "lower": 0.2,
+              "observed_mean_gain": -0.009544008483563097,
+              "optimism_per_row": 0.25695691161732265,
+              "predicted_mean_gain": 0.24741290313375958,
+              "rows": 943,
+              "upper": 0.3
+            },
+            {
+              "lower": 0.3,
+              "observed_mean_gain": 0.0970970970970971,
+              "optimism_per_row": 0.292208698473965,
+              "predicted_mean_gain": 0.38930579557106215,
+              "rows": 999,
+              "upper": 0.5
+            },
+            {
+              "lower": 0.5,
+              "observed_mean_gain": 0.16341463414634147,
+              "optimism_per_row": 0.4543214028239961,
+              "predicted_mean_gain": 0.6177360369703376,
+              "rows": 410,
+              "upper": 1
+            }
+          ],
+          "changes": 5479,
+          "conditional_brier_on_baseline_wrong": 0.3883774106233944,
+          "conditional_selected_baseline_wrong": {
+            "observed": 0.4508596356171414,
+            "predicted": 0.6205089664626239,
+            "rows": 3897
+          },
+          "corrections": 1757,
+          "evaluations_per_native_eligible_event": 3,
+          "expected_corrections": 2532.336016090121,
+          "expected_net": 1156.5261588566937,
+          "expected_regressions": 1375.8098572334275,
+          "net": 175,
+          "nll": {
+            "baseline": 0.6314192529882883,
+            "conditional_on_baseline_wrong": 0.6233248229047674,
+            "conditional_weighted_by_all_events": 0.4141079632216646,
+            "event": 1.0455272162099527
+          },
+          "optimism": 981.5261588566937,
+          "other_baseline_wrong": {
+            "observed": 0.6737645640819606,
+            "predicted": 0.6918262294728864
+          },
+          "other_selected_baseline_wrong": {
+            "observed": 0.4547087503207596,
+            "predicted": 0.33299819113741524
+          },
+          "policies": {
+            "accepted_best": {
+              "observed_mean_gain": 0.031940135061142544,
+              "optimism_per_row": 0.1791433074753189,
+              "predicted_mean_gain": 0.21108344253646139,
+              "rows": 5479
+            },
+            "best_without_acceptance_gate": {
+              "observed_mean_gain": -0.062248598747115066,
+              "optimism_per_row": -0.009081172415325902,
+              "predicted_mean_gain": -0.07132977116244096,
+              "rows": 15165
+            },
+            "rejected_best": {
+              "observed_mean_gain": -0.11552756555853809,
+              "optimism_per_row": -0.11555256672885499,
+              "predicted_mean_gain": -0.23108013228739305,
+              "rows": 9686
+            },
+            "uniform_over_distinct_alternatives": {
+              "observed_mean_gain": -0.07365644576327068,
+              "optimism_per_row": -0.022757817233925202,
+              "predicted_mean_gain": -0.0964142629971959,
+              "rows": 15165
+            }
+          },
+          "reference_all": {
+            "observed": 0.3356466034965968,
+            "predicted": 0.34782244786048794
+          },
+          "reference_selected": {
+            "observed": 0.2887388209527286,
+            "predicted": 0.2511060151913538
+          },
+          "regressions": 1582,
+          "rows": 22479,
+          "selected_by_alternative_count": {
+            "1": {
+              "observed_mean_gain": 0.011938749026732417,
+              "optimism_per_row": 0.19816416965735403,
+              "predicted_mean_gain": 0.21010291868408648,
+              "rows": 3853
+            },
+            "2": {
+              "observed_mean_gain": 0.07894736842105263,
+              "optimism_per_row": 0.13605614820991474,
+              "predicted_mean_gain": 0.21500351663096737,
+              "rows": 1482
+            },
+            "3": {
+              "observed_mean_gain": 0.08333333333333333,
+              "optimism_per_row": 0.11364183555828783,
+              "predicted_mean_gain": 0.19697516889162114,
+              "rows": 144
+            },
+            "4": {
+              "observed_mean_gain": null,
+              "optimism_per_row": null,
+              "predicted_mean_gain": null,
+              "rows": 0
+            }
+          },
+          "selected_optimism_decomposition": {
+            "baseline_component": 320.4027393524266,
+            "conditional_component": 661.1234423048456,
+            "formula": "(B-r)*(1+q) + (1-B)*(q-I(selected_K=true_K)); a fixed algebraic decomposition, not causal attribution"
+          },
+          "selected_wrong_baseline_with_correct_alternative_but_wrong_choice": 368,
+          "selected_wrong_baseline_without_correct_alternative": 1772
+        }
+      },
+      "archive_sha256": "ee1ea474321ba2f56d567fef190e59a7f7078cc664fbbb93cd5cf6fd017d8a51",
+      "common_available_destination_sets": {
+        "definition": "Identical available K sets in held model and all three models trained on that event.",
+        "held": {
+          "alternative_count": {
+            "0": 1365,
+            "1": 2359,
+            "2": 396,
+            "3": 6,
+            "4": 0
+          },
+          "baseline_accuracy": 0.32937469704314104,
+          "baseline_brier": 0.21628110977037882,
+          "baseline_correct": 1359,
+          "best_gain_bins": [
+            {
+              "lower": -1,
+              "observed_mean_gain": -0.14285714285714285,
+              "optimism_per_row": -0.4497019059566428,
+              "predicted_mean_gain": -0.5925590488137856,
+              "rows": 105,
+              "upper": -0.5
+            },
+            {
+              "lower": -0.5,
+              "observed_mean_gain": -0.10723860589812333,
+              "optimism_per_row": -0.21572819197514845,
+              "predicted_mean_gain": -0.32296679787327176,
+              "rows": 746,
+              "upper": -0.2
+            },
+            {
+              "lower": -0.2,
+              "observed_mean_gain": -0.057279236276849645,
+              "optimism_per_row": -0.0905678459299476,
+              "predicted_mean_gain": -0.14784708220679726,
+              "rows": 419,
+              "upper": -0.1
+            },
+            {
+              "lower": -0.1,
+              "observed_mean_gain": -0.058004640371229696,
+              "optimism_per_row": 0.008736278098821213,
+              "predicted_mean_gain": -0.049268362272408474,
+              "rows": 431,
+              "upper": 0
+            },
+            {
+              "lower": 0,
+              "observed_mean_gain": -0.03278688524590164,
+              "optimism_per_row": 0.05658136757165167,
+              "predicted_mean_gain": 0.023794482325750044,
+              "rows": 183,
+              "upper": 0.05
+            },
+            {
+              "lower": 0.05,
+              "observed_mean_gain": 0.0658682634730539,
+              "optimism_per_row": 0.007724903229682792,
+              "predicted_mean_gain": 0.07359316670273669,
+              "rows": 167,
+              "upper": 0.1
+            },
+            {
+              "lower": 0.1,
+              "observed_mean_gain": 0.024193548387096774,
+              "optimism_per_row": 0.12033293063642668,
+              "predicted_mean_gain": 0.1445264790235235,
+              "rows": 248,
+              "upper": 0.2
+            },
+            {
+              "lower": 0.2,
+              "observed_mean_gain": -0.03932584269662921,
+              "optimism_per_row": 0.2873082553488896,
+              "predicted_mean_gain": 0.24798241265226043,
+              "rows": 178,
+              "upper": 0.3
+            },
+            {
+              "lower": 0.3,
+              "observed_mean_gain": 0.042105263157894736,
+              "optimism_per_row": 0.3488725415353026,
+              "predicted_mean_gain": 0.3909778046931974,
+              "rows": 190,
+              "upper": 0.5
+            },
+            {
+              "lower": 0.5,
+              "observed_mean_gain": 0.1702127659574468,
+              "optimism_per_row": 0.4525449910187866,
+              "predicted_mean_gain": 0.6227577569762334,
+              "rows": 94,
+              "upper": 1
+            }
+          ],
+          "changes": 1060,
+          "conditional_brier_on_baseline_wrong": 0.382331209650144,
+          "conditional_selected_baseline_wrong": {
+            "observed": 0.45454545454545453,
+            "predicted": 0.6131892547733264,
+            "rows": 748
+          },
+          "corrections": 340,
+          "expected_corrections": 491.0367669565603,
+          "expected_net": 229.45289338426664,
+          "expected_regressions": 261.58387357229367,
+          "net": 28,
+          "nll": {
+            "baseline": 0.6223389081820319,
+            "conditional_on_baseline_wrong": 0.5962346773678042,
+            "conditional_weighted_by_all_events": 0.3998500611431687,
+            "event": 1.0221889693252006
+          },
+          "optimism": 201.45289338426664,
+          "other_baseline_wrong": {
+            "observed": 0.6826888326707625,
+            "predicted": 0.6955365358646727
+          },
+          "other_selected_baseline_wrong": {
+            "observed": 0.4879679144385027,
+            "predicted": 0.3519355434417348
+          },
+          "policies": {
+            "accepted_best": {
+              "observed_mean_gain": 0.026415094339622643,
+              "optimism_per_row": 0.19004990320979145,
+              "predicted_mean_gain": 0.21646499754941403,
+              "rows": 1060
+            },
+            "best_without_acceptance_gate": {
+              "observed_mean_gain": -0.042013763129300975,
+              "optimism_per_row": -0.014806818370367776,
+              "predicted_mean_gain": -0.05682058149966875,
+              "rows": 2761
+            },
+            "rejected_best": {
+              "observed_mean_gain": -0.08465608465608465,
+              "optimism_per_row": -0.1424659158865164,
+              "predicted_mean_gain": -0.22712200054260104,
+              "rows": 1701
+            },
+            "uniform_over_distinct_alternatives": {
+              "observed_mean_gain": -0.051491005674272616,
+              "optimism_per_row": -0.02197322455306964,
+              "predicted_mean_gain": -0.07346423022734223,
+              "rows": 2761
+            }
+          },
+          "reference_all": {
+            "observed": 0.32937469704314104,
+            "predicted": 0.3388058520658936
+          },
+          "reference_selected": {
+            "observed": 0.2943396226415094,
+            "predicted": 0.24677723921914496
+          },
+          "regressions": 312,
+          "rows": 4126,
+          "selected_by_alternative_count": {
+            "1": {
+              "observed_mean_gain": 0.016666666666666666,
+              "optimism_per_row": 0.19823847198052535,
+              "predicted_mean_gain": 0.21490513864719207,
+              "rows": 840
+            },
+            "2": {
+              "observed_mean_gain": 0.05555555555555555,
+              "optimism_per_row": 0.16724122931858051,
+              "predicted_mean_gain": 0.2227967848741361,
+              "rows": 216
+            },
+            "3": {
+              "observed_mean_gain": 0.5,
+              "optimism_per_row": -0.2978811485189511,
+              "predicted_mean_gain": 0.20211885148104888,
+              "rows": 4
+            },
+            "4": {
+              "observed_mean_gain": null,
+              "optimism_per_row": null,
+              "predicted_mean_gain": null,
+              "rows": 0
+            }
+          },
+          "selected_optimism_decomposition": {
+            "baseline_component": 82.78733483193074,
+            "conditional_component": 118.66556257044815,
+            "formula": "(B-r)*(1+q) + (1-B)*(q-I(selected_K=true_K)); a fixed algebraic decomposition, not causal attribution"
+          },
+          "selected_wrong_baseline_with_correct_alternative_but_wrong_choice": 43,
+          "selected_wrong_baseline_without_correct_alternative": 365
+        },
+        "train": {
+          "alternative_count": {
+            "0": 4095,
+            "1": 7077,
+            "2": 1188,
+            "3": 18,
+            "4": 0
+          },
+          "baseline_accuracy": 0.32937469704314104,
+          "baseline_brier": 0.18760802111048733,
+          "baseline_correct": 4077,
+          "best_gain_bins": [
+            {
+              "lower": -1,
+              "observed_mean_gain": -0.6179775280898876,
+              "optimism_per_row": 0.039232372650754875,
+              "predicted_mean_gain": -0.5787451554391327,
+              "rows": 267,
+              "upper": -0.5
+            },
+            {
+              "lower": -0.5,
+              "observed_mean_gain": -0.36079153244362633,
+              "optimism_per_row": 0.04115258481997393,
+              "predicted_mean_gain": -0.3196389476236524,
+              "rows": 2173,
+              "upper": -0.2
+            },
+            {
+              "lower": -0.2,
+              "observed_mean_gain": -0.14285714285714285,
+              "optimism_per_row": -0.005747053381942193,
+              "predicted_mean_gain": -0.14860419623908508,
+              "rows": 1274,
+              "upper": -0.1
+            },
+            {
+              "lower": -0.1,
+              "observed_mean_gain": -0.021660649819494584,
+              "optimism_per_row": -0.02700437731177783,
+              "predicted_mean_gain": -0.0486650271312724,
+              "rows": 1385,
+              "upper": 0
+            },
+            {
+              "lower": 0,
+              "observed_mean_gain": 0.032490974729241874,
+              "optimism_per_row": -0.008153686214400453,
+              "predicted_mean_gain": 0.024337288514841415,
+              "rows": 554,
+              "upper": 0.05
+            },
+            {
+              "lower": 0.05,
+              "observed_mean_gain": 0.09829059829059829,
+              "optimism_per_row": -0.023922046232171295,
+              "predicted_mean_gain": 0.074368552058427,
+              "rows": 468,
+              "upper": 0.1
+            },
+            {
+              "lower": 0.1,
+              "observed_mean_gain": 0.20392156862745098,
+              "optimism_per_row": -0.056444231285187864,
+              "predicted_mean_gain": 0.1474773373422631,
+              "rows": 765,
+              "upper": 0.2
+            },
+            {
+              "lower": 0.2,
+              "observed_mean_gain": 0.3359840954274354,
+              "optimism_per_row": -0.08973502827952023,
+              "predicted_mean_gain": 0.24624906714791514,
+              "rows": 503,
+              "upper": 0.3
+            },
+            {
+              "lower": 0.3,
+              "observed_mean_gain": 0.5566502463054187,
+              "optimism_per_row": -0.17168038744962705,
+              "predicted_mean_gain": 0.38496985885579166,
+              "rows": 609,
+              "upper": 0.5
+            },
+            {
+              "lower": 0.5,
+              "observed_mean_gain": 0.7859649122807018,
+              "optimism_per_row": -0.16809196950031371,
+              "predicted_mean_gain": 0.6178729427803881,
+              "rows": 285,
+              "upper": 1
+            }
+          ],
+          "changes": 3184,
+          "conditional_brier_on_baseline_wrong": 0.1647590691598295,
+          "conditional_selected_baseline_wrong": {
+            "observed": 0.7076796036333609,
+            "predicted": 0.6428336189759383,
+            "rows": 2422
+          },
+          "corrections": 1714,
+          "expected_corrections": 1512.0328077584854,
+          "expected_net": 695.5112027027717,
+          "expected_regressions": 816.5216050557137,
+          "net": 952,
+          "nll": {
+            "baseline": 0.5512997485160898,
+            "conditional_on_baseline_wrong": 0.26582384107818796,
+            "conditional_weighted_by_all_events": 0.1782681939562157,
+            "event": 0.7295679424723057
+          },
+          "optimism": -256.4887972972283,
+          "other_baseline_wrong": {
+            "observed": 0.6826888326707625,
+            "predicted": 0.6913142165408374
+          },
+          "other_selected_baseline_wrong": {
+            "observed": 0.2737407101568951,
+            "predicted": 0.3260952366755186
+          },
+          "policies": {
+            "accepted_best": {
+              "observed_mean_gain": 0.2989949748743719,
+              "optimism_per_row": -0.08055552236859727,
+              "predicted_mean_gain": 0.21843945250577462,
+              "rows": 3184
+            },
+            "best_without_acceptance_gate": {
+              "observed_mean_gain": -0.025232403718459494,
+              "optimism_per_row": -0.024304235361036514,
+              "predicted_mean_gain": -0.04953663907949601,
+              "rows": 8283
+            },
+            "rejected_best": {
+              "observed_mean_gain": -0.22769170425573643,
+              "optimism_per_row": 0.010821102515424248,
+              "predicted_mean_gain": -0.21687060174031214,
+              "rows": 5099
+            },
+            "uniform_over_distinct_alternatives": {
+              "observed_mean_gain": -0.05149100567427261,
+              "optimism_per_row": -0.016170489581926715,
+              "predicted_mean_gain": -0.06766149525619931,
+              "rows": 8283
+            }
+          },
+          "reference_all": {
+            "observed": 0.32937469704314104,
+            "predicted": 0.3332511538192007
+          },
+          "reference_selected": {
+            "observed": 0.239321608040201,
+            "predicted": 0.25644522771850303
+          },
+          "regressions": 762,
+          "rows": 12378,
+          "selected_by_alternative_count": {
+            "1": {
+              "observed_mean_gain": 0.26692456479690524,
+              "optimism_per_row": -0.05588121988228053,
+              "predicted_mean_gain": 0.21104334491462468,
+              "rows": 2585
+            },
+            "2": {
+              "observed_mean_gain": 0.4312393887945671,
+              "optimism_per_row": -0.1797831584119392,
+              "predicted_mean_gain": 0.2514562303826278,
+              "rows": 589
+            },
+            "3": {
+              "observed_mean_gain": 0.8,
+              "optimism_per_row": -0.6143549521286307,
+              "predicted_mean_gain": 0.18564504787136943,
+              "rows": 10
+            },
+            "4": {
+              "observed_mean_gain": null,
+              "optimism_per_row": null,
+              "predicted_mean_gain": null,
+              "rows": 0
+            }
+          },
+          "selected_optimism_decomposition": {
+            "baseline_component": -99.43180838133628,
+            "conditional_component": -157.0569748402774,
+            "formula": "(B-r)*(1+q) + (1-B)*(q-I(selected_K=true_K)); a fixed algebraic decomposition, not causal attribution"
+          },
+          "selected_wrong_baseline_with_correct_alternative_but_wrong_choice": 45,
+          "selected_wrong_baseline_without_correct_alternative": 663
+        },
+        "unique_events": 4126
+      },
+      "folds": {
+        "0": {
+          "held_profile": {
+            "candidate_entropy_mean": [
+              0.0,
+              1.182653546333313,
+              1.0623254776000977,
+              1.0411314964294434,
+              1.0390950441360474,
+              1.1909085512161255,
+              1.1387653350830078
+            ],
+            "candidate_max_probability_mean": [
+              1.0,
+              0.4651566743850708,
+              0.5142893195152283,
+              0.5309228301048279,
+              0.5297136902809143,
+              0.446216344833374,
+              0.48375749588012695
+            ],
+            "history_mean": [
+              0.19754132187690215,
+              0.22070610677594943,
+              0.2564272433927234,
+              0.0,
+              0.0,
+              0.0,
+              0.21126073081201385,
+              0.0,
+              0.0
+            ],
+            "history_std": [
+              0.14082254655148585,
+              0.16383232908295678,
+              0.19004852520020396,
+              0.0,
+              0.0,
+              0.0,
+              0.1936699031972323,
+              0.0,
+              0.0
+            ],
+            "rows": 1998,
+            "wrong_baseline_reachable_rate": 0.3182844243792325
+          },
+          "loss": {
+            "held": {
+              "baseline": 0.6407800988962489,
+              "conditional_on_baseline_wrong": 0.6490196932132734,
+              "conditional_weighted_by_all_events": 0.4317052914316517,
+              "event": 1.0724853903279008
+            },
+            "train": {
+              "baseline": 0.5553335157091066,
+              "conditional_on_baseline_wrong": 0.28254006701649237,
+              "conditional_weighted_by_all_events": 0.18762305815162525,
+              "event": 0.7429565738607317
+            }
+          },
+          "train_profile": {
+            "candidate_entropy_mean": [
+              0.0,
+              1.1610004901885986,
+              1.0432024002075195,
+              1.0188673734664917,
+              1.0146559476852417,
+              1.160529375076294,
+              1.1178078651428223
+            ],
+            "candidate_max_probability_mean": [
+              1.0,
+              0.4701659381389618,
+              0.5242459177970886,
+              0.5394690632820129,
+              0.5399388074874878,
+              0.45868223905563354,
+              0.49139878153800964
+            ],
+            "history_mean": [
+              0.19237368462928847,
+              0.23171280563103017,
+              0.2709089602103561,
+              0.0,
+              0.0,
+              0.0,
+              0.21872046012390597,
+              0.0,
+              0.0
+            ],
+            "history_std": [
+              0.1348421230613316,
+              0.16338709974991217,
+              0.18870754615118082,
+              0.0,
+              0.0,
+              0.0,
+              0.1836531882622492,
+              0.0,
+              0.0
+            ],
+            "rows": 5495,
+            "wrong_baseline_reachable_rate": 0.32419841052343107
+          }
+        },
+        "1": {
+          "held_profile": {
+            "candidate_entropy_mean": [
+              0.0,
+              1.1889748573303223,
+              1.0683457851409912,
+              1.0462446212768555,
+              1.038895845413208,
+              1.1903033256530762,
+              1.1420483589172363
+            ],
+            "candidate_max_probability_mean": [
+              1.0,
+              0.4526936709880829,
+              0.5089104771614075,
+              0.52338045835495,
+              0.5250277519226074,
+              0.4403967559337616,
+              0.4761972725391388
+            ],
+            "history_mean": [
+              0.2002481038577797,
+              0.23556163936346175,
+              0.2845720644532527,
+              0.0,
+              0.0,
+              0.0,
+              0.20184970695017593,
+              0.0,
+              0.0
+            ],
+            "history_std": [
+              0.13097342239615434,
+              0.15370776479446394,
+              0.18732676274335566,
+              0.0,
+              0.0,
+              0.0,
+              0.16502991305178527,
+              0.0,
+              0.0
+            ],
+            "rows": 1781,
+            "wrong_baseline_reachable_rate": 0.37542372881355934
+          },
+          "loss": {
+            "held": {
+              "baseline": 0.6327929433883979,
+              "conditional_on_baseline_wrong": 0.6713099218322183,
+              "conditional_weighted_by_all_events": 0.4447758044705321,
+              "event": 1.0775687478589298
+            },
+            "train": {
+              "baseline": 0.5611216256336408,
+              "conditional_on_baseline_wrong": 0.32122841649680445,
+              "conditional_weighted_by_all_events": 0.21358990298579533,
+              "event": 0.7747115286194362
+            }
+          },
+          "train_profile": {
+            "candidate_entropy_mean": [
+              0.0,
+              1.1840319633483887,
+              1.0721650123596191,
+              1.0400186777114868,
+              1.0286070108413696,
+              1.1847825050354004,
+              1.1418464183807373
+            ],
+            "candidate_max_probability_mean": [
+              1.0,
+              0.45804986357688904,
+              0.5086454749107361,
+              0.532585859298706,
+              0.5361237525939941,
+              0.44927626848220825,
+              0.4808519184589386
+            ],
+            "history_mean": [
+              0.18153171278828356,
+              0.23776607176421322,
+              0.2951630054509475,
+              0.0,
+              0.0,
+              0.0,
+              0.20326066395730366,
+              0.0,
+              0.0
+            ],
+            "history_std": [
+              0.12261977014589279,
+              0.15990889782273093,
+              0.19556433900518314,
+              0.0,
+              0.0,
+              0.0,
+              0.16456195136039162,
+              0.0,
+              0.0
+            ],
+            "rows": 5712,
+            "wrong_baseline_reachable_rate": 0.34149552395997895
+          }
+        },
+        "2": {
+          "held_profile": {
+            "candidate_entropy_mean": [
+              0.0,
+              1.1721062660217285,
+              1.0925170183181763,
+              1.0575752258300781,
+              1.0580841302871704,
+              1.1781468391418457,
+              1.1443673372268677
+            ],
+            "candidate_max_probability_mean": [
+              1.0,
+              0.4664510488510132,
+              0.5006203055381775,
+              0.5226743221282959,
+              0.5215168595314026,
+              0.45789116621017456,
+              0.4801837205886841
+            ],
+            "history_mean": [
+              0.2051475960368402,
+              0.23445369657587542,
+              0.26904532790289837,
+              0.0,
+              0.0,
+              0.0,
+              0.22300082766841695,
+              0.0,
+              0.0
+            ],
+            "history_std": [
+              0.13446122790744666,
+              0.15955936188196385,
+              0.18048113139602812,
+              0.0,
+              0.0,
+              0.0,
+              0.19459070009159266,
+              0.0,
+              0.0
+            ],
+            "rows": 1596,
+            "wrong_baseline_reachable_rate": 0.3365019011406844
+          },
+          "loss": {
+            "held": {
+              "baseline": 0.6248292811584888,
+              "conditional_on_baseline_wrong": 0.6836022311277605,
+              "conditional_weighted_by_all_events": 0.4505949543523835,
+              "event": 1.0754242355108723
+            },
+            "train": {
+              "baseline": 0.557897177727793,
+              "conditional_on_baseline_wrong": 0.26104503841386417,
+              "conditional_weighted_by_all_events": 0.1737939326458929,
+              "event": 0.731691110373686
+            }
+          },
+          "train_profile": {
+            "candidate_entropy_mean": [
+              0.0,
+              1.14391028881073,
+              1.0466231107711792,
+              1.020324945449829,
+              1.0172432661056519,
+              1.1587132215499878,
+              1.1103655099868774
+            ],
+            "candidate_max_probability_mean": [
+              1.0,
+              0.48341602087020874,
+              0.5265306234359741,
+              0.5429232120513916,
+              0.5437302589416504,
+              0.46807169914245605,
+              0.4998750388622284
+            ],
+            "history_mean": [
+              0.18159728257185673,
+              0.21772059796078017,
+              0.25830463329886694,
+              0.0,
+              0.0,
+              0.0,
+              0.19184126058505951,
+              0.0,
+              0.0
+            ],
+            "history_std": [
+              0.13715066919709254,
+              0.1656339412942507,
+              0.19221151752763288,
+              0.0,
+              0.0,
+              0.0,
+              0.17828207795703335,
+              0.0,
+              0.0
+            ],
+            "rows": 5897,
+            "wrong_baseline_reachable_rate": 0.32042791645440655
+          }
+        },
+        "4": {
+          "held_profile": {
+            "candidate_entropy_mean": [
+              0.0,
+              1.1384718418121338,
+              1.0290791988372803,
+              1.0032522678375244,
+              0.9898405075073242,
+              1.1458511352539062,
+              1.095587134361267
+            ],
+            "candidate_max_probability_mean": [
+              1.0,
+              0.47931498289108276,
+              0.5330768823623657,
+              0.5487126111984253,
+              0.5540044903755188,
+              0.4667918384075165,
+              0.504368782043457
+            ],
+            "history_mean": [
+              0.16859509758718697,
+              0.1922331356287611,
+              0.24965333758812072,
+              0.0,
+              0.0,
+              0.0,
+              0.19426269527650278,
+              0.0,
+              0.0
+            ],
+            "history_std": [
+              0.1369482498926599,
+              0.15806179701099646,
+              0.20591575784454103,
+              0.0,
+              0.0,
+              0.0,
+              0.1976865981637902,
+              0.0,
+              0.0
+            ],
+            "rows": 2118,
+            "wrong_baseline_reachable_rate": 0.28510938602681724
+          },
+          "loss": {
+            "held": {
+              "baseline": 0.6261813540962584,
+              "conditional_on_baseline_wrong": 0.5148741267536082,
+              "conditional_weighted_by_all_events": 0.34446489027849986,
+              "event": 0.9706462443747583
+            },
+            "train": {
+              "baseline": 0.5646819205939434,
+              "conditional_on_baseline_wrong": 0.2881353118057267,
+              "conditional_weighted_by_all_events": 0.19089299448189634,
+              "event": 0.7555749150758396
+            }
+          },
+          "train_profile": {
+            "candidate_entropy_mean": [
+              0.0,
+              1.1778587102890015,
+              1.0804988145828247,
+              1.0461384057998657,
+              1.041996955871582,
+              1.180777668952942,
+              1.1401910781860352
+            ],
+            "candidate_max_probability_mean": [
+              1.0,
+              0.4643651843070984,
+              0.5084467530250549,
+              0.5304248332977295,
+              0.5298886299133301,
+              0.45559874176979065,
+              0.4835362136363983
+            ],
+            "history_mean": [
+              0.1914366151517821,
+              0.23053239004450268,
+              0.28965890064995964,
+              0.0,
+              0.0,
+              0.0,
+              0.2509943982866194,
+              0.0,
+              0.0
+            ],
+            "history_std": [
+              0.12747162875147214,
+              0.15345806044981297,
+              0.1932457584561825,
+              0.0,
+              0.0,
+              0.0,
+              0.2030408448073106,
+              0.0,
+              0.0
+            ],
+            "rows": 5375,
+            "wrong_baseline_reachable_rate": 0.32855939342881213
+          }
+        }
+      },
+      "held_outputs_bit_identical": false,
+      "report_sha256": "0e9317400fd023ceb31a622e34bbc91f063c7354f01b8b1ff8b3e40db2df0a0c",
+      "snapshots_verified": 44
+    },
+    "corrector8": {
+      "aggregate": {
+        "held": {
+          "alternative_count": {
+            "0": 2262,
+            "1": 3854,
+            "2": 1235,
+            "3": 139,
+            "4": 3
+          },
+          "baseline_accuracy": 0.3356466034965968,
+          "baseline_brier": 0.2198356538703392,
+          "baseline_correct": 2515,
+          "best_gain_bins": [
+            {
+              "lower": -1,
+              "observed_mean_gain": -0.2111111111111111,
+              "optimism_per_row": -0.37593442629446594,
+              "predicted_mean_gain": -0.5870455374055771,
+              "rows": 180,
+              "upper": -0.5
+            },
+            {
+              "lower": -0.5,
+              "observed_mean_gain": -0.12287581699346405,
+              "optimism_per_row": -0.19508495447045637,
+              "predicted_mean_gain": -0.31796077146392043,
+              "rows": 1530,
+              "upper": -0.2
+            },
+            {
+              "lower": -0.2,
+              "observed_mean_gain": -0.09693251533742331,
+              "optimism_per_row": -0.05291424958359488,
+              "predicted_mean_gain": -0.1498467649210182,
+              "rows": 815,
+              "upper": -0.1
+            },
+            {
+              "lower": -0.1,
+              "observed_mean_gain": -0.08024691358024691,
+              "optimism_per_row": 0.03140346128551803,
+              "predicted_mean_gain": -0.04884345229472886,
+              "rows": 810,
+              "upper": 0
+            },
+            {
+              "lower": 0,
+              "observed_mean_gain": 0.0,
+              "optimism_per_row": 0.023647367079576816,
+              "predicted_mean_gain": 0.02364736707957682,
+              "rows": 292,
+              "upper": 0.05
+            },
+            {
+              "lower": 0.05,
+              "observed_mean_gain": 0.0061162079510703364,
+              "optimism_per_row": 0.06927950044627096,
+              "predicted_mean_gain": 0.07539570839734129,
+              "rows": 327,
+              "upper": 0.1
+            },
+            {
+              "lower": 0.1,
+              "observed_mean_gain": -0.07644628099173553,
+              "optimism_per_row": 0.223442938266904,
+              "predicted_mean_gain": 0.1469966572751685,
+              "rows": 484,
+              "upper": 0.2
+            },
+            {
+              "lower": 0.2,
+              "observed_mean_gain": 0.10031347962382445,
+              "optimism_per_row": 0.1476489984681659,
+              "predicted_mean_gain": 0.24796247809199037,
+              "rows": 319,
+              "upper": 0.3
+            },
+            {
+              "lower": 0.3,
+              "observed_mean_gain": 0.08383233532934131,
+              "optimism_per_row": 0.3006940107130658,
+              "predicted_mean_gain": 0.3845263460424071,
+              "rows": 334,
+              "upper": 0.5
+            },
+            {
+              "lower": 0.5,
+              "observed_mean_gain": 0.09285714285714286,
+              "optimism_per_row": 0.5298746976798996,
+              "predicted_mean_gain": 0.6227318405370423,
+              "rows": 140,
+              "upper": 1
+            }
+          ],
+          "changes": 1896,
+          "conditional_brier_on_baseline_wrong": 0.4206185214825646,
+          "conditional_selected_baseline_wrong": {
+            "observed": 0.4325925925925926,
+            "predicted": 0.6171435757237766,
+            "rows": 1350
+          },
+          "corrections": 584,
+          "evaluations_per_native_eligible_event": 1,
+          "expected_corrections": 872.9236633619294,
+          "expected_net": 397.4201004942879,
+          "expected_regressions": 475.50356286764145,
+          "net": 38,
+          "nll": {
+            "baseline": 0.6316826022457328,
+            "conditional_on_baseline_wrong": 0.6710328360710837,
+            "conditional_weighted_by_all_events": 0.44580294380913577,
+            "event": 1.0774855460548687
+          },
+          "optimism": 359.4201004942879,
+          "other_baseline_wrong": {
+            "observed": 0.6470470068300522,
+            "predicted": 0.6709803504257005
+          },
+          "other_selected_baseline_wrong": {
+            "observed": 0.46296296296296297,
+            "predicted": 0.32678137175418676
+          },
+          "policies": {
+            "accepted_best": {
+              "observed_mean_gain": 0.020042194092827006,
+              "optimism_per_row": 0.18956756208810305,
+              "predicted_mean_gain": 0.20960975618093008,
+              "rows": 1896
+            },
+            "best_without_acceptance_gate": {
+              "observed_mean_gain": -0.06346778818581533,
+              "optimism_per_row": -0.004667633172073964,
+              "predicted_mean_gain": -0.0681354213578893,
+              "rows": 5231
+            },
+            "rejected_best": {
+              "observed_mean_gain": -0.11094452773613193,
+              "optimism_per_row": -0.11509339935297222,
+              "predicted_mean_gain": -0.22603792708910414,
+              "rows": 3335
+            },
+            "uniform_over_distinct_alternatives": {
+              "observed_mean_gain": -0.0730580513604792,
+              "optimism_per_row": -0.0233487466128033,
+              "predicted_mean_gain": -0.09640679797328248,
+              "rows": 5231
+            }
+          },
+          "reference_all": {
+            "observed": 0.3356466034965968,
+            "predicted": 0.34721290758125595
+          },
+          "reference_selected": {
+            "observed": 0.2879746835443038,
+            "predicted": 0.25079301839010626
+          },
+          "regressions": 546,
+          "rows": 7493,
+          "selected_by_alternative_count": {
+            "1": {
+              "observed_mean_gain": 0.00859375,
+              "optimism_per_row": 0.1980464392334427,
+              "predicted_mean_gain": 0.20664018923344268,
+              "rows": 1280
+            },
+            "2": {
+              "observed_mean_gain": 0.05755395683453238,
+              "optimism_per_row": 0.15898436462048243,
+              "predicted_mean_gain": 0.2165383214550148,
+              "rows": 556
+            },
+            "3": {
+              "observed_mean_gain": -0.08333333333333333,
+              "optimism_per_row": 0.29208914618747644,
+              "predicted_mean_gain": 0.20875581285414307,
+              "rows": 60
+            },
+            "4": {
+              "observed_mean_gain": null,
+              "optimism_per_row": null,
+              "predicted_mean_gain": null,
+              "rows": 0
+            }
+          },
+          "selected_optimism_decomposition": {
+            "baseline_component": 110.27627049194501,
+            "conditional_component": 249.14382722709843,
+            "formula": "(B-r)*(1+q) + (1-B)*(q-I(selected_K=true_K)); a fixed algebraic decomposition, not causal attribution"
+          },
+          "selected_wrong_baseline_with_correct_alternative_but_wrong_choice": 141,
+          "selected_wrong_baseline_without_correct_alternative": 625
+        },
+        "train": {
+          "alternative_count": {
+            "0": 6430,
+            "1": 11650,
+            "2": 4029,
+            "3": 367,
+            "4": 3
+          },
+          "baseline_accuracy": 0.3356466034965968,
+          "baseline_brier": 0.19093877977947465,
+          "baseline_correct": 7545,
+          "best_gain_bins": [
+            {
+              "lower": -1,
+              "observed_mean_gain": -0.6672473867595818,
+              "optimism_per_row": 0.08345781201998607,
+              "predicted_mean_gain": -0.5837895747395958,
+              "rows": 574,
+              "upper": -0.5
+            },
+            {
+              "lower": -0.5,
+              "observed_mean_gain": -0.34020385050962626,
+              "optimism_per_row": 0.023806698246060545,
+              "predicted_mean_gain": -0.31639715226356574,
+              "rows": 4415,
+              "upper": -0.2
+            },
+            {
+              "lower": -0.2,
+              "observed_mean_gain": -0.15079689415610953,
+              "optimism_per_row": 0.0018700126866817584,
+              "predicted_mean_gain": -0.14892688146942779,
+              "rows": 2447,
+              "upper": -0.1
+            },
+            {
+              "lower": -0.1,
+              "observed_mean_gain": -0.06224737267582862,
+              "optimism_per_row": 0.011753026550035994,
+              "predicted_mean_gain": -0.05049434612579262,
+              "rows": 2474,
+              "upper": 0
+            },
+            {
+              "lower": 0,
+              "observed_mean_gain": 0.040566037735849055,
+              "optimism_per_row": -0.016357931938405592,
+              "predicted_mean_gain": 0.02420810579744346,
+              "rows": 1060,
+              "upper": 0.05
+            },
+            {
+              "lower": 0.05,
+              "observed_mean_gain": 0.15384615384615385,
+              "optimism_per_row": -0.07877598778584935,
+              "predicted_mean_gain": 0.07507016606030449,
+              "rows": 884,
+              "upper": 0.1
+            },
+            {
+              "lower": 0.1,
+              "observed_mean_gain": 0.24142394822006472,
+              "optimism_per_row": -0.09361530157739488,
+              "predicted_mean_gain": 0.14780864664266985,
+              "rows": 1545,
+              "upper": 0.2
+            },
+            {
+              "lower": 0.2,
+              "observed_mean_gain": 0.345595353339787,
+              "optimism_per_row": -0.09909015518234307,
+              "predicted_mean_gain": 0.24650519815744398,
+              "rows": 1033,
+              "upper": 0.3
+            },
+            {
+              "lower": 0.3,
+              "observed_mean_gain": 0.5564444444444444,
+              "optimism_per_row": -0.1737789324064365,
+              "predicted_mean_gain": 0.38266551203800797,
+              "rows": 1125,
+              "upper": 0.5
+            },
+            {
+              "lower": 0.5,
+              "observed_mean_gain": 0.7682926829268293,
+              "optimism_per_row": -0.1507581693309338,
+              "predicted_mean_gain": 0.6175345135958955,
+              "rows": 492,
+              "upper": 1
+            }
+          ],
+          "changes": 6139,
+          "conditional_brier_on_baseline_wrong": 0.18668954547634983,
+          "conditional_selected_baseline_wrong": {
+            "observed": 0.7120986604295131,
+            "predicted": 0.6412132881337552,
+            "rows": 4703
+          },
+          "corrections": 3349,
+          "evaluations_per_native_eligible_event": 3,
+          "expected_corrections": 2898.390552096069,
+          "expected_net": 1309.3525362416221,
+          "expected_regressions": 1589.0380158544467,
+          "net": 1913,
+          "nll": {
+            "baseline": 0.5600438033776345,
+            "conditional_on_baseline_wrong": 0.30592525711449825,
+            "conditional_weighted_by_all_events": 0.20324248364019384,
+            "event": 0.7632862870178284
+          },
+          "optimism": -603.6474637583779,
+          "other_baseline_wrong": {
+            "observed": 0.6477166197937592,
+            "predicted": 0.6594736445517894
+          },
+          "other_selected_baseline_wrong": {
+            "observed": 0.24643844354667233,
+            "predicted": 0.2989133404296573
+          },
+          "policies": {
+            "accepted_best": {
+              "observed_mean_gain": 0.31161426942498777,
+              "optimism_per_row": -0.09832993493498887,
+              "predicted_mean_gain": 0.2132843344899989,
+              "rows": 6139
+            },
+            "best_without_acceptance_gate": {
+              "observed_mean_gain": -0.030843043180260453,
+              "optimism_per_row": -0.025981880801356355,
+              "predicted_mean_gain": -0.05682492398161681,
+              "rows": 16049
+            },
+            "rejected_best": {
+              "observed_mean_gain": -0.24298688193743692,
+              "optimism_per_row": 0.018835950109478167,
+              "predicted_mean_gain": -0.22415093182795875,
+              "rows": 9910
+            },
+            "uniform_over_distinct_alternatives": {
+              "observed_mean_gain": -0.07924688973352442,
+              "optimism_per_row": -0.01085356507788774,
+              "predicted_mean_gain": -0.09010045481141216,
+              "rows": 16049
+            }
+          },
+          "reference_all": {
+            "observed": 0.3356466034965968,
+            "predicted": 0.3421545599286535
+          },
+          "reference_selected": {
+            "observed": 0.2339143182928816,
+            "predicted": 0.25884313664350006
+          },
+          "regressions": 1436,
+          "rows": 22479,
+          "selected_by_alternative_count": {
+            "1": {
+              "observed_mean_gain": 0.2658740197318492,
+              "optimism_per_row": -0.05815933561054599,
+              "predicted_mean_gain": 0.20771468412130323,
+              "rows": 3953
+            },
+            "2": {
+              "observed_mean_gain": 0.38693210821847884,
+              "optimism_per_row": -0.16557603894304387,
+              "predicted_mean_gain": 0.22135606927543494,
+              "rows": 1959
+            },
+            "3": {
+              "observed_mean_gain": 0.4533333333333333,
+              "optimism_per_row": -0.21404438777986587,
+              "predicted_mean_gain": 0.23928894555346744,
+              "rows": 225
+            },
+            "4": {
+              "observed_mean_gain": 1.0,
+              "optimism_per_row": -0.6100846787578438,
+              "predicted_mean_gain": 0.38991532124215617,
+              "rows": 2
+            }
+          },
+          "selected_optimism_decomposition": {
+            "baseline_component": -270.27356465894786,
+            "conditional_component": -333.37390590694895,
+            "formula": "(B-r)*(1+q) + (1-B)*(q-I(selected_K=true_K)); a fixed algebraic decomposition, not causal attribution"
+          },
+          "selected_wrong_baseline_with_correct_alternative_but_wrong_choice": 195,
+          "selected_wrong_baseline_without_correct_alternative": 1159
+        },
+        "votes2_audits2": {
+          "alternative_count": {
+            "0": 6430,
+            "1": 11650,
+            "2": 4029,
+            "3": 367,
+            "4": 3
+          },
+          "baseline_accuracy": 0.3356466034965968,
+          "baseline_brier": 0.22036286185088377,
+          "baseline_correct": 7545,
+          "best_gain_bins": [
+            {
+              "lower": -1,
+              "observed_mean_gain": -0.22408026755852842,
+              "optimism_per_row": -0.3658328909729171,
+              "predicted_mean_gain": -0.5899131585314457,
+              "rows": 598,
+              "upper": -0.5
+            },
+            {
+              "lower": -0.5,
+              "observed_mean_gain": -0.12791181364392679,
+              "optimism_per_row": -0.19171232057748303,
+              "predicted_mean_gain": -0.3196241342214098,
+              "rows": 4808,
+              "upper": -0.2
+            },
+            {
+              "lower": -0.2,
+              "observed_mean_gain": -0.08837579617834394,
+              "optimism_per_row": -0.06183188660877844,
+              "predicted_mean_gain": -0.1502076827871224,
+              "rows": 2512,
+              "upper": -0.1
+            },
+            {
+              "lower": -0.1,
+              "observed_mean_gain": -0.07277289836888332,
+              "optimism_per_row": 0.022934097340405395,
+              "predicted_mean_gain": -0.049838801028477916,
+              "rows": 2391,
+              "upper": 0
+            },
+            {
+              "lower": 0,
+              "observed_mean_gain": -0.05623721881390593,
+              "optimism_per_row": 0.07991236151257415,
+              "predicted_mean_gain": 0.023675142698668217,
+              "rows": 978,
+              "upper": 0.05
+            },
+            {
+              "lower": 0.05,
+              "observed_mean_gain": -0.01714898177920686,
+              "optimism_per_row": 0.09161009159723975,
+              "predicted_mean_gain": 0.0744611098180329,
+              "rows": 933,
+              "upper": 0.1
+            },
+            {
+              "lower": 0.1,
+              "observed_mean_gain": -0.02426837972876517,
+              "optimism_per_row": 0.1701873724811298,
+              "predicted_mean_gain": 0.14591899275236464,
+              "rows": 1401,
+              "upper": 0.2
+            },
+            {
+              "lower": 0.2,
+              "observed_mean_gain": 0.059123343527013254,
+              "optimism_per_row": 0.18692377050798203,
+              "predicted_mean_gain": 0.2460471140349953,
+              "rows": 981,
+              "upper": 0.3
+            },
+            {
+              "lower": 0.3,
+              "observed_mean_gain": 0.06615532118887824,
+              "optimism_per_row": 0.3183516905089412,
+              "predicted_mean_gain": 0.3845070116978194,
+              "rows": 1043,
+              "upper": 0.5
+            },
+            {
+              "lower": 0.5,
+              "observed_mean_gain": 0.07425742574257425,
+              "optimism_per_row": 0.5490374862537029,
+              "predicted_mean_gain": 0.6232949119962772,
+              "rows": 404,
+              "upper": 1
+            }
+          ],
+          "changes": 5740,
+          "conditional_brier_on_baseline_wrong": 0.4283354281771435,
+          "conditional_selected_baseline_wrong": {
+            "observed": 0.42484624846248464,
+            "predicted": 0.6208570953867996,
+            "rows": 4065
+          },
+          "corrections": 1727,
+          "evaluations_per_native_eligible_event": 3,
+          "expected_corrections": 2646.777329163626,
+          "expected_net": 1191.2831974858418,
+          "expected_regressions": 1455.494131677784,
+          "net": 52,
+          "nll": {
+            "baseline": 0.632883230996186,
+            "conditional_on_baseline_wrong": 0.6892531090650839,
+            "conditional_weighted_by_all_events": 0.45790764405791906,
+            "event": 1.0907908750541053
+          },
+          "optimism": 1139.2831974858418,
+          "other_baseline_wrong": {
+            "observed": 0.6477166197937592,
+            "predicted": 0.6680286173991923
+          },
+          "other_selected_baseline_wrong": {
+            "observed": 0.46051660516605164,
+            "predicted": 0.3199354199615867
+          },
+          "policies": {
+            "accepted_best": {
+              "observed_mean_gain": 0.009059233449477353,
+              "optimism_per_row": 0.19848139205248033,
+              "predicted_mean_gain": 0.20754062550195768,
+              "rows": 5740
+            },
+            "best_without_acceptance_gate": {
+              "observed_mean_gain": -0.06810393170914075,
+              "optimism_per_row": -0.006338338100657227,
+              "predicted_mean_gain": -0.07444226980979798,
+              "rows": 16049
+            },
+            "rejected_best": {
+              "observed_mean_gain": -0.11106799883596857,
+              "optimism_per_row": -0.12038094660575077,
+              "predicted_mean_gain": -0.23144894544171937,
+              "rows": 10309
+            },
+            "uniform_over_distinct_alternatives": {
+              "observed_mean_gain": -0.07924688973352441,
+              "optimism_per_row": -0.025070495142314325,
+              "predicted_mean_gain": -0.10431738487583872,
+              "rows": 16049
+            }
+          },
+          "reference_all": {
+            "observed": 0.3356466034965968,
+            "predicted": 0.3487074726411455
+          },
+          "reference_selected": {
+            "observed": 0.29181184668989546,
+            "predicted": 0.2535704062156418
+          },
+          "regressions": 1675,
+          "rows": 22479,
+          "selected_by_alternative_count": {
+            "1": {
+              "observed_mean_gain": -0.001326259946949602,
+              "optimism_per_row": 0.20677186234222852,
+              "predicted_mean_gain": 0.20544560239527893,
+              "rows": 3770
+            },
+            "2": {
+              "observed_mean_gain": 0.042986425339366516,
+              "optimism_per_row": 0.16953687323768085,
+              "predicted_mean_gain": 0.21252329857704735,
+              "rows": 1768
+            },
+            "3": {
+              "observed_mean_gain": -0.09,
+              "optimism_per_row": 0.29335380911099124,
+              "predicted_mean_gain": 0.20335380911099118,
+              "rows": 200
+            },
+            "4": {
+              "observed_mean_gain": -0.5,
+              "optimism_per_row": 0.6706578223087849,
+              "predicted_mean_gain": 0.17065782230878496,
+              "rows": 2
+            }
+          },
+          "selected_optimism_decomposition": {
+            "baseline_component": 342.4990976338969,
+            "conditional_component": 796.7840927473401,
+            "formula": "(B-r)*(1+q) + (1-B)*(q-I(selected_K=true_K)); a fixed algebraic decomposition, not causal attribution"
+          },
+          "selected_wrong_baseline_with_correct_alternative_but_wrong_choice": 466,
+          "selected_wrong_baseline_without_correct_alternative": 1872
+        },
+        "votes2_audits3": {
+          "alternative_count": {
+            "0": 6430,
+            "1": 11650,
+            "2": 4029,
+            "3": 367,
+            "4": 3
+          },
+          "baseline_accuracy": 0.3356466034965968,
+          "baseline_brier": 0.22028420691669245,
+          "baseline_correct": 7545,
+          "best_gain_bins": [
+            {
+              "lower": -1,
+              "observed_mean_gain": -0.22393162393162394,
+              "optimism_per_row": -0.36736263181826767,
+              "predicted_mean_gain": -0.5912942557498916,
+              "rows": 585,
+              "upper": -0.5
+            },
+            {
+              "lower": -0.5,
+              "observed_mean_gain": -0.12448559670781893,
+              "optimism_per_row": -0.19508499925108683,
+              "predicted_mean_gain": -0.31957059595890575,
+              "rows": 4860,
+              "upper": -0.2
+            },
+            {
+              "lower": -0.2,
+              "observed_mean_gain": -0.09156626506024096,
+              "optimism_per_row": -0.058693731878814576,
+              "predicted_mean_gain": -0.15025999693905553,
+              "rows": 2490,
+              "upper": -0.1
+            },
+            {
+              "lower": -0.1,
+              "observed_mean_gain": -0.08052588331963846,
+              "optimism_per_row": 0.030763082535495017,
+              "predicted_mean_gain": -0.049762800784143434,
+              "rows": 2434,
+              "upper": 0
+            },
+            {
+              "lower": 0,
+              "observed_mean_gain": -0.05288932419196866,
+              "optimism_per_row": 0.07697315745910584,
+              "predicted_mean_gain": 0.02408383326713717,
+              "rows": 1021,
+              "upper": 0.05
+            },
+            {
+              "lower": 0.05,
+              "observed_mean_gain": -0.007856341189674524,
+              "optimism_per_row": 0.08238994248695397,
+              "predicted_mean_gain": 0.07453360129727944,
+              "rows": 891,
+              "upper": 0.1
+            },
+            {
+              "lower": 0.1,
+              "observed_mean_gain": -0.027639971651311126,
+              "optimism_per_row": 0.17441891940268098,
+              "predicted_mean_gain": 0.14677894775136985,
+              "rows": 1411,
+              "upper": 0.2
+            },
+            {
+              "lower": 0.2,
+              "observed_mean_gain": 0.07435344827586207,
+              "optimism_per_row": 0.1725529818128782,
+              "predicted_mean_gain": 0.24690643008874028,
+              "rows": 928,
+              "upper": 0.3
+            },
+            {
+              "lower": 0.3,
+              "observed_mean_gain": 0.06621880998080615,
+              "optimism_per_row": 0.319412409924382,
+              "predicted_mean_gain": 0.3856312199051881,
+              "rows": 1042,
+              "upper": 0.5
+            },
+            {
+              "lower": 0.5,
+              "observed_mean_gain": 0.07493540051679587,
+              "optimism_per_row": 0.5504864837681686,
+              "predicted_mean_gain": 0.6254218842849645,
+              "rows": 387,
+              "upper": 1
+            }
+          ],
+          "changes": 5680,
+          "conditional_brier_on_baseline_wrong": 0.427967723951952,
+          "conditional_selected_baseline_wrong": {
+            "observed": 0.4225247524752475,
+            "predicted": 0.6154565867774152,
+            "rows": 4040
+          },
+          "corrections": 1707,
+          "evaluations_per_native_eligible_event": 3,
+          "expected_corrections": 2601.8769905781373,
+          "expected_net": 1171.099300003145,
+          "expected_regressions": 1430.7776905749924,
+          "net": 67,
+          "nll": {
+            "baseline": 0.6327518433759387,
+            "conditional_on_baseline_wrong": 0.6881873018940343,
+            "conditional_weighted_by_all_events": 0.45719957144381457,
+            "event": 1.0899514148197533
+          },
+          "optimism": 1104.099300003145,
+          "other_baseline_wrong": {
+            "observed": 0.6477166197937592,
+            "predicted": 0.670229787936489
+          },
+          "other_selected_baseline_wrong": {
+            "observed": 0.46212871287128715,
+            "predicted": 0.32509510178391143
+          },
+          "policies": {
+            "accepted_best": {
+              "observed_mean_gain": 0.011795774647887324,
+              "optimism_per_row": 0.19438367874659226,
+              "predicted_mean_gain": 0.2061794533944796,
+              "rows": 5680
+            },
+            "best_without_acceptance_gate": {
+              "observed_mean_gain": -0.06810393170914075,
+              "optimism_per_row": -0.008112093599612296,
+              "predicted_mean_gain": -0.07621602530875306,
+              "rows": 16049
+            },
+            "rejected_best": {
+              "observed_mean_gain": -0.11187192593306973,
+              "optimism_per_row": -0.11903657878877634,
+              "predicted_mean_gain": -0.23090850472184607,
+              "rows": 10369
+            },
+            "uniform_over_distinct_alternatives": {
+              "observed_mean_gain": -0.07924688973352441,
+              "optimism_per_row": -0.026187411079285197,
+              "predicted_mean_gain": -0.1054343008128096,
+              "rows": 16049
+            }
+          },
+          "reference_all": {
+            "observed": 0.3356466034965968,
+            "predicted": 0.348336445641815
+          },
+          "reference_selected": {
+            "observed": 0.2887323943661972,
+            "predicted": 0.2518974807350339
+          },
+          "regressions": 1640,
+          "rows": 22479,
+          "selected_by_alternative_count": {
+            "1": {
+              "observed_mean_gain": 0.0032119914346895075,
+              "optimism_per_row": 0.2021469344557127,
+              "predicted_mean_gain": 0.2053589258904022,
+              "rows": 3736
+            },
+            "2": {
+              "observed_mean_gain": 0.0430786904078116,
+              "optimism_per_row": 0.16627579689403785,
+              "predicted_mean_gain": 0.20935448730184944,
+              "rows": 1741
+            },
+            "3": {
+              "observed_mean_gain": -0.0945273631840796,
+              "optimism_per_row": 0.28893164793892234,
+              "predicted_mean_gain": 0.1944042847548427,
+              "rows": 201
+            },
+            "4": {
+              "observed_mean_gain": -0.5,
+              "optimism_per_row": 0.6584622629292156,
+              "predicted_mean_gain": 0.1584622629292157,
+              "rows": 2
+            }
+          },
+          "selected_optimism_decomposition": {
+            "baseline_component": 324.65468469988707,
+            "conditional_component": 779.4446105807571,
+            "formula": "(B-r)*(1+q) + (1-B)*(q-I(selected_K=true_K)); a fixed algebraic decomposition, not causal attribution"
+          },
+          "selected_wrong_baseline_with_correct_alternative_but_wrong_choice": 466,
+          "selected_wrong_baseline_without_correct_alternative": 1867
+        },
+        "votes3_audits2": {
+          "alternative_count": {
+            "0": 6786,
+            "1": 11562,
+            "2": 3705,
+            "3": 417,
+            "4": 9
+          },
+          "baseline_accuracy": 0.3356466034965968,
+          "baseline_brier": 0.21988689748078974,
+          "baseline_correct": 7545,
+          "best_gain_bins": [
+            {
+              "lower": -1,
+              "observed_mean_gain": -0.2088724584103512,
+              "optimism_per_row": -0.37734395580507474,
+              "predicted_mean_gain": -0.5862164142154259,
+              "rows": 541,
+              "upper": -0.5
+            },
+            {
+              "lower": -0.5,
+              "observed_mean_gain": -0.12685739631847417,
+              "optimism_per_row": -0.19057251215932516,
+              "predicted_mean_gain": -0.31742990847779934,
+              "rows": 4509,
+              "upper": -0.2
+            },
+            {
+              "lower": -0.2,
+              "observed_mean_gain": -0.09019769357495881,
+              "optimism_per_row": -0.059822087796021585,
+              "predicted_mean_gain": -0.1500197813709804,
+              "rows": 2428,
+              "upper": -0.1
+            },
+            {
+              "lower": -0.1,
+              "observed_mean_gain": -0.06883445945945946,
+              "optimism_per_row": 0.019047238392905636,
+              "predicted_mean_gain": -0.049787221066553825,
+              "rows": 2368,
+              "upper": 0
+            },
+            {
+              "lower": 0,
+              "observed_mean_gain": -0.05714285714285714,
+              "optimism_per_row": 0.08076659205908815,
+              "predicted_mean_gain": 0.023623734916230998,
+              "rows": 945,
+              "upper": 0.05
+            },
+            {
+              "lower": 0.05,
+              "observed_mean_gain": 0.012012012012012012,
+              "optimism_per_row": 0.06329207742705033,
+              "predicted_mean_gain": 0.07530408943906233,
+              "rows": 999,
+              "upper": 0.1
+            },
+            {
+              "lower": 0.1,
+              "observed_mean_gain": -0.045548654244306416,
+              "optimism_per_row": 0.19218861951778474,
+              "predicted_mean_gain": 0.14663996527347833,
+              "rows": 1449,
+              "upper": 0.2
+            },
+            {
+              "lower": 0.2,
+              "observed_mean_gain": 0.0486815415821501,
+              "optimism_per_row": 0.19806480677851196,
+              "predicted_mean_gain": 0.24674634836066206,
+              "rows": 986,
+              "upper": 0.3
+            },
+            {
+              "lower": 0.3,
+              "observed_mean_gain": 0.09038461538461538,
+              "optimism_per_row": 0.29288199181281693,
+              "predicted_mean_gain": 0.38326660719743233,
+              "rows": 1040,
+              "upper": 0.5
+            },
+            {
+              "lower": 0.5,
+              "observed_mean_gain": 0.09579439252336448,
+              "optimism_per_row": 0.5272049752653135,
+              "predicted_mean_gain": 0.622999367788678,
+              "rows": 428,
+              "upper": 1
+            }
+          ],
+          "changes": 5847,
+          "conditional_brier_on_baseline_wrong": 0.4210880640628671,
+          "conditional_selected_baseline_wrong": {
+            "observed": 0.43078038173471855,
+            "predicted": 0.6172876453104474,
+            "rows": 4139
+          },
+          "corrections": 1783,
+          "evaluations_per_native_eligible_event": 3,
+          "expected_corrections": 2691.9086752366275,
+          "expected_net": 1218.5674335090443,
+          "expected_regressions": 1473.341241727583,
+          "net": 75,
+          "nll": {
+            "baseline": 0.6317913250220426,
+            "conditional_on_baseline_wrong": 0.6720449311742217,
+            "conditional_weighted_by_all_events": 0.44647533262849004,
+            "event": 1.0782666576505329
+          },
+          "optimism": 1143.5674335090443,
+          "other_baseline_wrong": {
+            "observed": 0.6470470068300522,
+            "predicted": 0.6682133043898538
+          },
+          "other_selected_baseline_wrong": {
+            "observed": 0.4612225175163083,
+            "predicted": 0.3262353294517901
+          },
+          "policies": {
+            "accepted_best": {
+              "observed_mean_gain": 0.012827090815802977,
+              "optimism_per_row": 0.19558190951072824,
+              "predicted_mean_gain": 0.20840900032653123,
+              "rows": 5847
+            },
+            "best_without_acceptance_gate": {
+              "observed_mean_gain": -0.06321289747020965,
+              "optimism_per_row": -0.0012751724438956325,
+              "predicted_mean_gain": -0.06448806991410529,
+              "rows": 15693
+            },
+            "rejected_best": {
+              "observed_mean_gain": -0.10836888076376193,
+              "optimism_per_row": -0.11817780886362811,
+              "predicted_mean_gain": -0.22654668962739005,
+              "rows": 9846
+            },
+            "uniform_over_distinct_alternatives": {
+              "observed_mean_gain": -0.0730580513604792,
+              "optimism_per_row": -0.02027613372123574,
+              "predicted_mean_gain": -0.09333418508171494,
+              "rows": 15693
+            }
+          },
+          "reference_all": {
+            "observed": 0.3356466034965968,
+            "predicted": 0.34686279684552485
+          },
+          "reference_selected": {
+            "observed": 0.29211561484521975,
+            "predicted": 0.25198242547076843
+          },
+          "regressions": 1708,
+          "rows": 22479,
+          "selected_by_alternative_count": {
+            "1": {
+              "observed_mean_gain": 0.001520912547528517,
+              "optimism_per_row": 0.20309856008103436,
+              "predicted_mean_gain": 0.20461947262856287,
+              "rows": 3945
+            },
+            "2": {
+              "observed_mean_gain": 0.04603729603729604,
+              "optimism_per_row": 0.17082546196277326,
+              "predicted_mean_gain": 0.2168627580000693,
+              "rows": 1716
+            },
+            "3": {
+              "observed_mean_gain": -0.053763440860215055,
+              "optimism_per_row": 0.26455436914746605,
+              "predicted_mean_gain": 0.21079092828725102,
+              "rows": 186
+            },
+            "4": {
+              "observed_mean_gain": null,
+              "optimism_per_row": null,
+              "predicted_mean_gain": null,
+              "rows": 0
+            }
+          },
+          "selected_optimism_decomposition": {
+            "baseline_component": 371.6138609692865,
+            "conditional_component": 771.9535639399417,
+            "formula": "(B-r)*(1+q) + (1-B)*(q-I(selected_K=true_K)); a fixed algebraic decomposition, not causal attribution"
+          },
+          "selected_wrong_baseline_with_correct_alternative_but_wrong_choice": 447,
+          "selected_wrong_baseline_without_correct_alternative": 1909
+        }
+      },
+      "archive_sha256": "c66d091b1c8b28555dc9ab8752a10c7210dfe1fd8406cf270a383e145ac7b749",
+      "common_available_destination_sets": {
+        "definition": "Identical available K sets in held model and all three models trained on that event.",
+        "held": {
+          "alternative_count": {
+            "0": 1254,
+            "1": 2151,
+            "2": 443,
+            "3": 15,
+            "4": 0
+          },
+          "baseline_accuracy": 0.32720683406678747,
+          "baseline_brier": 0.21599321539221852,
+          "baseline_correct": 1264,
+          "best_gain_bins": [
+            {
+              "lower": -1,
+              "observed_mean_gain": -0.1375,
+              "optimism_per_row": -0.4475222690148636,
+              "predicted_mean_gain": -0.5850222690148635,
+              "rows": 80,
+              "upper": -0.5
+            },
+            {
+              "lower": -0.5,
+              "observed_mean_gain": -0.05991440798858773,
+              "optimism_per_row": -0.25655542040317786,
+              "predicted_mean_gain": -0.31646982839176563,
+              "rows": 701,
+              "upper": -0.2
+            },
+            {
+              "lower": -0.2,
+              "observed_mean_gain": -0.10704960835509138,
+              "optimism_per_row": -0.04362778950356667,
+              "predicted_mean_gain": -0.15067739785865805,
+              "rows": 383,
+              "upper": -0.1
+            },
+            {
+              "lower": -0.1,
+              "observed_mean_gain": -0.10238095238095238,
+              "optimism_per_row": 0.055296806321479756,
+              "predicted_mean_gain": -0.04708414605947262,
+              "rows": 420,
+              "upper": 0
+            },
+            {
+              "lower": 0,
+              "observed_mean_gain": -0.013793103448275862,
+              "optimism_per_row": 0.037870610118128055,
+              "predicted_mean_gain": 0.0240775066698522,
+              "rows": 145,
+              "upper": 0.05
+            },
+            {
+              "lower": 0.05,
+              "observed_mean_gain": -0.022598870056497175,
+              "optimism_per_row": 0.0976002990699533,
+              "predicted_mean_gain": 0.07500142901345613,
+              "rows": 177,
+              "upper": 0.1
+            },
+            {
+              "lower": 0.1,
+              "observed_mean_gain": -0.04477611940298507,
+              "optimism_per_row": 0.19108177901544746,
+              "predicted_mean_gain": 0.1463056596124624,
+              "rows": 268,
+              "upper": 0.2
+            },
+            {
+              "lower": 0.2,
+              "observed_mean_gain": 0.1437908496732026,
+              "optimism_per_row": 0.10563092172872947,
+              "predicted_mean_gain": 0.24942177140193203,
+              "rows": 153,
+              "upper": 0.3
+            },
+            {
+              "lower": 0.3,
+              "observed_mean_gain": 0.12307692307692308,
+              "optimism_per_row": 0.26198686618877154,
+              "predicted_mean_gain": 0.3850637892656945,
+              "rows": 195,
+              "upper": 0.5
+            },
+            {
+              "lower": 0.5,
+              "observed_mean_gain": 0.0,
+              "optimism_per_row": 0.6315180929636992,
+              "predicted_mean_gain": 0.6315180929636993,
+              "rows": 87,
+              "upper": 1
+            }
+          ],
+          "changes": 1025,
+          "conditional_brier_on_baseline_wrong": 0.39409946771506316,
+          "conditional_selected_baseline_wrong": {
+            "observed": 0.44049247606019154,
+            "predicted": 0.6153819466990487,
+            "rows": 731
+          },
+          "corrections": 322,
+          "expected_corrections": 475.36212982516736,
+          "expected_net": 224.16745400591753,
+          "expected_regressions": 251.19467581924982,
+          "net": 28,
+          "nll": {
+            "baseline": 0.6225893909188406,
+            "conditional_on_baseline_wrong": 0.6141712759270097,
+            "conditional_weighted_by_all_events": 0.4132102371561734,
+            "event": 1.035799628075014
+          },
+          "optimism": 196.16745400591753,
+          "other_baseline_wrong": {
+            "observed": 0.6683339746056175,
+            "predicted": 0.6851158605518006
+          },
+          "other_selected_baseline_wrong": {
+            "observed": 0.48700410396716826,
+            "predicted": 0.3416757480584259
+          },
+          "policies": {
+            "accepted_best": {
+              "observed_mean_gain": 0.027317073170731707,
+              "optimism_per_row": 0.19138288019297378,
+              "predicted_mean_gain": 0.21869995336370548,
+              "rows": 1025
+            },
+            "best_without_acceptance_gate": {
+              "observed_mean_gain": -0.04177845917976236,
+              "optimism_per_row": -0.004969131372504088,
+              "predicted_mean_gain": -0.04674759055226646,
+              "rows": 2609
+            },
+            "rejected_best": {
+              "observed_mean_gain": -0.08648989898989899,
+              "optimism_per_row": -0.13202772471506394,
+              "predicted_mean_gain": -0.21851762370496294,
+              "rows": 1584
+            },
+            "uniform_over_distinct_alternatives": {
+              "observed_mean_gain": -0.05065797879136324,
+              "optimism_per_row": -0.01591690400734979,
+              "predicted_mean_gain": -0.06657488279871301,
+              "rows": 2609
+            }
+          },
+          "reference_all": {
+            "observed": 0.32720683406678747,
+            "predicted": 0.33278655210152136
+          },
+          "reference_selected": {
+            "observed": 0.2868292682926829,
+            "predicted": 0.24506797640902422
+          },
+          "regressions": 294,
+          "rows": 3863,
+          "selected_by_alternative_count": {
+            "1": {
+              "observed_mean_gain": 0.022929936305732482,
+              "optimism_per_row": 0.1909983489554903,
+              "predicted_mean_gain": 0.2139282852612228,
+              "rows": 785
+            },
+            "2": {
+              "observed_mean_gain": 0.039301310043668124,
+              "optimism_per_row": 0.19493749984451425,
+              "predicted_mean_gain": 0.23423880988818244,
+              "rows": 229
+            },
+            "3": {
+              "observed_mean_gain": 0.09090909090909091,
+              "optimism_per_row": 0.14482370939495184,
+              "predicted_mean_gain": 0.2357328003040428,
+              "rows": 11
+            },
+            "4": {
+              "observed_mean_gain": null,
+              "optimism_per_row": null,
+              "predicted_mean_gain": null,
+              "rows": 0
+            }
+          },
+          "selected_optimism_decomposition": {
+            "baseline_component": 68.32324916079354,
+            "conditional_component": 127.8442030370046,
+            "formula": "(B-r)*(1+q) + (1-B)*(q-I(selected_K=true_K)); a fixed algebraic decomposition, not causal attribution"
+          },
+          "selected_wrong_baseline_with_correct_alternative_but_wrong_choice": 53,
+          "selected_wrong_baseline_without_correct_alternative": 356
+        },
+        "train": {
+          "alternative_count": {
+            "0": 3762,
+            "1": 6453,
+            "2": 1329,
+            "3": 45,
+            "4": 0
+          },
+          "baseline_accuracy": 0.32720683406678747,
+          "baseline_brier": 0.18720617764301822,
+          "baseline_correct": 3792,
+          "best_gain_bins": [
+            {
+              "lower": -1,
+              "observed_mean_gain": -0.6391304347826087,
+              "optimism_per_row": 0.06028139410495254,
+              "predicted_mean_gain": -0.5788490406776562,
+              "rows": 230,
+              "upper": -0.5
+            },
+            {
+              "lower": -0.5,
+              "observed_mean_gain": -0.3424657534246575,
+              "optimism_per_row": 0.025460246894290363,
+              "predicted_mean_gain": -0.31700550653036713,
+              "rows": 1971,
+              "upper": -0.2
+            },
+            {
+              "lower": -0.2,
+              "observed_mean_gain": -0.15301003344481606,
+              "optimism_per_row": 0.005481153413934502,
+              "predicted_mean_gain": -0.14752888003088158,
+              "rows": 1196,
+              "upper": -0.1
+            },
+            {
+              "lower": -0.1,
+              "observed_mean_gain": -0.042789223454833596,
+              "optimism_per_row": -0.006413935779970843,
+              "predicted_mean_gain": -0.04920315923480444,
+              "rows": 1262,
+              "upper": 0
+            },
+            {
+              "lower": 0,
+              "observed_mean_gain": -0.01639344262295082,
+              "optimism_per_row": 0.03996523177217824,
+              "predicted_mean_gain": 0.02357178914922742,
+              "rows": 549,
+              "upper": 0.05
+            },
+            {
+              "lower": 0.05,
+              "observed_mean_gain": 0.11751662971175167,
+              "optimism_per_row": -0.04201757069142079,
+              "predicted_mean_gain": 0.07549905902033086,
+              "rows": 451,
+              "upper": 0.1
+            },
+            {
+              "lower": 0.1,
+              "observed_mean_gain": 0.22697795071335927,
+              "optimism_per_row": -0.08002782811094553,
+              "predicted_mean_gain": 0.14695012260241375,
+              "rows": 771,
+              "upper": 0.2
+            },
+            {
+              "lower": 0.2,
+              "observed_mean_gain": 0.3271375464684015,
+              "optimism_per_row": -0.08206330101875721,
+              "predicted_mean_gain": 0.24507424544964432,
+              "rows": 538,
+              "upper": 0.3
+            },
+            {
+              "lower": 0.3,
+              "observed_mean_gain": 0.520618556701031,
+              "optimism_per_row": -0.138265717247041,
+              "predicted_mean_gain": 0.3823528394539899,
+              "rows": 582,
+              "upper": 0.5
+            },
+            {
+              "lower": 0.5,
+              "observed_mean_gain": 0.779783393501805,
+              "optimism_per_row": -0.15927898702126797,
+              "predicted_mean_gain": 0.6205044064805371,
+              "rows": 277,
+              "upper": 1
+            }
+          ],
+          "changes": 3168,
+          "conditional_brier_on_baseline_wrong": 0.1689672912989077,
+          "conditional_selected_baseline_wrong": {
+            "observed": 0.7015423092955398,
+            "predicted": 0.6383991226948489,
+            "rows": 2399
+          },
+          "corrections": 1683,
+          "expected_corrections": 1495.2466111280955,
+          "expected_net": 686.5485533861029,
+          "expected_regressions": 808.6980577419927,
+          "net": 914,
+          "nll": {
+            "baseline": 0.5496313355663124,
+            "conditional_on_baseline_wrong": 0.272150621735701,
+            "conditional_weighted_by_all_events": 0.1831010784082544,
+            "event": 0.7327324139745667
+          },
+          "optimism": -227.45144661389713,
+          "other_baseline_wrong": {
+            "observed": 0.6683339746056175,
+            "predicted": 0.6810123168778577
+          },
+          "other_selected_baseline_wrong": {
+            "observed": 0.2742809503959983,
+            "predicted": 0.32055940486980233
+          },
+          "policies": {
+            "accepted_best": {
+              "observed_mean_gain": 0.288510101010101,
+              "optimism_per_row": -0.07179654368788017,
+              "predicted_mean_gain": 0.21671355732222083,
+              "rows": 3168
+            },
+            "best_without_acceptance_gate": {
+              "observed_mean_gain": -0.018525616455857926,
+              "optimism_per_row": -0.02107365665027169,
+              "predicted_mean_gain": -0.039599273106129616,
+              "rows": 7827
+            },
+            "rejected_best": {
+              "observed_mean_gain": -0.22730199613650998,
+              "optimism_per_row": 0.01341660008618327,
+              "predicted_mean_gain": -0.2138853960503267,
+              "rows": 4659
+            },
+            "uniform_over_distinct_alternatives": {
+              "observed_mean_gain": -0.05065797879136323,
+              "optimism_per_row": -0.010451953791192504,
+              "predicted_mean_gain": -0.061109932582555725,
+              "rows": 7827
+            }
+          },
+          "reference_all": {
+            "observed": 0.32720683406678747,
+            "predicted": 0.32818589834176515
+          },
+          "reference_selected": {
+            "observed": 0.24273989898989898,
+            "predicted": 0.2552708515599724
+          },
+          "regressions": 769,
+          "rows": 11589,
+          "selected_by_alternative_count": {
+            "1": {
+              "observed_mean_gain": 0.25551020408163266,
+              "optimism_per_row": -0.04497154636516863,
+              "predicted_mean_gain": 0.21053865771646402,
+              "rows": 2450
+            },
+            "2": {
+              "observed_mean_gain": 0.4011627906976744,
+              "optimism_per_row": -0.16494086121717583,
+              "predicted_mean_gain": 0.23622192948049855,
+              "rows": 688
+            },
+            "3": {
+              "observed_mean_gain": 0.4,
+              "optimism_per_row": -0.12639497637080882,
+              "predicted_mean_gain": 0.27360502362919115,
+              "rows": 30
+            },
+            "4": {
+              "observed_mean_gain": null,
+              "optimism_per_row": null,
+              "predicted_mean_gain": null,
+              "rows": 0
+            }
+          },
+          "selected_optimism_decomposition": {
+            "baseline_component": -75.97094574814683,
+            "conditional_component": -151.48050465505753,
+            "formula": "(B-r)*(1+q) + (1-B)*(q-I(selected_K=true_K)); a fixed algebraic decomposition, not causal attribution"
+          },
+          "selected_wrong_baseline_with_correct_alternative_but_wrong_choice": 58,
+          "selected_wrong_baseline_without_correct_alternative": 658
+        },
+        "unique_events": 3863
+      },
+      "folds": {
+        "0": {
+          "held_profile": {
+            "candidate_entropy_mean": [
+              0.0,
+              1.182653546333313,
+              1.0623254776000977,
+              1.0411314964294434,
+              1.0390950441360474,
+              1.1909085512161255,
+              1.1387653350830078,
+              0.801737904548645
+            ],
+            "candidate_max_probability_mean": [
+              1.0,
+              0.4651566743850708,
+              0.5142893195152283,
+              0.5309228301048279,
+              0.5297136902809143,
+              0.446216344833374,
+              0.48375749588012695,
+              0.6601495146751404
+            ],
+            "history_mean": [
+              0.20969009809054998,
+              0.22290682339717233,
+              0.2575932480085985,
+              0.0,
+              0.0,
+              0.0,
+              0.1946445896686154,
+              0.0,
+              0.0
+            ],
+            "history_std": [
+              0.14452107436779058,
+              0.15975304856337694,
+              0.18427275260218795,
+              0.0,
+              0.0,
+              0.0,
+              0.17554534082003798,
+              0.0,
+              0.0
+            ],
+            "rows": 1998,
+            "wrong_baseline_reachable_rate": 0.34236267870579384
+          },
+          "loss": {
+            "held": {
+              "baseline": 0.6424859596910959,
+              "conditional_on_baseline_wrong": 0.6604593749587114,
+              "conditional_weighted_by_all_events": 0.4393145692292931,
+              "event": 1.0818005289203887
+            },
+            "train": {
+              "baseline": 0.5551938056368548,
+              "conditional_on_baseline_wrong": 0.3064200909474425,
+              "conditional_weighted_by_all_events": 0.20348078468921157,
+              "event": 0.7586745903260663
+            }
+          },
+          "train_profile": {
+            "candidate_entropy_mean": [
+              0.0,
+              1.1610004901885986,
+              1.0432024002075195,
+              1.0188673734664917,
+              1.0146559476852417,
+              1.160529375076294,
+              1.1178078651428223,
+              0.797129213809967
+            ],
+            "candidate_max_probability_mean": [
+              1.0,
+              0.4701659381389618,
+              0.5242459177970886,
+              0.5394690632820129,
+              0.5399388074874878,
+              0.45868223905563354,
+              0.49139878153800964,
+              0.6606394648551941
+            ],
+            "history_mean": [
+              0.20392241537107622,
+              0.24167855003510733,
+              0.2786938506817829,
+              0.0,
+              0.0,
+              0.0,
+              0.20218896598136774,
+              0.0,
+              0.0
+            ],
+            "history_std": [
+              0.1346552917099902,
+              0.15912956310714108,
+              0.18212634796721455,
+              0.0,
+              0.0,
+              0.0,
+              0.1688338500563675,
+              0.0,
+              0.0
+            ],
+            "rows": 5495,
+            "wrong_baseline_reachable_rate": 0.3507810359002466
+          }
+        },
+        "1": {
+          "held_profile": {
+            "candidate_entropy_mean": [
+              0.0,
+              1.1889748573303223,
+              1.0683457851409912,
+              1.0462446212768555,
+              1.038895845413208,
+              1.1903033256530762,
+              1.1420483589172363,
+              0.8011382818222046
+            ],
+            "candidate_max_probability_mean": [
+              1.0,
+              0.4526936709880829,
+              0.5089104771614075,
+              0.52338045835495,
+              0.5250277519226074,
+              0.4403967559337616,
+              0.4761972725391388,
+              0.6581392884254456
+            ],
+            "history_mean": [
+              0.21385670711456142,
+              0.2368027130622891,
+              0.2826364766301283,
+              0.0,
+              0.0,
+              0.0,
+              0.1857719726721727,
+              0.0,
+              0.0
+            ],
+            "history_std": [
+              0.13653210500986898,
+              0.15018293377826633,
+              0.18109795114553986,
+              0.0,
+              0.0,
+              0.0,
+              0.15185427037265262,
+              0.0,
+              0.0
+            ],
+            "rows": 1781,
+            "wrong_baseline_reachable_rate": 0.3864406779661017
+          },
+          "loss": {
+            "held": {
+              "baseline": 0.6321195569899011,
+              "conditional_on_baseline_wrong": 0.7020401770222378,
+              "conditional_weighted_by_all_events": 0.46513610830221247,
+              "event": 1.0972556652921135
+            },
+            "train": {
+              "baseline": 0.5617130568695304,
+              "conditional_on_baseline_wrong": 0.337825498522769,
+              "conditional_weighted_by_all_events": 0.22462556782028661,
+              "event": 0.7863386246898171
+            }
+          },
+          "train_profile": {
+            "candidate_entropy_mean": [
+              0.0,
+              1.1840319633483887,
+              1.0721650123596191,
+              1.0400186777114868,
+              1.0286070108413696,
+              1.1847825050354004,
+              1.1418464183807373,
+              0.7950372099876404
+            ],
+            "candidate_max_probability_mean": [
+              1.0,
+              0.45804986357688904,
+              0.5086454749107361,
+              0.532585859298706,
+              0.5361237525939941,
+              0.44927626848220825,
+              0.4808519184589386,
+              0.664826512336731
+            ],
+            "history_mean": [
+              0.19106220275286762,
+              0.24273242136707027,
+              0.29852330698867086,
+              0.0,
+              0.0,
+              0.0,
+              0.1891248221099273,
+              0.0,
+              0.0
+            ],
+            "history_std": [
+              0.12464532545477619,
+              0.1566068997587222,
+              0.1901032299919708,
+              0.0,
+              0.0,
+              0.0,
+              0.15178920598876935,
+              0.0,
+              0.0
+            ],
+            "rows": 5712,
+            "wrong_baseline_reachable_rate": 0.366245392311743
+          }
+        },
+        "2": {
+          "held_profile": {
+            "candidate_entropy_mean": [
+              0.0,
+              1.1721062660217285,
+              1.0925170183181763,
+              1.0575752258300781,
+              1.0580841302871704,
+              1.1781468391418457,
+              1.1443673372268677,
+              0.841593861579895
+            ],
+            "candidate_max_probability_mean": [
+              1.0,
+              0.4664510488510132,
+              0.5006203055381775,
+              0.5226743221282959,
+              0.5215168595314026,
+              0.45789116621017456,
+              0.4801837205886841,
+              0.6426147818565369
+            ],
+            "history_mean": [
+              0.21378676094613475,
+              0.23379091809026978,
+              0.27172057429910607,
+              0.0,
+              0.0,
+              0.0,
+              0.20663447730857806,
+              0.0,
+              0.0
+            ],
+            "history_std": [
+              0.13668147511635,
+              0.1551149149879407,
+              0.17733771837638201,
+              0.0,
+              0.0,
+              0.0,
+              0.17968907254123792,
+              0.0,
+              0.0
+            ],
+            "rows": 1596,
+            "wrong_baseline_reachable_rate": 0.3612167300380228
+          },
+          "loss": {
+            "held": {
+              "baseline": 0.6238812884628144,
+              "conditional_on_baseline_wrong": 0.7430734624105146,
+              "conditional_weighted_by_all_events": 0.4897952897593117,
+              "event": 1.113676578222126
+            },
+            "train": {
+              "baseline": 0.5571538359633588,
+              "conditional_on_baseline_wrong": 0.28423279265155166,
+              "conditional_weighted_by_all_events": 0.18923146412582528,
+              "event": 0.7463853000891839
+            }
+          },
+          "train_profile": {
+            "candidate_entropy_mean": [
+              0.0,
+              1.14391028881073,
+              1.0466231107711792,
+              1.020324945449829,
+              1.0172432661056519,
+              1.1587132215499878,
+              1.1103655099868774,
+              0.7721192240715027
+            ],
+            "candidate_max_probability_mean": [
+              1.0,
+              0.48341602087020874,
+              0.5265306234359741,
+              0.5429232120513916,
+              0.5437302589416504,
+              0.46807169914245605,
+              0.4998750388622284,
+              0.674107551574707
+            ],
+            "history_mean": [
+              0.19062926312716064,
+              0.21945266082036782,
+              0.25991976943105305,
+              0.0,
+              0.0,
+              0.0,
+              0.17845449956462425,
+              0.0,
+              0.0
+            ],
+            "history_std": [
+              0.14059945935187446,
+              0.1627065290621771,
+              0.1885269751106798,
+              0.0,
+              0.0,
+              0.0,
+              0.16446839875183028,
+              0.0,
+              0.0
+            ],
+            "rows": 5897,
+            "wrong_baseline_reachable_rate": 0.3405501782985227
+          }
+        },
+        "4": {
+          "held_profile": {
+            "candidate_entropy_mean": [
+              0.0,
+              1.1384718418121338,
+              1.0290791988372803,
+              1.0032522678375244,
+              0.9898405075073242,
+              1.1458511352539062,
+              1.095587134361267,
+              0.7901116013526917
+            ],
+            "candidate_max_probability_mean": [
+              1.0,
+              0.47931498289108276,
+              0.5330768823623657,
+              0.5487126111984253,
+              0.5540044903755188,
+              0.4667918384075165,
+              0.504368782043457,
+              0.6618334650993347
+            ],
+            "history_mean": [
+              0.18833828020982418,
+              0.20519173621549,
+              0.2665266344096647,
+              0.0,
+              0.0,
+              0.0,
+              0.1808370641076214,
+              0.0,
+              0.0
+            ],
+            "history_std": [
+              0.13832230188510694,
+              0.15175545409911628,
+              0.19858770674666942,
+              0.0,
+              0.0,
+              0.0,
+              0.1770939431470178,
+              0.0,
+              0.0
+            ],
+            "rows": 2118,
+            "wrong_baseline_reachable_rate": 0.32886379675370503
+          },
+          "loss": {
+            "held": {
+              "baseline": 0.6270025135877243,
+              "conditional_on_baseline_wrong": 0.6016445005643086,
+              "conditional_weighted_by_all_events": 0.4025166465059609,
+              "event": 1.0295191600936855
+            },
+            "train": {
+              "baseline": 0.5663987986300734,
+              "conditional_on_baseline_wrong": 0.2953107808315729,
+              "conditional_weighted_by_all_events": 0.1956468261472058,
+              "event": 0.7620456247772791
+            }
+          },
+          "train_profile": {
+            "candidate_entropy_mean": [
+              0.0,
+              1.1778587102890015,
+              1.0804988145828247,
+              1.0461384057998657,
+              1.041996955871582,
+              1.180777668952942,
+              1.1401910781860352,
+              0.7922677397727966
+            ],
+            "candidate_max_probability_mean": [
+              1.0,
+              0.4643651843070984,
+              0.5084467530250549,
+              0.5304248332977295,
+              0.5298886299133301,
+              0.45559874176979065,
+              0.4835362136363983,
+              0.6658148169517517
+            ],
+            "history_mean": [
+              0.20054352090175534,
+              0.2378270362223246,
+              0.29372245919512485,
+              0.0,
+              0.0,
+              0.0,
+              0.23471383202558485,
+              0.0,
+              0.0
+            ],
+            "history_std": [
+              0.12807026195611687,
+              0.15111773373942256,
+              0.18754725462336164,
+              0.0,
+              0.0,
+              0.0,
+              0.18916214295779332,
+              0.0,
+              0.0
+            ],
+            "rows": 5375,
+            "wrong_baseline_reachable_rate": 0.35186745296265093
+          }
+        }
+      },
+      "held_outputs_bit_identical": true,
+      "report_sha256": "a4fa9538d38f4698dd5b8f87f01c2a1a124c66a11d440cd3c88e1513f24530d6",
+      "snapshots_verified": 44
+    }
+  },
+  "artifact_manifest": {
+    "arms": {
+      "control7": {
+        "id": 11559046906,
+        "sha256": "ee1ea474321ba2f56d567fef190e59a7f7078cc664fbbb93cd5cf6fd017d8a51",
+        "size": 3953197
+      },
+      "corrector8": {
+        "id": 11559177269,
+        "sha256": "c66d091b1c8b28555dc9ab8752a10c7210dfe1fd8406cf270a383e145ac7b749",
+        "size": 4530192
+      }
+    },
+    "initial_export_failure": {
+      "reason": "All 44 snapshots per arm were produced; report JSON export failed on NumPy fold integers. Fixed serialization only and replayed unchanged weights.",
+      "run_id": 37797057773
+    },
+    "run_id": 37797488453,
+    "source_commit": "78cbade5ffaa168bb959eb381a9124f25742d56a"
+  },
+  "comparison_file": {
+    "path": "confidence-comparison.csv",
+    "rows": 10,
+    "sha256": "a7a44676d656f4cb3ddd288d361b68a5b0f0b7d4b1f871ccf0b7acdcdd28a787"
+  },
+  "independent_validation": false,
+  "optimizer_used": false,
+  "promotion": false,
+  "run_id": 37797488453,
+  "source_commit": "78cbade5ffaa168bb959eb381a9124f25742d56a",
+  "status": "verified",
+  "trained_source_commit": "3f83c2b07308c9114f1db0b5a904c0d80a91b91a",
+  "trained_source_run": 37789646292,
+  "weights_changed": false
+}
