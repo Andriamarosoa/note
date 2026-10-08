@@ -243,8 +243,11 @@ def main():
             "|---|---:|---:|---:|"]
     for key,q in report["arms"].items():
         lines.append(f"| {key} | {pct(q['raw']['exact'])} | {pct(q['raw']['poly']['exact'])} | {q['raw_paired']['global']['net']:+d} |")
-    lines+=["","## Limits and decision"]+["- "+x for x in report["interpretation_limits"]]+
-           ["","No reference promotion."]
+    lines += (
+        ["", "## Limits and decision"]
+        + ["- " + x for x in report["interpretation_limits"]]
+        + ["", "No reference promotion."]
+    )
     (args.output/"report.md").write_text("\n".join(lines)+"\n")
     print("\n".join(lines),flush=True)
 
