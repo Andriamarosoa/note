@@ -1,0 +1,105 @@
+name: V27.3 Energy Transport Persistence Audit
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - 'scripts/extract_v273_energy_transport.py'
+      - 'scripts/summarize_v273_energy_transport.py'
+      - 'test/test_v273_energy_transport.py'
+      - '.github/workflows/v273-energy-transport.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+
+jobs:
+  fold:
+    strategy:
+      fail-fast: false
+      matrix:
+        fold: [0, 1, 2, 4]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install pinned extraction environment
+        run: python -m pip install -r requirements-train.txt numpy==1.26.4 scipy==1.17.1 scikit-learn==1.4.2
+      - name: Test equations and synthetic source/sink
+        run: |
+          python -m py_compile scripts/extract_v273_energy_transport.py scripts/summarize_v273_energy_transport.py
+          python -m unittest -v test.test_v273_energy_transport
+      - uses: actions/cache@v4
+        id: gs
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+      - name: Download original audio if needed
+        if: steps.gs.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+      - name: Verify audio identity
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Read fixed cases without changing their ownership labels
+        run: |
+          mkdir -p model/cases
+          unzip -q analysis/evidence/v273-residual-acoustics/evidence.zip -d model/cases
+          test -f model/cases/acoustic/cases.jsonl
+          test "$(wc -l < model/cases/acoustic/cases.jsonl)" -eq 488
+          echo "6a3da0099c775f1d437dea4a389881326da774981ec001f3550ad6028c9d3b65  model/cases/acoustic/cases.jsonl" | sha256sum -c -
+      - name: Extract energy-field and time/band destruction controls
+        run: |
+          python -B scripts/extract_v273_energy_transport.py \
+            --cases model/cases/acoustic/cases.jsonl \
+            --dataset data/GuitarSet \
+            --fold ${{ matrix.fold }} \
+            --output model/fold-${{ matrix.fold }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-energy-transport-fold-${{ matrix.fold }}
+          path: model/fold-${{ matrix.fold }}/
+          retention-days: 90
+  evaluate:
+    needs: fold
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.17.1 scikit-learn==1.4.2
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v273-energy-transport-fold-*
+          path: model/folds
+      - name: Compare static vs source transport persistence and controls
+        run: |
+          python -B scripts/summarize_v273_energy_transport.py \
+            --input-root model/folds \
+            --output model/eval
+      - name: Publish diagnostic summary
+        run: cat model/eval/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-energy-transport-summary
+          path: model/eval/
+          retention-days: 90
