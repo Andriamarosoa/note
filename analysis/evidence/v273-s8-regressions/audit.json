@@ -1,0 +1,825 @@
+{
+  "audit_type": "saved-prediction descriptive audit; no training or inference rule changes",
+  "calibration": {
+    "correction_selected": {
+      "auc": 0.5444252735549615,
+      "bins": [
+        {
+          "lower": 0.0,
+          "observed_rate": 0.125,
+          "predicted_mean": 0.06220081196321795,
+          "rows": 24,
+          "upper": 0.1
+        },
+        {
+          "lower": 0.1,
+          "observed_rate": 0.22727272727272727,
+          "predicted_mean": 0.16097690955255972,
+          "rows": 66,
+          "upper": 0.2
+        },
+        {
+          "lower": 0.2,
+          "observed_rate": 0.25,
+          "predicted_mean": 0.25919141908260906,
+          "rows": 176,
+          "upper": 0.3
+        },
+        {
+          "lower": 0.3,
+          "observed_rate": 0.2994791666666667,
+          "predicted_mean": 0.3580138661588232,
+          "rows": 384,
+          "upper": 0.4
+        },
+        {
+          "lower": 0.4,
+          "observed_rate": 0.31237721021611004,
+          "predicted_mean": 0.45156139018259256,
+          "rows": 509,
+          "upper": 0.5
+        },
+        {
+          "lower": 0.5,
+          "observed_rate": 0.31990521327014215,
+          "predicted_mean": 0.5454698422508782,
+          "rows": 422,
+          "upper": 0.6
+        },
+        {
+          "lower": 0.6,
+          "observed_rate": 0.36597938144329895,
+          "predicted_mean": 0.6416000785286894,
+          "rows": 194,
+          "upper": 0.7
+        },
+        {
+          "lower": 0.7,
+          "observed_rate": 0.30434782608695654,
+          "predicted_mean": 0.7426209197096203,
+          "rows": 92,
+          "upper": 0.8
+        },
+        {
+          "lower": 0.8,
+          "observed_rate": 0.48,
+          "predicted_mean": 0.8473651075363159,
+          "rows": 25,
+          "upper": 0.9
+        },
+        {
+          "lower": 0.9,
+          "observed_rate": 0.5,
+          "predicted_mean": 0.9256662279367447,
+          "rows": 4,
+          "upper": 1.0
+        }
+      ],
+      "brier": 0.24838267314006823,
+      "observed_rate": 0.3080168776371308,
+      "predicted_mean": 0.46040277603477286,
+      "rows": 1896
+    },
+    "expected_net": 397.4201004942879,
+    "gain_auc_corrections_vs_regressions": 0.5430967434392092,
+    "observed_net": 38,
+    "predicted_corrections": 872.9236633619294,
+    "predicted_regressions": 475.50356286764145,
+    "reference_selected": {
+      "auc": 0.5979744946411613,
+      "bins": [
+        {
+          "lower": 0.0,
+          "observed_rate": 0.14054054054054055,
+          "predicted_mean": 0.0628308826604405,
+          "rows": 185,
+          "upper": 0.1
+        },
+        {
+          "lower": 0.1,
+          "observed_rate": 0.21064814814814814,
+          "predicted_mean": 0.15442923920367052,
+          "rows": 432,
+          "upper": 0.2
+        },
+        {
+          "lower": 0.2,
+          "observed_rate": 0.3225806451612903,
+          "predicted_mean": 0.2506764761622875,
+          "rows": 620,
+          "upper": 0.3
+        },
+        {
+          "lower": 0.3,
+          "observed_rate": 0.3248031496062992,
+          "predicted_mean": 0.347108404526091,
+          "rows": 508,
+          "upper": 0.4
+        },
+        {
+          "lower": 0.4,
+          "observed_rate": 0.423841059602649,
+          "predicted_mean": 0.43321810277882,
+          "rows": 151,
+          "upper": 0.5
+        },
+        {
+          "lower": 0.5,
+          "observed_rate": null,
+          "predicted_mean": null,
+          "rows": 0,
+          "upper": 0.6
+        },
+        {
+          "lower": 0.6,
+          "observed_rate": null,
+          "predicted_mean": null,
+          "rows": 0,
+          "upper": 0.7
+        },
+        {
+          "lower": 0.7,
+          "observed_rate": null,
+          "predicted_mean": null,
+          "rows": 0,
+          "upper": 0.8
+        },
+        {
+          "lower": 0.8,
+          "observed_rate": null,
+          "predicted_mean": null,
+          "rows": 0,
+          "upper": 0.9
+        },
+        {
+          "lower": 0.9,
+          "observed_rate": null,
+          "predicted_mean": null,
+          "rows": 0,
+          "upper": 1.0
+        }
+      ],
+      "brier": 0.2024987005386475,
+      "observed_rate": 0.2879746835443038,
+      "predicted_mean": 0.25079301839010626,
+      "rows": 1896
+    }
+  },
+  "counts": {
+    "corrections": 584,
+    "lost_corrections": 163,
+    "new_regressions": 168,
+    "persistent": 378,
+    "regressions": 546,
+    "repaired_regressions": 144
+  },
+  "decode_ablations": {
+    "new_singleton_gated": {
+      "comparison_with_all": {
+        "by_k": {
+          "0": {
+            "changed": 54,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 200,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 314,
+            "corrections": 148,
+            "net": 20,
+            "regressions": 128
+          },
+          "3": {
+            "changed": 309,
+            "corrections": 134,
+            "net": -10,
+            "regressions": 144
+          },
+          "4": {
+            "changed": 167,
+            "corrections": 23,
+            "net": -38,
+            "regressions": 61
+          },
+          "5": {
+            "changed": 62,
+            "corrections": 4,
+            "net": 2,
+            "regressions": 2
+          },
+          "6": {
+            "changed": 22,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1128,
+          "corrections": 309,
+          "net": -26,
+          "regressions": 335
+        },
+        "poly": {
+          "changed": 874,
+          "corrections": 309,
+          "net": -26,
+          "regressions": 335
+        }
+      },
+      "note": "All catalogue inputs and weights retained; only allowed output masks restricted.",
+      "paired": {
+        "by_k": {
+          "0": {
+            "changed": 12,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 96,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 212,
+            "corrections": 119,
+            "net": 74,
+            "regressions": 45
+          },
+          "3": {
+            "changed": 241,
+            "corrections": 100,
+            "net": -14,
+            "regressions": 114
+          },
+          "4": {
+            "changed": 167,
+            "corrections": 55,
+            "net": -11,
+            "regressions": 66
+          },
+          "5": {
+            "changed": 70,
+            "corrections": 15,
+            "net": 15,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 15,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 813,
+          "corrections": 289,
+          "net": 64,
+          "regressions": 225
+        },
+        "poly": {
+          "changed": 705,
+          "corrections": 289,
+          "net": 64,
+          "regressions": 225
+        }
+      },
+      "retrained": false
+    },
+    "old_groups_only": {
+      "comparison_with_all": {
+        "by_k": {
+          "0": {
+            "changed": 1,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 13,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 24,
+            "corrections": 4,
+            "net": -3,
+            "regressions": 7
+          },
+          "3": {
+            "changed": 31,
+            "corrections": 7,
+            "net": -14,
+            "regressions": 21
+          },
+          "4": {
+            "changed": 26,
+            "corrections": 12,
+            "net": 5,
+            "regressions": 7
+          },
+          "5": {
+            "changed": 16,
+            "corrections": 6,
+            "net": 6,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 2,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 113,
+          "corrections": 29,
+          "net": -6,
+          "regressions": 35
+        },
+        "poly": {
+          "changed": 99,
+          "corrections": 29,
+          "net": -6,
+          "regressions": 35
+        }
+      },
+      "note": "All catalogue inputs and weights retained; only allowed output masks restricted.",
+      "paired": {
+        "by_k": {
+          "0": {
+            "changed": 64,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 279,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 494,
+            "corrections": 260,
+            "net": 97,
+            "regressions": 163
+          },
+          "3": {
+            "changed": 510,
+            "corrections": 224,
+            "net": -10,
+            "regressions": 234
+          },
+          "4": {
+            "changed": 304,
+            "corrections": 65,
+            "net": -54,
+            "regressions": 119
+          },
+          "5": {
+            "changed": 113,
+            "corrections": 11,
+            "net": 11,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 35,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1799,
+          "corrections": 560,
+          "net": 44,
+          "regressions": 516
+        },
+        "poly": {
+          "changed": 1456,
+          "corrections": 560,
+          "net": 44,
+          "regressions": 516
+        }
+      },
+      "retrained": false
+    },
+    "old_groups_plus_new_singleton": {
+      "comparison_with_all": {
+        "by_k": {
+          "0": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 1,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 5,
+            "corrections": 1,
+            "net": 0,
+            "regressions": 1
+          },
+          "3": {
+            "changed": 1,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          },
+          "4": {
+            "changed": 1,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "5": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 8,
+          "corrections": 2,
+          "net": 1,
+          "regressions": 1
+        },
+        "poly": {
+          "changed": 7,
+          "corrections": 2,
+          "net": 1,
+          "regressions": 1
+        }
+      },
+      "note": "All catalogue inputs and weights retained; only allowed output masks restricted.",
+      "paired": {
+        "by_k": {
+          "0": {
+            "changed": 65,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 289,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 510,
+            "corrections": 261,
+            "net": 94,
+            "regressions": 167
+          },
+          "3": {
+            "changed": 534,
+            "corrections": 227,
+            "net": -25,
+            "regressions": 252
+          },
+          "4": {
+            "changed": 326,
+            "corrections": 77,
+            "net": -49,
+            "regressions": 126
+          },
+          "5": {
+            "changed": 127,
+            "corrections": 17,
+            "net": 17,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 37,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1888,
+          "corrections": 582,
+          "net": 37,
+          "regressions": 545
+        },
+        "poly": {
+          "changed": 1534,
+          "corrections": 582,
+          "net": 37,
+          "regressions": 545
+        }
+      },
+      "retrained": false
+    }
+  },
+  "destination_and_s8": {
+    "corrections_despite_S8_voting_KEEP": 274,
+    "new_regressions_control_r_at_least_half": 3,
+    "new_regressions_mean_r_control": 0.32396024226077963,
+    "new_regressions_mean_r_extended": 0.31544382431145224,
+    "new_regressions_where_S8_alone_correct": 95,
+    "new_regressions_with_new_destination": 25,
+    "new_regressions_with_old_destination": 143,
+    "regressions_where_S8_alone_correct": 297,
+    "regressions_with_old_destination": 512
+  },
+  "files": {
+    "corrections-perdues-163.csv": {
+      "rows": 163,
+      "sha256": "de31bd583b6921c3a11186271e5876c0c674a8dc8110c11c5d936174004ec722"
+    },
+    "regressions-546.csv": {
+      "rows": 546,
+      "sha256": "db494be85ba0aa556fbeff5952131b8a43100f424c30344fa3900a5d6de1904b"
+    }
+  },
+  "folds": {
+    "0": {
+      "lost_corrections": 46,
+      "new": 49,
+      "regressions": 166,
+      "repaired": 41
+    },
+    "1": {
+      "lost_corrections": 52,
+      "new": 42,
+      "regressions": 153,
+      "repaired": 36
+    },
+    "2": {
+      "lost_corrections": 29,
+      "new": 27,
+      "regressions": 98,
+      "repaired": 33
+    },
+    "4": {
+      "lost_corrections": 36,
+      "new": 50,
+      "regressions": 129,
+      "repaired": 34
+    }
+  },
+  "highest_confidence_new_regressions": [
+    {
+      "S8_alone_K": 2,
+      "baseline_K": 2,
+      "control_K": 2,
+      "control_reference_correct_probability": 0.1889636516571045,
+      "control_score_for_same_destination": -0.14862735196948051,
+      "extended_K": 3,
+      "fold": 1,
+      "global_history_gain": -0.12700730562210083,
+      "global_index": 63735,
+      "local_history_gain_unused": -0.2209634929895401,
+      "recording_id": "04_Funk2-119-G_solo.jams",
+      "reference_correct_probability": 0.21797935664653778,
+      "regression_status": "new",
+      "selected_correction_probability": 0.7154340147972107,
+      "selected_destination_available_in_old_catalogue": true,
+      "selected_gain": 0.4974546581506729,
+      "start_sample": 1116485,
+      "time_s": 25.317120181405894,
+      "true_K": 2
+    },
+    {
+      "S8_alone_K": 4,
+      "baseline_K": 2,
+      "control_K": 2,
+      "control_reference_correct_probability": 0.1570073515176773,
+      "control_score_for_same_destination": -0.1570073515176773,
+      "extended_K": 4,
+      "fold": 1,
+      "global_history_gain": 0.13098367452621457,
+      "global_index": 60185,
+      "local_history_gain_unused": 0.09972326755523683,
+      "recording_id": "03_SS3-98-C_comp.jams",
+      "reference_correct_probability": 0.10084081441164017,
+      "regression_status": "new",
+      "selected_correction_probability": 0.519849419593811,
+      "selected_destination_available_in_old_catalogue": false,
+      "selected_gain": 0.41900860518217087,
+      "start_sample": 413708,
+      "time_s": 9.381133786848073,
+      "true_K": 2
+    },
+    {
+      "S8_alone_K": 2,
+      "baseline_K": 2,
+      "control_K": 2,
+      "control_reference_correct_probability": 0.35037925839424133,
+      "control_score_for_same_destination": -0.34287999104708433,
+      "extended_K": 3,
+      "fold": 4,
+      "global_history_gain": -0.10010042786598206,
+      "global_index": 54619,
+      "local_history_gain_unused": -0.17351779341697693,
+      "recording_id": "03_Rock1-90-C#_comp.jams",
+      "reference_correct_probability": 0.29421013593673706,
+      "regression_status": "new",
+      "selected_correction_probability": 0.6871508955955505,
+      "selected_destination_available_in_old_catalogue": true,
+      "selected_gain": 0.3929407596588135,
+      "start_sample": 925439,
+      "time_s": 20.98501133786848,
+      "true_K": 2
+    },
+    {
+      "S8_alone_K": 2,
+      "baseline_K": 3,
+      "control_K": 3,
+      "control_reference_correct_probability": 0.24045930802822113,
+      "control_score_for_same_destination": -0.24045930802822113,
+      "extended_K": 2,
+      "fold": 0,
+      "global_history_gain": 0.1026415228843689,
+      "global_index": 69084,
+      "local_history_gain_unused": 0.2868918776512146,
+      "recording_id": "04_Rock2-142-D_comp.jams",
+      "reference_correct_probability": 0.2778000235557556,
+      "regression_status": "new",
+      "selected_correction_probability": 0.6612493395805359,
+      "selected_destination_available_in_old_catalogue": false,
+      "selected_gain": 0.3834493160247803,
+      "start_sample": 660226,
+      "time_s": 14.971111111111112,
+      "true_K": 3
+    },
+    {
+      "S8_alone_K": 3,
+      "baseline_K": 2,
+      "control_K": 2,
+      "control_reference_correct_probability": 0.4043278992176056,
+      "control_score_for_same_destination": -0.4043278992176056,
+      "extended_K": 3,
+      "fold": 1,
+      "global_history_gain": -0.09633105993270874,
+      "global_index": 3344,
+      "local_history_gain_unused": -0.047688345114390074,
+      "recording_id": "00_Funk2-119-G_comp.jams",
+      "reference_correct_probability": 0.24062804877758026,
+      "regression_status": "new",
+      "selected_correction_probability": 0.6143820285797119,
+      "selected_destination_available_in_old_catalogue": false,
+      "selected_gain": 0.37375397980213165,
+      "start_sample": 1195149,
+      "time_s": 27.100884353741495,
+      "true_K": 2
+    }
+  ],
+  "history": {
+    "global_enabled": {
+      "auc_corrections_vs_regressions": 0.5298512845601886,
+      "descriptive_veto_net": -9,
+      "negative_on_corrections": 298,
+      "negative_on_new_regressions": 88,
+      "negative_on_regressions": 289,
+      "validated_rule": false
+    },
+    "local_unused": {
+      "auc_corrections_vs_regressions": 0.5420492749259873,
+      "descriptive_veto_net": 28,
+      "negative_on_corrections": 238,
+      "negative_on_new_regressions": 102,
+      "negative_on_regressions": 266,
+      "validated_rule": false
+    }
+  },
+  "independent_validation": false,
+  "limitations": [
+    "Previously exposed recording folds; this is not unseen validation.",
+    "The extended selector adds parameters and changes features/pooled scores; the comparison does not isolate a causal contributor.",
+    "Equal-destination group logits are pooled; the selected representative mask is not causal attribution.",
+    "History means summarize all groups proposing the selected K, not a neural importance score.",
+    "Local history fields were zeroed during selector training. A retrospective sign veto is not a validated inference rule.",
+    "AUC separates 584 corrections from 546 regressions and excludes 766 neutral changes.",
+    "These prediction archives do not identify a missing acoustic feature or a physical cause."
+  ],
+  "promotion": false,
+  "regression_by_true_k": {
+    "2": {
+      "corrections": 262,
+      "new": 43,
+      "persistent": 125,
+      "repaired": 48,
+      "total": 168
+    },
+    "3": {
+      "corrections": 228,
+      "new": 91,
+      "persistent": 161,
+      "repaired": 62,
+      "total": 252
+    },
+    "4": {
+      "corrections": 77,
+      "new": 34,
+      "persistent": 92,
+      "repaired": 34,
+      "total": 126
+    }
+  },
+  "source_commit": "3f83c2b07308c9114f1db0b5a904c0d80a91b91a",
+  "source_run": 37789646292,
+  "source_sha256": {
+    "control7": "b86ab264a4a7f34c855ef7a7e2cc5e73636f8f2c0cdfe9b95b77258d6976e5cc",
+    "corrector8": "99b92ae5d69f53fa0f6a9fd78d175ab21d0abb1c4752b0a46cb7deda7eabfadc"
+  },
+  "status": "verified",
+  "transitions": [
+    {
+      "changed": 447,
+      "corrections": 131,
+      "net": -21,
+      "new_regressions": 36,
+      "regressions": 152,
+      "source": 2,
+      "target": 3
+    },
+    {
+      "changed": 46,
+      "corrections": 6,
+      "net": -10,
+      "new_regressions": 7,
+      "regressions": 16,
+      "source": 2,
+      "target": 4
+    },
+    {
+      "changed": 676,
+      "corrections": 210,
+      "net": 26,
+      "new_regressions": 61,
+      "regressions": 184,
+      "source": 3,
+      "target": 2
+    },
+    {
+      "changed": 207,
+      "corrections": 71,
+      "net": 12,
+      "new_regressions": 23,
+      "regressions": 59,
+      "source": 3,
+      "target": 4
+    },
+    {
+      "changed": 34,
+      "corrections": 9,
+      "net": 0,
+      "new_regressions": 7,
+      "regressions": 9,
+      "source": 3,
+      "target": 5
+    },
+    {
+      "changed": 160,
+      "corrections": 52,
+      "net": 27,
+      "new_regressions": 4,
+      "regressions": 25,
+      "source": 4,
+      "target": 2
+    },
+    {
+      "changed": 288,
+      "corrections": 97,
+      "net": 11,
+      "new_regressions": 25,
+      "regressions": 86,
+      "source": 4,
+      "target": 3
+    },
+    {
+      "changed": 38,
+      "corrections": 8,
+      "net": -7,
+      "new_regressions": 5,
+      "regressions": 15,
+      "source": 4,
+      "target": 5
+    }
+  ]
+}

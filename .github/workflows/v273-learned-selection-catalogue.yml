@@ -1,0 +1,154 @@
+name: V27.3 learned selection catalogue
+
+on:
+  push:
+    branches: [codex/v273-learned-selection-catalogue]
+    paths:
+      - 'scripts/*v273*catalogue*.py'
+      - 'scripts/prepare_v273_learned_corrector.py'
+      - 'test/test_v273_catalogue*.py'
+      - '.github/workflows/v273-learned-selection-catalogue.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  CUDA_VISIBLE_DEVICES: '-1'
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  TF_NUM_INTRAOP_THREADS: '2'
+  TF_NUM_INTEROP_THREADS: '1'
+
+jobs:
+  corrector:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install reference numerical versions
+        run: |
+          python -m pip install -r requirements-train.txt
+          python -m pip install scipy==1.17.1 scikit-learn==1.4.2
+      - name: Test contracts, exclusions, synergy, neural equivalence and gradients
+        run: python -m unittest -v test.test_v273_group127_contract test.test_v273_group127_neural test.test_v273_group_consensus test.test_v273_catalogue_contract test.test_v273_catalogue_neural
+      - name: Retrieve immutable native cohort
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37766719862
+          name: v273-selector-repair-coherent
+          path: model/catalogue/reference
+      - name: Retrieve acoustic observables
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37740493178
+          pattern: v273-harmonic-global-fold-*
+          path: model/catalogue/features
+      - name: Train fourteen excluded corrector producers
+        run: |
+          python -m scripts.prepare_v273_learned_corrector \
+            --reference model/catalogue/reference/predictions.npz \
+            --features model/catalogue/features \
+            --output model/catalogue/corrector-cache
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-learned-corrector-cache
+          path: model/catalogue/corrector-cache/
+          retention-days: 90
+  experiment:
+    needs: corrector
+    strategy:
+      fail-fast: false
+      matrix:
+        arm: [control7, corrector8]
+    name: "Catalogue: ${{ matrix.arm }}"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install reference numerical versions
+        run: |
+          python -m pip install -r requirements-train.txt
+          python -m pip install scipy==1.17.1 scikit-learn==1.4.2
+      - name: Retrieve immutable native cohort
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37766719862
+          name: v273-selector-repair-coherent
+          path: model/catalogue/reference
+      - name: Retrieve acoustic observables
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37740493178
+          pattern: v273-harmonic-global-fold-*
+          path: model/catalogue/features
+      - name: Retrieve shared original producers
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37777844182
+          name: v273-group127-producer-cache
+          path: model/catalogue/producer-cache
+      - name: Retrieve original global and singleton comparator
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37777844182
+          name: v273-group127-global
+          path: model/catalogue/archived-global
+      - name: Retrieve categorical consensus comparator
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37781750476
+          name: v273-group-consensus-pooled_ce
+          path: model/catalogue/archived-consensus
+      - name: Retrieve shared learned correctors
+        uses: actions/download-artifact@v4
+        with:
+          name: v273-learned-corrector-cache
+          path: model/catalogue/corrector-cache
+      - name: Train and evaluate all complete groups on exposed folds
+        run: |
+          python -m scripts.evaluate_v273_catalogue \
+            --reference model/catalogue/reference/predictions.npz \
+            --features model/catalogue/features \
+            --producer-cache model/catalogue/producer-cache \
+            --corrector-cache model/catalogue/corrector-cache \
+            --archived-global model/catalogue/archived-global \
+            --archived-consensus model/catalogue/archived-consensus \
+            --mode ${{ matrix.arm }} \
+            --output model/catalogue-${{ matrix.arm }}
+      - name: Publish measured scores
+        run: cat model/catalogue-${{ matrix.arm }}/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-catalogue-${{ matrix.arm }}
+          path: model/catalogue-${{ matrix.arm }}/
+          retention-days: 90
