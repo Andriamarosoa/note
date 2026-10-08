@@ -56,9 +56,9 @@ def predict(model, inputs):
     return {k: np.concatenate([o[k] for o in outputs]) for k in outputs[0]}
 
 
-def train_catalogue(train, truth, base, held, epochs=30, seed=27402):
+def train_catalogue(train, truth, base, held, epochs=30, seed=27402, model_factory=CatalogueCritic):
     tf.keras.utils.set_random_seed(seed)
-    model = CatalogueCritic()
+    model = model_factory()
     optimizer = tf.keras.optimizers.Adam(.002)
     dataset = tf.data.Dataset.from_tensor_slices((train, np.asarray(truth, np.int32), np.asarray(base, np.int32)))
     dataset = dataset.shuffle(len(truth), seed=seed, reshuffle_each_iteration=True).batch(192)

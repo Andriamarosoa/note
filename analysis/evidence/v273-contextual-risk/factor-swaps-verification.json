@@ -1,0 +1,2935 @@
+{
+  "all_previous_candidates_unchanged": true,
+  "both_crossovers_verified": true,
+  "candidate_registry_sha256": "17d2a844d57d3ac6d228cbb376aad42fce3a915abd7092010ffb596225e18978",
+  "independent_validation": false,
+  "predictions_sha256": "b62463716ec0d1099878b0321106c29a66c2ef936ba2e50189b850707af61e72",
+  "promotion": false,
+  "protocol_commit": "3a488b0d674d957b3e4580b9f30eabc256074a7c",
+  "same_new_selected_cohort": {
+    "new_risk_mean": 0.1557929515838623,
+    "observed_baseline_correct": 0.2980344965904533,
+    "parent_risk_mean": 0.2857174277305603,
+    "rows": 2493
+  },
+  "source_files": {
+    "candidate_sha256": "982fa366be1c0e0fe0398c4054b767c314e05186510bc831db9346902dfaea83",
+    "parent_sha256": "61e06060c098b05af865e2e915ffc028b0524419db47e2b33fd7beb8f92a45d4"
+  },
+  "status": "verified",
+  "total_candidates": 46,
+  "variants": {
+    "new_risk_parent_correction": {
+      "confidence": {
+        "alternative_count": {
+          "0": 2262,
+          "1": 3854,
+          "2": 1235,
+          "3": 139,
+          "4": 3
+        },
+        "baseline_accuracy": 0.3356466034965968,
+        "baseline_brier": 0.24301687778480857,
+        "baseline_correct": 2515,
+        "best_gain_bins": [
+          {
+            "lower": -1,
+            "observed_mean_gain": -0.1774891774891775,
+            "optimism_per_row": -0.5143845300658633,
+            "predicted_mean_gain": -0.6918737075550409,
+            "rows": 693,
+            "upper": -0.5
+          },
+          {
+            "lower": -0.5,
+            "observed_mean_gain": -0.08502415458937199,
+            "optimism_per_row": -0.2509976620474934,
+            "predicted_mean_gain": -0.3360218166368654,
+            "rows": 1035,
+            "upper": -0.2
+          },
+          {
+            "lower": -0.2,
+            "observed_mean_gain": -0.12008281573498965,
+            "optimism_per_row": -0.028828209105337458,
+            "predicted_mean_gain": -0.14891102484032712,
+            "rows": 483,
+            "upper": -0.1
+          },
+          {
+            "lower": -0.1,
+            "observed_mean_gain": -0.05646359583952452,
+            "optimism_per_row": 0.012229659912327683,
+            "predicted_mean_gain": -0.04423393592719683,
+            "rows": 673,
+            "upper": 0
+          },
+          {
+            "lower": 0,
+            "observed_mean_gain": -0.02197802197802198,
+            "optimism_per_row": 0.04436158303027355,
+            "predicted_mean_gain": 0.02238356105225157,
+            "rows": 364,
+            "upper": 0.05
+          },
+          {
+            "lower": 0.05,
+            "observed_mean_gain": -0.019011406844106463,
+            "optimism_per_row": 0.09368139079913114,
+            "predicted_mean_gain": 0.07466998395502468,
+            "rows": 263,
+            "upper": 0.1
+          },
+          {
+            "lower": 0.1,
+            "observed_mean_gain": -0.03711790393013101,
+            "optimism_per_row": 0.18453633953414006,
+            "predicted_mean_gain": 0.14741843560400905,
+            "rows": 458,
+            "upper": 0.2
+          },
+          {
+            "lower": 0.2,
+            "observed_mean_gain": -0.055408970976253295,
+            "optimism_per_row": 0.30293385028823,
+            "predicted_mean_gain": 0.2475248793119767,
+            "rows": 379,
+            "upper": 0.3
+          },
+          {
+            "lower": 0.3,
+            "observed_mean_gain": 0.013806706114398421,
+            "optimism_per_row": 0.37890014174420406,
+            "predicted_mean_gain": 0.3927068478586025,
+            "rows": 507,
+            "upper": 0.5
+          },
+          {
+            "lower": 0.5,
+            "observed_mean_gain": 0.03723404255319149,
+            "optimism_per_row": 0.623917569300945,
+            "predicted_mean_gain": 0.6611516118541365,
+            "rows": 376,
+            "upper": 1
+          }
+        ],
+        "changes": 2347,
+        "conditional_brier_on_baseline_wrong": 0.423892793351847,
+        "conditional_selected_baseline_wrong": {
+          "observed": 0.40765492102065615,
+          "predicted": 0.506864941831464,
+          "rows": 1646
+        },
+        "corrections": 671,
+        "expected_corrections": 1003.4190073288268,
+        "expected_net": 636.8107726905331,
+        "expected_regressions": 366.60823463829365,
+        "net": -30,
+        "nll": {
+          "baseline": 0.7207980654549019,
+          "conditional_on_baseline_wrong": 0.679824840617838,
+          "conditional_weighted_by_all_events": 0.4516439418918454,
+          "event": 1.1724420073467472
+        },
+        "optimism": 666.8107726905331,
+        "other_baseline_wrong": {
+          "observed": 0.6470470068300522,
+          "predicted": 0.6864591001964108
+        },
+        "other_selected_baseline_wrong": {
+          "observed": 0.4835965978128797,
+          "predicted": 0.4401936936059387
+        },
+        "policies": {
+          "accepted_best": {
+            "observed_mean_gain": -0.01278227524499361,
+            "optimism_per_row": 0.2841119610952421,
+            "predicted_mean_gain": 0.27132968585024847,
+            "rows": 2347
+          },
+          "best_without_acceptance_gate": {
+            "observed_mean_gain": -0.06442362836933664,
+            "optimism_per_row": 0.008576992785098981,
+            "predicted_mean_gain": -0.05584663558423766,
+            "rows": 5231
+          },
+          "rejected_best": {
+            "observed_mean_gain": -0.10644937586685159,
+            "optimism_per_row": -0.21565344085703203,
+            "predicted_mean_gain": -0.32210281672388363,
+            "rows": 2884
+          },
+          "uniform_over_distinct_alternatives": {
+            "observed_mean_gain": -0.0730580513604792,
+            "optimism_per_row": -0.010222221465202267,
+            "predicted_mean_gain": -0.08328027282568147,
+            "rows": 5231
+          }
+        },
+        "reference_all": {
+          "observed": 0.3356466034965968,
+          "predicted": 0.3310430136092477
+        },
+        "reference_selected": {
+          "observed": 0.29867916489135066,
+          "predicted": 0.15620291207426232
+        },
+        "regressions": 701,
+        "rows": 7493,
+        "selected_by_alternative_count": {
+          "1": {
+            "observed_mean_gain": -0.016270337922403004,
+            "optimism_per_row": 0.29147768023649623,
+            "predicted_mean_gain": 0.2752073423140933,
+            "rows": 1598
+          },
+          "2": {
+            "observed_mean_gain": 0.010526315789473684,
+            "optimism_per_row": 0.25894574879313353,
+            "predicted_mean_gain": 0.2694720645826072,
+            "rows": 665
+          },
+          "3": {
+            "observed_mean_gain": -0.13095238095238096,
+            "optimism_per_row": 0.3432204372045041,
+            "predicted_mean_gain": 0.2122680562521232,
+            "rows": 84
+          },
+          "4": {
+            "observed_mean_gain": null,
+            "optimism_per_row": null,
+            "predicted_mean_gain": null,
+            "rows": 0
+          }
+        },
+        "selected_optimism_decomposition": {
+          "baseline_component": 503.5110784359433,
+          "conditional_component": 163.29969425458978,
+          "formula": "(B-r)*(1+q) + (1-B)*(q-I(selected_K=true_K)); a fixed algebraic decomposition, not causal attribution"
+        },
+        "selected_wrong_baseline_with_correct_alternative_but_wrong_choice": 179,
+        "selected_wrong_baseline_without_correct_alternative": 796
+      },
+      "downstream_ready": false,
+      "metrics": {
+        "by_k": {
+          "0": {
+            "correct": 38035,
+            "exact": 0.9592202158781398,
+            "over": 1617,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7889,
+            "exact": 0.6428455019556715,
+            "over": 1474,
+            "rows": 12272,
+            "under": 2909
+          },
+          "2": {
+            "correct": 1258,
+            "exact": 0.365166908563135,
+            "over": 779,
+            "rows": 3445,
+            "under": 1408
+          },
+          "3": {
+            "correct": 876,
+            "exact": 0.382699868938401,
+            "over": 315,
+            "rows": 2289,
+            "under": 1098
+          },
+          "4": {
+            "correct": 325,
+            "exact": 0.26926263463131733,
+            "over": 46,
+            "rows": 1207,
+            "under": 836
+          },
+          "5": {
+            "correct": 41,
+            "exact": 0.11549295774647887,
+            "over": 0,
+            "rows": 355,
+            "under": 314
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38035,
+            1047,
+            483,
+            82,
+            5,
+            0,
+            0
+          ],
+          [
+            2909,
+            7889,
+            1166,
+            276,
+            27,
+            5,
+            0
+          ],
+          [
+            666,
+            742,
+            1258,
+            637,
+            133,
+            9,
+            0
+          ],
+          [
+            211,
+            170,
+            717,
+            876,
+            285,
+            30,
+            0
+          ],
+          [
+            47,
+            34,
+            256,
+            499,
+            325,
+            46,
+            0
+          ],
+          [
+            7,
+            8,
+            54,
+            131,
+            114,
+            41,
+            0
+          ],
+          [
+            0,
+            4,
+            13,
+            31,
+            31,
+            10,
+            0
+          ]
+        ],
+        "correct": 48424,
+        "exact": 0.816469675765904,
+        "over": 4231,
+        "poly": {
+          "correct": 2500,
+          "exact": 0.33852403520649965,
+          "over": 1140,
+          "rows": 7385,
+          "under": 3745
+        },
+        "rows": 59309,
+        "under": 6654
+      },
+      "paired": {
+        "by_k": {
+          "0": {
+            "changed": 92,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 393,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 641,
+            "corrections": 310,
+            "net": 75,
+            "regressions": 235
+          },
+          "3": {
+            "changed": 616,
+            "corrections": 251,
+            "net": -39,
+            "regressions": 290
+          },
+          "4": {
+            "changed": 419,
+            "corrections": 84,
+            "net": -92,
+            "regressions": 176
+          },
+          "5": {
+            "changed": 151,
+            "corrections": 26,
+            "net": 26,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 35,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2347,
+          "corrections": 671,
+          "net": -30,
+          "regressions": 701
+        },
+        "poly": {
+          "changed": 1862,
+          "corrections": 671,
+          "net": -30,
+          "regressions": 701
+        }
+      },
+      "parent_profile_retention": {
+        "keep": {
+          "candidate_vs_freeze": {
+            "by_k": {
+              "0": {
+                "changed": 45,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 154,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 234,
+                "corrections": 92,
+                "net": -9,
+                "regressions": 101
+              },
+              "3": {
+                "changed": 226,
+                "corrections": 95,
+                "net": -16,
+                "regressions": 111
+              },
+              "4": {
+                "changed": 184,
+                "corrections": 34,
+                "net": -55,
+                "regressions": 89
+              },
+              "5": {
+                "changed": 63,
+                "corrections": 13,
+                "net": 13,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 13,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 919,
+              "corrections": 234,
+              "net": -67,
+              "regressions": 301
+            },
+            "poly": {
+              "changed": 720,
+              "corrections": 234,
+              "net": -67,
+              "regressions": 301
+            }
+          },
+          "parent_vs_freeze": {
+            "by_k": {
+              "0": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "3": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "4": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "5": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 0,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "poly": {
+              "changed": 0,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "retention": {
+            "corrections_added": 234,
+            "corrections_lost": 0,
+            "corrections_retained": 0,
+            "corrections_union": 234,
+            "oracle_union_not_prediction": true,
+            "paired": {
+              "by_k": {
+                "0": {
+                  "changed": 45,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 154,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 234,
+                  "corrections": 92,
+                  "net": -9,
+                  "regressions": 101
+                },
+                "3": {
+                  "changed": 226,
+                  "corrections": 95,
+                  "net": -16,
+                  "regressions": 111
+                },
+                "4": {
+                  "changed": 184,
+                  "corrections": 34,
+                  "net": -55,
+                  "regressions": 89
+                },
+                "5": {
+                  "changed": 63,
+                  "corrections": 13,
+                  "net": 13,
+                  "regressions": 0
+                },
+                "6": {
+                  "changed": 13,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 919,
+                "corrections": 234,
+                "net": -67,
+                "regressions": 301
+              },
+              "poly": {
+                "changed": 720,
+                "corrections": 234,
+                "net": -67,
+                "regressions": 301
+              }
+            },
+            "regressions_added": 301,
+            "regressions_avoided": 0,
+            "regressions_retained": 0
+          },
+          "rows": 5773
+        },
+        "local_rates_favor_correction_for_all_groups": {
+          "candidate_vs_freeze": {
+            "by_k": {
+              "0": {
+                "changed": 7,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 44,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 72,
+                "corrections": 49,
+                "net": 33,
+                "regressions": 16
+              },
+              "3": {
+                "changed": 71,
+                "corrections": 15,
+                "net": -28,
+                "regressions": 43
+              },
+              "4": {
+                "changed": 44,
+                "corrections": 6,
+                "net": -13,
+                "regressions": 19
+              },
+              "5": {
+                "changed": 21,
+                "corrections": 2,
+                "net": 2,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 8,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 267,
+              "corrections": 72,
+              "net": -6,
+              "regressions": 78
+            },
+            "poly": {
+              "changed": 216,
+              "corrections": 72,
+              "net": -6,
+              "regressions": 78
+            }
+          },
+          "parent_vs_freeze": {
+            "by_k": {
+              "0": {
+                "changed": 8,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 46,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 82,
+                "corrections": 55,
+                "net": 38,
+                "regressions": 17
+              },
+              "3": {
+                "changed": 83,
+                "corrections": 17,
+                "net": -35,
+                "regressions": 52
+              },
+              "4": {
+                "changed": 48,
+                "corrections": 10,
+                "net": -9,
+                "regressions": 19
+              },
+              "5": {
+                "changed": 27,
+                "corrections": 6,
+                "net": 6,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 11,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 305,
+              "corrections": 88,
+              "net": 0,
+              "regressions": 88
+            },
+            "poly": {
+              "changed": 251,
+              "corrections": 88,
+              "net": 0,
+              "regressions": 88
+            }
+          },
+          "retention": {
+            "corrections_added": 0,
+            "corrections_lost": 16,
+            "corrections_retained": 72,
+            "corrections_union": 88,
+            "oracle_union_not_prediction": true,
+            "paired": {
+              "by_k": {
+                "0": {
+                  "changed": 1,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 2,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 10,
+                  "corrections": 1,
+                  "net": -5,
+                  "regressions": 6
+                },
+                "3": {
+                  "changed": 12,
+                  "corrections": 9,
+                  "net": 7,
+                  "regressions": 2
+                },
+                "4": {
+                  "changed": 4,
+                  "corrections": 0,
+                  "net": -4,
+                  "regressions": 4
+                },
+                "5": {
+                  "changed": 6,
+                  "corrections": 0,
+                  "net": -4,
+                  "regressions": 4
+                },
+                "6": {
+                  "changed": 3,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 38,
+                "corrections": 10,
+                "net": -6,
+                "regressions": 16
+              },
+              "poly": {
+                "changed": 35,
+                "corrections": 10,
+                "net": -6,
+                "regressions": 16
+              }
+            },
+            "regressions_added": 0,
+            "regressions_avoided": 10,
+            "regressions_retained": 78
+          },
+          "rows": 305
+        },
+        "local_rates_favor_regression_for_all_groups": {
+          "candidate_vs_freeze": {
+            "by_k": {
+              "0": {
+                "changed": 5,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 39,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 81,
+                "corrections": 22,
+                "net": -26,
+                "regressions": 48
+              },
+              "3": {
+                "changed": 80,
+                "corrections": 38,
+                "net": 4,
+                "regressions": 34
+              },
+              "4": {
+                "changed": 50,
+                "corrections": 12,
+                "net": -4,
+                "regressions": 16
+              },
+              "5": {
+                "changed": 11,
+                "corrections": 4,
+                "net": 4,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 2,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 268,
+              "corrections": 76,
+              "net": -22,
+              "regressions": 98
+            },
+            "poly": {
+              "changed": 224,
+              "corrections": 76,
+              "net": -22,
+              "regressions": 98
+            }
+          },
+          "parent_vs_freeze": {
+            "by_k": {
+              "0": {
+                "changed": 8,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 51,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 98,
+                "corrections": 26,
+                "net": -34,
+                "regressions": 60
+              },
+              "3": {
+                "changed": 105,
+                "corrections": 49,
+                "net": 3,
+                "regressions": 46
+              },
+              "4": {
+                "changed": 62,
+                "corrections": 13,
+                "net": -7,
+                "regressions": 20
+              },
+              "5": {
+                "changed": 13,
+                "corrections": 4,
+                "net": 4,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 4,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 341,
+              "corrections": 92,
+              "net": -34,
+              "regressions": 126
+            },
+            "poly": {
+              "changed": 282,
+              "corrections": 92,
+              "net": -34,
+              "regressions": 126
+            }
+          },
+          "retention": {
+            "corrections_added": 0,
+            "corrections_lost": 16,
+            "corrections_retained": 76,
+            "corrections_union": 92,
+            "oracle_union_not_prediction": true,
+            "paired": {
+              "by_k": {
+                "0": {
+                  "changed": 3,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 12,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 17,
+                  "corrections": 12,
+                  "net": 8,
+                  "regressions": 4
+                },
+                "3": {
+                  "changed": 25,
+                  "corrections": 12,
+                  "net": 1,
+                  "regressions": 11
+                },
+                "4": {
+                  "changed": 12,
+                  "corrections": 4,
+                  "net": 3,
+                  "regressions": 1
+                },
+                "5": {
+                  "changed": 2,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "6": {
+                  "changed": 2,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 73,
+                "corrections": 28,
+                "net": 12,
+                "regressions": 16
+              },
+              "poly": {
+                "changed": 58,
+                "corrections": 28,
+                "net": 12,
+                "regressions": 16
+              }
+            },
+            "regressions_added": 0,
+            "regressions_avoided": 28,
+            "regressions_retained": 98
+          },
+          "rows": 341
+        },
+        "mixed_by_complete_group": {
+          "candidate_vs_freeze": {
+            "by_k": {
+              "0": {
+                "changed": 35,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 156,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 253,
+                "corrections": 147,
+                "net": 77,
+                "regressions": 70
+              },
+              "3": {
+                "changed": 239,
+                "corrections": 103,
+                "net": 1,
+                "regressions": 102
+              },
+              "4": {
+                "changed": 140,
+                "corrections": 32,
+                "net": -19,
+                "regressions": 51
+              },
+              "5": {
+                "changed": 56,
+                "corrections": 7,
+                "net": 7,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 12,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 891,
+              "corrections": 289,
+              "net": 66,
+              "regressions": 223
+            },
+            "poly": {
+              "changed": 700,
+              "corrections": 289,
+              "net": 66,
+              "regressions": 223
+            }
+          },
+          "parent_vs_freeze": {
+            "by_k": {
+              "0": {
+                "changed": 42,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 169,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 309,
+                "corrections": 173,
+                "net": 87,
+                "regressions": 86
+              },
+              "3": {
+                "changed": 294,
+                "corrections": 123,
+                "net": -7,
+                "regressions": 130
+              },
+              "4": {
+                "changed": 178,
+                "corrections": 43,
+                "net": -21,
+                "regressions": 64
+              },
+              "5": {
+                "changed": 64,
+                "corrections": 8,
+                "net": 8,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 16,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 1072,
+              "corrections": 347,
+              "net": 67,
+              "regressions": 280
+            },
+            "poly": {
+              "changed": 861,
+              "corrections": 347,
+              "net": 67,
+              "regressions": 280
+            }
+          },
+          "retention": {
+            "corrections_added": 0,
+            "corrections_lost": 58,
+            "corrections_retained": 289,
+            "corrections_union": 347,
+            "oracle_union_not_prediction": true,
+            "paired": {
+              "by_k": {
+                "0": {
+                  "changed": 7,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 13,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 56,
+                  "corrections": 16,
+                  "net": -10,
+                  "regressions": 26
+                },
+                "3": {
+                  "changed": 55,
+                  "corrections": 28,
+                  "net": 8,
+                  "regressions": 20
+                },
+                "4": {
+                  "changed": 38,
+                  "corrections": 13,
+                  "net": 2,
+                  "regressions": 11
+                },
+                "5": {
+                  "changed": 8,
+                  "corrections": 0,
+                  "net": -1,
+                  "regressions": 1
+                },
+                "6": {
+                  "changed": 4,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 181,
+                "corrections": 57,
+                "net": -1,
+                "regressions": 58
+              },
+              "poly": {
+                "changed": 161,
+                "corrections": 57,
+                "net": -1,
+                "regressions": 58
+              }
+            },
+            "regressions_added": 0,
+            "regressions_avoided": 57,
+            "regressions_retained": 223
+          },
+          "rows": 1072
+        },
+        "tied_local_rates": {
+          "candidate_vs_freeze": {
+            "by_k": {
+              "0": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 1,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "3": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "4": {
+                "changed": 1,
+                "corrections": 0,
+                "net": -1,
+                "regressions": 1
+              },
+              "5": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 2,
+              "corrections": 0,
+              "net": -1,
+              "regressions": 1
+            },
+            "poly": {
+              "changed": 2,
+              "corrections": 0,
+              "net": -1,
+              "regressions": 1
+            }
+          },
+          "parent_vs_freeze": {
+            "by_k": {
+              "0": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 1,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "3": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "4": {
+                "changed": 1,
+                "corrections": 0,
+                "net": -1,
+                "regressions": 1
+              },
+              "5": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 2,
+              "corrections": 0,
+              "net": -1,
+              "regressions": 1
+            },
+            "poly": {
+              "changed": 2,
+              "corrections": 0,
+              "net": -1,
+              "regressions": 1
+            }
+          },
+          "retention": {
+            "corrections_added": 0,
+            "corrections_lost": 0,
+            "corrections_retained": 0,
+            "corrections_union": 0,
+            "oracle_union_not_prediction": true,
+            "paired": {
+              "by_k": {
+                "0": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "3": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "4": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "5": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "6": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "poly": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "regressions_added": 0,
+            "regressions_avoided": 0,
+            "regressions_retained": 1
+          },
+          "rows": 2
+        }
+      },
+      "retained": true,
+      "retention_depends_on_global_gain": false,
+      "versus_new": {
+        "corrections_added": 91,
+        "corrections_lost": 125,
+        "corrections_retained": 580,
+        "corrections_union": 796,
+        "oracle_union_not_prediction": true,
+        "paired": {
+          "by_k": {
+            "0": {
+              "changed": 29,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 91,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 179,
+              "corrections": 69,
+              "net": -14,
+              "regressions": 83
+            },
+            "3": {
+              "changed": 192,
+              "corrections": 91,
+              "net": 16,
+              "regressions": 75
+            },
+            "4": {
+              "changed": 120,
+              "corrections": 36,
+              "net": 8,
+              "regressions": 28
+            },
+            "5": {
+              "changed": 41,
+              "corrections": 5,
+              "net": -1,
+              "regressions": 6
+            },
+            "6": {
+              "changed": 10,
+              "corrections": 0,
+              "net": -1,
+              "regressions": 1
+            }
+          },
+          "global": {
+            "changed": 662,
+            "corrections": 201,
+            "net": 8,
+            "regressions": 193
+          },
+          "poly": {
+            "changed": 542,
+            "corrections": 201,
+            "net": 8,
+            "regressions": 193
+          }
+        },
+        "regressions_added": 68,
+        "regressions_avoided": 110,
+        "regressions_retained": 633
+      },
+      "versus_parent": {
+        "corrections_added": 234,
+        "corrections_lost": 90,
+        "corrections_retained": 437,
+        "corrections_union": 761,
+        "oracle_union_not_prediction": true,
+        "paired": {
+          "by_k": {
+            "0": {
+              "changed": 56,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 181,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 317,
+              "corrections": 121,
+              "net": -16,
+              "regressions": 137
+            },
+            "3": {
+              "changed": 318,
+              "corrections": 144,
+              "net": 0,
+              "regressions": 144
+            },
+            "4": {
+              "changed": 238,
+              "corrections": 51,
+              "net": -54,
+              "regressions": 105
+            },
+            "5": {
+              "changed": 79,
+              "corrections": 13,
+              "net": 8,
+              "regressions": 5
+            },
+            "6": {
+              "changed": 22,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 1211,
+            "corrections": 329,
+            "net": -62,
+            "regressions": 391
+          },
+          "poly": {
+            "changed": 974,
+            "corrections": 329,
+            "net": -62,
+            "regressions": 391
+          }
+        },
+        "regressions_added": 301,
+        "regressions_avoided": 95,
+        "regressions_retained": 400
+      }
+    },
+    "parent_risk_new_correction": {
+      "confidence": {
+        "alternative_count": {
+          "0": 2262,
+          "1": 3854,
+          "2": 1235,
+          "3": 139,
+          "4": 3
+        },
+        "baseline_accuracy": 0.3356466034965968,
+        "baseline_brier": 0.22090161267545905,
+        "baseline_correct": 2515,
+        "best_gain_bins": [
+          {
+            "lower": -1,
+            "observed_mean_gain": -0.26903553299492383,
+            "optimism_per_row": -0.315200369920332,
+            "predicted_mean_gain": -0.5842359029152558,
+            "rows": 197,
+            "upper": -0.5
+          },
+          {
+            "lower": -0.5,
+            "observed_mean_gain": -0.11997319034852547,
+            "optimism_per_row": -0.20102640578457986,
+            "predicted_mean_gain": -0.32099959613310536,
+            "rows": 1492,
+            "upper": -0.2
+          },
+          {
+            "lower": -0.2,
+            "observed_mean_gain": -0.11907514450867052,
+            "optimism_per_row": -0.02877454920890484,
+            "predicted_mean_gain": -0.14784969371757536,
+            "rows": 865,
+            "upper": -0.1
+          },
+          {
+            "lower": -0.1,
+            "observed_mean_gain": -0.066746126340882,
+            "optimism_per_row": 0.01543609529935155,
+            "predicted_mean_gain": -0.05131003104153045,
+            "rows": 839,
+            "upper": 0
+          },
+          {
+            "lower": 0,
+            "observed_mean_gain": -0.07162534435261708,
+            "optimism_per_row": 0.09576137224905316,
+            "predicted_mean_gain": 0.024136027896436072,
+            "rows": 363,
+            "upper": 0.05
+          },
+          {
+            "lower": 0.05,
+            "observed_mean_gain": 0.02857142857142857,
+            "optimism_per_row": 0.04609012796065697,
+            "predicted_mean_gain": 0.07466155653208555,
+            "rows": 280,
+            "upper": 0.1
+          },
+          {
+            "lower": 0.1,
+            "observed_mean_gain": 0.04793028322440087,
+            "optimism_per_row": 0.09931270391880606,
+            "predicted_mean_gain": 0.14724298714320694,
+            "rows": 459,
+            "upper": 0.2
+          },
+          {
+            "lower": 0.2,
+            "observed_mean_gain": 0.03216374269005848,
+            "optimism_per_row": 0.21285551562497834,
+            "predicted_mean_gain": 0.24501925831503685,
+            "rows": 342,
+            "upper": 0.3
+          },
+          {
+            "lower": 0.3,
+            "observed_mean_gain": 0.0576271186440678,
+            "optimism_per_row": 0.32573856891615866,
+            "predicted_mean_gain": 0.3833656875602265,
+            "rows": 295,
+            "upper": 0.5
+          },
+          {
+            "lower": 0.5,
+            "observed_mean_gain": 0.16161616161616163,
+            "optimism_per_row": 0.4508455836611824,
+            "predicted_mean_gain": 0.6124617452773439,
+            "rows": 99,
+            "upper": 1
+          }
+        ],
+        "changes": 1838,
+        "conditional_brier_on_baseline_wrong": 0.4026259394633636,
+        "conditional_selected_baseline_wrong": {
+          "observed": 0.4287878787878788,
+          "predicted": 0.5834998530818557,
+          "rows": 1320
+        },
+        "corrections": 566,
+        "expected_corrections": 806.2240415756326,
+        "expected_net": 354.77432201058866,
+        "expected_regressions": 451.4497195650438,
+        "net": 48,
+        "nll": {
+          "baseline": 0.6343471331272325,
+          "conditional_on_baseline_wrong": 0.627482495126043,
+          "conditional_weighted_by_all_events": 0.41687012688341674,
+          "event": 1.0512172600106493
+        },
+        "optimism": 306.77432201058866,
+        "other_baseline_wrong": {
+          "observed": 0.6470470068300522,
+          "predicted": 0.6663200530579331
+        },
+        "other_selected_baseline_wrong": {
+          "observed": 0.45681818181818185,
+          "predicted": 0.3541055193119782
+        },
+        "policies": {
+          "accepted_best": {
+            "observed_mean_gain": 0.026115342763873776,
+            "optimism_per_row": 0.16690659521794812,
+            "predicted_mean_gain": 0.19302193798182193,
+            "rows": 1838
+          },
+          "best_without_acceptance_gate": {
+            "observed_mean_gain": -0.06557063658956222,
+            "optimism_per_row": -0.012844704531419747,
+            "predicted_mean_gain": -0.07841534112098196,
+            "rows": 5231
+          },
+          "rejected_best": {
+            "observed_mean_gain": -0.11523725316828765,
+            "optimism_per_row": -0.1102166140331404,
+            "predicted_mean_gain": -0.22545386720142804,
+            "rows": 3393
+          },
+          "uniform_over_distinct_alternatives": {
+            "observed_mean_gain": -0.0730580513604792,
+            "optimism_per_row": -0.03058237604353703,
+            "predicted_mean_gain": -0.10364042740401623,
+            "rows": 5231
+          }
+        },
+        "reference_all": {
+          "observed": 0.3356466034965968,
+          "predicted": 0.3524536200168108
+        },
+        "reference_selected": {
+          "observed": 0.28182807399347115,
+          "predicted": 0.24562008681449607
+        },
+        "regressions": 518,
+        "rows": 7493,
+        "selected_by_alternative_count": {
+          "1": {
+            "observed_mean_gain": 0.024174053182917002,
+            "optimism_per_row": 0.17018150378610825,
+            "predicted_mean_gain": 0.19435555696902526,
+            "rows": 1241
+          },
+          "2": {
+            "observed_mean_gain": 0.04119850187265917,
+            "optimism_per_row": 0.1533662542320391,
+            "predicted_mean_gain": 0.19456475610469828,
+            "rows": 534
+          },
+          "3": {
+            "observed_mean_gain": -0.06349206349206349,
+            "optimism_per_row": 0.21716660400189602,
+            "predicted_mean_gain": 0.15367454050983254,
+            "rows": 63
+          },
+          "4": {
+            "observed_mean_gain": null,
+            "optimism_per_row": null,
+            "predicted_mean_gain": null,
+            "rows": 0
+          }
+        },
+        "selected_optimism_decomposition": {
+          "baseline_component": 102.55451594253921,
+          "conditional_component": 204.21980606804948,
+          "formula": "(B-r)*(1+q) + (1-B)*(q-I(selected_K=true_K)); a fixed algebraic decomposition, not causal attribution"
+        },
+        "selected_wrong_baseline_with_correct_alternative_but_wrong_choice": 151,
+        "selected_wrong_baseline_without_correct_alternative": 603
+      },
+      "downstream_ready": false,
+      "metrics": {
+        "by_k": {
+          "0": {
+            "correct": 38035,
+            "exact": 0.9592202158781398,
+            "over": 1617,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7889,
+            "exact": 0.6428455019556715,
+            "over": 1474,
+            "rows": 12272,
+            "under": 2909
+          },
+          "2": {
+            "correct": 1285,
+            "exact": 0.37300435413642963,
+            "over": 752,
+            "rows": 3445,
+            "under": 1408
+          },
+          "3": {
+            "correct": 882,
+            "exact": 0.3853211009174312,
+            "over": 321,
+            "rows": 2289,
+            "under": 1086
+          },
+          "4": {
+            "correct": 373,
+            "exact": 0.30903065451532724,
+            "over": 46,
+            "rows": 1207,
+            "under": 788
+          },
+          "5": {
+            "correct": 38,
+            "exact": 0.10704225352112676,
+            "over": 0,
+            "rows": 355,
+            "under": 317
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38035,
+            1047,
+            489,
+            73,
+            8,
+            0,
+            0
+          ],
+          [
+            2909,
+            7889,
+            1193,
+            249,
+            28,
+            4,
+            0
+          ],
+          [
+            666,
+            742,
+            1285,
+            616,
+            131,
+            5,
+            0
+          ],
+          [
+            211,
+            170,
+            705,
+            882,
+            290,
+            31,
+            0
+          ],
+          [
+            47,
+            34,
+            250,
+            457,
+            373,
+            46,
+            0
+          ],
+          [
+            7,
+            8,
+            53,
+            130,
+            119,
+            38,
+            0
+          ],
+          [
+            0,
+            4,
+            11,
+            26,
+            38,
+            10,
+            0
+          ]
+        ],
+        "correct": 48502,
+        "exact": 0.8177848218651469,
+        "over": 4210,
+        "poly": {
+          "correct": 2578,
+          "exact": 0.34908598510494243,
+          "over": 1119,
+          "rows": 7385,
+          "under": 3688
+        },
+        "rows": 59309,
+        "under": 6597
+      },
+      "paired": {
+        "by_k": {
+          "0": {
+            "changed": 62,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 291,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 519,
+            "corrections": 267,
+            "net": 102,
+            "regressions": 165
+          },
+          "3": {
+            "changed": 493,
+            "corrections": 200,
+            "net": -33,
+            "regressions": 233
+          },
+          "4": {
+            "changed": 315,
+            "corrections": 76,
+            "net": -44,
+            "regressions": 120
+          },
+          "5": {
+            "changed": 123,
+            "corrections": 23,
+            "net": 23,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 35,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1838,
+          "corrections": 566,
+          "net": 48,
+          "regressions": 518
+        },
+        "poly": {
+          "changed": 1485,
+          "corrections": 566,
+          "net": 48,
+          "regressions": 518
+        }
+      },
+      "parent_profile_retention": {
+        "keep": {
+          "candidate_vs_freeze": {
+            "by_k": {
+              "0": {
+                "changed": 20,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 66,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 110,
+                "corrections": 44,
+                "net": 1,
+                "regressions": 43
+              },
+              "3": {
+                "changed": 92,
+                "corrections": 37,
+                "net": -10,
+                "regressions": 47
+              },
+              "4": {
+                "changed": 68,
+                "corrections": 20,
+                "net": -4,
+                "regressions": 24
+              },
+              "5": {
+                "changed": 34,
+                "corrections": 7,
+                "net": 7,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 8,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 398,
+              "corrections": 108,
+              "net": -6,
+              "regressions": 114
+            },
+            "poly": {
+              "changed": 312,
+              "corrections": 108,
+              "net": -6,
+              "regressions": 114
+            }
+          },
+          "parent_vs_freeze": {
+            "by_k": {
+              "0": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "3": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "4": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "5": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 0,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "poly": {
+              "changed": 0,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "retention": {
+            "corrections_added": 108,
+            "corrections_lost": 0,
+            "corrections_retained": 0,
+            "corrections_union": 108,
+            "oracle_union_not_prediction": true,
+            "paired": {
+              "by_k": {
+                "0": {
+                  "changed": 20,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 66,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 110,
+                  "corrections": 44,
+                  "net": 1,
+                  "regressions": 43
+                },
+                "3": {
+                  "changed": 92,
+                  "corrections": 37,
+                  "net": -10,
+                  "regressions": 47
+                },
+                "4": {
+                  "changed": 68,
+                  "corrections": 20,
+                  "net": -4,
+                  "regressions": 24
+                },
+                "5": {
+                  "changed": 34,
+                  "corrections": 7,
+                  "net": 7,
+                  "regressions": 0
+                },
+                "6": {
+                  "changed": 8,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 398,
+                "corrections": 108,
+                "net": -6,
+                "regressions": 114
+              },
+              "poly": {
+                "changed": 312,
+                "corrections": 108,
+                "net": -6,
+                "regressions": 114
+              }
+            },
+            "regressions_added": 114,
+            "regressions_avoided": 0,
+            "regressions_retained": 0
+          },
+          "rows": 5773
+        },
+        "local_rates_favor_correction_for_all_groups": {
+          "candidate_vs_freeze": {
+            "by_k": {
+              "0": {
+                "changed": 5,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 39,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 79,
+                "corrections": 53,
+                "net": 37,
+                "regressions": 16
+              },
+              "3": {
+                "changed": 76,
+                "corrections": 17,
+                "net": -30,
+                "regressions": 47
+              },
+              "4": {
+                "changed": 40,
+                "corrections": 10,
+                "net": -6,
+                "regressions": 16
+              },
+              "5": {
+                "changed": 23,
+                "corrections": 4,
+                "net": 4,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 11,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 273,
+              "corrections": 84,
+              "net": 5,
+              "regressions": 79
+            },
+            "poly": {
+              "changed": 229,
+              "corrections": 84,
+              "net": 5,
+              "regressions": 79
+            }
+          },
+          "parent_vs_freeze": {
+            "by_k": {
+              "0": {
+                "changed": 8,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 46,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 82,
+                "corrections": 55,
+                "net": 38,
+                "regressions": 17
+              },
+              "3": {
+                "changed": 83,
+                "corrections": 17,
+                "net": -35,
+                "regressions": 52
+              },
+              "4": {
+                "changed": 48,
+                "corrections": 10,
+                "net": -9,
+                "regressions": 19
+              },
+              "5": {
+                "changed": 27,
+                "corrections": 6,
+                "net": 6,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 11,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 305,
+              "corrections": 88,
+              "net": 0,
+              "regressions": 88
+            },
+            "poly": {
+              "changed": 251,
+              "corrections": 88,
+              "net": 0,
+              "regressions": 88
+            }
+          },
+          "retention": {
+            "corrections_added": 3,
+            "corrections_lost": 7,
+            "corrections_retained": 81,
+            "corrections_union": 91,
+            "oracle_union_not_prediction": true,
+            "paired": {
+              "by_k": {
+                "0": {
+                  "changed": 3,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 8,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 8,
+                  "corrections": 2,
+                  "net": -1,
+                  "regressions": 3
+                },
+                "3": {
+                  "changed": 13,
+                  "corrections": 7,
+                  "net": 5,
+                  "regressions": 2
+                },
+                "4": {
+                  "changed": 10,
+                  "corrections": 3,
+                  "net": 3,
+                  "regressions": 0
+                },
+                "5": {
+                  "changed": 4,
+                  "corrections": 0,
+                  "net": -2,
+                  "regressions": 2
+                },
+                "6": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 46,
+                "corrections": 12,
+                "net": 5,
+                "regressions": 7
+              },
+              "poly": {
+                "changed": 35,
+                "corrections": 12,
+                "net": 5,
+                "regressions": 7
+              }
+            },
+            "regressions_added": 0,
+            "regressions_avoided": 9,
+            "regressions_retained": 79
+          },
+          "rows": 305
+        },
+        "local_rates_favor_regression_for_all_groups": {
+          "candidate_vs_freeze": {
+            "by_k": {
+              "0": {
+                "changed": 4,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 40,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 68,
+                "corrections": 19,
+                "net": -18,
+                "regressions": 37
+              },
+              "3": {
+                "changed": 77,
+                "corrections": 40,
+                "net": 7,
+                "regressions": 33
+              },
+              "4": {
+                "changed": 50,
+                "corrections": 11,
+                "net": -6,
+                "regressions": 17
+              },
+              "5": {
+                "changed": 8,
+                "corrections": 3,
+                "net": 3,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 2,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 249,
+              "corrections": 73,
+              "net": -14,
+              "regressions": 87
+            },
+            "poly": {
+              "changed": 205,
+              "corrections": 73,
+              "net": -14,
+              "regressions": 87
+            }
+          },
+          "parent_vs_freeze": {
+            "by_k": {
+              "0": {
+                "changed": 8,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 51,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 98,
+                "corrections": 26,
+                "net": -34,
+                "regressions": 60
+              },
+              "3": {
+                "changed": 105,
+                "corrections": 49,
+                "net": 3,
+                "regressions": 46
+              },
+              "4": {
+                "changed": 62,
+                "corrections": 13,
+                "net": -7,
+                "regressions": 20
+              },
+              "5": {
+                "changed": 13,
+                "corrections": 4,
+                "net": 4,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 4,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 341,
+              "corrections": 92,
+              "net": -34,
+              "regressions": 126
+            },
+            "poly": {
+              "changed": 282,
+              "corrections": 92,
+              "net": -34,
+              "regressions": 126
+            }
+          },
+          "retention": {
+            "corrections_added": 5,
+            "corrections_lost": 24,
+            "corrections_retained": 68,
+            "corrections_union": 97,
+            "oracle_union_not_prediction": true,
+            "paired": {
+              "by_k": {
+                "0": {
+                  "changed": 4,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 13,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 38,
+                  "corrections": 24,
+                  "net": 16,
+                  "regressions": 8
+                },
+                "3": {
+                  "changed": 33,
+                  "corrections": 16,
+                  "net": 4,
+                  "regressions": 12
+                },
+                "4": {
+                  "changed": 20,
+                  "corrections": 4,
+                  "net": 1,
+                  "regressions": 3
+                },
+                "5": {
+                  "changed": 6,
+                  "corrections": 0,
+                  "net": -1,
+                  "regressions": 1
+                },
+                "6": {
+                  "changed": 2,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 116,
+                "corrections": 44,
+                "net": 20,
+                "regressions": 24
+              },
+              "poly": {
+                "changed": 99,
+                "corrections": 44,
+                "net": 20,
+                "regressions": 24
+              }
+            },
+            "regressions_added": 0,
+            "regressions_avoided": 39,
+            "regressions_retained": 87
+          },
+          "rows": 341
+        },
+        "mixed_by_complete_group": {
+          "candidate_vs_freeze": {
+            "by_k": {
+              "0": {
+                "changed": 33,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 146,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 262,
+                "corrections": 151,
+                "net": 82,
+                "regressions": 69
+              },
+              "3": {
+                "changed": 248,
+                "corrections": 106,
+                "net": 0,
+                "regressions": 106
+              },
+              "4": {
+                "changed": 156,
+                "corrections": 35,
+                "net": -27,
+                "regressions": 62
+              },
+              "5": {
+                "changed": 58,
+                "corrections": 9,
+                "net": 9,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 14,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 917,
+              "corrections": 301,
+              "net": 64,
+              "regressions": 237
+            },
+            "poly": {
+              "changed": 738,
+              "corrections": 301,
+              "net": 64,
+              "regressions": 237
+            }
+          },
+          "parent_vs_freeze": {
+            "by_k": {
+              "0": {
+                "changed": 42,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 169,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 309,
+                "corrections": 173,
+                "net": 87,
+                "regressions": 86
+              },
+              "3": {
+                "changed": 294,
+                "corrections": 123,
+                "net": -7,
+                "regressions": 130
+              },
+              "4": {
+                "changed": 178,
+                "corrections": 43,
+                "net": -21,
+                "regressions": 64
+              },
+              "5": {
+                "changed": 64,
+                "corrections": 8,
+                "net": 8,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 16,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 1072,
+              "corrections": 347,
+              "net": 67,
+              "regressions": 280
+            },
+            "poly": {
+              "changed": 861,
+              "corrections": 347,
+              "net": 67,
+              "regressions": 280
+            }
+          },
+          "retention": {
+            "corrections_added": 12,
+            "corrections_lost": 58,
+            "corrections_retained": 289,
+            "corrections_union": 359,
+            "oracle_union_not_prediction": true,
+            "paired": {
+              "by_k": {
+                "0": {
+                  "changed": 9,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 26,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 61,
+                  "corrections": 20,
+                  "net": -5,
+                  "regressions": 25
+                },
+                "3": {
+                  "changed": 68,
+                  "corrections": 31,
+                  "net": 7,
+                  "regressions": 24
+                },
+                "4": {
+                  "changed": 28,
+                  "corrections": 3,
+                  "net": -6,
+                  "regressions": 9
+                },
+                "5": {
+                  "changed": 12,
+                  "corrections": 1,
+                  "net": 1,
+                  "regressions": 0
+                },
+                "6": {
+                  "changed": 3,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 207,
+                "corrections": 55,
+                "net": -3,
+                "regressions": 58
+              },
+              "poly": {
+                "changed": 172,
+                "corrections": 55,
+                "net": -3,
+                "regressions": 58
+              }
+            },
+            "regressions_added": 0,
+            "regressions_avoided": 43,
+            "regressions_retained": 237
+          },
+          "rows": 1072
+        },
+        "tied_local_rates": {
+          "candidate_vs_freeze": {
+            "by_k": {
+              "0": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "3": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "4": {
+                "changed": 1,
+                "corrections": 0,
+                "net": -1,
+                "regressions": 1
+              },
+              "5": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 1,
+              "corrections": 0,
+              "net": -1,
+              "regressions": 1
+            },
+            "poly": {
+              "changed": 1,
+              "corrections": 0,
+              "net": -1,
+              "regressions": 1
+            }
+          },
+          "parent_vs_freeze": {
+            "by_k": {
+              "0": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 1,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "3": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "4": {
+                "changed": 1,
+                "corrections": 0,
+                "net": -1,
+                "regressions": 1
+              },
+              "5": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 2,
+              "corrections": 0,
+              "net": -1,
+              "regressions": 1
+            },
+            "poly": {
+              "changed": 2,
+              "corrections": 0,
+              "net": -1,
+              "regressions": 1
+            }
+          },
+          "retention": {
+            "corrections_added": 0,
+            "corrections_lost": 0,
+            "corrections_retained": 0,
+            "corrections_union": 0,
+            "oracle_union_not_prediction": true,
+            "paired": {
+              "by_k": {
+                "0": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 1,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "3": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "4": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "5": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "6": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 1,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "poly": {
+                "changed": 1,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "regressions_added": 0,
+            "regressions_avoided": 0,
+            "regressions_retained": 1
+          },
+          "rows": 2
+        }
+      },
+      "retained": true,
+      "retention_depends_on_global_gain": false,
+      "versus_new": {
+        "corrections_added": 104,
+        "corrections_lost": 243,
+        "corrections_retained": 462,
+        "corrections_union": 809,
+        "oracle_union_not_prediction": true,
+        "paired": {
+          "by_k": {
+            "0": {
+              "changed": 51,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 195,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 344,
+              "corrections": 144,
+              "net": 13,
+              "regressions": 131
+            },
+            "3": {
+              "changed": 328,
+              "corrections": 163,
+              "net": 22,
+              "regressions": 141
+            },
+            "4": {
+              "changed": 266,
+              "corrections": 114,
+              "net": 56,
+              "regressions": 58
+            },
+            "5": {
+              "changed": 68,
+              "corrections": 5,
+              "net": -4,
+              "regressions": 9
+            },
+            "6": {
+              "changed": 25,
+              "corrections": 0,
+              "net": -1,
+              "regressions": 1
+            }
+          },
+          "global": {
+            "changed": 1277,
+            "corrections": 426,
+            "net": 86,
+            "regressions": 340
+          },
+          "poly": {
+            "changed": 1031,
+            "corrections": 426,
+            "net": 86,
+            "regressions": 340
+          }
+        },
+        "regressions_added": 97,
+        "regressions_avoided": 322,
+        "regressions_retained": 421
+      },
+      "versus_parent": {
+        "corrections_added": 128,
+        "corrections_lost": 89,
+        "corrections_retained": 438,
+        "corrections_union": 655,
+        "oracle_union_not_prediction": true,
+        "paired": {
+          "by_k": {
+            "0": {
+              "changed": 36,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 113,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 218,
+              "corrections": 90,
+              "net": 11,
+              "regressions": 79
+            },
+            "3": {
+              "changed": 206,
+              "corrections": 91,
+              "net": 6,
+              "regressions": 85
+            },
+            "4": {
+              "changed": 126,
+              "corrections": 30,
+              "net": -6,
+              "regressions": 36
+            },
+            "5": {
+              "changed": 56,
+              "corrections": 8,
+              "net": 5,
+              "regressions": 3
+            },
+            "6": {
+              "changed": 13,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 768,
+            "corrections": 219,
+            "net": 16,
+            "regressions": 203
+          },
+          "poly": {
+            "changed": 619,
+            "corrections": 219,
+            "net": 16,
+            "regressions": 203
+          }
+        },
+        "regressions_added": 114,
+        "regressions_avoided": 91,
+        "regressions_retained": 404
+      }
+    }
+  }
+}
