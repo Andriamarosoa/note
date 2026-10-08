@@ -1,0 +1,2283 @@
+{
+  "arms": {
+    "control7": {
+      "all_singletons_wrong_but_group_correct": 16,
+      "candidate": {
+        "by_k": {
+          "0": {
+            "correct": 38035,
+            "exact": 0.9592202158781398,
+            "over": 1617,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7889,
+            "exact": 0.6428455019556715,
+            "over": 1474,
+            "rows": 12272,
+            "under": 2909
+          },
+          "2": {
+            "correct": 1284,
+            "exact": 0.37271407837445575,
+            "over": 753,
+            "rows": 3445,
+            "under": 1408
+          },
+          "3": {
+            "correct": 909,
+            "exact": 0.39711664482306686,
+            "over": 292,
+            "rows": 2289,
+            "under": 1088
+          },
+          "4": {
+            "correct": 367,
+            "exact": 0.304059652029826,
+            "over": 30,
+            "rows": 1207,
+            "under": 810
+          },
+          "5": {
+            "correct": 30,
+            "exact": 0.08450704225352113,
+            "over": 0,
+            "rows": 355,
+            "under": 325
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38035,
+            1047,
+            490,
+            73,
+            7,
+            0,
+            0
+          ],
+          [
+            2909,
+            7889,
+            1201,
+            242,
+            28,
+            3,
+            0
+          ],
+          [
+            666,
+            742,
+            1284,
+            626,
+            125,
+            2,
+            0
+          ],
+          [
+            211,
+            170,
+            707,
+            909,
+            273,
+            19,
+            0
+          ],
+          [
+            47,
+            34,
+            237,
+            492,
+            367,
+            30,
+            0
+          ],
+          [
+            7,
+            8,
+            49,
+            152,
+            109,
+            30,
+            0
+          ],
+          [
+            0,
+            4,
+            10,
+            30,
+            34,
+            11,
+            0
+          ]
+        ],
+        "correct": 48514,
+        "exact": 0.8179871520342612,
+        "over": 4166,
+        "poly": {
+          "correct": 2590,
+          "exact": 0.35071090047393366,
+          "over": 1075,
+          "rows": 7385,
+          "under": 3720
+        },
+        "rows": 59309,
+        "under": 6629
+      },
+      "catalogue_extension": {
+        "new_by_k": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 0,
+          "5": 0,
+          "6": 0
+        },
+        "new_reachable_errors": 0,
+        "old_reachable_errors": 1624,
+        "recovered_new": 0
+      },
+      "changes": 1800,
+      "control_reproduction": {
+        "max_gain_difference": 0.0,
+        "prediction_bit_identical": true
+      },
+      "corrections_on_old_reachable": 582,
+      "corrector_provenance": null,
+      "coverage_recovered_by_k": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0
+      },
+      "decode_ablations": {
+        "old_groups_only": {
+          "comparison_with_all": {
+            "by_k": {
+              "0": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "3": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "4": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "5": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 0,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "poly": {
+              "changed": 0,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "note": "All catalogue inputs and weights retained; only allowed output masks restricted.",
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 51,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 250,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 515,
+                "corrections": 274,
+                "net": 101,
+                "regressions": 173
+              },
+              "3": {
+                "changed": 502,
+                "corrections": 217,
+                "net": -6,
+                "regressions": 223
+              },
+              "4": {
+                "changed": 324,
+                "corrections": 76,
+                "net": -50,
+                "regressions": 126
+              },
+              "5": {
+                "changed": 123,
+                "corrections": 15,
+                "net": 15,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 35,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 1800,
+              "corrections": 582,
+              "net": 60,
+              "regressions": 522
+            },
+            "poly": {
+              "changed": 1499,
+              "corrections": 582,
+              "net": 60,
+              "regressions": 522
+            }
+          },
+          "retrained": false
+        }
+      },
+      "expected_corrections": 832.7896728515625,
+      "expected_net": 383.19525146484375,
+      "expected_regressions": 449.59442138671875,
+      "expert_provenance": {
+        "distinct_producers": 14,
+        "forbidden_id_overlap": 0,
+        "nested_paths": 24
+      },
+      "fold_nets": {
+        "0": 16,
+        "1": 23,
+        "2": 1,
+        "4": 20
+      },
+      "neutral_changes": 696,
+      "oracle": {
+        "correctable_errors_with_some_group": 1624,
+        "global_exact_upper_bound": 0.8443575174088249,
+        "mean_distinct_verdicts_per_event": 1.836647537701855,
+        "not_a_prediction": true,
+        "poly_exact_upper_bound": 0.5624915368991198,
+        "true_k_counts": {
+          "0": 0,
+          "1": 0,
+          "2": 636,
+          "3": 715,
+          "4": 227,
+          "5": 46,
+          "6": 0
+        }
+      },
+      "paired": {
+        "by_k": {
+          "0": {
+            "changed": 51,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 250,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 515,
+            "corrections": 274,
+            "net": 101,
+            "regressions": 173
+          },
+          "3": {
+            "changed": 502,
+            "corrections": 217,
+            "net": -6,
+            "regressions": 223
+          },
+          "4": {
+            "changed": 324,
+            "corrections": 76,
+            "net": -50,
+            "regressions": 126
+          },
+          "5": {
+            "changed": 123,
+            "corrections": 15,
+            "net": 15,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 35,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1800,
+          "corrections": 582,
+          "net": 60,
+          "regressions": 522
+        },
+        "poly": {
+          "changed": 1499,
+          "corrections": 582,
+          "net": 60,
+          "regressions": 522
+        }
+      },
+      "paired_vs_archived_consensus": {
+        "by_k": {
+          "0": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "3": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "4": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "5": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 0,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "poly": {
+          "changed": 0,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        }
+      },
+      "paired_vs_archived_global": {
+        "by_k": {
+          "0": {
+            "changed": 33,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 135,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 219,
+            "corrections": 82,
+            "net": -19,
+            "regressions": 101
+          },
+          "3": {
+            "changed": 244,
+            "corrections": 119,
+            "net": 12,
+            "regressions": 107
+          },
+          "4": {
+            "changed": 137,
+            "corrections": 44,
+            "net": 14,
+            "regressions": 30
+          },
+          "5": {
+            "changed": 63,
+            "corrections": 4,
+            "net": -4,
+            "regressions": 8
+          },
+          "6": {
+            "changed": 12,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 843,
+          "corrections": 249,
+          "net": 3,
+          "regressions": 246
+        },
+        "poly": {
+          "changed": 675,
+          "corrections": 249,
+          "net": 3,
+          "regressions": 246
+        }
+      },
+      "paired_vs_archived_singletons": {
+        "by_k": {
+          "0": {
+            "changed": 27,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 121,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 214,
+            "corrections": 74,
+            "net": -30,
+            "regressions": 104
+          },
+          "3": {
+            "changed": 229,
+            "corrections": 113,
+            "net": 17,
+            "regressions": 96
+          },
+          "4": {
+            "changed": 130,
+            "corrections": 41,
+            "net": 9,
+            "regressions": 32
+          },
+          "5": {
+            "changed": 59,
+            "corrections": 3,
+            "net": -4,
+            "regressions": 7
+          },
+          "6": {
+            "changed": 12,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 792,
+          "corrections": 231,
+          "net": -8,
+          "regressions": 239
+        },
+        "poly": {
+          "changed": 644,
+          "corrections": 231,
+          "net": -8,
+          "regressions": 239
+        }
+      },
+      "predictions_sha256": "b86ab264a4a7f34c855ef7a7e2cc5e73636f8f2c0cdfe9b95b77258d6976e5cc",
+      "recovered_strong_synergy": 6,
+      "singletons_only": {
+        "comparison_with_all_groups": {
+          "by_k": {
+            "0": {
+              "changed": 1,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 0,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 7,
+              "corrections": 1,
+              "net": -4,
+              "regressions": 5
+            },
+            "3": {
+              "changed": 5,
+              "corrections": 2,
+              "net": 0,
+              "regressions": 2
+            },
+            "4": {
+              "changed": 3,
+              "corrections": 3,
+              "net": 3,
+              "regressions": 0
+            },
+            "5": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 0,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 19,
+            "corrections": 6,
+            "net": -1,
+            "regressions": 7
+          },
+          "poly": {
+            "changed": 18,
+            "corrections": 6,
+            "net": -1,
+            "regressions": 7
+          }
+        },
+        "metrics": {
+          "by_k": {
+            "0": {
+              "correct": 38035,
+              "exact": 0.9592202158781398,
+              "over": 1617,
+              "rows": 39652,
+              "under": 0
+            },
+            "1": {
+              "correct": 7889,
+              "exact": 0.6428455019556715,
+              "over": 1474,
+              "rows": 12272,
+              "under": 2909
+            },
+            "2": {
+              "correct": 1288,
+              "exact": 0.3738751814223512,
+              "over": 749,
+              "rows": 3445,
+              "under": 1408
+            },
+            "3": {
+              "correct": 909,
+              "exact": 0.39711664482306686,
+              "over": 290,
+              "rows": 2289,
+              "under": 1090
+            },
+            "4": {
+              "correct": 364,
+              "exact": 0.3015741507870754,
+              "over": 30,
+              "rows": 1207,
+              "under": 813
+            },
+            "5": {
+              "correct": 30,
+              "exact": 0.08450704225352113,
+              "over": 0,
+              "rows": 355,
+              "under": 325
+            },
+            "6": {
+              "correct": 0,
+              "exact": 0.0,
+              "over": 0,
+              "rows": 89,
+              "under": 89
+            }
+          },
+          "confusion_true_by_predicted": [
+            [
+              38035,
+              1047,
+              491,
+              72,
+              7,
+              0,
+              0
+            ],
+            [
+              2909,
+              7889,
+              1201,
+              242,
+              28,
+              3,
+              0
+            ],
+            [
+              666,
+              742,
+              1288,
+              620,
+              127,
+              2,
+              0
+            ],
+            [
+              211,
+              170,
+              709,
+              909,
+              271,
+              19,
+              0
+            ],
+            [
+              47,
+              34,
+              238,
+              494,
+              364,
+              30,
+              0
+            ],
+            [
+              7,
+              8,
+              51,
+              149,
+              110,
+              30,
+              0
+            ],
+            [
+              0,
+              4,
+              10,
+              30,
+              34,
+              11,
+              0
+            ]
+          ],
+          "correct": 48515,
+          "exact": 0.8180040128816874,
+          "over": 4160,
+          "poly": {
+            "correct": 2591,
+            "exact": 0.35084631008801626,
+            "over": 1069,
+            "rows": 7385,
+            "under": 3725
+          },
+          "rows": 59309,
+          "under": 6634
+        },
+        "paired": {
+          "by_k": {
+            "0": {
+              "changed": 50,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 250,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 511,
+              "corrections": 275,
+              "net": 105,
+              "regressions": 170
+            },
+            "3": {
+              "changed": 497,
+              "corrections": 215,
+              "net": -6,
+              "regressions": 221
+            },
+            "4": {
+              "changed": 322,
+              "corrections": 73,
+              "net": -53,
+              "regressions": 126
+            },
+            "5": {
+              "changed": 120,
+              "corrections": 15,
+              "net": 15,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 35,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 1785,
+            "corrections": 578,
+            "net": 61,
+            "regressions": 517
+          },
+          "poly": {
+            "changed": 1485,
+            "corrections": 578,
+            "net": 61,
+            "regressions": 517
+          }
+        },
+        "retrained": false
+      },
+      "weights_sha256": {
+        "0": "58733228edb2fc4a167d09db65fafde46aed6952391fbb437ecc6c2dae783af0",
+        "1": "44b7cfce46c16c00f2e29fcac4e96b3c0e7fd5e5f893633041343beea76ea4fd",
+        "2": "296c928c7c79f932474107203aa3805a56a3741aa8ecf36b609737109edfb38d",
+        "4": "23055888635cbb09d1456138702140295728fa5d4ebec3e015dbcfca09551919"
+      }
+    },
+    "corrector8": {
+      "all_singletons_wrong_but_group_correct": 17,
+      "candidate": {
+        "by_k": {
+          "0": {
+            "correct": 38035,
+            "exact": 0.9592202158781398,
+            "over": 1617,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7889,
+            "exact": 0.6428455019556715,
+            "over": 1474,
+            "rows": 12272,
+            "under": 2909
+          },
+          "2": {
+            "correct": 1277,
+            "exact": 0.3706821480406386,
+            "over": 760,
+            "rows": 3445,
+            "under": 1408
+          },
+          "3": {
+            "correct": 891,
+            "exact": 0.3892529488859764,
+            "over": 307,
+            "rows": 2289,
+            "under": 1091
+          },
+          "4": {
+            "correct": 368,
+            "exact": 0.30488815244407624,
+            "over": 39,
+            "rows": 1207,
+            "under": 800
+          },
+          "5": {
+            "correct": 32,
+            "exact": 0.09014084507042254,
+            "over": 0,
+            "rows": 355,
+            "under": 323
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38035,
+            1047,
+            482,
+            78,
+            10,
+            0,
+            0
+          ],
+          [
+            2909,
+            7889,
+            1180,
+            258,
+            32,
+            4,
+            0
+          ],
+          [
+            666,
+            742,
+            1277,
+            610,
+            143,
+            7,
+            0
+          ],
+          [
+            211,
+            170,
+            710,
+            891,
+            281,
+            26,
+            0
+          ],
+          [
+            47,
+            34,
+            255,
+            464,
+            368,
+            39,
+            0
+          ],
+          [
+            7,
+            8,
+            49,
+            136,
+            123,
+            32,
+            0
+          ],
+          [
+            0,
+            4,
+            13,
+            29,
+            32,
+            11,
+            0
+          ]
+        ],
+        "correct": 48492,
+        "exact": 0.817616213390885,
+        "over": 4197,
+        "poly": {
+          "correct": 2568,
+          "exact": 0.34773188896411644,
+          "over": 1106,
+          "rows": 7385,
+          "under": 3711
+        },
+        "rows": 59309,
+        "under": 6620
+      },
+      "catalogue_extension": {
+        "new_by_k": {
+          "0": 0,
+          "1": 0,
+          "2": 18,
+          "3": 20,
+          "4": 59,
+          "5": 33,
+          "6": 3
+        },
+        "new_reachable_by_singleton": 128,
+        "new_reachable_errors": 133,
+        "new_reachable_only_by_combination": 5,
+        "old_reachable_errors": 1624,
+        "recovered_combination_only": 2,
+        "recovered_new": 29
+      },
+      "changes": 1896,
+      "control_reproduction": null,
+      "corrections_on_old_reachable": 555,
+      "corrector_provenance": {
+        "checked_crossfit_paths": 36,
+        "forbidden_overlap": 0,
+        "producer_sets": 14
+      },
+      "coverage_recovered_by_k": {
+        "0": 0,
+        "1": 0,
+        "2": 4,
+        "3": 7,
+        "4": 12,
+        "5": 6,
+        "6": 0
+      },
+      "decode_ablations": {
+        "new_singleton_gated": {
+          "comparison_with_all": {
+            "by_k": {
+              "0": {
+                "changed": 54,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 200,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 314,
+                "corrections": 148,
+                "net": 20,
+                "regressions": 128
+              },
+              "3": {
+                "changed": 309,
+                "corrections": 134,
+                "net": -10,
+                "regressions": 144
+              },
+              "4": {
+                "changed": 167,
+                "corrections": 23,
+                "net": -38,
+                "regressions": 61
+              },
+              "5": {
+                "changed": 62,
+                "corrections": 4,
+                "net": 2,
+                "regressions": 2
+              },
+              "6": {
+                "changed": 22,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 1128,
+              "corrections": 309,
+              "net": -26,
+              "regressions": 335
+            },
+            "poly": {
+              "changed": 874,
+              "corrections": 309,
+              "net": -26,
+              "regressions": 335
+            }
+          },
+          "note": "All catalogue inputs and weights retained; only allowed output masks restricted.",
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 12,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 96,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 212,
+                "corrections": 119,
+                "net": 74,
+                "regressions": 45
+              },
+              "3": {
+                "changed": 241,
+                "corrections": 100,
+                "net": -14,
+                "regressions": 114
+              },
+              "4": {
+                "changed": 167,
+                "corrections": 55,
+                "net": -11,
+                "regressions": 66
+              },
+              "5": {
+                "changed": 70,
+                "corrections": 15,
+                "net": 15,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 15,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 813,
+              "corrections": 289,
+              "net": 64,
+              "regressions": 225
+            },
+            "poly": {
+              "changed": 705,
+              "corrections": 289,
+              "net": 64,
+              "regressions": 225
+            }
+          },
+          "retrained": false
+        },
+        "old_groups_only": {
+          "comparison_with_all": {
+            "by_k": {
+              "0": {
+                "changed": 1,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 13,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 24,
+                "corrections": 4,
+                "net": -3,
+                "regressions": 7
+              },
+              "3": {
+                "changed": 31,
+                "corrections": 7,
+                "net": -14,
+                "regressions": 21
+              },
+              "4": {
+                "changed": 26,
+                "corrections": 12,
+                "net": 5,
+                "regressions": 7
+              },
+              "5": {
+                "changed": 16,
+                "corrections": 6,
+                "net": 6,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 2,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 113,
+              "corrections": 29,
+              "net": -6,
+              "regressions": 35
+            },
+            "poly": {
+              "changed": 99,
+              "corrections": 29,
+              "net": -6,
+              "regressions": 35
+            }
+          },
+          "note": "All catalogue inputs and weights retained; only allowed output masks restricted.",
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 64,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 279,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 494,
+                "corrections": 260,
+                "net": 97,
+                "regressions": 163
+              },
+              "3": {
+                "changed": 510,
+                "corrections": 224,
+                "net": -10,
+                "regressions": 234
+              },
+              "4": {
+                "changed": 304,
+                "corrections": 65,
+                "net": -54,
+                "regressions": 119
+              },
+              "5": {
+                "changed": 113,
+                "corrections": 11,
+                "net": 11,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 35,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 1799,
+              "corrections": 560,
+              "net": 44,
+              "regressions": 516
+            },
+            "poly": {
+              "changed": 1456,
+              "corrections": 560,
+              "net": 44,
+              "regressions": 516
+            }
+          },
+          "retrained": false
+        },
+        "old_groups_plus_new_singleton": {
+          "comparison_with_all": {
+            "by_k": {
+              "0": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 1,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 5,
+                "corrections": 1,
+                "net": 0,
+                "regressions": 1
+              },
+              "3": {
+                "changed": 1,
+                "corrections": 1,
+                "net": 1,
+                "regressions": 0
+              },
+              "4": {
+                "changed": 1,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "5": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 0,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 8,
+              "corrections": 2,
+              "net": 1,
+              "regressions": 1
+            },
+            "poly": {
+              "changed": 7,
+              "corrections": 2,
+              "net": 1,
+              "regressions": 1
+            }
+          },
+          "note": "All catalogue inputs and weights retained; only allowed output masks restricted.",
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 65,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 289,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 510,
+                "corrections": 261,
+                "net": 94,
+                "regressions": 167
+              },
+              "3": {
+                "changed": 534,
+                "corrections": 227,
+                "net": -25,
+                "regressions": 252
+              },
+              "4": {
+                "changed": 326,
+                "corrections": 77,
+                "net": -49,
+                "regressions": 126
+              },
+              "5": {
+                "changed": 127,
+                "corrections": 17,
+                "net": 17,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 37,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 1888,
+              "corrections": 582,
+              "net": 37,
+              "regressions": 545
+            },
+            "poly": {
+              "changed": 1534,
+              "corrections": 582,
+              "net": 37,
+              "regressions": 545
+            }
+          },
+          "retrained": false
+        }
+      },
+      "expected_corrections": 872.9236450195312,
+      "expected_net": 397.42010498046875,
+      "expected_regressions": 475.5035705566406,
+      "expert_provenance": {
+        "distinct_producers": 14,
+        "forbidden_id_overlap": 0,
+        "nested_paths": 24
+      },
+      "fold_nets": {
+        "0": 19,
+        "1": 4,
+        "2": 4,
+        "4": 11
+      },
+      "neutral_changes": 766,
+      "new_singleton_alone": {
+        "metrics": {
+          "by_k": {
+            "0": {
+              "correct": 38035,
+              "exact": 0.9592202158781398,
+              "over": 1617,
+              "rows": 39652,
+              "under": 0
+            },
+            "1": {
+              "correct": 7889,
+              "exact": 0.6428455019556715,
+              "over": 1474,
+              "rows": 12272,
+              "under": 2909
+            },
+            "2": {
+              "correct": 1269,
+              "exact": 0.3683599419448476,
+              "over": 768,
+              "rows": 3445,
+              "under": 1408
+            },
+            "3": {
+              "correct": 846,
+              "exact": 0.36959370904325034,
+              "over": 386,
+              "rows": 2289,
+              "under": 1057
+            },
+            "4": {
+              "correct": 404,
+              "exact": 0.3347141673570837,
+              "over": 85,
+              "rows": 1207,
+              "under": 718
+            },
+            "5": {
+              "correct": 68,
+              "exact": 0.19154929577464788,
+              "over": 5,
+              "rows": 355,
+              "under": 282
+            },
+            "6": {
+              "correct": 3,
+              "exact": 0.033707865168539325,
+              "over": 0,
+              "rows": 89,
+              "under": 86
+            }
+          },
+          "confusion_true_by_predicted": [
+            [
+              38035,
+              1047,
+              468,
+              87,
+              14,
+              1,
+              0
+            ],
+            [
+              2909,
+              7889,
+              1150,
+              252,
+              65,
+              6,
+              1
+            ],
+            [
+              666,
+              742,
+              1269,
+              588,
+              159,
+              21,
+              0
+            ],
+            [
+              211,
+              170,
+              676,
+              846,
+              331,
+              53,
+              2
+            ],
+            [
+              47,
+              34,
+              218,
+              419,
+              404,
+              81,
+              4
+            ],
+            [
+              7,
+              8,
+              39,
+              96,
+              132,
+              68,
+              5
+            ],
+            [
+              0,
+              4,
+              9,
+              17,
+              41,
+              15,
+              3
+            ]
+          ],
+          "correct": 48514,
+          "exact": 0.8179871520342612,
+          "over": 4335,
+          "poly": {
+            "correct": 2590,
+            "exact": 0.35071090047393366,
+            "over": 1244,
+            "rows": 7385,
+            "under": 3551
+          },
+          "rows": 59309,
+          "under": 6460
+        },
+        "paired": {
+          "by_k": {
+            "0": {
+              "changed": 35,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 154,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 448,
+              "corrections": 204,
+              "net": 86,
+              "regressions": 118
+            },
+            "3": {
+              "changed": 560,
+              "corrections": 213,
+              "net": -69,
+              "regressions": 282
+            },
+            "4": {
+              "changed": 426,
+              "corrections": 149,
+              "net": -13,
+              "regressions": 162
+            },
+            "5": {
+              "changed": 175,
+              "corrections": 53,
+              "net": 53,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 39,
+              "corrections": 3,
+              "net": 3,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 1837,
+            "corrections": 622,
+            "net": 60,
+            "regressions": 562
+          },
+          "poly": {
+            "changed": 1648,
+            "corrections": 622,
+            "net": 60,
+            "regressions": 562
+          }
+        }
+      },
+      "oracle": {
+        "correctable_errors_with_some_group": 1757,
+        "global_exact_upper_bound": 0.8466000101165084,
+        "mean_distinct_verdicts_per_event": 1.9012411584145201,
+        "not_a_prediction": true,
+        "poly_exact_upper_bound": 0.5805010155721056,
+        "true_k_counts": {
+          "0": 0,
+          "1": 0,
+          "2": 654,
+          "3": 735,
+          "4": 286,
+          "5": 79,
+          "6": 3
+        }
+      },
+      "paired": {
+        "by_k": {
+          "0": {
+            "changed": 65,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 290,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 515,
+            "corrections": 262,
+            "net": 94,
+            "regressions": 168
+          },
+          "3": {
+            "changed": 535,
+            "corrections": 228,
+            "net": -24,
+            "regressions": 252
+          },
+          "4": {
+            "changed": 327,
+            "corrections": 77,
+            "net": -49,
+            "regressions": 126
+          },
+          "5": {
+            "changed": 127,
+            "corrections": 17,
+            "net": 17,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 37,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1896,
+          "corrections": 584,
+          "net": 38,
+          "regressions": 546
+        },
+        "poly": {
+          "changed": 1541,
+          "corrections": 584,
+          "net": 38,
+          "regressions": 546
+        }
+      },
+      "paired_vs_archived_consensus": {
+        "by_k": {
+          "0": {
+            "changed": 40,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 142,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 255,
+            "corrections": 100,
+            "net": -7,
+            "regressions": 107
+          },
+          "3": {
+            "changed": 334,
+            "corrections": 140,
+            "net": -18,
+            "regressions": 158
+          },
+          "4": {
+            "changed": 209,
+            "corrections": 61,
+            "net": 1,
+            "regressions": 60
+          },
+          "5": {
+            "changed": 67,
+            "corrections": 8,
+            "net": 2,
+            "regressions": 6
+          },
+          "6": {
+            "changed": 14,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1061,
+          "corrections": 309,
+          "net": -22,
+          "regressions": 331
+        },
+        "poly": {
+          "changed": 879,
+          "corrections": 309,
+          "net": -22,
+          "regressions": 331
+        }
+      },
+      "paired_vs_archived_global": {
+        "by_k": {
+          "0": {
+            "changed": 48,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 181,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 306,
+            "corrections": 115,
+            "net": -26,
+            "regressions": 141
+          },
+          "3": {
+            "changed": 324,
+            "corrections": 146,
+            "net": -6,
+            "regressions": 152
+          },
+          "4": {
+            "changed": 235,
+            "corrections": 76,
+            "net": 15,
+            "regressions": 61
+          },
+          "5": {
+            "changed": 86,
+            "corrections": 7,
+            "net": -2,
+            "regressions": 9
+          },
+          "6": {
+            "changed": 15,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1195,
+          "corrections": 344,
+          "net": -19,
+          "regressions": 363
+        },
+        "poly": {
+          "changed": 966,
+          "corrections": 344,
+          "net": -19,
+          "regressions": 363
+        }
+      },
+      "paired_vs_archived_singletons": {
+        "by_k": {
+          "0": {
+            "changed": 47,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 178,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 302,
+            "corrections": 107,
+            "net": -37,
+            "regressions": 144
+          },
+          "3": {
+            "changed": 339,
+            "corrections": 153,
+            "net": -1,
+            "regressions": 154
+          },
+          "4": {
+            "changed": 224,
+            "corrections": 70,
+            "net": 10,
+            "regressions": 60
+          },
+          "5": {
+            "changed": 81,
+            "corrections": 7,
+            "net": -2,
+            "regressions": 9
+          },
+          "6": {
+            "changed": 15,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1186,
+          "corrections": 337,
+          "net": -30,
+          "regressions": 367
+        },
+        "poly": {
+          "changed": 961,
+          "corrections": 337,
+          "net": -30,
+          "regressions": 367
+        }
+      },
+      "predictions_sha256": "99b92ae5d69f53fa0f6a9fd78d175ab21d0abb1c4752b0a46cb7deda7eabfadc",
+      "recovered_strong_synergy": 5,
+      "singletons_only": {
+        "comparison_with_all_groups": {
+          "by_k": {
+            "0": {
+              "changed": 0,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 1,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 10,
+              "corrections": 1,
+              "net": -4,
+              "regressions": 5
+            },
+            "3": {
+              "changed": 5,
+              "corrections": 3,
+              "net": 2,
+              "regressions": 1
+            },
+            "4": {
+              "changed": 2,
+              "corrections": 1,
+              "net": 1,
+              "regressions": 0
+            },
+            "5": {
+              "changed": 1,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 0,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 19,
+            "corrections": 5,
+            "net": -1,
+            "regressions": 6
+          },
+          "poly": {
+            "changed": 18,
+            "corrections": 5,
+            "net": -1,
+            "regressions": 6
+          }
+        },
+        "metrics": {
+          "by_k": {
+            "0": {
+              "correct": 38035,
+              "exact": 0.9592202158781398,
+              "over": 1617,
+              "rows": 39652,
+              "under": 0
+            },
+            "1": {
+              "correct": 7889,
+              "exact": 0.6428455019556715,
+              "over": 1474,
+              "rows": 12272,
+              "under": 2909
+            },
+            "2": {
+              "correct": 1281,
+              "exact": 0.3718432510885341,
+              "over": 756,
+              "rows": 3445,
+              "under": 1408
+            },
+            "3": {
+              "correct": 889,
+              "exact": 0.38837920489296635,
+              "over": 309,
+              "rows": 2289,
+              "under": 1091
+            },
+            "4": {
+              "correct": 367,
+              "exact": 0.304059652029826,
+              "over": 40,
+              "rows": 1207,
+              "under": 800
+            },
+            "5": {
+              "correct": 32,
+              "exact": 0.09014084507042254,
+              "over": 0,
+              "rows": 355,
+              "under": 323
+            },
+            "6": {
+              "correct": 0,
+              "exact": 0.0,
+              "over": 0,
+              "rows": 89,
+              "under": 89
+            }
+          },
+          "confusion_true_by_predicted": [
+            [
+              38035,
+              1047,
+              482,
+              78,
+              10,
+              0,
+              0
+            ],
+            [
+              2909,
+              7889,
+              1181,
+              258,
+              31,
+              4,
+              0
+            ],
+            [
+              666,
+              742,
+              1281,
+              602,
+              147,
+              7,
+              0
+            ],
+            [
+              211,
+              170,
+              710,
+              889,
+              283,
+              26,
+              0
+            ],
+            [
+              47,
+              34,
+              254,
+              465,
+              367,
+              40,
+              0
+            ],
+            [
+              7,
+              8,
+              49,
+              135,
+              124,
+              32,
+              0
+            ],
+            [
+              0,
+              4,
+              13,
+              29,
+              32,
+              11,
+              0
+            ]
+          ],
+          "correct": 48493,
+          "exact": 0.8176330742383112,
+          "over": 4196,
+          "poly": {
+            "correct": 2569,
+            "exact": 0.34786729857819904,
+            "over": 1105,
+            "rows": 7385,
+            "under": 3711
+          },
+          "rows": 59309,
+          "under": 6620
+        },
+        "paired": {
+          "by_k": {
+            "0": {
+              "changed": 65,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 289,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 505,
+              "corrections": 261,
+              "net": 98,
+              "regressions": 163
+            },
+            "3": {
+              "changed": 531,
+              "corrections": 225,
+              "net": -26,
+              "regressions": 251
+            },
+            "4": {
+              "changed": 326,
+              "corrections": 76,
+              "net": -50,
+              "regressions": 126
+            },
+            "5": {
+              "changed": 126,
+              "corrections": 17,
+              "net": 17,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 37,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 1879,
+            "corrections": 579,
+            "net": 39,
+            "regressions": 540
+          },
+          "poly": {
+            "changed": 1525,
+            "corrections": 579,
+            "net": 39,
+            "regressions": 540
+          }
+        },
+        "retrained": false
+      },
+      "weights_sha256": {
+        "0": "ccd6d94a1516f670b31a3009815b529ded5cd80df0cfc7892ae00060070e2d58",
+        "1": "5c7c6ba6fdefe4be65c7ee655c6f78d3dc058b3e631abce196960c648323afff",
+        "2": "e6bc9878acffd244f2c82d3f801125c803a53c522f2e0ae405a6213b19aee622",
+        "4": "7a025744fbf1621f8aaf500e73678c3c5583a117ac87a7c56ee367909ad8c5e9"
+      }
+    }
+  },
+  "artifact_manifest": {
+    "arms": {
+      "control7": {
+        "id": 11555952736,
+        "sha256": "fd653a88299bdb4d91f95f384e267ee375ca6c28d7509f74e3ca33c39d9ae0b8",
+        "size": 12395510
+      },
+      "corrector8": {
+        "id": 11556596516,
+        "sha256": "684f1fa7d5aaa3a500f08967f01373e2b27e0a69ec8338bda3b1fded3f1b33fe",
+        "size": 26877802
+      }
+    },
+    "corrector_cache": {
+      "id": 11555253523,
+      "sha256": "f0805fe3256eed3f46fbe6d47133dd164ff08dc2057ad80716189a1299856002",
+      "size": 2412010
+    },
+    "run_id": 37789646292,
+    "source_commit": "3f83c2b07308c9114f1db0b5a904c0d80a91b91a"
+  },
+  "case_files": {
+    "extended-vs-control.csv": {
+      "rows": 640,
+      "sha256": "aa8e0fcac6b308b6485e6b2331c85186914720d29d4f88737dad96e8540ba979"
+    },
+    "new-reachable-errors.csv": {
+      "rows": 133,
+      "sha256": "06ec54e65c8ebde86104fcc7c8aeb34e446f382e2e846347156533460cfddede"
+    }
+  },
+  "control_all_archived_arrays_bit_identical": true,
+  "corrector_cache_sha256": "c08344dea641f4e6b30530a845113298369895d3c08256a8f1622a0863294ed5",
+  "freeze_reference": {
+    "by_k": {
+      "0": {
+        "correct": 38035,
+        "exact": 0.9592202158781398,
+        "over": 1617,
+        "rows": 39652,
+        "under": 0
+      },
+      "1": {
+        "correct": 7889,
+        "exact": 0.6428455019556715,
+        "over": 1474,
+        "rows": 12272,
+        "under": 2909
+      },
+      "2": {
+        "correct": 1183,
+        "exact": 0.3433962264150943,
+        "over": 854,
+        "rows": 3445,
+        "under": 1408
+      },
+      "3": {
+        "correct": 915,
+        "exact": 0.399737876802097,
+        "over": 358,
+        "rows": 2289,
+        "under": 1016
+      },
+      "4": {
+        "correct": 417,
+        "exact": 0.34548467274233635,
+        "over": 13,
+        "rows": 1207,
+        "under": 777
+      },
+      "5": {
+        "correct": 15,
+        "exact": 0.04225352112676056,
+        "over": 0,
+        "rows": 355,
+        "under": 340
+      },
+      "6": {
+        "correct": 0,
+        "exact": 0.0,
+        "over": 0,
+        "rows": 89,
+        "under": 89
+      }
+    },
+    "confusion_true_by_predicted": [
+      [
+        38035,
+        1047,
+        465,
+        94,
+        11,
+        0,
+        0
+      ],
+      [
+        2909,
+        7889,
+        1097,
+        298,
+        76,
+        3,
+        0
+      ],
+      [
+        666,
+        742,
+        1183,
+        659,
+        193,
+        2,
+        0
+      ],
+      [
+        211,
+        170,
+        635,
+        915,
+        346,
+        12,
+        0
+      ],
+      [
+        47,
+        34,
+        199,
+        497,
+        417,
+        13,
+        0
+      ],
+      [
+        7,
+        8,
+        39,
+        152,
+        134,
+        15,
+        0
+      ],
+      [
+        0,
+        4,
+        5,
+        33,
+        45,
+        2,
+        0
+      ]
+    ],
+    "correct": 48454,
+    "exact": 0.8169755011886898,
+    "over": 4316,
+    "poly": {
+      "correct": 2530,
+      "exact": 0.3425863236289777,
+      "over": 1225,
+      "rows": 7385,
+      "under": 3630
+    },
+    "rows": 59309,
+    "under": 6539
+  },
+  "independent_validation": false,
+  "paired_decomposition": {
+    "lost_corrections": 163,
+    "new_corrections": 165,
+    "new_regressions": 168,
+    "persisting_regressions": 378,
+    "repaired_regressions": 144,
+    "retained_corrections": 419
+  },
+  "paired_extended_vs_control": {
+    "by_k": {
+      "0": {
+        "changed": 40,
+        "corrections": 0,
+        "net": 0,
+        "regressions": 0
+      },
+      "1": {
+        "changed": 142,
+        "corrections": 0,
+        "net": 0,
+        "regressions": 0
+      },
+      "2": {
+        "changed": 255,
+        "corrections": 100,
+        "net": -7,
+        "regressions": 107
+      },
+      "3": {
+        "changed": 334,
+        "corrections": 140,
+        "net": -18,
+        "regressions": 158
+      },
+      "4": {
+        "changed": 209,
+        "corrections": 61,
+        "net": 1,
+        "regressions": 60
+      },
+      "5": {
+        "changed": 67,
+        "corrections": 8,
+        "net": 2,
+        "regressions": 6
+      },
+      "6": {
+        "changed": 14,
+        "corrections": 0,
+        "net": 0,
+        "regressions": 0
+      }
+    },
+    "global": {
+      "changed": 1061,
+      "corrections": 309,
+      "net": -22,
+      "regressions": 331
+    },
+    "poly": {
+      "changed": 879,
+      "corrections": 309,
+      "net": -22,
+      "regressions": 331
+    }
+  },
+  "promotion": false,
+  "run_id": 37789646292,
+  "source_commit": "3f83c2b07308c9114f1db0b5a904c0d80a91b91a",
+  "source_reference_sha256": "707fc1681e2b0b1ef01805710186c4119ad697a0b52ed3330698e48f34c2f77b",
+  "status": "verified"
+}
