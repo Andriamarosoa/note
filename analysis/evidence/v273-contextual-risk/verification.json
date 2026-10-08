@@ -1,0 +1,987 @@
+{
+  "artifact_manifest": {
+    "artifact": {
+      "bytes": 27397936,
+      "filename": "v273-contextual-risk.zip",
+      "id": 11567495691,
+      "sha256": "4c3c63c4de32b6996e28383ecb907632141cd11848617ce97ed05b3a4b855fea"
+    },
+    "run_id": 37815209004,
+    "source_commit": "07e8641072a6d50a2cae753860659fbb10f219c4"
+  },
+  "combination_only": {
+    "candidate_corrected": 5,
+    "events": 17,
+    "parent_corrected": 4
+  },
+  "confidence": {
+    "alternative_count": {
+      "0": 2262,
+      "1": 3854,
+      "2": 1235,
+      "3": 139,
+      "4": 3
+    },
+    "baseline_accuracy": 0.3356466034965968,
+    "baseline_brier": 0.24301687778480857,
+    "baseline_correct": 2515,
+    "best_gain_bins": [
+      {
+        "lower": -1,
+        "observed_mean_gain": -0.18128654970760233,
+        "optimism_per_row": -0.50486144803655,
+        "predicted_mean_gain": -0.6861479977441522,
+        "rows": 684,
+        "upper": -0.5
+      },
+      {
+        "lower": -0.5,
+        "observed_mean_gain": -0.09895833333333333,
+        "optimism_per_row": -0.2360051759307976,
+        "predicted_mean_gain": -0.33496350926413093,
+        "rows": 960,
+        "upper": -0.2
+      },
+      {
+        "lower": -0.2,
+        "observed_mean_gain": -0.08855291576673865,
+        "optimism_per_row": -0.05910022334473539,
+        "predicted_mean_gain": -0.14765313911147404,
+        "rows": 463,
+        "upper": -0.1
+      },
+      {
+        "lower": -0.1,
+        "observed_mean_gain": -0.07131537242472266,
+        "optimism_per_row": 0.026561889530286743,
+        "predicted_mean_gain": -0.04475348289443593,
+        "rows": 631,
+        "upper": 0
+      },
+      {
+        "lower": 0,
+        "observed_mean_gain": -0.03125,
+        "optimism_per_row": 0.054646977272107496,
+        "predicted_mean_gain": 0.02339697727210748,
+        "rows": 352,
+        "upper": 0.05
+      },
+      {
+        "lower": 0.05,
+        "observed_mean_gain": -0.07920792079207921,
+        "optimism_per_row": 0.15424830393018255,
+        "predicted_mean_gain": 0.07504038313810332,
+        "rows": 303,
+        "upper": 0.1
+      },
+      {
+        "lower": 0.1,
+        "observed_mean_gain": 0.007936507936507936,
+        "optimism_per_row": 0.14125741935194328,
+        "predicted_mean_gain": 0.1491939272884512,
+        "rows": 504,
+        "upper": 0.2
+      },
+      {
+        "lower": 0.2,
+        "observed_mean_gain": -0.06701030927835051,
+        "optimism_per_row": 0.3133132378924911,
+        "predicted_mean_gain": 0.24630292861414058,
+        "rows": 388,
+        "upper": 0.3
+      },
+      {
+        "lower": 0.3,
+        "observed_mean_gain": -0.009380863039399626,
+        "optimism_per_row": 0.39734384117292426,
+        "predicted_mean_gain": 0.38796297813352465,
+        "rows": 533,
+        "upper": 0.5
+      },
+      {
+        "lower": 0.5,
+        "observed_mean_gain": 0.05811138014527845,
+        "optimism_per_row": 0.5918230269746437,
+        "predicted_mean_gain": 0.6499344071199221,
+        "rows": 413,
+        "upper": 1
+      }
+    ],
+    "changes": 2493,
+    "conditional_brier_on_baseline_wrong": 0.4026259394633636,
+    "conditional_selected_baseline_wrong": {
+      "observed": 0.40285714285714286,
+      "predicted": 0.5030195484729598,
+      "rows": 1750
+    },
+    "corrections": 705,
+    "expected_corrections": 1065.3312883283143,
+    "expected_net": 676.9394242476319,
+    "expected_regressions": 388.39186408068235,
+    "net": -38,
+    "nll": {
+      "baseline": 0.7207980654549017,
+      "conditional_on_baseline_wrong": 0.627482495126043,
+      "conditional_weighted_by_all_events": 0.41687012688341674,
+      "event": 1.1376681923383187
+    },
+    "optimism": 714.9394242476319,
+    "other_baseline_wrong": {
+      "observed": 0.6470470068300522,
+      "predicted": 0.6663200530579332
+    },
+    "other_selected_baseline_wrong": {
+      "observed": 0.48914285714285716,
+      "predicted": 0.4384044819158835
+    },
+    "policies": {
+      "accepted_best": {
+        "observed_mean_gain": -0.0152426795026073,
+        "optimism_per_row": 0.28677875059446034,
+        "predicted_mean_gain": 0.271536071091853,
+        "rows": 2493
+      },
+      "best_without_acceptance_gate": {
+        "observed_mean_gain": -0.06557063658956222,
+        "optimism_per_row": 0.025319513432693973,
+        "predicted_mean_gain": -0.04025112315686826,
+        "rows": 5231
+      },
+      "rejected_best": {
+        "observed_mean_gain": -0.11139517896274653,
+        "optimism_per_row": -0.21274399213497713,
+        "predicted_mean_gain": -0.32413917109772367,
+        "rows": 2738
+      },
+      "uniform_over_distinct_alternatives": {
+        "observed_mean_gain": -0.0730580513604792,
+        "optimism_per_row": 0.0062852682390341814,
+        "predicted_mean_gain": -0.06677278312144502,
+        "rows": 5231
+      }
+    },
+    "reference_all": {
+      "observed": 0.3356466034965968,
+      "predicted": 0.3310430136092477
+    },
+    "reference_selected": {
+      "observed": 0.2980344965904533,
+      "predicted": 0.15579296593689626
+    },
+    "regressions": 743,
+    "rows": 7493,
+    "selected_by_alternative_count": {
+      "1": {
+        "observed_mean_gain": -0.020396270396270396,
+        "optimism_per_row": 0.2951032992642779,
+        "predicted_mean_gain": 0.2747070288680075,
+        "rows": 1716
+      },
+      "2": {
+        "observed_mean_gain": 0.0014534883720930232,
+        "optimism_per_row": 0.27226152061868697,
+        "predicted_mean_gain": 0.27371500899078,
+        "rows": 688
+      },
+      "3": {
+        "observed_mean_gain": -0.056818181818181816,
+        "optimism_per_row": 0.2516096159354257,
+        "predicted_mean_gain": 0.19479143411724387,
+        "rows": 88
+      },
+      "4": {
+        "observed_mean_gain": 1.0,
+        "optimism_per_row": -0.9154086934854266,
+        "predicted_mean_gain": 0.08459130651457333,
+        "rows": 1
+      }
+    },
+    "selected_optimism_decomposition": {
+      "baseline_component": 539.65521540431,
+      "conditional_component": 175.28420982767972,
+      "formula": "(B-r)*(1+q) + (1-B)*(q-I(selected_K=true_K)); a fixed algebraic decomposition, not causal attribution"
+    },
+    "selected_wrong_baseline_with_correct_alternative_but_wrong_choice": 189,
+    "selected_wrong_baseline_without_correct_alternative": 856
+  },
+  "corrector_provenance": {
+    "checked_crossfit_paths": 36,
+    "forbidden_overlap": 0,
+    "producer_sets": 14
+  },
+  "expert_provenance": {
+    "distinct_producers": 14,
+    "forbidden_id_overlap": 0,
+    "nested_paths": 24
+  },
+  "independent_validation": false,
+  "interventions": {
+    "zero_group_context_K": {
+      "paired_main_vs_intervention": {
+        "by_k": {
+          "0": {
+            "changed": 71,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 283,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 479,
+            "corrections": 203,
+            "net": 21,
+            "regressions": 182
+          },
+          "3": {
+            "changed": 505,
+            "corrections": 241,
+            "net": 28,
+            "regressions": 213
+          },
+          "4": {
+            "changed": 380,
+            "corrections": 76,
+            "net": -90,
+            "regressions": 166
+          },
+          "5": {
+            "changed": 117,
+            "corrections": 23,
+            "net": 22,
+            "regressions": 1
+          },
+          "6": {
+            "changed": 38,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1873,
+          "corrections": 544,
+          "net": -18,
+          "regressions": 562
+        },
+        "poly": {
+          "changed": 1519,
+          "corrections": 544,
+          "net": -18,
+          "regressions": 562
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 46,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 187,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 328,
+            "corrections": 178,
+            "net": 68,
+            "regressions": 110
+          },
+          "3": {
+            "changed": 286,
+            "corrections": 90,
+            "net": -83,
+            "regressions": 173
+          },
+          "4": {
+            "changed": 171,
+            "corrections": 43,
+            "net": -10,
+            "regressions": 53
+          },
+          "5": {
+            "changed": 56,
+            "corrections": 5,
+            "net": 5,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 10,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1084,
+          "corrections": 316,
+          "net": -20,
+          "regressions": 336
+        },
+        "poly": {
+          "changed": 851,
+          "corrections": 316,
+          "net": -20,
+          "regressions": 336
+        }
+      },
+      "retrained": false
+    },
+    "zero_local_audit_K": {
+      "paired_main_vs_intervention": {
+        "by_k": {
+          "0": {
+            "changed": 23,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 67,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 193,
+            "corrections": 69,
+            "net": -8,
+            "regressions": 77
+          },
+          "3": {
+            "changed": 262,
+            "corrections": 120,
+            "net": -11,
+            "regressions": 131
+          },
+          "4": {
+            "changed": 183,
+            "corrections": 83,
+            "net": 40,
+            "regressions": 43
+          },
+          "5": {
+            "changed": 61,
+            "corrections": 6,
+            "net": 0,
+            "regressions": 6
+          },
+          "6": {
+            "changed": 21,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 810,
+          "corrections": 279,
+          "net": 22,
+          "regressions": 257
+        },
+        "poly": {
+          "changed": 720,
+          "corrections": 279,
+          "net": 22,
+          "regressions": 257
+        }
+      },
+      "paired_vs_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 108,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 461,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 841,
+            "corrections": 393,
+            "net": 97,
+            "regressions": 296
+          },
+          "3": {
+            "changed": 884,
+            "corrections": 387,
+            "net": -44,
+            "regressions": 431
+          },
+          "4": {
+            "changed": 599,
+            "corrections": 125,
+            "net": -140,
+            "regressions": 265
+          },
+          "5": {
+            "changed": 204,
+            "corrections": 27,
+            "net": 27,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 59,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 3156,
+          "corrections": 932,
+          "net": -60,
+          "regressions": 992
+        },
+        "poly": {
+          "changed": 2587,
+          "corrections": 932,
+          "net": -60,
+          "regressions": 992
+        }
+      },
+      "retrained": false
+    }
+  },
+  "paired": {
+    "by_k": {
+      "0": {
+        "changed": 95,
+        "corrections": 0,
+        "net": 0,
+        "regressions": 0
+      },
+      "1": {
+        "changed": 426,
+        "corrections": 0,
+        "net": 0,
+        "regressions": 0
+      },
+      "2": {
+        "changed": 671,
+        "corrections": 325,
+        "net": 89,
+        "regressions": 236
+      },
+      "3": {
+        "changed": 653,
+        "corrections": 263,
+        "net": -55,
+        "regressions": 318
+      },
+      "4": {
+        "changed": 449,
+        "corrections": 89,
+        "net": -100,
+        "regressions": 189
+      },
+      "5": {
+        "changed": 159,
+        "corrections": 27,
+        "net": 27,
+        "regressions": 0
+      },
+      "6": {
+        "changed": 40,
+        "corrections": 1,
+        "net": 1,
+        "regressions": 0
+      }
+    },
+    "global": {
+      "changed": 2493,
+      "corrections": 705,
+      "net": -38,
+      "regressions": 743
+    },
+    "poly": {
+      "changed": 1972,
+      "corrections": 705,
+      "net": -38,
+      "regressions": 743
+    }
+  },
+  "paired_cases": {
+    "file": "paired-cases.csv",
+    "rows": 7493,
+    "sha256": "ba87440f45c2707ce690d6641990d1534e0b4d8498417b262f3938e27f990515"
+  },
+  "parent_confidence": {
+    "alternative_count": {
+      "0": 2262,
+      "1": 3854,
+      "2": 1235,
+      "3": 139,
+      "4": 3
+    },
+    "baseline_accuracy": 0.3356466034965968,
+    "baseline_brier": 0.22090161267545905,
+    "baseline_correct": 2515,
+    "best_gain_bins": [
+      {
+        "lower": -1,
+        "observed_mean_gain": -0.21120689655172414,
+        "optimism_per_row": -0.3736653820321645,
+        "predicted_mean_gain": -0.5848722785838887,
+        "rows": 232,
+        "upper": -0.5
+      },
+      {
+        "lower": -0.5,
+        "observed_mean_gain": -0.13414634146341464,
+        "optimism_per_row": -0.18985401901767512,
+        "predicted_mean_gain": -0.32400036048108977,
+        "rows": 1640,
+        "upper": -0.2
+      },
+      {
+        "lower": -0.2,
+        "observed_mean_gain": -0.06557377049180328,
+        "optimism_per_row": -0.08515005870979997,
+        "predicted_mean_gain": -0.15072382920160327,
+        "rows": 854,
+        "upper": -0.1
+      },
+      {
+        "lower": -0.1,
+        "observed_mean_gain": -0.05605095541401274,
+        "optimism_per_row": 0.006253470192499656,
+        "predicted_mean_gain": -0.04979748522151309,
+        "rows": 785,
+        "upper": 0
+      },
+      {
+        "lower": 0,
+        "observed_mean_gain": -0.024539877300613498,
+        "optimism_per_row": 0.049522044697193984,
+        "predicted_mean_gain": 0.024982167396580487,
+        "rows": 326,
+        "upper": 0.05
+      },
+      {
+        "lower": 0.05,
+        "observed_mean_gain": 0.003745318352059925,
+        "optimism_per_row": 0.06787061696040378,
+        "predicted_mean_gain": 0.07161593531246373,
+        "rows": 267,
+        "upper": 0.1
+      },
+      {
+        "lower": 0.1,
+        "observed_mean_gain": 0.014814814814814815,
+        "optimism_per_row": 0.13285353714010048,
+        "predicted_mean_gain": 0.1476683519549153,
+        "rows": 405,
+        "upper": 0.2
+      },
+      {
+        "lower": 0.2,
+        "observed_mean_gain": 0.0,
+        "optimism_per_row": 0.2475016344173243,
+        "predicted_mean_gain": 0.24750163441732426,
+        "rows": 285,
+        "upper": 0.3
+      },
+      {
+        "lower": 0.3,
+        "observed_mean_gain": 0.09646302250803858,
+        "optimism_per_row": 0.2839690023585543,
+        "predicted_mean_gain": 0.38043202486659294,
+        "rows": 311,
+        "upper": 0.5
+      },
+      {
+        "lower": 0.5,
+        "observed_mean_gain": 0.023809523809523808,
+        "optimism_per_row": 0.5994141138618703,
+        "predicted_mean_gain": 0.6232236376713941,
+        "rows": 126,
+        "upper": 1
+      }
+    ],
+    "changes": 1720,
+    "conditional_brier_on_baseline_wrong": 0.423892793351847,
+    "conditional_selected_baseline_wrong": {
+      "observed": 0.43020408163265306,
+      "predicted": 0.6017502281321316,
+      "rows": 1225
+    },
+    "corrections": 527,
+    "expected_corrections": 778.8803843925707,
+    "expected_net": 354.44982151093427,
+    "expected_regressions": 424.43056288163643,
+    "net": 32,
+    "nll": {
+      "baseline": 0.6343471331272323,
+      "conditional_on_baseline_wrong": 0.679824840617838,
+      "conditional_weighted_by_all_events": 0.4516439418918454,
+      "event": 1.0859910750190778
+    },
+    "optimism": 322.44982151093427,
+    "other_baseline_wrong": {
+      "observed": 0.6470470068300522,
+      "predicted": 0.6864591001964109
+    },
+    "other_selected_baseline_wrong": {
+      "observed": 0.4563265306122449,
+      "predicted": 0.3401522967393684
+    },
+    "policies": {
+      "accepted_best": {
+        "observed_mean_gain": 0.018604651162790697,
+        "optimism_per_row": 0.18747083007587045,
+        "predicted_mean_gain": 0.20607548123866115,
+        "rows": 1720
+      },
+      "best_without_acceptance_gate": {
+        "observed_mean_gain": -0.06442362836933664,
+        "optimism_per_row": -0.02741546704779375,
+        "predicted_mean_gain": -0.09183909541713038,
+        "rows": 5231
+      },
+      "rejected_best": {
+        "observed_mean_gain": -0.10509826260324694,
+        "optimism_per_row": -0.13268588318356772,
+        "predicted_mean_gain": -0.23778414578681467,
+        "rows": 3511
+      },
+      "uniform_over_distinct_alternatives": {
+        "observed_mean_gain": -0.0730580513604792,
+        "optimism_per_row": -0.045198845010755,
+        "predicted_mean_gain": -0.11825689637123418,
+        "rows": 5231
+      }
+    },
+    "reference_all": {
+      "observed": 0.3356466034965968,
+      "predicted": 0.3524536200168108
+    },
+    "reference_selected": {
+      "observed": 0.2877906976744186,
+      "predicted": 0.2467619551637421
+    },
+    "regressions": 495,
+    "rows": 7493,
+    "selected_by_alternative_count": {
+      "1": {
+        "observed_mean_gain": 0.011996572407883462,
+        "optimism_per_row": 0.19073394848803613,
+        "predicted_mean_gain": 0.20273052089591959,
+        "rows": 1167
+      },
+      "2": {
+        "observed_mean_gain": 0.04878048780487805,
+        "optimism_per_row": 0.16772968287462262,
+        "predicted_mean_gain": 0.21651017067950065,
+        "rows": 492
+      },
+      "3": {
+        "observed_mean_gain": -0.09836065573770492,
+        "optimism_per_row": 0.28426730935483224,
+        "predicted_mean_gain": 0.1859066536171273,
+        "rows": 61
+      },
+      "4": {
+        "observed_mean_gain": null,
+        "optimism_per_row": null,
+        "predicted_mean_gain": null,
+        "rows": 0
+      }
+    },
+    "selected_optimism_decomposition": {
+      "baseline_component": 112.30579826863598,
+      "conditional_component": 210.14402946186127,
+      "formula": "(B-r)*(1+q) + (1-B)*(q-I(selected_K=true_K)); a fixed algebraic decomposition, not causal attribution"
+    },
+    "selected_wrong_baseline_with_correct_alternative_but_wrong_choice": 139,
+    "selected_wrong_baseline_without_correct_alternative": 559
+  },
+  "preserved_candidates": [
+    "catalogue8_contextual_risk",
+    "catalogue8_contextual_risk__zero_group_context",
+    "catalogue8_contextual_risk__zero_local_audit"
+  ],
+  "previous_native_memory_unchanged_sha256": "c8dac50ed5d46710cf6911c0161b0a55ce439fa14c4af0586c343c6326a988fd",
+  "previous_registry_unchanged_sha256": "040e05667407084738f2594d3f4570caeb267646c1162f4c686e5a4ccf3b284b",
+  "promotion": false,
+  "raw_votes_proposals_audits_unchanged": true,
+  "report_sha256": "b41f6f25ee41aff4da917866b563ad7e7046b6175cd64b9f6f1d5beaec8ca44a",
+  "retention": {
+    "corrections_added": 318,
+    "corrections_lost": 140,
+    "corrections_retained": 387,
+    "corrections_union": 845,
+    "oracle_union_not_prediction": true,
+    "paired": {
+      "by_k": {
+        "0": {
+          "changed": 67,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "1": {
+          "changed": 234,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "2": {
+          "changed": 418,
+          "corrections": 169,
+          "net": -2,
+          "regressions": 171
+        },
+        "3": {
+          "changed": 435,
+          "corrections": 187,
+          "net": -16,
+          "regressions": 203
+        },
+        "4": {
+          "changed": 316,
+          "corrections": 64,
+          "net": -62,
+          "regressions": 126
+        },
+        "5": {
+          "changed": 102,
+          "corrections": 15,
+          "net": 9,
+          "regressions": 6
+        },
+        "6": {
+          "changed": 30,
+          "corrections": 1,
+          "net": 1,
+          "regressions": 0
+        }
+      },
+      "global": {
+        "changed": 1602,
+        "corrections": 436,
+        "net": -70,
+        "regressions": 506
+      },
+      "poly": {
+        "changed": 1301,
+        "corrections": 436,
+        "net": -70,
+        "regressions": 506
+      }
+    },
+    "regressions_added": 366,
+    "regressions_avoided": 118,
+    "regressions_retained": 377
+  },
+  "run_id": 37815209004,
+  "source_commit": "07e8641072a6d50a2cae753860659fbb10f219c4",
+  "source_predictions_sha256": "982fa366be1c0e0fe0398c4054b767c314e05186510bc831db9346902dfaea83",
+  "status": "verified",
+  "target_profile": {
+    "candidate_vs_freeze": {
+      "by_k": {
+        "0": {
+          "changed": 4,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "1": {
+          "changed": 38,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "2": {
+          "changed": 75,
+          "corrections": 18,
+          "net": -25,
+          "regressions": 43
+        },
+        "3": {
+          "changed": 71,
+          "corrections": 36,
+          "net": 5,
+          "regressions": 31
+        },
+        "4": {
+          "changed": 42,
+          "corrections": 12,
+          "net": -2,
+          "regressions": 14
+        },
+        "5": {
+          "changed": 10,
+          "corrections": 3,
+          "net": 3,
+          "regressions": 0
+        },
+        "6": {
+          "changed": 2,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        }
+      },
+      "global": {
+        "changed": 242,
+        "corrections": 69,
+        "net": -19,
+        "regressions": 88
+      },
+      "poly": {
+        "changed": 200,
+        "corrections": 69,
+        "net": -19,
+        "regressions": 88
+      }
+    },
+    "parent_vs_freeze": {
+      "by_k": {
+        "0": {
+          "changed": 8,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "1": {
+          "changed": 51,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "2": {
+          "changed": 98,
+          "corrections": 26,
+          "net": -34,
+          "regressions": 60
+        },
+        "3": {
+          "changed": 105,
+          "corrections": 49,
+          "net": 3,
+          "regressions": 46
+        },
+        "4": {
+          "changed": 62,
+          "corrections": 13,
+          "net": -7,
+          "regressions": 20
+        },
+        "5": {
+          "changed": 13,
+          "corrections": 4,
+          "net": 4,
+          "regressions": 0
+        },
+        "6": {
+          "changed": 4,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        }
+      },
+      "global": {
+        "changed": 341,
+        "corrections": 92,
+        "net": -34,
+        "regressions": 126
+      },
+      "poly": {
+        "changed": 282,
+        "corrections": 92,
+        "net": -34,
+        "regressions": 126
+      }
+    },
+    "retention": {
+      "corrections_added": 6,
+      "corrections_lost": 29,
+      "corrections_retained": 63,
+      "corrections_union": 98,
+      "oracle_union_not_prediction": true,
+      "paired": {
+        "by_k": {
+          "0": {
+            "changed": 4,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 16,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 32,
+            "corrections": 18,
+            "net": 9,
+            "regressions": 9
+          },
+          "3": {
+            "changed": 39,
+            "corrections": 19,
+            "net": 2,
+            "regressions": 17
+          },
+          "4": {
+            "changed": 27,
+            "corrections": 7,
+            "net": 5,
+            "regressions": 2
+          },
+          "5": {
+            "changed": 4,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          },
+          "6": {
+            "changed": 2,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 124,
+          "corrections": 44,
+          "net": 15,
+          "regressions": 29
+        },
+        "poly": {
+          "changed": 104,
+          "corrections": 44,
+          "net": 15,
+          "regressions": 29
+        }
+      },
+      "regressions_added": 0,
+      "regressions_avoided": 38,
+      "regressions_retained": 88
+    },
+    "rows": 341
+  },
+  "total_candidates_after_neural_stage": 44,
+  "weight_hashes": {
+    "fold-0.weights.h5": "c7da3f0cba06647050f413f2b0a69dee5b4566449ef5228e11e62e94a3b90154",
+    "fold-1.weights.h5": "d80f664ee7a72250123bde761e2d81d13858dd7f1bf6cb9dca04520f5b9e7d21",
+    "fold-2.weights.h5": "d4a062c07b8712757c85c785e77680b5c52c8e2622db3e233acd32d8f31690d3",
+    "fold-4.weights.h5": "2183e68f91202e70c336b626ff658ee613e934a10fb393dc3f935d2296efdf2e"
+  }
+}

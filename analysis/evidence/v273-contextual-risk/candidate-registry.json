@@ -1,0 +1,1328 @@
+{
+  "added_candidates": [
+    {
+      "candidate_kind": "measured_neural_policy",
+      "downstream_ready": false,
+      "identical_prediction_alias_of": null,
+      "metrics": {
+        "by_k": {
+          "0": {
+            "correct": 38035,
+            "exact": 0.9592202158781398,
+            "over": 1617,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7889,
+            "exact": 0.6428455019556715,
+            "over": 1474,
+            "rows": 12272,
+            "under": 2909
+          },
+          "2": {
+            "correct": 1272,
+            "exact": 0.36923076923076925,
+            "over": 765,
+            "rows": 3445,
+            "under": 1408
+          },
+          "3": {
+            "correct": 860,
+            "exact": 0.37570991699432066,
+            "over": 331,
+            "rows": 2289,
+            "under": 1098
+          },
+          "4": {
+            "correct": 317,
+            "exact": 0.2626346313173157,
+            "over": 53,
+            "rows": 1207,
+            "under": 837
+          },
+          "5": {
+            "correct": 42,
+            "exact": 0.11830985915492957,
+            "over": 0,
+            "rows": 355,
+            "under": 313
+          },
+          "6": {
+            "correct": 1,
+            "exact": 0.011235955056179775,
+            "over": 0,
+            "rows": 89,
+            "under": 88
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38035,
+            1047,
+            482,
+            80,
+            8,
+            0,
+            0
+          ],
+          [
+            2909,
+            7889,
+            1172,
+            277,
+            21,
+            4,
+            0
+          ],
+          [
+            666,
+            742,
+            1272,
+            625,
+            131,
+            9,
+            0
+          ],
+          [
+            211,
+            170,
+            717,
+            860,
+            295,
+            36,
+            0
+          ],
+          [
+            47,
+            34,
+            253,
+            503,
+            317,
+            53,
+            0
+          ],
+          [
+            7,
+            8,
+            56,
+            130,
+            112,
+            42,
+            0
+          ],
+          [
+            0,
+            4,
+            13,
+            32,
+            29,
+            10,
+            1
+          ]
+        ],
+        "correct": 48416,
+        "exact": 0.8163347889864945,
+        "over": 4240,
+        "poly": {
+          "correct": 2492,
+          "exact": 0.33744075829383885,
+          "over": 1149,
+          "rows": 7385,
+          "under": 3744
+        },
+        "rows": 59309,
+        "under": 6653
+      },
+      "parent_id": "catalogue8_local",
+      "prediction_values_sha256": "2bd63f3faa423cd73e9d6dc9e11dc3a87757cb65a29968ed96c0b32da1ed7ce5",
+      "required_for_downstream_activation": "Regenerate nested producer predictions excluding every consumer receiver and forbidden fold.",
+      "retained": true,
+      "retention_depends_on_global_gain": false,
+      "source_field": "predicted_K",
+      "source_predictions_sha256": "982fa366be1c0e0fe0398c4054b767c314e05186510bc831db9346902dfaea83",
+      "variant_id": "catalogue8_contextual_risk",
+      "versus_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 95,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 426,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 671,
+            "corrections": 325,
+            "net": 89,
+            "regressions": 236
+          },
+          "3": {
+            "changed": 653,
+            "corrections": 263,
+            "net": -55,
+            "regressions": 318
+          },
+          "4": {
+            "changed": 449,
+            "corrections": 89,
+            "net": -100,
+            "regressions": 189
+          },
+          "5": {
+            "changed": 159,
+            "corrections": 27,
+            "net": 27,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 40,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2493,
+          "corrections": 705,
+          "net": -38,
+          "regressions": 743
+        },
+        "poly": {
+          "changed": 1972,
+          "corrections": 705,
+          "net": -38,
+          "regressions": 743
+        }
+      },
+      "versus_parent": {
+        "by_k": {
+          "0": {
+            "changed": 67,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 234,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 418,
+            "corrections": 169,
+            "net": -2,
+            "regressions": 171
+          },
+          "3": {
+            "changed": 435,
+            "corrections": 187,
+            "net": -16,
+            "regressions": 203
+          },
+          "4": {
+            "changed": 316,
+            "corrections": 64,
+            "net": -62,
+            "regressions": 126
+          },
+          "5": {
+            "changed": 102,
+            "corrections": 15,
+            "net": 9,
+            "regressions": 6
+          },
+          "6": {
+            "changed": 30,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1602,
+          "corrections": 436,
+          "net": -70,
+          "regressions": 506
+        },
+        "poly": {
+          "changed": 1301,
+          "corrections": 436,
+          "net": -70,
+          "regressions": 506
+        }
+      }
+    },
+    {
+      "candidate_kind": "fixed_weight_intervention",
+      "downstream_ready": false,
+      "identical_prediction_alias_of": null,
+      "metrics": {
+        "by_k": {
+          "0": {
+            "correct": 38035,
+            "exact": 0.9592202158781398,
+            "over": 1617,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7889,
+            "exact": 0.6428455019556715,
+            "over": 1474,
+            "rows": 12272,
+            "under": 2909
+          },
+          "2": {
+            "correct": 1251,
+            "exact": 0.36313497822931784,
+            "over": 786,
+            "rows": 3445,
+            "under": 1408
+          },
+          "3": {
+            "correct": 832,
+            "exact": 0.36347750109217997,
+            "over": 384,
+            "rows": 2289,
+            "under": 1073
+          },
+          "4": {
+            "correct": 407,
+            "exact": 0.3371996685998343,
+            "over": 26,
+            "rows": 1207,
+            "under": 774
+          },
+          "5": {
+            "correct": 20,
+            "exact": 0.056338028169014086,
+            "over": 0,
+            "rows": 355,
+            "under": 335
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38035,
+            1047,
+            480,
+            79,
+            11,
+            0,
+            0
+          ],
+          [
+            2909,
+            7889,
+            1163,
+            257,
+            50,
+            4,
+            0
+          ],
+          [
+            666,
+            742,
+            1251,
+            607,
+            177,
+            2,
+            0
+          ],
+          [
+            211,
+            170,
+            692,
+            832,
+            362,
+            22,
+            0
+          ],
+          [
+            47,
+            34,
+            243,
+            450,
+            407,
+            26,
+            0
+          ],
+          [
+            7,
+            8,
+            46,
+            131,
+            143,
+            20,
+            0
+          ],
+          [
+            0,
+            4,
+            8,
+            23,
+            51,
+            3,
+            0
+          ]
+        ],
+        "correct": 48434,
+        "exact": 0.8166382842401659,
+        "over": 4287,
+        "poly": {
+          "correct": 2510,
+          "exact": 0.33987813134732564,
+          "over": 1196,
+          "rows": 7385,
+          "under": 3679
+        },
+        "rows": 59309,
+        "under": 6588
+      },
+      "parent_id": "catalogue8_contextual_risk",
+      "prediction_values_sha256": "231922d3a4926c3072cbc45cbe1c7664bfc6ebe9853fae2fc50d16b19b587d50",
+      "required_for_downstream_activation": "Regenerate nested producer predictions excluding every consumer receiver and forbidden fold.",
+      "retained": true,
+      "retention_depends_on_global_gain": false,
+      "source_field": "zero_group_context_K",
+      "source_predictions_sha256": "982fa366be1c0e0fe0398c4054b767c314e05186510bc831db9346902dfaea83",
+      "variant_id": "catalogue8_contextual_risk__zero_group_context",
+      "versus_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 46,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 187,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 328,
+            "corrections": 178,
+            "net": 68,
+            "regressions": 110
+          },
+          "3": {
+            "changed": 286,
+            "corrections": 90,
+            "net": -83,
+            "regressions": 173
+          },
+          "4": {
+            "changed": 171,
+            "corrections": 43,
+            "net": -10,
+            "regressions": 53
+          },
+          "5": {
+            "changed": 56,
+            "corrections": 5,
+            "net": 5,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 10,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1084,
+          "corrections": 316,
+          "net": -20,
+          "regressions": 336
+        },
+        "poly": {
+          "changed": 851,
+          "corrections": 316,
+          "net": -20,
+          "regressions": 336
+        }
+      },
+      "versus_parent": {
+        "by_k": {
+          "0": {
+            "changed": 71,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 283,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 479,
+            "corrections": 182,
+            "net": -21,
+            "regressions": 203
+          },
+          "3": {
+            "changed": 505,
+            "corrections": 213,
+            "net": -28,
+            "regressions": 241
+          },
+          "4": {
+            "changed": 380,
+            "corrections": 166,
+            "net": 90,
+            "regressions": 76
+          },
+          "5": {
+            "changed": 117,
+            "corrections": 1,
+            "net": -22,
+            "regressions": 23
+          },
+          "6": {
+            "changed": 38,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          }
+        },
+        "global": {
+          "changed": 1873,
+          "corrections": 562,
+          "net": 18,
+          "regressions": 544
+        },
+        "poly": {
+          "changed": 1519,
+          "corrections": 562,
+          "net": 18,
+          "regressions": 544
+        }
+      }
+    },
+    {
+      "candidate_kind": "fixed_weight_intervention",
+      "downstream_ready": false,
+      "identical_prediction_alias_of": null,
+      "metrics": {
+        "by_k": {
+          "0": {
+            "correct": 38035,
+            "exact": 0.9592202158781398,
+            "over": 1617,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7889,
+            "exact": 0.6428455019556715,
+            "over": 1474,
+            "rows": 12272,
+            "under": 2909
+          },
+          "2": {
+            "correct": 1280,
+            "exact": 0.37155297532656023,
+            "over": 757,
+            "rows": 3445,
+            "under": 1408
+          },
+          "3": {
+            "correct": 871,
+            "exact": 0.38051550895587594,
+            "over": 305,
+            "rows": 2289,
+            "under": 1113
+          },
+          "4": {
+            "correct": 277,
+            "exact": 0.22949461474730737,
+            "over": 54,
+            "rows": 1207,
+            "under": 876
+          },
+          "5": {
+            "correct": 42,
+            "exact": 0.11830985915492957,
+            "over": 0,
+            "rows": 355,
+            "under": 313
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38035,
+            1047,
+            484,
+            78,
+            8,
+            0,
+            0
+          ],
+          [
+            2909,
+            7889,
+            1177,
+            267,
+            27,
+            3,
+            0
+          ],
+          [
+            666,
+            742,
+            1280,
+            634,
+            114,
+            9,
+            0
+          ],
+          [
+            211,
+            170,
+            732,
+            871,
+            273,
+            32,
+            0
+          ],
+          [
+            47,
+            34,
+            271,
+            524,
+            277,
+            54,
+            0
+          ],
+          [
+            7,
+            8,
+            57,
+            145,
+            96,
+            42,
+            0
+          ],
+          [
+            0,
+            4,
+            16,
+            33,
+            25,
+            11,
+            0
+          ]
+        ],
+        "correct": 48394,
+        "exact": 0.8159638503431182,
+        "over": 4207,
+        "poly": {
+          "correct": 2470,
+          "exact": 0.3344617467840217,
+          "over": 1116,
+          "rows": 7385,
+          "under": 3799
+        },
+        "rows": 59309,
+        "under": 6708
+      },
+      "parent_id": "catalogue8_contextual_risk",
+      "prediction_values_sha256": "f1d2323e901d848d6c721c5b442dc591858d31eacd58f1de98a5b6efb5105844",
+      "required_for_downstream_activation": "Regenerate nested producer predictions excluding every consumer receiver and forbidden fold.",
+      "retained": true,
+      "retention_depends_on_global_gain": false,
+      "source_field": "zero_local_audit_K",
+      "source_predictions_sha256": "982fa366be1c0e0fe0398c4054b767c314e05186510bc831db9346902dfaea83",
+      "variant_id": "catalogue8_contextual_risk__zero_local_audit",
+      "versus_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 108,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 461,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 841,
+            "corrections": 393,
+            "net": 97,
+            "regressions": 296
+          },
+          "3": {
+            "changed": 884,
+            "corrections": 387,
+            "net": -44,
+            "regressions": 431
+          },
+          "4": {
+            "changed": 599,
+            "corrections": 125,
+            "net": -140,
+            "regressions": 265
+          },
+          "5": {
+            "changed": 204,
+            "corrections": 27,
+            "net": 27,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 59,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 3156,
+          "corrections": 932,
+          "net": -60,
+          "regressions": 992
+        },
+        "poly": {
+          "changed": 2587,
+          "corrections": 932,
+          "net": -60,
+          "regressions": 992
+        }
+      },
+      "versus_parent": {
+        "by_k": {
+          "0": {
+            "changed": 23,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 67,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 193,
+            "corrections": 77,
+            "net": 8,
+            "regressions": 69
+          },
+          "3": {
+            "changed": 262,
+            "corrections": 131,
+            "net": 11,
+            "regressions": 120
+          },
+          "4": {
+            "changed": 183,
+            "corrections": 43,
+            "net": -40,
+            "regressions": 83
+          },
+          "5": {
+            "changed": 61,
+            "corrections": 6,
+            "net": 0,
+            "regressions": 6
+          },
+          "6": {
+            "changed": 21,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          }
+        },
+        "global": {
+          "changed": 810,
+          "corrections": 257,
+          "net": -22,
+          "regressions": 279
+        },
+        "poly": {
+          "changed": 720,
+          "corrections": 257,
+          "net": -22,
+          "regressions": 279
+        }
+      }
+    },
+    {
+      "candidate_kind": "fixed_neural_factor_composition",
+      "downstream_ready": false,
+      "identical_prediction_alias_of": null,
+      "metrics": {
+        "by_k": {
+          "0": {
+            "correct": 38035,
+            "exact": 0.9592202158781398,
+            "over": 1617,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7889,
+            "exact": 0.6428455019556715,
+            "over": 1474,
+            "rows": 12272,
+            "under": 2909
+          },
+          "2": {
+            "correct": 1285,
+            "exact": 0.37300435413642963,
+            "over": 752,
+            "rows": 3445,
+            "under": 1408
+          },
+          "3": {
+            "correct": 882,
+            "exact": 0.3853211009174312,
+            "over": 321,
+            "rows": 2289,
+            "under": 1086
+          },
+          "4": {
+            "correct": 373,
+            "exact": 0.30903065451532724,
+            "over": 46,
+            "rows": 1207,
+            "under": 788
+          },
+          "5": {
+            "correct": 38,
+            "exact": 0.10704225352112676,
+            "over": 0,
+            "rows": 355,
+            "under": 317
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38035,
+            1047,
+            489,
+            73,
+            8,
+            0,
+            0
+          ],
+          [
+            2909,
+            7889,
+            1193,
+            249,
+            28,
+            4,
+            0
+          ],
+          [
+            666,
+            742,
+            1285,
+            616,
+            131,
+            5,
+            0
+          ],
+          [
+            211,
+            170,
+            705,
+            882,
+            290,
+            31,
+            0
+          ],
+          [
+            47,
+            34,
+            250,
+            457,
+            373,
+            46,
+            0
+          ],
+          [
+            7,
+            8,
+            53,
+            130,
+            119,
+            38,
+            0
+          ],
+          [
+            0,
+            4,
+            11,
+            26,
+            38,
+            10,
+            0
+          ]
+        ],
+        "correct": 48502,
+        "exact": 0.8177848218651469,
+        "over": 4210,
+        "poly": {
+          "correct": 2578,
+          "exact": 0.34908598510494243,
+          "over": 1119,
+          "rows": 7385,
+          "under": 3688
+        },
+        "rows": 59309,
+        "under": 6597
+      },
+      "parent_id": "catalogue8_local",
+      "prediction_values_sha256": "163ff8530ce7bbd9baf1dc789402fb41ee726497c67881c080fb7bf5e98e9bb2",
+      "protocol_commit": "3a488b0d674d957b3e4580b9f30eabc256074a7c",
+      "required_for_downstream_activation": "Regenerate both factors with every downstream receiver excluded from all producers and audits.",
+      "retained": true,
+      "retention_depends_on_global_gain": false,
+      "source_field": "parent_risk_new_correction_K",
+      "source_file": "factor-swaps.npz",
+      "source_files": {
+        "candidate_sha256": "982fa366be1c0e0fe0398c4054b767c314e05186510bc831db9346902dfaea83",
+        "parent_sha256": "61e06060c098b05af865e2e915ffc028b0524419db47e2b33fd7beb8f92a45d4"
+      },
+      "variant_id": "catalogue8_parent_risk_new_correction",
+      "versus_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 62,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 291,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 519,
+            "corrections": 267,
+            "net": 102,
+            "regressions": 165
+          },
+          "3": {
+            "changed": 493,
+            "corrections": 200,
+            "net": -33,
+            "regressions": 233
+          },
+          "4": {
+            "changed": 315,
+            "corrections": 76,
+            "net": -44,
+            "regressions": 120
+          },
+          "5": {
+            "changed": 123,
+            "corrections": 23,
+            "net": 23,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 35,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1838,
+          "corrections": 566,
+          "net": 48,
+          "regressions": 518
+        },
+        "poly": {
+          "changed": 1485,
+          "corrections": 566,
+          "net": 48,
+          "regressions": 518
+        }
+      },
+      "versus_parent": {
+        "by_k": {
+          "0": {
+            "changed": 36,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 113,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 218,
+            "corrections": 90,
+            "net": 11,
+            "regressions": 79
+          },
+          "3": {
+            "changed": 206,
+            "corrections": 91,
+            "net": 6,
+            "regressions": 85
+          },
+          "4": {
+            "changed": 126,
+            "corrections": 30,
+            "net": -6,
+            "regressions": 36
+          },
+          "5": {
+            "changed": 56,
+            "corrections": 8,
+            "net": 5,
+            "regressions": 3
+          },
+          "6": {
+            "changed": 13,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 768,
+          "corrections": 219,
+          "net": 16,
+          "regressions": 203
+        },
+        "poly": {
+          "changed": 619,
+          "corrections": 219,
+          "net": 16,
+          "regressions": 203
+        }
+      }
+    },
+    {
+      "candidate_kind": "fixed_neural_factor_composition",
+      "downstream_ready": false,
+      "identical_prediction_alias_of": null,
+      "metrics": {
+        "by_k": {
+          "0": {
+            "correct": 38035,
+            "exact": 0.9592202158781398,
+            "over": 1617,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7889,
+            "exact": 0.6428455019556715,
+            "over": 1474,
+            "rows": 12272,
+            "under": 2909
+          },
+          "2": {
+            "correct": 1258,
+            "exact": 0.365166908563135,
+            "over": 779,
+            "rows": 3445,
+            "under": 1408
+          },
+          "3": {
+            "correct": 876,
+            "exact": 0.382699868938401,
+            "over": 315,
+            "rows": 2289,
+            "under": 1098
+          },
+          "4": {
+            "correct": 325,
+            "exact": 0.26926263463131733,
+            "over": 46,
+            "rows": 1207,
+            "under": 836
+          },
+          "5": {
+            "correct": 41,
+            "exact": 0.11549295774647887,
+            "over": 0,
+            "rows": 355,
+            "under": 314
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38035,
+            1047,
+            483,
+            82,
+            5,
+            0,
+            0
+          ],
+          [
+            2909,
+            7889,
+            1166,
+            276,
+            27,
+            5,
+            0
+          ],
+          [
+            666,
+            742,
+            1258,
+            637,
+            133,
+            9,
+            0
+          ],
+          [
+            211,
+            170,
+            717,
+            876,
+            285,
+            30,
+            0
+          ],
+          [
+            47,
+            34,
+            256,
+            499,
+            325,
+            46,
+            0
+          ],
+          [
+            7,
+            8,
+            54,
+            131,
+            114,
+            41,
+            0
+          ],
+          [
+            0,
+            4,
+            13,
+            31,
+            31,
+            10,
+            0
+          ]
+        ],
+        "correct": 48424,
+        "exact": 0.816469675765904,
+        "over": 4231,
+        "poly": {
+          "correct": 2500,
+          "exact": 0.33852403520649965,
+          "over": 1140,
+          "rows": 7385,
+          "under": 3745
+        },
+        "rows": 59309,
+        "under": 6654
+      },
+      "parent_id": "catalogue8_local",
+      "prediction_values_sha256": "3e964f41cb24afcfa605df41a275f19c15a173e1dd9192a5a482ac689a93f0cf",
+      "protocol_commit": "3a488b0d674d957b3e4580b9f30eabc256074a7c",
+      "required_for_downstream_activation": "Regenerate both factors with every downstream receiver excluded from all producers and audits.",
+      "retained": true,
+      "retention_depends_on_global_gain": false,
+      "source_field": "new_risk_parent_correction_K",
+      "source_file": "factor-swaps.npz",
+      "source_files": {
+        "candidate_sha256": "982fa366be1c0e0fe0398c4054b767c314e05186510bc831db9346902dfaea83",
+        "parent_sha256": "61e06060c098b05af865e2e915ffc028b0524419db47e2b33fd7beb8f92a45d4"
+      },
+      "variant_id": "catalogue8_new_risk_parent_correction",
+      "versus_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 92,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 393,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 641,
+            "corrections": 310,
+            "net": 75,
+            "regressions": 235
+          },
+          "3": {
+            "changed": 616,
+            "corrections": 251,
+            "net": -39,
+            "regressions": 290
+          },
+          "4": {
+            "changed": 419,
+            "corrections": 84,
+            "net": -92,
+            "regressions": 176
+          },
+          "5": {
+            "changed": 151,
+            "corrections": 26,
+            "net": 26,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 35,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2347,
+          "corrections": 671,
+          "net": -30,
+          "regressions": 701
+        },
+        "poly": {
+          "changed": 1862,
+          "corrections": 671,
+          "net": -30,
+          "regressions": 701
+        }
+      },
+      "versus_parent": {
+        "by_k": {
+          "0": {
+            "changed": 56,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 181,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 317,
+            "corrections": 121,
+            "net": -16,
+            "regressions": 137
+          },
+          "3": {
+            "changed": 318,
+            "corrections": 144,
+            "net": 0,
+            "regressions": 144
+          },
+          "4": {
+            "changed": 238,
+            "corrections": 51,
+            "net": -54,
+            "regressions": 105
+          },
+          "5": {
+            "changed": 79,
+            "corrections": 13,
+            "net": 8,
+            "regressions": 5
+          },
+          "6": {
+            "changed": 22,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1211,
+          "corrections": 329,
+          "net": -62,
+          "regressions": 391
+        },
+        "poly": {
+          "changed": 974,
+          "corrections": 329,
+          "net": -62,
+          "regressions": 391
+        }
+      }
+    }
+  ],
+  "additional_errors_reached_by_appended_outputs": 98,
+  "candidate_file": "preserved-candidates.npz",
+  "candidate_file_sha256": "85de84edeed436d6ba5bb0e7b67479a64fc9e4deba3728dc2731b74b0c11ddba",
+  "context_join": "../v273-audit-memory/variants/context-fold-*-part-*.npz; join by global_index",
+  "distinct_prediction_vectors": 35,
+  "factor_swap_file": "factor-swaps.npz",
+  "factor_swap_file_sha256": "b62463716ec0d1099878b0321106c29a66c2ef936ba2e50189b850707af61e72",
+  "independent_validation": false,
+  "oracle_union_not_prediction": true,
+  "previous_candidates": 41,
+  "previous_native_memory_sha256": "c8dac50ed5d46710cf6911c0161b0a55ce439fa14c4af0586c343c6326a988fd",
+  "previous_registry": "../v273-audit-memory/variants/registry.json",
+  "previous_registry_sha256": "040e05667407084738f2594d3f4570caeb267646c1162f4c686e5a4ccf3b284b",
+  "probability_file": "probability-evidence.npz",
+  "probability_file_sha256": "7be5193d5d7095e0a98be7ff2b6b46b1a6bfc595672df6cbb04fc9c3db19e06a",
+  "promotion": false,
+  "schema": "v273-appended-candidate-memory-v1",
+  "total_candidates": 46,
+  "union_of_initial_errors_corrected": 1671
+}
