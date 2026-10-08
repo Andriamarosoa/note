@@ -144,8 +144,11 @@ def main():
     for name,r in outputs.items():
         m=r["metrics"];f2=r["folds"]["2"];p=r["paired_v_band_static"]
         lines.append(f"| {name} | {r['dimensions']} | {100*m['balanced_accuracy']:.2f}% | {m['macro_ovr_auc']:.4f} | {100*m['recall_by_K']['2']:.1f}% | {100*m['recall_by_K']['3']:.1f}% | {100*m['recall_by_K']['4']:.1f}% | {100*f2['balanced_accuracy']:.2f}% | {p['net']:+d} |")
-    lines+=["","## Interpretation limits"]+["- "+x for x in report["hypothesis_notes"]]+
-           ["","No automatic promotion; these are already exposed compositions."]
+    lines += (
+        ["", "## Interpretation limits"]
+        + ["- " + x for x in report["hypothesis_notes"]]
+        + ["", "No automatic promotion; these are already exposed compositions."]
+    )
     (a.output/"report.md").write_text("\n".join(lines)+"\n")
     print("\n".join(lines),flush=True)
 
