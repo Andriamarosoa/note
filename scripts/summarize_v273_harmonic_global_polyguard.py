@@ -65,7 +65,6 @@ def evaluate_policy(X,y,base,fold,target):
             iva=Ft==internal
             if not iva.any():continue
             it=~iva
-            pp,dd=learn_scores(Xt[it],Y[it],B[it],Ft[it],target)
             # Predictions must be made on excluded fold, not the fitting subset.
             trainmask=it & np.isin(Y,target)
             # Refit is intentionally performed on inner training only.
