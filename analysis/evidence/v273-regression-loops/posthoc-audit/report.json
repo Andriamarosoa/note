@@ -1,0 +1,1224 @@
+{
+  "all_decisions_replayed_from_label_free_observables": true,
+  "distinct_prediction_vectors": 197,
+  "files": {
+    "appended-candidates.npz": "e9280f32025bbc3a700777628fca159c9ddaf5eb36a31f159c9f3286fdf3640d",
+    "candidate-registry.json": "ac01a38acc3a6d826508746f65966735da4ca10cb610af634aa2083c1b2af4ce",
+    "cases.csv": "b1d8ef9d28a251d0923e5c67882188d85b97a7a43c22ea83cfd9aae047462845"
+  },
+  "policies": {
+    "regression_loops_posthoc__group_audit__cost_1.15__no_favorable_group": {
+      "downstream_ready": false,
+      "gated": {
+        "combination_only": {
+          "corrected": 5,
+          "events": 17
+        },
+        "eligible": {
+          "changes": 1367,
+          "corrections": 475,
+          "net": 163,
+          "regressions": 312
+        },
+        "failures": {
+          "correction": 475,
+          "keep": 6126,
+          "no_correct_alternative": 481,
+          "regression": 312,
+          "wrong_choice_despite_correct_alternative": 99
+        },
+        "folds": {
+          "0": {
+            "changes": 333,
+            "corrections": 111,
+            "net": 36,
+            "regressions": 75
+          },
+          "1": {
+            "changes": 334,
+            "corrections": 118,
+            "net": 42,
+            "regressions": 76
+          },
+          "2": {
+            "changes": 281,
+            "corrections": 98,
+            "net": 31,
+            "regressions": 67
+          },
+          "4": {
+            "changes": 419,
+            "corrections": 148,
+            "net": 54,
+            "regressions": 94
+          }
+        },
+        "native": {
+          "by_k": {
+            "0": {
+              "correct": 38035,
+              "exact": 0.9592202158781398,
+              "over": 1617,
+              "rows": 39652,
+              "under": 0
+            },
+            "1": {
+              "correct": 7889,
+              "exact": 0.6428455019556715,
+              "over": 1474,
+              "rows": 12272,
+              "under": 2909
+            },
+            "2": {
+              "correct": 1363,
+              "exact": 0.3956458635703919,
+              "over": 674,
+              "rows": 3445,
+              "under": 1408
+            },
+            "3": {
+              "correct": 869,
+              "exact": 0.3796417649628659,
+              "over": 297,
+              "rows": 2289,
+              "under": 1123
+            },
+            "4": {
+              "correct": 432,
+              "exact": 0.35791217895608946,
+              "over": 20,
+              "rows": 1207,
+              "under": 755
+            },
+            "5": {
+              "correct": 29,
+              "exact": 0.08169014084507042,
+              "over": 0,
+              "rows": 355,
+              "under": 326
+            },
+            "6": {
+              "correct": 0,
+              "exact": 0.0,
+              "over": 0,
+              "rows": 89,
+              "under": 89
+            }
+          },
+          "confusion_true_by_predicted": [
+            [
+              38035,
+              1047,
+              515,
+              44,
+              10,
+              1,
+              0
+            ],
+            [
+              2909,
+              7889,
+              1260,
+              181,
+              29,
+              4,
+              0
+            ],
+            [
+              666,
+              742,
+              1363,
+              550,
+              121,
+              3,
+              0
+            ],
+            [
+              211,
+              170,
+              742,
+              869,
+              277,
+              20,
+              0
+            ],
+            [
+              47,
+              34,
+              243,
+              431,
+              432,
+              20,
+              0
+            ],
+            [
+              7,
+              8,
+              47,
+              116,
+              148,
+              29,
+              0
+            ],
+            [
+              0,
+              4,
+              11,
+              22,
+              45,
+              7,
+              0
+            ]
+          ],
+          "correct": 48617,
+          "exact": 0.8197238193191589,
+          "over": 4082,
+          "poly": {
+            "correct": 2693,
+            "exact": 0.36465809072444144,
+            "over": 991,
+            "rows": 7385,
+            "under": 3701
+          },
+          "rows": 59309,
+          "under": 6610
+        },
+        "versus_freeze": {
+          "by_k": {
+            "0": {
+              "changed": 67,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 230,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 373,
+              "corrections": 244,
+              "net": 180,
+              "regressions": 64
+            },
+            "3": {
+              "changed": 332,
+              "corrections": 123,
+              "net": -46,
+              "regressions": 169
+            },
+            "4": {
+              "changed": 241,
+              "corrections": 94,
+              "net": 15,
+              "regressions": 79
+            },
+            "5": {
+              "changed": 101,
+              "corrections": 14,
+              "net": 14,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 23,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 1367,
+            "corrections": 475,
+            "net": 163,
+            "regressions": 312
+          },
+          "poly": {
+            "changed": 1070,
+            "corrections": 475,
+            "net": 163,
+            "regressions": 312
+          }
+        },
+        "versus_original": {
+          "corrections_added": 170,
+          "corrections_lost": 261,
+          "corrections_retained": 305,
+          "corrections_union": 736,
+          "oracle_union_not_prediction": true,
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 45,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 189,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 343,
+                "corrections": 175,
+                "net": 78,
+                "regressions": 97
+              },
+              "3": {
+                "changed": 387,
+                "corrections": 169,
+                "net": -13,
+                "regressions": 182
+              },
+              "4": {
+                "changed": 278,
+                "corrections": 121,
+                "net": 59,
+                "regressions": 62
+              },
+              "5": {
+                "changed": 105,
+                "corrections": 8,
+                "net": -9,
+                "regressions": 17
+              },
+              "6": {
+                "changed": 32,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 1379,
+              "corrections": 473,
+              "net": 115,
+              "regressions": 358
+            },
+            "poly": {
+              "changed": 1145,
+              "corrections": 473,
+              "net": 115,
+              "regressions": 358
+            }
+          },
+          "regressions_added": 97,
+          "regressions_avoided": 303,
+          "regressions_retained": 215
+        }
+      },
+      "labels_used_to_construct_gate": false,
+      "parent_key": "group_audit__cost_1.15",
+      "parent_profiles": {
+        "correction_favored": {
+          "corrections": 68,
+          "neutral": 114,
+          "regressions": 41,
+          "rows": 223
+        },
+        "mixed": {
+          "corrections": 406,
+          "neutral": 465,
+          "regressions": 270,
+          "rows": 1141
+        },
+        "regression_favored": {
+          "corrections": 69,
+          "neutral": 104,
+          "regressions": 83,
+          "rows": 256
+        },
+        "unsupported": {
+          "corrections": 1,
+          "neutral": 1,
+          "regressions": 1,
+          "rows": 3
+        }
+      },
+      "parent_series": 1,
+      "posthoc": true,
+      "retained": true,
+      "versus_parent": {
+        "corrections_added": 0,
+        "corrections_lost": 69,
+        "corrections_retained": 475,
+        "corrections_union": 544,
+        "oracle_union_not_prediction": true,
+        "paired": {
+          "by_k": {
+            "0": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 32,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 61,
+              "corrections": 27,
+              "net": 14,
+              "regressions": 13
+            },
+            "3": {
+              "changed": 73,
+              "corrections": 35,
+              "net": 8,
+              "regressions": 27
+            },
+            "4": {
+              "changed": 65,
+              "corrections": 21,
+              "net": -4,
+              "regressions": 25
+            },
+            "5": {
+              "changed": 19,
+              "corrections": 0,
+              "net": -4,
+              "regressions": 4
+            },
+            "6": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 256,
+            "corrections": 83,
+            "net": 14,
+            "regressions": 69
+          },
+          "poly": {
+            "changed": 221,
+            "corrections": 83,
+            "net": 14,
+            "regressions": 69
+          }
+        },
+        "regressions_added": 0,
+        "regressions_avoided": 83,
+        "regressions_retained": 312
+      }
+    },
+    "regression_loops_posthoc__source_count90__no_favorable_group": {
+      "downstream_ready": false,
+      "gated": {
+        "combination_only": {
+          "corrected": 3,
+          "events": 17
+        },
+        "eligible": {
+          "changes": 1205,
+          "corrections": 427,
+          "net": 157,
+          "regressions": 270
+        },
+        "failures": {
+          "correction": 427,
+          "keep": 6288,
+          "no_correct_alternative": 420,
+          "regression": 270,
+          "wrong_choice_despite_correct_alternative": 88
+        },
+        "folds": {
+          "0": {
+            "changes": 301,
+            "corrections": 101,
+            "net": 34,
+            "regressions": 67
+          },
+          "1": {
+            "changes": 387,
+            "corrections": 137,
+            "net": 41,
+            "regressions": 96
+          },
+          "2": {
+            "changes": 218,
+            "corrections": 80,
+            "net": 37,
+            "regressions": 43
+          },
+          "4": {
+            "changes": 299,
+            "corrections": 109,
+            "net": 45,
+            "regressions": 64
+          }
+        },
+        "native": {
+          "by_k": {
+            "0": {
+              "correct": 38035,
+              "exact": 0.9592202158781398,
+              "over": 1617,
+              "rows": 39652,
+              "under": 0
+            },
+            "1": {
+              "correct": 7889,
+              "exact": 0.6428455019556715,
+              "over": 1474,
+              "rows": 12272,
+              "under": 2909
+            },
+            "2": {
+              "correct": 1361,
+              "exact": 0.39506531204644413,
+              "over": 676,
+              "rows": 3445,
+              "under": 1408
+            },
+            "3": {
+              "correct": 858,
+              "exact": 0.3748361730013106,
+              "over": 313,
+              "rows": 2289,
+              "under": 1118
+            },
+            "4": {
+              "correct": 437,
+              "exact": 0.3620546810273405,
+              "over": 23,
+              "rows": 1207,
+              "under": 747
+            },
+            "5": {
+              "correct": 31,
+              "exact": 0.08732394366197183,
+              "over": 0,
+              "rows": 355,
+              "under": 324
+            },
+            "6": {
+              "correct": 0,
+              "exact": 0.0,
+              "over": 0,
+              "rows": 89,
+              "under": 89
+            }
+          },
+          "confusion_true_by_predicted": [
+            [
+              38035,
+              1047,
+              513,
+              48,
+              9,
+              0,
+              0
+            ],
+            [
+              2909,
+              7889,
+              1247,
+              195,
+              29,
+              3,
+              0
+            ],
+            [
+              666,
+              742,
+              1361,
+              540,
+              133,
+              3,
+              0
+            ],
+            [
+              211,
+              170,
+              737,
+              858,
+              294,
+              19,
+              0
+            ],
+            [
+              47,
+              34,
+              244,
+              422,
+              437,
+              23,
+              0
+            ],
+            [
+              7,
+              8,
+              51,
+              123,
+              135,
+              31,
+              0
+            ],
+            [
+              0,
+              4,
+              11,
+              23,
+              42,
+              9,
+              0
+            ]
+          ],
+          "correct": 48611,
+          "exact": 0.8196226542346018,
+          "over": 4103,
+          "poly": {
+            "correct": 2687,
+            "exact": 0.3638456330399458,
+            "over": 1012,
+            "rows": 7385,
+            "under": 3686
+          },
+          "rows": 59309,
+          "under": 6595
+        },
+        "versus_freeze": {
+          "by_k": {
+            "0": {
+              "changed": 54,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 207,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 336,
+              "corrections": 231,
+              "net": 178,
+              "regressions": 53
+            },
+            "3": {
+              "changed": 290,
+              "corrections": 98,
+              "net": -57,
+              "regressions": 155
+            },
+            "4": {
+              "changed": 203,
+              "corrections": 82,
+              "net": 20,
+              "regressions": 62
+            },
+            "5": {
+              "changed": 95,
+              "corrections": 16,
+              "net": 16,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 20,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 1205,
+            "corrections": 427,
+            "net": 157,
+            "regressions": 270
+          },
+          "poly": {
+            "changed": 944,
+            "corrections": 427,
+            "net": 157,
+            "regressions": 270
+          }
+        },
+        "versus_original": {
+          "corrections_added": 118,
+          "corrections_lost": 257,
+          "corrections_retained": 309,
+          "corrections_union": 684,
+          "oracle_union_not_prediction": true,
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 42,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 180,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 325,
+                "corrections": 169,
+                "net": 76,
+                "regressions": 93
+              },
+              "3": {
+                "changed": 348,
+                "corrections": 147,
+                "net": -24,
+                "regressions": 171
+              },
+              "4": {
+                "changed": 236,
+                "corrections": 108,
+                "net": 64,
+                "regressions": 44
+              },
+              "5": {
+                "changed": 84,
+                "corrections": 6,
+                "net": -7,
+                "regressions": 13
+              },
+              "6": {
+                "changed": 25,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 1240,
+              "corrections": 430,
+              "net": 109,
+              "regressions": 321
+            },
+            "poly": {
+              "changed": 1018,
+              "corrections": 430,
+              "net": 109,
+              "regressions": 321
+            }
+          },
+          "regressions_added": 64,
+          "regressions_avoided": 312,
+          "regressions_retained": 206
+        }
+      },
+      "labels_used_to_construct_gate": false,
+      "parent_key": "source_count90",
+      "parent_profiles": {
+        "correction_favored": {
+          "corrections": 72,
+          "neutral": 98,
+          "regressions": 50,
+          "rows": 220
+        },
+        "mixed": {
+          "corrections": 354,
+          "neutral": 409,
+          "regressions": 219,
+          "rows": 982
+        },
+        "regression_favored": {
+          "corrections": 79,
+          "neutral": 101,
+          "regressions": 84,
+          "rows": 264
+        },
+        "unsupported": {
+          "corrections": 1,
+          "neutral": 1,
+          "regressions": 1,
+          "rows": 3
+        }
+      },
+      "parent_series": 2,
+      "posthoc": true,
+      "retained": true,
+      "versus_parent": {
+        "corrections_added": 0,
+        "corrections_lost": 79,
+        "corrections_retained": 427,
+        "corrections_union": 506,
+        "oracle_union_not_prediction": true,
+        "paired": {
+          "by_k": {
+            "0": {
+              "changed": 4,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 38,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 58,
+              "corrections": 29,
+              "net": 15,
+              "regressions": 14
+            },
+            "3": {
+              "changed": 81,
+              "corrections": 41,
+              "net": 11,
+              "regressions": 30
+            },
+            "4": {
+              "changed": 61,
+              "corrections": 14,
+              "net": -15,
+              "regressions": 29
+            },
+            "5": {
+              "changed": 17,
+              "corrections": 0,
+              "net": -5,
+              "regressions": 5
+            },
+            "6": {
+              "changed": 5,
+              "corrections": 0,
+              "net": -1,
+              "regressions": 1
+            }
+          },
+          "global": {
+            "changed": 264,
+            "corrections": 84,
+            "net": 5,
+            "regressions": 79
+          },
+          "poly": {
+            "changed": 222,
+            "corrections": 84,
+            "net": 5,
+            "regressions": 79
+          }
+        },
+        "regressions_added": 0,
+        "regressions_avoided": 84,
+        "regressions_retained": 270
+      }
+    },
+    "regression_loops_posthoc__tree_group_audit__blend_0.25__cost_1__no_favorable_group": {
+      "downstream_ready": false,
+      "gated": {
+        "combination_only": {
+          "corrected": 3,
+          "events": 17
+        },
+        "eligible": {
+          "changes": 1446,
+          "corrections": 484,
+          "net": 108,
+          "regressions": 376
+        },
+        "failures": {
+          "correction": 484,
+          "keep": 6047,
+          "no_correct_alternative": 486,
+          "regression": 376,
+          "wrong_choice_despite_correct_alternative": 100
+        },
+        "folds": {
+          "0": {
+            "changes": 416,
+            "corrections": 133,
+            "net": 24,
+            "regressions": 109
+          },
+          "1": {
+            "changes": 408,
+            "corrections": 144,
+            "net": 44,
+            "regressions": 100
+          },
+          "2": {
+            "changes": 294,
+            "corrections": 96,
+            "net": 23,
+            "regressions": 73
+          },
+          "4": {
+            "changes": 328,
+            "corrections": 111,
+            "net": 17,
+            "regressions": 94
+          }
+        },
+        "native": {
+          "by_k": {
+            "0": {
+              "correct": 38035,
+              "exact": 0.9592202158781398,
+              "over": 1617,
+              "rows": 39652,
+              "under": 0
+            },
+            "1": {
+              "correct": 7889,
+              "exact": 0.6428455019556715,
+              "over": 1474,
+              "rows": 12272,
+              "under": 2909
+            },
+            "2": {
+              "correct": 1335,
+              "exact": 0.3875181422351234,
+              "over": 702,
+              "rows": 3445,
+              "under": 1408
+            },
+            "3": {
+              "correct": 880,
+              "exact": 0.38444735692442117,
+              "over": 315,
+              "rows": 2289,
+              "under": 1094
+            },
+            "4": {
+              "correct": 395,
+              "exact": 0.3272576636288318,
+              "over": 27,
+              "rows": 1207,
+              "under": 785
+            },
+            "5": {
+              "correct": 28,
+              "exact": 0.07887323943661972,
+              "over": 0,
+              "rows": 355,
+              "under": 327
+            },
+            "6": {
+              "correct": 0,
+              "exact": 0.0,
+              "over": 0,
+              "rows": 89,
+              "under": 89
+            }
+          },
+          "confusion_true_by_predicted": [
+            [
+              38035,
+              1047,
+              510,
+              52,
+              8,
+              0,
+              0
+            ],
+            [
+              2909,
+              7889,
+              1236,
+              206,
+              29,
+              3,
+              0
+            ],
+            [
+              666,
+              742,
+              1335,
+              577,
+              122,
+              3,
+              0
+            ],
+            [
+              211,
+              170,
+              713,
+              880,
+              292,
+              23,
+              0
+            ],
+            [
+              47,
+              34,
+              242,
+              462,
+              395,
+              27,
+              0
+            ],
+            [
+              7,
+              8,
+              47,
+              137,
+              128,
+              28,
+              0
+            ],
+            [
+              0,
+              4,
+              13,
+              24,
+              41,
+              7,
+              0
+            ]
+          ],
+          "correct": 48562,
+          "exact": 0.8187964727107184,
+          "over": 4135,
+          "poly": {
+            "correct": 2638,
+            "exact": 0.3572105619498984,
+            "over": 1044,
+            "rows": 7385,
+            "under": 3703
+          },
+          "rows": 59309,
+          "under": 6612
+        },
+        "versus_freeze": {
+          "by_k": {
+            "0": {
+              "changed": 61,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 226,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 417,
+              "corrections": 255,
+              "net": 152,
+              "regressions": 103
+            },
+            "3": {
+              "changed": 383,
+              "corrections": 152,
+              "net": -35,
+              "regressions": 187
+            },
+            "4": {
+              "changed": 233,
+              "corrections": 64,
+              "net": -22,
+              "regressions": 86
+            },
+            "5": {
+              "changed": 96,
+              "corrections": 13,
+              "net": 13,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 30,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 1446,
+            "corrections": 484,
+            "net": 108,
+            "regressions": 376
+          },
+          "poly": {
+            "changed": 1159,
+            "corrections": 484,
+            "net": 108,
+            "regressions": 376
+          }
+        },
+        "versus_original": {
+          "corrections_added": 38,
+          "corrections_lost": 120,
+          "corrections_retained": 446,
+          "corrections_union": 604,
+          "oracle_union_not_prediction": true,
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 25,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 95,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 146,
+                "corrections": 82,
+                "net": 50,
+                "regressions": 32
+              },
+              "3": {
+                "changed": 171,
+                "corrections": 75,
+                "net": -2,
+                "regressions": 77
+              },
+              "4": {
+                "changed": 120,
+                "corrections": 46,
+                "net": 22,
+                "regressions": 24
+              },
+              "5": {
+                "changed": 44,
+                "corrections": 1,
+                "net": -10,
+                "regressions": 11
+              },
+              "6": {
+                "changed": 10,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 611,
+              "corrections": 204,
+              "net": 60,
+              "regressions": 144
+            },
+            "poly": {
+              "changed": 491,
+              "corrections": 204,
+              "net": 60,
+              "regressions": 144
+            }
+          },
+          "regressions_added": 24,
+          "regressions_avoided": 166,
+          "regressions_retained": 352
+        }
+      },
+      "labels_used_to_construct_gate": false,
+      "parent_key": "tree_group_audit__blend_0.25__cost_1",
+      "parent_profiles": {
+        "correction_favored": {
+          "corrections": 97,
+          "neutral": 122,
+          "regressions": 78,
+          "rows": 297
+        },
+        "mixed": {
+          "corrections": 387,
+          "neutral": 464,
+          "regressions": 297,
+          "rows": 1148
+        },
+        "regression_favored": {
+          "corrections": 85,
+          "neutral": 114,
+          "regressions": 87,
+          "rows": 286
+        },
+        "unsupported": {
+          "corrections": 0,
+          "neutral": 0,
+          "regressions": 1,
+          "rows": 1
+        }
+      },
+      "parent_series": 3,
+      "posthoc": true,
+      "retained": true,
+      "versus_parent": {
+        "corrections_added": 0,
+        "corrections_lost": 85,
+        "corrections_retained": 484,
+        "corrections_union": 569,
+        "oracle_union_not_prediction": true,
+        "paired": {
+          "by_k": {
+            "0": {
+              "changed": 9,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 53,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 81,
+              "corrections": 40,
+              "net": 18,
+              "regressions": 22
+            },
+            "3": {
+              "changed": 82,
+              "corrections": 34,
+              "net": -9,
+              "regressions": 43
+            },
+            "4": {
+              "changed": 49,
+              "corrections": 13,
+              "net": -4,
+              "regressions": 17
+            },
+            "5": {
+              "changed": 9,
+              "corrections": 0,
+              "net": -3,
+              "regressions": 3
+            },
+            "6": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 286,
+            "corrections": 87,
+            "net": 2,
+            "regressions": 85
+          },
+          "poly": {
+            "changed": 224,
+            "corrections": 87,
+            "net": 2,
+            "regressions": 85
+          }
+        },
+        "regressions_added": 0,
+        "regressions_avoided": 87,
+        "regressions_retained": 376
+      }
+    }
+  },
+  "prior_208_columns_unchanged": true,
+  "scope": "Post-hoc gate diagnostic after the four fitted series; not independent validation.",
+  "status": "verified",
+  "total_candidates": 211
+}

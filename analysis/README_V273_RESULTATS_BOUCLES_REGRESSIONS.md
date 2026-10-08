@@ -5,7 +5,9 @@
 Le croisement de départ réalisait **566 corrections et 518 régressions**,
 soit **+48** face à `freeze_local_combo`. Quatre séries successives ont été
 exécutées ; leurs protocoles ont été enregistrés avant chaque calcul.
-Elles produisent 162 politiques supplémentaires, toutes conservées.
+Elles produisent 162 politiques supplémentaires, toutes conservées. L'audit
+final conserve ensuite trois gardes déterministes a posteriori, soit
+**211 politiques au total** en incluant les 46 précédentes.
 
 Trois compromis utiles se dégagent. Leur présentation ci-dessous est un
 choix de développement après comparaison : aucune validation inédite ni
@@ -147,24 +149,63 @@ nécessaire avant promotion.
 La vérification locale indépendante reproduit les probabilités linéaires
 à 1,78e-15 près, les décisions et les choix imbriqués, contrôle les
 standardisations et identités d'entraînement, les exclusions des modèles
-non linéaires et les métriques natives. La CI refait les quatre séries
-depuis les données figées et compare chaque politique et chaque décision
-interne aux archives ; son résultat est ajouté au dossier de preuves.
+non linéaires et les métriques natives. La
+[CI 37827415747](https://github.com/Andriamarosoa/note/actions/runs/37827415747)
+est **terminée avec succès** : cinq tests, puis réapprentissage des quatre
+séries depuis les données figées. Les 162 politiques nouvelles sont
+reproduites exactement : **9 608 058 décisions natives et 4 144 077 décisions
+internes, zéro divergence**. L'écart probabiliste maximal est 9,04e-10.
+Il s'agit d'un rejeu indépendant du calcul, pas de données inédites.
+
+## Audit final des profils et conservation des petits apports
+
+Dans le candidat prudent, les 463 régressions restantes se répartissent
+ainsi : 297 dans un profil mixte entre groupes complets, 87 dans un profil
+sans groupe favorable à la correction, 78 dans un profil favorable et
+une sans support local. Le profil défavorable contient aussi **85 bonnes
+corrections** : ce signal n'isole donc pas proprement les échecs.
+
+La définition exacte du profil défavorable est : support local présent,
+au moins un groupe avec N>M, et aucun groupe avec M>N parmi tous les
+groupes donnant le K proposé. Les égalités sont possibles. La vérité du
+fragment n'entre pas dans cette définition.
+
+Après cet audit, trois politiques qui annulent uniquement ce profil sont
+calculées et conservées. Ce sont des diagnostics **a posteriori**, pas des
+variantes préenregistrées avant les quatre séries ni une validation inédite.
+
+| Parent | Régressions évitées | Corrections perdues | Apport net supplémentaire | Corrections / régressions finales | Net / freeze |
+|---|---:|---:|---:|---:|---:|
+| Mélange prudent | 87 | 85 | **+2** | 484 /376 | +108 |
+| Calibration groupes coût 1,15 | 83 | 69 | **+14** | 475 /312 | +163 |
+| Routage par K initial | 84 | 79 | **+5** | 427 /270 | +157 |
+
+Même **+2** devient une politique candidate documentée. Les bonnes
+corrections abandonnées restent identifiées et conservées dans son parent.
+Le dernier compromis réduit les régressions de 47,88 % face au départ, mais
+réduit aussi le nombre total de corrections de 24,56 % : ce n'est pas une
+amélioration gratuite. Ces trois règles sont rejouées localement à partir
+des sorties fraîchement réapprises par la CI, avec décisions identiques.
+Les cas et les vérifications sont dans `posthoc-audit/`.
 
 ## Rien n'est supprimé
 
-La mémoire passe de **46 à 208 politiques archivées**, soit 194 vecteurs de
-prédiction distincts. Les doublons et les bilans négatifs restent présents.
-Les 46 anciennes colonnes sont reproduites à l'identique. Aucun de ces
-208 éléments ne devient automatiquement une tête active du réseau.
+Les quatre séries font passer la mémoire de **46 à 208 politiques
+archivées**, soit 194 vecteurs distincts. Les trois diagnostics finaux
+portent le total à **211 politiques et 197 vecteurs distincts**. Les
+doublons et les bilans négatifs restent présents. Les anciennes colonnes
+sont reproduites à l'identique. Aucun de ces éléments ne devient
+automatiquement une tête active du réseau.
 
 L'union des erreurs initiales corrigées par au moins une politique passe
 de 1 671 à 1 727 : **56 cas complémentaires supplémentaires** sont conservés.
 Cette union est un diagnostic utilisant la vérité, pas le score d'un
 sélecteur utilisable en inférence.
 
-`all-candidate-decisions.npz` conserve les 208 politiques sur les 59 309
-événements, leurs effets individuels et leurs identifiants. `prepared/`
+`all-candidate-decisions.npz` conserve les 208 premières politiques sur les
+59 309 événements, leurs effets individuels et leurs identifiants. Les trois
+suivantes sont ajoutées dans `posthoc-audit/appended-candidates.npz` ; le
+dernier registre est `posthoc-audit/candidate-registry.json`. `prepared/`
 conserve les 58 observables, les contextes complets utilisés, les propositions,
 probabilités initiales et coordonnées des événements. Chaque série conserve
 les sorties internes, décisions, paramètres et chemins de choix. Les modèles
