@@ -1,0 +1,102 @@
+name: V27.3 contextual regression risk
+
+on:
+  push:
+    branches: [codex/v273-contextual-risk]
+    paths:
+      - 'scripts/learn_v273_catalogue.py'
+      - 'scripts/learn_v273_contextual_risk.py'
+      - 'scripts/v273_contextual_risk_contract.py'
+      - 'scripts/evaluate_v273_contextual_risk.py'
+      - 'test/test_v273_contextual_risk.py'
+      - '.github/workflows/v273-contextual-risk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  CUDA_VISIBLE_DEVICES: '-1'
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  TF_NUM_INTRAOP_THREADS: '2'
+  TF_NUM_INTEROP_THREADS: '1'
+
+jobs:
+  experiment:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install reference numerical versions
+        run: |
+          python -m pip install -r requirements-train.txt
+          python -m pip install scipy==1.17.1 scikit-learn==1.4.2
+      - name: Test invariance, learning, contracts and preservation
+        run: python -m unittest -v test.test_v273_catalogue_contract test.test_v273_catalogue_neural test.test_v273_contextual_risk test.test_v273_audit_context test.test_v273_variant_memory
+      - name: Retrieve native cohort
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37766719862
+          name: v273-selector-repair-coherent
+          path: model/risk/reference
+      - name: Retrieve acoustic observables
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37740493178
+          pattern: v273-harmonic-global-fold-*
+          path: model/risk/features
+      - name: Retrieve immutable specialists
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37777844182
+          name: v273-group127-producer-cache
+          path: model/risk/producer-cache
+      - name: Retrieve immutable learned correctors
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37789646292
+          name: v273-learned-corrector-cache
+          path: model/risk/corrector-cache
+      - name: Retrieve frozen local parent
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37807124287
+          name: v273-memory-local-corrector8
+          path: model/risk/parent
+      - name: Train and evaluate contextual risk on four exposed folds
+        run: |
+          python -m scripts.evaluate_v273_contextual_risk \
+            --reference model/risk/reference/predictions.npz \
+            --features model/risk/features \
+            --producer-cache model/risk/producer-cache \
+            --corrector-cache model/risk/corrector-cache \
+            --archive model/risk/parent \
+            --output model/contextual-risk
+      - name: Publish measured scores
+        run: cat model/contextual-risk/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-contextual-risk
+          path: model/contextual-risk/
+          retention-days: 90
