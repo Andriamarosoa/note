@@ -1,0 +1,66 @@
+name: V27.3 S21 learned B-message trust loops
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series21-B-trust.yml'
+      - 'scripts/train_v273_message_reliability.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v273-series21-B-trust
+  cancel-in-progress: false
+jobs:
+  evaluate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Validate fixed B reliability features and policy count
+        run: python -m scripts.train_v273_message_reliability --self-test
+      - name: Retrieve four SHA256 verified original acoustic folds
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/audio
+          gh release download v273-open-k0-k6-37837235723 --repo "$GITHUB_REPOSITORY" --pattern 'v273-open-features-*.tar' --dir model/audio
+          for fold in 0 1 2 4; do
+            mkdir -p "model/features/fold-$fold"
+            tar -xf "model/audio/v273-open-features-$fold.tar" -C "model/features/fold-$fold"
+          done
+      - name: Retrieve exact S18 baseline
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37856499212 --repo "$GITHUB_REPOSITORY" --name v273-series18-k43-k21 --dir model/s18
+      - name: Retrieve S20 A-B feedback, probabilities and predictions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37858383973 --repo "$GITHUB_REPOSITORY" --name v273-series20-residual --dir model/s20
+      - name: Train risk-selectors on other pieces and audit all 96 alternatives
+        run: >-
+          python -m scripts.train_v273_message_reliability
+          --features model/features
+          --s18 model/s18/predictions.npz
+          --series20 model/s20/probabilities.npz
+          --s20-predictions model/s20/predictions.npz
+          --output model/series21-message-trust
+      - name: Publish corrections regressions and ablation
+        run: cat model/series21-message-trust/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series21-B-trust
+          path: model/series21-message-trust/
+          retention-days: 90
