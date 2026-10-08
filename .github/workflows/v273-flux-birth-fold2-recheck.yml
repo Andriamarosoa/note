@@ -1,0 +1,60 @@
+name: V27.3 Flux Birth Fold2 Recheck
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - 'scripts/audit_v273_flux_birth_fold2.py'
+      - '.github/workflows/v273-flux-birth-fold2-recheck.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned evaluation libraries
+        run: python -m pip install numpy==1.26.4 scikit-learn==1.4.2
+      - name: Validate code compiles
+        run: |
+          python -m py_compile scripts/audit_v273_flux_birth_fold2.py
+          python -m py_compile scripts/summarize_v273_energy_flux_combined.py
+      - name: Retrieve frozen independent run artifacts
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37731923226
+          pattern: v273-energy-flux-combined-fold-*
+          path: model/fold-artifacts
+      - name: Restore frozen case provenance
+        run: |
+          mkdir -p model/cases
+          unzip -p analysis/evidence/v273-residual-acoustics/evidence.zip acoustic/cases.jsonl > model/cases/cases.jsonl
+          test "$(wc -l < model/cases/cases.jsonl)" -eq 488
+      - name: Replay and diagnose fold 2
+        run: |
+          python -B scripts/audit_v273_flux_birth_fold2.py \
+            --input-root model/fold-artifacts \
+            --cases model/cases/cases.jsonl \
+            --output model/fold2-audit
+      - name: Show report
+        run: cat model/fold2-audit/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-flux-birth-fold2-recheck
+          path: model/fold2-audit/
+          retention-days: 90
