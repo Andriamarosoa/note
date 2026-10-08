@@ -52,7 +52,7 @@ def role(path):
     name=Path(path).name.lower()
     if re.search(r"correct|fix|guard|veto|rescue|transplant|patch|repair|intervention",name):
         return "correction_or_fix_candidate"
-    if re.search(r"(train_|decode|_moe|_expert|_network|_model)",name):
+    if re.search(r"(train_|learn_|decode|_moe|_expert|_network|_model)",name):
         return "predictor_or_neural_candidate"
     if re.search(r"extract|spectral|cqt|morphol|flow|feature|embedding",name):
         return "feature_candidate"
@@ -60,10 +60,14 @@ def role(path):
 
 def tracked(path):
     if path.startswith("scripts/") and path.endswith(".py"):
-        return any(Path(path).name.startswith(m) for m in MARKERS)
-    if path.startswith("analysis/") and Path(path).suffix.lower() in {".md",".json"}:
-        return True  # preserve every historical hypothesis/protocol and its provenance
-    if path.startswith("src/") and path.endswith(".py") and "test" not in path:
+        return True  # helpers/learn_ modules also implement hypotheses and corrections
+    if path.startswith("analysis/"):
+        return True  # retain numerical evidence (CSV/NPZ/etc.), not only prose
+    if path.startswith(("src/", "test/", "tests/")) and path.endswith(".py"):
+        return True
+    if path.startswith(".github/workflows/") and Path(path).suffix in {".yml", ".yaml"}:
+        return True
+    if path.startswith("docs/") or Path(path).name.lower().startswith("readme"):
         return True
     return False
 
@@ -111,7 +115,8 @@ def collect(refs):
     for branch in refs:
         try:
             revision=git("rev-parse",branch)
-            files=git("ls-tree","-r","--name-only",branch).splitlines()
+            entries=git("ls-tree","-r","--format=%(objectname) %(path)",branch).splitlines()
+            files={line.split(" ",1)[1]:line.split(" ",1)[0] for line in entries}
         except subprocess.CalledProcessError:
             inaccessible.append(branch)
             continue
@@ -121,6 +126,7 @@ def collect(refs):
             registry[key]=dict(
                 head_id="HIST-"+key,source_branch=branch,
                 commit=revision,source_path=path,source_type=role(path),
+                source_blob_sha=files[path],
                 research_families=family(path),
                 implementation_status="historical_candidate_not_activated",
                 aligned_oof_predictions=False,train_only_k_audit=False,
@@ -163,3 +169,4 @@ def main():
 
 if __name__=="__main__":
     main()
+

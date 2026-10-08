@@ -14,7 +14,8 @@ from scripts.v273_selector_contract import ProducerPool, matrices, require, FOLD
 from scripts.v273_group127_contract import CANDIDATES, NEIGHBORS, outcome_labels
 from scripts.v273_catalogue_contract import group_masks, direct_dim, assemble_catalogue_outer, choose_groups
 from scripts.prepare_v273_learned_corrector import CataloguePool, FrozenCorrector
-from scripts.learn_v273_catalogue import train_catalogue
+from scripts.learn_v273_catalogue import train_catalogue, predict
+from scripts.v273_audit_context import audit_context
 MODES = ("control7", "corrector8")
 from scripts.prepare_v273_group127_producers import FrozenProducerPool
 from scripts.yourmt3_exactk_common import metrics, paired, digest
@@ -55,6 +56,7 @@ def main():
     parser.add_argument('--archived-global', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--producer-cache', type=Path, required=True)
+    parser.add_argument('--audit-arm', choices=('global', 'local'), default='global')
     args = parser.parse_args()
     args.arm = args.mode
     count = 8 if args.mode == "corrector8" else 7
@@ -107,6 +109,9 @@ def main():
     class_probability = np.full((len(pos),7), np.nan, np.float32)
     other_probability = np.full(len(pos), np.nan, np.float32)
     pooled_logits = np.full((len(pos),7), np.nan, np.float32)
+    no_local_prediction = base.copy()
+    no_local_class_probability = np.full((len(pos),7), np.nan, np.float32)
+    no_local_baseline_probability = np.full(len(pos), np.nan, np.float32)
     fold_reports = {}; manifests = []
     args.output.mkdir(parents=True)
     for outer in FOLDS:
@@ -117,9 +122,8 @@ def main():
         audits[val] = held['group_features'][..., DIRECT_DIM:]
         for key, value in [('member_votes',held['member_votes'][:, :7]),('group_proposal',held['proposal'][:, :127]),('local_audit_features',audits[val, :127])]:
             require(np.array_equal(value,archived[key][val]), 'inputs differ from archived global: '+key)
-        local_columns = [DIRECT_DIM+j for j in (3,4,5,7,8)]
-        train['group_features'][..., local_columns] = 0
-        held['group_features'][..., local_columns] = 0
+        train, train_audit_connection = audit_context(train, args.audit_arm)
+        held, held_audit_connection = audit_context(held, args.audit_arm)
         print(json.dumps(dict(arm=args.arm, fold=outer, stage='train_catalogue', groups=groups, epochs=30)), flush=True)
         pred, chosen, out, history, model = train_catalogue(train, yc[tr], bc[tr], held)
         singleton, singleton_choice = choose_groups(out['expected_gain'], held['proposal'], bc[val], singletons=True)
@@ -135,6 +139,19 @@ def main():
         result = dict(eligible_rows=len(val), parameters=int(model.count_params()), training=history,
             paired=paired(yc[val], bc[val], pred),
             selected_expected_net=float(np.where(chosen > 0, out['expected_gain'][np.arange(len(val)), np.maximum(chosen-1, 0)], 0).sum()))
+        result['audit_connection'] = dict(train=train_audit_connection, held=held_audit_connection)
+        if args.audit_arm == 'local':
+            without_local, _ = audit_context(held, 'global')
+            ablated = predict(model, without_local)
+            no_local, _ = choose_groups(ablated['expected_gain'], held['proposal'], bc[val])
+            no_local_prediction[pos[val]] = no_local
+            no_local_class_probability[val] = ablated['class_probability']
+            no_local_baseline_probability[val] = ablated['baseline_correct']
+            result['local_influence_fixed_weights'] = dict(
+                decisions_changed=int(np.sum(no_local != pred)),
+                max_absolute_gain_change=float(np.max(np.abs(out['expected_gain']-ablated['expected_gain']))),
+                paired_local_vs_zero=paired(yc[val], no_local, pred))
+            del without_local, ablated
         fold_reports[str(outer)] = result
         (args.output/f'fold-{outer}-result.json').write_text(json.dumps(result, indent=2, sort_keys=True)+'\n')
         print(json.dumps(dict(arm=args.arm, fold=outer, stage='evaluated', paired=result['paired']['global'], history=history)), flush=True)
@@ -168,7 +185,7 @@ def main():
         paired=paired(y,base,prediction), paired_vs_coherent=paired(y,old,prediction), folds=fold_reports,
         paired_vs_archived_consensus=paired(y,consensus['predicted_K'],prediction),
         control_reproduction=dict(prediction_bit_identical=bool(np.array_equal(prediction,consensus['predicted_K'])),
-            max_gain_difference=float(np.max(np.abs(gain[:,:127]-consensus['group_expected_gain'])))) if count==7 else None,
+            max_gain_difference=float(np.max(np.abs(gain[:,:127]-consensus['group_expected_gain'])))) if count==7 and args.audit_arm=='global' else None,
         paired_vs_archived_global=paired(y,archived['predicted_K'],prediction),
         paired_vs_archived_singletons=paired(y,archived['singletons_only_K'],prediction),
         singletons_only=dict(metrics=metrics(y,singleton_prediction), paired=paired(y,base,singleton_prediction),
@@ -185,7 +202,7 @@ def main():
             poly_exact_upper_bound=(2530+int(oracle_fix.sum()))/7385,
             true_k_counts={str(k):int(np.sum(oracle_fix & (yc==k))) for k in range(7)},
             mean_distinct_verdicts_per_event=float(np.mean(unique)), not_a_prediction=True),
-        configuration=dict(mode='pooled_ce', experiment_arm=args.mode, audit_arm='global', pool='mean conditional logits by proposed K before probability',
+        configuration=dict(mode='pooled_ce', experiment_arm=args.mode, audit_arm=args.audit_arm, pool='mean conditional logits by proposed K before probability',
             other='fixed zero logit for no available changing proposal correct',
             parameter_budget=12994+544*(count-7), archived_group127_run=37777844182,
             candidates=list(CANDIDATES)+(['learned_corrector'] if count==8 else []), candidate_count=count, groups=groups, extra_KEEP=1,
@@ -195,7 +212,7 @@ def main():
             H0='deterministic action encoding; not probability of correctness',
             context_names=context_names, local_neighbors=NEIGHBORS, local_audit_strength=12,
             producer_cache_sha256=pool.experts.cache_sha256, corrector_cache_sha256=corrector.cache_sha256,
-            global_audits_enabled=True, local_audits_enabled=False, descriptor_dimensions=DIRECT_DIM+9,
+            global_audits_enabled=True, local_audits_enabled=args.audit_arm=='local', descriptor_dimensions=DIRECT_DIM+9,
             epochs=30, seed=27402, learning_rate=.002, batch_size=192,
             objective='baseline BCE plus one conditional categorical CE per baseline-wrong event',
             shared_baseline_correctness=True, no_posthoc_threshold=True,
@@ -221,6 +238,15 @@ def main():
         new_reachable_errors=int(new_reach.sum()), recovered_new=int((new_reach & (prediction[pos] == yc)).sum()),
         new_by_k={str(k):int((new_reach & (yc==k)).sum()) for k in range(7)})
     diagnostic_predictions = {}
+    if args.audit_arm == 'local':
+        require(np.isfinite(no_local_class_probability).all() and np.isfinite(no_local_baseline_probability).all(), 'complete local intervention')
+        diagnostic_predictions.update(no_local_audit_K=no_local_prediction,
+            no_local_class_probability=no_local_class_probability,
+            no_local_baseline_correct_probability=no_local_baseline_probability)
+        report['local_influence_fixed_weights'] = dict(
+            paired_local_vs_zero=paired(y, no_local_prediction, prediction),
+            zero_local_paired_vs_freeze=paired(y, base, no_local_prediction),
+            retrained=False, note='The local network is replayed after zeroing only five local audit inputs.')
     restrictions = {'old_groups_only': np.arange(groups) < 127}
     if count == 8:
         restrictions.update(old_groups_plus_new_singleton=(np.arange(groups) < 128),

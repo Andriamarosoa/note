@@ -1,0 +1,37 @@
+{
+  "all_outcomes_recomputed": true,
+  "all_primary_features_bitwise_equal": true,
+  "all_source_and_diagnostic_outputs_preserved": true,
+  "catalogue8_family_complements": {
+    "oracle_diagnostic_not_prediction": true,
+    "union_of_initial_errors_corrected": 707,
+    "unique_corrections_within_family": {
+      "catalogue8_calibrated": 66,
+      "catalogue8_global": 65,
+      "catalogue8_local": 43
+    },
+    "variants": [
+      "catalogue8_global",
+      "catalogue8_calibrated",
+      "catalogue8_local"
+    ]
+  },
+  "complementary_cases": 1573,
+  "context_features": 58,
+  "context_rows": 7493,
+  "distinct_prediction_vectors": 30,
+  "downstream_ready": false,
+  "independent_validation": false,
+  "native_rows": 59309,
+  "negative_net_candidates_preserved": [
+    "repair_legacy",
+    "repair_contracts",
+    "catalogue8_local__no_local_audit_K"
+  ],
+  "oracle_union_not_prediction": true,
+  "registry_sha256": "040e05667407084738f2594d3f4570caeb267646c1162f4c686e5a4ccf3b284b",
+  "retained_policy_candidates": 41,
+  "source_archives": 17,
+  "status": "verified",
+  "unchanged_primary_feature_values": 434594
+}
