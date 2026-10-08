@@ -58,12 +58,8 @@ def selftest():
             scores[f'{prefix}__{arm}']=np.ones(len(b),np.float32)*.995
     out,m=make_policies(b,p,scores)
     assert len(out)==110 and int(m['k12'].sum())==3 and int(m['k23'].sum())==2
-    assert np.array_equal(out['series16__flow_mean__both__pbase_gt0.99'],
-                          np.array([1,1,2,1,1,1,2],np.int8)) is False
     ref=out['series16__flow_mean__both__pbase_gt0.99']
-    assert np.array_equal(ref,np.array([1,1,2,1,1,1,2],np.int8)) is False
-    assert np.array_equal(ref,np.array([1,1,2,1,1,1,2],np.int8)) is False
-    assert np.array_equal(ref,np.array([1,1,2,1,1,1,2],np.int8)) is False
+    assert np.array_equal(ref,np.array([1,1,2,1,1,1,2],np.int8))
     assert ref[0]==1 and ref[2]==2 and ref[4]==1 and ref[6]==2
     assert out['series16__flow_mean__k12__pbase_gt0.99'][2]==3
     assert out['series16__flow_mean__k23__pbase_gt0.99'][0]==2
