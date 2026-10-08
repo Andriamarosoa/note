@@ -1,0 +1,82 @@
+name: V27.3 blocked calibration of frozen networks
+
+on:
+  push:
+    branches: [codex/v273-recording-calibration]
+    paths:
+      - 'scripts/v273_probability_calibration.py'
+      - 'scripts/evaluate_v273_recording_calibration.py'
+      - 'scripts/verify_v273_recording_calibration.py'
+      - 'test/test_v273_probability_calibration.py'
+      - '.github/workflows/v273-recording-calibration.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+
+jobs:
+  calibrate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pure numerical dependencies
+        run: python -m pip install numpy==2.3.5 scipy==1.17.0 pytest==8.4.2
+      - name: Verify gradients and probability contract
+        run: python -m pytest -q test/test_v273_probability_calibration.py
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37797488453
+          pattern: v273-confidence-*
+          path: model/replay-download
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37789646292
+          pattern: v273-catalogue-*
+          path: model/original-download
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37740493178
+          pattern: v273-harmonic-global-fold-*
+          path: model/features
+      - name: Arrange the two predeclared arms
+        run: |
+          mkdir -p model/replay model/original
+          for arm in control7 corrector8; do
+            mv "model/replay-download/v273-confidence-$arm" "model/replay/$arm"
+            mv "model/original-download/v273-catalogue-$arm" "model/original/$arm"
+          done
+      - name: Fit calibrators and evaluate all held-out pieces
+        run: |
+          python -m scripts.evaluate_v273_recording_calibration \
+            --replay model/replay --original model/original \
+            --features model/features --output model/calibration
+      - name: Independently verify probabilities, partitions and counts
+        run: |
+          python -m scripts.verify_v273_recording_calibration \
+            --results model/calibration --replay model/replay --original model/original \
+            --features model/features \
+            --output model/calibration/verification.json \
+            --source-commit "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-recording-calibration
+          path: model/calibration/
+          retention-days: 90
