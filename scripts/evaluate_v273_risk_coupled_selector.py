@@ -200,11 +200,12 @@ def main():
     ]
     for title,m,c in [
         ("Reference",baseline,None),("Risk-coupled NN",final,pair["global"])]:
+        net_text="—" if c is None else "%+d" % int(c["net"])
         lines.append(f"| {title} | {100*m['exact']:.4f}% | "
                      f"{100*m['poly']['exact']:.4f}% | "
-                     f"{'-' if c is None else c['corrections']} | "
-                     f"{'-' if c is None else c['regressions']} | "
-                     f"{'-' if c is None else c['net']:+d} |")
+                     f"{'—' if c is None else c['corrections']} | "
+                     f"{'—' if c is None else c['regressions']} | "
+                     f"{net_text} |")
     lines+=["","## True K corrections vs regressions","",
             "| True K | Corrections | Regressions | Net |",
             "|---|---:|---:|---:|"]
