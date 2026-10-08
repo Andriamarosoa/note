@@ -23,7 +23,7 @@ jobs:
       - run: python -m pip install numpy==1.26.4
       - name: Retrieve series8 independent CI output, not local selections
         env:
-          GH_TOKEN: \${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: gh run download 37851172129 --repo "$GITHUB_REPOSITORY" --name v273-series7-learned-risk --dir model/series8-input
       - name: Reproduce all K5 veto policies and each changed event
         run: >-
