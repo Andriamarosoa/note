@@ -1,0 +1,55 @@
+name: V27.3 Risk Head versus Unsupported Class Mask Audit
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - 'scripts/audit_v273_risk_vs_structural_mask.py'
+      - '.github/workflows/v273-risk-vs-mask-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  matched-control:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - run: python -m py_compile scripts/audit_v273_risk_vs_structural_mask.py
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37747861591
+          name: v273-native-neural-head-mix-report
+          path: model/old
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37753600592
+          name: v273-risk-coupled-class-conditional-evaluation
+          path: model/risk
+      - name: Compare risk NN with old network after unsupported K0 K1 control
+        run: |
+          python scripts/audit_v273_risk_vs_structural_mask.py \
+            --old model/old/neural-heads-predictions.npz \
+            --risk model/risk/risk-coupled-predictions.npz \
+            --output model/paired-risk-mask
+      - run: cat model/paired-risk-mask/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-risk-vs-nonpoly-mask-matched-audit
+          path: model/paired-risk-mask/
+          retention-days: 90
