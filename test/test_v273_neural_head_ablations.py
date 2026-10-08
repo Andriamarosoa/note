@@ -19,7 +19,7 @@ class RealNeuralAblationTests(unittest.TestCase):
         logits,active,kind,support=build_candidate_logits(P,b)
         x=inputs(logits,active,kind,support,np.zeros((4,H,21),np.float32),
                  np.zeros((4,3),np.float32),b)
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(ValueError):
             masking(x,(1,2,3))
         solo=masking(x,(0,))
         self.assertTrue(np.all(solo["head_mask"][:,0]))
