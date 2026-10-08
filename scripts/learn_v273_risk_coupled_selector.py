@@ -68,10 +68,10 @@ class RiskCoupledClassSelector(tf.keras.Model):
         batch=tf.shape(ctx)[0]
         context=tf.broadcast_to(ctx[:,None,:],[batch,7,tf.shape(ctx)[1]])
         base_feature=tf.broadcast_to(
-            baseline[:,None,:],[batch,7,7])
+            baseline[:,None,:],[batch,7,7]
         )
         class_identity=tf.broadcast_to(
-            tf.eye(7,dtype=tf.float32)[None,:,:],[batch,7,7])
+            tf.eye(7,dtype=tf.float32)[None,:,:],[batch,7,7]
         )
         candidate_features=tf.concat([
             raw[:,:7,None],selected_evidence[:,:,None],
