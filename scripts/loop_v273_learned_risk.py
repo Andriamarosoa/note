@@ -14,6 +14,7 @@ from scripts.loop_v273_policy_gate import GLOBAL, POLY
 ARMS=('votes','votes_acoustic')
 CS=(.03,.3)
 COSTS=(0.,.10,.20)
+REVERSE_COSTS=(0.,.05,.10,.20,.30,.50)
 
 def read(path):
     with np.load(path,allow_pickle=False) as z:
@@ -118,7 +119,17 @@ def main(a):
             pred[pos[choose]]=p[pos[choose]]
             outputs[key]=pred
             switches[key]=int(choose.sum())
-    require(len(outputs)==14,'policy count')
+    # Series 8: preserve the stronger polyphonic parent and veto only
+    # changes with a sufficiently strong learned advantage for G.
+    for name,diff in adv.items():
+        for cost in REVERSE_COSTS:
+            key=f'series8__poly_parent__{name}__cost{cost:g}'
+            pred=p.copy()
+            choose=disagree & (diff < -cost)
+            pred[pos[choose]]=g[pos[choose]]
+            outputs[key]=pred
+            switches[key]=int(choose.sum())
+    require(len(outputs)==38,'policy count')
     results={}
     for name,pred in outputs.items():
         results[name]=dict(metrics=metrics(y,pred),
@@ -145,7 +156,7 @@ def main(a):
     np.savez_compressed(a.output/'gate-advantages.npz',
         eligible_global_index=ids[pos],fold=efold,disagree=disagree,
         variants=np.asarray(list(adv)),advantage=np.column_stack(list(adv.values())))
-    lines=['# Series 7: nested learned regression gate','',
+    lines=['# Series 7 and 8: nested learned risk gates with poly parent preserved','',
       'Each evaluated piece was excluded from the gate fit; no independent unseen validation.','',
       '| Policy | Global | Poly | Corrections vs G | Regressions vs G | K5 | K6 |',
       '|---|---:|---:|---:|---:|---:|---:|']
