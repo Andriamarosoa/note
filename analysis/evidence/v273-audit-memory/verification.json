@@ -1,0 +1,2887 @@
+{
+  "arms": {
+    "control7": {
+      "all_changed_profile_effects": {
+        "local_rates_favor_correction_for_all_groups": {
+          "corrections": 123,
+          "net": 18,
+          "neutral": 132,
+          "regressions": 105
+        },
+        "local_rates_favor_regression_for_all_groups": {
+          "corrections": 100,
+          "net": -41,
+          "neutral": 144,
+          "regressions": 141
+        },
+        "mixed_by_complete_group": {
+          "corrections": 313,
+          "net": 55,
+          "neutral": 399,
+          "regressions": 258
+        }
+      },
+      "all_changed_profile_file": {
+        "path": "control7-all-changed-local-profiles.csv",
+        "rows": 1715,
+        "sha256": "753ae2e6ad13ff23d48af4613695f2cefe8700288ac5c5bc9fded13c4bce530c"
+      },
+      "all_local_channels_connected": true,
+      "combination_only": {
+        "events": 16,
+        "new_corrected": 5,
+        "old_corrected": 6
+      },
+      "corrector_provenance": null,
+      "decomposition": {
+        "corrections_added": 40,
+        "corrections_lost": 86,
+        "corrections_retained": 496,
+        "corrections_union": 622,
+        "oracle_union_not_prediction": true,
+        "regressions_added": 57,
+        "regressions_avoided": 75,
+        "regressions_retained": 447
+      },
+      "existing_regression_profiles": {
+        "local_rates_favor_correction_for_all_groups": 99,
+        "local_rates_favor_regression_for_all_groups": 123,
+        "mixed_by_complete_group": 225
+      },
+      "expert_provenance": {
+        "distinct_producers": 14,
+        "forbidden_id_overlap": 0,
+        "nested_paths": 24
+      },
+      "folds": {
+        "0": {
+          "audit_connection": {
+            "held": {
+              "effective_audit_sha256": "c9a1fca592a79ff7aaac3ef496e37a194e716bdaa2da449fbbc1fa4ce7da293b",
+              "local_columns": [
+                3,
+                4,
+                5,
+                7,
+                8
+              ],
+              "local_values_nonzero": 1268474,
+              "mode": "local",
+              "rows_with_local_evidence": 1998
+            },
+            "train": {
+              "effective_audit_sha256": "e73a2aad30b2f75bb0970826005806d7bb8b1b817e2a03c90227ca5baab06363",
+              "local_columns": [
+                3,
+                4,
+                5,
+                7,
+                8
+              ],
+              "local_values_nonzero": 3488288,
+              "mode": "local",
+              "rows_with_local_evidence": 5495
+            }
+          },
+          "local_influence": {
+            "decisions_changed": 187,
+            "max_absolute_gain_change": 0.42732375860214233,
+            "paired_local_vs_zero": {
+              "by_k": {
+                "0": {
+                  "changed": 4,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 18,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 44,
+                  "corrections": 15,
+                  "net": -5,
+                  "regressions": 20
+                },
+                "3": {
+                  "changed": 51,
+                  "corrections": 20,
+                  "net": -10,
+                  "regressions": 30
+                },
+                "4": {
+                  "changed": 52,
+                  "corrections": 28,
+                  "net": 26,
+                  "regressions": 2
+                },
+                "5": {
+                  "changed": 13,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "6": {
+                  "changed": 5,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 187,
+                "corrections": 63,
+                "net": 11,
+                "regressions": 52
+              },
+              "poly": {
+                "changed": 165,
+                "corrections": 63,
+                "net": 11,
+                "regressions": 52
+              }
+            }
+          },
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 13,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 55,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 124,
+                "corrections": 68,
+                "net": 25,
+                "regressions": 43
+              },
+              "3": {
+                "changed": 137,
+                "corrections": 61,
+                "net": 5,
+                "regressions": 56
+              },
+              "4": {
+                "changed": 118,
+                "corrections": 19,
+                "net": -21,
+                "regressions": 40
+              },
+              "5": {
+                "changed": 52,
+                "corrections": 9,
+                "net": 9,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 18,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 517,
+              "corrections": 157,
+              "net": 18,
+              "regressions": 139
+            },
+            "poly": {
+              "changed": 449,
+              "corrections": 157,
+              "net": 18,
+              "regressions": 139
+            }
+          },
+          "weights_sha256": "96b8f1e4f6ca3a775ee41c8bff0bc63e775fe67e5ace8a40b268833f63cd1461"
+        },
+        "1": {
+          "audit_connection": {
+            "held": {
+              "effective_audit_sha256": "16341ebdbc2e4dc3985e304fe38f631ccabee727a5786cdd5da9504835e99953",
+              "local_columns": [
+                3,
+                4,
+                5,
+                7,
+                8
+              ],
+              "local_values_nonzero": 1130729,
+              "mode": "local",
+              "rows_with_local_evidence": 1781
+            },
+            "train": {
+              "effective_audit_sha256": "acb02bb5ec9cb40dd20fe5f3efb972917eb5b2c744e8123527ba268d1299d16c",
+              "local_columns": [
+                3,
+                4,
+                5,
+                7,
+                8
+              ],
+              "local_values_nonzero": 3626440,
+              "mode": "local",
+              "rows_with_local_evidence": 5712
+            }
+          },
+          "local_influence": {
+            "decisions_changed": 167,
+            "max_absolute_gain_change": 0.47168025374412537,
+            "paired_local_vs_zero": {
+              "by_k": {
+                "0": {
+                  "changed": 2,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 22,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 42,
+                  "corrections": 11,
+                  "net": -14,
+                  "regressions": 25
+                },
+                "3": {
+                  "changed": 59,
+                  "corrections": 37,
+                  "net": 17,
+                  "regressions": 20
+                },
+                "4": {
+                  "changed": 32,
+                  "corrections": 17,
+                  "net": 8,
+                  "regressions": 9
+                },
+                "5": {
+                  "changed": 8,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "6": {
+                  "changed": 2,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 167,
+                "corrections": 65,
+                "net": 11,
+                "regressions": 54
+              },
+              "poly": {
+                "changed": 143,
+                "corrections": 65,
+                "net": 11,
+                "regressions": 54
+              }
+            }
+          },
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 11,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 70,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 168,
+                "corrections": 75,
+                "net": 15,
+                "regressions": 60
+              },
+              "3": {
+                "changed": 141,
+                "corrections": 68,
+                "net": 17,
+                "regressions": 51
+              },
+              "4": {
+                "changed": 56,
+                "corrections": 15,
+                "net": -14,
+                "regressions": 29
+              },
+              "5": {
+                "changed": 16,
+                "corrections": 2,
+                "net": 2,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 5,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 467,
+              "corrections": 160,
+              "net": 20,
+              "regressions": 140
+            },
+            "poly": {
+              "changed": 386,
+              "corrections": 160,
+              "net": 20,
+              "regressions": 140
+            }
+          },
+          "weights_sha256": "d482d1ac80f1a99e221633e9b9162ea1c51d7e9ce4a845354e69daecf0c99e19"
+        },
+        "2": {
+          "audit_connection": {
+            "held": {
+              "effective_audit_sha256": "cd3cfb6d1028327217385a3a7cd3c4e65c1235d45c341a4a8c2c6de9099e5f76",
+              "local_columns": [
+                3,
+                4,
+                5,
+                7,
+                8
+              ],
+              "local_values_nonzero": 1013346,
+              "mode": "local",
+              "rows_with_local_evidence": 1596
+            },
+            "train": {
+              "effective_audit_sha256": "b2c0b3d944c3eeb243a4b3ab3229ebe5eb708a6cde95feeb02b833b04cd5c7f9",
+              "local_columns": [
+                3,
+                4,
+                5,
+                7,
+                8
+              ],
+              "local_values_nonzero": 3744235,
+              "mode": "local",
+              "rows_with_local_evidence": 5897
+            }
+          },
+          "local_influence": {
+            "decisions_changed": 157,
+            "max_absolute_gain_change": 0.4556686580181122,
+            "paired_local_vs_zero": {
+              "by_k": {
+                "0": {
+                  "changed": 5,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 20,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 25,
+                  "corrections": 5,
+                  "net": -10,
+                  "regressions": 15
+                },
+                "3": {
+                  "changed": 50,
+                  "corrections": 20,
+                  "net": -8,
+                  "regressions": 28
+                },
+                "4": {
+                  "changed": 42,
+                  "corrections": 22,
+                  "net": 20,
+                  "regressions": 2
+                },
+                "5": {
+                  "changed": 14,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "6": {
+                  "changed": 1,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 157,
+                "corrections": 47,
+                "net": 2,
+                "regressions": 45
+              },
+              "poly": {
+                "changed": 132,
+                "corrections": 47,
+                "net": 2,
+                "regressions": 45
+              }
+            }
+          },
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 14,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 72,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 94,
+                "corrections": 55,
+                "net": 30,
+                "regressions": 25
+              },
+              "3": {
+                "changed": 109,
+                "corrections": 39,
+                "net": -13,
+                "regressions": 52
+              },
+              "4": {
+                "changed": 42,
+                "corrections": 3,
+                "net": -24,
+                "regressions": 27
+              },
+              "5": {
+                "changed": 25,
+                "corrections": 1,
+                "net": 1,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 3,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 359,
+              "corrections": 98,
+              "net": -6,
+              "regressions": 104
+            },
+            "poly": {
+              "changed": 273,
+              "corrections": 98,
+              "net": -6,
+              "regressions": 104
+            }
+          },
+          "weights_sha256": "4884ab0cfe3765bb3d86c3e0bf3ef485228e30d30f34a218eb1b250f717cbce3"
+        },
+        "4": {
+          "audit_connection": {
+            "held": {
+              "effective_audit_sha256": "7f8ffa595ec5a57eca53519b2ed2485fbb9732d740ed8dbf05852b8536adfb0e",
+              "local_columns": [
+                3,
+                4,
+                5,
+                7,
+                8
+              ],
+              "local_values_nonzero": 1344743,
+              "mode": "local",
+              "rows_with_local_evidence": 2118
+            },
+            "train": {
+              "effective_audit_sha256": "69a67a0c2151922e6a7ab0736f0d951560ddb2d139d4ae0523851a39ccb1f614",
+              "local_columns": [
+                3,
+                4,
+                5,
+                7,
+                8
+              ],
+              "local_values_nonzero": 3412604,
+              "mode": "local",
+              "rows_with_local_evidence": 5375
+            }
+          },
+          "local_influence": {
+            "decisions_changed": 146,
+            "max_absolute_gain_change": 0.3136158585548401,
+            "paired_local_vs_zero": {
+              "by_k": {
+                "0": {
+                  "changed": 5,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 17,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 28,
+                  "corrections": 3,
+                  "net": -19,
+                  "regressions": 22
+                },
+                "3": {
+                  "changed": 44,
+                  "corrections": 28,
+                  "net": 13,
+                  "regressions": 15
+                },
+                "4": {
+                  "changed": 42,
+                  "corrections": 18,
+                  "net": 10,
+                  "regressions": 8
+                },
+                "5": {
+                  "changed": 7,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "6": {
+                  "changed": 3,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 146,
+                "corrections": 49,
+                "net": 4,
+                "regressions": 45
+              },
+              "poly": {
+                "changed": 124,
+                "corrections": 49,
+                "net": 4,
+                "regressions": 45
+              }
+            }
+          },
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 11,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 50,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 106,
+                "corrections": 64,
+                "net": 28,
+                "regressions": 36
+              },
+              "3": {
+                "changed": 97,
+                "corrections": 25,
+                "net": -42,
+                "regressions": 67
+              },
+              "4": {
+                "changed": 79,
+                "corrections": 30,
+                "net": 12,
+                "regressions": 18
+              },
+              "5": {
+                "changed": 20,
+                "corrections": 2,
+                "net": 2,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 9,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 372,
+              "corrections": 121,
+              "net": 0,
+              "regressions": 121
+            },
+            "poly": {
+              "changed": 311,
+              "corrections": 121,
+              "net": 0,
+              "regressions": 121
+            }
+          },
+          "weights_sha256": "9ec8efe38a28c88a99b2b5773b29d8e917a60d15cc0493c4d52abb598c26ca37"
+        }
+      },
+      "local_confidence": {
+        "alternative_count": {
+          "0": 2438,
+          "1": 3921,
+          "2": 1054,
+          "3": 80,
+          "4": 0
+        },
+        "baseline_accuracy": 0.3356466034965968,
+        "baseline_brier": 0.2205863545390712,
+        "baseline_correct": 2515,
+        "best_gain_bins": [
+          {
+            "lower": -1,
+            "observed_mean_gain": -0.19902912621359223,
+            "optimism_per_row": -0.3884197924584894,
+            "predicted_mean_gain": -0.5874489186720816,
+            "rows": 206,
+            "upper": -0.5
+          },
+          {
+            "lower": -0.5,
+            "observed_mean_gain": -0.1521876981610653,
+            "optimism_per_row": -0.16905754074729049,
+            "predicted_mean_gain": -0.3212452389083558,
+            "rows": 1577,
+            "upper": -0.2
+          },
+          {
+            "lower": -0.2,
+            "observed_mean_gain": -0.05341614906832298,
+            "optimism_per_row": -0.09640931293092146,
+            "predicted_mean_gain": -0.14982546199924443,
+            "rows": 805,
+            "upper": -0.1
+          },
+          {
+            "lower": -0.1,
+            "observed_mean_gain": -0.03590425531914894,
+            "optimism_per_row": -0.014186485830052057,
+            "predicted_mean_gain": -0.05009074114920099,
+            "rows": 752,
+            "upper": 0
+          },
+          {
+            "lower": 0,
+            "observed_mean_gain": -0.1069182389937107,
+            "optimism_per_row": 0.130735900275766,
+            "predicted_mean_gain": 0.023817661282055314,
+            "rows": 318,
+            "upper": 0.05
+          },
+          {
+            "lower": 0.05,
+            "observed_mean_gain": -0.12931034482758622,
+            "optimism_per_row": 0.20430458689670397,
+            "predicted_mean_gain": 0.07499424206911778,
+            "rows": 232,
+            "upper": 0.1
+          },
+          {
+            "lower": 0.1,
+            "observed_mean_gain": 0.1111111111111111,
+            "optimism_per_row": 0.03878436160081432,
+            "predicted_mean_gain": 0.14989547271192544,
+            "rows": 441,
+            "upper": 0.2
+          },
+          {
+            "lower": 0.2,
+            "observed_mean_gain": 0.028169014084507043,
+            "optimism_per_row": 0.21730142711237907,
+            "predicted_mean_gain": 0.2454704411968861,
+            "rows": 284,
+            "upper": 0.3
+          },
+          {
+            "lower": 0.3,
+            "observed_mean_gain": 0.06451612903225806,
+            "optimism_per_row": 0.32681055496280187,
+            "predicted_mean_gain": 0.39132668399505993,
+            "rows": 310,
+            "upper": 0.5
+          },
+          {
+            "lower": 0.5,
+            "observed_mean_gain": 0.14615384615384616,
+            "optimism_per_row": 0.48477949283226557,
+            "predicted_mean_gain": 0.6309333389861118,
+            "rows": 130,
+            "upper": 1
+          }
+        ],
+        "changes": 1715,
+        "conditional_brier_on_baseline_wrong": 0.39034829680464644,
+        "conditional_selected_baseline_wrong": {
+          "observed": 0.4426094137076796,
+          "predicted": 0.6199634732187584,
+          "rows": 1211
+        },
+        "corrections": 536,
+        "expected_corrections": 792.6391250463203,
+        "expected_net": 364.12279693991877,
+        "expected_regressions": 428.5163281064015,
+        "net": 32,
+        "nll": {
+          "baseline": 0.6330457346305085,
+          "conditional_on_baseline_wrong": 0.6246767793803231,
+          "conditional_weighted_by_all_events": 0.4150061400981247,
+          "event": 1.0480518747286331
+        },
+        "optimism": 332.12279693991877,
+        "other_baseline_wrong": {
+          "observed": 0.6737645640819606,
+          "predicted": 0.6962198365894066
+        },
+        "other_selected_baseline_wrong": {
+          "observed": 0.46160198183319573,
+          "predicted": 0.33207185288698676
+        },
+        "policies": {
+          "accepted_best": {
+            "observed_mean_gain": 0.018658892128279883,
+            "optimism_per_row": 0.19365760660073866,
+            "predicted_mean_gain": 0.21231649872901853,
+            "rows": 1715
+          },
+          "best_without_acceptance_gate": {
+            "observed_mean_gain": -0.06310583580613255,
+            "optimism_per_row": -0.020330990690059357,
+            "predicted_mean_gain": -0.0834368264961919,
+            "rows": 5055
+          },
+          "rejected_best": {
+            "observed_mean_gain": -0.10508982035928144,
+            "optimism_per_row": -0.1302083692390769,
+            "predicted_mean_gain": -0.23529818959835835,
+            "rows": 3340
+          },
+          "uniform_over_distinct_alternatives": {
+            "observed_mean_gain": -0.07365644576327068,
+            "optimism_per_row": -0.033607904726157746,
+            "predicted_mean_gain": -0.10726435048942844,
+            "rows": 5055
+          }
+        },
+        "reference_all": {
+          "observed": 0.3356466034965968,
+          "predicted": 0.35151354220847286
+        },
+        "reference_selected": {
+          "observed": 0.2938775510204082,
+          "predicted": 0.24986374816699794
+        },
+        "regressions": 504,
+        "rows": 7493,
+        "selected_by_alternative_count": {
+          "1": {
+            "observed_mean_gain": 0.008382229673093043,
+            "optimism_per_row": 0.20486657640900108,
+            "predicted_mean_gain": 0.21324880608209415,
+            "rows": 1193
+          },
+          "2": {
+            "observed_mean_gain": 0.04631578947368421,
+            "optimism_per_row": 0.16660377981941135,
+            "predicted_mean_gain": 0.21291956929309555,
+            "rows": 475
+          },
+          "3": {
+            "observed_mean_gain": 0.0,
+            "optimism_per_row": 0.18255689893847038,
+            "predicted_mean_gain": 0.18255689893847035,
+            "rows": 47
+          },
+          "4": {
+            "observed_mean_gain": null,
+            "optimism_per_row": null,
+            "predicted_mean_gain": null,
+            "rows": 0
+          }
+        },
+        "selected_optimism_decomposition": {
+          "baseline_component": 117.3470292523503,
+          "conditional_component": 214.7757660679165,
+          "formula": "(B-r)*(1+q) + (1-B)*(q-I(selected_K=true_K)); a fixed algebraic decomposition, not causal attribution"
+        },
+        "selected_wrong_baseline_with_correct_alternative_but_wrong_choice": 116,
+        "selected_wrong_baseline_without_correct_alternative": 559
+      },
+      "local_influence_fixed_weights": {
+        "note": "The local network is replayed after zeroing only five local audit inputs.",
+        "paired_local_vs_zero": {
+          "by_k": {
+            "0": {
+              "changed": 16,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 77,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 139,
+              "corrections": 34,
+              "net": -48,
+              "regressions": 82
+            },
+            "3": {
+              "changed": 204,
+              "corrections": 105,
+              "net": 12,
+              "regressions": 93
+            },
+            "4": {
+              "changed": 168,
+              "corrections": 85,
+              "net": 64,
+              "regressions": 21
+            },
+            "5": {
+              "changed": 42,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 11,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 657,
+            "corrections": 224,
+            "net": 28,
+            "regressions": 196
+          },
+          "poly": {
+            "changed": 564,
+            "corrections": 224,
+            "net": 28,
+            "regressions": 196
+          }
+        },
+        "retrained": false,
+        "zero_local_paired_vs_freeze": {
+          "by_k": {
+            "0": {
+              "changed": 60,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 287,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 560,
+              "corrections": 309,
+              "net": 146,
+              "regressions": 163
+            },
+            "3": {
+              "changed": 632,
+              "corrections": 263,
+              "net": -45,
+              "regressions": 308
+            },
+            "4": {
+              "changed": 410,
+              "corrections": 79,
+              "net": -111,
+              "regressions": 190
+            },
+            "5": {
+              "changed": 152,
+              "corrections": 14,
+              "net": 14,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 45,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 2146,
+            "corrections": 665,
+            "net": 4,
+            "regressions": 661
+          },
+          "poly": {
+            "changed": 1799,
+            "corrections": 665,
+            "net": 4,
+            "regressions": 661
+          }
+        }
+      },
+      "metrics": {
+        "by_k": {
+          "0": {
+            "correct": 38035,
+            "exact": 0.9592202158781398,
+            "over": 1617,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7889,
+            "exact": 0.6428455019556715,
+            "over": 1474,
+            "rows": 12272,
+            "under": 2909
+          },
+          "2": {
+            "correct": 1281,
+            "exact": 0.3718432510885341,
+            "over": 756,
+            "rows": 3445,
+            "under": 1408
+          },
+          "3": {
+            "correct": 882,
+            "exact": 0.3853211009174312,
+            "over": 290,
+            "rows": 2289,
+            "under": 1117
+          },
+          "4": {
+            "correct": 370,
+            "exact": 0.30654515327257664,
+            "over": 29,
+            "rows": 1207,
+            "under": 808
+          },
+          "5": {
+            "correct": 29,
+            "exact": 0.08169014084507042,
+            "over": 0,
+            "rows": 355,
+            "under": 326
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38035,
+            1047,
+            487,
+            77,
+            6,
+            0,
+            0
+          ],
+          [
+            2909,
+            7889,
+            1202,
+            239,
+            30,
+            3,
+            0
+          ],
+          [
+            666,
+            742,
+            1281,
+            623,
+            131,
+            2,
+            0
+          ],
+          [
+            211,
+            170,
+            736,
+            882,
+            270,
+            20,
+            0
+          ],
+          [
+            47,
+            34,
+            234,
+            493,
+            370,
+            29,
+            0
+          ],
+          [
+            7,
+            8,
+            50,
+            151,
+            110,
+            29,
+            0
+          ],
+          [
+            0,
+            4,
+            12,
+            27,
+            34,
+            12,
+            0
+          ]
+        ],
+        "correct": 48486,
+        "exact": 0.8175150483063279,
+        "over": 4166,
+        "poly": {
+          "correct": 2562,
+          "exact": 0.3469194312796208,
+          "over": 1075,
+          "rows": 7385,
+          "under": 3748
+        },
+        "rows": 59309,
+        "under": 6657
+      },
+      "old_confidence": {
+        "alternative_count": {
+          "0": 2438,
+          "1": 3921,
+          "2": 1054,
+          "3": 80,
+          "4": 0
+        },
+        "baseline_accuracy": 0.3356466034965968,
+        "baseline_brier": 0.2199411291659606,
+        "baseline_correct": 2515,
+        "best_gain_bins": [
+          {
+            "lower": -1,
+            "observed_mean_gain": -0.22926829268292684,
+            "optimism_per_row": -0.35333904376006636,
+            "predicted_mean_gain": -0.5826073364429933,
+            "rows": 205,
+            "upper": -0.5
+          },
+          {
+            "lower": -0.5,
+            "observed_mean_gain": -0.1490222521915037,
+            "optimism_per_row": -0.17117604748042478,
+            "predicted_mean_gain": -0.3201982996719285,
+            "rows": 1483,
+            "upper": -0.2
+          },
+          {
+            "lower": -0.2,
+            "observed_mean_gain": -0.06675062972292191,
+            "optimism_per_row": -0.08252619644844364,
+            "predicted_mean_gain": -0.14927682617136556,
+            "rows": 794,
+            "upper": -0.1
+          },
+          {
+            "lower": -0.1,
+            "observed_mean_gain": -0.06985769728331177,
+            "optimism_per_row": 0.019265681723452992,
+            "predicted_mean_gain": -0.05059201555985877,
+            "rows": 773,
+            "upper": 0
+          },
+          {
+            "lower": 0,
+            "observed_mean_gain": -0.07046979865771812,
+            "optimism_per_row": 0.09437990706517346,
+            "predicted_mean_gain": 0.023910108407455354,
+            "rows": 298,
+            "upper": 0.05
+          },
+          {
+            "lower": 0.05,
+            "observed_mean_gain": 0.07857142857142857,
+            "optimism_per_row": -0.004600885817579723,
+            "predicted_mean_gain": 0.07397054275384884,
+            "rows": 280,
+            "upper": 0.1
+          },
+          {
+            "lower": 0.1,
+            "observed_mean_gain": 0.01818181818181818,
+            "optimism_per_row": 0.12776844259693948,
+            "predicted_mean_gain": 0.1459502607787577,
+            "rows": 440,
+            "upper": 0.2
+          },
+          {
+            "lower": 0.2,
+            "observed_mean_gain": -0.009523809523809525,
+            "optimism_per_row": 0.2567746163925671,
+            "predicted_mean_gain": 0.2472508068687576,
+            "rows": 315,
+            "upper": 0.3
+          },
+          {
+            "lower": 0.3,
+            "observed_mean_gain": 0.09538461538461539,
+            "optimism_per_row": 0.2923751063466563,
+            "predicted_mean_gain": 0.38775972173127166,
+            "rows": 325,
+            "upper": 0.5
+          },
+          {
+            "lower": 0.5,
+            "observed_mean_gain": 0.1619718309859155,
+            "optimism_per_row": 0.4523538279135755,
+            "predicted_mean_gain": 0.614325658899491,
+            "rows": 142,
+            "upper": 1
+          }
+        ],
+        "changes": 1800,
+        "conditional_brier_on_baseline_wrong": 0.3881354934671974,
+        "conditional_selected_baseline_wrong": {
+          "observed": 0.45539906103286387,
+          "predicted": 0.6195703346586632,
+          "rows": 1278
+        },
+        "corrections": 582,
+        "expected_corrections": 832.7896591192111,
+        "expected_net": 383.1952280732803,
+        "expected_regressions": 449.59443104593083,
+        "net": 60,
+        "nll": {
+          "baseline": 0.6313576020828943,
+          "conditional_on_baseline_wrong": 0.6234268912813831,
+          "conditional_weighted_by_all_events": 0.4141757726943447,
+          "event": 1.0455333747772388
+        },
+        "optimism": 323.1952280732803,
+        "other_baseline_wrong": {
+          "observed": 0.6737645640819606,
+          "predicted": 0.6931519592446357
+        },
+        "other_selected_baseline_wrong": {
+          "observed": 0.4491392801251956,
+          "predicted": 0.333349457772714
+        },
+        "policies": {
+          "accepted_best": {
+            "observed_mean_gain": 0.03333333333333333,
+            "optimism_per_row": 0.179552909060668,
+            "predicted_mean_gain": 0.21288624239400133,
+            "rows": 1800
+          },
+          "best_without_acceptance_gate": {
+            "observed_mean_gain": -0.06231454005934718,
+            "optimism_per_row": -0.010628441955077393,
+            "predicted_mean_gain": -0.07294298201442458,
+            "rows": 5055
+          },
+          "rejected_best": {
+            "observed_mean_gain": -0.1152073732718894,
+            "optimism_per_row": -0.11579785265502876,
+            "predicted_mean_gain": -0.23100522592691816,
+            "rows": 3255
+          },
+          "uniform_over_distinct_alternatives": {
+            "observed_mean_gain": -0.07365644576327068,
+            "optimism_per_row": -0.02433636672355501,
+            "predicted_mean_gain": -0.09799281248682569,
+            "rows": 5055
+          }
+        },
+        "reference_all": {
+          "observed": 0.3356466034965968,
+          "predicted": 0.34799058063106186
+        },
+        "reference_selected": {
+          "observed": 0.29,
+          "predicted": 0.24977468391440602
+        },
+        "regressions": 522,
+        "rows": 7493,
+        "selected_by_alternative_count": {
+          "1": {
+            "observed_mean_gain": 0.01584786053882726,
+            "optimism_per_row": 0.1967069119644208,
+            "predicted_mean_gain": 0.21255477250324809,
+            "rows": 1262
+          },
+          "2": {
+            "observed_mean_gain": 0.07128309572301425,
+            "optimism_per_row": 0.14362718727941778,
+            "predicted_mean_gain": 0.21491028300243206,
+            "rows": 491
+          },
+          "3": {
+            "observed_mean_gain": 0.10638297872340426,
+            "optimism_per_row": 0.09425881821083468,
+            "predicted_mean_gain": 0.20064179693423886,
+            "rows": 47
+          },
+          "4": {
+            "observed_mean_gain": null,
+            "optimism_per_row": null,
+            "predicted_mean_gain": null,
+            "rows": 0
+          }
+        },
+        "selected_optimism_decomposition": {
+          "baseline_component": 113.38434861543081,
+          "conditional_component": 209.8108876937716,
+          "formula": "(B-r)*(1+q) + (1-B)*(q-I(selected_K=true_K)); a fixed algebraic decomposition, not causal attribution"
+        },
+        "selected_wrong_baseline_with_correct_alternative_but_wrong_choice": 122,
+        "selected_wrong_baseline_without_correct_alternative": 574
+      },
+      "original_predictions_sha256": "b86ab264a4a7f34c855ef7a7e2cc5e73636f8f2c0cdfe9b95b77258d6976e5cc",
+      "paired": {
+        "by_k": {
+          "0": {
+            "changed": 49,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 247,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 492,
+            "corrections": 262,
+            "net": 98,
+            "regressions": 164
+          },
+          "3": {
+            "changed": 484,
+            "corrections": 193,
+            "net": -33,
+            "regressions": 226
+          },
+          "4": {
+            "changed": 295,
+            "corrections": 67,
+            "net": -47,
+            "regressions": 114
+          },
+          "5": {
+            "changed": 113,
+            "corrections": 14,
+            "net": 14,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 35,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1715,
+          "corrections": 536,
+          "net": 32,
+          "regressions": 504
+        },
+        "poly": {
+          "changed": 1419,
+          "corrections": 536,
+          "net": 32,
+          "regressions": 504
+        }
+      },
+      "predictions_sha256": "a54652174103e5ea8b9fc401c99643ce5c4d18977d3e8041621f58617214c7ab",
+      "raw_votes_proposals_and_audits_identical": true,
+      "regression_case_file": {
+        "path": "control7-remaining-regression-profiles.csv",
+        "rows": 504,
+        "sha256": "a97b8746dd5d2fe78c283c8ba3673c326c6722730ebb649ad5a01ce2476ad1aa"
+      },
+      "regression_profiles_are_descriptive_not_new_categories": true,
+      "remaining_regression_profiles": {
+        "local_rates_favor_correction_for_all_groups": 105,
+        "local_rates_favor_regression_for_all_groups": 141,
+        "mixed_by_complete_group": 258
+      },
+      "report_sha256": "e383751ec2d6daa4684ec7e3765d31bb864eb6a1f651d9fb8484f15ca5dd9c8f",
+      "versus_original": {
+        "by_k": {
+          "0": {
+            "changed": 19,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 57,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 102,
+            "corrections": 42,
+            "net": -3,
+            "regressions": 45
+          },
+          "3": {
+            "changed": 126,
+            "corrections": 45,
+            "net": -27,
+            "regressions": 72
+          },
+          "4": {
+            "changed": 90,
+            "corrections": 27,
+            "net": 3,
+            "regressions": 24
+          },
+          "5": {
+            "changed": 30,
+            "corrections": 1,
+            "net": -1,
+            "regressions": 2
+          },
+          "6": {
+            "changed": 4,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 428,
+          "corrections": 115,
+          "net": -28,
+          "regressions": 143
+        },
+        "poly": {
+          "changed": 352,
+          "corrections": 115,
+          "net": -28,
+          "regressions": 143
+        }
+      }
+    },
+    "corrector8": {
+      "all_changed_profile_effects": {
+        "local_rates_favor_correction_for_all_groups": {
+          "corrections": 88,
+          "net": 0,
+          "neutral": 129,
+          "regressions": 88
+        },
+        "local_rates_favor_regression_for_all_groups": {
+          "corrections": 92,
+          "net": -34,
+          "neutral": 123,
+          "regressions": 126
+        },
+        "mixed_by_complete_group": {
+          "corrections": 347,
+          "net": 67,
+          "neutral": 445,
+          "regressions": 280
+        },
+        "tied_local_rates": {
+          "corrections": 0,
+          "net": -1,
+          "neutral": 1,
+          "regressions": 1
+        }
+      },
+      "all_changed_profile_file": {
+        "path": "corrector8-all-changed-local-profiles.csv",
+        "rows": 1720,
+        "sha256": "43098059ce32817e17a27a63b55206a43f5d717017000820e396086973df40a3"
+      },
+      "all_local_channels_connected": true,
+      "combination_only": {
+        "events": 17,
+        "new_corrected": 4,
+        "old_corrected": 5
+      },
+      "corrector_provenance": {
+        "checked_crossfit_paths": 36,
+        "forbidden_overlap": 0,
+        "producer_sets": 14
+      },
+      "decomposition": {
+        "corrections_added": 57,
+        "corrections_lost": 114,
+        "corrections_retained": 470,
+        "corrections_union": 641,
+        "oracle_union_not_prediction": true,
+        "regressions_added": 52,
+        "regressions_avoided": 103,
+        "regressions_retained": 443
+      },
+      "existing_regression_profiles": {
+        "local_rates_favor_correction_for_all_groups": 84,
+        "local_rates_favor_regression_for_all_groups": 106,
+        "mixed_by_complete_group": 252,
+        "tied_local_rates": 1
+      },
+      "expert_provenance": {
+        "distinct_producers": 14,
+        "forbidden_id_overlap": 0,
+        "nested_paths": 24
+      },
+      "folds": {
+        "0": {
+          "audit_connection": {
+            "held": {
+              "effective_audit_sha256": "9ff7125a966da58f9d455134a7f91e6288558fd60c2b8f85bc7df8074644a3c2",
+              "local_columns": [
+                3,
+                4,
+                5,
+                7,
+                8
+              ],
+              "local_values_nonzero": 2546843,
+              "mode": "local",
+              "rows_with_local_evidence": 1998
+            },
+            "train": {
+              "effective_audit_sha256": "88c000c16001934bc67acecd1db5efde6f5a4cf89350d413830cb09a2a41fe8b",
+              "local_columns": [
+                3,
+                4,
+                5,
+                7,
+                8
+              ],
+              "local_values_nonzero": 7002711,
+              "mode": "local",
+              "rows_with_local_evidence": 5495
+            }
+          },
+          "local_influence": {
+            "decisions_changed": 232,
+            "max_absolute_gain_change": 0.4457603693008423,
+            "paired_local_vs_zero": {
+              "by_k": {
+                "0": {
+                  "changed": 4,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 25,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 47,
+                  "corrections": 17,
+                  "net": 3,
+                  "regressions": 14
+                },
+                "3": {
+                  "changed": 75,
+                  "corrections": 27,
+                  "net": -15,
+                  "regressions": 42
+                },
+                "4": {
+                  "changed": 53,
+                  "corrections": 32,
+                  "net": 26,
+                  "regressions": 6
+                },
+                "5": {
+                  "changed": 22,
+                  "corrections": 0,
+                  "net": -2,
+                  "regressions": 2
+                },
+                "6": {
+                  "changed": 6,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 232,
+                "corrections": 76,
+                "net": 12,
+                "regressions": 64
+              },
+              "poly": {
+                "changed": 203,
+                "corrections": 76,
+                "net": 12,
+                "regressions": 64
+              }
+            }
+          },
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 13,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 59,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 125,
+                "corrections": 60,
+                "net": 13,
+                "regressions": 47
+              },
+              "3": {
+                "changed": 135,
+                "corrections": 60,
+                "net": 9,
+                "regressions": 51
+              },
+              "4": {
+                "changed": 114,
+                "corrections": 20,
+                "net": -19,
+                "regressions": 39
+              },
+              "5": {
+                "changed": 51,
+                "corrections": 10,
+                "net": 10,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 17,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 514,
+              "corrections": 150,
+              "net": 13,
+              "regressions": 137
+            },
+            "poly": {
+              "changed": 442,
+              "corrections": 150,
+              "net": 13,
+              "regressions": 137
+            }
+          },
+          "weights_sha256": "50af2540a967ee545df41c06145d28031717197312e194c67c3e1d8d23e2053e"
+        },
+        "1": {
+          "audit_connection": {
+            "held": {
+              "effective_audit_sha256": "00c60663e59a450a8eb77e440befaf162edde7f6b8594165c2c90c0dd5788904",
+              "local_columns": [
+                3,
+                4,
+                5,
+                7,
+                8
+              ],
+              "local_values_nonzero": 2270351,
+              "mode": "local",
+              "rows_with_local_evidence": 1781
+            },
+            "train": {
+              "effective_audit_sha256": "0bd66647ed11ddd57f978e49dc7f82d4b270e39d40fb2bf4adcf900562362d83",
+              "local_columns": [
+                3,
+                4,
+                5,
+                7,
+                8
+              ],
+              "local_values_nonzero": 7280697,
+              "mode": "local",
+              "rows_with_local_evidence": 5712
+            }
+          },
+          "local_influence": {
+            "decisions_changed": 216,
+            "max_absolute_gain_change": 0.48099392652511597,
+            "paired_local_vs_zero": {
+              "by_k": {
+                "0": {
+                  "changed": 9,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 19,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 54,
+                  "corrections": 19,
+                  "net": -3,
+                  "regressions": 22
+                },
+                "3": {
+                  "changed": 69,
+                  "corrections": 40,
+                  "net": 13,
+                  "regressions": 27
+                },
+                "4": {
+                  "changed": 42,
+                  "corrections": 23,
+                  "net": 12,
+                  "regressions": 11
+                },
+                "5": {
+                  "changed": 18,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "6": {
+                  "changed": 5,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 216,
+                "corrections": 82,
+                "net": 22,
+                "regressions": 60
+              },
+              "poly": {
+                "changed": 188,
+                "corrections": 82,
+                "net": 22,
+                "regressions": 60
+              }
+            }
+          },
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 17,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 72,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 168,
+                "corrections": 71,
+                "net": 7,
+                "regressions": 64
+              },
+              "3": {
+                "changed": 135,
+                "corrections": 67,
+                "net": 19,
+                "regressions": 48
+              },
+              "4": {
+                "changed": 53,
+                "corrections": 11,
+                "net": -17,
+                "regressions": 28
+              },
+              "5": {
+                "changed": 14,
+                "corrections": 2,
+                "net": 2,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 3,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 462,
+              "corrections": 151,
+              "net": 11,
+              "regressions": 140
+            },
+            "poly": {
+              "changed": 373,
+              "corrections": 151,
+              "net": 11,
+              "regressions": 140
+            }
+          },
+          "weights_sha256": "d3b67004bfe45e7ab446f9ba42798293bc2a6084d3f67fad69a69b2f17f19e12"
+        },
+        "2": {
+          "audit_connection": {
+            "held": {
+              "effective_audit_sha256": "c00f3b5bd85c6376b6a8bff983ae80ce3fc0091bdd2cc1faf926f70b3b12a348",
+              "local_columns": [
+                3,
+                4,
+                5,
+                7,
+                8
+              ],
+              "local_values_nonzero": 2034594,
+              "mode": "local",
+              "rows_with_local_evidence": 1596
+            },
+            "train": {
+              "effective_audit_sha256": "2b541cd129f5b3f9dac25c44e3cf45ac5e67af975af22c37d0eeb5db8fc6d6cd",
+              "local_columns": [
+                3,
+                4,
+                5,
+                7,
+                8
+              ],
+              "local_values_nonzero": 7517613,
+              "mode": "local",
+              "rows_with_local_evidence": 5897
+            }
+          },
+          "local_influence": {
+            "decisions_changed": 137,
+            "max_absolute_gain_change": 0.37990859150886536,
+            "paired_local_vs_zero": {
+              "by_k": {
+                "0": {
+                  "changed": 3,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 20,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 40,
+                  "corrections": 18,
+                  "net": 0,
+                  "regressions": 18
+                },
+                "3": {
+                  "changed": 45,
+                  "corrections": 22,
+                  "net": 3,
+                  "regressions": 19
+                },
+                "4": {
+                  "changed": 19,
+                  "corrections": 10,
+                  "net": 9,
+                  "regressions": 1
+                },
+                "5": {
+                  "changed": 10,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "6": {
+                  "changed": 0,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 137,
+                "corrections": 50,
+                "net": 12,
+                "regressions": 38
+              },
+              "poly": {
+                "changed": 114,
+                "corrections": 50,
+                "net": 12,
+                "regressions": 38
+              }
+            }
+          },
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 10,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 68,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 82,
+                "corrections": 50,
+                "net": 29,
+                "regressions": 21
+              },
+              "3": {
+                "changed": 99,
+                "corrections": 31,
+                "net": -18,
+                "regressions": 49
+              },
+              "4": {
+                "changed": 42,
+                "corrections": 6,
+                "net": -15,
+                "regressions": 21
+              },
+              "5": {
+                "changed": 15,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 2,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 318,
+              "corrections": 87,
+              "net": -4,
+              "regressions": 91
+            },
+            "poly": {
+              "changed": 240,
+              "corrections": 87,
+              "net": -4,
+              "regressions": 91
+            }
+          },
+          "weights_sha256": "47004aabe131451509aa800bce89be959ac05a6748b54c4b5fcc22df07b6c458"
+        },
+        "4": {
+          "audit_connection": {
+            "held": {
+              "effective_audit_sha256": "7f60cb08f966a0bac2aa85d72c07ca8486f023ef6611496e4eff9c7e757d84a5",
+              "local_columns": [
+                3,
+                4,
+                5,
+                7,
+                8
+              ],
+              "local_values_nonzero": 2700071,
+              "mode": "local",
+              "rows_with_local_evidence": 2118
+            },
+            "train": {
+              "effective_audit_sha256": "9fe8ec6886f4fac3fed9d958f88b36a46e2b1b8ffe87f629186911bd52ddd4f0",
+              "local_columns": [
+                3,
+                4,
+                5,
+                7,
+                8
+              ],
+              "local_values_nonzero": 6851371,
+              "mode": "local",
+              "rows_with_local_evidence": 5375
+            }
+          },
+          "local_influence": {
+            "decisions_changed": 112,
+            "max_absolute_gain_change": 0.3063434064388275,
+            "paired_local_vs_zero": {
+              "by_k": {
+                "0": {
+                  "changed": 2,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "1": {
+                  "changed": 14,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                },
+                "2": {
+                  "changed": 20,
+                  "corrections": 8,
+                  "net": -1,
+                  "regressions": 9
+                },
+                "3": {
+                  "changed": 27,
+                  "corrections": 9,
+                  "net": -6,
+                  "regressions": 15
+                },
+                "4": {
+                  "changed": 40,
+                  "corrections": 19,
+                  "net": 13,
+                  "regressions": 6
+                },
+                "5": {
+                  "changed": 7,
+                  "corrections": 4,
+                  "net": 4,
+                  "regressions": 0
+                },
+                "6": {
+                  "changed": 2,
+                  "corrections": 0,
+                  "net": 0,
+                  "regressions": 0
+                }
+              },
+              "global": {
+                "changed": 112,
+                "corrections": 40,
+                "net": 10,
+                "regressions": 30
+              },
+              "poly": {
+                "changed": 96,
+                "corrections": 40,
+                "net": 10,
+                "regressions": 30
+              }
+            }
+          },
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 18,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 67,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 115,
+                "corrections": 73,
+                "net": 42,
+                "regressions": 31
+              },
+              "3": {
+                "changed": 113,
+                "corrections": 31,
+                "net": -49,
+                "regressions": 80
+              },
+              "4": {
+                "changed": 80,
+                "corrections": 29,
+                "net": 13,
+                "regressions": 16
+              },
+              "5": {
+                "changed": 24,
+                "corrections": 6,
+                "net": 6,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 9,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 426,
+              "corrections": 139,
+              "net": 12,
+              "regressions": 127
+            },
+            "poly": {
+              "changed": 341,
+              "corrections": 139,
+              "net": 12,
+              "regressions": 127
+            }
+          },
+          "weights_sha256": "2d49580154be3a95b35e131338fe00ccd4ccbc7845e25495e78d64738ec039a7"
+        }
+      },
+      "local_confidence": {
+        "alternative_count": {
+          "0": 2262,
+          "1": 3854,
+          "2": 1235,
+          "3": 139,
+          "4": 3
+        },
+        "baseline_accuracy": 0.3356466034965968,
+        "baseline_brier": 0.22090161267545905,
+        "baseline_correct": 2515,
+        "best_gain_bins": [
+          {
+            "lower": -1,
+            "observed_mean_gain": -0.21120689655172414,
+            "optimism_per_row": -0.37366538203216443,
+            "predicted_mean_gain": -0.5848722785838887,
+            "rows": 232,
+            "upper": -0.5
+          },
+          {
+            "lower": -0.5,
+            "observed_mean_gain": -0.13414634146341464,
+            "optimism_per_row": -0.18985401901767512,
+            "predicted_mean_gain": -0.32400036048108977,
+            "rows": 1640,
+            "upper": -0.2
+          },
+          {
+            "lower": -0.2,
+            "observed_mean_gain": -0.06557377049180328,
+            "optimism_per_row": -0.0851500587098,
+            "predicted_mean_gain": -0.1507238292016033,
+            "rows": 854,
+            "upper": -0.1
+          },
+          {
+            "lower": -0.1,
+            "observed_mean_gain": -0.05605095541401274,
+            "optimism_per_row": 0.006253470192499649,
+            "predicted_mean_gain": -0.049797485221513095,
+            "rows": 785,
+            "upper": 0
+          },
+          {
+            "lower": 0,
+            "observed_mean_gain": -0.024539877300613498,
+            "optimism_per_row": 0.04952204469719398,
+            "predicted_mean_gain": 0.024982167396580487,
+            "rows": 326,
+            "upper": 0.05
+          },
+          {
+            "lower": 0.05,
+            "observed_mean_gain": 0.003745318352059925,
+            "optimism_per_row": 0.06787061696040379,
+            "predicted_mean_gain": 0.07161593531246373,
+            "rows": 267,
+            "upper": 0.1
+          },
+          {
+            "lower": 0.1,
+            "observed_mean_gain": 0.014814814814814815,
+            "optimism_per_row": 0.13285353714010048,
+            "predicted_mean_gain": 0.1476683519549153,
+            "rows": 405,
+            "upper": 0.2
+          },
+          {
+            "lower": 0.2,
+            "observed_mean_gain": 0.0,
+            "optimism_per_row": 0.2475016344173243,
+            "predicted_mean_gain": 0.24750163441732426,
+            "rows": 285,
+            "upper": 0.3
+          },
+          {
+            "lower": 0.3,
+            "observed_mean_gain": 0.09646302250803858,
+            "optimism_per_row": 0.2839690023585543,
+            "predicted_mean_gain": 0.38043202486659294,
+            "rows": 311,
+            "upper": 0.5
+          },
+          {
+            "lower": 0.5,
+            "observed_mean_gain": 0.023809523809523808,
+            "optimism_per_row": 0.5994141138618703,
+            "predicted_mean_gain": 0.6232236376713941,
+            "rows": 126,
+            "upper": 1
+          }
+        ],
+        "changes": 1720,
+        "conditional_brier_on_baseline_wrong": 0.423892793351847,
+        "conditional_selected_baseline_wrong": {
+          "observed": 0.43020408163265306,
+          "predicted": 0.6017502281321316,
+          "rows": 1225
+        },
+        "corrections": 527,
+        "expected_corrections": 778.8803843925707,
+        "expected_net": 354.44982151093427,
+        "expected_regressions": 424.43056288163643,
+        "net": 32,
+        "nll": {
+          "baseline": 0.6343471331272325,
+          "conditional_on_baseline_wrong": 0.679824840617838,
+          "conditional_weighted_by_all_events": 0.4516439418918454,
+          "event": 1.085991075019078
+        },
+        "optimism": 322.44982151093427,
+        "other_baseline_wrong": {
+          "observed": 0.6470470068300522,
+          "predicted": 0.6864591001964108
+        },
+        "other_selected_baseline_wrong": {
+          "observed": 0.4563265306122449,
+          "predicted": 0.34015229673936836
+        },
+        "policies": {
+          "accepted_best": {
+            "observed_mean_gain": 0.018604651162790697,
+            "optimism_per_row": 0.18747083007587045,
+            "predicted_mean_gain": 0.20607548123866115,
+            "rows": 1720
+          },
+          "best_without_acceptance_gate": {
+            "observed_mean_gain": -0.06442362836933664,
+            "optimism_per_row": -0.027415467047793754,
+            "predicted_mean_gain": -0.0918390954171304,
+            "rows": 5231
+          },
+          "rejected_best": {
+            "observed_mean_gain": -0.10509826260324694,
+            "optimism_per_row": -0.13268588318356772,
+            "predicted_mean_gain": -0.23778414578681467,
+            "rows": 3511
+          },
+          "uniform_over_distinct_alternatives": {
+            "observed_mean_gain": -0.0730580513604792,
+            "optimism_per_row": -0.04519884501075501,
+            "predicted_mean_gain": -0.11825689637123418,
+            "rows": 5231
+          }
+        },
+        "reference_all": {
+          "observed": 0.3356466034965968,
+          "predicted": 0.3524536200168108
+        },
+        "reference_selected": {
+          "observed": 0.2877906976744186,
+          "predicted": 0.2467619551637421
+        },
+        "regressions": 495,
+        "rows": 7493,
+        "selected_by_alternative_count": {
+          "1": {
+            "observed_mean_gain": 0.011996572407883462,
+            "optimism_per_row": 0.1907339484880361,
+            "predicted_mean_gain": 0.20273052089591959,
+            "rows": 1167
+          },
+          "2": {
+            "observed_mean_gain": 0.04878048780487805,
+            "optimism_per_row": 0.16772968287462253,
+            "predicted_mean_gain": 0.2165101706795006,
+            "rows": 492
+          },
+          "3": {
+            "observed_mean_gain": -0.09836065573770492,
+            "optimism_per_row": 0.28426730935483224,
+            "predicted_mean_gain": 0.1859066536171273,
+            "rows": 61
+          },
+          "4": {
+            "observed_mean_gain": null,
+            "optimism_per_row": null,
+            "predicted_mean_gain": null,
+            "rows": 0
+          }
+        },
+        "selected_optimism_decomposition": {
+          "baseline_component": 112.30579826863598,
+          "conditional_component": 210.14402946186124,
+          "formula": "(B-r)*(1+q) + (1-B)*(q-I(selected_K=true_K)); a fixed algebraic decomposition, not causal attribution"
+        },
+        "selected_wrong_baseline_with_correct_alternative_but_wrong_choice": 139,
+        "selected_wrong_baseline_without_correct_alternative": 559
+      },
+      "local_influence_fixed_weights": {
+        "note": "The local network is replayed after zeroing only five local audit inputs.",
+        "paired_local_vs_zero": {
+          "by_k": {
+            "0": {
+              "changed": 18,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 78,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 161,
+              "corrections": 62,
+              "net": -1,
+              "regressions": 63
+            },
+            "3": {
+              "changed": 216,
+              "corrections": 98,
+              "net": -5,
+              "regressions": 103
+            },
+            "4": {
+              "changed": 154,
+              "corrections": 84,
+              "net": 60,
+              "regressions": 24
+            },
+            "5": {
+              "changed": 57,
+              "corrections": 4,
+              "net": 2,
+              "regressions": 2
+            },
+            "6": {
+              "changed": 13,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 697,
+            "corrections": 248,
+            "net": 56,
+            "regressions": 192
+          },
+          "poly": {
+            "changed": 601,
+            "corrections": 248,
+            "net": 56,
+            "regressions": 192
+          }
+        },
+        "retrained": false,
+        "zero_local_paired_vs_freeze": {
+          "by_k": {
+            "0": {
+              "changed": 68,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 293,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 577,
+              "corrections": 281,
+              "net": 92,
+              "regressions": 189
+            },
+            "3": {
+              "changed": 616,
+              "corrections": 262,
+              "net": -34,
+              "regressions": 296
+            },
+            "4": {
+              "changed": 391,
+              "corrections": 78,
+              "net": -98,
+              "regressions": 176
+            },
+            "5": {
+              "changed": 148,
+              "corrections": 16,
+              "net": 16,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 42,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 2135,
+            "corrections": 637,
+            "net": -24,
+            "regressions": 661
+          },
+          "poly": {
+            "changed": 1774,
+            "corrections": 637,
+            "net": -24,
+            "regressions": 661
+          }
+        }
+      },
+      "metrics": {
+        "by_k": {
+          "0": {
+            "correct": 38035,
+            "exact": 0.9592202158781398,
+            "over": 1617,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7889,
+            "exact": 0.6428455019556715,
+            "over": 1474,
+            "rows": 12272,
+            "under": 2909
+          },
+          "2": {
+            "correct": 1274,
+            "exact": 0.36981132075471695,
+            "over": 763,
+            "rows": 3445,
+            "under": 1408
+          },
+          "3": {
+            "correct": 876,
+            "exact": 0.382699868938401,
+            "over": 314,
+            "rows": 2289,
+            "under": 1099
+          },
+          "4": {
+            "correct": 379,
+            "exact": 0.3140016570008285,
+            "over": 39,
+            "rows": 1207,
+            "under": 789
+          },
+          "5": {
+            "correct": 33,
+            "exact": 0.09295774647887324,
+            "over": 0,
+            "rows": 355,
+            "under": 322
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38035,
+            1047,
+            486,
+            74,
+            10,
+            0,
+            0
+          ],
+          [
+            2909,
+            7889,
+            1178,
+            255,
+            37,
+            4,
+            0
+          ],
+          [
+            666,
+            742,
+            1274,
+            613,
+            142,
+            8,
+            0
+          ],
+          [
+            211,
+            170,
+            718,
+            876,
+            289,
+            25,
+            0
+          ],
+          [
+            47,
+            34,
+            248,
+            460,
+            379,
+            39,
+            0
+          ],
+          [
+            7,
+            8,
+            51,
+            134,
+            122,
+            33,
+            0
+          ],
+          [
+            0,
+            4,
+            14,
+            22,
+            39,
+            10,
+            0
+          ]
+        ],
+        "correct": 48486,
+        "exact": 0.8175150483063279,
+        "over": 4207,
+        "poly": {
+          "correct": 2562,
+          "exact": 0.3469194312796208,
+          "over": 1116,
+          "rows": 7385,
+          "under": 3707
+        },
+        "rows": 59309,
+        "under": 6616
+      },
+      "old_confidence": {
+        "alternative_count": {
+          "0": 2262,
+          "1": 3854,
+          "2": 1235,
+          "3": 139,
+          "4": 3
+        },
+        "baseline_accuracy": 0.3356466034965968,
+        "baseline_brier": 0.2198356538703392,
+        "baseline_correct": 2515,
+        "best_gain_bins": [
+          {
+            "lower": -1,
+            "observed_mean_gain": -0.2111111111111111,
+            "optimism_per_row": -0.37593442629446594,
+            "predicted_mean_gain": -0.5870455374055771,
+            "rows": 180,
+            "upper": -0.5
+          },
+          {
+            "lower": -0.5,
+            "observed_mean_gain": -0.12287581699346405,
+            "optimism_per_row": -0.19508495447045637,
+            "predicted_mean_gain": -0.31796077146392043,
+            "rows": 1530,
+            "upper": -0.2
+          },
+          {
+            "lower": -0.2,
+            "observed_mean_gain": -0.09693251533742331,
+            "optimism_per_row": -0.05291424958359488,
+            "predicted_mean_gain": -0.1498467649210182,
+            "rows": 815,
+            "upper": -0.1
+          },
+          {
+            "lower": -0.1,
+            "observed_mean_gain": -0.08024691358024691,
+            "optimism_per_row": 0.03140346128551803,
+            "predicted_mean_gain": -0.04884345229472886,
+            "rows": 810,
+            "upper": 0
+          },
+          {
+            "lower": 0,
+            "observed_mean_gain": 0.0,
+            "optimism_per_row": 0.023647367079576816,
+            "predicted_mean_gain": 0.02364736707957682,
+            "rows": 292,
+            "upper": 0.05
+          },
+          {
+            "lower": 0.05,
+            "observed_mean_gain": 0.0061162079510703364,
+            "optimism_per_row": 0.06927950044627096,
+            "predicted_mean_gain": 0.07539570839734129,
+            "rows": 327,
+            "upper": 0.1
+          },
+          {
+            "lower": 0.1,
+            "observed_mean_gain": -0.07644628099173553,
+            "optimism_per_row": 0.223442938266904,
+            "predicted_mean_gain": 0.1469966572751685,
+            "rows": 484,
+            "upper": 0.2
+          },
+          {
+            "lower": 0.2,
+            "observed_mean_gain": 0.10031347962382445,
+            "optimism_per_row": 0.1476489984681659,
+            "predicted_mean_gain": 0.24796247809199037,
+            "rows": 319,
+            "upper": 0.3
+          },
+          {
+            "lower": 0.3,
+            "observed_mean_gain": 0.08383233532934131,
+            "optimism_per_row": 0.3006940107130658,
+            "predicted_mean_gain": 0.3845263460424071,
+            "rows": 334,
+            "upper": 0.5
+          },
+          {
+            "lower": 0.5,
+            "observed_mean_gain": 0.09285714285714286,
+            "optimism_per_row": 0.5298746976798996,
+            "predicted_mean_gain": 0.6227318405370423,
+            "rows": 140,
+            "upper": 1
+          }
+        ],
+        "changes": 1896,
+        "conditional_brier_on_baseline_wrong": 0.4206185214825646,
+        "conditional_selected_baseline_wrong": {
+          "observed": 0.4325925925925926,
+          "predicted": 0.6171435757237766,
+          "rows": 1350
+        },
+        "corrections": 584,
+        "expected_corrections": 872.9236633619294,
+        "expected_net": 397.4201004942879,
+        "expected_regressions": 475.50356286764145,
+        "net": 38,
+        "nll": {
+          "baseline": 0.6316826018688587,
+          "conditional_on_baseline_wrong": 0.6710328360710837,
+          "conditional_weighted_by_all_events": 0.44580294380913577,
+          "event": 1.0774855456779946
+        },
+        "optimism": 359.4201004942879,
+        "other_baseline_wrong": {
+          "observed": 0.6470470068300522,
+          "predicted": 0.6709803504257005
+        },
+        "other_selected_baseline_wrong": {
+          "observed": 0.46296296296296297,
+          "predicted": 0.32678137175418676
+        },
+        "policies": {
+          "accepted_best": {
+            "observed_mean_gain": 0.020042194092827006,
+            "optimism_per_row": 0.18956756208810305,
+            "predicted_mean_gain": 0.20960975618093008,
+            "rows": 1896
+          },
+          "best_without_acceptance_gate": {
+            "observed_mean_gain": -0.06346778818581533,
+            "optimism_per_row": -0.004667633172073964,
+            "predicted_mean_gain": -0.0681354213578893,
+            "rows": 5231
+          },
+          "rejected_best": {
+            "observed_mean_gain": -0.11094452773613193,
+            "optimism_per_row": -0.11509339935297222,
+            "predicted_mean_gain": -0.22603792708910414,
+            "rows": 3335
+          },
+          "uniform_over_distinct_alternatives": {
+            "observed_mean_gain": -0.0730580513604792,
+            "optimism_per_row": -0.0233487466128033,
+            "predicted_mean_gain": -0.09640679797328248,
+            "rows": 5231
+          }
+        },
+        "reference_all": {
+          "observed": 0.3356466034965968,
+          "predicted": 0.34721290758125595
+        },
+        "reference_selected": {
+          "observed": 0.2879746835443038,
+          "predicted": 0.25079301839010626
+        },
+        "regressions": 546,
+        "rows": 7493,
+        "selected_by_alternative_count": {
+          "1": {
+            "observed_mean_gain": 0.00859375,
+            "optimism_per_row": 0.1980464392334427,
+            "predicted_mean_gain": 0.20664018923344268,
+            "rows": 1280
+          },
+          "2": {
+            "observed_mean_gain": 0.05755395683453238,
+            "optimism_per_row": 0.15898436462048243,
+            "predicted_mean_gain": 0.2165383214550148,
+            "rows": 556
+          },
+          "3": {
+            "observed_mean_gain": -0.08333333333333333,
+            "optimism_per_row": 0.29208914618747644,
+            "predicted_mean_gain": 0.20875581285414307,
+            "rows": 60
+          },
+          "4": {
+            "observed_mean_gain": null,
+            "optimism_per_row": null,
+            "predicted_mean_gain": null,
+            "rows": 0
+          }
+        },
+        "selected_optimism_decomposition": {
+          "baseline_component": 110.27627049194501,
+          "conditional_component": 249.14382722709843,
+          "formula": "(B-r)*(1+q) + (1-B)*(q-I(selected_K=true_K)); a fixed algebraic decomposition, not causal attribution"
+        },
+        "selected_wrong_baseline_with_correct_alternative_but_wrong_choice": 141,
+        "selected_wrong_baseline_without_correct_alternative": 625
+      },
+      "original_predictions_sha256": "99b92ae5d69f53fa0f6a9fd78d175ab21d0abb1c4752b0a46cb7deda7eabfadc",
+      "paired": {
+        "by_k": {
+          "0": {
+            "changed": 58,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 266,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 490,
+            "corrections": 254,
+            "net": 91,
+            "regressions": 163
+          },
+          "3": {
+            "changed": 482,
+            "corrections": 189,
+            "net": -39,
+            "regressions": 228
+          },
+          "4": {
+            "changed": 289,
+            "corrections": 66,
+            "net": -38,
+            "regressions": 104
+          },
+          "5": {
+            "changed": 104,
+            "corrections": 18,
+            "net": 18,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 31,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1720,
+          "corrections": 527,
+          "net": 32,
+          "regressions": 495
+        },
+        "poly": {
+          "changed": 1396,
+          "corrections": 527,
+          "net": 32,
+          "regressions": 495
+        }
+      },
+      "predictions_sha256": "61e06060c098b05af865e2e915ffc028b0524419db47e2b33fd7beb8f92a45d4",
+      "raw_votes_proposals_and_audits_identical": true,
+      "regression_case_file": {
+        "path": "corrector8-remaining-regression-profiles.csv",
+        "rows": 495,
+        "sha256": "ab15d55f024d2f973f1910a9dc3fb42b2b00202c61374805116269adfa07bee4"
+      },
+      "regression_profiles_are_descriptive_not_new_categories": true,
+      "remaining_regression_profiles": {
+        "local_rates_favor_correction_for_all_groups": 88,
+        "local_rates_favor_regression_for_all_groups": 126,
+        "mixed_by_complete_group": 280,
+        "tied_local_rates": 1
+      },
+      "report_sha256": "be86cf6a77467fc555a31159c13378c490e5ff7f34b7d35ee8d02d91fa3df2c1",
+      "versus_original": {
+        "by_k": {
+          "0": {
+            "changed": 24,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 59,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 132,
+            "corrections": 53,
+            "net": -3,
+            "regressions": 56
+          },
+          "3": {
+            "changed": 171,
+            "corrections": 71,
+            "net": -15,
+            "regressions": 86
+          },
+          "4": {
+            "changed": 89,
+            "corrections": 33,
+            "net": 11,
+            "regressions": 22
+          },
+          "5": {
+            "changed": 40,
+            "corrections": 3,
+            "net": 1,
+            "regressions": 2
+          },
+          "6": {
+            "changed": 8,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 523,
+          "corrections": 160,
+          "net": -6,
+          "regressions": 166
+        },
+        "poly": {
+          "changed": 440,
+          "corrections": 160,
+          "net": -6,
+          "regressions": 166
+        }
+      }
+    }
+  },
+  "artifact_manifest": {
+    "artifacts": [
+      {
+        "id": 11563906800,
+        "name": "v273-memory-local-corrector8",
+        "sha256": "c8d20d61fbdcbb133e4f5b230ce4e202bb3d418a5b811522758c6eea0b09222a",
+        "size": 26992004
+      },
+      {
+        "id": 11563283042,
+        "name": "v273-history-memory",
+        "sha256": "d454c5bfe8be18ac05075c72e13927cb2128a640770c783a953a6051286b2a1d",
+        "size": 1477956
+      },
+      {
+        "id": 11562993737,
+        "name": "v273-memory-local-control7",
+        "sha256": "1957a1d1dd6de7432e2a7e7e082db6661a807edb04bc66394b194e5c329bda88",
+        "size": 12506958
+      }
+    ],
+    "run_id": 37807124287,
+    "source_commit": "a287fbf42f091fa996b1f085416d64b28a7b381e"
+  },
+  "independent_validation": false,
+  "promotion": false,
+  "run_id": 37807124287,
+  "source_commit": "a287fbf42f091fa996b1f085416d64b28a7b381e",
+  "status": "verified"
+}
