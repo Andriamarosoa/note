@@ -1,0 +1,70 @@
+name: V27.3 Native Neural Head Selection with Fixes
+
+on:
+  push:
+    branches: [codex/v273-failure-clustering]
+    paths:
+      - 'scripts/evaluate_v273_neural_history_mix.py'
+      - 'scripts/learn_v273_neural_head_selector.py'
+      - '.github/workflows/v273-native-neural-head-mix.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  native-eval:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 95
+    env:
+      PYTHONPATH: '.:src'
+      TF_CPP_MIN_LOG_LEVEL: '2'
+      CUDA_VISIBLE_DEVICES: '-1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      TF_NUM_INTRAOP_THREADS: '2'
+      TF_NUM_INTEROP_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install neural CPU and scoring dependencies
+        run: |
+          python -m pip install -r requirements-train.txt
+          python -m pip install scipy==1.17.1 scikit-learn==1.4.2
+      - name: Verify learned-attention head interaction tests
+        run: |
+          python -m py_compile scripts/evaluate_v273_neural_history_mix.py scripts/learn_v273_neural_head_selector.py
+          python -m unittest -v test.test_v273_neural_history_selector
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37605163312
+          name: yourmt3-exactk-cohort
+          path: model/cohort
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37740493178
+          pattern: v273-harmonic-global-fold-*
+          path: model/features
+      - name: Fit train-only OOF neural head selector and score 59309 native events
+        run: |
+          python -B scripts/evaluate_v273_neural_history_mix.py \
+            --cohort model/cohort \
+            --features model/features \
+            --output model/neural-full
+      - name: Publish Exact-K and by-K regression audit
+        run: cat model/neural-full/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-native-neural-head-mix-report
+          path: model/neural-full/
+          retention-days: 90
