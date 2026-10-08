@@ -2,8 +2,13 @@
 
 **Date : 2026-10-08. Statut : protocole exploratoire terminé ; référence intacte.**
 
+Les deux comptages binaires de perte d'énergie sur des templates quasi nuls ont
+été remplacés par des rapports continus avant le run final, afin de limiter
+la sensibilité aux arrondis. Les scores du run final 37739605464 prévalent
+sur les premières valeurs exploratoires.
+
 - [Run initial, complet](https://github.com/Andriamarosoa/note/actions/runs/37738998181)
-- [Run contrôles supplémentaires, complet](https://github.com/Andriamarosoa/note/actions/runs/37739246923)
+- [Run final après stabilisation, complet](https://github.com/Andriamarosoa/note/actions/runs/37739605464)
 - Branche : `codex/v273-failure-clustering`
 - Cohorte : **1 800 événements** natifs, 150 K2 + 150 K3 + 150 K4
   dans chacun des folds **0, 1, 2, 4**. Joueur 05 et fold 3 exclus.
@@ -41,21 +46,21 @@ Ce ne sont PAS les scores du réseau `freeze_local_combo` à sept classes.
 | Flux + transport 24 bandes | 47.06 % | .6572 | 55.8 % |
 | État harmonique seul | 49.56 % | .6774 | 58.5 % |
 | **Naissance + maintien + extinction** | **51.28 %** | **.6895** | **67.0 %** |
-| Harmoniques, toutes caractéristiques | 52.17 % | .7074 | 62.2 % |
-| Harmoniques désaccordés | 52.17 % | .7078 | 62.3 % |
-| **Fondamentales seules** | **50.78 %** | **.7099** | **61.3 %** |
-| Ordre temporel brouillé | 49.44 % | .6838 | 59.2 % |
-| Flux 24 bandes + cycle de vie harmonique | 51.78 % | **.7207** | 60.2 % |
+| Harmoniques, toutes caractéristiques | 51.67 % | .7061 | 59.8 % |
+| Harmoniques désaccordés | 51.83 % | .6996 | 62.2 % |
+| **Fondamentales seules** | **50.72 %** | **.7082** | **60.5 %** |
+| Ordre temporel brouillé | 49.39 % | .6789 | 59.2 % |
+| Flux 24 bandes + cycle de vie harmonique | **52.61 %** | **.7174** | 60.7 % |
 
 ### Stabilité inter-folds (balanced accuracy)
 
 | Fold | Énergie statique | Cycle de vie harmonique | Tous traits harmoniques |
 |---|---:|---:|---:|
-| 0 | 45.11 % | **50.00 %** | 52.22 % |
-| 1 | 47.33 % | **51.33 %** | 52.89 % |
-| 2 | 49.33 % | **51.78 %** | 48.44 % |
-| 4 | 44.22 % | **52.00 %** | 55.11 % |
-| Ensemble | 46.50 % | **51.28 %** | 52.17 % |
+| 0 | 45.11 % | **50.00 %** | 52.89 % |
+| 1 | 47.33 % | **51.33 %** | 51.78 % |
+| 2 | 49.33 % | **51.78 %** | 49.11 % |
+| 4 | 44.22 % | **52.00 %** | 52.89 % |
+| Ensemble | 46.50 % | **51.28 %** | 51.67 % |
 
 Le cycle de vie harmonique gagne donc face à l'état statique **dans les
 quatre folds**, dont le fold 2. La paire est **316 corrections / 230
@@ -64,8 +69,12 @@ du protocole **à trois classes** ; cela **n'est pas** un gain validé de
 `freeze_local_combo`.
 
 La combinaison totale avec les anciennes caractéristiques atteint une
-macro AUC de .7207 mais une balanced accuracy de 51.78 %, donc ne surpasse
-pas la méthode harmonique complète en taux de bonnes classifications.
+macro AUC de .7174 et une balanced accuracy de **52.61 %**, meilleure que
+les 51.67 % du modèle harmonique seul. Sur le fold 2, elle obtient
+**54.89 %** (contre 49.33 % pour le contrôle statique).
+Elle réalise 347 corrections et 237 régressions (net +110) par rapport
+au contrôle à trois classes. Cette combinaison a été évaluée sur les
+mêmes folds historiquement exposés : **aucune validation indépendante**.
 
 ## Interprétation honnête
 
@@ -73,12 +82,12 @@ pas la méthode harmonique complète en taux de bonnes classifications.
    naissance/persistance/extinction sont utiles et leur avantage sur
    l'énergie statique apparaît dans les quatre folds testés.
 2. **Harmoniques pas identifiés de manière causale :** fondamentales seules
-   donnent déjà 50.78 %. Des partiels désaccordés donnent presque les
+   donnent déjà 50.72 %. Des partiels désaccordés donnent presque les
    mêmes performances que les partiels vrais. L'importance de la structure
    harmonique exacte et la séparation des véritables sources musicales
    restent non démontrées.
 3. **Effet du temps :** le brouillage temporel réduit la balanced accuracy
-   de 52.17 % à 49.44 %, mais ce contrôle modifie aussi certaines frontières
+   de 51.67 % à 49.39 %, mais ce contrôle modifie aussi certaines frontières
    du mouvement. Il ne constitue pas à lui seul une expérience causale.
 4. **Pas de validation indépendante :** les compositions de GuitarSet des
    folds internes ont déjà été examinées. La distribution K2/K3/K4 est
