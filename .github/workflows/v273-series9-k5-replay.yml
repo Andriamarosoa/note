@@ -1,0 +1,40 @@
+name: V27.3 series9 posthoc K5 veto replay
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series9-k5-replay.yml'
+      - 'scripts/audit_v273_series9_posthoc.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Retrieve series8 independent CI output, not local selections
+        env:
+          GH_TOKEN: \${{ github.token }}
+        run: gh run download 37851172129 --repo "$GITHUB_REPOSITORY" --name v273-series7-learned-risk --dir model/series8-input
+      - name: Reproduce all K5 veto policies and each changed event
+        run: >-
+          python -m scripts.audit_v273_series9_posthoc
+          --input model/series8-input/predictions.npz
+          --output model/series9-audit
+      - name: Publish pairwise audit
+        run: cat model/series9-audit/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series9-posthoc-audit
+          path: model/series9-audit/
+          retention-days: 90
