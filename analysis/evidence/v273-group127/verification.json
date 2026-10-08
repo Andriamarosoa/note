@@ -1,0 +1,2506 @@
+{
+  "archived_coherent": {
+    "by_k": {
+      "0": {
+        "correct": 38035,
+        "exact": 0.9592202158781398,
+        "over": 1617,
+        "rows": 39652,
+        "under": 0
+      },
+      "1": {
+        "correct": 7889,
+        "exact": 0.6428455019556715,
+        "over": 1474,
+        "rows": 12272,
+        "under": 2909
+      },
+      "2": {
+        "correct": 1308,
+        "exact": 0.37968069666182874,
+        "over": 729,
+        "rows": 3445,
+        "under": 1408
+      },
+      "3": {
+        "correct": 818,
+        "exact": 0.35736129314110965,
+        "over": 370,
+        "rows": 2289,
+        "under": 1101
+      },
+      "4": {
+        "correct": 391,
+        "exact": 0.323943661971831,
+        "over": 54,
+        "rows": 1207,
+        "under": 762
+      },
+      "5": {
+        "correct": 43,
+        "exact": 0.12112676056338029,
+        "over": 2,
+        "rows": 355,
+        "under": 310
+      },
+      "6": {
+        "correct": 1,
+        "exact": 0.011235955056179775,
+        "over": 0,
+        "rows": 89,
+        "under": 88
+      }
+    },
+    "confusion_true_by_predicted": [
+      [
+        38035,
+        1047,
+        499,
+        61,
+        10,
+        0,
+        0
+      ],
+      [
+        2909,
+        7889,
+        1229,
+        207,
+        31,
+        7,
+        0
+      ],
+      [
+        666,
+        742,
+        1308,
+        584,
+        141,
+        4,
+        0
+      ],
+      [
+        211,
+        170,
+        720,
+        818,
+        341,
+        29,
+        0
+      ],
+      [
+        47,
+        34,
+        240,
+        441,
+        391,
+        54,
+        0
+      ],
+      [
+        7,
+        8,
+        55,
+        105,
+        135,
+        43,
+        2
+      ],
+      [
+        0,
+        4,
+        12,
+        26,
+        28,
+        18,
+        1
+      ]
+    ],
+    "correct": 48485,
+    "exact": 0.8174981874589017,
+    "over": 4246,
+    "poly": {
+      "correct": 2561,
+      "exact": 0.34678402166553823,
+      "over": 1155,
+      "rows": 7385,
+      "under": 3669
+    },
+    "rows": 59309,
+    "under": 6578
+  },
+  "arms": {
+    "direct": {
+      "all_seven_singletons_wrong": {
+        "events": 16,
+        "global_ids": [
+          9927,
+          12762,
+          25645,
+          48217,
+          61509,
+          67320,
+          71649,
+          72111,
+          3021,
+          31759,
+          32041,
+          46620,
+          63436,
+          8837,
+          8909,
+          9255
+        ],
+        "recovered": 6,
+        "true_k_counts": {
+          "0": 0,
+          "1": 0,
+          "2": 1,
+          "3": 6,
+          "4": 9,
+          "5": 0,
+          "6": 0
+        }
+      },
+      "archive_sha256": "4ddca867afabb67a64991633d2deb8aadd364cb6cfacead1b6e694462c9337fa",
+      "artifact_id": 11550612680,
+      "candidate": {
+        "by_k": {
+          "0": {
+            "correct": 38035,
+            "exact": 0.9592202158781398,
+            "over": 1617,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7889,
+            "exact": 0.6428455019556715,
+            "over": 1474,
+            "rows": 12272,
+            "under": 2909
+          },
+          "2": {
+            "correct": 1304,
+            "exact": 0.3785195936139332,
+            "over": 733,
+            "rows": 3445,
+            "under": 1408
+          },
+          "3": {
+            "correct": 887,
+            "exact": 0.3875054608999563,
+            "over": 256,
+            "rows": 2289,
+            "under": 1146
+          },
+          "4": {
+            "correct": 331,
+            "exact": 0.2742336371168186,
+            "over": 38,
+            "rows": 1207,
+            "under": 838
+          },
+          "5": {
+            "correct": 32,
+            "exact": 0.09014084507042254,
+            "over": 0,
+            "rows": 355,
+            "under": 323
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38035,
+            1047,
+            495,
+            67,
+            8,
+            0,
+            0
+          ],
+          [
+            2909,
+            7889,
+            1221,
+            226,
+            24,
+            3,
+            0
+          ],
+          [
+            666,
+            742,
+            1304,
+            620,
+            108,
+            5,
+            0
+          ],
+          [
+            211,
+            170,
+            765,
+            887,
+            236,
+            20,
+            0
+          ],
+          [
+            47,
+            34,
+            248,
+            509,
+            331,
+            38,
+            0
+          ],
+          [
+            7,
+            8,
+            54,
+            151,
+            103,
+            32,
+            0
+          ],
+          [
+            0,
+            4,
+            10,
+            36,
+            28,
+            11,
+            0
+          ]
+        ],
+        "correct": 48478,
+        "exact": 0.8173801615269184,
+        "over": 4118,
+        "poly": {
+          "correct": 2554,
+          "exact": 0.3458361543669601,
+          "over": 1027,
+          "rows": 7385,
+          "under": 3804
+        },
+        "rows": 59309,
+        "under": 6713
+      },
+      "configuration": {
+        "H0": "deterministic action encoding; not probability of correctness",
+        "batch_size": 192,
+        "candidate_count": 7,
+        "candidates": [
+          "frozen_action",
+          "spectral",
+          "lifecycle",
+          "harmonic_full",
+          "fundamentals",
+          "sources",
+          "five_specialist_mean"
+        ],
+        "context_names": [
+          "birth__early_mass_fraction",
+          "birth__frame_max",
+          "birth__frame_mean",
+          "birth__frame_std",
+          "birth__late_mass_fraction",
+          "birth__mid_mass_fraction",
+          "birth__novel_mass",
+          "birth__novel_track_fraction",
+          "birth__positive_flow",
+          "birth__positive_fraction",
+          "birth__positive_track_concentration",
+          "damping__early_mass_fraction",
+          "damping__frame_max",
+          "damping__frame_mean",
+          "damping__frame_std",
+          "damping__late_mass_fraction",
+          "damping__lost_mass",
+          "damping__mid_mass_fraction",
+          "damping__negative_flow",
+          "damping__sink_fraction",
+          "damping__sink_track_concentration",
+          "damping__vanishing_track_fraction",
+          "persistence__mean_survival",
+          "persistence__new_source_retention",
+          "persistence__pre_post_retention",
+          "persistence__retention_10",
+          "persistence__retention_2",
+          "persistence__retention_5",
+          "persistence__stable_track_fraction",
+          "spectral__active_late",
+          "spectral__active_on",
+          "spectral__active_pre",
+          "spectral__dominant_late",
+          "spectral__dominant_on",
+          "spectral__dominant_pre",
+          "spectral__entropy_late",
+          "spectral__entropy_on",
+          "spectral__entropy_pre",
+          "spectral__late_pre_ratio",
+          "spectral__mass_late",
+          "spectral__mass_on",
+          "spectral__mass_pre",
+          "spectral__on_pre_ratio"
+        ],
+        "descriptor_dimensions": 64,
+        "eligible_rows": 7493,
+        "epochs": 30,
+        "extra_KEEP": 1,
+        "fold3_used": false,
+        "folds": [
+          0,
+          1,
+          2,
+          4
+        ],
+        "fusion": "fixed arithmetic mean of candidate vote vectors; tie keeps frozen class",
+        "global_audits_enabled": false,
+        "groups": 127,
+        "individual_veto": false,
+        "learning_rate": 0.002,
+        "local_audit_strength": 12,
+        "local_audits_enabled": false,
+        "local_neighbors": 64,
+        "native_rows": 59309,
+        "no_posthoc_threshold": true,
+        "objective": "unweighted baseline BCE plus per-event averaged conditional joint-correction BCE",
+        "optional_frozen_action": true,
+        "player05_used": false,
+        "producer_cache_sha256": "836b07f9ae062160508c63a7c9ab4f72b65e8458c7e24c5e4e92f17567fde914",
+        "seed": 27402,
+        "seventh_candidate": "mean of the same five specialists, not new independent evidence",
+        "shared_baseline_correctness": true
+      },
+      "fold_nets": {
+        "0": 12,
+        "1": 25,
+        "2": -24,
+        "4": 11
+      },
+      "input_sha256": {
+        "group_proposal": "94502c499e5fa095142d15a0701ed9ca1d917d0add4098498bc331b3891da094",
+        "local_audit_features": "e19dc436b6d4842bb7a06b95f0db690cf57a66069e2db747ea12a7ffa149740c",
+        "member_votes": "f05c0d830d3c18a64ce2808d45fd9e01a3913cebf37f2e2df553e35c82c05198"
+      },
+      "keep_rows": 5289,
+      "oracle": {
+        "correctable_errors_with_some_group": 1624,
+        "global_exact_upper_bound": 0.8443575174088249,
+        "mean_distinct_verdicts_per_event": 1.836647537701855,
+        "not_a_prediction": true,
+        "poly_exact_upper_bound": 0.5624915368991198,
+        "true_k_counts": {
+          "0": 0,
+          "1": 0,
+          "2": 636,
+          "3": 715,
+          "4": 227,
+          "5": 46,
+          "6": 0
+        }
+      },
+      "paired": {
+        "by_k": {
+          "0": {
+            "changed": 72,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 325,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 600,
+            "corrections": 317,
+            "net": 121,
+            "regressions": 196
+          },
+          "3": {
+            "changed": 617,
+            "corrections": 272,
+            "net": -28,
+            "regressions": 300
+          },
+          "4": {
+            "changed": 400,
+            "corrections": 80,
+            "net": -86,
+            "regressions": 166
+          },
+          "5": {
+            "changed": 147,
+            "corrections": 17,
+            "net": 17,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 43,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2204,
+          "corrections": 686,
+          "net": 24,
+          "regressions": 662
+        },
+        "poly": {
+          "changed": 1807,
+          "corrections": 686,
+          "net": 24,
+          "regressions": 662
+        }
+      },
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 56,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 217,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 490,
+            "corrections": 199,
+            "net": -4,
+            "regressions": 203
+          },
+          "3": {
+            "changed": 556,
+            "corrections": 291,
+            "net": 69,
+            "regressions": 222
+          },
+          "4": {
+            "changed": 377,
+            "corrections": 98,
+            "net": -60,
+            "regressions": 158
+          },
+          "5": {
+            "changed": 131,
+            "corrections": 10,
+            "net": -11,
+            "regressions": 21
+          },
+          "6": {
+            "changed": 35,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          }
+        },
+        "global": {
+          "changed": 1862,
+          "corrections": 598,
+          "net": -7,
+          "regressions": 605
+        },
+        "poly": {
+          "changed": 1589,
+          "corrections": 598,
+          "net": -7,
+          "regressions": 605
+        }
+      },
+      "parameters": [
+        12994,
+        12994,
+        12994,
+        12994
+      ],
+      "predictions_sha256": "b35eb5801c82fb18aa811719468452bb4a7222626a924ae3ebe3581599d75209",
+      "provenance_verification": {
+        "distinct_producers": 14,
+        "forbidden_id_overlap": 0,
+        "nested_paths": 24
+      },
+      "raw_audits_exported_before_arm_mask": true,
+      "selected_expected_net": 496.82989501953125,
+      "selected_group_sizes": {
+        "1": 587,
+        "2": 526,
+        "3": 451,
+        "4": 345,
+        "5": 189,
+        "6": 79,
+        "7": 27
+      },
+      "singletons_only": {
+        "comparison_with_all_groups": {
+          "by_k": {
+            "0": {
+              "changed": 10,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 45,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 70,
+              "corrections": 18,
+              "net": -20,
+              "regressions": 38
+            },
+            "3": {
+              "changed": 84,
+              "corrections": 42,
+              "net": 9,
+              "regressions": 33
+            },
+            "4": {
+              "changed": 42,
+              "corrections": 6,
+              "net": -13,
+              "regressions": 19
+            },
+            "5": {
+              "changed": 25,
+              "corrections": 1,
+              "net": -2,
+              "regressions": 3
+            },
+            "6": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 279,
+            "corrections": 67,
+            "net": -26,
+            "regressions": 93
+          },
+          "poly": {
+            "changed": 224,
+            "corrections": 67,
+            "net": -26,
+            "regressions": 93
+          }
+        },
+        "metrics": {
+          "by_k": {
+            "0": {
+              "correct": 38035,
+              "exact": 0.9592202158781398,
+              "over": 1617,
+              "rows": 39652,
+              "under": 0
+            },
+            "1": {
+              "correct": 7889,
+              "exact": 0.6428455019556715,
+              "over": 1474,
+              "rows": 12272,
+              "under": 2909
+            },
+            "2": {
+              "correct": 1324,
+              "exact": 0.38432510885341076,
+              "over": 713,
+              "rows": 3445,
+              "under": 1408
+            },
+            "3": {
+              "correct": 878,
+              "exact": 0.3835736129314111,
+              "over": 279,
+              "rows": 2289,
+              "under": 1132
+            },
+            "4": {
+              "correct": 344,
+              "exact": 0.28500414250207123,
+              "over": 41,
+              "rows": 1207,
+              "under": 822
+            },
+            "5": {
+              "correct": 34,
+              "exact": 0.09577464788732394,
+              "over": 0,
+              "rows": 355,
+              "under": 321
+            },
+            "6": {
+              "correct": 0,
+              "exact": 0.0,
+              "over": 0,
+              "rows": 89,
+              "under": 89
+            }
+          },
+          "confusion_true_by_predicted": [
+            [
+              38035,
+              1047,
+              489,
+              73,
+              8,
+              0,
+              0
+            ],
+            [
+              2909,
+              7889,
+              1210,
+              230,
+              31,
+              3,
+              0
+            ],
+            [
+              666,
+              742,
+              1324,
+              593,
+              116,
+              4,
+              0
+            ],
+            [
+              211,
+              170,
+              751,
+              878,
+              258,
+              21,
+              0
+            ],
+            [
+              47,
+              34,
+              238,
+              503,
+              344,
+              41,
+              0
+            ],
+            [
+              7,
+              8,
+              49,
+              151,
+              106,
+              34,
+              0
+            ],
+            [
+              0,
+              4,
+              11,
+              35,
+              28,
+              11,
+              0
+            ]
+          ],
+          "correct": 48504,
+          "exact": 0.8178185435599993,
+          "over": 4124,
+          "poly": {
+            "correct": 2580,
+            "exact": 0.3493568043331077,
+            "over": 1033,
+            "rows": 7385,
+            "under": 3772
+          },
+          "rows": 59309,
+          "under": 6681
+        },
+        "paired": {
+          "by_k": {
+            "0": {
+              "changed": 63,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 287,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 542,
+              "corrections": 303,
+              "net": 141,
+              "regressions": 162
+            },
+            "3": {
+              "changed": 550,
+              "corrections": 238,
+              "net": -37,
+              "regressions": 275
+            },
+            "4": {
+              "changed": 364,
+              "corrections": 74,
+              "net": -73,
+              "regressions": 147
+            },
+            "5": {
+              "changed": 126,
+              "corrections": 19,
+              "net": 19,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 40,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 1972,
+            "corrections": 634,
+            "net": 50,
+            "regressions": 584
+          },
+          "poly": {
+            "changed": 1622,
+            "corrections": 634,
+            "net": 50,
+            "regressions": 584
+          }
+        },
+        "retrained": false
+      },
+      "synergy": {
+        "among_initially_correct": 60,
+        "among_initially_wrong": 87,
+        "events_with_correct_group_and_all_its_members_wrong": 147,
+        "selected_correct_joint_groups_with_all_members_wrong": 7
+      }
+    },
+    "global": {
+      "all_seven_singletons_wrong": {
+        "events": 16,
+        "global_ids": [
+          9927,
+          12762,
+          25645,
+          48217,
+          61509,
+          67320,
+          71649,
+          72111,
+          3021,
+          31759,
+          32041,
+          46620,
+          63436,
+          8837,
+          8909,
+          9255
+        ],
+        "recovered": 6,
+        "true_k_counts": {
+          "0": 0,
+          "1": 0,
+          "2": 1,
+          "3": 6,
+          "4": 9,
+          "5": 0,
+          "6": 0
+        }
+      },
+      "archive_sha256": "15514adb259c8c65580e97ae963fba0e886abe2a53566c1dba64fed554b5f19a",
+      "artifact_id": 11550932225,
+      "candidate": {
+        "by_k": {
+          "0": {
+            "correct": 38035,
+            "exact": 0.9592202158781398,
+            "over": 1617,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7889,
+            "exact": 0.6428455019556715,
+            "over": 1474,
+            "rows": 12272,
+            "under": 2909
+          },
+          "2": {
+            "correct": 1303,
+            "exact": 0.37822931785195935,
+            "over": 734,
+            "rows": 3445,
+            "under": 1408
+          },
+          "3": {
+            "correct": 897,
+            "exact": 0.3918741808650065,
+            "over": 271,
+            "rows": 2289,
+            "under": 1121
+          },
+          "4": {
+            "correct": 353,
+            "exact": 0.29246064623032314,
+            "over": 39,
+            "rows": 1207,
+            "under": 815
+          },
+          "5": {
+            "correct": 34,
+            "exact": 0.09577464788732394,
+            "over": 0,
+            "rows": 355,
+            "under": 321
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38035,
+            1047,
+            496,
+            67,
+            7,
+            0,
+            0
+          ],
+          [
+            2909,
+            7889,
+            1213,
+            233,
+            25,
+            3,
+            0
+          ],
+          [
+            666,
+            742,
+            1303,
+            619,
+            110,
+            5,
+            0
+          ],
+          [
+            211,
+            170,
+            740,
+            897,
+            250,
+            21,
+            0
+          ],
+          [
+            47,
+            34,
+            241,
+            493,
+            353,
+            39,
+            0
+          ],
+          [
+            7,
+            8,
+            52,
+            143,
+            111,
+            34,
+            0
+          ],
+          [
+            0,
+            4,
+            10,
+            36,
+            28,
+            11,
+            0
+          ]
+        ],
+        "correct": 48511,
+        "exact": 0.8179365694919827,
+        "over": 4135,
+        "poly": {
+          "correct": 2587,
+          "exact": 0.3503046716316858,
+          "over": 1044,
+          "rows": 7385,
+          "under": 3754
+        },
+        "rows": 59309,
+        "under": 6663
+      },
+      "configuration": {
+        "H0": "deterministic action encoding; not probability of correctness",
+        "batch_size": 192,
+        "candidate_count": 7,
+        "candidates": [
+          "frozen_action",
+          "spectral",
+          "lifecycle",
+          "harmonic_full",
+          "fundamentals",
+          "sources",
+          "five_specialist_mean"
+        ],
+        "context_names": [
+          "birth__early_mass_fraction",
+          "birth__frame_max",
+          "birth__frame_mean",
+          "birth__frame_std",
+          "birth__late_mass_fraction",
+          "birth__mid_mass_fraction",
+          "birth__novel_mass",
+          "birth__novel_track_fraction",
+          "birth__positive_flow",
+          "birth__positive_fraction",
+          "birth__positive_track_concentration",
+          "damping__early_mass_fraction",
+          "damping__frame_max",
+          "damping__frame_mean",
+          "damping__frame_std",
+          "damping__late_mass_fraction",
+          "damping__lost_mass",
+          "damping__mid_mass_fraction",
+          "damping__negative_flow",
+          "damping__sink_fraction",
+          "damping__sink_track_concentration",
+          "damping__vanishing_track_fraction",
+          "persistence__mean_survival",
+          "persistence__new_source_retention",
+          "persistence__pre_post_retention",
+          "persistence__retention_10",
+          "persistence__retention_2",
+          "persistence__retention_5",
+          "persistence__stable_track_fraction",
+          "spectral__active_late",
+          "spectral__active_on",
+          "spectral__active_pre",
+          "spectral__dominant_late",
+          "spectral__dominant_on",
+          "spectral__dominant_pre",
+          "spectral__entropy_late",
+          "spectral__entropy_on",
+          "spectral__entropy_pre",
+          "spectral__late_pre_ratio",
+          "spectral__mass_late",
+          "spectral__mass_on",
+          "spectral__mass_pre",
+          "spectral__on_pre_ratio"
+        ],
+        "descriptor_dimensions": 64,
+        "eligible_rows": 7493,
+        "epochs": 30,
+        "extra_KEEP": 1,
+        "fold3_used": false,
+        "folds": [
+          0,
+          1,
+          2,
+          4
+        ],
+        "fusion": "fixed arithmetic mean of candidate vote vectors; tie keeps frozen class",
+        "global_audits_enabled": true,
+        "groups": 127,
+        "individual_veto": false,
+        "learning_rate": 0.002,
+        "local_audit_strength": 12,
+        "local_audits_enabled": false,
+        "local_neighbors": 64,
+        "native_rows": 59309,
+        "no_posthoc_threshold": true,
+        "objective": "unweighted baseline BCE plus per-event averaged conditional joint-correction BCE",
+        "optional_frozen_action": true,
+        "player05_used": false,
+        "producer_cache_sha256": "836b07f9ae062160508c63a7c9ab4f72b65e8458c7e24c5e4e92f17567fde914",
+        "seed": 27402,
+        "seventh_candidate": "mean of the same five specialists, not new independent evidence",
+        "shared_baseline_correctness": true
+      },
+      "fold_nets": {
+        "0": 18,
+        "1": 26,
+        "2": -20,
+        "4": 33
+      },
+      "input_sha256": {
+        "group_proposal": "94502c499e5fa095142d15a0701ed9ca1d917d0add4098498bc331b3891da094",
+        "local_audit_features": "e19dc436b6d4842bb7a06b95f0db690cf57a66069e2db747ea12a7ffa149740c",
+        "member_votes": "f05c0d830d3c18a64ce2808d45fd9e01a3913cebf37f2e2df553e35c82c05198"
+      },
+      "keep_rows": 5352,
+      "oracle": {
+        "correctable_errors_with_some_group": 1624,
+        "global_exact_upper_bound": 0.8443575174088249,
+        "mean_distinct_verdicts_per_event": 1.836647537701855,
+        "not_a_prediction": true,
+        "poly_exact_upper_bound": 0.5624915368991198,
+        "true_k_counts": {
+          "0": 0,
+          "1": 0,
+          "2": 636,
+          "3": 715,
+          "4": 227,
+          "5": 46,
+          "6": 0
+        }
+      },
+      "paired": {
+        "by_k": {
+          "0": {
+            "changed": 71,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 325,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 589,
+            "corrections": 309,
+            "net": 120,
+            "regressions": 189
+          },
+          "3": {
+            "changed": 586,
+            "corrections": 261,
+            "net": -18,
+            "regressions": 279
+          },
+          "4": {
+            "changed": 383,
+            "corrections": 86,
+            "net": -64,
+            "regressions": 150
+          },
+          "5": {
+            "changed": 144,
+            "corrections": 19,
+            "net": 19,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 43,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2141,
+          "corrections": 675,
+          "net": 57,
+          "regressions": 618
+        },
+        "poly": {
+          "changed": 1745,
+          "corrections": 675,
+          "net": 57,
+          "regressions": 618
+        }
+      },
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 56,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 224,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 497,
+            "corrections": 200,
+            "net": -5,
+            "regressions": 205
+          },
+          "3": {
+            "changed": 558,
+            "corrections": 298,
+            "net": 79,
+            "regressions": 219
+          },
+          "4": {
+            "changed": 360,
+            "corrections": 108,
+            "net": -38,
+            "regressions": 146
+          },
+          "5": {
+            "changed": 134,
+            "corrections": 11,
+            "net": -9,
+            "regressions": 20
+          },
+          "6": {
+            "changed": 35,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          }
+        },
+        "global": {
+          "changed": 1864,
+          "corrections": 617,
+          "net": 26,
+          "regressions": 591
+        },
+        "poly": {
+          "changed": 1584,
+          "corrections": 617,
+          "net": 26,
+          "regressions": 591
+        }
+      },
+      "parameters": [
+        12994,
+        12994,
+        12994,
+        12994
+      ],
+      "predictions_sha256": "29758e90675918844c8eea01fcb9816f830dd3837bae02e79e56b0d57e6af038",
+      "provenance_verification": {
+        "distinct_producers": 14,
+        "forbidden_id_overlap": 0,
+        "nested_paths": 24
+      },
+      "raw_audits_exported_before_arm_mask": true,
+      "selected_expected_net": 488.94244384765625,
+      "selected_group_sizes": {
+        "1": 554,
+        "2": 515,
+        "3": 442,
+        "4": 338,
+        "5": 188,
+        "6": 77,
+        "7": 27
+      },
+      "singletons_only": {
+        "comparison_with_all_groups": {
+          "by_k": {
+            "0": {
+              "changed": 8,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 47,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 73,
+              "corrections": 22,
+              "net": -11,
+              "regressions": 33
+            },
+            "3": {
+              "changed": 66,
+              "corrections": 32,
+              "net": 5,
+              "regressions": 27
+            },
+            "4": {
+              "changed": 41,
+              "corrections": 10,
+              "net": -5,
+              "regressions": 15
+            },
+            "5": {
+              "changed": 25,
+              "corrections": 2,
+              "net": 0,
+              "regressions": 2
+            },
+            "6": {
+              "changed": 4,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 264,
+            "corrections": 66,
+            "net": -11,
+            "regressions": 77
+          },
+          "poly": {
+            "changed": 209,
+            "corrections": 66,
+            "net": -11,
+            "regressions": 77
+          }
+        },
+        "metrics": {
+          "by_k": {
+            "0": {
+              "correct": 38035,
+              "exact": 0.9592202158781398,
+              "over": 1617,
+              "rows": 39652,
+              "under": 0
+            },
+            "1": {
+              "correct": 7889,
+              "exact": 0.6428455019556715,
+              "over": 1474,
+              "rows": 12272,
+              "under": 2909
+            },
+            "2": {
+              "correct": 1314,
+              "exact": 0.38142235123367196,
+              "over": 723,
+              "rows": 3445,
+              "under": 1408
+            },
+            "3": {
+              "correct": 892,
+              "exact": 0.38968982088248144,
+              "over": 287,
+              "rows": 2289,
+              "under": 1110
+            },
+            "4": {
+              "correct": 358,
+              "exact": 0.29660314830157414,
+              "over": 41,
+              "rows": 1207,
+              "under": 808
+            },
+            "5": {
+              "correct": 34,
+              "exact": 0.09577464788732394,
+              "over": 0,
+              "rows": 355,
+              "under": 321
+            },
+            "6": {
+              "correct": 0,
+              "exact": 0.0,
+              "over": 0,
+              "rows": 89,
+              "under": 89
+            }
+          },
+          "confusion_true_by_predicted": [
+            [
+              38035,
+              1047,
+              492,
+              70,
+              8,
+              0,
+              0
+            ],
+            [
+              2909,
+              7889,
+              1214,
+              226,
+              31,
+              3,
+              0
+            ],
+            [
+              666,
+              742,
+              1314,
+              599,
+              119,
+              5,
+              0
+            ],
+            [
+              211,
+              170,
+              729,
+              892,
+              265,
+              22,
+              0
+            ],
+            [
+              47,
+              34,
+              237,
+              490,
+              358,
+              41,
+              0
+            ],
+            [
+              7,
+              8,
+              49,
+              141,
+              116,
+              34,
+              0
+            ],
+            [
+              0,
+              4,
+              11,
+              36,
+              27,
+              11,
+              0
+            ]
+          ],
+          "correct": 48522,
+          "exact": 0.8181220388136707,
+          "over": 4142,
+          "poly": {
+            "correct": 2598,
+            "exact": 0.35179417738659446,
+            "over": 1051,
+            "rows": 7385,
+            "under": 3736
+          },
+          "rows": 59309,
+          "under": 6645
+        },
+        "paired": {
+          "by_k": {
+            "0": {
+              "changed": 64,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 286,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 530,
+              "corrections": 292,
+              "net": 131,
+              "regressions": 161
+            },
+            "3": {
+              "changed": 535,
+              "corrections": 236,
+              "net": -23,
+              "regressions": 259
+            },
+            "4": {
+              "changed": 353,
+              "corrections": 77,
+              "net": -59,
+              "regressions": 136
+            },
+            "5": {
+              "changed": 122,
+              "corrections": 19,
+              "net": 19,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 39,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 1929,
+            "corrections": 624,
+            "net": 68,
+            "regressions": 556
+          },
+          "poly": {
+            "changed": 1579,
+            "corrections": 624,
+            "net": 68,
+            "regressions": 556
+          }
+        },
+        "retrained": false
+      },
+      "synergy": {
+        "among_initially_correct": 60,
+        "among_initially_wrong": 87,
+        "events_with_correct_group_and_all_its_members_wrong": 147,
+        "selected_correct_joint_groups_with_all_members_wrong": 6
+      }
+    },
+    "local": {
+      "all_seven_singletons_wrong": {
+        "events": 16,
+        "global_ids": [
+          9927,
+          12762,
+          25645,
+          48217,
+          61509,
+          67320,
+          71649,
+          72111,
+          3021,
+          31759,
+          32041,
+          46620,
+          63436,
+          8837,
+          8909,
+          9255
+        ],
+        "recovered": 7,
+        "true_k_counts": {
+          "0": 0,
+          "1": 0,
+          "2": 1,
+          "3": 6,
+          "4": 9,
+          "5": 0,
+          "6": 0
+        }
+      },
+      "archive_sha256": "aac124973df354f1537e4adf7bc5b6c01d546fe1af686d15f50ab781ea8b66e4",
+      "artifact_id": 11550733523,
+      "candidate": {
+        "by_k": {
+          "0": {
+            "correct": 38035,
+            "exact": 0.9592202158781398,
+            "over": 1617,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7889,
+            "exact": 0.6428455019556715,
+            "over": 1474,
+            "rows": 12272,
+            "under": 2909
+          },
+          "2": {
+            "correct": 1300,
+            "exact": 0.37735849056603776,
+            "over": 737,
+            "rows": 3445,
+            "under": 1408
+          },
+          "3": {
+            "correct": 884,
+            "exact": 0.38619484491044126,
+            "over": 286,
+            "rows": 2289,
+            "under": 1119
+          },
+          "4": {
+            "correct": 370,
+            "exact": 0.30654515327257664,
+            "over": 36,
+            "rows": 1207,
+            "under": 801
+          },
+          "5": {
+            "correct": 30,
+            "exact": 0.08450704225352113,
+            "over": 0,
+            "rows": 355,
+            "under": 325
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38035,
+            1047,
+            495,
+            67,
+            7,
+            1,
+            0
+          ],
+          [
+            2909,
+            7889,
+            1207,
+            240,
+            24,
+            3,
+            0
+          ],
+          [
+            666,
+            742,
+            1300,
+            623,
+            109,
+            5,
+            0
+          ],
+          [
+            211,
+            170,
+            738,
+            884,
+            262,
+            24,
+            0
+          ],
+          [
+            47,
+            34,
+            244,
+            476,
+            370,
+            36,
+            0
+          ],
+          [
+            7,
+            8,
+            52,
+            147,
+            111,
+            30,
+            0
+          ],
+          [
+            0,
+            4,
+            11,
+            37,
+            25,
+            12,
+            0
+          ]
+        ],
+        "correct": 48508,
+        "exact": 0.817885986949704,
+        "over": 4150,
+        "poly": {
+          "correct": 2584,
+          "exact": 0.34989844278943805,
+          "over": 1059,
+          "rows": 7385,
+          "under": 3742
+        },
+        "rows": 59309,
+        "under": 6651
+      },
+      "configuration": {
+        "H0": "deterministic action encoding; not probability of correctness",
+        "batch_size": 192,
+        "candidate_count": 7,
+        "candidates": [
+          "frozen_action",
+          "spectral",
+          "lifecycle",
+          "harmonic_full",
+          "fundamentals",
+          "sources",
+          "five_specialist_mean"
+        ],
+        "context_names": [
+          "birth__early_mass_fraction",
+          "birth__frame_max",
+          "birth__frame_mean",
+          "birth__frame_std",
+          "birth__late_mass_fraction",
+          "birth__mid_mass_fraction",
+          "birth__novel_mass",
+          "birth__novel_track_fraction",
+          "birth__positive_flow",
+          "birth__positive_fraction",
+          "birth__positive_track_concentration",
+          "damping__early_mass_fraction",
+          "damping__frame_max",
+          "damping__frame_mean",
+          "damping__frame_std",
+          "damping__late_mass_fraction",
+          "damping__lost_mass",
+          "damping__mid_mass_fraction",
+          "damping__negative_flow",
+          "damping__sink_fraction",
+          "damping__sink_track_concentration",
+          "damping__vanishing_track_fraction",
+          "persistence__mean_survival",
+          "persistence__new_source_retention",
+          "persistence__pre_post_retention",
+          "persistence__retention_10",
+          "persistence__retention_2",
+          "persistence__retention_5",
+          "persistence__stable_track_fraction",
+          "spectral__active_late",
+          "spectral__active_on",
+          "spectral__active_pre",
+          "spectral__dominant_late",
+          "spectral__dominant_on",
+          "spectral__dominant_pre",
+          "spectral__entropy_late",
+          "spectral__entropy_on",
+          "spectral__entropy_pre",
+          "spectral__late_pre_ratio",
+          "spectral__mass_late",
+          "spectral__mass_on",
+          "spectral__mass_pre",
+          "spectral__on_pre_ratio"
+        ],
+        "descriptor_dimensions": 64,
+        "eligible_rows": 7493,
+        "epochs": 30,
+        "extra_KEEP": 1,
+        "fold3_used": false,
+        "folds": [
+          0,
+          1,
+          2,
+          4
+        ],
+        "fusion": "fixed arithmetic mean of candidate vote vectors; tie keeps frozen class",
+        "global_audits_enabled": true,
+        "groups": 127,
+        "individual_veto": false,
+        "learning_rate": 0.002,
+        "local_audit_strength": 12,
+        "local_audits_enabled": true,
+        "local_neighbors": 64,
+        "native_rows": 59309,
+        "no_posthoc_threshold": true,
+        "objective": "unweighted baseline BCE plus per-event averaged conditional joint-correction BCE",
+        "optional_frozen_action": true,
+        "player05_used": false,
+        "producer_cache_sha256": "836b07f9ae062160508c63a7c9ab4f72b65e8458c7e24c5e4e92f17567fde914",
+        "seed": 27402,
+        "seventh_candidate": "mean of the same five specialists, not new independent evidence",
+        "shared_baseline_correctness": true
+      },
+      "fold_nets": {
+        "0": 17,
+        "1": 25,
+        "2": -13,
+        "4": 25
+      },
+      "input_sha256": {
+        "group_proposal": "94502c499e5fa095142d15a0701ed9ca1d917d0add4098498bc331b3891da094",
+        "local_audit_features": "e19dc436b6d4842bb7a06b95f0db690cf57a66069e2db747ea12a7ffa149740c",
+        "member_votes": "f05c0d830d3c18a64ce2808d45fd9e01a3913cebf37f2e2df553e35c82c05198"
+      },
+      "keep_rows": 5441,
+      "oracle": {
+        "correctable_errors_with_some_group": 1624,
+        "global_exact_upper_bound": 0.8443575174088249,
+        "mean_distinct_verdicts_per_event": 1.836647537701855,
+        "not_a_prediction": true,
+        "poly_exact_upper_bound": 0.5624915368991198,
+        "true_k_counts": {
+          "0": 0,
+          "1": 0,
+          "2": 636,
+          "3": 715,
+          "4": 227,
+          "5": 46,
+          "6": 0
+        }
+      },
+      "paired": {
+        "by_k": {
+          "0": {
+            "changed": 68,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 321,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 573,
+            "corrections": 307,
+            "net": 117,
+            "regressions": 190
+          },
+          "3": {
+            "changed": 560,
+            "corrections": 237,
+            "net": -31,
+            "regressions": 268
+          },
+          "4": {
+            "changed": 355,
+            "corrections": 81,
+            "net": -47,
+            "regressions": 128
+          },
+          "5": {
+            "changed": 135,
+            "corrections": 15,
+            "net": 15,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 40,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2052,
+          "corrections": 640,
+          "net": 54,
+          "regressions": 586
+        },
+        "poly": {
+          "changed": 1663,
+          "corrections": 640,
+          "net": 54,
+          "regressions": 586
+        }
+      },
+      "paired_vs_coherent": {
+        "by_k": {
+          "0": {
+            "changed": 61,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 223,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 496,
+            "corrections": 196,
+            "net": -8,
+            "regressions": 204
+          },
+          "3": {
+            "changed": 590,
+            "corrections": 304,
+            "net": 66,
+            "regressions": 238
+          },
+          "4": {
+            "changed": 379,
+            "corrections": 119,
+            "net": -21,
+            "regressions": 140
+          },
+          "5": {
+            "changed": 126,
+            "corrections": 7,
+            "net": -13,
+            "regressions": 20
+          },
+          "6": {
+            "changed": 39,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          }
+        },
+        "global": {
+          "changed": 1914,
+          "corrections": 626,
+          "net": 23,
+          "regressions": 603
+        },
+        "poly": {
+          "changed": 1630,
+          "corrections": 626,
+          "net": 23,
+          "regressions": 603
+        }
+      },
+      "parameters": [
+        12994,
+        12994,
+        12994,
+        12994
+      ],
+      "predictions_sha256": "47f3ea38063ade88db8a21f0dbe47952315f1adbb7a1a571c77d02031281c91f",
+      "provenance_verification": {
+        "distinct_producers": 14,
+        "forbidden_id_overlap": 0,
+        "nested_paths": 24
+      },
+      "raw_audits_exported_before_arm_mask": true,
+      "selected_expected_net": 473.2734375,
+      "selected_group_sizes": {
+        "1": 516,
+        "2": 474,
+        "3": 447,
+        "4": 328,
+        "5": 188,
+        "6": 84,
+        "7": 15
+      },
+      "singletons_only": {
+        "comparison_with_all_groups": {
+          "by_k": {
+            "0": {
+              "changed": 9,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 43,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 85,
+              "corrections": 29,
+              "net": -13,
+              "regressions": 42
+            },
+            "3": {
+              "changed": 80,
+              "corrections": 40,
+              "net": 6,
+              "regressions": 34
+            },
+            "4": {
+              "changed": 42,
+              "corrections": 9,
+              "net": -2,
+              "regressions": 11
+            },
+            "5": {
+              "changed": 24,
+              "corrections": 2,
+              "net": -1,
+              "regressions": 3
+            },
+            "6": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 286,
+            "corrections": 80,
+            "net": -10,
+            "regressions": 90
+          },
+          "poly": {
+            "changed": 234,
+            "corrections": 80,
+            "net": -10,
+            "regressions": 90
+          }
+        },
+        "metrics": {
+          "by_k": {
+            "0": {
+              "correct": 38035,
+              "exact": 0.9592202158781398,
+              "over": 1617,
+              "rows": 39652,
+              "under": 0
+            },
+            "1": {
+              "correct": 7889,
+              "exact": 0.6428455019556715,
+              "over": 1474,
+              "rows": 12272,
+              "under": 2909
+            },
+            "2": {
+              "correct": 1313,
+              "exact": 0.38113207547169814,
+              "over": 724,
+              "rows": 3445,
+              "under": 1408
+            },
+            "3": {
+              "correct": 878,
+              "exact": 0.3835736129314111,
+              "over": 295,
+              "rows": 2289,
+              "under": 1116
+            },
+            "4": {
+              "correct": 372,
+              "exact": 0.30820215410107704,
+              "over": 39,
+              "rows": 1207,
+              "under": 796
+            },
+            "5": {
+              "correct": 31,
+              "exact": 0.08732394366197183,
+              "over": 0,
+              "rows": 355,
+              "under": 324
+            },
+            "6": {
+              "correct": 0,
+              "exact": 0.0,
+              "over": 0,
+              "rows": 89,
+              "under": 89
+            }
+          },
+          "confusion_true_by_predicted": [
+            [
+              38035,
+              1047,
+              492,
+              69,
+              8,
+              1,
+              0
+            ],
+            [
+              2909,
+              7889,
+              1214,
+              228,
+              29,
+              3,
+              0
+            ],
+            [
+              666,
+              742,
+              1313,
+              595,
+              125,
+              4,
+              0
+            ],
+            [
+              211,
+              170,
+              735,
+              878,
+              272,
+              23,
+              0
+            ],
+            [
+              47,
+              34,
+              237,
+              478,
+              372,
+              39,
+              0
+            ],
+            [
+              7,
+              8,
+              51,
+              146,
+              112,
+              31,
+              0
+            ],
+            [
+              0,
+              4,
+              12,
+              34,
+              27,
+              12,
+              0
+            ]
+          ],
+          "correct": 48518,
+          "exact": 0.818054595423966,
+          "over": 4149,
+          "poly": {
+            "correct": 2594,
+            "exact": 0.35125253893026404,
+            "over": 1058,
+            "rows": 7385,
+            "under": 3733
+          },
+          "rows": 59309,
+          "under": 6642
+        },
+        "paired": {
+          "by_k": {
+            "0": {
+              "changed": 59,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 285,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 503,
+              "corrections": 283,
+              "net": 130,
+              "regressions": 153
+            },
+            "3": {
+              "changed": 493,
+              "corrections": 204,
+              "net": -37,
+              "regressions": 241
+            },
+            "4": {
+              "changed": 323,
+              "corrections": 73,
+              "net": -45,
+              "regressions": 118
+            },
+            "5": {
+              "changed": 115,
+              "corrections": 16,
+              "net": 16,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 37,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 1815,
+            "corrections": 576,
+            "net": 64,
+            "regressions": 512
+          },
+          "poly": {
+            "changed": 1471,
+            "corrections": 576,
+            "net": 64,
+            "regressions": 512
+          }
+        },
+        "retrained": false
+      },
+      "synergy": {
+        "among_initially_correct": 60,
+        "among_initially_wrong": 87,
+        "events_with_correct_group_and_all_its_members_wrong": 147,
+        "selected_correct_joint_groups_with_all_members_wrong": 7
+      }
+    }
+  },
+  "artifact_manifest": {
+    "arms": {
+      "direct": {
+        "id": 11550612680,
+        "sha256": "4ddca867afabb67a64991633d2deb8aadd364cb6cfacead1b6e694462c9337fa",
+        "size_in_bytes": 14829364
+      },
+      "global": {
+        "id": 11550932225,
+        "sha256": "15514adb259c8c65580e97ae963fba0e886abe2a53566c1dba64fed554b5f19a",
+        "size_in_bytes": 14827720
+      },
+      "local": {
+        "id": 11550733523,
+        "sha256": "aac124973df354f1537e4adf7bc5b6c01d546fe1af686d15f50ab781ea8b66e4",
+        "size_in_bytes": 14826261
+      }
+    },
+    "producer_cache": {
+      "id": 11550991071,
+      "sha256": "cf7418c8ab42d4679752153144bfcb60bdc44cec8cfaeb94f769ff3b3fd5be30",
+      "size_in_bytes": 5068253
+    },
+    "run_id": 37777844182,
+    "source_commit": "71b162b10e1100f6efd2ec6e258406023077a219"
+  },
+  "comparison_inputs_bit_identical": true,
+  "freeze_reference": {
+    "by_k": {
+      "0": {
+        "correct": 38035,
+        "exact": 0.9592202158781398,
+        "over": 1617,
+        "rows": 39652,
+        "under": 0
+      },
+      "1": {
+        "correct": 7889,
+        "exact": 0.6428455019556715,
+        "over": 1474,
+        "rows": 12272,
+        "under": 2909
+      },
+      "2": {
+        "correct": 1183,
+        "exact": 0.3433962264150943,
+        "over": 854,
+        "rows": 3445,
+        "under": 1408
+      },
+      "3": {
+        "correct": 915,
+        "exact": 0.399737876802097,
+        "over": 358,
+        "rows": 2289,
+        "under": 1016
+      },
+      "4": {
+        "correct": 417,
+        "exact": 0.34548467274233635,
+        "over": 13,
+        "rows": 1207,
+        "under": 777
+      },
+      "5": {
+        "correct": 15,
+        "exact": 0.04225352112676056,
+        "over": 0,
+        "rows": 355,
+        "under": 340
+      },
+      "6": {
+        "correct": 0,
+        "exact": 0.0,
+        "over": 0,
+        "rows": 89,
+        "under": 89
+      }
+    },
+    "confusion_true_by_predicted": [
+      [
+        38035,
+        1047,
+        465,
+        94,
+        11,
+        0,
+        0
+      ],
+      [
+        2909,
+        7889,
+        1097,
+        298,
+        76,
+        3,
+        0
+      ],
+      [
+        666,
+        742,
+        1183,
+        659,
+        193,
+        2,
+        0
+      ],
+      [
+        211,
+        170,
+        635,
+        915,
+        346,
+        12,
+        0
+      ],
+      [
+        47,
+        34,
+        199,
+        497,
+        417,
+        13,
+        0
+      ],
+      [
+        7,
+        8,
+        39,
+        152,
+        134,
+        15,
+        0
+      ],
+      [
+        0,
+        4,
+        5,
+        33,
+        45,
+        2,
+        0
+      ]
+    ],
+    "correct": 48454,
+    "exact": 0.8169755011886898,
+    "over": 4316,
+    "poly": {
+      "correct": 2530,
+      "exact": 0.3425863236289777,
+      "over": 1225,
+      "rows": 7385,
+      "under": 3630
+    },
+    "rows": 59309,
+    "under": 6539
+  },
+  "group_outcome_file": {
+    "path": "group-outcomes.csv",
+    "rows": 381,
+    "sha256": "0c9da4f1cdf72112958e7d475dda3a9d8c5393f4c4fd20d9d1d78a359d3944cb"
+  },
+  "independent_validation": false,
+  "paired_between_arms": {
+    "direct_to_global": {
+      "by_k": {
+        "0": {
+          "changed": 11,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "1": {
+          "changed": 37,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "2": {
+          "changed": 85,
+          "corrections": 38,
+          "net": -1,
+          "regressions": 39
+        },
+        "3": {
+          "changed": 76,
+          "corrections": 40,
+          "net": 10,
+          "regressions": 30
+        },
+        "4": {
+          "changed": 71,
+          "corrections": 29,
+          "net": 22,
+          "regressions": 7
+        },
+        "5": {
+          "changed": 22,
+          "corrections": 3,
+          "net": 2,
+          "regressions": 1
+        },
+        "6": {
+          "changed": 2,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        }
+      },
+      "global": {
+        "changed": 304,
+        "corrections": 110,
+        "net": 33,
+        "regressions": 77
+      },
+      "poly": {
+        "changed": 256,
+        "corrections": 110,
+        "net": 33,
+        "regressions": 77
+      }
+    },
+    "direct_to_local": {
+      "by_k": {
+        "0": {
+          "changed": 19,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "1": {
+          "changed": 71,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "2": {
+          "changed": 128,
+          "corrections": 55,
+          "net": -4,
+          "regressions": 59
+        },
+        "3": {
+          "changed": 155,
+          "corrections": 72,
+          "net": -3,
+          "regressions": 75
+        },
+        "4": {
+          "changed": 120,
+          "corrections": 55,
+          "net": 39,
+          "regressions": 16
+        },
+        "5": {
+          "changed": 27,
+          "corrections": 1,
+          "net": -2,
+          "regressions": 3
+        },
+        "6": {
+          "changed": 5,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        }
+      },
+      "global": {
+        "changed": 525,
+        "corrections": 183,
+        "net": 30,
+        "regressions": 153
+      },
+      "poly": {
+        "changed": 435,
+        "corrections": 183,
+        "net": 30,
+        "regressions": 153
+      }
+    },
+    "global_to_local": {
+      "by_k": {
+        "0": {
+          "changed": 18,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "1": {
+          "changed": 66,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        },
+        "2": {
+          "changed": 105,
+          "corrections": 45,
+          "net": -3,
+          "regressions": 48
+        },
+        "3": {
+          "changed": 123,
+          "corrections": 52,
+          "net": -13,
+          "regressions": 65
+        },
+        "4": {
+          "changed": 85,
+          "corrections": 35,
+          "net": 17,
+          "regressions": 18
+        },
+        "5": {
+          "changed": 23,
+          "corrections": 0,
+          "net": -4,
+          "regressions": 4
+        },
+        "6": {
+          "changed": 5,
+          "corrections": 0,
+          "net": 0,
+          "regressions": 0
+        }
+      },
+      "global": {
+        "changed": 425,
+        "corrections": 132,
+        "net": -3,
+        "regressions": 135
+      },
+      "poly": {
+        "changed": 341,
+        "corrections": 132,
+        "net": -3,
+        "regressions": 135
+      }
+    }
+  },
+  "promotion": false,
+  "run_id": 37777844182,
+  "shared_producer_cache_sha256": "836b07f9ae062160508c63a7c9ab4f72b65e8458c7e24c5e4e92f17567fde914",
+  "source_commit": "71b162b10e1100f6efd2ec6e258406023077a219",
+  "source_reference_sha256": "707fc1681e2b0b1ef01805710186c4119ad697a0b52ed3330698e48f34c2f77b",
+  "status": "verified",
+  "synergy_case_file": {
+    "path": "synergy-all-seven-wrong.csv",
+    "rows": 16,
+    "sha256": "de81413699ee7352bc69ff8ae0656efdbe4cb81781516c0e42b45179be546c09"
+  }
+}

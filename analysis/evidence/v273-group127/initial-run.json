@@ -1,0 +1,2354 @@
+{
+  "arms": {
+    "direct": {
+      "candidate": {
+        "by_k": {
+          "0": {
+            "correct": 38035,
+            "exact": 0.9592202158781398,
+            "over": 1617,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7889,
+            "exact": 0.6428455019556715,
+            "over": 1474,
+            "rows": 12272,
+            "under": 2909
+          },
+          "2": {
+            "correct": 1304,
+            "exact": 0.3785195936139332,
+            "over": 733,
+            "rows": 3445,
+            "under": 1408
+          },
+          "3": {
+            "correct": 887,
+            "exact": 0.3875054608999563,
+            "over": 256,
+            "rows": 2289,
+            "under": 1146
+          },
+          "4": {
+            "correct": 331,
+            "exact": 0.2742336371168186,
+            "over": 38,
+            "rows": 1207,
+            "under": 838
+          },
+          "5": {
+            "correct": 32,
+            "exact": 0.09014084507042254,
+            "over": 0,
+            "rows": 355,
+            "under": 323
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38035,
+            1047,
+            495,
+            67,
+            8,
+            0,
+            0
+          ],
+          [
+            2909,
+            7889,
+            1221,
+            226,
+            24,
+            3,
+            0
+          ],
+          [
+            666,
+            742,
+            1304,
+            620,
+            108,
+            5,
+            0
+          ],
+          [
+            211,
+            170,
+            765,
+            887,
+            236,
+            20,
+            0
+          ],
+          [
+            47,
+            34,
+            248,
+            509,
+            331,
+            38,
+            0
+          ],
+          [
+            7,
+            8,
+            54,
+            151,
+            103,
+            32,
+            0
+          ],
+          [
+            0,
+            4,
+            10,
+            36,
+            28,
+            11,
+            0
+          ]
+        ],
+        "correct": 48478,
+        "exact": 0.8173801615269184,
+        "over": 4118,
+        "poly": {
+          "correct": 2554,
+          "exact": 0.3458361543669601,
+          "over": 1027,
+          "rows": 7385,
+          "under": 3804
+        },
+        "rows": 59309,
+        "under": 6713
+      },
+      "folds": {
+        "0": {
+          "eligible_rows": 1998,
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 19,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 92,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 171,
+                "corrections": 87,
+                "net": 27,
+                "regressions": 60
+              },
+              "3": {
+                "changed": 185,
+                "corrections": 95,
+                "net": 18,
+                "regressions": 77
+              },
+              "4": {
+                "changed": 160,
+                "corrections": 21,
+                "net": -44,
+                "regressions": 65
+              },
+              "5": {
+                "changed": 65,
+                "corrections": 11,
+                "net": 11,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 20,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 712,
+              "corrections": 214,
+              "net": 12,
+              "regressions": 202
+            },
+            "poly": {
+              "changed": 601,
+              "corrections": 214,
+              "net": 12,
+              "regressions": 202
+            }
+          },
+          "parameters": 12994,
+          "selected_expected_net": 159.25531005859375,
+          "training": [
+            {
+              "baseline_loss": 0.6618139497165022,
+              "conditional_group_loss": 0.30314765510887937,
+              "epoch": 1,
+              "loss": 0.9649616068807142
+            },
+            {
+              "baseline_loss": 0.583769401599621,
+              "conditional_group_loss": 0.23497053775294074,
+              "epoch": 16,
+              "loss": 0.8187399177715696
+            },
+            {
+              "baseline_loss": 0.5628656457210409,
+              "conditional_group_loss": 0.18995235397897917,
+              "epoch": 30,
+              "loss": 0.7528179986723538
+            }
+          ]
+        },
+        "1": {
+          "eligible_rows": 1781,
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 15,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 82,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 193,
+                "corrections": 96,
+                "net": 34,
+                "regressions": 62
+              },
+              "3": {
+                "changed": 186,
+                "corrections": 95,
+                "net": 18,
+                "regressions": 77
+              },
+              "4": {
+                "changed": 78,
+                "corrections": 15,
+                "net": -30,
+                "regressions": 45
+              },
+              "5": {
+                "changed": 24,
+                "corrections": 3,
+                "net": 3,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 7,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 585,
+              "corrections": 209,
+              "net": 25,
+              "regressions": 184
+            },
+            "poly": {
+              "changed": 488,
+              "corrections": 209,
+              "net": 25,
+              "regressions": 184
+            }
+          },
+          "parameters": 12994,
+          "selected_expected_net": 134.01138305664062,
+          "training": [
+            {
+              "baseline_loss": 0.6648103098074595,
+              "conditional_group_loss": 0.3100743189454079,
+              "epoch": 1,
+              "loss": 0.9748846252759298
+            },
+            {
+              "baseline_loss": 0.5870358804861705,
+              "conditional_group_loss": 0.24019287874301273,
+              "epoch": 16,
+              "loss": 0.8272287587324778
+            },
+            {
+              "baseline_loss": 0.5648470461368561,
+              "conditional_group_loss": 0.19651466161012648,
+              "epoch": 30,
+              "loss": 0.7613617102305095
+            }
+          ]
+        },
+        "2": {
+          "eligible_rows": 1596,
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 18,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 90,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 104,
+                "corrections": 50,
+                "net": 16,
+                "regressions": 34
+              },
+              "3": {
+                "changed": 118,
+                "corrections": 46,
+                "net": -11,
+                "regressions": 57
+              },
+              "4": {
+                "changed": 60,
+                "corrections": 4,
+                "net": -29,
+                "regressions": 33
+              },
+              "5": {
+                "changed": 26,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 2,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 418,
+              "corrections": 100,
+              "net": -24,
+              "regressions": 124
+            },
+            "poly": {
+              "changed": 310,
+              "corrections": 100,
+              "net": -24,
+              "regressions": 124
+            }
+          },
+          "parameters": 12994,
+          "selected_expected_net": 104.03642272949219,
+          "training": [
+            {
+              "baseline_loss": 0.6618768207488521,
+              "conditional_group_loss": 0.2929190945240759,
+              "epoch": 1,
+              "loss": 0.9547959123888323
+            },
+            {
+              "baseline_loss": 0.5854382322680566,
+              "conditional_group_loss": 0.22731517591784078,
+              "epoch": 16,
+              "loss": 0.8127534081858974
+            },
+            {
+              "baseline_loss": 0.5658445348662715,
+              "conditional_group_loss": 0.17605528764186368,
+              "epoch": 30,
+              "loss": 0.7418998210660873
+            }
+          ]
+        },
+        "4": {
+          "eligible_rows": 2118,
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 20,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 61,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 132,
+                "corrections": 84,
+                "net": 44,
+                "regressions": 40
+              },
+              "3": {
+                "changed": 128,
+                "corrections": 36,
+                "net": -53,
+                "regressions": 89
+              },
+              "4": {
+                "changed": 102,
+                "corrections": 40,
+                "net": 17,
+                "regressions": 23
+              },
+              "5": {
+                "changed": 32,
+                "corrections": 3,
+                "net": 3,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 14,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 489,
+              "corrections": 163,
+              "net": 11,
+              "regressions": 152
+            },
+            "poly": {
+              "changed": 408,
+              "corrections": 163,
+              "net": 11,
+              "regressions": 152
+            }
+          },
+          "parameters": 12994,
+          "selected_expected_net": 99.52674865722656,
+          "training": [
+            {
+              "baseline_loss": 0.6724952714783805,
+              "conditional_group_loss": 0.3160705736705235,
+              "epoch": 1,
+              "loss": 0.9885658494063786
+            },
+            {
+              "baseline_loss": 0.5923959272248405,
+              "conditional_group_loss": 0.24490703376276152,
+              "epoch": 16,
+              "loss": 0.8373029615197863
+            },
+            {
+              "baseline_loss": 0.572136538369315,
+              "conditional_group_loss": 0.1929204985499382,
+              "epoch": 30,
+              "loss": 0.7650570422410965
+            }
+          ]
+        }
+      },
+      "paired": {
+        "by_k": {
+          "0": {
+            "changed": 72,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 325,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 600,
+            "corrections": 317,
+            "net": 121,
+            "regressions": 196
+          },
+          "3": {
+            "changed": 617,
+            "corrections": 272,
+            "net": -28,
+            "regressions": 300
+          },
+          "4": {
+            "changed": 400,
+            "corrections": 80,
+            "net": -86,
+            "regressions": 166
+          },
+          "5": {
+            "changed": 147,
+            "corrections": 17,
+            "net": 17,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 43,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2204,
+          "corrections": 686,
+          "net": 24,
+          "regressions": 662
+        },
+        "poly": {
+          "changed": 1807,
+          "corrections": 686,
+          "net": 24,
+          "regressions": 662
+        }
+      },
+      "selected_expected_net": 496.82989501953125,
+      "singletons_only": {
+        "comparison_with_all_groups": {
+          "by_k": {
+            "0": {
+              "changed": 10,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 45,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 70,
+              "corrections": 18,
+              "net": -20,
+              "regressions": 38
+            },
+            "3": {
+              "changed": 84,
+              "corrections": 42,
+              "net": 9,
+              "regressions": 33
+            },
+            "4": {
+              "changed": 42,
+              "corrections": 6,
+              "net": -13,
+              "regressions": 19
+            },
+            "5": {
+              "changed": 25,
+              "corrections": 1,
+              "net": -2,
+              "regressions": 3
+            },
+            "6": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 279,
+            "corrections": 67,
+            "net": -26,
+            "regressions": 93
+          },
+          "poly": {
+            "changed": 224,
+            "corrections": 67,
+            "net": -26,
+            "regressions": 93
+          }
+        },
+        "metrics": {
+          "by_k": {
+            "0": {
+              "correct": 38035,
+              "exact": 0.9592202158781398,
+              "over": 1617,
+              "rows": 39652,
+              "under": 0
+            },
+            "1": {
+              "correct": 7889,
+              "exact": 0.6428455019556715,
+              "over": 1474,
+              "rows": 12272,
+              "under": 2909
+            },
+            "2": {
+              "correct": 1324,
+              "exact": 0.38432510885341076,
+              "over": 713,
+              "rows": 3445,
+              "under": 1408
+            },
+            "3": {
+              "correct": 878,
+              "exact": 0.3835736129314111,
+              "over": 279,
+              "rows": 2289,
+              "under": 1132
+            },
+            "4": {
+              "correct": 344,
+              "exact": 0.28500414250207123,
+              "over": 41,
+              "rows": 1207,
+              "under": 822
+            },
+            "5": {
+              "correct": 34,
+              "exact": 0.09577464788732394,
+              "over": 0,
+              "rows": 355,
+              "under": 321
+            },
+            "6": {
+              "correct": 0,
+              "exact": 0.0,
+              "over": 0,
+              "rows": 89,
+              "under": 89
+            }
+          },
+          "confusion_true_by_predicted": [
+            [
+              38035,
+              1047,
+              489,
+              73,
+              8,
+              0,
+              0
+            ],
+            [
+              2909,
+              7889,
+              1210,
+              230,
+              31,
+              3,
+              0
+            ],
+            [
+              666,
+              742,
+              1324,
+              593,
+              116,
+              4,
+              0
+            ],
+            [
+              211,
+              170,
+              751,
+              878,
+              258,
+              21,
+              0
+            ],
+            [
+              47,
+              34,
+              238,
+              503,
+              344,
+              41,
+              0
+            ],
+            [
+              7,
+              8,
+              49,
+              151,
+              106,
+              34,
+              0
+            ],
+            [
+              0,
+              4,
+              11,
+              35,
+              28,
+              11,
+              0
+            ]
+          ],
+          "correct": 48504,
+          "exact": 0.8178185435599993,
+          "over": 4124,
+          "poly": {
+            "correct": 2580,
+            "exact": 0.3493568043331077,
+            "over": 1033,
+            "rows": 7385,
+            "under": 3772
+          },
+          "rows": 59309,
+          "under": 6681
+        },
+        "paired": {
+          "by_k": {
+            "0": {
+              "changed": 63,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 287,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 542,
+              "corrections": 303,
+              "net": 141,
+              "regressions": 162
+            },
+            "3": {
+              "changed": 550,
+              "corrections": 238,
+              "net": -37,
+              "regressions": 275
+            },
+            "4": {
+              "changed": 364,
+              "corrections": 74,
+              "net": -73,
+              "regressions": 147
+            },
+            "5": {
+              "changed": 126,
+              "corrections": 19,
+              "net": 19,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 40,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 1972,
+            "corrections": 634,
+            "net": 50,
+            "regressions": 584
+          },
+          "poly": {
+            "changed": 1622,
+            "corrections": 634,
+            "net": 50,
+            "regressions": 584
+          }
+        },
+        "retrained": false
+      },
+      "synergy": {
+        "among_initially_correct": 60,
+        "among_initially_wrong": 87,
+        "events_with_correct_group_and_all_its_members_wrong": 147,
+        "selected_correct_joint_groups_with_all_members_wrong": 7
+      }
+    },
+    "global": {
+      "candidate": {
+        "by_k": {
+          "0": {
+            "correct": 38035,
+            "exact": 0.9592202158781398,
+            "over": 1617,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7889,
+            "exact": 0.6428455019556715,
+            "over": 1474,
+            "rows": 12272,
+            "under": 2909
+          },
+          "2": {
+            "correct": 1303,
+            "exact": 0.37822931785195935,
+            "over": 734,
+            "rows": 3445,
+            "under": 1408
+          },
+          "3": {
+            "correct": 897,
+            "exact": 0.3918741808650065,
+            "over": 271,
+            "rows": 2289,
+            "under": 1121
+          },
+          "4": {
+            "correct": 353,
+            "exact": 0.29246064623032314,
+            "over": 39,
+            "rows": 1207,
+            "under": 815
+          },
+          "5": {
+            "correct": 34,
+            "exact": 0.09577464788732394,
+            "over": 0,
+            "rows": 355,
+            "under": 321
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38035,
+            1047,
+            496,
+            67,
+            7,
+            0,
+            0
+          ],
+          [
+            2909,
+            7889,
+            1213,
+            233,
+            25,
+            3,
+            0
+          ],
+          [
+            666,
+            742,
+            1303,
+            619,
+            110,
+            5,
+            0
+          ],
+          [
+            211,
+            170,
+            740,
+            897,
+            250,
+            21,
+            0
+          ],
+          [
+            47,
+            34,
+            241,
+            493,
+            353,
+            39,
+            0
+          ],
+          [
+            7,
+            8,
+            52,
+            143,
+            111,
+            34,
+            0
+          ],
+          [
+            0,
+            4,
+            10,
+            36,
+            28,
+            11,
+            0
+          ]
+        ],
+        "correct": 48511,
+        "exact": 0.8179365694919827,
+        "over": 4135,
+        "poly": {
+          "correct": 2587,
+          "exact": 0.3503046716316858,
+          "over": 1044,
+          "rows": 7385,
+          "under": 3754
+        },
+        "rows": 59309,
+        "under": 6663
+      },
+      "folds": {
+        "0": {
+          "eligible_rows": 1998,
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 19,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 99,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 172,
+                "corrections": 87,
+                "net": 25,
+                "regressions": 62
+              },
+              "3": {
+                "changed": 178,
+                "corrections": 91,
+                "net": 19,
+                "regressions": 72
+              },
+              "4": {
+                "changed": 150,
+                "corrections": 20,
+                "net": -37,
+                "regressions": 57
+              },
+              "5": {
+                "changed": 60,
+                "corrections": 11,
+                "net": 11,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 20,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 698,
+              "corrections": 209,
+              "net": 18,
+              "regressions": 191
+            },
+            "poly": {
+              "changed": 580,
+              "corrections": 209,
+              "net": 18,
+              "regressions": 191
+            }
+          },
+          "parameters": 12994,
+          "selected_expected_net": 160.16757202148438,
+          "training": [
+            {
+              "baseline_loss": 0.6603703766033567,
+              "conditional_group_loss": 0.303279846906662,
+              "epoch": 1,
+              "loss": 0.9636502348143479
+            },
+            {
+              "baseline_loss": 0.5820988807184942,
+              "conditional_group_loss": 0.23440912520063334,
+              "epoch": 16,
+              "loss": 0.8165080136266248
+            },
+            {
+              "baseline_loss": 0.5602043661577948,
+              "conditional_group_loss": 0.18837363144447064,
+              "epoch": 30,
+              "loss": 0.7485779955469328
+            }
+          ]
+        },
+        "1": {
+          "eligible_rows": 1781,
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 15,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 79,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 185,
+                "corrections": 89,
+                "net": 32,
+                "regressions": 57
+              },
+              "3": {
+                "changed": 167,
+                "corrections": 84,
+                "net": 15,
+                "regressions": 69
+              },
+              "4": {
+                "changed": 75,
+                "corrections": 17,
+                "net": -25,
+                "regressions": 42
+              },
+              "5": {
+                "changed": 25,
+                "corrections": 4,
+                "net": 4,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 7,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 553,
+              "corrections": 194,
+              "net": 26,
+              "regressions": 168
+            },
+            "poly": {
+              "changed": 459,
+              "corrections": 194,
+              "net": 26,
+              "regressions": 168
+            }
+          },
+          "parameters": 12994,
+          "selected_expected_net": 126.65473937988281,
+          "training": [
+            {
+              "baseline_loss": 0.662781681617101,
+              "conditional_group_loss": 0.3102507710456848,
+              "epoch": 1,
+              "loss": 0.9730324705441793
+            },
+            {
+              "baseline_loss": 0.585158916314443,
+              "conditional_group_loss": 0.2396197964747747,
+              "epoch": 16,
+              "loss": 0.8247787018616994
+            },
+            {
+              "baseline_loss": 0.5624553004900614,
+              "conditional_group_loss": 0.19428950051466623,
+              "epoch": 30,
+              "loss": 0.7567448039849599
+            }
+          ]
+        },
+        "2": {
+          "eligible_rows": 1596,
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 18,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 87,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 101,
+                "corrections": 49,
+                "net": 17,
+                "regressions": 32
+              },
+              "3": {
+                "changed": 119,
+                "corrections": 48,
+                "net": -9,
+                "regressions": 57
+              },
+              "4": {
+                "changed": 56,
+                "corrections": 4,
+                "net": -29,
+                "regressions": 33
+              },
+              "5": {
+                "changed": 25,
+                "corrections": 1,
+                "net": 1,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 2,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 408,
+              "corrections": 102,
+              "net": -20,
+              "regressions": 122
+            },
+            "poly": {
+              "changed": 303,
+              "corrections": 102,
+              "net": -20,
+              "regressions": 122
+            }
+          },
+          "parameters": 12994,
+          "selected_expected_net": 101.77924346923828,
+          "training": [
+            {
+              "baseline_loss": 0.660469001339328,
+              "conditional_group_loss": 0.2929651237303211,
+              "epoch": 1,
+              "loss": 0.9534341193014576
+            },
+            {
+              "baseline_loss": 0.5837231739874809,
+              "conditional_group_loss": 0.22713452673727466,
+              "epoch": 16,
+              "loss": 0.8108576939951989
+            },
+            {
+              "baseline_loss": 0.5631439849253623,
+              "conditional_group_loss": 0.17555314975400124,
+              "epoch": 30,
+              "loss": 0.7386971173747894
+            }
+          ]
+        },
+        "4": {
+          "eligible_rows": 2118,
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 19,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 60,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 131,
+                "corrections": 84,
+                "net": 46,
+                "regressions": 38
+              },
+              "3": {
+                "changed": 122,
+                "corrections": 38,
+                "net": -43,
+                "regressions": 81
+              },
+              "4": {
+                "changed": 102,
+                "corrections": 45,
+                "net": 27,
+                "regressions": 18
+              },
+              "5": {
+                "changed": 34,
+                "corrections": 3,
+                "net": 3,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 14,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 482,
+              "corrections": 170,
+              "net": 33,
+              "regressions": 137
+            },
+            "poly": {
+              "changed": 403,
+              "corrections": 170,
+              "net": 33,
+              "regressions": 137
+            }
+          },
+          "parameters": 12994,
+          "selected_expected_net": 100.34089660644531,
+          "training": [
+            {
+              "baseline_loss": 0.6700414887496403,
+              "conditional_group_loss": 0.31617179832288195,
+              "epoch": 1,
+              "loss": 0.9862132732357297
+            },
+            {
+              "baseline_loss": 0.5904609858989716,
+              "conditional_group_loss": 0.2449013590812683,
+              "epoch": 16,
+              "loss": 0.8353623513664518
+            },
+            {
+              "baseline_loss": 0.5688505832638059,
+              "conditional_group_loss": 0.19244743032114847,
+              "epoch": 30,
+              "loss": 0.7612980220999036
+            }
+          ]
+        }
+      },
+      "paired": {
+        "by_k": {
+          "0": {
+            "changed": 71,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 325,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 589,
+            "corrections": 309,
+            "net": 120,
+            "regressions": 189
+          },
+          "3": {
+            "changed": 586,
+            "corrections": 261,
+            "net": -18,
+            "regressions": 279
+          },
+          "4": {
+            "changed": 383,
+            "corrections": 86,
+            "net": -64,
+            "regressions": 150
+          },
+          "5": {
+            "changed": 144,
+            "corrections": 19,
+            "net": 19,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 43,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2141,
+          "corrections": 675,
+          "net": 57,
+          "regressions": 618
+        },
+        "poly": {
+          "changed": 1745,
+          "corrections": 675,
+          "net": 57,
+          "regressions": 618
+        }
+      },
+      "selected_expected_net": 488.94244384765625,
+      "singletons_only": {
+        "comparison_with_all_groups": {
+          "by_k": {
+            "0": {
+              "changed": 8,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 47,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 73,
+              "corrections": 22,
+              "net": -11,
+              "regressions": 33
+            },
+            "3": {
+              "changed": 66,
+              "corrections": 32,
+              "net": 5,
+              "regressions": 27
+            },
+            "4": {
+              "changed": 41,
+              "corrections": 10,
+              "net": -5,
+              "regressions": 15
+            },
+            "5": {
+              "changed": 25,
+              "corrections": 2,
+              "net": 0,
+              "regressions": 2
+            },
+            "6": {
+              "changed": 4,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 264,
+            "corrections": 66,
+            "net": -11,
+            "regressions": 77
+          },
+          "poly": {
+            "changed": 209,
+            "corrections": 66,
+            "net": -11,
+            "regressions": 77
+          }
+        },
+        "metrics": {
+          "by_k": {
+            "0": {
+              "correct": 38035,
+              "exact": 0.9592202158781398,
+              "over": 1617,
+              "rows": 39652,
+              "under": 0
+            },
+            "1": {
+              "correct": 7889,
+              "exact": 0.6428455019556715,
+              "over": 1474,
+              "rows": 12272,
+              "under": 2909
+            },
+            "2": {
+              "correct": 1314,
+              "exact": 0.38142235123367196,
+              "over": 723,
+              "rows": 3445,
+              "under": 1408
+            },
+            "3": {
+              "correct": 892,
+              "exact": 0.38968982088248144,
+              "over": 287,
+              "rows": 2289,
+              "under": 1110
+            },
+            "4": {
+              "correct": 358,
+              "exact": 0.29660314830157414,
+              "over": 41,
+              "rows": 1207,
+              "under": 808
+            },
+            "5": {
+              "correct": 34,
+              "exact": 0.09577464788732394,
+              "over": 0,
+              "rows": 355,
+              "under": 321
+            },
+            "6": {
+              "correct": 0,
+              "exact": 0.0,
+              "over": 0,
+              "rows": 89,
+              "under": 89
+            }
+          },
+          "confusion_true_by_predicted": [
+            [
+              38035,
+              1047,
+              492,
+              70,
+              8,
+              0,
+              0
+            ],
+            [
+              2909,
+              7889,
+              1214,
+              226,
+              31,
+              3,
+              0
+            ],
+            [
+              666,
+              742,
+              1314,
+              599,
+              119,
+              5,
+              0
+            ],
+            [
+              211,
+              170,
+              729,
+              892,
+              265,
+              22,
+              0
+            ],
+            [
+              47,
+              34,
+              237,
+              490,
+              358,
+              41,
+              0
+            ],
+            [
+              7,
+              8,
+              49,
+              141,
+              116,
+              34,
+              0
+            ],
+            [
+              0,
+              4,
+              11,
+              36,
+              27,
+              11,
+              0
+            ]
+          ],
+          "correct": 48522,
+          "exact": 0.8181220388136707,
+          "over": 4142,
+          "poly": {
+            "correct": 2598,
+            "exact": 0.35179417738659446,
+            "over": 1051,
+            "rows": 7385,
+            "under": 3736
+          },
+          "rows": 59309,
+          "under": 6645
+        },
+        "paired": {
+          "by_k": {
+            "0": {
+              "changed": 64,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 286,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 530,
+              "corrections": 292,
+              "net": 131,
+              "regressions": 161
+            },
+            "3": {
+              "changed": 535,
+              "corrections": 236,
+              "net": -23,
+              "regressions": 259
+            },
+            "4": {
+              "changed": 353,
+              "corrections": 77,
+              "net": -59,
+              "regressions": 136
+            },
+            "5": {
+              "changed": 122,
+              "corrections": 19,
+              "net": 19,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 39,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 1929,
+            "corrections": 624,
+            "net": 68,
+            "regressions": 556
+          },
+          "poly": {
+            "changed": 1579,
+            "corrections": 624,
+            "net": 68,
+            "regressions": 556
+          }
+        },
+        "retrained": false
+      },
+      "synergy": {
+        "among_initially_correct": 60,
+        "among_initially_wrong": 87,
+        "events_with_correct_group_and_all_its_members_wrong": 147,
+        "selected_correct_joint_groups_with_all_members_wrong": 6
+      }
+    },
+    "local": {
+      "candidate": {
+        "by_k": {
+          "0": {
+            "correct": 38035,
+            "exact": 0.9592202158781398,
+            "over": 1617,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7889,
+            "exact": 0.6428455019556715,
+            "over": 1474,
+            "rows": 12272,
+            "under": 2909
+          },
+          "2": {
+            "correct": 1300,
+            "exact": 0.37735849056603776,
+            "over": 737,
+            "rows": 3445,
+            "under": 1408
+          },
+          "3": {
+            "correct": 884,
+            "exact": 0.38619484491044126,
+            "over": 286,
+            "rows": 2289,
+            "under": 1119
+          },
+          "4": {
+            "correct": 370,
+            "exact": 0.30654515327257664,
+            "over": 36,
+            "rows": 1207,
+            "under": 801
+          },
+          "5": {
+            "correct": 30,
+            "exact": 0.08450704225352113,
+            "over": 0,
+            "rows": 355,
+            "under": 325
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38035,
+            1047,
+            495,
+            67,
+            7,
+            1,
+            0
+          ],
+          [
+            2909,
+            7889,
+            1207,
+            240,
+            24,
+            3,
+            0
+          ],
+          [
+            666,
+            742,
+            1300,
+            623,
+            109,
+            5,
+            0
+          ],
+          [
+            211,
+            170,
+            738,
+            884,
+            262,
+            24,
+            0
+          ],
+          [
+            47,
+            34,
+            244,
+            476,
+            370,
+            36,
+            0
+          ],
+          [
+            7,
+            8,
+            52,
+            147,
+            111,
+            30,
+            0
+          ],
+          [
+            0,
+            4,
+            11,
+            37,
+            25,
+            12,
+            0
+          ]
+        ],
+        "correct": 48508,
+        "exact": 0.817885986949704,
+        "over": 4150,
+        "poly": {
+          "correct": 2584,
+          "exact": 0.34989844278943805,
+          "over": 1059,
+          "rows": 7385,
+          "under": 3742
+        },
+        "rows": 59309,
+        "under": 6651
+      },
+      "folds": {
+        "0": {
+          "eligible_rows": 1998,
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 17,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 93,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 160,
+                "corrections": 80,
+                "net": 22,
+                "regressions": 58
+              },
+              "3": {
+                "changed": 163,
+                "corrections": 82,
+                "net": 16,
+                "regressions": 66
+              },
+              "4": {
+                "changed": 145,
+                "corrections": 21,
+                "net": -31,
+                "regressions": 52
+              },
+              "5": {
+                "changed": 56,
+                "corrections": 10,
+                "net": 10,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 21,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 655,
+              "corrections": 193,
+              "net": 17,
+              "regressions": 176
+            },
+            "poly": {
+              "changed": 545,
+              "corrections": 193,
+              "net": 17,
+              "regressions": 176
+            }
+          },
+          "parameters": 12994,
+          "selected_expected_net": 156.76751708984375,
+          "training": [
+            {
+              "baseline_loss": 0.6599849277529223,
+              "conditional_group_loss": 0.3028083998581459,
+              "epoch": 1,
+              "loss": 0.9627933152790727
+            },
+            {
+              "baseline_loss": 0.5805048182092863,
+              "conditional_group_loss": 0.23278521617938733,
+              "epoch": 16,
+              "loss": 0.8132900451791698
+            },
+            {
+              "baseline_loss": 0.5577336005095778,
+              "conditional_group_loss": 0.18547468606767983,
+              "epoch": 30,
+              "loss": 0.7432082829804256
+            }
+          ]
+        },
+        "1": {
+          "eligible_rows": 1781,
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 15,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 84,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 184,
+                "corrections": 91,
+                "net": 29,
+                "regressions": 62
+              },
+              "3": {
+                "changed": 165,
+                "corrections": 77,
+                "net": 9,
+                "regressions": 68
+              },
+              "4": {
+                "changed": 61,
+                "corrections": 15,
+                "net": -16,
+                "regressions": 31
+              },
+              "5": {
+                "changed": 23,
+                "corrections": 3,
+                "net": 3,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 7,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 539,
+              "corrections": 186,
+              "net": 25,
+              "regressions": 161
+            },
+            "poly": {
+              "changed": 440,
+              "corrections": 186,
+              "net": 25,
+              "regressions": 161
+            }
+          },
+          "parameters": 12994,
+          "selected_expected_net": 122.70604705810547,
+          "training": [
+            {
+              "baseline_loss": 0.6619450549284617,
+              "conditional_group_loss": 0.3100231856107712,
+              "epoch": 1,
+              "loss": 0.9719682395458221
+            },
+            {
+              "baseline_loss": 0.5830572843551636,
+              "conditional_group_loss": 0.23953128854433695,
+              "epoch": 16,
+              "loss": 0.8225885788599651
+            },
+            {
+              "baseline_loss": 0.5587316532929738,
+              "conditional_group_loss": 0.1927549699942271,
+              "epoch": 30,
+              "loss": 0.7514866312344869
+            }
+          ]
+        },
+        "2": {
+          "eligible_rows": 1596,
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 19,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 85,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 101,
+                "corrections": 52,
+                "net": 20,
+                "regressions": 32
+              },
+              "3": {
+                "changed": 117,
+                "corrections": 46,
+                "net": -9,
+                "regressions": 55
+              },
+              "4": {
+                "changed": 49,
+                "corrections": 3,
+                "net": -25,
+                "regressions": 28
+              },
+              "5": {
+                "changed": 26,
+                "corrections": 1,
+                "net": 1,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 1,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 398,
+              "corrections": 102,
+              "net": -13,
+              "regressions": 115
+            },
+            "poly": {
+              "changed": 294,
+              "corrections": 102,
+              "net": -13,
+              "regressions": 115
+            }
+          },
+          "parameters": 12994,
+          "selected_expected_net": 98.68792724609375,
+          "training": [
+            {
+              "baseline_loss": 0.6604503873855837,
+              "conditional_group_loss": 0.2926134529613679,
+              "epoch": 1,
+              "loss": 0.953063839866269
+            },
+            {
+              "baseline_loss": 0.5821744472749771,
+              "conditional_group_loss": 0.22719912134831952,
+              "epoch": 16,
+              "loss": 0.8093735710267098
+            },
+            {
+              "baseline_loss": 0.5608205785674434,
+              "conditional_group_loss": 0.17420909649902774,
+              "epoch": 30,
+              "loss": 0.7350296743454472
+            }
+          ]
+        },
+        "4": {
+          "eligible_rows": 2118,
+          "paired": {
+            "by_k": {
+              "0": {
+                "changed": 17,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "1": {
+                "changed": 59,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              },
+              "2": {
+                "changed": 128,
+                "corrections": 84,
+                "net": 46,
+                "regressions": 38
+              },
+              "3": {
+                "changed": 115,
+                "corrections": 32,
+                "net": -47,
+                "regressions": 79
+              },
+              "4": {
+                "changed": 100,
+                "corrections": 42,
+                "net": 25,
+                "regressions": 17
+              },
+              "5": {
+                "changed": 30,
+                "corrections": 1,
+                "net": 1,
+                "regressions": 0
+              },
+              "6": {
+                "changed": 11,
+                "corrections": 0,
+                "net": 0,
+                "regressions": 0
+              }
+            },
+            "global": {
+              "changed": 460,
+              "corrections": 159,
+              "net": 25,
+              "regressions": 134
+            },
+            "poly": {
+              "changed": 384,
+              "corrections": 159,
+              "net": 25,
+              "regressions": 134
+            }
+          },
+          "parameters": 12994,
+          "selected_expected_net": 95.11195373535156,
+          "training": [
+            {
+              "baseline_loss": 0.6697475143841335,
+              "conditional_group_loss": 0.3157527648976871,
+              "epoch": 1,
+              "loss": 0.9855002867324012
+            },
+            {
+              "baseline_loss": 0.5898522500480924,
+              "conditional_group_loss": 0.24455563777259418,
+              "epoch": 16,
+              "loss": 0.8344078894172396
+            },
+            {
+              "baseline_loss": 0.5679225251078606,
+              "conditional_group_loss": 0.1899999204490866,
+              "epoch": 30,
+              "loss": 0.7579224556684494
+            }
+          ]
+        }
+      },
+      "paired": {
+        "by_k": {
+          "0": {
+            "changed": 68,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 321,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 573,
+            "corrections": 307,
+            "net": 117,
+            "regressions": 190
+          },
+          "3": {
+            "changed": 560,
+            "corrections": 237,
+            "net": -31,
+            "regressions": 268
+          },
+          "4": {
+            "changed": 355,
+            "corrections": 81,
+            "net": -47,
+            "regressions": 128
+          },
+          "5": {
+            "changed": 135,
+            "corrections": 15,
+            "net": 15,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 40,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2052,
+          "corrections": 640,
+          "net": 54,
+          "regressions": 586
+        },
+        "poly": {
+          "changed": 1663,
+          "corrections": 640,
+          "net": 54,
+          "regressions": 586
+        }
+      },
+      "selected_expected_net": 473.2734375,
+      "singletons_only": {
+        "comparison_with_all_groups": {
+          "by_k": {
+            "0": {
+              "changed": 9,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 43,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 85,
+              "corrections": 29,
+              "net": -13,
+              "regressions": 42
+            },
+            "3": {
+              "changed": 80,
+              "corrections": 40,
+              "net": 6,
+              "regressions": 34
+            },
+            "4": {
+              "changed": 42,
+              "corrections": 9,
+              "net": -2,
+              "regressions": 11
+            },
+            "5": {
+              "changed": 24,
+              "corrections": 2,
+              "net": -1,
+              "regressions": 3
+            },
+            "6": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 286,
+            "corrections": 80,
+            "net": -10,
+            "regressions": 90
+          },
+          "poly": {
+            "changed": 234,
+            "corrections": 80,
+            "net": -10,
+            "regressions": 90
+          }
+        },
+        "metrics": {
+          "by_k": {
+            "0": {
+              "correct": 38035,
+              "exact": 0.9592202158781398,
+              "over": 1617,
+              "rows": 39652,
+              "under": 0
+            },
+            "1": {
+              "correct": 7889,
+              "exact": 0.6428455019556715,
+              "over": 1474,
+              "rows": 12272,
+              "under": 2909
+            },
+            "2": {
+              "correct": 1313,
+              "exact": 0.38113207547169814,
+              "over": 724,
+              "rows": 3445,
+              "under": 1408
+            },
+            "3": {
+              "correct": 878,
+              "exact": 0.3835736129314111,
+              "over": 295,
+              "rows": 2289,
+              "under": 1116
+            },
+            "4": {
+              "correct": 372,
+              "exact": 0.30820215410107704,
+              "over": 39,
+              "rows": 1207,
+              "under": 796
+            },
+            "5": {
+              "correct": 31,
+              "exact": 0.08732394366197183,
+              "over": 0,
+              "rows": 355,
+              "under": 324
+            },
+            "6": {
+              "correct": 0,
+              "exact": 0.0,
+              "over": 0,
+              "rows": 89,
+              "under": 89
+            }
+          },
+          "confusion_true_by_predicted": [
+            [
+              38035,
+              1047,
+              492,
+              69,
+              8,
+              1,
+              0
+            ],
+            [
+              2909,
+              7889,
+              1214,
+              228,
+              29,
+              3,
+              0
+            ],
+            [
+              666,
+              742,
+              1313,
+              595,
+              125,
+              4,
+              0
+            ],
+            [
+              211,
+              170,
+              735,
+              878,
+              272,
+              23,
+              0
+            ],
+            [
+              47,
+              34,
+              237,
+              478,
+              372,
+              39,
+              0
+            ],
+            [
+              7,
+              8,
+              51,
+              146,
+              112,
+              31,
+              0
+            ],
+            [
+              0,
+              4,
+              12,
+              34,
+              27,
+              12,
+              0
+            ]
+          ],
+          "correct": 48518,
+          "exact": 0.818054595423966,
+          "over": 4149,
+          "poly": {
+            "correct": 2594,
+            "exact": 0.35125253893026404,
+            "over": 1058,
+            "rows": 7385,
+            "under": 3733
+          },
+          "rows": 59309,
+          "under": 6642
+        },
+        "paired": {
+          "by_k": {
+            "0": {
+              "changed": 59,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 285,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 503,
+              "corrections": 283,
+              "net": 130,
+              "regressions": 153
+            },
+            "3": {
+              "changed": 493,
+              "corrections": 204,
+              "net": -37,
+              "regressions": 241
+            },
+            "4": {
+              "changed": 323,
+              "corrections": 73,
+              "net": -45,
+              "regressions": 118
+            },
+            "5": {
+              "changed": 115,
+              "corrections": 16,
+              "net": 16,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 37,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 1815,
+            "corrections": 576,
+            "net": 64,
+            "regressions": 512
+          },
+          "poly": {
+            "changed": 1471,
+            "corrections": 576,
+            "net": 64,
+            "regressions": 512
+          }
+        },
+        "retrained": false
+      },
+      "synergy": {
+        "among_initially_correct": 60,
+        "among_initially_wrong": 87,
+        "events_with_correct_group_and_all_its_members_wrong": 147,
+        "selected_correct_joint_groups_with_all_members_wrong": 7
+      }
+    }
+  },
+  "comparison_inputs_bit_identical": false,
+  "input_difference": {
+    "audit_inputs_identical": true,
+    "group_proposals_identical": true,
+    "probability_max_abs": 1.0132789611816406e-06,
+    "probability_values_different": 31586
+  },
+  "run_id": 37776065908,
+  "scope": "Initial completed run, preserved before shared-producer reproducibility correction",
+  "source_commit": "40f957f8bcdf60bfbb41aa82fd0288ebdcc53abd"
+}
