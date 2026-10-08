@@ -164,6 +164,119 @@ class LearnedAuditSelector(tf.keras.Model):
         return dict(action_logits=decision,
                     selection_weights=weights,head_risk=risk)
 
+
+
+class ClassConditionalAuditSelector(LearnedAuditSelector):
+    """Neural gate with one learned selection distribution FOR EACH possible K.
+
+    A head's structural availability (adapter usable for the signal) is
+    distinct from its possible target-K support. Both are input-observable.
+    Audit features are cross-fitted on training folds, NEVER true-K at
+    inference. Unsupported class/head pairs get *exactly zero* weight;
+    compatible pairs remain free to learn context-dependent weights.
+
+    head_k_mask: [B,H,7] structural eligibility for a head to inform each
+                 hypothetical output K, independent of true-K labels.
+    class_selection_weights: [B,H,7] learned conditional selection.
+    selection_weights: [B,H] marginal over model-inferred possible K; a
+                       backward-compatible descriptive summary, NOT gate.
+    """
+
+    def __init__(self, hidden=48, context_dim=16, **kwargs):
+        super().__init__(hidden=hidden,context_dim=context_dim,**kwargs)
+        self.class_gate=tf.keras.layers.Dense(7)
+        self.class_hidden=tf.keras.layers.Dense(hidden,activation="gelu")
+        self.class_out=tf.keras.layers.Dense(1)
+        self.keep_hidden=tf.keras.layers.Dense(hidden,activation="gelu")
+        self.keep_out=tf.keras.layers.Dense(1)
+
+    def call(self,inputs,training=False):
+        logits=tf.cast(inputs["head_logits"],tf.float32)
+        audits=tf.cast(inputs["audit"],tf.float32)
+        kind=tf.cast(inputs["head_type"],tf.float32)
+        mask=tf.cast(inputs["head_mask"],tf.bool)
+        ctx=tf.cast(inputs["context"],tf.float32)
+        baseline=tf.cast(inputs["baseline"],tf.float32)
+
+        tf.debugging.assert_equal(tf.shape(logits)[-1],ACTION_CLASSES)
+        tf.debugging.assert_equal(tf.shape(audits)[-1],21)
+        tf.debugging.assert_equal(tf.shape(kind)[-1],4)
+        tf.debugging.assert_equal(tf.shape(baseline)[-1],7)
+        tf.debugging.assert_greater(
+            tf.reduce_min(tf.reduce_sum(tf.cast(mask,tf.int32),axis=1)),0,
+            message="each event requires an active baseline/fallback"
+        )
+
+        if "head_k_mask" in inputs:
+            class_mask=tf.cast(inputs["head_k_mask"],tf.bool)
+            tf.debugging.assert_equal(tf.shape(class_mask)[:2],tf.shape(mask))
+            tf.debugging.assert_equal(tf.shape(class_mask)[-1],7)
+            class_mask=tf.logical_and(class_mask,mask[:,:,None])
+        else:
+            class_mask=tf.broadcast_to(mask[:,:,None],tf.concat([
+                tf.shape(mask),[7]],axis=0))
+
+        tf.debugging.assert_greater(
+            tf.reduce_min(tf.reduce_sum(tf.cast(class_mask,tf.int32),axis=1)),0,
+            message="every hypothetical K must retain an observable fallback"
+        )
+
+        features=tf.concat([tf.nn.softmax(logits,axis=-1),audits,kind],axis=-1)
+        heads=self.proj(features)
+        c=self.context_projection(tf.concat([ctx,baseline],axis=-1))
+        attention_mask=tf.logical_and(mask[:,:,None],mask[:,None,:])
+        interacted=self.att(heads,heads,attention_mask=attention_mask,training=training)
+        state=self.fuse(heads+interacted+c[:,None,:])
+
+        # Critically: softmax is OVER HEADS for EACH K, not over one global
+        # head axis with weights reused for every K.
+        class_scores=self.class_gate(state)           # [B,H,7]
+        negative=tf.constant(-1.e9,tf.float32)
+        class_scores=tf.where(class_mask,class_scores,negative)
+        weights_by_k=tf.nn.softmax(class_scores,axis=1)
+        weights_by_k=tf.where(class_mask,weights_by_k,tf.zeros_like(weights_by_k))
+        weights_by_k/=tf.reduce_sum(weights_by_k,axis=1,keepdims=True)
+
+        class_states=tf.einsum("bhk,bhd->bkd",weights_by_k,state)
+        post=tf.nn.softmax(logits,axis=-1)
+        class_evidence=tf.reduce_sum(weights_by_k*post[:,:,:7],axis=1)
+        n=tf.shape(ctx)[0]
+        context_by_k=tf.broadcast_to(c[:,None,:],tf.shape(class_states))
+        identities=tf.broadcast_to(tf.eye(7,dtype=tf.float32)[None,:,:],
+                                   tf.stack([n,7,7]))
+        class_features=tf.concat([
+            class_states,context_by_k,class_evidence[:,:,None],identities
+        ],axis=-1)
+        logits_by_k=tf.squeeze(
+            self.class_out(self.class_hidden(class_features)),axis=-1
+        )
+
+        # KEEP is separate and can learn from fixes/guards which need
+        # not represent any particular target K. Head masks still apply.
+        keep_scores=tf.squeeze(self.gate(state),axis=-1)
+        keep_scores=tf.where(mask,keep_scores,negative)
+        keep_weights=tf.nn.softmax(keep_scores,axis=1)
+        keep_state=tf.reduce_sum(state*keep_weights[:,:,None],axis=1)
+        keep_prob=tf.reduce_sum(post[:,:,KEEP]*keep_weights,axis=1)
+        keep_logits=self.keep_out(self.keep_hidden(tf.concat([
+            keep_state,c,ctx,baseline,keep_prob[:,None]
+        ],axis=-1)))
+        decision=tf.concat([logits_by_k,keep_logits],axis=1)
+
+        # Descriptive marginal weights use inferred classes, never true K.
+        inferred_k=tf.nn.softmax(logits_by_k,axis=1)
+        marginal=tf.einsum("bhk,bk->bh",weights_by_k,inferred_k)
+        # Risk supervision remains per head from cross-fitted audits.
+        risk=self.risk(state)
+        return dict(
+            action_logits=decision,
+            selection_weights=marginal,
+            class_selection_weights=weights_by_k,
+            class_probability=inferred_k,
+            keep_selection_weights=keep_weights,
+            head_risk=risk
+        )
+
 def train_loss(outputs,actions,correct_regress,mask,risk_weight=.20):
     """Differentiable neural classification plus per-head risk supervision."""
     a=tf.convert_to_tensor(actions,tf.int32)
