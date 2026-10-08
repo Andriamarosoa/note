@@ -1,0 +1,137 @@
+name: V27.3 audit memory and preserved variants
+
+on:
+  push:
+    branches: [codex/v273-audit-memory]
+    paths:
+      - 'scripts/evaluate_v273_catalogue.py'
+      - 'scripts/v273_audit_context.py'
+      - 'scripts/build_v273_head_history_registry.py'
+      - 'test/test_v273_audit_context.py'
+      - 'test/test_v273_history_preservation.py'
+      - '.github/workflows/v273-audit-memory.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  CUDA_VISIBLE_DEVICES: '-1'
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  TF_NUM_INTRAOP_THREADS: '2'
+  TF_NUM_INTEROP_THREADS: '1'
+
+jobs:
+  inventory:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fetch available remote branch history
+        run: git fetch origin '+refs/heads/*:refs/remotes/origin/*'
+      - name: Preserve sources, fixes and numerical evidence
+        run: python scripts/build_v273_head_history_registry.py --output model/history-memory
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-history-memory
+          path: model/history-memory/
+          retention-days: 90
+  experiment:
+    strategy:
+      fail-fast: false
+      matrix:
+        arm: [control7, corrector8]
+    name: "Local audit: ${{ matrix.arm }}"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install reference numerical versions
+        run: |
+          python -m pip install -r requirements-train.txt
+          python -m pip install scipy==1.17.1 scikit-learn==1.4.2
+      - name: Test contracts and preservation
+        run: python -m unittest -v test.test_v273_catalogue_contract test.test_v273_catalogue_neural test.test_v273_audit_context test.test_v273_history_preservation
+      - name: Retrieve immutable native cohort
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37766719862
+          name: v273-selector-repair-coherent
+          path: model/catalogue/reference
+      - name: Retrieve acoustic observables
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37740493178
+          pattern: v273-harmonic-global-fold-*
+          path: model/catalogue/features
+      - name: Retrieve shared original producers
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37777844182
+          name: v273-group127-producer-cache
+          path: model/catalogue/producer-cache
+      - name: Retrieve original global and singleton comparator
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37777844182
+          name: v273-group127-global
+          path: model/catalogue/archived-global
+      - name: Retrieve categorical consensus comparator
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37781750476
+          name: v273-group-consensus-pooled_ce
+          path: model/catalogue/archived-consensus
+      - name: Retrieve shared learned correctors
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37789646292
+          name: v273-learned-corrector-cache
+          path: model/catalogue/corrector-cache
+      - name: Train and evaluate all complete groups on exposed folds
+        run: |
+          python -m scripts.evaluate_v273_catalogue \
+            --reference model/catalogue/reference/predictions.npz \
+            --features model/catalogue/features \
+            --producer-cache model/catalogue/producer-cache \
+            --corrector-cache model/catalogue/corrector-cache \
+            --archived-global model/catalogue/archived-global \
+            --archived-consensus model/catalogue/archived-consensus \
+            --mode ${{ matrix.arm }} --audit-arm local \
+            --output model/catalogue-${{ matrix.arm }}
+      - name: Publish measured scores
+        run: cat model/catalogue-${{ matrix.arm }}/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-memory-local-${{ matrix.arm }}
+          path: model/catalogue-${{ matrix.arm }}/
+          retention-days: 90
