@@ -135,7 +135,7 @@ def inputs(logits,mask,kind,class_support,audit,context,baseline):
     )
 
 
-def fit_and_predict(train,truth,base_train,heldout):
+def fit_and_predict(train,truth,base_train,heldout,return_model=False):
     tf.keras.utils.set_random_seed(SEED)
     model=ClassConditionalAuditSelector(hidden=48)
     action=np.argmax(train["head_logits"],axis=-1)
@@ -158,8 +158,12 @@ def fit_and_predict(train,truth,base_train,heldout):
                               "loss":float(np.mean(losses))}),flush=True)
     out=model(heldout,training=False)
     action=np.argmax(out["action_logits"].numpy(),axis=1)
-    return (action,out["class_selection_weights"].numpy(),
+    result=(action,out["class_selection_weights"].numpy(),
             out["selection_weights"].numpy(),out["head_risk"].numpy())
+    # For post-hoc FORWARD-PASS interventions on the very same trained
+    # network, return the trained instance without altering training.
+    # This option is used only by independent ablation workflows.
+    return (*result,model) if return_model else result
 
 
 def main():
