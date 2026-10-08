@@ -9,7 +9,7 @@ import numpy as np
 from scripts.extract_v273_energy_flow import SAMPLE_RATE
 from scripts.extract_v273_harmonic_trajectory import (
     trajectory_features, _frames, features_from_spectrogram,
-    HARMONIC_BANK, DETUNED_BANK
+    HARMONIC_BANK, DETUNED_BANK, FUNDAMENTAL_BANK
 )
 
 def tone(f0,start_sec,stop_sec,amplitude=0.25,length=1.25):
@@ -48,6 +48,17 @@ class HarmonicTrajectoryTests(unittest.TestCase):
         steady=trajectory_features(constant,center)
         cutoff=trajectory_features(muted,center)
         self.assertGreater(cutoff["damping__negative_flow"],steady["damping__negative_flow"]+.01)
+
+    def test_fundamental_only_control_changes_representation(self):
+        center=int(.62*SAMPLE_RATE)
+        x=tone(220.,.10,1.1)+tone(493.88,.62,1.1,amplitude=.5)
+        spec,t=_frames(x,center)
+        full=features_from_spectrogram(spec,t,HARMONIC_BANK)
+        only=features_from_spectrogram(spec,t,FUNDAMENTAL_BANK)
+        self.assertTrue(np.isfinite(list(only.values())).all())
+        self.assertNotAlmostEqual(
+            full["source__novelty_l1"],only["source__novelty_l1"],places=5
+        )
 
     def test_wrong_harmonic_bank_is_distinct(self):
         center=int(.62*SAMPLE_RATE)
