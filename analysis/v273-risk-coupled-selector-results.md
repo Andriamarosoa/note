@@ -105,3 +105,35 @@ sur des données supplémentaires réellement inédites pour
 éviter de surajuster les folds déjà inspectés.
 
 **Aucune promotion à \`freeze_local_combo\`.**
+
+
+
+## Confirmation finale et contrôle de la contribution propre du risque
+
+Le [run 37754337532](https://github.com/Andriamarosoa/note/actions/runs/37754337532)
+s'est **terminé avec succès**, dont quatre tests unitaires TensorFlow réussis,
+les quatre folds reproduits, et le rapport/export complet produit.
+[Artefact final](https://github.com/Andriamarosoa/note/actions/runs/37754337532/artifacts/11539722721).
+
+Un [contrôle supplémentaire 37754832807](https://github.com/Andriamarosoa/note/actions/runs/37754832807)
+a comparé l'ancien réseau conditionnel dont seules les sorties K0/K1
+étaient annulées après coup (contrôle purement diagnostique) au
+nouveau réseau à risque appris.
+
+| Comparaison | Global | Poly | Fixes | Régressions | Net |
+|---|---:|---:|---:|---:|---:|
+| Ancien réseau, K0/K1 annulés après coup | 81,6942 % | 34,2316 % | 604 | 606 | -2 |
+| Risque couplé entraîné | 81,6942 % | 34,2316 % | 217 | 219 | -2 |
+
+Il y a **1 698 prédictions différentes** entre les deux systèmes,
+mais aussi **519 cas corrigés et 519 cas dégradés**, soit un bilan
+supplémentaire de zéro. Les effets par vrai K du réseau à risque par
+rapport au contrôle sont : K2 -25, K3 -28, K4 +63, K5 -10.
+
+**Conclusion corrigée et plus stricte :** le nouveau couplage a une
+connexion de gradient/décision réellement vérifiée, mais son gain net
+n'est PAS démontré face à la seule suppression des classes non soutenues.
+Il ne faut pas attribuer la récupération du score polyphonique à la
+branche de risque sans ablation causale supplémentaire à modèle fixe.
+
+Toujours aucune promotion au modèle gelé.
