@@ -122,8 +122,14 @@ def features_from_spectrogram(spec, times, bank=None):
     out["source__continuation_l1"] = float(np.sum(np.abs(after_rel - on_rel)))
     out["source__effective_onset_sources"] = float(1.0 / (np.sum(on_rel ** 2) + EPS))
     out["source__effective_late_sources"] = float(1.0 / (np.sum(after_rel ** 2) + EPS))
-    out["source__onset_below_pre_fraction"] = float(np.mean(onset < before))
-    out["source__post_below_pre_fraction"] = float(np.mean(after < before))
+    # Continuous energy-loss ratios avoid unstable 0/1 decisions on
+    # vanishing template components caused by machine-precision rounding.
+    out["source__onset_lost_energy_fraction"] = float(
+        np.sum(np.maximum(before-onset, 0.0)) / (np.sum(before) + EPS)
+    )
+    out["source__post_lost_energy_fraction"] = float(
+        np.sum(np.maximum(before-after, 0.0)) / (np.sum(before) + EPS)
+    )
     out["source__spectral_shift_cents"] = float(
         np.sum((on_rel - before_rel) * PITCHES) * 100.
     )
