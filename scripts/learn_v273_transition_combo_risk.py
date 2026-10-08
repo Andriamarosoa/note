@@ -192,7 +192,10 @@ class TransitionCombinationArbiter(tf.keras.Model):
         context=tf.cast(x["context"],tf.float32)
         keep_heads=tf.cast(x["keep_heads"],tf.float32)
         n=tf.shape(combo)[0]
-        if combo.shape[-1]!=FEAT_DIM:raise ValueError("invalid feature width")
+        # 10 baseline fields, optionally append 7-bit head identity and/or
+        # four train-fold contextual audit features (10/14/17/21).
+        if combo.shape[-1] not in (FEAT_DIM,FEAT_DIM+4,FEAT_DIM+7,FEAT_DIM+11):
+            raise ValueError("invalid feature width")
         if combo.shape[-2]!=COMBOS:raise ValueError("invalid subset axis")
         onehot_targets=tf.broadcast_to(tf.eye(5)[None,:,:],[n,5,5])
         base_exp=tf.broadcast_to(base[:,None,None,:],[n,5,COMBOS,7])
