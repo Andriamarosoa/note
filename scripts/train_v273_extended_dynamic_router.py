@@ -34,7 +34,7 @@ SEED=27335
 # their original structural support rather than pretending they detect K0.
 POLY_HEADS=FEATURE_HEADS[:5]
 NONPITCH=[h for h in FEATURE_HEADS if h!='H8_pitch_shift']
-TRAINABLE=NONPITCH+('E12_second_note',)
+TRAINABLE=tuple(NONPITCH)+('E12_second_note',)
 EXTRA_ACTION='AB_stateful_S29'
 ACTIONS=ALL_HEADS+(EXTRA_ACTION,)
 RISK_LAMBDAS=(1.,2.,4.)
