@@ -1,0 +1,77 @@
+name: V27.3 S41 independent six-action neural fusion replay and archive
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series41-verify.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 95
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Ensure S41 trained neural fusion completed successfully
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run watch 37881191015 --repo "$GITHUB_REPOSITORY" --exit-status --interval 15
+      - name: Install pinned numerical and CPU neural replay software
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Recover initial fixed 335 acoustic feature inputs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/native
+          gh release download v273-open-k0-k6-37837235723 --repo "$GITHUB_REPOSITORY" --pattern 'v273-open-features-*.tar' --dir model/native
+          for fold in 0 1 2 4; do
+            mkdir -p "model/features/fold-$fold"
+            tar -xf "model/native/v273-open-features-$fold.tar" -C "model/features/fold-$fold"
+          done
+      - name: Fetch S18 benchmark, S38 and S40 posterior evidence and S41 neural choices
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 37856499212 --repo "$GITHUB_REPOSITORY" --name v273-series18-k43-k21 --dir model/S18
+          gh run download 37880386031 --repo "$GITHUB_REPOSITORY" --name v273-series38-poly-harmonic-expert --dir model/S38
+          gh run download 37880762289 --repo "$GITHUB_REPOSITORY" --name v273-series40-temporal-cnn --dir model/S40
+          gh run download 37881191015 --repo "$GITHUB_REPOSITORY" --name v273-series41-six-head-neural-fusion --dir model/S41
+      - name: Independently infer all 19 trained fold-piece fusion gates and replay every K choice
+        run: >-
+          python -m scripts.verify_v273_s41_neural_fusion
+          --features model/features
+          --s18 model/S18/predictions.npz
+          --s38 model/S38/new_expert_probs.npz
+          --s40 model/S40/temporal_probs.npz
+          --input model/S41
+          --output model/S41-verified
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series41-verified
+          path: model/S41-verified/
+          retention-days: 90
+      - name: Archive all genuine neural fusion checkpoints and casewise outcomes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/archive
+          tar -czf model/archive/v273-series41-neural-fusion.tar.gz -C model S41 S41-verified
+          (cd model/archive && sha256sum v273-series41-neural-fusion.tar.gz > SHA256SUMS)
+          gh release create "v273-series41-research-${GITHUB_RUN_ID}" \
+            model/archive/v273-series41-neural-fusion.tar.gz model/archive/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "V27.3 S41 actual neural six-head selection ${GITHUB_RUN_ID}" \
+            --notes "19 saved genuine neural selectors, independent event-level replay and exact-K K0-K6 corrections/regressions, S18 + four S38 K-classes + S40 temporal CNN, H9 excluded. Development cohort historically explored; no production promotion."
