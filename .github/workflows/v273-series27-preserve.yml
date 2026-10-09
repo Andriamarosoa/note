@@ -1,0 +1,35 @@
+name: V27.3 S27 archive all sparse repeat audit outcomes
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series27-preserve.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  preserve:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download all 14 selective/full pass distributions and 58 prediction policies
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37864168525 --repo "$GITHUB_REPOSITORY" --name v273-series27-partial-revisits --dir model/S27
+      - name: Sanity-check full source evidence and publish checksum archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test -s model/S27/report.json
+          test -s model/S27/distributions.npz
+          test -s model/S27/predictions.npz
+          mkdir -p model/archive
+          tar -czf model/archive/v273-series27-partial-revisits.tar.gz -C model/S27 .
+          (cd model/archive && sha256sum v273-series27-partial-revisits.tar.gz > SHA256SUMS)
+          gh release create "v273-series27-research-${GITHUB_RUN_ID}" \
+            model/archive/v273-series27-partial-revisits.tar.gz model/archive/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "V27.3 S27 sparse A-B head revisit equivalence ${GITHUB_RUN_ID}" \
+            --notes "14 frozen full-versus-selective A/B scheduling strategies, all 59,309 event decisions/probabilities, exact A/B subbatch call counts, per-K and fold regressions; exposed cohort, no promotion or new-music validation."
