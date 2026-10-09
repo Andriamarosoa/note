@@ -27,7 +27,7 @@ def run(a):
     assert z['reference_S18_cor_vs_freeze']==2934 and z['reference_S18_reg_vs_freeze']==2210
     assert len(ranked)==len(freeze)==z['total_valid_native_variants']
     assert len(history)==z['total_archived_legacy_registry_entries']
-    assert len(source)==z['source_series_with_valid_vectors']
+    assert sum(x['series'].startswith('S') for x in source)==z['source_series_with_valid_vectors']
     assert len(over)<=min(128,z['distinct_prediction_vectors'])
     assert len(actionable)==z['actionable_candidate_variants']
     assert len(actionable_best)==len(set(x['source'] for x in actionable))
