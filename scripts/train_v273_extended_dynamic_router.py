@@ -30,7 +30,6 @@ from scripts.v273_extended_head_bank import (
 from scripts.yourmt3_exactk_common import FOLDS,metrics,paired,require
 
 SEED=27335
-POLY_OLD=tuple('H'+str(j)+ ('_spectral' if j==1 else '') for j in [])
 # These five are the historical K2–K6 specialists. New refits preserve
 # their original structural support rather than pretending they detect K0.
 POLY_HEADS=FEATURE_HEADS[:5]
@@ -71,8 +70,9 @@ def original_temporal_data(folder,d):
             ix=np.asarray([index[int(k)] for k in source],np.int64)
             require(np.array_equal(d['fold'][ix],np.full(len(ix),fold)),
                     'original waveform sequence aligned to wrong fold')
+            sequence=z['sequence']
             for start in range(0,len(ix),256):
-                zz=np.asarray(z['sequence'][start:start+256],np.float32)
+                zz=np.asarray(sequence[start:start+256],np.float32)
                 m,p=audio_temporal_views(zz)
                 at=ix[start:start+len(m)]
                 morph[at]=m
@@ -251,8 +251,7 @@ def fit_risk_models(x,base,y,train_idx,inner_proba,ab,model_dir,outer):
         gates[head]=dict(model=estimator,scaler=scaler)
         fname=f'outer{outer}__Q__{head}.joblib'
         joblib.dump(dict(model=estimator,scaler=scaler,head=head,
-                         outer=int(outer),fit_ids=dummy_id_tag(train_idx),
-                         fit_native_sha256=hsh(d['ids'][train_idx]) if False else ''),
+                         outer=int(outer),fit_ids=dummy_id_tag(train_idx)),
                     model_dir/fname,compress=3)
         stored.append(dict(head=head,training_action_rows=int(len(matrix)),
              observed_fixes=int(target[:,0].sum()),
