@@ -1,6 +1,7 @@
 """Independent structural verifier for S43 ranked historical correction evidence."""
 from __future__ import annotations
-import argparse,csv,json
+import argparse,csv,json,hashlib
+import numpy as np
 from collections import defaultdict
 from pathlib import Path
 
@@ -66,11 +67,30 @@ def run(a):
     assert z['retrospective_all_variants_oracle_union_correctable_S18']<=10131
     assert z['retrospective_poly_oracle_union_correctable_S18']<=4387
     assert z['distinct_prediction_vectors']<=len(ranked)
+    assert z['all_distinct_predictions_persisted']
+    with np.load(base/'all_distinct_native_predictions.npz',
+                 allow_pickle=False) as zbank:
+        ids=zbank['global_index']
+        bank=zbank['predictions']
+        hashes=list(map(str,zbank['distinct_vector_sha256']))
+        assert ids.shape==(59309,)
+        assert bank.shape==(59309,z['distinct_prediction_vectors'])
+        assert len(hashes)==len(set(hashes))
+        assert int((zbank['S18_reference_K']==zbank['true_K']).sum())==49178
+        assert int((zbank['freeze_reference_K']==zbank['true_K']).sum())==48454
+        for i,h in enumerate(hashes):
+            assert hashlib.sha256(np.asarray(bank[:,i],dtype=np.int8).tobytes()).hexdigest()==h
+    exclus=rows(base/'source_exclusive_corrections.csv')
+    assert len(exclus)==z['source_correction_exclusivity_audited']
+    assert sum(int(x['unique_correctable_events_only_from_this_source'])
+               for x in exclus)<=z['retrospective_actionable_oracle_union_correctable_S18']
     a.output.mkdir(parents=True,exist_ok=False)
     record=dict(status='S43_evidence_verified',all_native_variants_checked=len(ranked),
                 historical_registry_entries_checked=len(history),
                 source_series_checked=len(source),
                 source_series_not_comparable=len(uncovered),
+                all_distinct_archived_vectors_sha256_verified=len(hashes),
+                source_only_correction_exclusivity_checked=len(exclus),
                 rejected_schema_or_oracle_entries=len(errs),
                 old_reference_invariant=True,per_K_sums_verified=True,
                 per_fold_sums_verified=True,
