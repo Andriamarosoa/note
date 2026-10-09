@@ -1,0 +1,63 @@
+name: V27.3 S37 preserve nine-route experiment and negative evidence
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series37-preserve.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  preserve:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Recover original all-nine route negative and positive evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37870170306 --repo "$GITHUB_REPOSITORY" --name v273-series37-nine-route --dir model/S37
+      - name: Recount all 30 policies and paired corrections/losses independently
+        run: |
+          python - <<'PY'
+          import json
+          import numpy as np
+          from pathlib import Path
+          p=Path('model/S37')
+          report=json.loads((p/'report.json').read_text())
+          assert report['status']=='completed'
+          assert report['strict_zero_loss_candidates']==[]
+          assert report['policy_count']==32
+          with np.load(p/'predictions.npz',allow_pickle=False) as z:
+              names=list(map(str,z['variant_ids']))
+              assert len(names)==32
+              y=z['true_K'];P=z['predictions']
+              base=P[:,names.index('series18_parent')]
+              assert int((base==y).sum())==49178
+              for j,name in enumerate(names):
+                  x=P[:,j]
+                  gains=int(((base!=y)&(x==y)).sum())
+                  losses=int(((base==y)&(x!=y)).sum())
+                  assert gains==report['audits'][name]['corrections']
+                  assert losses==report['audits'][name]['regressions']
+                  if name.startswith('series37__'):
+                      assert losses>0 or gains==0
+              print('PASS: all 30 fixed S37 policies and failure cases independently recounted')
+          PY
+      - name: Publish original negative results with SHA256 audit trail
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/archive
+          tar -czf model/archive/v273-series37-nine-route.tar.gz -C model/S37 .
+          (cd model/archive && sha256sum v273-series37-nine-route.tar.gz > SHA256SUMS)
+          gh release create "v273-series37-research-${GITHUB_RUN_ID}" \
+            model/archive/v273-series37-nine-route.tar.gz model/archive/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "V27.3 S37 nine-route risk evidence ${GITHUB_RUN_ID}" \
+            --notes "All 30 fixed frozen-S36b risk choices among 9 S35 dynamic paths failed zero regression. Source original S18 and safe 2/0 S36b remain unchanged, H9 excluded. Full per-event selected route and risk score archived for analysis."
