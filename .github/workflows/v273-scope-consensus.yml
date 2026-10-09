@@ -1,0 +1,83 @@
+name: V27.3 S56 consensus replay (development only)
+
+on:
+  pull_request:
+    branches: [codex/v273-regression-loops]
+    paths:
+      - 'scripts/audit_v273_scope_consensus.py'
+      - 'test/test_v273_scope_consensus.py'
+      - '.github/workflows/v273-scope-consensus.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+
+jobs:
+  replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned NumPy for original inference contract
+        run: python -m pip install numpy==1.26.4 scipy==1.17.1 scikit-learn==1.4.2
+      - name: Verify frozen decision logic and non-interference of K2 K3 K4
+        run: |
+          python -m py_compile scripts/audit_v273_scope_consensus.py test/test_v273_scope_consensus.py
+          python -m unittest -v test.test_v273_scope_consensus
+      - name: Retrieve 36 original PR16 policies for all 59k events
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          name: v273-open-summary
+          path: model/pr16
+      - name: Retrieve independently replayed S54 native predictions
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37919359584
+          name: v273-scope-rescue-pr16-replay
+          path: model/s54-source
+      - name: Independently reproduce all S56 threshold policies with fixed labels and IDs
+        run: |
+          python -m scripts.audit_v273_scope_consensus \
+            --pr16 model/pr16/predictions.npz \
+            --s54 model/s54-source/scope-reuse-s54/predictions.npz \
+            --output model/s56-consensus
+      - name: Verify baseline and upstream S54 remain untouched
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          import numpy as np
+          root=Path('model/s56-consensus')
+          report=json.loads((root/'report.json').read_text())
+          with np.load(root/'predictions.npz') as z:
+              b,y=z['frozen_baseline_K'],z['true_K']
+              for k in z.files:
+                  if not k.endswith('_K') or k in ('true_K','frozen_baseline_K','s54_K'):
+                      continue
+                  p=z[k]
+                  assert len(p)==59309
+                  assert np.array_equal(p[~np.isin(b,[0,1,5])],b[~np.isin(b,[0,1,5])])
+                  assert (p==y).sum()-(b==y).sum()==report['policies'][k[:-2]]['paired']['global']['net']
+          print('Verified full-native coverage, frozen sources and score identities.')
+          PY
+      - name: Publish measured corrections, regressions and native coverage
+        run: cat model/s56-consensus/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s56-consensus-replay
+          path: model/s56-consensus/
+          retention-days: 90
