@@ -87,7 +87,7 @@ class TestScopeRescue(unittest.TestCase):
             pos, rows, features = read_scope(root,y,b,ids,folds,names,times)
             np.testing.assert_array_equal(pos,[0,1,2])
             self.assertEqual(features,["acoustic"])
-            extra=root/"3"/"rows.jsonl"
+            extra=root/"4"/"rows.jsonl"
             with extra.open("a") as f:
                 f.write(json.dumps(dict(global_index=103,fold=4,recording_id="04_D",
                                         start_sample=3,baseline_k=2,true_k=2,
