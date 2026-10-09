@@ -163,14 +163,16 @@ def bank_feature_views(x,morphology,physics):
       'E12_second_note':x,
     }
 
-def action_candidates(parent,expert_probs,head_available=None):
+def action_candidates(parent,expert_probs,head_available=None,base_parent=None):
     """Head proposals and *structural* per-event masks; never use true K.
 
     Probabilities for 9 acoustic experts must be genuine prefit OOF model
     outputs. Cxx are action adapters, F_keep protect KEEP decisions.
     """
     parent=np.asarray(parent,np.int64)
+    base_parent=np.asarray(parent if base_parent is None else base_parent,np.int64)
     n=len(parent)
+    if base_parent.shape!=(n,):raise ValueError('reference baseline dimensions changed')
     if not np.isin(parent,np.arange(7)).all():raise ValueError('bad parent K')
     allowed=set(FEATURE_HEADS).union({'E12_second_note'})
     if not set(expert_probs).issubset(allowed):
@@ -202,12 +204,13 @@ def action_candidates(parent,expert_probs,head_available=None):
         mask[:,j]=(parent==source)
     for k in (2,3,4):
         j=names[f'F_keep{k}']
-        proposal[:,j]=parent
+        proposal[:,j]=base_parent
         confidence[:,j]=1.
-        mask[:,j]=(parent==k)
+        mask[:,j]=(base_parent==k)&(parent!=base_parent)
     j=names['F_keep_any']
+    proposal[:,j]=base_parent
     confidence[:,j]=1.
-    mask[:,j]=True
+    mask[:,j]=(parent!=base_parent)
     if 'E12_second_note' in expert_probs:
         q=np.asarray(expert_probs['E12_second_note'],np.float32)
         proposal[:,names['E12_second_note']]=np.where(q[:,1]>=q[:,2],1,2)
@@ -241,7 +244,11 @@ def selftest():
     assert m[2,ALL_HEADS.index('C23')]
     assert m[3,ALL_HEADS.index('C32')]
     assert m[4,ALL_HEADS.index('C43')]
-    assert m[:,ALL_HEADS.index('F_keep_any')].all()
+    assert not m[:,ALL_HEADS.index('F_keep_any')].any()
+    advanced=p.copy();advanced[1,ALL_HEADS.index('H1_spectral')]=3
+    _,_,keep=action_candidates(advanced[:,ALL_HEADS.index('H1_spectral')],
+        {'H1_spectral':good},base_parent=parent)
+    assert keep[1,ALL_HEADS.index('F_keep_any')]
     try:action_candidates(parent,{'H9':good})
     except ValueError:pass
     else:raise AssertionError('H9 explicitly excluded but reached routing')
