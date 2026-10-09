@@ -1,0 +1,98 @@
+name: V27.3 S29 independent route/path audit and permanent archive
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series29-preserve.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  preserve:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Download all S29 event-level dynamic routes and Q-models
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37865173636 --repo "$GITHUB_REPOSITORY" --name v273-series29-stepwise-scheduler --dir model/S29
+      - name: Independently cross-audit every route and restore all 4 regressions
+        run: |
+          mkdir -p model/route-audit
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import numpy as np
+          import csv
+          directory=Path('model/S29')
+          z=json.loads((directory/'report.json').read_text())
+          assert z['status']=='completed' and len(z['fit_records'])==19
+          assert z['models_count']==38
+          with np.load(directory/'routes.npz',allow_pickle=False) as ro, np.load(directory/'predictions.npz',allow_pickle=False) as p:
+              ids=p['global_index']; y=p['true_K']
+              assert len(ids)==59309 and np.array_equal(ro['global_index'],ids)
+              keys=list(map(str,p['variant_ids']))
+              routes=list(map(str,ro['variant_ids']))
+              assert len(routes)==9 and len(keys)==11
+              parent=p['predictions'][:,keys.index('series18_parent')]
+              details={}
+              for name in routes:
+                  i=routes.index(name)
+                  decisions=p['predictions'][:,keys.index(name)]
+                  step=ro['actions'][:,i,:]
+                  calls=ro['head_calls'][:,i,:]
+                  assert np.array_equal(calls[:,0],(step!=0).sum(1))
+                  assert np.array_equal(calls[:,1],(step==2).sum(1))
+                  changed=decisions!=parent
+                  corrections=(changed & (decisions==y) & (parent!=y))
+                  regressions=(changed & (decisions!=y) & (parent==y))
+                  item=z['all_policies'][name]
+                  assert corrections.sum()==item['corrected'] and regressions.sum()==item['regressed']
+                  actual_paths={''.join('S' if c==0 else 'A' if c==1 else 'B→A' for c in row):int(n) for row,n in zip(*np.unique(step,axis=0,return_counts=True))}
+                  details[name]={'fix':int(corrections.sum()),'regressed':int(regressions.sum()),'paths':actual_paths,
+                      'A_calls':int(calls[:,0].sum()),'B_calls':int(calls[:,1].sum()),
+                      'stopped_immediately':int((step[:,0]==0).sum()),
+                      'second_action_nonstop':int((step[:,1]!=0).sum()),
+                      'third_action_nonstop':int((step[:,2]!=0).sum())}
+              name='series29__lambda2__threshold0.02'
+              j=routes.index(name); pred=p['predictions'][:,keys.index(name)]
+              losses=np.flatnonzero((parent==y)&(pred!=y))
+              gains=np.flatnonzero((parent!=y)&(pred==y))
+              assert len(losses)==4 and len(gains)==17
+              with (Path('model/route-audit')/'all_21_corrected_or_regressed_cases.csv').open('w',newline='') as file:
+                  writer=csv.writer(file)
+                  writer.writerow(['global_index','fold','true_K','S18_K','S29_K','outcome','route_A_1_BA_2_STOP_0'])
+                  for row in sorted([*losses,*gains]):
+                      writer.writerow([int(ids[row]),int(p['fold'][row]),int(y[row]),
+                          int(parent[row]),int(pred[row]),'regression' if row in losses else 'correction',
+                          ''.join(map(str,ro['actions'][row,j].tolist()))])
+          (Path('model/route-audit')/'report.json').write_text(json.dumps(details,indent=2,sort_keys=True)+'\n')
+          chosen=details['series29__lambda2__threshold0.02']
+          print(json.dumps({'best_conservative':chosen},indent=2))
+          PY
+      - name: Publish route frequency and lost-correction evidence
+        run: |
+          cat model/route-audit/report.json >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-series29-route-audit
+          path: model/route-audit/
+          retention-days: 90
+      - name: Preserve original trained dynamic scheduler, all routes and casewise regressions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/archive
+          tar -czf model/archive/v273-series29-stepwise-research.tar.gz -C model S29 route-audit
+          (cd model/archive && sha256sum v273-series29-stepwise-research.tar.gz > SHA256SUMS)
+          gh release create "v273-series29-research-${GITHUB_RUN_ID}" \
+            model/archive/v273-series29-stepwise-research.tar.gz model/archive/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "V27.3 S29 state-by-state neural routing ${GITHUB_RUN_ID}" \
+            --notes "Learned dynamic A/BA/STOP actions after each new head output on 59309 events, 38 saved Q models, every route and head-call count, 17 gains and 4 regressions at conservative threshold, no independent validation or production promotion."
