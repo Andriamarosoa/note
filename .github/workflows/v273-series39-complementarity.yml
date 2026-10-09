@@ -33,7 +33,7 @@ jobs:
           --pred model/S38/predictions.npz
           --probs model/S38/new_expert_probs.npz
           --output model/S39
-      - name: Publish data-driven verdict: acoustic recognition or arbitration blocker
+      - name: 'Publish data-driven verdict: acoustic recognition or arbitration blocker'
         run: cat model/S39/report.md >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         if: always()
