@@ -1,0 +1,37 @@
+name: V27.3 S35 per-head regression audit
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series35-head-usage-audit.yml'
+      - 'scripts/audit_v273_s35_head_usage.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Obtain full verified S35 predictions and dynamic head selections
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37868356632 --repo "$GITHUB_REPOSITORY" --name v273-series35-extended-head-router --dir model/S35
+      - name: Audit every head selection, corrections/regressions and K0 to K6 outcomes
+        run: >-
+          python -m scripts.audit_v273_s35_head_usage
+          --input model/S35
+          --output model/S35-head-usage
+      - name: Publish actual per-head usage and provenance limitations
+        run: cat model/S35-head-usage/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-series35-head-usage
+          path: model/S35-head-usage/
+          retention-days: 90
