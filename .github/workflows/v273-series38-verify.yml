@@ -1,0 +1,73 @@
+name: V27.3 S38 independent outer-fold acoustic model verification
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series38-verify.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Wait for source acoustic expert experiment to complete
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run watch 37880386031 --repo "$GITHUB_REPOSITORY" --exit-status --interval 15
+      - name: Install immutable original preprocessing and validation dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Recover original 42-frame sequences for independent feature replay
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/native
+          gh release download v273-open-k0-k6-37837235723 --repo "$GITHUB_REPOSITORY" --pattern 'v273-open-features-*.tar' --dir model/native
+          for fold in 0 1 2 4; do
+            mkdir -p "model/features/fold-$fold"
+            tar -xf "model/native/v273-open-features-$fold.tar" -C "model/features/fold-$fold"
+          done
+      - name: Recover certified S18 and all 16 trained K1-K6 acoustic experts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 37856499212 --repo "$GITHUB_REPOSITORY" --name v273-series18-k43-k21 --dir model/S18
+          gh run download 37880386031 --repo "$GITHUB_REPOSITORY" --name v273-series38-poly-harmonic-expert --dir model/S38
+      - name: Independently reproduce all 16 acoustic models and 24 intervention decisions
+        run: >-
+          python -m scripts.verify_v273_s38_poly_expert
+          --features model/features
+          --s18 model/S18/predictions.npz
+          --input model/S38
+          --output model/S38-verified
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series38-independent-verification
+          path: model/S38-verified/
+          retention-days: 90
+      - name: Preserve all trained new specialists and their complete negative evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/archive
+          tar -czf model/archive/v273-series38-acoustic-expert.tar.gz -C model S38 S38-verified
+          (cd model/archive && sha256sum v273-series38-acoustic-expert.tar.gz > SHA256SUMS)
+          gh release create "v273-series38-research-${GITHUB_RUN_ID}" \
+            model/archive/v273-series38-acoustic-expert.tar.gz model/archive/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "V27.3 S38 real harmonic-morphology K2-K6 expert ${GITHUB_RUN_ID}" \
+            --notes "16 new true acoustic K1-K6 multi-class expert fits, 24 S18 guarded policies and independently replayed K0-K6/poly event outputs. H9 excluded. Exploratory previously used cohort, no production promotion."
