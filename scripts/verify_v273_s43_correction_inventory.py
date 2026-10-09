@@ -37,7 +37,7 @@ def run(a):
     assert all(x['is_reference_control']=='True' or
         not x['variant'].lower().startswith('freeze_')
         for x in ranked)
-    assert len(uncovered)==len(manifest['sources'])-len(source)
+    assert len(uncovered)==len(manifest['sources'])-z['source_series_with_valid_vectors']
     assert len(heads['proposal_heads'])==z['produced_candidate_head_proposals']
     assert heads['banned_expert']=='H9_YourMT3'
     assert not heads['enabled_for_inference']
@@ -102,6 +102,8 @@ def run(a):
                 no_hypothesis_promoted=True,
                 same_historic_cohort=True)
     (a.output/'report.json').write_text(json.dumps(record,indent=2,sort_keys=True)+'\n')
+    print('EXCLUSIVE_SOURCE_TOP20 '+json.dumps(exclus[:20],ensure_ascii=False),flush=True)
+    print('HEAD_CANDIDATE_TOP12 '+json.dumps(heads['proposal_heads'][:12],ensure_ascii=False),flush=True)
     print(json.dumps(record,indent=2),flush=True)
 
 if __name__=='__main__':
