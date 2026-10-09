@@ -4,6 +4,7 @@ on:
     branches: [codex/v273-open-k0-k6]
     paths:
       - '.github/workflows/v273-series43-verify-preserve.yml'
+      - 'scripts/verify_v273_s43_correction_inventory.py'
   workflow_dispatch:
 permissions:
   contents: write
