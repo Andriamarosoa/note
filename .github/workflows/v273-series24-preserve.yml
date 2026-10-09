@@ -1,0 +1,34 @@
+name: V27.3 S24 preserve frozen-order inversion evidence
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series24-preserve.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  archive:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download audited reversed-order predictions and messages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37862241264 --repo "$GITHUB_REPOSITORY" --name v273-series24-inverse-order --dir model/S24
+      - name: Archive complete S24 reproducible signal-order comparison
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test -s model/S24/report.json
+          test -s model/S24/probabilities.npz
+          mkdir -p model/archive
+          tar -czf model/archive/v273-series24-research.tar.gz -C model/S24 .
+          (cd model/archive && sha256sum v273-series24-research.tar.gz > SHA256SUMS)
+          gh release create "v273-series24-research-${GITHUB_RUN_ID}" \
+            model/archive/v273-series24-research.tar.gz model/archive/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "V27.3 B-first order inversion frozen models ${GITHUB_RUN_ID}" \
+            --notes "No weights updated: 19 checkpoint replay, direct B-first vs A-first effects on 59309 native events, full K0-K6 corrections/regressions, all margins. Not independent validation or a promoted model."
