@@ -1,0 +1,62 @@
+name: V27.3 S31 preserve acoustic and harmonic loop evidence
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series31-preserve.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  preserve:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Download acoustic flow evaluation and all 42 trained reliability model files
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37866124959 --repo "$GITHUB_REPOSITORY" --name v273-series31-acoustic-flow --dir model/S31
+      - name: Independent audit of 26 changed native examples and selected variant
+        run: |
+          python - <<'PY'
+          import csv,json
+          from pathlib import Path
+          import numpy as np
+          base=Path('model/S31')
+          report=json.loads((base/'report.json').read_text())
+          assert report['original_changes']==26 and report['corrected']==17
+          assert report['regressed']==4 and report['neutral']==5
+          assert report['models_count']==42 and report['zero_loss_candidates']==[]
+          records=list(csv.DictReader((base/'26_changed_audio_flow_audit.csv').open()))
+          assert len(records)==26
+          assert sum(r['outcome']=='corrected' for r in records)==17
+          assert sum(r['outcome']=='regressed' for r in records)==4
+          assert sum(r['outcome']=='neutral' for r in records)==5
+          with np.load(base/'predictions.npz',allow_pickle=False) as z:
+              ids=list(map(str,z['variant_ids']))
+              assert len(ids)==26
+              truth=z['true_K'];p=z['predictions']
+              parent=p[:,ids.index('series18_parent')]
+              best=p[:,ids.index('series31__all335_logistic__p_gt0.25')]
+              assert int(((parent!=truth)&(best==truth)).sum())==16
+              assert int(((parent==truth)&(best!=truth)).sum())==3
+          print('PASS: 26 native cases, 24 acoustic models, 42 fitted checkpoints, 16/3 improvements counted')
+          PY
+      - name: Publish immutable archive including all regressions and negative variants
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/archive
+          tar -czf model/archive/v273-series31-research.tar.gz -C model/S31 .
+          (cd model/archive && sha256sum v273-series31-research.tar.gz > SHA256SUMS)
+          gh release create "v273-series31-research-${GITHUB_RUN_ID}" \
+            model/archive/v273-series31-research.tar.gz model/archive/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "V27.3 S31 acoustic corroboration research ${GITHUB_RUN_ID}" \
+            --notes "24 preregistered reliability policies with 42 trained models, exact 26 event case outcomes, 16 fixes and 3 regressions for all-335 logistic, no loss-free candidate, no new independent music validation."
