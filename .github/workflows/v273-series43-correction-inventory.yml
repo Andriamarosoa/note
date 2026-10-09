@@ -25,6 +25,8 @@ jobs:
           python-version: '3.11'
       - name: Install NumPy to independently check all source K classes
         run: python -m pip install numpy==1.26.4
+      - name: Syntax preflight before downloading historical archives
+        run: python -m py_compile scripts/collect_v273_s43_archives.py scripts/audit_v273_s43_all_corrections.py
       - name: Inventory and retrieve successful original S9 through S41 decision artifacts, including losing runs
         env:
           GH_TOKEN: ${{ github.token }}
