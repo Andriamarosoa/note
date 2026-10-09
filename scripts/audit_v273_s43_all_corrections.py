@@ -320,6 +320,7 @@ def run(a):
         changed,reg=per_vector_audits[row['evidence_sha256']]
         unique=int(((alltop==1)&changed).sum())
         novel=int((changed&~current).sum())
+        novel_poly=int((changed&~current&(y>=2)).sum())
         ov=int((changed&current).sum())
         current|=changed
         overlap.append(dict(rank=idx+1,source=row['source'],
@@ -329,10 +330,7 @@ def run(a):
             exclusive_among_top_128=unique,
             marginal_new_over_ranked_prior=novel,
             overlap_with_prior=ov,
-            marginal_poly=int((changed&(y>=2)&
-                # novelty computed after updating current but need
-                # reconstruct cumulative before this action
-                (alltop>=1)).sum()),
+            marginal_new_poly_over_ranked_prior=novel_poly,
             cumul_union_correctable_events=int(current.sum()),
             cumulative_union_is_truth_oracle_not_deployable=True))
     rows_csv(out/'head_correction_overlap.csv',overlap)
