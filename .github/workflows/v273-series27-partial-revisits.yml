@@ -1,0 +1,66 @@
+name: V27.3 S27 partial selective A-B neural revisits
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series27-partial-revisits.yml'
+      - 'scripts/audit_v273_partial_revisits.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install PyTorch CPU and original signal source dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Test actual A/B calls, cached B message, sparse B and early exit
+        run: python -m scripts.audit_v273_partial_revisits --self-test
+      - name: Retrieve original SHA256-bound harmonic acoustic features
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/audio-tars
+          gh release download v273-open-k0-k6-37837235723 --repo "$GITHUB_REPOSITORY" --pattern 'v273-open-features-*.tar' --dir model/audio-tars
+          for fold in 0 1 2 4; do
+            mkdir -p "model/features/fold-$fold"
+            tar -xf "model/audio-tars/v273-open-features-$fold.tar" -C "model/features/fold-$fold"
+          done
+      - name: Retrieve preserved S18 initial decisions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37856499212 --repo "$GITHUB_REPOSITORY" --name v273-series18-k43-k21 --dir model/S18
+      - name: Retrieve trained S20 checkpoints and per-pass output provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37858383973 --repo "$GITHUB_REPOSITORY" --name v273-series20-residual --dir model/S20
+      - name: Run all 14 conditional scheduling experiments with real compute counts
+        run: >-
+          python -m scripts.audit_v273_partial_revisits
+          --features model/features
+          --s18 model/S18/predictions.npz
+          --s20 model/S20
+          --s20-probs model/S20/probabilities.npz
+          --output model/S27
+      - name: Publish exact head call and K0-K6 regression audit
+        run: cat model/S27/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series27-partial-revisits
+          path: model/S27/
+          retention-days: 90
