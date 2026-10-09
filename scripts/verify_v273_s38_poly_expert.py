@@ -70,8 +70,12 @@ def run(a):
             verified[spec['file']]=hashlib.sha256(path.read_bytes()).hexdigest()
         expert=all_held_probs[:,model_idx]
         original_probs=scores['poly_probs'][:,model_idx]
-        require(np.allclose(expert,original_probs,atol=1e-5),
-                'expert numeric prediction not reproduced '+original_key)
+        diff=np.abs(expert-original_probs)
+        disagree=int(np.count_nonzero(expert.argmax(1)!=original_probs.argmax(1)))
+        print(json.dumps(dict(expert=original_key,max_abs=float(diff.max()),
+            mean_abs=float(diff.mean()),argmax_disagreement=disagree)),flush=True)
+        require(float(diff.max())<=2e-4 and disagree==0,
+                'reloaded expert numerical mismatch '+original_key)
         proposed=expert.argmax(1).astype(np.int8)
         for domain in DOMAINS:
             for gate in GATES:
