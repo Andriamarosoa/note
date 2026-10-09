@@ -44,6 +44,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh run download 37856499212 --repo "$GITHUB_REPOSITORY" --name v273-series18-k43-k21 --dir model/S18
+      - name: Require completion of the fixed S27 full versus sparse head audit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run watch 37864168525 --repo "$GITHUB_REPOSITORY" --exit-status --interval 10
       - name: Download S27 actual sparse revisit and full-depth candidates
         env:
           GH_TOKEN: ${{ github.token }}
