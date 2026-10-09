@@ -8,6 +8,8 @@ on:
       - 'scripts/evaluate_v273_scope_rescue.py'
       - 'test/test_v273_scope_rescue.py'
       - '.github/workflows/v273-scope-rescue.yml'
+  pull_request:
+    branches: [codex/v273-regression-loops]
   workflow_dispatch:
 
 permissions:
@@ -38,6 +40,7 @@ jobs:
           python -m unittest -v test.test_v273_scope_rescue
 
   extract:
+    if: github.event_name != 'pull_request'
     needs: tests
     strategy:
       fail-fast: false
