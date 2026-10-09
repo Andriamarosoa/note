@@ -193,13 +193,15 @@ def registry_sources(root):
     return result
 
 def is_control_vector(name):
-    # Every reversible old benchmark is retained in global audits but is
-    # NOT a novel head. The wrong global S18->freeze reversion otherwise
-    # ranks as if 2,210 new independent corrections came from each loop.
+    # Keep the historical baseline vectors in full statistics, but never
+    # count recycled frozen references as newly discovered expert heads.
     x=str(name).lower()
     return (x in ('freeze_parent','freeze_reference','freeze_local_combo',
-                  'series18_parent','s18_reference','s18_parent') or
-            bool(re.search(r'(?:^|__)series[0-9]+_(?:parent|reference)
+                  'series18_parent','s18_reference','s18_parent')
+            or bool(re.fullmatch(r'series[0-9]+_(parent|reference)',x))
+            or bool(re.fullmatch(r'freeze_(parent|reference)',x)))
+
+def run(a):
     root=a.root
     archive=a.collection
     out=a.output
