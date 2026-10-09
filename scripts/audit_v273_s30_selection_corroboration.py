@@ -233,7 +233,8 @@ def main(args):
                  parent[d['fold']==f],vec[d['fold']==f])) for f in FOLDS})
     # All original 21 changed events, even when correctly blocked, are retained.
     original_changed=np.flatnonzero(original!=parent)
-    with (args.output/'all_21_S29_changed_cases.csv').open('w',newline='') as f:
+    require(len(original_changed)==26 and int(((original!=parent)&(parent!=d['y'])&(original!=d['y'])).sum())==5, 'changed cases include 5 neutral events')
+    with (args.output/'all_26_S29_changed_cases.csv').open('w',newline='') as f:
         writer=csv.writer(f)
         writer.writerow(['native_id','fold','piece','true_K','old_K','S29_K',
             'original_outcome','AF2_agree','AF4_agree','BF2_agree',
@@ -258,7 +259,7 @@ def main(args):
             and audits[k]['corrected']>0 and audits[k]['regressed']==0
             and audits[k]['metrics']['poly']['correct']>=2998]
     report=dict(status='completed',source_run_S29=37865173636,
-        original_21_changes=21,original_corrected=17,original_regressed=4,
+        original_26_changes=26,original_corrected=17,original_regressed=4,
         parent_S18_unmodified=True,independent_unseen_validation=False,
         historically_exposed_development_dataset=True,
         source_experts_per_piece_out_of_fit=True,
@@ -290,7 +291,7 @@ def main(args):
              f"{v['regressed']} | {4-v['regressed']} | {v['corrected']} |")
     lines+=['',f"Loss-free research candidates (still NOT promoted): {len(positive_zero_loss)}",
         f"Learned models: {len(models_ledger)}",
-        'Detailed 21 changed-case CSV, every rejected selection and fold/per-K metric preserved.']
+        'Detailed 26 changed-case CSV (17 fixes, 4 regressions, 5 neutral); every rejected selection and fold/per-K metric preserved.']
     (args.output/'report.md').write_text('\n'.join(lines)+'\n')
     print('\n'.join(lines),flush=True)
 
