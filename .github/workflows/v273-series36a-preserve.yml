@@ -1,0 +1,44 @@
+name: V27.3 S36a permanent poly-guard research evidence
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series36a-preserve.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  archive:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Retrieve the complete 20 fixed poly guards and native predictions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37869563550 --repo "$GITHUB_REPOSITORY" --name v273-series36a-poly-guards --dir model/S36a
+      - name: Verify reference and ranking before permanent archive
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          z=json.loads(Path('model/S36a/report.json').read_text())
+          assert z['status']=='completed'
+          assert z['strict_zero_loss_candidates']==[]
+          assert z['all_policies']['series36a__series35__lambda1__threshold0.05__source_le3']['corrected']==323
+          assert z['all_policies']['series36a__series35__lambda1__threshold0.05__source_le3']['regressions']==243
+          print('PASS: 22 source-K policies, zero loss-free positive gains')
+          PY
+      - name: Preserve all fixes and regressions and SHA256 checksums
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/archive
+          tar -czf model/archive/v273-series36a-poly-guards.tar.gz -C model/S36a .
+          (cd model/archive && sha256sum v273-series36a-poly-guards.tar.gz > SHA256SUMS)
+          gh release create "v273-series36a-research-${GITHUB_RUN_ID}" \
+            model/archive/v273-series36a-poly-guards.tar.gz model/archive/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "V27.3 S36a poly source guards ${GITHUB_RUN_ID}" \
+            --notes "22 S18/S35 and fixed K-class guards, 59,309 native predictions, all positive and negative gains preserved; no criterion-passing changes; H9 remains excluded."
