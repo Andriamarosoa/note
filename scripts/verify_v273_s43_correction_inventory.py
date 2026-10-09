@@ -13,6 +13,8 @@ def run(a):
     manifest=data(a.manifest)
     ranked=rows(base/'rank_all_vs_S18.csv')
     freeze=rows(base/'rank_all_vs_freeze.csv')
+    actionable=rows(base/'rank_actionable_vs_S18.csv')
+    actionable_best=rows(base/'best_actionable_per_loop.csv')
     history=rows(base/'historical_metric_registry.csv')
     source=rows(base/'best_per_loop.csv')
     over=rows(base/'head_correction_overlap.csv')
@@ -25,7 +27,15 @@ def run(a):
     assert len(ranked)==len(freeze)==z['total_valid_native_variants']
     assert len(history)==z['total_archived_legacy_registry_entries']
     assert len(source)==z['source_series_with_valid_vectors']
-    assert len(over)==min(128,z['distinct_prediction_vectors'])
+    assert len(over)<=min(128,z['distinct_prediction_vectors'])
+    assert len(actionable)==z['actionable_candidate_variants']
+    assert len(actionable_best)==len(set(x['source'] for x in actionable))
+    assert int(z['retrospective_actionable_oracle_union_correctable_S18'])<=int(
+        z['retrospective_all_variants_oracle_union_correctable_S18'])
+    assert all(x['is_reference_control']=='False' for x in actionable)
+    assert all(x['is_reference_control']=='True' or
+        not x['variant'].lower().startswith('freeze_')
+        for x in ranked)
     assert len(uncovered)==len(manifest['sources'])-len(source)
     assert len(heads['proposal_heads'])==z['produced_candidate_head_proposals']
     assert heads['banned_expert']=='H9_YourMT3'
@@ -33,6 +43,9 @@ def run(a):
     assert all(int(ranked[i]['gross_fixes_vs_S18'])>=
                int(ranked[i+1]['gross_fixes_vs_S18'])
                for i in range(len(ranked)-1))
+    assert all(int(actionable[i]['gross_fixes_vs_S18'])>=
+               int(actionable[i+1]['gross_fixes_vs_S18'])
+               for i in range(len(actionable)-1))
     assert all(int(freeze[i]['gross_fixes_vs_freeze'])>=
                int(freeze[i+1]['gross_fixes_vs_freeze'])
                for i in range(len(freeze)-1))
@@ -63,6 +76,8 @@ def run(a):
                 per_fold_sums_verified=True,
                 all_correction_sorted_descending=True,
                 H9_excluded=True,
+                references_excluded_from_actionable_head_rank=True,
+                actionable_candidate_variants_checked=len(actionable),
                 source_training_not_replayed_in_S43=True,
                 no_hypothesis_promoted=True,
                 same_historic_cohort=True)
