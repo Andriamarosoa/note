@@ -88,7 +88,7 @@ def main():
     (args.output/"rows.jsonl").write_text("".join(json.dumps(x,sort_keys=True)+"\n" for x in output))
     result=dict(experiment=EXPERIMENT,status="completed",fold=args.fold,
                 full_rows=len(idx),eligible_rows=len(output),
-                selection="untouched baseline prediction in explicit candidate_baselines",
+                selection=("untouched baseline prediction belongs to K2/K3/K4 ONLY"\n                           if candidates==CANDIDATES and not args.primary_only\n                           else "untouched baseline prediction in explicit candidate_baselines"),
                 candidate_baselines=list(candidates),primary_only=bool(args.primary_only),
                 candidate_original_prediction_counts={str(k):int(np.sum(base[eligible]==k)) for k in candidates},
                 true_label_counts={str(k):int(np.sum(true_k[eligible]==k)) for k in range(7)},
