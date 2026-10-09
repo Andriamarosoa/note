@@ -1,13 +1,6 @@
 name: V27.3 scope rescue K0 K1 K5 (experimental)
 
 on:
-  push:
-    branches: [codex/v273-scope-rescue]
-    paths:
-      - 'scripts/extract_v273_harmonic_global.py'
-      - 'scripts/evaluate_v273_scope_rescue.py'
-      - 'test/test_v273_scope_rescue.py'
-      - '.github/workflows/v273-scope-rescue.yml'
   pull_request:
     branches: [codex/v273-regression-loops]
   workflow_dispatch:
@@ -40,6 +33,7 @@ jobs:
           python -m unittest -v test.test_v273_scope_rescue
 
   extract:
+    if: github.event_name == 'workflow_dispatch'
     needs: tests
     strategy:
       fail-fast: false
