@@ -1,0 +1,48 @@
+name: V27.3 S46 poly K2-K6 risk compromise across archived correction heads
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series46-poly-risk-compromises.yml'
+      - 'scripts/audit_v273_s46_classwise_compromise.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Validate all class-conditioned stop/move constraints without truth or H9
+        run: python -m scripts.audit_v273_s46_classwise_compromise --self-test
+      - name: Fetch immutable saved S45 16-family risk estimates and candidate corrections
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/S45-bundle model
+          gh release download v273-series45-research-37891074478 --repo "$GITHUB_REPOSITORY" --pattern '*.tar.gz' --dir model/S45-bundle
+          tar -xzf model/S45-bundle/v273-series45-specialized-heads.tar.gz -C model
+          test -f model/S45/predictions.npz
+          test -f model/S45/risk_scores.npz
+      - name: Test 192 fixed poly-sensitive compromise choices against original S18
+        run: >-
+          python -m scripts.audit_v273_s46_classwise_compromise
+          --s45pred model/S45/predictions.npz
+          --s45risk model/S45/risk_scores.npz
+          --output model/S46
+      - name: Publish classwise true K0-K6 corrections and regressions
+        run: cat model/S46/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series46-poly-class-compromises
+          path: model/S46/
+          retention-days: 90
