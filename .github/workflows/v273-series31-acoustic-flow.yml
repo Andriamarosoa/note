@@ -1,0 +1,71 @@
+name: V27.3 S31 acoustic flow quality loop
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series31-acoustic-flow.yml'
+      - 'scripts/audit_v273_s31_acoustic_flow_quality.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Pin numerical and torch CPU dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Unit-test feature separation signal 58 versus harmonic flow 245
+        run: python -m scripts.audit_v273_s31_acoustic_flow_quality --self-test
+      - name: Download the original acoustic and harmonic features for folds 0 1 2 4
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/original
+          gh release download v273-open-k0-k6-37837235723 --repo "$GITHUB_REPOSITORY" --pattern 'v273-open-features-*.tar' --dir model/original
+          for fold in 0 1 2 4; do
+            mkdir -p "model/features/fold-$fold"
+            tar -xf "model/original/v273-open-features-$fold.tar" -C "model/features/fold-$fold"
+          done
+      - name: Download unchanged S18 and source S29 dynamic selections
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 37856499212 --repo "$GITHUB_REPOSITORY" --name v273-series18-k43-k21 --dir model/S18
+          gh run download 37865173636 --repo "$GITHUB_REPOSITORY" --name v273-series29-stepwise-scheduler --dir model/S29
+      - name: Download original A-first and B-first confidence channels
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 37858383973 --repo "$GITHUB_REPOSITORY" --name v273-series20-residual --dir model/S20
+          gh run download 37862417522 --repo "$GITHUB_REPOSITORY" --name v273-series25-trained-Bfirst --dir model/S25
+      - name: Fit piece-excluded acoustic risk gates and inspect each corrected or broken K
+        run: >-
+          python -m scripts.audit_v273_s31_acoustic_flow_quality
+          --features model/features
+          --s18 model/S18/predictions.npz
+          --s29 model/S29/predictions.npz
+          --s20 model/S20/probabilities.npz
+          --s25 model/S25/probabilities.npz
+          --output model/S31
+      - name: Publish all corrected regressed neutral events
+        run: cat model/S31/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series31-acoustic-flow
+          path: model/S31/
+          retention-days: 90

@@ -1,0 +1,52 @@
+name: V27.3 S17 independent K3 decoder audit
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series17-verify.yml'
+      - 'scripts/verify_v273_series17.py'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Recover verified S17 training, probabilities and all 108 predictions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37856164138 --repo "$GITHUB_REPOSITORY" --name v273-series17-k32-k34 --dir model/series17-original
+      - name: Verify all policy vectors and all changed event outcomes
+        run: >-
+          python -m scripts.verify_v273_series17
+          --input model/series17-original
+          --output model/series17-replayed
+      - name: Publish strict replay evidence
+        run: cat model/series17-replayed/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series17-replayed
+          path: model/series17-replayed/
+          retention-days: 90
+      - name: Preserve all 108 candidates and neural weights permanently
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/archive
+          tar -czf model/archive/v273-series17-research.tar.gz -C model series17-original series17-replayed
+          (cd model/archive && sha256sum v273-series17-research.tar.gz > SHA256SUMS)
+          gh release create "v273-series17-research-${GITHUB_RUN_ID}" \
+            model/archive/v273-series17-research.tar.gz model/archive/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "V27.3 K3 S17 research ${GITHUB_RUN_ID}" \
+            --notes "Development only: all K3 correction and regression cases, 108 decision variants and fitted models. No production promotion or independent validation."

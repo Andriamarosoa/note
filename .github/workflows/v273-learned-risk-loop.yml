@@ -1,0 +1,41 @@
+name: V27.3 series7 nested learned correction risk
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-learned-risk-loop.yml'
+      - 'scripts/loop_v273_learned_risk.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v273-series7-learned-risk
+  cancel-in-progress: false
+jobs:
+  train_and_audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scikit-learn==1.4.2 joblib==1.4.2
+      - name: Validate feature schemas and risk decoding
+        run: python -m scripts.loop_v273_learned_risk --self-test
+      - name: Crossfit 12 fixed nested gate policies
+        run: >-
+          python -m scripts.loop_v273_learned_risk
+          --output model/v273-learned-loop
+      - name: Publish correction/regression audit
+        run: cat model/v273-learned-loop/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series7-learned-risk
+          path: model/v273-learned-loop/
+          retention-days: 90

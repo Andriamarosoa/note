@@ -1,0 +1,65 @@
+name: V27.3 S29 true stepwise dynamic head scheduler
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series29-stepwise.yml'
+      - 'scripts/train_v273_stepwise_scheduler.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  evaluate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 70
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Pin numerical and torch CPU preprocessing
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Verify scheduler changes its action after every head and executes real subbatch work
+        run: python -m scripts.train_v273_stepwise_scheduler --self-test
+      - name: Recover original acoustic envelopes and harmonic features
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/acoustic-tars
+          gh release download v273-open-k0-k6-37837235723 --repo "$GITHUB_REPOSITORY" --pattern 'v273-open-features-*.tar' --dir model/acoustic-tars
+          for fold in 0 1 2 4; do
+            mkdir -p "model/features/fold-$fold"
+            tar -xf "model/acoustic-tars/v273-open-features-$fold.tar" -C "model/features/fold-$fold"
+          done
+      - name: Recover verified S18 baseline
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37856499212 --repo "$GITHUB_REPOSITORY" --name v273-series18-k43-k21 --dir model/S18
+      - name: Recover 19 genuine neural A/B checkpoints
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37858383973 --repo "$GITHUB_REPOSITORY" --name v273-series20-residual --dir model/S20
+      - name: Explore all training histories then fit and test state-by-state policy on held pieces
+        run: >-
+          python -m scripts.train_v273_stepwise_scheduler
+          --features model/features
+          --s18 model/S18/predictions.npz
+          --s20 model/S20
+          --output model/S29
+      - name: Show per-step routes, real A/B calls and exact-K regressions
+        run: cat model/S29/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series29-stepwise-scheduler
+          path: model/S29/
+          retention-days: 90

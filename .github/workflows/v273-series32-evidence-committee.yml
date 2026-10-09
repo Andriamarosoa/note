@@ -1,0 +1,50 @@
+name: V27.3 S32 predeclared evidence committee loop
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series32-evidence-committee.yml'
+      - 'scripts/audit_v273_s32_evidence_committee.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  evaluate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install exact numpy for native K0 to K6 score verification
+        run: python -m pip install numpy==1.26.4
+      - name: Test 28 fixed score coalitions without true-K oracle
+        run: python -m scripts.audit_v273_s32_evidence_committee --self-test
+      - name: Recover all 26 native change cases and each model's precomputed held-piece trust score
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 37865173636 --repo "$GITHUB_REPOSITORY" --name v273-series29-stepwise-scheduler --dir model/S29
+          gh run download 37865974760 --repo "$GITHUB_REPOSITORY" --name v273-series30-corroboration --dir model/S30
+          gh run download 37866124959 --repo "$GITHUB_REPOSITORY" --name v273-series31-acoustic-flow --dir model/S31
+      - name: Test all 28 agreed-quality subsets, record corrections, regressions and neutral cases
+        run: >-
+          python -m scripts.audit_v273_s32_evidence_committee
+          --s29 model/S29/predictions.npz
+          --s30 model/S30/predictions.npz
+          --s31 model/S31/predictions.npz
+          --gate30 model/S30/gate_scores.npz
+          --gate31 model/S31/acoustic_scores.npz
+          --output model/S32
+      - name: Publish exact 26-case results and non-promotion status
+        run: cat model/S32/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series32-evidence-committee
+          path: model/S32/
+          retention-days: 90

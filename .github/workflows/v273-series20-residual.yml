@@ -1,0 +1,63 @@
+name: V27.3 S20 anchored recurrent A-B-A selections
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series20-residual.yml'
+      - 'scripts/train_v273_aba_residual.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v273-series20-residual
+  cancel-in-progress: false
+jobs:
+  train:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install PyTorch CPU and feature dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Test the anchored A-B-A message and K4 soft-exclusion mechanism
+        run: python -m scripts.train_v273_aba_residual --self-test
+      - name: Get SHA256 verified harmonic/flow signatures for all folds
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/audio
+          gh release download v273-open-k0-k6-37837235723 --repo "$GITHUB_REPOSITORY" --pattern 'v273-open-features-*.tar' --dir model/audio
+          for fold in 0 1 2 4; do
+            mkdir -p "model/full-audio/fold-$fold"
+            tar -xf "model/audio/v273-open-features-$fold.tar" -C "model/full-audio/fold-$fold"
+          done
+      - name: Get original conservative S18 parent
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37856499212 --repo "$GITHUB_REPOSITORY" --name v273-series18-k43-k21 --dir model/s18-parent
+      - name: Crossfit residual A-B-A neural selectors and archive all 27 policies
+        run: >-
+          python -m scripts.train_v273_aba_residual
+          --features model/full-audio
+          --s18 model/s18-parent/predictions.npz
+          --output model/series20-residual
+      - name: Publish full pass-specific regression and corrective audit
+        run: cat model/series20-residual/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series20-residual
+          path: model/series20-residual/
+          retention-days: 90

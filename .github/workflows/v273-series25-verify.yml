@@ -1,0 +1,75 @@
+name: V27.3 S25 verify B-first training and archive
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series25-verify.yml'
+      - 'scripts/verify_v273_Bfirst_recurrent.py'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install exact CPU training dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Recover all 19 trained B-first checkpoints and every prediction
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37862417522 --repo "$GITHUB_REPOSITORY" --name v273-series25-trained-Bfirst --dir model/S25-original
+      - name: Recover original held-fold acoustic signatures
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/sources
+          gh release download v273-open-k0-k6-37837235723 --repo "$GITHUB_REPOSITORY" --pattern 'v273-open-features-*.tar' --dir model/sources
+          for fold in 0 1 2 4; do
+            mkdir -p "model/features/fold-$fold"
+            tar -xf "model/sources/v273-open-features-$fold.tar" -C "model/features/fold-$fold"
+          done
+      - name: Recover unchanged conservative parent S18
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37856499212 --repo "$GITHUB_REPOSITORY" --name v273-series18-k43-k21 --dir model/S18
+      - name: Re-infer all K0-K6 outputs from original trained B-first weights
+        run: >-
+          python -m scripts.verify_v273_Bfirst_recurrent
+          --features model/features
+          --s18 model/S18/predictions.npz
+          --input model/S25-original
+          --output model/S25-verified
+      - name: Publish independent numerical replay report
+        run: cat model/S25-verified/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series25-replayed
+          path: model/S25-verified/
+          retention-days: 90
+      - name: Preserve positive and negative B-first training results permanently
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/archive
+          tar -czf model/archive/v273-series25-trained-research.tar.gz -C model S25-original S25-verified
+          (cd model/archive && sha256sum v273-series25-trained-research.tar.gz > SHA256SUMS)
+          gh release create "v273-series25-research-${GITHUB_RUN_ID}" \
+            model/archive/v273-series25-trained-research.tar.gz model/archive/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "V27.3 S25 B-first trained neural selection ${GITHUB_RUN_ID}" \
+            --notes "19 trained B-first checkpoints, full probabilities and 28 decision policies, all K0-K6 regression cases and independent numerical replay. Historical S18 unchanged; no new independent music validation or promotion."

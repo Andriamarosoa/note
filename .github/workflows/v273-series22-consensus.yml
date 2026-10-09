@@ -1,0 +1,46 @@
+name: V27.3 S22 A-B-A multihead consensus gates
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series22-consensus.yml'
+      - 'scripts/audit_v273_multihead_consensus.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Test 108 fixed consensus conditions
+        run: python -m scripts.audit_v273_multihead_consensus --self-test
+      - name: Download S20 A/B probabilities and original decisions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37858383973 --repo "$GITHUB_REPOSITORY" --name v273-series20-residual --dir model/S20
+      - name: Download cross-piece learned S21 trust scores
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37859454327 --repo "$GITHUB_REPOSITORY" --name v273-series21-B-trust --dir model/S21
+      - name: Audit corrections, regressions and neutral selections under 108 policies
+        run: >-
+          python -m scripts.audit_v273_multihead_consensus
+          --s20 model/S20/predictions.npz
+          --s20-prob model/S20/probabilities.npz
+          --s21 model/S21/scores.npz
+          --output model/S22
+      - name: Show all policies and exact-K results
+        run: cat model/S22/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series22-consensus
+          path: model/S22/
+          retention-days: 90

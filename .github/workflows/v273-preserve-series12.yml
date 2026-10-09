@@ -1,0 +1,32 @@
+name: V27.3 preserve series12 full-audio research
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-preserve-series12.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  preserve:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover all K0-K6 audio-gate fitted weights and measured outcomes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37853979683 --repo "$GITHUB_REPOSITORY" --name v273-series12-full-audio --dir model/series12-research
+      - name: Archive with checksum and mark as research only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/archive
+          tar -czf model/archive/v273-series12-research.tar.gz -C model/series12-research .
+          (cd model/archive && sha256sum v273-series12-research.tar.gz > SHA256SUMS)
+          gh release create "v273-series12-research-${GITHUB_RUN_ID}" \
+            model/archive/v273-series12-research.tar.gz model/archive/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "V27.3 full audio K0-K6 regression research ${GITHUB_RUN_ID}" \
+            --notes "Research evidence only: 24 acoustic-gate variants, full cross-piece weights, predictions and regression audit. NO independent validation or promoted model."

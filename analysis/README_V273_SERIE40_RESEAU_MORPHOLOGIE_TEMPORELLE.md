@@ -1,0 +1,11 @@
+# S40 — réseau convolutionnel temporel apprenant directement 42×49 trajectoires harmoniques
+
+**Protocole fixé avant le run.** L'échec principal des anciennes boucles est l'absence de preuve fiable de présence d'une deuxième, troisième ou quatrième note. S38 teste des modèles tabulaires sur une morphologie comprimée. S40 doit tester l'apprentissage direct des **séquences 42 trames ×49 canaux** grâce à une architecture CNN temporelle réelle, et NON un ensemble de portes statiques.
+
+Architecture unique prédéclarée : entrée `trajectory[42,49]` (log d'amplitude issu des sources audio), transposée en canaux 49×42. Branches `Conv1d(49,64,k=5,pad=2)→BatchNorm→GELU→Conv1d(64,128,k=3,pad=1)→BatchNorm→GELU→AdaptiveAvgPool+AdaptiveMaxPool`, jointe à `Linear(335,96)→GELU` sur les votes/audio/flux originaux, puis `Linear(352,128)→GELU→Dropout(0.20)→Linear(128,6)` pour K1..K6. Entrées audio et votes S5 sont historiques, mais **aucune représentation ou prédiction H9/YourMT3+** n'entre dans le modèle. H8 reste masquée.
+
+Protocole de fit : 4 folds natifs 0/1/2/4, entraînement K1..K6 sur les trois autres folds, aucun exemple du fold testé. AdamW lr=0.001 weight_decay=0.001, 10 epochs fixes (pas d'early stopping sur le test), batch=256, loss CrossEntropy avec `sqrt(max_frequency / class_frequency)` plafonné à 5, seed=27340+fold. CPU torch et threads<=2. Aucune optimisation d'hyperparamètre sur les étiquettes tenues à l'écart.
+
+Évaluation : distinguer diagnostic modèle direct sur les vrais K2..K6 et intervention S18, avec les deux domaines `source_K1to6`, `source_poly_K2to6` et les 3 portes prédéclarées `argmax,delta>0.10,delta>0.25`. Six alternatives plus S18. Toute correction/régression est comptée par vrai K et fold. L'entraînement des réseaux n'utilise jamais le vrai K au moment de la décision finale.
+
+Critère scientifique : mesurer l'existence de **bonnes nouvelles prédictions polyphoniques** avec effet réel utile, pas seulement 2 corrections sans régression ; bilan sérieux vs S18 40,5958 % poly et benchmark YourMT3+ 54,5430 % poly, qui demeure **externe** et jamais une tête. Ne pas promouvoir sur cette cohorte de développement déjà utilisée.

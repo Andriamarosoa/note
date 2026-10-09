@@ -1,0 +1,36 @@
+name: V27.3 preserve series10 and series11 research evidence
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-preserve-series10-11.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  preserve:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Retrieve verified whole-cohort regression taxonomy
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37853361662 --repo "$GITHUB_REPOSITORY" --name v273-series10-regression-taxonomy --dir model/research/series10
+      - name: Retrieve verified cross-piece risk models and predictions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37853663514 --repo "$GITHUB_REPOSITORY" --name v273-series11-native-risk --dir model/research/series11
+      - name: Hash and create non-production prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/archive
+          tar -czf model/archive/v273-series10-11.tar.gz -C model/research .
+          (cd model/archive && sha256sum v273-series10-11.tar.gz > SHA256SUMS)
+          gh release create "v273-series10-11-research-${GITHUB_RUN_ID}" \
+            model/archive/v273-series10-11.tar.gz model/archive/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "V27.3 series10-11 regression evidence ${GITHUB_RUN_ID}" \
+            --notes "Permanent research evidence only: 2226 regressions signature audit, 24 cross-piece risk gates with full fitted weights and decisions. NO independent validation or model promotion."

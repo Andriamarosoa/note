@@ -1,0 +1,7609 @@
+{
+  "automatic_promotion": false,
+  "independent_validation": false,
+  "policies": {
+    "S8__low_gate_0.50": {
+      "folds": {
+        "0": {
+          "by_k": {
+            "0": {
+              "changed": 61,
+              "corrections": 24,
+              "net": 24,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 183,
+              "corrections": 128,
+              "net": 128,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 156,
+              "corrections": 38,
+              "net": -48,
+              "regressions": 86
+            },
+            "3": {
+              "changed": 95,
+              "corrections": 33,
+              "net": -2,
+              "regressions": 35
+            },
+            "4": {
+              "changed": 91,
+              "corrections": 35,
+              "net": 4,
+              "regressions": 31
+            },
+            "5": {
+              "changed": 30,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 6,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 622,
+            "corrections": 258,
+            "net": 106,
+            "regressions": 152
+          },
+          "poly": {
+            "changed": 378,
+            "corrections": 106,
+            "net": -46,
+            "regressions": 152
+          }
+        },
+        "1": {
+          "by_k": {
+            "0": {
+              "changed": 70,
+              "corrections": 38,
+              "net": 38,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 138,
+              "corrections": 48,
+              "net": 48,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 158,
+              "corrections": 73,
+              "net": 8,
+              "regressions": 65
+            },
+            "3": {
+              "changed": 93,
+              "corrections": 36,
+              "net": 1,
+              "regressions": 35
+            },
+            "4": {
+              "changed": 29,
+              "corrections": 2,
+              "net": -14,
+              "regressions": 16
+            },
+            "5": {
+              "changed": 12,
+              "corrections": 1,
+              "net": 1,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 503,
+            "corrections": 198,
+            "net": 82,
+            "regressions": 116
+          },
+          "poly": {
+            "changed": 295,
+            "corrections": 112,
+            "net": -4,
+            "regressions": 116
+          }
+        },
+        "2": {
+          "by_k": {
+            "0": {
+              "changed": 62,
+              "corrections": 33,
+              "net": 33,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 98,
+              "corrections": 41,
+              "net": 41,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 107,
+              "corrections": 36,
+              "net": -16,
+              "regressions": 52
+            },
+            "3": {
+              "changed": 88,
+              "corrections": 50,
+              "net": 35,
+              "regressions": 15
+            },
+            "4": {
+              "changed": 40,
+              "corrections": 0,
+              "net": -30,
+              "regressions": 30
+            },
+            "5": {
+              "changed": 21,
+              "corrections": 11,
+              "net": 11,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 419,
+            "corrections": 171,
+            "net": 74,
+            "regressions": 97
+          },
+          "poly": {
+            "changed": 259,
+            "corrections": 97,
+            "net": 0,
+            "regressions": 97
+          }
+        },
+        "4": {
+          "by_k": {
+            "0": {
+              "changed": 96,
+              "corrections": 57,
+              "net": 57,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 156,
+              "corrections": 78,
+              "net": 78,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 128,
+              "corrections": 78,
+              "net": 47,
+              "regressions": 31
+            },
+            "3": {
+              "changed": 98,
+              "corrections": 3,
+              "net": -86,
+              "regressions": 89
+            },
+            "4": {
+              "changed": 87,
+              "corrections": 57,
+              "net": 55,
+              "regressions": 2
+            },
+            "5": {
+              "changed": 38,
+              "corrections": 2,
+              "net": 2,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 11,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 614,
+            "corrections": 275,
+            "net": 153,
+            "regressions": 122
+          },
+          "poly": {
+            "changed": 362,
+            "corrections": 140,
+            "net": 18,
+            "regressions": 122
+          }
+        }
+      },
+      "metrics": {
+        "by_k": {
+          "0": {
+            "correct": 38187,
+            "exact": 0.9630535660244124,
+            "over": 1465,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 8184,
+            "exact": 0.666883963494133,
+            "over": 1081,
+            "rows": 12272,
+            "under": 3007
+          },
+          "2": {
+            "correct": 1174,
+            "exact": 0.34078374455732946,
+            "over": 668,
+            "rows": 3445,
+            "under": 1603
+          },
+          "3": {
+            "correct": 863,
+            "exact": 0.37702053298383575,
+            "over": 297,
+            "rows": 2289,
+            "under": 1129
+          },
+          "4": {
+            "correct": 432,
+            "exact": 0.35791217895608946,
+            "over": 20,
+            "rows": 1207,
+            "under": 755
+          },
+          "5": {
+            "correct": 29,
+            "exact": 0.08169014084507042,
+            "over": 0,
+            "rows": 355,
+            "under": 326
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38187,
+            1142,
+            282,
+            31,
+            10,
+            0,
+            0
+          ],
+          [
+            3007,
+            8184,
+            884,
+            168,
+            25,
+            4,
+            0
+          ],
+          [
+            709,
+            894,
+            1174,
+            545,
+            120,
+            3,
+            0
+          ],
+          [
+            220,
+            210,
+            699,
+            863,
+            277,
+            20,
+            0
+          ],
+          [
+            50,
+            42,
+            232,
+            431,
+            432,
+            20,
+            0
+          ],
+          [
+            7,
+            9,
+            46,
+            116,
+            148,
+            29,
+            0
+          ],
+          [
+            0,
+            4,
+            11,
+            22,
+            45,
+            7,
+            0
+          ]
+        ],
+        "correct": 48869,
+        "exact": 0.8239727528705593,
+        "over": 3531,
+        "poly": {
+          "correct": 2498,
+          "exact": 0.33825321597833446,
+          "over": 985,
+          "rows": 7385,
+          "under": 3902
+        },
+        "rows": 59309,
+        "under": 6909
+      },
+      "versus_current": {
+        "by_k": {
+          "0": {
+            "changed": 247,
+            "corrections": 152,
+            "net": 152,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 393,
+            "corrections": 295,
+            "net": 295,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 195,
+            "corrections": 0,
+            "net": -189,
+            "regressions": 189
+          },
+          "3": {
+            "changed": 49,
+            "corrections": 0,
+            "net": -6,
+            "regressions": 6
+          },
+          "4": {
+            "changed": 11,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "5": {
+            "changed": 1,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 896,
+          "corrections": 447,
+          "net": 252,
+          "regressions": 195
+        },
+        "poly": {
+          "changed": 256,
+          "corrections": 0,
+          "net": -195,
+          "regressions": 195
+        }
+      },
+      "versus_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 289,
+            "corrections": 152,
+            "net": 152,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 575,
+            "corrections": 295,
+            "net": 295,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 549,
+            "corrections": 225,
+            "net": -9,
+            "regressions": 234
+          },
+          "3": {
+            "changed": 374,
+            "corrections": 122,
+            "net": -52,
+            "regressions": 174
+          },
+          "4": {
+            "changed": 247,
+            "corrections": 94,
+            "net": 15,
+            "regressions": 79
+          },
+          "5": {
+            "changed": 101,
+            "corrections": 14,
+            "net": 14,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 23,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2158,
+          "corrections": 902,
+          "net": 415,
+          "regressions": 487
+        },
+        "poly": {
+          "changed": 1294,
+          "corrections": 455,
+          "net": -32,
+          "regressions": 487
+        }
+      },
+      "versus_yourmt3": {
+        "by_k": {
+          "0": {
+            "changed": 2142,
+            "corrections": 1150,
+            "net": 351,
+            "regressions": 799
+          },
+          "1": {
+            "changed": 3229,
+            "corrections": 689,
+            "net": -1280,
+            "regressions": 1969
+          },
+          "2": {
+            "changed": 2137,
+            "corrections": 461,
+            "net": -644,
+            "regressions": 1105
+          },
+          "3": {
+            "changed": 1387,
+            "corrections": 295,
+            "net": -389,
+            "regressions": 684
+          },
+          "4": {
+            "changed": 758,
+            "corrections": 122,
+            "net": -293,
+            "regressions": 415
+          },
+          "5": {
+            "changed": 293,
+            "corrections": 13,
+            "net": -160,
+            "regressions": 173
+          },
+          "6": {
+            "changed": 81,
+            "corrections": 0,
+            "net": -44,
+            "regressions": 44
+          }
+        },
+        "global": {
+          "changed": 10027,
+          "corrections": 2730,
+          "net": -2459,
+          "regressions": 5189
+        },
+        "poly": {
+          "changed": 4656,
+          "corrections": 891,
+          "net": -1530,
+          "regressions": 2421
+        }
+      }
+    },
+    "S8__low_gate_0.65": {
+      "folds": {
+        "0": {
+          "by_k": {
+            "0": {
+              "changed": 40,
+              "corrections": 17,
+              "net": 17,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 106,
+              "corrections": 60,
+              "net": 60,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 113,
+              "corrections": 40,
+              "net": -4,
+              "regressions": 44
+            },
+            "3": {
+              "changed": 81,
+              "corrections": 34,
+              "net": 1,
+              "regressions": 33
+            },
+            "4": {
+              "changed": 86,
+              "corrections": 35,
+              "net": 4,
+              "regressions": 31
+            },
+            "5": {
+              "changed": 30,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 6,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 462,
+            "corrections": 186,
+            "net": 78,
+            "regressions": 108
+          },
+          "poly": {
+            "changed": 316,
+            "corrections": 109,
+            "net": 1,
+            "regressions": 108
+          }
+        },
+        "1": {
+          "by_k": {
+            "0": {
+              "changed": 52,
+              "corrections": 30,
+              "net": 30,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 104,
+              "corrections": 19,
+              "net": 19,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 138,
+              "corrections": 78,
+              "net": 32,
+              "regressions": 46
+            },
+            "3": {
+              "changed": 86,
+              "corrections": 36,
+              "net": 2,
+              "regressions": 34
+            },
+            "4": {
+              "changed": 29,
+              "corrections": 2,
+              "net": -14,
+              "regressions": 16
+            },
+            "5": {
+              "changed": 12,
+              "corrections": 1,
+              "net": 1,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 424,
+            "corrections": 166,
+            "net": 70,
+            "regressions": 96
+          },
+          "poly": {
+            "changed": 268,
+            "corrections": 117,
+            "net": 21,
+            "regressions": 96
+          }
+        },
+        "2": {
+          "by_k": {
+            "0": {
+              "changed": 44,
+              "corrections": 25,
+              "net": 25,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 75,
+              "corrections": 19,
+              "net": 19,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 88,
+              "corrections": 37,
+              "net": 4,
+              "regressions": 33
+            },
+            "3": {
+              "changed": 84,
+              "corrections": 50,
+              "net": 35,
+              "regressions": 15
+            },
+            "4": {
+              "changed": 39,
+              "corrections": 0,
+              "net": -30,
+              "regressions": 30
+            },
+            "5": {
+              "changed": 21,
+              "corrections": 11,
+              "net": 11,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 354,
+            "corrections": 142,
+            "net": 64,
+            "regressions": 78
+          },
+          "poly": {
+            "changed": 235,
+            "corrections": 98,
+            "net": 20,
+            "regressions": 78
+          }
+        },
+        "4": {
+          "by_k": {
+            "0": {
+              "changed": 74,
+              "corrections": 47,
+              "net": 47,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 102,
+              "corrections": 26,
+              "net": 26,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 111,
+              "corrections": 84,
+              "net": 70,
+              "regressions": 14
+            },
+            "3": {
+              "changed": 94,
+              "corrections": 3,
+              "net": -85,
+              "regressions": 88
+            },
+            "4": {
+              "changed": 87,
+              "corrections": 57,
+              "net": 55,
+              "regressions": 2
+            },
+            "5": {
+              "changed": 38,
+              "corrections": 2,
+              "net": 2,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 11,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 517,
+            "corrections": 219,
+            "net": 115,
+            "regressions": 104
+          },
+          "poly": {
+            "changed": 341,
+            "corrections": 146,
+            "net": 42,
+            "regressions": 104
+          }
+        }
+      },
+      "metrics": {
+        "by_k": {
+          "0": {
+            "correct": 38154,
+            "exact": 0.9622213255321296,
+            "over": 1498,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 8013,
+            "exact": 0.6529498044328553,
+            "over": 1296,
+            "rows": 12272,
+            "under": 2963
+          },
+          "2": {
+            "correct": 1285,
+            "exact": 0.37300435413642963,
+            "over": 670,
+            "rows": 3445,
+            "under": 1490
+          },
+          "3": {
+            "correct": 868,
+            "exact": 0.37920489296636084,
+            "over": 297,
+            "rows": 2289,
+            "under": 1124
+          },
+          "4": {
+            "correct": 432,
+            "exact": 0.35791217895608946,
+            "over": 20,
+            "rows": 1207,
+            "under": 755
+          },
+          "5": {
+            "correct": 29,
+            "exact": 0.08169014084507042,
+            "over": 0,
+            "rows": 355,
+            "under": 326
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38154,
+            1088,
+            365,
+            34,
+            10,
+            1,
+            0
+          ],
+          [
+            2963,
+            8013,
+            1088,
+            175,
+            29,
+            4,
+            0
+          ],
+          [
+            691,
+            799,
+            1285,
+            547,
+            120,
+            3,
+            0
+          ],
+          [
+            215,
+            180,
+            729,
+            868,
+            277,
+            20,
+            0
+          ],
+          [
+            48,
+            35,
+            241,
+            431,
+            432,
+            20,
+            0
+          ],
+          [
+            7,
+            8,
+            47,
+            116,
+            148,
+            29,
+            0
+          ],
+          [
+            0,
+            4,
+            11,
+            22,
+            45,
+            7,
+            0
+          ]
+        ],
+        "correct": 48781,
+        "exact": 0.8224889982970545,
+        "over": 3781,
+        "poly": {
+          "correct": 2614,
+          "exact": 0.35396073121191607,
+          "over": 987,
+          "rows": 7385,
+          "under": 3784
+        },
+        "rows": 59309,
+        "under": 6747
+      },
+      "versus_current": {
+        "by_k": {
+          "0": {
+            "changed": 160,
+            "corrections": 119,
+            "net": 119,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 178,
+            "corrections": 124,
+            "net": 124,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 82,
+            "corrections": 0,
+            "net": -78,
+            "regressions": 78
+          },
+          "3": {
+            "changed": 14,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          },
+          "4": {
+            "changed": 2,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "5": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 436,
+          "corrections": 243,
+          "net": 164,
+          "regressions": 79
+        },
+        "poly": {
+          "changed": 98,
+          "corrections": 0,
+          "net": -79,
+          "regressions": 79
+        }
+      },
+      "versus_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 210,
+            "corrections": 119,
+            "net": 119,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 387,
+            "corrections": 124,
+            "net": 124,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 450,
+            "corrections": 239,
+            "net": 102,
+            "regressions": 137
+          },
+          "3": {
+            "changed": 345,
+            "corrections": 123,
+            "net": -47,
+            "regressions": 170
+          },
+          "4": {
+            "changed": 241,
+            "corrections": 94,
+            "net": 15,
+            "regressions": 79
+          },
+          "5": {
+            "changed": 101,
+            "corrections": 14,
+            "net": 14,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 23,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1757,
+          "corrections": 713,
+          "net": 327,
+          "regressions": 386
+        },
+        "poly": {
+          "changed": 1160,
+          "corrections": 470,
+          "net": 84,
+          "regressions": 386
+        }
+      },
+      "versus_yourmt3": {
+        "by_k": {
+          "0": {
+            "changed": 2183,
+            "corrections": 1144,
+            "net": 318,
+            "regressions": 826
+          },
+          "1": {
+            "changed": 3328,
+            "corrections": 640,
+            "net": -1451,
+            "regressions": 2091
+          },
+          "2": {
+            "changed": 2112,
+            "corrections": 512,
+            "net": -533,
+            "regressions": 1045
+          },
+          "3": {
+            "changed": 1381,
+            "corrections": 297,
+            "net": -384,
+            "regressions": 681
+          },
+          "4": {
+            "changed": 756,
+            "corrections": 122,
+            "net": -293,
+            "regressions": 415
+          },
+          "5": {
+            "changed": 293,
+            "corrections": 13,
+            "net": -160,
+            "regressions": 173
+          },
+          "6": {
+            "changed": 81,
+            "corrections": 0,
+            "net": -44,
+            "regressions": 44
+          }
+        },
+        "global": {
+          "changed": 10134,
+          "corrections": 2728,
+          "net": -2547,
+          "regressions": 5275
+        },
+        "poly": {
+          "changed": 4623,
+          "corrections": 944,
+          "net": -1414,
+          "regressions": 2358
+        }
+      }
+    },
+    "S8__low_gate_0.80": {
+      "folds": {
+        "0": {
+          "by_k": {
+            "0": {
+              "changed": 21,
+              "corrections": 11,
+              "net": 11,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 74,
+              "corrections": 28,
+              "net": 28,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 88,
+              "corrections": 42,
+              "net": 22,
+              "regressions": 20
+            },
+            "3": {
+              "changed": 78,
+              "corrections": 34,
+              "net": 1,
+              "regressions": 33
+            },
+            "4": {
+              "changed": 86,
+              "corrections": 35,
+              "net": 4,
+              "regressions": 31
+            },
+            "5": {
+              "changed": 30,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 6,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 383,
+            "corrections": 150,
+            "net": 66,
+            "regressions": 84
+          },
+          "poly": {
+            "changed": 288,
+            "corrections": 111,
+            "net": 27,
+            "regressions": 84
+          }
+        },
+        "1": {
+          "by_k": {
+            "0": {
+              "changed": 35,
+              "corrections": 16,
+              "net": 16,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 89,
+              "corrections": 11,
+              "net": 11,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 120,
+              "corrections": 79,
+              "net": 51,
+              "regressions": 28
+            },
+            "3": {
+              "changed": 85,
+              "corrections": 36,
+              "net": 2,
+              "regressions": 34
+            },
+            "4": {
+              "changed": 29,
+              "corrections": 2,
+              "net": -14,
+              "regressions": 16
+            },
+            "5": {
+              "changed": 12,
+              "corrections": 1,
+              "net": 1,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 373,
+            "corrections": 145,
+            "net": 67,
+            "regressions": 78
+          },
+          "poly": {
+            "changed": 249,
+            "corrections": 118,
+            "net": 40,
+            "regressions": 78
+          }
+        },
+        "2": {
+          "by_k": {
+            "0": {
+              "changed": 31,
+              "corrections": 17,
+              "net": 17,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 58,
+              "corrections": 5,
+              "net": 5,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 82,
+              "corrections": 37,
+              "net": 9,
+              "regressions": 28
+            },
+            "3": {
+              "changed": 80,
+              "corrections": 50,
+              "net": 35,
+              "regressions": 15
+            },
+            "4": {
+              "changed": 39,
+              "corrections": 0,
+              "net": -30,
+              "regressions": 30
+            },
+            "5": {
+              "changed": 21,
+              "corrections": 11,
+              "net": 11,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 314,
+            "corrections": 120,
+            "net": 47,
+            "regressions": 73
+          },
+          "poly": {
+            "changed": 225,
+            "corrections": 98,
+            "net": 25,
+            "regressions": 73
+          }
+        },
+        "4": {
+          "by_k": {
+            "0": {
+              "changed": 59,
+              "corrections": 36,
+              "net": 36,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 79,
+              "corrections": 5,
+              "net": 5,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 102,
+              "corrections": 86,
+              "net": 80,
+              "regressions": 6
+            },
+            "3": {
+              "changed": 93,
+              "corrections": 3,
+              "net": -85,
+              "regressions": 88
+            },
+            "4": {
+              "changed": 87,
+              "corrections": 57,
+              "net": 55,
+              "regressions": 2
+            },
+            "5": {
+              "changed": 38,
+              "corrections": 2,
+              "net": 2,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 11,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 469,
+            "corrections": 189,
+            "net": 93,
+            "regressions": 96
+          },
+          "poly": {
+            "changed": 331,
+            "corrections": 148,
+            "net": 52,
+            "regressions": 96
+          }
+        }
+      },
+      "metrics": {
+        "by_k": {
+          "0": {
+            "correct": 38115,
+            "exact": 0.9612377685867043,
+            "over": 1537,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7938,
+            "exact": 0.646838331160365,
+            "over": 1396,
+            "rows": 12272,
+            "under": 2938
+          },
+          "2": {
+            "correct": 1345,
+            "exact": 0.3904208998548621,
+            "over": 673,
+            "rows": 3445,
+            "under": 1427
+          },
+          "3": {
+            "correct": 868,
+            "exact": 0.37920489296636084,
+            "over": 297,
+            "rows": 2289,
+            "under": 1124
+          },
+          "4": {
+            "correct": 432,
+            "exact": 0.35791217895608946,
+            "over": 20,
+            "rows": 1207,
+            "under": 755
+          },
+          "5": {
+            "correct": 29,
+            "exact": 0.08169014084507042,
+            "over": 0,
+            "rows": 355,
+            "under": 326
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38115,
+            1058,
+            429,
+            39,
+            10,
+            1,
+            0
+          ],
+          [
+            2938,
+            7938,
+            1185,
+            178,
+            29,
+            4,
+            0
+          ],
+          [
+            675,
+            752,
+            1345,
+            549,
+            121,
+            3,
+            0
+          ],
+          [
+            212,
+            173,
+            739,
+            868,
+            277,
+            20,
+            0
+          ],
+          [
+            47,
+            34,
+            243,
+            431,
+            432,
+            20,
+            0
+          ],
+          [
+            7,
+            8,
+            47,
+            116,
+            148,
+            29,
+            0
+          ],
+          [
+            0,
+            4,
+            11,
+            22,
+            45,
+            7,
+            0
+          ]
+        ],
+        "correct": 48727,
+        "exact": 0.8215785125360401,
+        "over": 3923,
+        "poly": {
+          "correct": 2674,
+          "exact": 0.36208530805687206,
+          "over": 990,
+          "rows": 7385,
+          "under": 3721
+        },
+        "rows": 59309,
+        "under": 6659
+      },
+      "versus_current": {
+        "by_k": {
+          "0": {
+            "changed": 91,
+            "corrections": 80,
+            "net": 80,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 78,
+            "corrections": 49,
+            "net": 49,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 19,
+            "corrections": 0,
+            "net": -18,
+            "regressions": 18
+          },
+          "3": {
+            "changed": 4,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          },
+          "4": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "5": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 192,
+          "corrections": 129,
+          "net": 110,
+          "regressions": 19
+        },
+        "poly": {
+          "changed": 23,
+          "corrections": 0,
+          "net": -19,
+          "regressions": 19
+        }
+      },
+      "versus_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 146,
+            "corrections": 80,
+            "net": 80,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 300,
+            "corrections": 49,
+            "net": 49,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 392,
+            "corrections": 244,
+            "net": 162,
+            "regressions": 82
+          },
+          "3": {
+            "changed": 336,
+            "corrections": 123,
+            "net": -47,
+            "regressions": 170
+          },
+          "4": {
+            "changed": 241,
+            "corrections": 94,
+            "net": 15,
+            "regressions": 79
+          },
+          "5": {
+            "changed": 101,
+            "corrections": 14,
+            "net": 14,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 23,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1539,
+          "corrections": 604,
+          "net": 273,
+          "regressions": 331
+        },
+        "poly": {
+          "changed": 1093,
+          "corrections": 475,
+          "net": 144,
+          "regressions": 331
+        }
+      },
+      "versus_yourmt3": {
+        "by_k": {
+          "0": {
+            "changed": 2216,
+            "corrections": 1132,
+            "net": 279,
+            "regressions": 853
+          },
+          "1": {
+            "changed": 3383,
+            "corrections": 625,
+            "net": -1526,
+            "regressions": 2151
+          },
+          "2": {
+            "changed": 2108,
+            "corrections": 544,
+            "net": -473,
+            "regressions": 1017
+          },
+          "3": {
+            "changed": 1381,
+            "corrections": 297,
+            "net": -384,
+            "regressions": 681
+          },
+          "4": {
+            "changed": 756,
+            "corrections": 122,
+            "net": -293,
+            "regressions": 415
+          },
+          "5": {
+            "changed": 293,
+            "corrections": 13,
+            "net": -160,
+            "regressions": 173
+          },
+          "6": {
+            "changed": 81,
+            "corrections": 0,
+            "net": -44,
+            "regressions": 44
+          }
+        },
+        "global": {
+          "changed": 10218,
+          "corrections": 2733,
+          "net": -2601,
+          "regressions": 5334
+        },
+        "poly": {
+          "changed": 4619,
+          "corrections": 976,
+          "net": -1354,
+          "regressions": 2330
+        }
+      }
+    },
+    "S8__low_gate_0.90": {
+      "folds": {
+        "0": {
+          "by_k": {
+            "0": {
+              "changed": 13,
+              "corrections": 5,
+              "net": 5,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 56,
+              "corrections": 9,
+              "net": 9,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 81,
+              "corrections": 42,
+              "net": 29,
+              "regressions": 13
+            },
+            "3": {
+              "changed": 78,
+              "corrections": 34,
+              "net": 1,
+              "regressions": 33
+            },
+            "4": {
+              "changed": 86,
+              "corrections": 35,
+              "net": 4,
+              "regressions": 31
+            },
+            "5": {
+              "changed": 30,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 6,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 350,
+            "corrections": 125,
+            "net": 48,
+            "regressions": 77
+          },
+          "poly": {
+            "changed": 281,
+            "corrections": 111,
+            "net": 34,
+            "regressions": 77
+          }
+        },
+        "1": {
+          "by_k": {
+            "0": {
+              "changed": 30,
+              "corrections": 11,
+              "net": 11,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 78,
+              "corrections": 4,
+              "net": 4,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 117,
+              "corrections": 79,
+              "net": 53,
+              "regressions": 26
+            },
+            "3": {
+              "changed": 85,
+              "corrections": 36,
+              "net": 2,
+              "regressions": 34
+            },
+            "4": {
+              "changed": 29,
+              "corrections": 2,
+              "net": -14,
+              "regressions": 16
+            },
+            "5": {
+              "changed": 12,
+              "corrections": 1,
+              "net": 1,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 354,
+            "corrections": 133,
+            "net": 57,
+            "regressions": 76
+          },
+          "poly": {
+            "changed": 246,
+            "corrections": 118,
+            "net": 42,
+            "regressions": 76
+          }
+        },
+        "2": {
+          "by_k": {
+            "0": {
+              "changed": 23,
+              "corrections": 10,
+              "net": 10,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 53,
+              "corrections": 2,
+              "net": 2,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 78,
+              "corrections": 37,
+              "net": 13,
+              "regressions": 24
+            },
+            "3": {
+              "changed": 79,
+              "corrections": 50,
+              "net": 35,
+              "regressions": 15
+            },
+            "4": {
+              "changed": 39,
+              "corrections": 0,
+              "net": -30,
+              "regressions": 30
+            },
+            "5": {
+              "changed": 21,
+              "corrections": 11,
+              "net": 11,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 296,
+            "corrections": 110,
+            "net": 41,
+            "regressions": 69
+          },
+          "poly": {
+            "changed": 220,
+            "corrections": 98,
+            "net": 29,
+            "regressions": 69
+          }
+        },
+        "4": {
+          "by_k": {
+            "0": {
+              "changed": 50,
+              "corrections": 27,
+              "net": 27,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 71,
+              "corrections": 4,
+              "net": 4,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 101,
+              "corrections": 86,
+              "net": 81,
+              "regressions": 5
+            },
+            "3": {
+              "changed": 92,
+              "corrections": 3,
+              "net": -85,
+              "regressions": 88
+            },
+            "4": {
+              "changed": 87,
+              "corrections": 57,
+              "net": 55,
+              "regressions": 2
+            },
+            "5": {
+              "changed": 38,
+              "corrections": 2,
+              "net": 2,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 11,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 450,
+            "corrections": 179,
+            "net": 84,
+            "regressions": 95
+          },
+          "poly": {
+            "changed": 329,
+            "corrections": 148,
+            "net": 53,
+            "regressions": 95
+          }
+        }
+      },
+      "metrics": {
+        "by_k": {
+          "0": {
+            "correct": 38088,
+            "exact": 0.9605568445475638,
+            "over": 1564,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7908,
+            "exact": 0.644393741851369,
+            "over": 1444,
+            "rows": 12272,
+            "under": 2920
+          },
+          "2": {
+            "correct": 1359,
+            "exact": 0.39448476052249637,
+            "over": 674,
+            "rows": 3445,
+            "under": 1412
+          },
+          "3": {
+            "correct": 868,
+            "exact": 0.37920489296636084,
+            "over": 297,
+            "rows": 2289,
+            "under": 1124
+          },
+          "4": {
+            "correct": 432,
+            "exact": 0.35791217895608946,
+            "over": 20,
+            "rows": 1207,
+            "under": 755
+          },
+          "5": {
+            "correct": 29,
+            "exact": 0.08169014084507042,
+            "over": 0,
+            "rows": 355,
+            "under": 326
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38088,
+            1049,
+            464,
+            40,
+            10,
+            1,
+            0
+          ],
+          [
+            2920,
+            7908,
+            1232,
+            179,
+            29,
+            4,
+            0
+          ],
+          [
+            668,
+            744,
+            1359,
+            550,
+            121,
+            3,
+            0
+          ],
+          [
+            212,
+            171,
+            741,
+            868,
+            277,
+            20,
+            0
+          ],
+          [
+            47,
+            34,
+            243,
+            431,
+            432,
+            20,
+            0
+          ],
+          [
+            7,
+            8,
+            47,
+            116,
+            148,
+            29,
+            0
+          ],
+          [
+            0,
+            4,
+            11,
+            22,
+            45,
+            7,
+            0
+          ]
+        ],
+        "correct": 48684,
+        "exact": 0.8208534960967139,
+        "over": 3999,
+        "poly": {
+          "correct": 2688,
+          "exact": 0.3639810426540284,
+          "over": 991,
+          "rows": 7385,
+          "under": 3706
+        },
+        "rows": 59309,
+        "under": 6626
+      },
+      "versus_current": {
+        "by_k": {
+          "0": {
+            "changed": 55,
+            "corrections": 53,
+            "net": 53,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 30,
+            "corrections": 19,
+            "net": 19,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 4,
+            "corrections": 0,
+            "net": -4,
+            "regressions": 4
+          },
+          "3": {
+            "changed": 2,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          },
+          "4": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "5": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 91,
+          "corrections": 72,
+          "net": 67,
+          "regressions": 5
+        },
+        "poly": {
+          "changed": 6,
+          "corrections": 0,
+          "net": -5,
+          "regressions": 5
+        }
+      },
+      "versus_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 116,
+            "corrections": 53,
+            "net": 53,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 258,
+            "corrections": 19,
+            "net": 19,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 377,
+            "corrections": 244,
+            "net": 176,
+            "regressions": 68
+          },
+          "3": {
+            "changed": 334,
+            "corrections": 123,
+            "net": -47,
+            "regressions": 170
+          },
+          "4": {
+            "changed": 241,
+            "corrections": 94,
+            "net": 15,
+            "regressions": 79
+          },
+          "5": {
+            "changed": 101,
+            "corrections": 14,
+            "net": 14,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 23,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1450,
+          "corrections": 547,
+          "net": 230,
+          "regressions": 317
+        },
+        "poly": {
+          "changed": 1076,
+          "corrections": 475,
+          "net": 158,
+          "regressions": 317
+        }
+      },
+      "versus_yourmt3": {
+        "by_k": {
+          "0": {
+            "changed": 2245,
+            "corrections": 1128,
+            "net": 252,
+            "regressions": 876
+          },
+          "1": {
+            "changed": 3409,
+            "corrections": 619,
+            "net": -1556,
+            "regressions": 2175
+          },
+          "2": {
+            "changed": 2103,
+            "corrections": 551,
+            "net": -459,
+            "regressions": 1010
+          },
+          "3": {
+            "changed": 1381,
+            "corrections": 297,
+            "net": -384,
+            "regressions": 681
+          },
+          "4": {
+            "changed": 756,
+            "corrections": 122,
+            "net": -293,
+            "regressions": 415
+          },
+          "5": {
+            "changed": 293,
+            "corrections": 13,
+            "net": -160,
+            "regressions": 173
+          },
+          "6": {
+            "changed": 81,
+            "corrections": 0,
+            "net": -44,
+            "regressions": 44
+          }
+        },
+        "global": {
+          "changed": 10268,
+          "corrections": 2730,
+          "net": -2644,
+          "regressions": 5374
+        },
+        "poly": {
+          "changed": 4614,
+          "corrections": 983,
+          "net": -1340,
+          "regressions": 2323
+        }
+      }
+    },
+    "S8__low_gate_0.95": {
+      "folds": {
+        "0": {
+          "by_k": {
+            "0": {
+              "changed": 9,
+              "corrections": 2,
+              "net": 2,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 53,
+              "corrections": 5,
+              "net": 5,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 80,
+              "corrections": 42,
+              "net": 30,
+              "regressions": 12
+            },
+            "3": {
+              "changed": 78,
+              "corrections": 34,
+              "net": 1,
+              "regressions": 33
+            },
+            "4": {
+              "changed": 86,
+              "corrections": 35,
+              "net": 4,
+              "regressions": 31
+            },
+            "5": {
+              "changed": 30,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 6,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 342,
+            "corrections": 118,
+            "net": 42,
+            "regressions": 76
+          },
+          "poly": {
+            "changed": 280,
+            "corrections": 111,
+            "net": 35,
+            "regressions": 76
+          }
+        },
+        "1": {
+          "by_k": {
+            "0": {
+              "changed": 28,
+              "corrections": 7,
+              "net": 7,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 76,
+              "corrections": 3,
+              "net": 3,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 117,
+              "corrections": 79,
+              "net": 53,
+              "regressions": 26
+            },
+            "3": {
+              "changed": 85,
+              "corrections": 36,
+              "net": 2,
+              "regressions": 34
+            },
+            "4": {
+              "changed": 29,
+              "corrections": 2,
+              "net": -14,
+              "regressions": 16
+            },
+            "5": {
+              "changed": 12,
+              "corrections": 1,
+              "net": 1,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 350,
+            "corrections": 128,
+            "net": 52,
+            "regressions": 76
+          },
+          "poly": {
+            "changed": 246,
+            "corrections": 118,
+            "net": 42,
+            "regressions": 76
+          }
+        },
+        "2": {
+          "by_k": {
+            "0": {
+              "changed": 18,
+              "corrections": 5,
+              "net": 5,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 51,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 77,
+              "corrections": 37,
+              "net": 14,
+              "regressions": 23
+            },
+            "3": {
+              "changed": 79,
+              "corrections": 50,
+              "net": 35,
+              "regressions": 15
+            },
+            "4": {
+              "changed": 39,
+              "corrections": 0,
+              "net": -30,
+              "regressions": 30
+            },
+            "5": {
+              "changed": 21,
+              "corrections": 11,
+              "net": 11,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 288,
+            "corrections": 103,
+            "net": 35,
+            "regressions": 68
+          },
+          "poly": {
+            "changed": 219,
+            "corrections": 98,
+            "net": 30,
+            "regressions": 68
+          }
+        },
+        "4": {
+          "by_k": {
+            "0": {
+              "changed": 44,
+              "corrections": 21,
+              "net": 21,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 67,
+              "corrections": 2,
+              "net": 2,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 101,
+              "corrections": 86,
+              "net": 81,
+              "regressions": 5
+            },
+            "3": {
+              "changed": 92,
+              "corrections": 3,
+              "net": -85,
+              "regressions": 88
+            },
+            "4": {
+              "changed": 87,
+              "corrections": 57,
+              "net": 55,
+              "regressions": 2
+            },
+            "5": {
+              "changed": 38,
+              "corrections": 2,
+              "net": 2,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 11,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 440,
+            "corrections": 171,
+            "net": 76,
+            "regressions": 95
+          },
+          "poly": {
+            "changed": 329,
+            "corrections": 148,
+            "net": 53,
+            "regressions": 95
+          }
+        }
+      },
+      "metrics": {
+        "by_k": {
+          "0": {
+            "correct": 38070,
+            "exact": 0.9601028951881367,
+            "over": 1582,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7899,
+            "exact": 0.6436603650586702,
+            "over": 1457,
+            "rows": 12272,
+            "under": 2916
+          },
+          "2": {
+            "correct": 1361,
+            "exact": 0.39506531204644413,
+            "over": 674,
+            "rows": 3445,
+            "under": 1410
+          },
+          "3": {
+            "correct": 868,
+            "exact": 0.37920489296636084,
+            "over": 297,
+            "rows": 2289,
+            "under": 1124
+          },
+          "4": {
+            "correct": 432,
+            "exact": 0.35791217895608946,
+            "over": 20,
+            "rows": 1207,
+            "under": 755
+          },
+          "5": {
+            "correct": 29,
+            "exact": 0.08169014084507042,
+            "over": 0,
+            "rows": 355,
+            "under": 326
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38070,
+            1048,
+            483,
+            40,
+            10,
+            1,
+            0
+          ],
+          [
+            2916,
+            7899,
+            1244,
+            180,
+            29,
+            4,
+            0
+          ],
+          [
+            667,
+            743,
+            1361,
+            550,
+            121,
+            3,
+            0
+          ],
+          [
+            212,
+            171,
+            741,
+            868,
+            277,
+            20,
+            0
+          ],
+          [
+            47,
+            34,
+            243,
+            431,
+            432,
+            20,
+            0
+          ],
+          [
+            7,
+            8,
+            47,
+            116,
+            148,
+            29,
+            0
+          ],
+          [
+            0,
+            4,
+            11,
+            22,
+            45,
+            7,
+            0
+          ]
+        ],
+        "correct": 48659,
+        "exact": 0.820431974911059,
+        "over": 4030,
+        "poly": {
+          "correct": 2690,
+          "exact": 0.36425186188219366,
+          "over": 991,
+          "rows": 7385,
+          "under": 3704
+        },
+        "rows": 59309,
+        "under": 6620
+      },
+      "versus_current": {
+        "by_k": {
+          "0": {
+            "changed": 36,
+            "corrections": 35,
+            "net": 35,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 17,
+            "corrections": 10,
+            "net": 10,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 2,
+            "corrections": 0,
+            "net": -2,
+            "regressions": 2
+          },
+          "3": {
+            "changed": 2,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          },
+          "4": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "5": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 57,
+          "corrections": 45,
+          "net": 42,
+          "regressions": 3
+        },
+        "poly": {
+          "changed": 4,
+          "corrections": 0,
+          "net": -3,
+          "regressions": 3
+        }
+      },
+      "versus_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 99,
+            "corrections": 35,
+            "net": 35,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 247,
+            "corrections": 10,
+            "net": 10,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 375,
+            "corrections": 244,
+            "net": 178,
+            "regressions": 66
+          },
+          "3": {
+            "changed": 334,
+            "corrections": 123,
+            "net": -47,
+            "regressions": 170
+          },
+          "4": {
+            "changed": 241,
+            "corrections": 94,
+            "net": 15,
+            "regressions": 79
+          },
+          "5": {
+            "changed": 101,
+            "corrections": 14,
+            "net": 14,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 23,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1420,
+          "corrections": 520,
+          "net": 205,
+          "regressions": 315
+        },
+        "poly": {
+          "changed": 1074,
+          "corrections": 475,
+          "net": 160,
+          "regressions": 315
+        }
+      },
+      "versus_yourmt3": {
+        "by_k": {
+          "0": {
+            "changed": 2260,
+            "corrections": 1126,
+            "net": 234,
+            "regressions": 892
+          },
+          "1": {
+            "changed": 3416,
+            "corrections": 619,
+            "net": -1565,
+            "regressions": 2184
+          },
+          "2": {
+            "changed": 2104,
+            "corrections": 553,
+            "net": -457,
+            "regressions": 1010
+          },
+          "3": {
+            "changed": 1381,
+            "corrections": 297,
+            "net": -384,
+            "regressions": 681
+          },
+          "4": {
+            "changed": 756,
+            "corrections": 122,
+            "net": -293,
+            "regressions": 415
+          },
+          "5": {
+            "changed": 293,
+            "corrections": 13,
+            "net": -160,
+            "regressions": 173
+          },
+          "6": {
+            "changed": 81,
+            "corrections": 0,
+            "net": -44,
+            "regressions": 44
+          }
+        },
+        "global": {
+          "changed": 10291,
+          "corrections": 2730,
+          "net": -2669,
+          "regressions": 5399
+        },
+        "poly": {
+          "changed": 4615,
+          "corrections": 985,
+          "net": -1338,
+          "regressions": 2323
+        }
+      }
+    },
+    "S8__open_argmax": {
+      "folds": {
+        "0": {
+          "by_k": {
+            "0": {
+              "changed": 101,
+              "corrections": 32,
+              "net": 32,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 279,
+              "corrections": 184,
+              "net": 184,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 326,
+              "corrections": 69,
+              "net": -134,
+              "regressions": 203
+            },
+            "3": {
+              "changed": 234,
+              "corrections": 68,
+              "net": -33,
+              "regressions": 101
+            },
+            "4": {
+              "changed": 166,
+              "corrections": 59,
+              "net": 12,
+              "regressions": 47
+            },
+            "5": {
+              "changed": 65,
+              "corrections": 13,
+              "net": 13,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 18,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 1189,
+            "corrections": 425,
+            "net": 74,
+            "regressions": 351
+          },
+          "poly": {
+            "changed": 809,
+            "corrections": 209,
+            "net": -142,
+            "regressions": 351
+          }
+        },
+        "1": {
+          "by_k": {
+            "0": {
+              "changed": 95,
+              "corrections": 44,
+              "net": 44,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 222,
+              "corrections": 104,
+              "net": 104,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 279,
+              "corrections": 62,
+              "net": -76,
+              "regressions": 138
+            },
+            "3": {
+              "changed": 216,
+              "corrections": 100,
+              "net": 30,
+              "regressions": 70
+            },
+            "4": {
+              "changed": 100,
+              "corrections": 21,
+              "net": -34,
+              "regressions": 55
+            },
+            "5": {
+              "changed": 34,
+              "corrections": 4,
+              "net": 4,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 6,
+              "corrections": 1,
+              "net": 1,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 952,
+            "corrections": 336,
+            "net": 73,
+            "regressions": 263
+          },
+          "poly": {
+            "changed": 635,
+            "corrections": 188,
+            "net": -75,
+            "regressions": 263
+          }
+        },
+        "2": {
+          "by_k": {
+            "0": {
+              "changed": 99,
+              "corrections": 41,
+              "net": 41,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 171,
+              "corrections": 77,
+              "net": 77,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 185,
+              "corrections": 67,
+              "net": -17,
+              "regressions": 84
+            },
+            "3": {
+              "changed": 204,
+              "corrections": 75,
+              "net": -1,
+              "regressions": 76
+            },
+            "4": {
+              "changed": 91,
+              "corrections": 9,
+              "net": -46,
+              "regressions": 55
+            },
+            "5": {
+              "changed": 48,
+              "corrections": 18,
+              "net": 18,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 6,
+              "corrections": 1,
+              "net": 1,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 804,
+            "corrections": 288,
+            "net": 73,
+            "regressions": 215
+          },
+          "poly": {
+            "changed": 534,
+            "corrections": 170,
+            "net": -45,
+            "regressions": 215
+          }
+        },
+        "4": {
+          "by_k": {
+            "0": {
+              "changed": 144,
+              "corrections": 72,
+              "net": 72,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 260,
+              "corrections": 140,
+              "net": 140,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 246,
+              "corrections": 82,
+              "net": -35,
+              "regressions": 117
+            },
+            "3": {
+              "changed": 218,
+              "corrections": 38,
+              "net": -116,
+              "regressions": 154
+            },
+            "4": {
+              "changed": 161,
+              "corrections": 74,
+              "net": 56,
+              "regressions": 18
+            },
+            "5": {
+              "changed": 54,
+              "corrections": 19,
+              "net": 19,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 13,
+              "corrections": 1,
+              "net": 1,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 1096,
+            "corrections": 426,
+            "net": 137,
+            "regressions": 289
+          },
+          "poly": {
+            "changed": 692,
+            "corrections": 214,
+            "net": -75,
+            "regressions": 289
+          }
+        }
+      },
+      "metrics": {
+        "by_k": {
+          "0": {
+            "correct": 38224,
+            "exact": 0.9639866841521235,
+            "over": 1428,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 8394,
+            "exact": 0.6839960886571056,
+            "over": 815,
+            "rows": 12272,
+            "under": 3063
+          },
+          "2": {
+            "correct": 921,
+            "exact": 0.26734397677793903,
+            "over": 711,
+            "rows": 3445,
+            "under": 1813
+          },
+          "3": {
+            "correct": 795,
+            "exact": 0.3473132372214941,
+            "over": 388,
+            "rows": 2289,
+            "under": 1106
+          },
+          "4": {
+            "correct": 405,
+            "exact": 0.3355426677713339,
+            "over": 87,
+            "rows": 1207,
+            "under": 715
+          },
+          "5": {
+            "correct": 69,
+            "exact": 0.19436619718309858,
+            "over": 5,
+            "rows": 355,
+            "under": 281
+          },
+          "6": {
+            "correct": 3,
+            "exact": 0.033707865168539325,
+            "over": 0,
+            "rows": 89,
+            "under": 86
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38224,
+            1233,
+            146,
+            35,
+            13,
+            1,
+            0
+          ],
+          [
+            3063,
+            8394,
+            605,
+            157,
+            44,
+            8,
+            1
+          ],
+          [
+            745,
+            1068,
+            921,
+            540,
+            148,
+            23,
+            0
+          ],
+          [
+            232,
+            294,
+            580,
+            795,
+            330,
+            56,
+            2
+          ],
+          [
+            55,
+            60,
+            221,
+            379,
+            405,
+            83,
+            4
+          ],
+          [
+            8,
+            13,
+            40,
+            92,
+            128,
+            69,
+            5
+          ],
+          [
+            0,
+            4,
+            10,
+            16,
+            41,
+            15,
+            3
+          ]
+        ],
+        "correct": 48811,
+        "exact": 0.8229948237198401,
+        "over": 3434,
+        "poly": {
+          "correct": 2193,
+          "exact": 0.2969532836831415,
+          "over": 1191,
+          "rows": 7385,
+          "under": 4001
+        },
+        "rows": 59309,
+        "under": 7064
+      },
+      "versus_current": {
+        "by_k": {
+          "0": {
+            "changed": 419,
+            "corrections": 189,
+            "net": 189,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 851,
+            "corrections": 505,
+            "net": 505,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 894,
+            "corrections": 160,
+            "net": -442,
+            "regressions": 602
+          },
+          "3": {
+            "changed": 741,
+            "corrections": 243,
+            "net": -74,
+            "regressions": 317
+          },
+          "4": {
+            "changed": 415,
+            "corrections": 112,
+            "net": -27,
+            "regressions": 139
+          },
+          "5": {
+            "changed": 145,
+            "corrections": 44,
+            "net": 40,
+            "regressions": 4
+          },
+          "6": {
+            "changed": 41,
+            "corrections": 3,
+            "net": 3,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 3506,
+          "corrections": 1256,
+          "net": 194,
+          "regressions": 1062
+        },
+        "poly": {
+          "changed": 2236,
+          "corrections": 562,
+          "net": -500,
+          "regressions": 1062
+        }
+      },
+      "versus_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 439,
+            "corrections": 189,
+            "net": 189,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 932,
+            "corrections": 505,
+            "net": 505,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 1036,
+            "corrections": 280,
+            "net": -262,
+            "regressions": 542
+          },
+          "3": {
+            "changed": 872,
+            "corrections": 281,
+            "net": -120,
+            "regressions": 401
+          },
+          "4": {
+            "changed": 518,
+            "corrections": 163,
+            "net": -12,
+            "regressions": 175
+          },
+          "5": {
+            "changed": 201,
+            "corrections": 54,
+            "net": 54,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 43,
+            "corrections": 3,
+            "net": 3,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 4041,
+          "corrections": 1475,
+          "net": 357,
+          "regressions": 1118
+        },
+        "poly": {
+          "changed": 2670,
+          "corrections": 781,
+          "net": -337,
+          "regressions": 1118
+        }
+      },
+      "versus_yourmt3": {
+        "by_k": {
+          "0": {
+            "changed": 2102,
+            "corrections": 1164,
+            "net": 388,
+            "regressions": 776
+          },
+          "1": {
+            "changed": 3154,
+            "corrections": 767,
+            "net": -1070,
+            "regressions": 1837
+          },
+          "2": {
+            "changed": 2249,
+            "corrections": 365,
+            "net": -897,
+            "regressions": 1262
+          },
+          "3": {
+            "changed": 1463,
+            "corrections": 284,
+            "net": -457,
+            "regressions": 741
+          },
+          "4": {
+            "changed": 772,
+            "corrections": 107,
+            "net": -320,
+            "regressions": 427
+          },
+          "5": {
+            "changed": 279,
+            "corrections": 28,
+            "net": -120,
+            "regressions": 148
+          },
+          "6": {
+            "changed": 73,
+            "corrections": 1,
+            "net": -41,
+            "regressions": 42
+          }
+        },
+        "global": {
+          "changed": 10092,
+          "corrections": 2716,
+          "net": -2517,
+          "regressions": 5233
+        },
+        "poly": {
+          "changed": 4836,
+          "corrections": 785,
+          "net": -1835,
+          "regressions": 2620
+        }
+      }
+    },
+    "S8__restricted_control": {
+      "folds": {
+        "0": {
+          "by_k": {
+            "0": {
+              "changed": 4,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 33,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 109,
+              "corrections": 50,
+              "net": 22,
+              "regressions": 28
+            },
+            "3": {
+              "changed": 129,
+              "corrections": 48,
+              "net": -15,
+              "regressions": 63
+            },
+            "4": {
+              "changed": 129,
+              "corrections": 53,
+              "net": 12,
+              "regressions": 41
+            },
+            "5": {
+              "changed": 52,
+              "corrections": 13,
+              "net": 13,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 14,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 470,
+            "corrections": 164,
+            "net": 32,
+            "regressions": 132
+          },
+          "poly": {
+            "changed": 433,
+            "corrections": 164,
+            "net": 32,
+            "regressions": 132
+          }
+        },
+        "1": {
+          "by_k": {
+            "0": {
+              "changed": 10,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 34,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 124,
+              "corrections": 40,
+              "net": 0,
+              "regressions": 40
+            },
+            "3": {
+              "changed": 150,
+              "corrections": 79,
+              "net": 28,
+              "regressions": 51
+            },
+            "4": {
+              "changed": 85,
+              "corrections": 20,
+              "net": -31,
+              "regressions": 51
+            },
+            "5": {
+              "changed": 32,
+              "corrections": 4,
+              "net": 4,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 6,
+              "corrections": 1,
+              "net": 1,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 441,
+            "corrections": 144,
+            "net": 2,
+            "regressions": 142
+          },
+          "poly": {
+            "changed": 397,
+            "corrections": 144,
+            "net": 2,
+            "regressions": 142
+          }
+        },
+        "2": {
+          "by_k": {
+            "0": {
+              "changed": 9,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 52,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 99,
+              "corrections": 52,
+              "net": 30,
+              "regressions": 22
+            },
+            "3": {
+              "changed": 133,
+              "corrections": 62,
+              "net": 14,
+              "regressions": 48
+            },
+            "4": {
+              "changed": 77,
+              "corrections": 8,
+              "net": -44,
+              "regressions": 52
+            },
+            "5": {
+              "changed": 40,
+              "corrections": 17,
+              "net": 17,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 6,
+              "corrections": 1,
+              "net": 1,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 416,
+            "corrections": 140,
+            "net": 18,
+            "regressions": 122
+          },
+          "poly": {
+            "changed": 355,
+            "corrections": 140,
+            "net": 18,
+            "regressions": 122
+          }
+        },
+        "4": {
+          "by_k": {
+            "0": {
+              "changed": 12,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 35,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 116,
+              "corrections": 62,
+              "net": 34,
+              "regressions": 28
+            },
+            "3": {
+              "changed": 148,
+              "corrections": 24,
+              "net": -96,
+              "regressions": 120
+            },
+            "4": {
+              "changed": 135,
+              "corrections": 68,
+              "net": 50,
+              "regressions": 18
+            },
+            "5": {
+              "changed": 51,
+              "corrections": 19,
+              "net": 19,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 13,
+              "corrections": 1,
+              "net": 1,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 510,
+            "corrections": 174,
+            "net": 8,
+            "regressions": 166
+          },
+          "poly": {
+            "changed": 463,
+            "corrections": 174,
+            "net": 8,
+            "regressions": 166
+          }
+        }
+      },
+      "metrics": {
+        "by_k": {
+          "0": {
+            "correct": 38035,
+            "exact": 0.9592202158781398,
+            "over": 1617,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7889,
+            "exact": 0.6428455019556715,
+            "over": 1474,
+            "rows": 12272,
+            "under": 2909
+          },
+          "2": {
+            "correct": 1269,
+            "exact": 0.3683599419448476,
+            "over": 768,
+            "rows": 3445,
+            "under": 1408
+          },
+          "3": {
+            "correct": 846,
+            "exact": 0.36959370904325034,
+            "over": 386,
+            "rows": 2289,
+            "under": 1057
+          },
+          "4": {
+            "correct": 404,
+            "exact": 0.3347141673570837,
+            "over": 85,
+            "rows": 1207,
+            "under": 718
+          },
+          "5": {
+            "correct": 68,
+            "exact": 0.19154929577464788,
+            "over": 5,
+            "rows": 355,
+            "under": 282
+          },
+          "6": {
+            "correct": 3,
+            "exact": 0.033707865168539325,
+            "over": 0,
+            "rows": 89,
+            "under": 86
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38035,
+            1047,
+            468,
+            87,
+            14,
+            1,
+            0
+          ],
+          [
+            2909,
+            7889,
+            1150,
+            252,
+            65,
+            6,
+            1
+          ],
+          [
+            666,
+            742,
+            1269,
+            588,
+            159,
+            21,
+            0
+          ],
+          [
+            211,
+            170,
+            676,
+            846,
+            331,
+            53,
+            2
+          ],
+          [
+            47,
+            34,
+            218,
+            419,
+            404,
+            81,
+            4
+          ],
+          [
+            7,
+            8,
+            39,
+            96,
+            132,
+            68,
+            5
+          ],
+          [
+            0,
+            4,
+            9,
+            17,
+            41,
+            15,
+            3
+          ]
+        ],
+        "correct": 48514,
+        "exact": 0.8179871520342612,
+        "over": 4335,
+        "poly": {
+          "correct": 2590,
+          "exact": 0.35071090047393366,
+          "over": 1244,
+          "rows": 7385,
+          "under": 3551
+        },
+        "rows": 59309,
+        "under": 6460
+      },
+      "versus_current": {
+        "by_k": {
+          "0": {
+            "changed": 74,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 229,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 454,
+            "corrections": 130,
+            "net": -94,
+            "regressions": 224
+          },
+          "3": {
+            "changed": 515,
+            "corrections": 218,
+            "net": -23,
+            "regressions": 241
+          },
+          "4": {
+            "changed": 374,
+            "corrections": 109,
+            "net": -28,
+            "regressions": 137
+          },
+          "5": {
+            "changed": 133,
+            "corrections": 43,
+            "net": 39,
+            "regressions": 4
+          },
+          "6": {
+            "changed": 37,
+            "corrections": 3,
+            "net": 3,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1816,
+          "corrections": 503,
+          "net": -103,
+          "regressions": 606
+        },
+        "poly": {
+          "changed": 1513,
+          "corrections": 503,
+          "net": -103,
+          "regressions": 606
+        }
+      },
+      "versus_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 35,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 154,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 448,
+            "corrections": 204,
+            "net": 86,
+            "regressions": 118
+          },
+          "3": {
+            "changed": 560,
+            "corrections": 213,
+            "net": -69,
+            "regressions": 282
+          },
+          "4": {
+            "changed": 426,
+            "corrections": 149,
+            "net": -13,
+            "regressions": 162
+          },
+          "5": {
+            "changed": 175,
+            "corrections": 53,
+            "net": 53,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 39,
+            "corrections": 3,
+            "net": 3,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1837,
+          "corrections": 622,
+          "net": 60,
+          "regressions": 562
+        },
+        "poly": {
+          "changed": 1648,
+          "corrections": 622,
+          "net": 60,
+          "regressions": 562
+        }
+      },
+      "versus_yourmt3": {
+        "by_k": {
+          "0": {
+            "changed": 2294,
+            "corrections": 1124,
+            "net": 199,
+            "regressions": 925
+          },
+          "1": {
+            "changed": 3444,
+            "corrections": 617,
+            "net": -1575,
+            "regressions": 2192
+          },
+          "2": {
+            "changed": 2173,
+            "corrections": 526,
+            "net": -549,
+            "regressions": 1075
+          },
+          "3": {
+            "changed": 1423,
+            "corrections": 302,
+            "net": -406,
+            "regressions": 708
+          },
+          "4": {
+            "changed": 762,
+            "corrections": 104,
+            "net": -321,
+            "regressions": 425
+          },
+          "5": {
+            "changed": 278,
+            "corrections": 27,
+            "net": -121,
+            "regressions": 148
+          },
+          "6": {
+            "changed": 73,
+            "corrections": 1,
+            "net": -41,
+            "regressions": 42
+          }
+        },
+        "global": {
+          "changed": 10447,
+          "corrections": 2701,
+          "net": -2814,
+          "regressions": 5515
+        },
+        "poly": {
+          "changed": 4709,
+          "corrections": 960,
+          "net": -1438,
+          "regressions": 2398
+        }
+      }
+    },
+    "coherent__low_gate_0.50": {
+      "folds": {
+        "0": {
+          "by_k": {
+            "0": {
+              "changed": 76,
+              "corrections": 30,
+              "net": 30,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 164,
+              "corrections": 116,
+              "net": 116,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 138,
+              "corrections": 40,
+              "net": -27,
+              "regressions": 67
+            },
+            "3": {
+              "changed": 91,
+              "corrections": 34,
+              "net": 1,
+              "regressions": 33
+            },
+            "4": {
+              "changed": 90,
+              "corrections": 34,
+              "net": 3,
+              "regressions": 31
+            },
+            "5": {
+              "changed": 30,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 6,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 595,
+            "corrections": 254,
+            "net": 123,
+            "regressions": 131
+          },
+          "poly": {
+            "changed": 355,
+            "corrections": 108,
+            "net": -23,
+            "regressions": 131
+          }
+        },
+        "1": {
+          "by_k": {
+            "0": {
+              "changed": 71,
+              "corrections": 37,
+              "net": 37,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 179,
+              "corrections": 94,
+              "net": 94,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 181,
+              "corrections": 65,
+              "net": -17,
+              "regressions": 82
+            },
+            "3": {
+              "changed": 108,
+              "corrections": 35,
+              "net": -1,
+              "regressions": 36
+            },
+            "4": {
+              "changed": 30,
+              "corrections": 2,
+              "net": -14,
+              "regressions": 16
+            },
+            "5": {
+              "changed": 13,
+              "corrections": 1,
+              "net": 1,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 585,
+            "corrections": 234,
+            "net": 100,
+            "regressions": 134
+          },
+          "poly": {
+            "changed": 335,
+            "corrections": 103,
+            "net": -31,
+            "regressions": 134
+          }
+        },
+        "2": {
+          "by_k": {
+            "0": {
+              "changed": 78,
+              "corrections": 45,
+              "net": 45,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 119,
+              "corrections": 62,
+              "net": 62,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 108,
+              "corrections": 35,
+              "net": -18,
+              "regressions": 53
+            },
+            "3": {
+              "changed": 99,
+              "corrections": 50,
+              "net": 32,
+              "regressions": 18
+            },
+            "4": {
+              "changed": 42,
+              "corrections": 0,
+              "net": -30,
+              "regressions": 30
+            },
+            "5": {
+              "changed": 21,
+              "corrections": 11,
+              "net": 11,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 470,
+            "corrections": 203,
+            "net": 102,
+            "regressions": 101
+          },
+          "poly": {
+            "changed": 273,
+            "corrections": 96,
+            "net": -5,
+            "regressions": 101
+          }
+        },
+        "4": {
+          "by_k": {
+            "0": {
+              "changed": 109,
+              "corrections": 85,
+              "net": 85,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 182,
+              "corrections": 92,
+              "net": 92,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 130,
+              "corrections": 77,
+              "net": 44,
+              "regressions": 33
+            },
+            "3": {
+              "changed": 101,
+              "corrections": 3,
+              "net": -85,
+              "regressions": 88
+            },
+            "4": {
+              "changed": 87,
+              "corrections": 57,
+              "net": 55,
+              "regressions": 2
+            },
+            "5": {
+              "changed": 38,
+              "corrections": 2,
+              "net": 2,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 11,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 658,
+            "corrections": 316,
+            "net": 193,
+            "regressions": 123
+          },
+          "poly": {
+            "changed": 367,
+            "corrections": 139,
+            "net": 16,
+            "regressions": 123
+          }
+        }
+      },
+      "metrics": {
+        "by_k": {
+          "0": {
+            "correct": 38232,
+            "exact": 0.9641884394229799,
+            "over": 1420,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 8253,
+            "exact": 0.6725065189048239,
+            "over": 1011,
+            "rows": 12272,
+            "under": 3008
+          },
+          "2": {
+            "correct": 1165,
+            "exact": 0.3381712626995646,
+            "over": 660,
+            "rows": 3445,
+            "under": 1620
+          },
+          "3": {
+            "correct": 862,
+            "exact": 0.3765836609873307,
+            "over": 297,
+            "rows": 2289,
+            "under": 1130
+          },
+          "4": {
+            "correct": 431,
+            "exact": 0.35708367854183926,
+            "over": 20,
+            "rows": 1207,
+            "under": 756
+          },
+          "5": {
+            "correct": 29,
+            "exact": 0.08169014084507042,
+            "over": 0,
+            "rows": 355,
+            "under": 326
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38232,
+            1142,
+            238,
+            30,
+            9,
+            1,
+            0
+          ],
+          [
+            3008,
+            8253,
+            825,
+            156,
+            26,
+            4,
+            0
+          ],
+          [
+            693,
+            927,
+            1165,
+            540,
+            117,
+            3,
+            0
+          ],
+          [
+            219,
+            241,
+            670,
+            862,
+            277,
+            20,
+            0
+          ],
+          [
+            49,
+            47,
+            231,
+            429,
+            431,
+            20,
+            0
+          ],
+          [
+            8,
+            9,
+            45,
+            116,
+            148,
+            29,
+            0
+          ],
+          [
+            0,
+            4,
+            11,
+            22,
+            45,
+            7,
+            0
+          ]
+        ],
+        "correct": 48972,
+        "exact": 0.825709420155457,
+        "over": 3408,
+        "poly": {
+          "correct": 2487,
+          "exact": 0.3367637102234259,
+          "over": 977,
+          "rows": 7385,
+          "under": 3921
+        },
+        "rows": 59309,
+        "under": 6929
+      },
+      "versus_current": {
+        "by_k": {
+          "0": {
+            "changed": 292,
+            "corrections": 197,
+            "net": 197,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 463,
+            "corrections": 364,
+            "net": 364,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 212,
+            "corrections": 0,
+            "net": -198,
+            "regressions": 198
+          },
+          "3": {
+            "changed": 79,
+            "corrections": 0,
+            "net": -7,
+            "regressions": 7
+          },
+          "4": {
+            "changed": 15,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          },
+          "5": {
+            "changed": 2,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1063,
+          "corrections": 561,
+          "net": 355,
+          "regressions": 206
+        },
+        "poly": {
+          "changed": 308,
+          "corrections": 0,
+          "net": -206,
+          "regressions": 206
+        }
+      },
+      "versus_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 334,
+            "corrections": 197,
+            "net": 197,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 644,
+            "corrections": 364,
+            "net": 364,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 557,
+            "corrections": 217,
+            "net": -18,
+            "regressions": 235
+          },
+          "3": {
+            "changed": 399,
+            "corrections": 122,
+            "net": -53,
+            "regressions": 175
+          },
+          "4": {
+            "changed": 249,
+            "corrections": 93,
+            "net": 14,
+            "regressions": 79
+          },
+          "5": {
+            "changed": 102,
+            "corrections": 14,
+            "net": 14,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 23,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2308,
+          "corrections": 1007,
+          "net": 518,
+          "regressions": 489
+        },
+        "poly": {
+          "changed": 1330,
+          "corrections": 446,
+          "net": -43,
+          "regressions": 489
+        }
+      },
+      "versus_yourmt3": {
+        "by_k": {
+          "0": {
+            "changed": 2115,
+            "corrections": 1164,
+            "net": 396,
+            "regressions": 768
+          },
+          "1": {
+            "changed": 3170,
+            "corrections": 699,
+            "net": -1211,
+            "regressions": 1910
+          },
+          "2": {
+            "changed": 2135,
+            "corrections": 457,
+            "net": -653,
+            "regressions": 1110
+          },
+          "3": {
+            "changed": 1396,
+            "corrections": 293,
+            "net": -390,
+            "regressions": 683
+          },
+          "4": {
+            "changed": 758,
+            "corrections": 122,
+            "net": -294,
+            "regressions": 416
+          },
+          "5": {
+            "changed": 293,
+            "corrections": 13,
+            "net": -160,
+            "regressions": 173
+          },
+          "6": {
+            "changed": 81,
+            "corrections": 0,
+            "net": -44,
+            "regressions": 44
+          }
+        },
+        "global": {
+          "changed": 9948,
+          "corrections": 2748,
+          "net": -2356,
+          "regressions": 5104
+        },
+        "poly": {
+          "changed": 4663,
+          "corrections": 885,
+          "net": -1541,
+          "regressions": 2426
+        }
+      }
+    },
+    "coherent__low_gate_0.65": {
+      "folds": {
+        "0": {
+          "by_k": {
+            "0": {
+              "changed": 36,
+              "corrections": 16,
+              "net": 16,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 105,
+              "corrections": 57,
+              "net": 57,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 100,
+              "corrections": 40,
+              "net": 10,
+              "regressions": 30
+            },
+            "3": {
+              "changed": 81,
+              "corrections": 34,
+              "net": 1,
+              "regressions": 33
+            },
+            "4": {
+              "changed": 86,
+              "corrections": 34,
+              "net": 3,
+              "regressions": 31
+            },
+            "5": {
+              "changed": 30,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 6,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 444,
+            "corrections": 181,
+            "net": 87,
+            "regressions": 94
+          },
+          "poly": {
+            "changed": 303,
+            "corrections": 108,
+            "net": 14,
+            "regressions": 94
+          }
+        },
+        "1": {
+          "by_k": {
+            "0": {
+              "changed": 57,
+              "corrections": 28,
+              "net": 28,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 112,
+              "corrections": 34,
+              "net": 34,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 140,
+              "corrections": 71,
+              "net": 23,
+              "regressions": 48
+            },
+            "3": {
+              "changed": 90,
+              "corrections": 36,
+              "net": 2,
+              "regressions": 34
+            },
+            "4": {
+              "changed": 29,
+              "corrections": 2,
+              "net": -14,
+              "regressions": 16
+            },
+            "5": {
+              "changed": 13,
+              "corrections": 1,
+              "net": 1,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 444,
+            "corrections": 172,
+            "net": 74,
+            "regressions": 98
+          },
+          "poly": {
+            "changed": 275,
+            "corrections": 110,
+            "net": 12,
+            "regressions": 98
+          }
+        },
+        "2": {
+          "by_k": {
+            "0": {
+              "changed": 53,
+              "corrections": 34,
+              "net": 34,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 79,
+              "corrections": 24,
+              "net": 24,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 88,
+              "corrections": 37,
+              "net": 3,
+              "regressions": 34
+            },
+            "3": {
+              "changed": 84,
+              "corrections": 50,
+              "net": 34,
+              "regressions": 16
+            },
+            "4": {
+              "changed": 39,
+              "corrections": 0,
+              "net": -30,
+              "regressions": 30
+            },
+            "5": {
+              "changed": 21,
+              "corrections": 11,
+              "net": 11,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 367,
+            "corrections": 156,
+            "net": 76,
+            "regressions": 80
+          },
+          "poly": {
+            "changed": 235,
+            "corrections": 98,
+            "net": 18,
+            "regressions": 80
+          }
+        },
+        "4": {
+          "by_k": {
+            "0": {
+              "changed": 89,
+              "corrections": 68,
+              "net": 68,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 107,
+              "corrections": 28,
+              "net": 28,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 110,
+              "corrections": 80,
+              "net": 66,
+              "regressions": 14
+            },
+            "3": {
+              "changed": 94,
+              "corrections": 3,
+              "net": -85,
+              "regressions": 88
+            },
+            "4": {
+              "changed": 87,
+              "corrections": 57,
+              "net": 55,
+              "regressions": 2
+            },
+            "5": {
+              "changed": 38,
+              "corrections": 2,
+              "net": 2,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 11,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 536,
+            "corrections": 238,
+            "net": 134,
+            "regressions": 104
+          },
+          "poly": {
+            "changed": 340,
+            "corrections": 142,
+            "net": 38,
+            "regressions": 104
+          }
+        }
+      },
+      "metrics": {
+        "by_k": {
+          "0": {
+            "correct": 38181,
+            "exact": 0.96290224957127,
+            "over": 1471,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 8032,
+            "exact": 0.6544980443285529,
+            "over": 1281,
+            "rows": 12272,
+            "under": 2959
+          },
+          "2": {
+            "correct": 1285,
+            "exact": 0.37300435413642963,
+            "over": 670,
+            "rows": 3445,
+            "under": 1490
+          },
+          "3": {
+            "correct": 867,
+            "exact": 0.37876802096985585,
+            "over": 297,
+            "rows": 2289,
+            "under": 1125
+          },
+          "4": {
+            "correct": 431,
+            "exact": 0.35708367854183926,
+            "over": 20,
+            "rows": 1207,
+            "under": 756
+          },
+          "5": {
+            "correct": 29,
+            "exact": 0.08169014084507042,
+            "over": 0,
+            "rows": 355,
+            "under": 326
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38181,
+            1087,
+            339,
+            34,
+            10,
+            1,
+            0
+          ],
+          [
+            2959,
+            8032,
+            1076,
+            174,
+            27,
+            4,
+            0
+          ],
+          [
+            682,
+            808,
+            1285,
+            548,
+            119,
+            3,
+            0
+          ],
+          [
+            217,
+            185,
+            723,
+            867,
+            277,
+            20,
+            0
+          ],
+          [
+            48,
+            35,
+            242,
+            431,
+            431,
+            20,
+            0
+          ],
+          [
+            7,
+            9,
+            46,
+            116,
+            148,
+            29,
+            0
+          ],
+          [
+            0,
+            4,
+            11,
+            22,
+            45,
+            7,
+            0
+          ]
+        ],
+        "correct": 48825,
+        "exact": 0.8232308755838068,
+        "over": 3739,
+        "poly": {
+          "correct": 2612,
+          "exact": 0.3536899119837508,
+          "over": 987,
+          "rows": 7385,
+          "under": 3786
+        },
+        "rows": 59309,
+        "under": 6745
+      },
+      "versus_current": {
+        "by_k": {
+          "0": {
+            "changed": 186,
+            "corrections": 146,
+            "net": 146,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 193,
+            "corrections": 143,
+            "net": 143,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 82,
+            "corrections": 0,
+            "net": -78,
+            "regressions": 78
+          },
+          "3": {
+            "changed": 21,
+            "corrections": 0,
+            "net": -2,
+            "regressions": 2
+          },
+          "4": {
+            "changed": 2,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          },
+          "5": {
+            "changed": 1,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 485,
+          "corrections": 289,
+          "net": 208,
+          "regressions": 81
+        },
+        "poly": {
+          "changed": 106,
+          "corrections": 0,
+          "net": -81,
+          "regressions": 81
+        }
+      },
+      "versus_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 235,
+            "corrections": 146,
+            "net": 146,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 403,
+            "corrections": 143,
+            "net": 143,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 438,
+            "corrections": 228,
+            "net": 102,
+            "regressions": 126
+          },
+          "3": {
+            "changed": 349,
+            "corrections": 123,
+            "net": -48,
+            "regressions": 171
+          },
+          "4": {
+            "changed": 241,
+            "corrections": 93,
+            "net": 14,
+            "regressions": 79
+          },
+          "5": {
+            "changed": 102,
+            "corrections": 14,
+            "net": 14,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 23,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1791,
+          "corrections": 747,
+          "net": 371,
+          "regressions": 376
+        },
+        "poly": {
+          "changed": 1153,
+          "corrections": 458,
+          "net": 82,
+          "regressions": 376
+        }
+      },
+      "versus_yourmt3": {
+        "by_k": {
+          "0": {
+            "changed": 2161,
+            "corrections": 1147,
+            "net": 345,
+            "regressions": 802
+          },
+          "1": {
+            "changed": 3306,
+            "corrections": 639,
+            "net": -1432,
+            "regressions": 2071
+          },
+          "2": {
+            "changed": 2104,
+            "corrections": 511,
+            "net": -533,
+            "regressions": 1044
+          },
+          "3": {
+            "changed": 1384,
+            "corrections": 297,
+            "net": -385,
+            "regressions": 682
+          },
+          "4": {
+            "changed": 757,
+            "corrections": 122,
+            "net": -294,
+            "regressions": 416
+          },
+          "5": {
+            "changed": 293,
+            "corrections": 13,
+            "net": -160,
+            "regressions": 173
+          },
+          "6": {
+            "changed": 81,
+            "corrections": 0,
+            "net": -44,
+            "regressions": 44
+          }
+        },
+        "global": {
+          "changed": 10086,
+          "corrections": 2729,
+          "net": -2503,
+          "regressions": 5232
+        },
+        "poly": {
+          "changed": 4619,
+          "corrections": 943,
+          "net": -1416,
+          "regressions": 2359
+        }
+      }
+    },
+    "coherent__low_gate_0.80": {
+      "folds": {
+        "0": {
+          "by_k": {
+            "0": {
+              "changed": 19,
+              "corrections": 11,
+              "net": 11,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 66,
+              "corrections": 22,
+              "net": 22,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 84,
+              "corrections": 42,
+              "net": 28,
+              "regressions": 14
+            },
+            "3": {
+              "changed": 78,
+              "corrections": 34,
+              "net": 2,
+              "regressions": 32
+            },
+            "4": {
+              "changed": 86,
+              "corrections": 34,
+              "net": 3,
+              "regressions": 31
+            },
+            "5": {
+              "changed": 30,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 6,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 369,
+            "corrections": 143,
+            "net": 66,
+            "regressions": 77
+          },
+          "poly": {
+            "changed": 284,
+            "corrections": 110,
+            "net": 33,
+            "regressions": 77
+          }
+        },
+        "1": {
+          "by_k": {
+            "0": {
+              "changed": 36,
+              "corrections": 16,
+              "net": 16,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 83,
+              "corrections": 13,
+              "net": 13,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 126,
+              "corrections": 77,
+              "net": 42,
+              "regressions": 35
+            },
+            "3": {
+              "changed": 86,
+              "corrections": 36,
+              "net": 2,
+              "regressions": 34
+            },
+            "4": {
+              "changed": 29,
+              "corrections": 2,
+              "net": -14,
+              "regressions": 16
+            },
+            "5": {
+              "changed": 12,
+              "corrections": 1,
+              "net": 1,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 375,
+            "corrections": 145,
+            "net": 60,
+            "regressions": 85
+          },
+          "poly": {
+            "changed": 256,
+            "corrections": 116,
+            "net": 31,
+            "regressions": 85
+          }
+        },
+        "2": {
+          "by_k": {
+            "0": {
+              "changed": 32,
+              "corrections": 17,
+              "net": 17,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 61,
+              "corrections": 8,
+              "net": 8,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 78,
+              "corrections": 37,
+              "net": 13,
+              "regressions": 24
+            },
+            "3": {
+              "changed": 81,
+              "corrections": 50,
+              "net": 35,
+              "regressions": 15
+            },
+            "4": {
+              "changed": 39,
+              "corrections": 0,
+              "net": -30,
+              "regressions": 30
+            },
+            "5": {
+              "changed": 21,
+              "corrections": 11,
+              "net": 11,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 315,
+            "corrections": 123,
+            "net": 54,
+            "regressions": 69
+          },
+          "poly": {
+            "changed": 222,
+            "corrections": 98,
+            "net": 29,
+            "regressions": 69
+          }
+        },
+        "4": {
+          "by_k": {
+            "0": {
+              "changed": 70,
+              "corrections": 45,
+              "net": 45,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 76,
+              "corrections": 5,
+              "net": 5,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 104,
+              "corrections": 86,
+              "net": 78,
+              "regressions": 8
+            },
+            "3": {
+              "changed": 93,
+              "corrections": 3,
+              "net": -85,
+              "regressions": 88
+            },
+            "4": {
+              "changed": 87,
+              "corrections": 57,
+              "net": 55,
+              "regressions": 2
+            },
+            "5": {
+              "changed": 38,
+              "corrections": 2,
+              "net": 2,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 11,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 479,
+            "corrections": 198,
+            "net": 100,
+            "regressions": 98
+          },
+          "poly": {
+            "changed": 333,
+            "corrections": 148,
+            "net": 50,
+            "regressions": 98
+          }
+        }
+      },
+      "metrics": {
+        "by_k": {
+          "0": {
+            "correct": 38124,
+            "exact": 0.9614647432664178,
+            "over": 1528,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7937,
+            "exact": 0.6467568448500652,
+            "over": 1408,
+            "rows": 12272,
+            "under": 2927
+          },
+          "2": {
+            "correct": 1344,
+            "exact": 0.39013062409288823,
+            "over": 671,
+            "rows": 3445,
+            "under": 1430
+          },
+          "3": {
+            "correct": 869,
+            "exact": 0.3796417649628659,
+            "over": 297,
+            "rows": 2289,
+            "under": 1123
+          },
+          "4": {
+            "correct": 431,
+            "exact": 0.35708367854183926,
+            "over": 20,
+            "rows": 1207,
+            "under": 756
+          },
+          "5": {
+            "correct": 29,
+            "exact": 0.08169014084507042,
+            "over": 0,
+            "rows": 355,
+            "under": 326
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38124,
+            1056,
+            424,
+            37,
+            10,
+            1,
+            0
+          ],
+          [
+            2927,
+            7937,
+            1198,
+            177,
+            29,
+            4,
+            0
+          ],
+          [
+            670,
+            760,
+            1344,
+            548,
+            120,
+            3,
+            0
+          ],
+          [
+            212,
+            175,
+            736,
+            869,
+            277,
+            20,
+            0
+          ],
+          [
+            48,
+            34,
+            243,
+            431,
+            431,
+            20,
+            0
+          ],
+          [
+            7,
+            8,
+            47,
+            116,
+            148,
+            29,
+            0
+          ],
+          [
+            0,
+            4,
+            11,
+            22,
+            45,
+            7,
+            0
+          ]
+        ],
+        "correct": 48734,
+        "exact": 0.8216965384680234,
+        "over": 3924,
+        "poly": {
+          "correct": 2673,
+          "exact": 0.36194989844278946,
+          "over": 988,
+          "rows": 7385,
+          "under": 3724
+        },
+        "rows": 59309,
+        "under": 6651
+      },
+      "versus_current": {
+        "by_k": {
+          "0": {
+            "changed": 98,
+            "corrections": 89,
+            "net": 89,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 66,
+            "corrections": 48,
+            "net": 48,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 22,
+            "corrections": 0,
+            "net": -19,
+            "regressions": 19
+          },
+          "3": {
+            "changed": 6,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "4": {
+            "changed": 1,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          },
+          "5": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 193,
+          "corrections": 137,
+          "net": 117,
+          "regressions": 20
+        },
+        "poly": {
+          "changed": 29,
+          "corrections": 0,
+          "net": -20,
+          "regressions": 20
+        }
+      },
+      "versus_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 157,
+            "corrections": 89,
+            "net": 89,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 286,
+            "corrections": 48,
+            "net": 48,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 392,
+            "corrections": 242,
+            "net": 161,
+            "regressions": 81
+          },
+          "3": {
+            "changed": 338,
+            "corrections": 123,
+            "net": -46,
+            "regressions": 169
+          },
+          "4": {
+            "changed": 241,
+            "corrections": 93,
+            "net": 14,
+            "regressions": 79
+          },
+          "5": {
+            "changed": 101,
+            "corrections": 14,
+            "net": 14,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 23,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1538,
+          "corrections": 609,
+          "net": 280,
+          "regressions": 329
+        },
+        "poly": {
+          "changed": 1095,
+          "corrections": 472,
+          "net": 143,
+          "regressions": 329
+        }
+      },
+      "versus_yourmt3": {
+        "by_k": {
+          "0": {
+            "changed": 2217,
+            "corrections": 1134,
+            "net": 288,
+            "regressions": 846
+          },
+          "1": {
+            "changed": 3383,
+            "corrections": 622,
+            "net": -1527,
+            "regressions": 2149
+          },
+          "2": {
+            "changed": 2102,
+            "corrections": 543,
+            "net": -474,
+            "regressions": 1017
+          },
+          "3": {
+            "changed": 1382,
+            "corrections": 298,
+            "net": -383,
+            "regressions": 681
+          },
+          "4": {
+            "changed": 757,
+            "corrections": 122,
+            "net": -294,
+            "regressions": 416
+          },
+          "5": {
+            "changed": 293,
+            "corrections": 13,
+            "net": -160,
+            "regressions": 173
+          },
+          "6": {
+            "changed": 81,
+            "corrections": 0,
+            "net": -44,
+            "regressions": 44
+          }
+        },
+        "global": {
+          "changed": 10215,
+          "corrections": 2732,
+          "net": -2594,
+          "regressions": 5326
+        },
+        "poly": {
+          "changed": 4615,
+          "corrections": 976,
+          "net": -1355,
+          "regressions": 2331
+        }
+      }
+    },
+    "coherent__low_gate_0.90": {
+      "folds": {
+        "0": {
+          "by_k": {
+            "0": {
+              "changed": 12,
+              "corrections": 5,
+              "net": 5,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 58,
+              "corrections": 13,
+              "net": 13,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 80,
+              "corrections": 42,
+              "net": 30,
+              "regressions": 12
+            },
+            "3": {
+              "changed": 78,
+              "corrections": 34,
+              "net": 2,
+              "regressions": 32
+            },
+            "4": {
+              "changed": 86,
+              "corrections": 35,
+              "net": 4,
+              "regressions": 31
+            },
+            "5": {
+              "changed": 30,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 6,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 350,
+            "corrections": 129,
+            "net": 54,
+            "regressions": 75
+          },
+          "poly": {
+            "changed": 280,
+            "corrections": 111,
+            "net": 36,
+            "regressions": 75
+          }
+        },
+        "1": {
+          "by_k": {
+            "0": {
+              "changed": 28,
+              "corrections": 8,
+              "net": 8,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 72,
+              "corrections": 3,
+              "net": 3,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 119,
+              "corrections": 79,
+              "net": 51,
+              "regressions": 28
+            },
+            "3": {
+              "changed": 85,
+              "corrections": 36,
+              "net": 2,
+              "regressions": 34
+            },
+            "4": {
+              "changed": 29,
+              "corrections": 2,
+              "net": -14,
+              "regressions": 16
+            },
+            "5": {
+              "changed": 12,
+              "corrections": 1,
+              "net": 1,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 348,
+            "corrections": 129,
+            "net": 51,
+            "regressions": 78
+          },
+          "poly": {
+            "changed": 248,
+            "corrections": 118,
+            "net": 40,
+            "regressions": 78
+          }
+        },
+        "2": {
+          "by_k": {
+            "0": {
+              "changed": 21,
+              "corrections": 9,
+              "net": 9,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 52,
+              "corrections": 1,
+              "net": 1,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 76,
+              "corrections": 37,
+              "net": 15,
+              "regressions": 22
+            },
+            "3": {
+              "changed": 78,
+              "corrections": 50,
+              "net": 35,
+              "regressions": 15
+            },
+            "4": {
+              "changed": 39,
+              "corrections": 0,
+              "net": -30,
+              "regressions": 30
+            },
+            "5": {
+              "changed": 21,
+              "corrections": 11,
+              "net": 11,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 290,
+            "corrections": 108,
+            "net": 41,
+            "regressions": 67
+          },
+          "poly": {
+            "changed": 217,
+            "corrections": 98,
+            "net": 31,
+            "regressions": 67
+          }
+        },
+        "4": {
+          "by_k": {
+            "0": {
+              "changed": 55,
+              "corrections": 28,
+              "net": 28,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 66,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 101,
+              "corrections": 86,
+              "net": 81,
+              "regressions": 5
+            },
+            "3": {
+              "changed": 92,
+              "corrections": 3,
+              "net": -85,
+              "regressions": 88
+            },
+            "4": {
+              "changed": 87,
+              "corrections": 57,
+              "net": 55,
+              "regressions": 2
+            },
+            "5": {
+              "changed": 38,
+              "corrections": 2,
+              "net": 2,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 11,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 450,
+            "corrections": 176,
+            "net": 81,
+            "regressions": 95
+          },
+          "poly": {
+            "changed": 329,
+            "corrections": 148,
+            "net": 53,
+            "regressions": 95
+          }
+        }
+      },
+      "metrics": {
+        "by_k": {
+          "0": {
+            "correct": 38085,
+            "exact": 0.9604811863209927,
+            "over": 1567,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7906,
+            "exact": 0.6442307692307693,
+            "over": 1452,
+            "rows": 12272,
+            "under": 2914
+          },
+          "2": {
+            "correct": 1360,
+            "exact": 0.39477503628447025,
+            "over": 673,
+            "rows": 3445,
+            "under": 1412
+          },
+          "3": {
+            "correct": 869,
+            "exact": 0.3796417649628659,
+            "over": 297,
+            "rows": 2289,
+            "under": 1123
+          },
+          "4": {
+            "correct": 432,
+            "exact": 0.35791217895608946,
+            "over": 20,
+            "rows": 1207,
+            "under": 755
+          },
+          "5": {
+            "correct": 29,
+            "exact": 0.08169014084507042,
+            "over": 0,
+            "rows": 355,
+            "under": 326
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38085,
+            1047,
+            469,
+            40,
+            10,
+            1,
+            0
+          ],
+          [
+            2914,
+            7906,
+            1239,
+            180,
+            29,
+            4,
+            0
+          ],
+          [
+            667,
+            745,
+            1360,
+            549,
+            121,
+            3,
+            0
+          ],
+          [
+            211,
+            171,
+            741,
+            869,
+            277,
+            20,
+            0
+          ],
+          [
+            47,
+            34,
+            243,
+            431,
+            432,
+            20,
+            0
+          ],
+          [
+            7,
+            8,
+            47,
+            116,
+            148,
+            29,
+            0
+          ],
+          [
+            0,
+            4,
+            11,
+            22,
+            45,
+            7,
+            0
+          ]
+        ],
+        "correct": 48681,
+        "exact": 0.8208029135544352,
+        "over": 4009,
+        "poly": {
+          "correct": 2690,
+          "exact": 0.36425186188219366,
+          "over": 990,
+          "rows": 7385,
+          "under": 3705
+        },
+        "rows": 59309,
+        "under": 6619
+      },
+      "versus_current": {
+        "by_k": {
+          "0": {
+            "changed": 50,
+            "corrections": 50,
+            "net": 50,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 22,
+            "corrections": 17,
+            "net": 17,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 4,
+            "corrections": 0,
+            "net": -3,
+            "regressions": 3
+          },
+          "3": {
+            "changed": 1,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "4": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "5": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 77,
+          "corrections": 67,
+          "net": 64,
+          "regressions": 3
+        },
+        "poly": {
+          "changed": 5,
+          "corrections": 0,
+          "net": -3,
+          "regressions": 3
+        }
+      },
+      "versus_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 116,
+            "corrections": 50,
+            "net": 50,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 248,
+            "corrections": 17,
+            "net": 17,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 376,
+            "corrections": 244,
+            "net": 177,
+            "regressions": 67
+          },
+          "3": {
+            "changed": 333,
+            "corrections": 123,
+            "net": -46,
+            "regressions": 169
+          },
+          "4": {
+            "changed": 241,
+            "corrections": 94,
+            "net": 15,
+            "regressions": 79
+          },
+          "5": {
+            "changed": 101,
+            "corrections": 14,
+            "net": 14,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 23,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1438,
+          "corrections": 542,
+          "net": 227,
+          "regressions": 315
+        },
+        "poly": {
+          "changed": 1074,
+          "corrections": 475,
+          "net": 160,
+          "regressions": 315
+        }
+      },
+      "versus_yourmt3": {
+        "by_k": {
+          "0": {
+            "changed": 2249,
+            "corrections": 1127,
+            "net": 249,
+            "regressions": 878
+          },
+          "1": {
+            "changed": 3410,
+            "corrections": 618,
+            "net": -1558,
+            "regressions": 2176
+          },
+          "2": {
+            "changed": 2104,
+            "corrections": 553,
+            "net": -458,
+            "regressions": 1011
+          },
+          "3": {
+            "changed": 1380,
+            "corrections": 298,
+            "net": -383,
+            "regressions": 681
+          },
+          "4": {
+            "changed": 756,
+            "corrections": 122,
+            "net": -293,
+            "regressions": 415
+          },
+          "5": {
+            "changed": 293,
+            "corrections": 13,
+            "net": -160,
+            "regressions": 173
+          },
+          "6": {
+            "changed": 81,
+            "corrections": 0,
+            "net": -44,
+            "regressions": 44
+          }
+        },
+        "global": {
+          "changed": 10273,
+          "corrections": 2731,
+          "net": -2647,
+          "regressions": 5378
+        },
+        "poly": {
+          "changed": 4614,
+          "corrections": 986,
+          "net": -1338,
+          "regressions": 2324
+        }
+      }
+    },
+    "coherent__low_gate_0.95": {
+      "folds": {
+        "0": {
+          "by_k": {
+            "0": {
+              "changed": 8,
+              "corrections": 1,
+              "net": 1,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 51,
+              "corrections": 4,
+              "net": 4,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 80,
+              "corrections": 42,
+              "net": 30,
+              "regressions": 12
+            },
+            "3": {
+              "changed": 77,
+              "corrections": 34,
+              "net": 2,
+              "regressions": 32
+            },
+            "4": {
+              "changed": 86,
+              "corrections": 35,
+              "net": 4,
+              "regressions": 31
+            },
+            "5": {
+              "changed": 30,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 6,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 338,
+            "corrections": 116,
+            "net": 41,
+            "regressions": 75
+          },
+          "poly": {
+            "changed": 279,
+            "corrections": 111,
+            "net": 36,
+            "regressions": 75
+          }
+        },
+        "1": {
+          "by_k": {
+            "0": {
+              "changed": 24,
+              "corrections": 4,
+              "net": 4,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 70,
+              "corrections": 1,
+              "net": 1,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 117,
+              "corrections": 79,
+              "net": 53,
+              "regressions": 26
+            },
+            "3": {
+              "changed": 85,
+              "corrections": 36,
+              "net": 2,
+              "regressions": 34
+            },
+            "4": {
+              "changed": 29,
+              "corrections": 2,
+              "net": -14,
+              "regressions": 16
+            },
+            "5": {
+              "changed": 12,
+              "corrections": 1,
+              "net": 1,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 340,
+            "corrections": 123,
+            "net": 47,
+            "regressions": 76
+          },
+          "poly": {
+            "changed": 246,
+            "corrections": 118,
+            "net": 42,
+            "regressions": 76
+          }
+        },
+        "2": {
+          "by_k": {
+            "0": {
+              "changed": 17,
+              "corrections": 5,
+              "net": 5,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 52,
+              "corrections": 1,
+              "net": 1,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 76,
+              "corrections": 37,
+              "net": 15,
+              "regressions": 22
+            },
+            "3": {
+              "changed": 78,
+              "corrections": 50,
+              "net": 35,
+              "regressions": 15
+            },
+            "4": {
+              "changed": 39,
+              "corrections": 0,
+              "net": -30,
+              "regressions": 30
+            },
+            "5": {
+              "changed": 21,
+              "corrections": 11,
+              "net": 11,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 3,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 286,
+            "corrections": 104,
+            "net": 37,
+            "regressions": 67
+          },
+          "poly": {
+            "changed": 217,
+            "corrections": 98,
+            "net": 31,
+            "regressions": 67
+          }
+        },
+        "4": {
+          "by_k": {
+            "0": {
+              "changed": 44,
+              "corrections": 17,
+              "net": 17,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 65,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 101,
+              "corrections": 86,
+              "net": 81,
+              "regressions": 5
+            },
+            "3": {
+              "changed": 92,
+              "corrections": 3,
+              "net": -85,
+              "regressions": 88
+            },
+            "4": {
+              "changed": 87,
+              "corrections": 57,
+              "net": 55,
+              "regressions": 2
+            },
+            "5": {
+              "changed": 38,
+              "corrections": 2,
+              "net": 2,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 11,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 438,
+            "corrections": 165,
+            "net": 70,
+            "regressions": 95
+          },
+          "poly": {
+            "changed": 329,
+            "corrections": 148,
+            "net": 53,
+            "regressions": 95
+          }
+        }
+      },
+      "metrics": {
+        "by_k": {
+          "0": {
+            "correct": 38062,
+            "exact": 0.9599011399172803,
+            "over": 1590,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7895,
+            "exact": 0.6433344198174706,
+            "over": 1465,
+            "rows": 12272,
+            "under": 2912
+          },
+          "2": {
+            "correct": 1362,
+            "exact": 0.395355587808418,
+            "over": 674,
+            "rows": 3445,
+            "under": 1409
+          },
+          "3": {
+            "correct": 869,
+            "exact": 0.3796417649628659,
+            "over": 297,
+            "rows": 2289,
+            "under": 1123
+          },
+          "4": {
+            "correct": 432,
+            "exact": 0.35791217895608946,
+            "over": 20,
+            "rows": 1207,
+            "under": 755
+          },
+          "5": {
+            "correct": 29,
+            "exact": 0.08169014084507042,
+            "over": 0,
+            "rows": 355,
+            "under": 326
+          },
+          "6": {
+            "correct": 0,
+            "exact": 0.0,
+            "over": 0,
+            "rows": 89,
+            "under": 89
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38062,
+            1047,
+            492,
+            40,
+            10,
+            1,
+            0
+          ],
+          [
+            2912,
+            7895,
+            1252,
+            180,
+            29,
+            4,
+            0
+          ],
+          [
+            667,
+            742,
+            1362,
+            550,
+            121,
+            3,
+            0
+          ],
+          [
+            211,
+            170,
+            742,
+            869,
+            277,
+            20,
+            0
+          ],
+          [
+            47,
+            34,
+            243,
+            431,
+            432,
+            20,
+            0
+          ],
+          [
+            7,
+            8,
+            47,
+            116,
+            148,
+            29,
+            0
+          ],
+          [
+            0,
+            4,
+            11,
+            22,
+            45,
+            7,
+            0
+          ]
+        ],
+        "correct": 48649,
+        "exact": 0.8202633664367971,
+        "over": 4046,
+        "poly": {
+          "correct": 2692,
+          "exact": 0.36452268111035885,
+          "over": 991,
+          "rows": 7385,
+          "under": 3702
+        },
+        "rows": 59309,
+        "under": 6614
+      },
+      "versus_current": {
+        "by_k": {
+          "0": {
+            "changed": 27,
+            "corrections": 27,
+            "net": 27,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 9,
+            "corrections": 6,
+            "net": 6,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 1,
+            "corrections": 0,
+            "net": -1,
+            "regressions": 1
+          },
+          "3": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "4": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "5": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 0,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 37,
+          "corrections": 33,
+          "net": 32,
+          "regressions": 1
+        },
+        "poly": {
+          "changed": 1,
+          "corrections": 0,
+          "net": -1,
+          "regressions": 1
+        }
+      },
+      "versus_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 93,
+            "corrections": 27,
+            "net": 27,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 238,
+            "corrections": 6,
+            "net": 6,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 374,
+            "corrections": 244,
+            "net": 179,
+            "regressions": 65
+          },
+          "3": {
+            "changed": 332,
+            "corrections": 123,
+            "net": -46,
+            "regressions": 169
+          },
+          "4": {
+            "changed": 241,
+            "corrections": 94,
+            "net": 15,
+            "regressions": 79
+          },
+          "5": {
+            "changed": 101,
+            "corrections": 14,
+            "net": 14,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 23,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 1402,
+          "corrections": 508,
+          "net": 195,
+          "regressions": 313
+        },
+        "poly": {
+          "changed": 1071,
+          "corrections": 475,
+          "net": 162,
+          "regressions": 313
+        }
+      },
+      "versus_yourmt3": {
+        "by_k": {
+          "0": {
+            "changed": 2269,
+            "corrections": 1125,
+            "net": 226,
+            "regressions": 899
+          },
+          "1": {
+            "changed": 3421,
+            "corrections": 618,
+            "net": -1569,
+            "regressions": 2187
+          },
+          "2": {
+            "changed": 2104,
+            "corrections": 554,
+            "net": -456,
+            "regressions": 1010
+          },
+          "3": {
+            "changed": 1380,
+            "corrections": 298,
+            "net": -383,
+            "regressions": 681
+          },
+          "4": {
+            "changed": 756,
+            "corrections": 122,
+            "net": -293,
+            "regressions": 415
+          },
+          "5": {
+            "changed": 293,
+            "corrections": 13,
+            "net": -160,
+            "regressions": 173
+          },
+          "6": {
+            "changed": 81,
+            "corrections": 0,
+            "net": -44,
+            "regressions": 44
+          }
+        },
+        "global": {
+          "changed": 10304,
+          "corrections": 2730,
+          "net": -2679,
+          "regressions": 5409
+        },
+        "poly": {
+          "changed": 4614,
+          "corrections": 987,
+          "net": -1336,
+          "regressions": 2323
+        }
+      }
+    },
+    "coherent__open_argmax": {
+      "folds": {
+        "0": {
+          "by_k": {
+            "0": {
+              "changed": 106,
+              "corrections": 38,
+              "net": 38,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 267,
+              "corrections": 195,
+              "net": 195,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 335,
+              "corrections": 70,
+              "net": -145,
+              "regressions": 215
+            },
+            "3": {
+              "changed": 256,
+              "corrections": 120,
+              "net": 32,
+              "regressions": 88
+            },
+            "4": {
+              "changed": 184,
+              "corrections": 28,
+              "net": -42,
+              "regressions": 70
+            },
+            "5": {
+              "changed": 67,
+              "corrections": 12,
+              "net": 12,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 24,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 1239,
+            "corrections": 463,
+            "net": 90,
+            "regressions": 373
+          },
+          "poly": {
+            "changed": 866,
+            "corrections": 230,
+            "net": -143,
+            "regressions": 373
+          }
+        },
+        "1": {
+          "by_k": {
+            "0": {
+              "changed": 98,
+              "corrections": 44,
+              "net": 44,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 272,
+              "corrections": 161,
+              "net": 161,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 327,
+              "corrections": 79,
+              "net": -82,
+              "regressions": 161
+            },
+            "3": {
+              "changed": 265,
+              "corrections": 100,
+              "net": -14,
+              "regressions": 114
+            },
+            "4": {
+              "changed": 114,
+              "corrections": 27,
+              "net": -25,
+              "regressions": 52
+            },
+            "5": {
+              "changed": 39,
+              "corrections": 4,
+              "net": 4,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 10,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 1125,
+            "corrections": 415,
+            "net": 88,
+            "regressions": 327
+          },
+          "poly": {
+            "changed": 755,
+            "corrections": 210,
+            "net": -117,
+            "regressions": 327
+          }
+        },
+        "2": {
+          "by_k": {
+            "0": {
+              "changed": 93,
+              "corrections": 50,
+              "net": 50,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 185,
+              "corrections": 99,
+              "net": 99,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 177,
+              "corrections": 67,
+              "net": -14,
+              "regressions": 81
+            },
+            "3": {
+              "changed": 176,
+              "corrections": 53,
+              "net": -19,
+              "regressions": 72
+            },
+            "4": {
+              "changed": 87,
+              "corrections": 13,
+              "net": -32,
+              "regressions": 45
+            },
+            "5": {
+              "changed": 31,
+              "corrections": 7,
+              "net": 7,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 8,
+              "corrections": 1,
+              "net": 1,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 757,
+            "corrections": 290,
+            "net": 92,
+            "regressions": 198
+          },
+          "poly": {
+            "changed": 479,
+            "corrections": 141,
+            "net": -57,
+            "regressions": 198
+          }
+        },
+        "4": {
+          "by_k": {
+            "0": {
+              "changed": 141,
+              "corrections": 100,
+              "net": 100,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 258,
+              "corrections": 158,
+              "net": 158,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 235,
+              "corrections": 68,
+              "net": -38,
+              "regressions": 106
+            },
+            "3": {
+              "changed": 201,
+              "corrections": 32,
+              "net": -113,
+              "regressions": 145
+            },
+            "4": {
+              "changed": 166,
+              "corrections": 95,
+              "net": 72,
+              "regressions": 23
+            },
+            "5": {
+              "changed": 57,
+              "corrections": 5,
+              "net": 5,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 16,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 1074,
+            "corrections": 458,
+            "net": 184,
+            "regressions": 274
+          },
+          "poly": {
+            "changed": 675,
+            "corrections": 200,
+            "net": -74,
+            "regressions": 274
+          }
+        }
+      },
+      "metrics": {
+        "by_k": {
+          "0": {
+            "correct": 38267,
+            "exact": 0.9650711187329769,
+            "over": 1385,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 8502,
+            "exact": 0.6927966101694916,
+            "over": 727,
+            "rows": 12272,
+            "under": 3043
+          },
+          "2": {
+            "correct": 904,
+            "exact": 0.2624092888243832,
+            "over": 684,
+            "rows": 3445,
+            "under": 1857
+          },
+          "3": {
+            "correct": 801,
+            "exact": 0.34993446920052423,
+            "over": 369,
+            "rows": 2289,
+            "under": 1119
+          },
+          "4": {
+            "correct": 390,
+            "exact": 0.3231151615575808,
+            "over": 54,
+            "rows": 1207,
+            "under": 763
+          },
+          "5": {
+            "correct": 43,
+            "exact": 0.12112676056338029,
+            "over": 2,
+            "rows": 355,
+            "under": 310
+          },
+          "6": {
+            "correct": 1,
+            "exact": 0.011235955056179775,
+            "over": 0,
+            "rows": 89,
+            "under": 88
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38267,
+            1214,
+            137,
+            25,
+            9,
+            0,
+            0
+          ],
+          [
+            3043,
+            8502,
+            539,
+            154,
+            27,
+            7,
+            0
+          ],
+          [
+            715,
+            1142,
+            904,
+            543,
+            137,
+            4,
+            0
+          ],
+          [
+            224,
+            319,
+            576,
+            801,
+            340,
+            29,
+            0
+          ],
+          [
+            54,
+            73,
+            199,
+            437,
+            390,
+            54,
+            0
+          ],
+          [
+            8,
+            14,
+            51,
+            103,
+            134,
+            43,
+            2
+          ],
+          [
+            0,
+            4,
+            12,
+            26,
+            28,
+            18,
+            1
+          ]
+        ],
+        "correct": 48908,
+        "exact": 0.8246303259201807,
+        "over": 3221,
+        "poly": {
+          "correct": 2139,
+          "exact": 0.2896411645226811,
+          "over": 1109,
+          "rows": 7385,
+          "under": 4137
+        },
+        "rows": 59309,
+        "under": 7180
+      },
+      "versus_current": {
+        "by_k": {
+          "0": {
+            "changed": 426,
+            "corrections": 232,
+            "net": 232,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 899,
+            "corrections": 613,
+            "net": 613,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 951,
+            "corrections": 172,
+            "net": -459,
+            "regressions": 631
+          },
+          "3": {
+            "changed": 776,
+            "corrections": 261,
+            "net": -68,
+            "regressions": 329
+          },
+          "4": {
+            "changed": 465,
+            "corrections": 123,
+            "net": -42,
+            "regressions": 165
+          },
+          "5": {
+            "changed": 153,
+            "corrections": 23,
+            "net": 14,
+            "regressions": 9
+          },
+          "6": {
+            "changed": 43,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 3713,
+          "corrections": 1425,
+          "net": 291,
+          "regressions": 1134
+        },
+        "poly": {
+          "changed": 2388,
+          "corrections": 580,
+          "net": -554,
+          "regressions": 1134
+        }
+      },
+      "versus_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 438,
+            "corrections": 232,
+            "net": 232,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 982,
+            "corrections": 613,
+            "net": 613,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 1074,
+            "corrections": 284,
+            "net": -279,
+            "regressions": 563
+          },
+          "3": {
+            "changed": 898,
+            "corrections": 305,
+            "net": -114,
+            "regressions": 419
+          },
+          "4": {
+            "changed": 551,
+            "corrections": 163,
+            "net": -27,
+            "regressions": 190
+          },
+          "5": {
+            "changed": 194,
+            "corrections": 28,
+            "net": 28,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 58,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 4195,
+          "corrections": 1626,
+          "net": 454,
+          "regressions": 1172
+        },
+        "poly": {
+          "changed": 2775,
+          "corrections": 781,
+          "net": -391,
+          "regressions": 1172
+        }
+      },
+      "versus_yourmt3": {
+        "by_k": {
+          "0": {
+            "changed": 2073,
+            "corrections": 1175,
+            "net": 431,
+            "regressions": 744
+          },
+          "1": {
+            "changed": 3078,
+            "corrections": 795,
+            "net": -962,
+            "regressions": 1757
+          },
+          "2": {
+            "changed": 2239,
+            "corrections": 353,
+            "net": -914,
+            "regressions": 1267
+          },
+          "3": {
+            "changed": 1477,
+            "corrections": 293,
+            "net": -451,
+            "regressions": 744
+          },
+          "4": {
+            "changed": 786,
+            "corrections": 112,
+            "net": -335,
+            "regressions": 447
+          },
+          "5": {
+            "changed": 282,
+            "corrections": 14,
+            "net": -146,
+            "regressions": 160
+          },
+          "6": {
+            "changed": 76,
+            "corrections": 0,
+            "net": -43,
+            "regressions": 43
+          }
+        },
+        "global": {
+          "changed": 10011,
+          "corrections": 2742,
+          "net": -2420,
+          "regressions": 5162
+        },
+        "poly": {
+          "changed": 4860,
+          "corrections": 772,
+          "net": -1889,
+          "regressions": 2661
+        }
+      }
+    },
+    "coherent__restricted_control": {
+      "folds": {
+        "0": {
+          "by_k": {
+            "0": {
+              "changed": 20,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 91,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 216,
+              "corrections": 75,
+              "net": -23,
+              "regressions": 98
+            },
+            "3": {
+              "changed": 220,
+              "corrections": 122,
+              "net": 37,
+              "regressions": 85
+            },
+            "4": {
+              "changed": 170,
+              "corrections": 28,
+              "net": -42,
+              "regressions": 70
+            },
+            "5": {
+              "changed": 66,
+              "corrections": 12,
+              "net": 12,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 24,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 807,
+            "corrections": 237,
+            "net": -16,
+            "regressions": 253
+          },
+          "poly": {
+            "changed": 696,
+            "corrections": 237,
+            "net": -16,
+            "regressions": 253
+          }
+        },
+        "1": {
+          "by_k": {
+            "0": {
+              "changed": 20,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 88,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 204,
+              "corrections": 106,
+              "net": 57,
+              "regressions": 49
+            },
+            "3": {
+              "changed": 224,
+              "corrections": 101,
+              "net": -9,
+              "regressions": 110
+            },
+            "4": {
+              "changed": 107,
+              "corrections": 27,
+              "net": -24,
+              "regressions": 51
+            },
+            "5": {
+              "changed": 38,
+              "corrections": 4,
+              "net": 4,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 10,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 691,
+            "corrections": 238,
+            "net": 28,
+            "regressions": 210
+          },
+          "poly": {
+            "changed": 583,
+            "corrections": 238,
+            "net": 28,
+            "regressions": 210
+          }
+        },
+        "2": {
+          "by_k": {
+            "0": {
+              "changed": 15,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 87,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 113,
+              "corrections": 70,
+              "net": 50,
+              "regressions": 20
+            },
+            "3": {
+              "changed": 144,
+              "corrections": 53,
+              "net": -15,
+              "regressions": 68
+            },
+            "4": {
+              "changed": 83,
+              "corrections": 13,
+              "net": -32,
+              "regressions": 45
+            },
+            "5": {
+              "changed": 30,
+              "corrections": 7,
+              "net": 7,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 8,
+              "corrections": 1,
+              "net": 1,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 480,
+            "corrections": 144,
+            "net": 11,
+            "regressions": 133
+          },
+          "poly": {
+            "changed": 378,
+            "corrections": 144,
+            "net": 11,
+            "regressions": 133
+          }
+        },
+        "4": {
+          "by_k": {
+            "0": {
+              "changed": 14,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "1": {
+              "changed": 58,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            },
+            "2": {
+              "changed": 152,
+              "corrections": 77,
+              "net": 41,
+              "regressions": 36
+            },
+            "3": {
+              "changed": 176,
+              "corrections": 32,
+              "net": -110,
+              "regressions": 142
+            },
+            "4": {
+              "changed": 160,
+              "corrections": 95,
+              "net": 72,
+              "regressions": 23
+            },
+            "5": {
+              "changed": 57,
+              "corrections": 5,
+              "net": 5,
+              "regressions": 0
+            },
+            "6": {
+              "changed": 16,
+              "corrections": 0,
+              "net": 0,
+              "regressions": 0
+            }
+          },
+          "global": {
+            "changed": 633,
+            "corrections": 209,
+            "net": 8,
+            "regressions": 201
+          },
+          "poly": {
+            "changed": 561,
+            "corrections": 209,
+            "net": 8,
+            "regressions": 201
+          }
+        }
+      },
+      "metrics": {
+        "by_k": {
+          "0": {
+            "correct": 38035,
+            "exact": 0.9592202158781398,
+            "over": 1617,
+            "rows": 39652,
+            "under": 0
+          },
+          "1": {
+            "correct": 7889,
+            "exact": 0.6428455019556715,
+            "over": 1474,
+            "rows": 12272,
+            "under": 2909
+          },
+          "2": {
+            "correct": 1308,
+            "exact": 0.37968069666182874,
+            "over": 729,
+            "rows": 3445,
+            "under": 1408
+          },
+          "3": {
+            "correct": 818,
+            "exact": 0.35736129314110965,
+            "over": 370,
+            "rows": 2289,
+            "under": 1101
+          },
+          "4": {
+            "correct": 391,
+            "exact": 0.323943661971831,
+            "over": 54,
+            "rows": 1207,
+            "under": 762
+          },
+          "5": {
+            "correct": 43,
+            "exact": 0.12112676056338029,
+            "over": 2,
+            "rows": 355,
+            "under": 310
+          },
+          "6": {
+            "correct": 1,
+            "exact": 0.011235955056179775,
+            "over": 0,
+            "rows": 89,
+            "under": 88
+          }
+        },
+        "confusion_true_by_predicted": [
+          [
+            38035,
+            1047,
+            499,
+            61,
+            10,
+            0,
+            0
+          ],
+          [
+            2909,
+            7889,
+            1229,
+            207,
+            31,
+            7,
+            0
+          ],
+          [
+            666,
+            742,
+            1308,
+            584,
+            141,
+            4,
+            0
+          ],
+          [
+            211,
+            170,
+            720,
+            818,
+            341,
+            29,
+            0
+          ],
+          [
+            47,
+            34,
+            240,
+            441,
+            391,
+            54,
+            0
+          ],
+          [
+            7,
+            8,
+            55,
+            105,
+            135,
+            43,
+            2
+          ],
+          [
+            0,
+            4,
+            12,
+            26,
+            28,
+            18,
+            1
+          ]
+        ],
+        "correct": 48485,
+        "exact": 0.8174981874589017,
+        "over": 4246,
+        "poly": {
+          "correct": 2561,
+          "exact": 0.34678402166553823,
+          "over": 1155,
+          "rows": 7385,
+          "under": 3669
+        },
+        "rows": 59309,
+        "under": 6578
+      },
+      "versus_current": {
+        "by_k": {
+          "0": {
+            "changed": 57,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 216,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 552,
+            "corrections": 190,
+            "net": -55,
+            "regressions": 245
+          },
+          "3": {
+            "changed": 635,
+            "corrections": 271,
+            "net": -51,
+            "regressions": 322
+          },
+          "4": {
+            "changed": 431,
+            "corrections": 124,
+            "net": -41,
+            "regressions": 165
+          },
+          "5": {
+            "changed": 148,
+            "corrections": 23,
+            "net": 14,
+            "regressions": 9
+          },
+          "6": {
+            "changed": 43,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2082,
+          "corrections": 609,
+          "net": -132,
+          "regressions": 741
+        },
+        "poly": {
+          "changed": 1809,
+          "corrections": 609,
+          "net": -132,
+          "regressions": 741
+        }
+      },
+      "versus_freeze": {
+        "by_k": {
+          "0": {
+            "changed": 69,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "1": {
+            "changed": 324,
+            "corrections": 0,
+            "net": 0,
+            "regressions": 0
+          },
+          "2": {
+            "changed": 685,
+            "corrections": 328,
+            "net": 125,
+            "regressions": 203
+          },
+          "3": {
+            "changed": 764,
+            "corrections": 308,
+            "net": -97,
+            "regressions": 405
+          },
+          "4": {
+            "changed": 520,
+            "corrections": 163,
+            "net": -26,
+            "regressions": 189
+          },
+          "5": {
+            "changed": 191,
+            "corrections": 28,
+            "net": 28,
+            "regressions": 0
+          },
+          "6": {
+            "changed": 58,
+            "corrections": 1,
+            "net": 1,
+            "regressions": 0
+          }
+        },
+        "global": {
+          "changed": 2611,
+          "corrections": 828,
+          "net": 31,
+          "regressions": 797
+        },
+        "poly": {
+          "changed": 2218,
+          "corrections": 828,
+          "net": 31,
+          "regressions": 797
+        }
+      },
+      "versus_yourmt3": {
+        "by_k": {
+          "0": {
+            "changed": 2293,
+            "corrections": 1124,
+            "net": 199,
+            "regressions": 925
+          },
+          "1": {
+            "changed": 3434,
+            "corrections": 617,
+            "net": -1575,
+            "regressions": 2192
+          },
+          "2": {
+            "changed": 2148,
+            "corrections": 546,
+            "net": -510,
+            "regressions": 1056
+          },
+          "3": {
+            "changed": 1439,
+            "corrections": 300,
+            "net": -434,
+            "regressions": 734
+          },
+          "4": {
+            "changed": 783,
+            "corrections": 113,
+            "net": -334,
+            "regressions": 447
+          },
+          "5": {
+            "changed": 282,
+            "corrections": 14,
+            "net": -146,
+            "regressions": 160
+          },
+          "6": {
+            "changed": 76,
+            "corrections": 0,
+            "net": -43,
+            "regressions": 43
+          }
+        },
+        "global": {
+          "changed": 10455,
+          "corrections": 2714,
+          "net": -2843,
+          "regressions": 5557
+        },
+        "poly": {
+          "changed": 4728,
+          "corrections": 973,
+          "net": -1467,
+          "regressions": 2440
+        }
+      }
+    }
+  },
+  "producer_exclusions": [
+    {
+      "held_fold": 0,
+      "producer_train_folds": [
+        1,
+        2,
+        4
+      ],
+      "producer_train_id_sha256": "a58c1eb64a2dd71de97a291be1508f6efb17c033192a2441d0451ffc905a4a18"
+    },
+    {
+      "held_fold": 1,
+      "producer_train_folds": [
+        0,
+        2,
+        4
+      ],
+      "producer_train_id_sha256": "8b40ae64e47501748c15b22f0f0f71e5a5d238a8bb04cc278b4219d9601cba60"
+    },
+    {
+      "held_fold": 2,
+      "producer_train_folds": [
+        0,
+        1,
+        4
+      ],
+      "producer_train_id_sha256": "c0ac3b3dbbe4449670f7240a7ac1a885ce79b5de652797f00632735c54a87776"
+    },
+    {
+      "held_fold": 4,
+      "producer_train_folds": [
+        0,
+        1,
+        2
+      ],
+      "producer_train_id_sha256": "917c94927a35e2d654920703dd9d14ef240071c644aba2c87d74d2ad404803f7"
+    }
+  ],
+  "protocol_commit": "22b55fb96e3a27348fa8b51c8b2bbfe99b28e2ea",
+  "source_coherent_sha256": "707fc1681e2b0b1ef01805710186c4119ad697a0b52ed3330698e48f34c2f77b",
+  "source_producers_sha256": "be34918f4d86d665013cf4f94524c4b40798035f7292961b486acb1d188f25f0",
+  "status": "completed",
+  "training_performed": false
+}

@@ -1,0 +1,48 @@
+name: V27.3 S44 per-family high-correction compromise and Pareto loops
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series44-compromise-loops.yml'
+      - 'scripts/audit_v273_s44_compromise_loops.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: '.:src'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Test all per-family abstention and class-mask rules
+        run: python -m scripts.audit_v273_s44_compromise_loops --self-test
+      - name: Recover complete S43 910-vectors/59k-event independently verified archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/S43-bundle model/S43
+          gh release download v273-series43-research-37888008660 --repo "$GITHUB_REPOSITORY" --pattern '*.tar.gz' --dir model/S43-bundle
+          tar -xzf model/S43-bundle/v273-series43-all-corrections.tar.gz -C model/S43
+          test -f model/S43/S43-evidence/S43-audit/all_distinct_native_predictions.npz
+          test -f model/S43/S43-evidence/S43-audit/rank_actionable_vs_S18.csv
+      - name: Evaluate dedicated S1 S2 S3 S4 S11 S12 S19 S20 S24 S25 S27 S35 S38 S40 S41 compromises
+        run: >-
+          python -m scripts.audit_v273_s44_compromise_loops
+          --source model/S43/S43-evidence/S43-audit
+          --output model/S44
+      - name: Publish Pareto by family alongside gross correction leaderboard
+        run: cat model/S44/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series44-per-family-compromises
+          path: model/S44/
+          retention-days: 90

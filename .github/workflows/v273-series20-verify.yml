@@ -1,0 +1,75 @@
+name: V27.3 S20 verify recurrent residual and archive
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series20-verify.yml'
+      - 'scripts/verify_v273_aba_residual.py'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Set up PyTorch for independent replay
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Recover the full S20 A/B weights and all per-pass decisions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37858383973 --repo "$GITHUB_REPOSITORY" --name v273-series20-residual --dir model/series20-original
+      - name: Recover exact original acoustic features with SHA256 reports
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/acoustic-tars
+          gh release download v273-open-k0-k6-37837235723 --repo "$GITHUB_REPOSITORY" --pattern 'v273-open-features-*.tar' --dir model/acoustic-tars
+          for fold in 0 1 2 4; do
+            mkdir -p "model/full-audio/fold-$fold"
+            tar -xf "model/acoustic-tars/v273-open-features-$fold.tar" -C "model/full-audio/fold-$fold"
+          done
+      - name: Recover prior reference S18 predictions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37856499212 --repo "$GITHUB_REPOSITORY" --name v273-series18-k43-k21 --dir model/s18
+      - name: Independently replay all 19 recurrent models and 27 variants
+        run: >-
+          python -m scripts.verify_v273_aba_residual
+          --features model/full-audio
+          --s18 model/s18/predictions.npz
+          --input model/series20-original
+          --output model/series20-verified
+      - name: Publish full numerical replay audit
+        run: cat model/series20-verified/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series20-verified
+          path: model/series20-verified/
+          retention-days: 90
+      - name: Preserve all weights, messages and decisions in a checksum release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/archive
+          tar -czf model/archive/v273-series20-recurrent-research.tar.gz -C model series20-original series20-verified
+          (cd model/archive && sha256sum v273-series20-recurrent-research.tar.gz > SHA256SUMS)
+          gh release create "v273-series20-research-${GITHUB_RUN_ID}" \
+            model/archive/v273-series20-recurrent-research.tar.gz model/archive/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "V27.3 S20 recurrent residual A-B-A ${GITHUB_RUN_ID}" \
+            --notes "Research only. Residual multi-pass neural A/B weights, confidence margin candidates, negative results and independently replayed decisions. No unseen validation or model promotion."

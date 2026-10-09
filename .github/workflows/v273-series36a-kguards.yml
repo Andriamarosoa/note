@@ -1,0 +1,42 @@
+name: V27.3 S36a protect K2-K4 without altering 18 heads
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series36a-kguards.yml'
+      - 'scripts/audit_v273_s36a_poly_guards.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  experiment:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Unit test source-K guards without ground-truth access
+        run: python -m scripts.audit_v273_s36a_poly_guards --self-test
+      - name: Fetch independently verified S35 native K0 K6 decisions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37868356632 --repo "$GITHUB_REPOSITORY" --name v273-series35-extended-head-router --dir model/S35
+      - name: Audit 20 protected K0-6 decision sets for regressions and corrections
+        run: >-
+          python -m scripts.audit_v273_s36a_poly_guards
+          --s35 model/S35/predictions.npz
+          --output model/S36a
+      - name: Publish exact 22 policy scoreboard
+        run: cat model/S36a/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series36a-poly-guards
+          path: model/S36a/
+          retention-days: 90

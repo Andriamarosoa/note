@@ -1,0 +1,17 @@
+# S41 — fusion neuronale apprenant quelle tête croire (S18 + 4 experts S38 + CNN S40)
+
+**Protocole fixé avant le run**, après la preuve de complémentarité S39 : quatre experts tabulaires K1..6 fournissent des réponses justes supplémentaires sur au moins 1 000 vrais événements poly manqués par S18 (plafond oracle **non déployable** 54,1368 % poly). Le CNN S40 trouve lui seul 1 090 vraies corrections poly hors S18, mais se trompe aussi sur 1 269 événements poly que S18 réussissait. Un réseau de fusion doit **choisir en aveugle de la vérité de test** entre la réponse S18 et cinq nouvelles propositions, sans remplacer de manière arbitraire toutes les bonnes réponses.
+
+## Architecture
+- SIX actions possibles : `KEEP_S18`, `raw335_HGB`, `raw335_ExtraTrees`, `morph825_HGB`, `morph825_ExtraTrees`, `temporalCNN`. **Aucune tête H9, aucun son pitch-shift synthétique H8.**
+- Entrée fusion = 335 caractéristiques son/votes/flux + 7 classes S18 one-hot + 4×7 probabilités tabulaires + 7 probabilités CNN = **377 valeurs**. L'état réel contient une distribution de la classe de chaque tête, pas uniquement l'argmax. Signal standardisé **par fit des morceaux d'entraînement seulement**.
+- MLP : `377→192 GELU→Dropout(0,15)→96 GELU→6 actions`. Softmax sur les six décisions, poids partagés entre événements d'un même split de formation.
+- Pour chaque **morceau évalué**, fit du réseau sur **tous les autres morceaux du même fold**, jamais sur ses étiquettes. Les probabilités S38 et S40 ont été produites par des spécialistes eux-mêmes entraînés hors de ce fold. Attention : le parent S18 historique et le choix du problème ont été conçus après observation de cette cohorte ; la séparation n'est pas une validation externe totalement nouvelle.
+- Supervision : utiliser le vrai K **seulement sur les morceaux de fit** ; les actions dont la proposition est exacte reçoivent ensemble la probabilité cible, sans imposer un ordre fixe ni favoriser arbitrairement un seul expert. Si aucune action n'est correcte, superviser `KEEP_S18` (ne pas déplacer la mauvaise sélection vers une erreur différente).
+- Renforcer les événements où S18 est incorrect mais une autre tête correcte, par poids de perte ×4, et les vrais événements poly par ×2. Ne pas mettre les vérités des morceaux tenus à l'écart dans les entrées, seuils, ou scores.
+- AdamW lr=0,001, batch=512, **12 epochs fixes**, seed=27341, aucun tuning du seuil avec les vraies classes évaluées.
+- À l'inférence, argmax de la tête d'action ou STOP/KEEP. Refuser une modification si `P(action choisie)-P(KEEP_S18)≤seuil`. Seuils préfixés {0, 0,05, 0,15}, avec domaine `parent_K>=1` ou `parent_K>=2`. **Six stratégies** + S18. Les 18 têtes S35 historiques ne sont pas supprimées ; cette fusion est une tête supplémentaire candidate, pas une réécriture de l'ancien routeur.
+- Audits K0–K6, poly K2–K6, fold, pièce, corrections, régressions, neutres, sélection par action et poids conservés. Le benchmark YourMT3+ n'entre dans aucun tenseur (H9 exclue) ; son score est seulement une référence externe.
+
+## Critères
+Recherche d'un nombre **substantiel** de nouvelles corrections K2/K3/K4 tout en abaissant les pertes, pas un gain artificiel par abstention. Les valeurs doivent être comparées à S18 (82,9183 % global, 40,5958 % poly). Aucun candidat ne peut être promu ni déclaré validé sur musique totalement inédite : les mêmes compositions historiques ont guidé la recherche depuis plusieurs séries.

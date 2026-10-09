@@ -1,0 +1,34 @@
+name: V27.3 S26 preserve all inverse-order confirmations
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series26-preserve.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  archive:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Retrieve all 90 cross-order decisions and K0-K6 audits
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37862754589 --repo "$GITHUB_REPOSITORY" --name v273-series26-cross-order --dir model/S26
+      - name: Archive all outcomes with checksum and make permanent prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test -s model/S26/report.json
+          test -s model/S26/predictions.npz
+          mkdir -p model/archive
+          tar -czf model/archive/v273-series26-research.tar.gz -C model/S26 .
+          (cd model/archive && sha256sum v273-series26-research.tar.gz > SHA256SUMS)
+          gh release create "v273-series26-research-${GITHUB_RUN_ID}" \
+            model/archive/v273-series26-research.tar.gz model/archive/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "V27.3 S26 A-first B-first agreement evidence ${GITHUB_RUN_ID}" \
+            --notes "Complete 90 nontraining A/B cross-order consensus gates, all corrections/regressions, native predictions and per-case CSVs. No loss-free gain and no promotion or validation on unseen music."

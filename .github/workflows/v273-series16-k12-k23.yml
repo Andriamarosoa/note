@@ -1,0 +1,59 @@
+name: V27.3 S16 K12 K23 regression gates
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series16-k12-k23.yml'
+      - 'scripts/loop_v273_k12_k23.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v273-series16-k12-k23
+  cancel-in-progress: false
+jobs:
+  evaluate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Check all 108 K12-K23 policies and rejection guards
+        run: python -m scripts.loop_v273_k12_k23 --self-test
+      - name: Recover original no-label acoustic time trajectories
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/feature-archives
+          gh release download v273-open-k0-k6-37837235723 --repo "$GITHUB_REPOSITORY" --pattern 'v273-open-features-*.tar' --dir model/feature-archives
+          for fold in 0 1 2 4; do
+            mkdir -p "model/full-audio/fold-$fold"
+            tar -xf "model/feature-archives/v273-open-features-$fold.tar" -C "model/full-audio/fold-$fold"
+          done
+      - name: Recover full parent series15 audited predictions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37855272619 --repo "$GITHUB_REPOSITORY" --name v273-series15-conservation --dir model/series15-input
+      - name: Crossfit K12 K23 targeted heads and audit all corrections
+        run: >-
+          python -m scripts.loop_v273_k12_k23
+          --features model/full-audio
+          --series15 model/series15-input/predictions.npz
+          --output model/series16-k12k23
+      - name: Publish all results including negative variants
+        run: cat model/series16-k12k23/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series16-k12-k23
+          path: model/series16-k12k23/
+          retention-days: 90

@@ -1,0 +1,57 @@
+name: V27.3 series15 regression conservation union replay
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series15-conservation-union.yml'
+      - 'scripts/verify_v273_series15_union.py'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Load preserved series13 proof
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37854384791 --repo "$GITHUB_REPOSITORY" --name v273-series13-birth-flow --dir model/research/series13
+      - name: Load original series14 conditional K01 models and outputs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37855070118 --repo "$GITHUB_REPOSITORY" --name v273-series14-conditional-k01 --dir model/research/series14
+      - name: Audit original and cumulative correction vectors
+        run: >-
+          python -m scripts.verify_v273_series15_union
+          --series13 model/research/series13/predictions.npz
+          --series14 model/research/series14/predictions.npz
+          --output model/research/series15
+      - name: Show exact pairwise audit
+        run: cat model/research/series15/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series15-conservation
+          path: model/research/series15/
+          retention-days: 90
+      - name: Preserve the two source models and cumulative decisions permanently
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/archive
+          tar -czf model/archive/v273-series13-15-research.tar.gz -C model/research .
+          (cd model/archive && sha256sum v273-series13-15-research.tar.gz > SHA256SUMS)
+          gh release create "v273-series15-research-${GITHUB_RUN_ID}" \
+            model/archive/v273-series13-15-research.tar.gz model/archive/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "V27.3 series15 cumulative regression proof ${GITHUB_RUN_ID}" \
+            --notes "Posthoc research: preserved S13 and S14 models, nine cumulative variants, corrected and regressed IDs. Not new validation, not production model."

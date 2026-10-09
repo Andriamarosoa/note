@@ -1,0 +1,66 @@
+name: V27.3 S37 nine-route frozen risk arbitration
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series37-nine-route.yml'
+      - 'scripts/audit_v273_s37_nine_route_quality.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  compare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install fixed native audio and frozen risk gate dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0 joblib==1.4.2
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Unit-test deterministic abstaining nine-action arbitration
+        run: python -m scripts.audit_v273_s37_nine_route_quality --self-test
+      - name: Retrieve unchanged original four folds of acoustic features
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/native
+          gh release download v273-open-k0-k6-37837235723 --repo "$GITHUB_REPOSITORY" --pattern 'v273-open-features-*.tar' --dir model/native
+          for fold in 0 1 2 4; do
+            mkdir -p "model/features/fold-$fold"
+            tar -xf "model/native/v273-open-features-$fold.tar" -C "model/features/fold-$fold"
+          done
+      - name: Retrieve original S18, all nine S35 proposals and frozen pieceheld S36b weights
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 37856499212 --repo "$GITHUB_REPOSITORY" --name v273-series18-k43-k21 --dir model/S18
+          gh run download 37868356632 --repo "$GITHUB_REPOSITORY" --name v273-series35-extended-head-router --dir model/S35
+          gh run download 37869664139 --repo "$GITHUB_REPOSITORY" --name v273-series36b-risk-judge --dir model/S36b
+      - name: Test 30 no-refit crosshead risk choices with all corrections/regressions K0-K6
+        run: >-
+          python -m scripts.audit_v273_s37_nine_route_quality
+          --features model/features
+          --s18 model/S18/predictions.npz
+          --s35 model/S35/predictions.npz
+          --routes model/S35/routing.npz
+          --s36b model/S36b/predictions.npz
+          --s36b-dir model/S36b
+          --output model/S37
+      - name: Publish all thirty variants even if below benchmark
+        run: cat model/S37/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series37-nine-route
+          path: model/S37/
+          retention-days: 90
