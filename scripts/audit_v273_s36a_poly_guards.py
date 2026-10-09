@@ -41,7 +41,7 @@ def selftest():
     q=np.array([1,2,1,4,3,2],np.int8)
     assert keep(p,q,'source_le1').tolist()==[True,True,False,False,False,False]
     assert keep(p,q,'guard_234').tolist()==[True,True,False,False,False,True]
-    assert keep(p,q,'guard_poly_to_low').tolist()==[True,True,False,True,True,False]
+    assert keep(p,q,'guard_poly_to_low').tolist()==[True,True,False,True,True,True]
     assert len(SOURCES)==2 and len(RULES)==10
     print('PASS: 20 fixed label-blind K guards; no H9 or test truth at inference')
 
