@@ -1,0 +1,56 @@
+name: V27.3 S43 independently verify and preserve every corrected variant
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series43-verify-preserve.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Confirm full S43 source retrieval and audit finished successfully
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run watch 37887837855 --repo "$GITHUB_REPOSITORY" --exit-status --interval 10
+      - name: Download every archived winner loser and unique prediction vector
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37887837855 --repo "$GITHUB_REPOSITORY" --name v273-series43-all-correction-inventory --dir model/S43-evidence
+      - name: Independently check rankings every class/fold alias bank and genuine new head inventory
+        run: >-
+          python -m scripts.verify_v273_s43_correction_inventory
+          --source model/S43-evidence/S43-audit
+          --manifest model/S43-evidence/S43-sources/source_manifest.json
+          --output model/S43-verified
+      - name: Publish original top-correction leaderboard with references correctly separated
+        run: cat model/S43-evidence/S43-audit/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series43-corrections-independent-verification
+          path: model/S43-verified/
+          retention-days: 90
+      - name: Permanently preserve all distinct native event predictions and head audit with checksum
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/archive
+          tar -czf model/archive/v273-series43-all-corrections.tar.gz -C model S43-evidence S43-verified
+          (cd model/archive && sha256sum v273-series43-all-corrections.tar.gz > SHA256SUMS)
+          gh release create "v273-series43-research-${GITHUB_RUN_ID}" \
+            model/archive/v273-series43-all-corrections.tar.gz model/archive/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "V27.3 S43 every preserved corrective selector audited ${GITHUB_RUN_ID}" \
+            --notes "All recoverable S9-S41 correction-generating loops plus native historic archives: sorted gross corrections separately vs S18 and freeze, full loss audits, unique vectors with SHA256, per-class/fold action evidence and overlap. Replay verified. Candidate heads are NOT yet new trained models. H9 excluded, no production promotion, cohort already explored."
