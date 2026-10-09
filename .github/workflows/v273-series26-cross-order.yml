@@ -1,0 +1,49 @@
+name: V27.3 S26 cross-order weak-head consensus
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series26-cross-order.yml'
+      - 'scripts/audit_v273_inverse_order_consensus.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Test 90 B-A and A-B cross-order consensus rules
+        run: python -m scripts.audit_v273_inverse_order_consensus --self-test
+      - name: Fetch original learned A-first head outputs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37858383973 --repo "$GITHUB_REPOSITORY" --name v273-series20-residual --dir model/S20
+      - name: Fetch independently replayed learned B-first head outputs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37862417522 --repo "$GITHUB_REPOSITORY" --name v273-series25-trained-Bfirst --dir model/S25
+      - name: Apply 90 order-independent mutual confirmation gates and audit K0-K6
+        run: >-
+          python -m scripts.audit_v273_inverse_order_consensus
+          --s20-predictions model/S20/predictions.npz
+          --s20-probabilities model/S20/probabilities.npz
+          --s25-predictions model/S25/predictions.npz
+          --s25-probabilities model/S25/probabilities.npz
+          --output model/S26
+      - name: Publish all positive and negative cross-order decisions
+        run: cat model/S26/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series26-cross-order
+          path: model/S26/
+          retention-days: 90
