@@ -217,6 +217,8 @@ def is_control_vector(name):
     covered_poly=np.zeros(len(y),bool)
     covered_actionable=np.zeros(len(y),bool)
     covered_actionable_poly=np.zeros(len(y),bool)
+    distinct_fix_frequency=np.zeros(len(y),np.uint16)
+    source_fix_union=defaultdict(lambda:np.zeros(len(y),bool))
     all_fix_count=0
     original_vectors=0
     for family,file in source_files(root,archive):
@@ -240,6 +242,7 @@ def is_control_vector(name):
                 if duplicate is None:
                     by_hash[hashkey]=f'{family}::{variant}'
                     rawvectors[hashkey]=pred.copy()
+                    distinct_fix_frequency+=fixed_s18.astype(np.uint16)
                     original_vectors+=1
                 else:origin='alias_identical_vector'
                 all_fix_count+=int(fixed_s18.sum())
@@ -248,6 +251,7 @@ def is_control_vector(name):
                 if not is_control_vector(variant):
                     covered_actionable|=fixed_s18
                     covered_actionable_poly|=(fixed_s18&(y>=2))
+                    source_fix_union[family]|=fixed_s18
                 cor_by_k=[int(np.sum(fixed_s18&(y==k))) for k in range(7)]
                 reg_by_k=[int(np.sum(lost_s18&(y==k))) for k in range(7)]
                 per_fold=[
@@ -349,6 +353,38 @@ def is_control_vector(name):
             cumul_union_correctable_events=int(current.sum()),
             cumulative_union_is_truth_oracle_not_deployable=True))
     rows_csv(out/'head_correction_overlap.csv',overlap)
+    # Preserve EVERY one of the 910-ish distinct archival prediction vectors.
+    # Otherwise original GitHub artifact expiry could destroy the candidates
+    # even though the audit retained only a textual ranking.
+    native_hashes=sorted(rawvectors)
+    bank=np.column_stack([rawvectors[h] for h in native_hashes])
+    assert bank.shape==(N,len(native_hashes)) and bank.dtype==np.int8
+    np.savez_compressed(out/'all_distinct_native_predictions.npz',
+        global_index=ids,true_K=y,fold=fold,
+        freeze_reference_K=freeze,S18_reference_K=s18,
+        distinct_vector_sha256=np.asarray(native_hashes),
+        original_names=np.asarray([by_hash[h] for h in native_hashes]),
+        predictions=bank)
+    assert len(native_hashes)==len(by_hash)
+
+    # Correction exclusivity across ALL sources, not only top-128 vectors.
+    sourcefreq=np.zeros(N,np.uint16)
+    for c in source_fix_union.values():sourcefreq+=c.astype(np.uint16)
+    source_edges=[]
+    for family,mask in source_fix_union.items():
+        source_edges.append(dict(
+            source=family,
+            gross_union_corrections_any_variant=int(mask.sum()),
+            unique_correctable_events_only_from_this_source=
+                int((mask&(sourcefreq==1)).sum()),
+            poly_gross_union_corrections=int((mask&(y>=2)).sum()),
+            poly_unique_source_corrections=int((mask&(y>=2)&(sourcefreq==1)).sum()),
+            true_K_unique_corrections=[
+                int((mask&(y==k)&(sourcefreq==1)).sum()) for k in range(7)],
+            union_uses_truth_only_for_retrospective_audit=True))
+    source_edges.sort(key=lambda d:-d['gross_union_corrections_any_variant'])
+    rows_csv(out/'source_exclusive_corrections.csv',source_edges)
+
     # Dedicated transition audit for best 128 (not only positive net).
     granular={}
     for row in top:
@@ -459,7 +495,11 @@ def is_control_vector(name):
             no_held_fold_validation_of_new_head_yet=True,
             available_vectors_hash=row['evidence_sha256'],
             alias_count=sum(r['evidence_sha256']==row['evidence_sha256']
-                             for r in vector_rows)-1))
+                             for r in vector_rows)-1,
+            globally_exclusive_corrections=int(
+                 (fix&(distinct_fix_frequency==1)).sum()),
+            source_exclusive_corrections=int(
+                 (fix&(sourcefreq==1)).sum())))
         if len(proposer)>=120:break
     jdump(out/'candidate_head_registry.json',dict(
         schema='S43_ARCHIVED_HEAD_PROPOSALS_NOT_PRODUCTION',
@@ -493,6 +533,9 @@ def is_control_vector(name):
         source_series_without_valid_vectors=uncovered_summary,
         total_valid_native_variants=len(vector_rows),
         distinct_prediction_vectors=len(by_hash),
+        all_distinct_predictions_persisted=True,
+        unique_bank_original_shape=list(bank.shape),
+        source_correction_exclusivity_audited=len(source_edges),
         total_archived_legacy_registry_entries=len(registry),
         registry_entries_native_crosschecked=sum(
               x.get('state')=='native_predictions_crosschecked' for x in registry),
@@ -539,6 +582,8 @@ def is_control_vector(name):
         f"Union-oracle NON DÉPLOYABLE, toutes variantes: {int(covered_all.sum())} événements erronés S18 disposant d'au moins une bonne proposition ; poly {int(covered_poly.sum())}.",
         f"Union-oracle NON DÉPLOYABLE sans contrôles de référence: {int(covered_actionable.sum())} événements erronés S18 avec nouvelle proposition ; poly {int(covered_actionable_poly.sum())}.",
         f"Union-oracle NON DÉPLOYABLE des 128 candidats distincts (sans contrôles): {int(current.sum())}.",
+        f"Archive de tous les {len(native_hashes)} vecteurs distincts, chacun avec SHA256 et nom original : all_distinct_native_predictions.npz.",
+        f"Exclusivité des corrections par source mesurée dans source_exclusive_corrections.csv ({len(source_edges)} sources).",
         'Les corrections « unique » par vecteur et « ajoutées par rang » figurent dans head_correction_overlap.csv.',
         f"Sources incomplètes/non comparables: {len(uncovered_summary)} séries; "
         f"fichiers au schéma incompatible: {len(excluded)}.",
