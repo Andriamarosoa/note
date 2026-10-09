@@ -70,7 +70,7 @@ def run_policy(net,signal,parent,variant,check_sparsity=False):
     max_steps=PASSES.get(variant,4)
     sparse_nonzero_max=0
     for t in range(max_steps):
-        indices=torch.flatnonzero(active)
+        indices=torch.nonzero(active,as_tuple=False).flatten()
         if len(indices)==0:
             states.extend([previous.clone() for _ in range(max_steps-t)])
             break
@@ -90,7 +90,7 @@ def run_policy(net,signal,parent,variant,check_sparsity=False):
             distance=(updated-prev).abs().mean(1)
             stable=(updated.argmax(1)==prev.argmax(1))&(distance<cutoff)
             active[indices[stable]]=False
-        indices=torch.flatnonzero(active)
+        indices=torch.nonzero(active,as_tuple=False).flatten()
         if len(indices)==0:
             continue
         # First B after A1 is mandatory; subsequent B can be skipped.
