@@ -281,7 +281,7 @@ def main(args):
     lines=['# Série30 — corroboration indépendante A-first/B-first des 4 régressions S29','',
         '**Étude de développement déjà exposée, pas validation sur musique inédite.**',
         'Pour chaque proposition de la S29, toutes les règles sont dérivées des sorties A/B et des entrées de signal, pas du vrai K.',
-        f"Changed S29 events: {len(original_changed)} = 17 fixed + 4 broken.",
+        f"Changed S29 events: {len(original_changed)} = 17 fixed + 4 broken + 5 neutral.",
         '', '| Policy | Exact global | Exact poly | Fix vs S18 | Break vs S18 | Original 4 blocked | Original 17 retained |',
         '|---|---:|---:|---:|---:|---:|---:|']
     for k in ranking:
