@@ -192,6 +192,682 @@ def registry_sources(root):
                 historical_overlap_not_claimed_if_vector_missing=True))
     return result
 
+def is_control_vector(name):
+    # Every reversible old benchmark is retained in global audits but is
+    # NOT a novel head. The wrong global S18->freeze reversion otherwise
+    # ranks as if 2,210 new independent corrections came from each loop.
+    x=str(name).lower()
+    return (x in ('freeze_parent','freeze_reference','freeze_local_combo',
+                  'series18_parent','s18_reference','s18_parent') or
+            bool(re.search(r'(?:^|__)series[0-9]+_(?:parent|reference)
+    root=a.root
+    archive=a.collection
+    out=a.output
+    if out.exists():raise ValueError('will not overwrite prior S43 research')
+    inp=data(root/'analysis/evidence/v273-regression-loops/prepared/inputs.npz')
+    y,ids,fold,freeze,s18,ref=find_reference(root,archive,inp)
+    out.mkdir(parents=True)
+    provenance=json.loads((archive/'source_manifest.json').read_text())
+    excluded=[]
+    vector_rows=[]
+    by_hash={}
+    rawvectors={}
+    per_vector_audits={}
+    covered_all=np.zeros(len(y),bool)
+    covered_poly=np.zeros(len(y),bool)
+    covered_actionable=np.zeros(len(y),bool)
+    covered_actionable_poly=np.zeros(len(y),bool)
+    all_fix_count=0
+    original_vectors=0
+    for family,file in source_files(root,archive):
+        try:
+            z=data(file)
+            variants=extract_views(z,ids,y,file)
+            for variant,pred in variants:
+                if any(x in variant.lower() for x in AVOID):
+                    excluded.append(dict(source=family,file=str(file),
+                        variant=variant,reason='forbidden oracle or YourMT3+ head'))
+                    continue
+                hashkey=digest(pred)
+                fixed_s18,lost_s18,neutral_s18=metrics(pred,y,s18)
+                fixed_fr,lost_fr,neutral_fr=metrics(pred,y,freeze)
+                if not (fixed_s18.any() or fixed_fr.any()):
+                    # Required to preserve all actual zero-positive vectors
+                    # for complete audits, not candidate heads.
+                    pass
+                origin='head_vector'
+                duplicate=by_hash.get(hashkey)
+                if duplicate is None:
+                    by_hash[hashkey]=f'{family}::{variant}'
+                    rawvectors[hashkey]=pred.copy()
+                    original_vectors+=1
+                else:origin='alias_identical_vector'
+                all_fix_count+=int(fixed_s18.sum())
+                covered_all|=fixed_s18
+                covered_poly|=(fixed_s18&(y>=2))
+                if not is_control_vector(variant):
+                    covered_actionable|=fixed_s18
+                    covered_actionable_poly|=(fixed_s18&(y>=2))
+                cor_by_k=[int(np.sum(fixed_s18&(y==k))) for k in range(7)]
+                reg_by_k=[int(np.sum(lost_s18&(y==k))) for k in range(7)]
+                per_fold=[
+                    dict(fold=f,corrections=int(np.sum(fixed_s18&(fold==f))),
+                        regressions=int(np.sum(lost_s18&(fold==f))))
+                    for f in FOLDS]
+                row=dict(source=family,variant=str(variant),
+                    evidence_file=str(file.relative_to(root) if file.is_relative_to(root)
+                                      else file.relative_to(archive)),
+                    evidence_sha256=hashkey,
+                    original_or_duplicate=origin,
+                    is_reference_control=is_control_vector(variant),
+                    alias_of=duplicate or '',
+                    gross_fixes_vs_S18=int(fixed_s18.sum()),
+                    regressions_vs_S18=int(lost_s18.sum()),
+                    neutral_vs_S18=int(neutral_s18.sum()),
+                    net_vs_S18=int(fixed_s18.sum()-lost_s18.sum()),
+                    gross_poly_fixes_vs_S18=int(np.sum(fixed_s18&(y>=2))),
+                    poly_regressions_vs_S18=int(np.sum(lost_s18&(y>=2))),
+                    net_poly_vs_S18=int(np.sum((pred==y)&(y>=2))-
+                                        np.sum((s18==y)&(y>=2))),
+                    gross_fixes_vs_freeze=int(fixed_fr.sum()),
+                    regressions_vs_freeze=int(lost_fr.sum()),
+                    net_vs_freeze=int(fixed_fr.sum()-lost_fr.sum()),
+                    global_correct=int((pred==y).sum()),
+                    poly_correct=int(np.sum((pred==y)&(y>=2))),
+                    per_true_K_fixes=cor_by_k,
+                    per_true_K_regressions=reg_by_k,
+                    per_fold=per_fold,
+                    previously_implemented_no_new_head_promotion=True)
+                vector_rows.append(row)
+                if duplicate is None:
+                    per_vector_audits[hashkey]=(fixed_s18.copy(),lost_s18.copy())
+        except Exception as exc:
+            excluded.append(dict(source=family,file=str(file),
+                reason=f'{type(exc).__name__}: {str(exc)[:450]}'))
+        print(json.dumps(dict(source=family,file=file.name,
+                  all_candidates=len(vector_rows),distinct=original_vectors,
+                  exclusions=len(excluded))),flush=True)
+
+    require_total=len(vector_rows)
+    if require_total<100:
+        raise ValueError(f'insufficient native historical vectors {require_total}')
+    # Register historical metrics even if the NPZ had missing IDs, and flag
+    # registry-only (never pretend overlap was measured).
+    registry=registry_sources(root)
+    registry_by_id={r.get('name'):r for r in registry if 'name' in r}
+    for row in vector_rows:
+        source_info=registry_by_id.get(row['variant'])
+        if source_info is not None:
+            assert source_info['gross_fixes']==row['gross_fixes_vs_freeze']
+            assert source_info['gross_regressions']==row['regressions_vs_freeze']
+            source_info['state']='native_predictions_crosschecked'
+            source_info['gross_fixes_vs_S18']=row['gross_fixes_vs_S18']
+            source_info['gross_regressions_vs_S18']=row['regressions_vs_S18']
+    ranking=sorted(vector_rows,key=lambda r:(
+        -r['gross_fixes_vs_S18'],-r['gross_poly_fixes_vs_S18'],
+         -r['net_vs_S18'],r['source'],r['variant']))
+    rank_fr=sorted(vector_rows,key=lambda r:(
+        -r['gross_fixes_vs_freeze'],
+        -r['net_vs_freeze'],r['source'],r['variant']))
+    # Never intermix reference spaces; save two distinct complete tables.
+    rows_csv(out/'rank_all_vs_S18.csv',ranking)
+    rows_csv(out/'rank_all_vs_freeze.csv',rank_fr)
+    actionable_rank=[r for r in ranking if not r['is_reference_control']]
+    rows_csv(out/'rank_actionable_vs_S18.csv',actionable_rank)
+    rows_csv(out/'historical_metric_registry.csv',registry)
+    rows_csv(out/'excluded_or_incomparable_sources.csv',excluded)
+    seen=set()
+    distinct_rank=[]
+    for row in actionable_rank:
+        h=row['evidence_sha256']
+        if h not in seen:
+            seen.add(h)
+            distinct_rank.append(row)
+    top=distinct_rank[:128]
+    # Actual measured overlap of corrected events among distinct top heads.
+    overlap=[]
+    alltop=np.zeros((N,),np.uint16)
+    for row in top:
+        c,_=per_vector_audits[row['evidence_sha256']]
+        alltop+=c.astype(np.uint16)
+    current=np.zeros(N,bool)
+    for idx,row in enumerate(top):
+        changed,reg=per_vector_audits[row['evidence_sha256']]
+        unique=int(((alltop==1)&changed).sum())
+        novel=int((changed&~current).sum())
+        novel_poly=int((changed&~current&(y>=2)).sum())
+        ov=int((changed&current).sum())
+        current|=changed
+        overlap.append(dict(rank=idx+1,source=row['source'],
+            variant=row['variant'],
+            gross_corrections=int(changed.sum()),
+            regressions=int(reg.sum()),
+            exclusive_among_top_128=unique,
+            marginal_new_over_ranked_prior=novel,
+            overlap_with_prior=ov,
+            marginal_new_poly_over_ranked_prior=novel_poly,
+            cumul_union_correctable_events=int(current.sum()),
+            cumulative_union_is_truth_oracle_not_deployable=True))
+    rows_csv(out/'head_correction_overlap.csv',overlap)
+    # Dedicated transition audit for best 128 (not only positive net).
+    granular={}
+    for row in top:
+        v=rawvectors[row['evidence_sha256']]
+        fc,rc=per_vector_audits[row['evidence_sha256']]
+        changes=v!=s18
+        trans=[]
+        for a0 in range(7):
+            for a1 in range(7):
+                if a0==a1:continue
+                mask=changes&(s18==a0)&(v==a1)
+                n=int(mask.sum())
+                if n==0:continue
+                fixes=int((fc&mask).sum())
+                breaks=int((rc&mask).sum())
+                trans.append(dict(source_K=a0,candidate_K=a1,
+                    events=n,corrections=fixes,regressions=breaks,
+                    neutral=n-fixes-breaks,
+                    empirical_mean_utility_on_historical_data=(fixes-breaks)/n))
+        granular[f"{row['source']}::{row['variant']}"]=trans
+    jdump(out/'transition_audit_top128.json',granular)
+
+    # Rank best branch per series, even if negative or absent.
+    groups=defaultdict(list)
+    for row in vector_rows:groups[row['source']].append(row)
+    best=[]
+    for fam in sorted(groups):
+        ordered=sorted(groups[fam],key=lambda r:-r['gross_fixes_vs_S18'])
+        best.append(dict(series=fam,variant_count=len(ordered),
+            distinct_vectors=len({r['evidence_sha256'] for r in ordered}),
+            max_gross_corrections=ordered[0]['gross_fixes_vs_S18'],
+            associated_regressions=ordered[0]['regressions_vs_S18'],
+            associated_net=ordered[0]['net_vs_S18'],
+            best_variant=ordered[0]['variant'],
+            poly_corrections=ordered[0]['gross_poly_fixes_vs_S18'],
+            poly_regressions=ordered[0]['poly_regressions_vs_S18']))
+    best.sort(key=lambda r:-r['max_gross_corrections'])
+    rows_csv(out/'best_per_loop.csv',best)
+    actionable_groups=defaultdict(list)
+    for r in actionable_rank:actionable_groups[r['source']].append(r)
+    actionable_best=[]
+    for fam,rr in actionable_groups.items():
+        one=rr[0]
+        actionable_best.append(dict(
+            series=fam,variant_count=len(rr),
+            best_variant=one['variant'],
+            max_gross_corrections=one['gross_fixes_vs_S18'],
+            associated_regressions=one['regressions_vs_S18'],
+            associated_net=one['net_vs_S18'],
+            poly_corrections=one['gross_poly_fixes_vs_S18'],
+            poly_regressions=one['poly_regressions_vs_S18']))
+    actionable_best.sort(key=lambda z:-z['max_gross_corrections'])
+    rows_csv(out/'best_actionable_per_loop.csv',actionable_best)
+
+    # Keep corrections of single families with a negative global net;
+    # rank potential new selectors by correction volume and diversity.
+    proposer=[]
+    # Preserve diversity across all historical loops AND strong candidates
+    # for every true K. K serves only a retrospective ranking annotation.
+    universe=distinct_rank
+    shortlist=universe[:45]
+    for fam in sorted(actionable_groups):
+        shortlist+=actionable_groups[fam][:3]
+    for k in range(7):
+        shortlist+=sorted(universe,
+            key=lambda r:-r['per_true_K_fixes'][k])[:5]
+    selected_hashes=set()
+    diverse=[]
+    for row in shortlist:
+        if row['evidence_sha256'] not in selected_hashes:
+            selected_hashes.add(row['evidence_sha256'])
+            diverse.append(row)
+    diverse.sort(key=lambda r:-r['gross_fixes_vs_S18'])
+    for idx,row in enumerate(diverse):
+        fix,lost=per_vector_audits[row['evidence_sha256']]
+        observed=np.asarray(row['per_true_K_fixes'])
+        counts=[d['corrections'] for d in row['per_fold']]
+        # No true labels may be used in a deployed gate: these are
+        # retrospective audit annotations, not a user-facing control.
+        exceptional=row['gross_fixes_vs_S18']>=80
+        allfold=sum(c>0 for c in counts)
+        if not exceptional:continue
+        family=row['source'].lower()
+        headtype=('temporal_morphology' if 'S40' in row['source'] else
+          'neural_fusion' if 'S41' in row['source'] else
+          'acoustic_k_expert' if 'S38' in row['source'] else
+          'historical_corrector_or_selector')
+        mask=fix&(y>=2)
+        topK=int(np.argmax(observed))
+        proposer.append(dict(head_id=f'S43_ARCHIVE_{len(proposer)+1:03d}',
+            variant=row['variant'],source=row['source'],
+            rank_by_gross_corrections=idx+1,
+            type=headtype,
+            action='consider_new_specialized_selection',
+            full_native_prediction_saved=True,
+            historic_corrections=row['gross_fixes_vs_S18'],
+            historic_regressions=row['regressions_vs_S18'],
+            historic_poly_corrections=int(mask.sum()),
+            leading_true_K_diagnostic=topK,
+            folds_with_any_correction=allfold,
+            allow_prediction_using_true_K=False,
+            possible_input_features=[
+              'original_spectrum_42x49','birth_attack_morphology',
+              'S18_current_K','proposed_K',
+              'relative_harmonic_energy','audited_path_history'
+            ],
+            prevent_promotion=True,
+            no_held_fold_validation_of_new_head_yet=True,
+            available_vectors_hash=row['evidence_sha256'],
+            alias_count=sum(r['evidence_sha256']==row['evidence_sha256']
+                             for r in vector_rows)-1))
+        if len(proposer)>=120:break
+    jdump(out/'candidate_head_registry.json',dict(
+        schema='S43_ARCHIVED_HEAD_PROPOSALS_NOT_PRODUCTION',
+        score_data_uses_held_truth_for_audit_only=True,
+        maximum_candidates=len(proposer),
+        proposal_heads=proposer,
+        banned_expert='H9_YourMT3',
+        retained_modules_existing_S35=18,
+        input_source_only_no_new_weights_trained=True,
+        enabled_for_inference=False))
+
+    # Count source runs with no prediction data; preserve missing artifacts.
+    found={r['source'] for r in vector_rows}
+    missing=[x for x in provenance['sources']
+             if x['series'] not in found]
+    uncovered_summary=[]
+    for x in missing:
+        uncovered_summary.append(dict(series=x['series'],
+           status=x['status'],reason=x.get('warnings',[]),
+           data_files=x.get('prediction_archives',[])))
+    jdump(out/'uncovered_series.json',uncovered_summary)
+    report=dict(status='completed',
+        reference_freeze_exact=48454,reference_S18_exact=49178,
+        reference_freeze_poly_exact=2530,
+        reference_S18_poly_exact=2998,
+        reference_S18_cor_vs_freeze=2934,
+        reference_S18_reg_vs_freeze=2210,
+        all_native_rows=N,poly_rows=int((y>=2).sum()),
+        source_total_declared=len(provenance['sources']),
+        source_series_with_valid_vectors=len([v for v in found if v.startswith('S')]),
+        source_series_without_valid_vectors=uncovered_summary,
+        total_valid_native_variants=len(vector_rows),
+        distinct_prediction_vectors=len(by_hash),
+        total_archived_legacy_registry_entries=len(registry),
+        registry_entries_native_crosschecked=sum(
+              x.get('state')=='native_predictions_crosschecked' for x in registry),
+        source_alignment_or_schema_exceptions=len(excluded),
+        max_fix_S18=ranking[0] if ranking else None,
+        max_fix_freeze=rank_fr[0] if rank_fr else None,
+        best_by_source=best,
+        best_actionable_by_source=actionable_best,
+        actionable_candidate_variants=len(actionable_rank),
+        retrospective_actionable_oracle_union_correctable_S18=
+            int(covered_actionable.sum()),
+        retrospective_actionable_poly_oracle_union_correctable_S18=
+            int(covered_actionable_poly.sum()),
+        control_reference_vectors_excluded_only_from_head_proposals=True,
+        retrospective_all_variants_oracle_union_correctable_S18=
+            int(covered_all.sum()),
+        retrospective_poly_oracle_union_correctable_S18=
+            int(covered_poly.sum()),
+        oracle_is_not_a_prediction=True,
+        no_new_correction_selection_model_trained=True,
+        produced_candidate_head_proposals=len(proposer),
+        never_seen_music_validation=False,
+        no_model_promotion=True,
+        H9_excluded_from_candidate_head_registry=True,
+        source_reference=ref)
+    jdump(out/'report.json',report)
+
+    lines=['# S43 — Classement de toutes les corrections réellement récupérables',
+        '', '**Comptage par correction brute, sans filtrer les régressions ni choisir les vrais labels lors de l inférence.**',
+        f'Archives séries valides: {report["source_series_with_valid_vectors"]}/{report["source_total_declared"]}; '
+        f'variantes: {len(vector_rows)}, vecteurs distincts: {len(by_hash)}.',
+        f'Registres historiques: {len(registry)} variantes, dont '
+        f'{report["registry_entries_native_crosschecked"]} recoupées sur valeurs natives.',
+        'Références distinctes: S18 49 178/59 309, freeze 48 454/59 309; '
+        'S18 vs freeze +2934/−2210.',
+        '', '## Meilleures sources de propositions vs S18 (contrôles S18/freeze exclus)',
+        '', '| Rang | Boucle | Variante | Corrections | Régressions | Poly corrigés | Poly perdus |',
+        '|---|---|---|---:|---:|---:|---:|']
+    for i,r in enumerate(actionable_best[:32],1):
+        lines.append(f"| {i} | {r['series']} | {r['best_variant']} | "
+            f"{r['max_gross_corrections']} | {r['associated_regressions']} | "
+            f"{r['poly_corrections']} | {r['poly_regressions']} |")
+    lines+=['','## Couverture et distinction des corrections',
+        f"Union-oracle NON DÉPLOYABLE, toutes variantes: {int(covered_all.sum())} événements erronés S18 disposant d'au moins une bonne proposition ; poly {int(covered_poly.sum())}.",
+        f"Union-oracle NON DÉPLOYABLE sans contrôles de référence: {int(covered_actionable.sum())} événements erronés S18 avec nouvelle proposition ; poly {int(covered_actionable_poly.sum())}.",
+        f"Union-oracle NON DÉPLOYABLE des 128 candidats distincts (sans contrôles): {int(current.sum())}.",
+        'Les corrections « unique » par vecteur et « ajoutées par rang » figurent dans head_correction_overlap.csv.',
+        f"Sources incomplètes/non comparables: {len(uncovered_summary)} séries; "
+        f"fichiers au schéma incompatible: {len(excluded)}.",
+        'Ne pas transformer ce classement en résultat de modèle. '
+        'Chaque future tête doit apprendre une porte depuis les observables sur folds tenus à l écart.',
+        f'Candidats d adaptation non activés: {len(proposer)}, liste détaillée dans candidate_head_registry.json.',
+        'H9/YourMT3 exclue ; anciens producteurs conservés ; aucune promotion.']
+    (out/'report.md').write_text('\n'.join(lines)+'\n')
+    print('\n'.join(lines),flush=True)
+
+if __name__=='__main__':
+    p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--root',type=Path,default=Path('.'))
+    p.add_argument('--collection',type=Path,required=True)
+    p.add_argument('--output',type=Path,required=True)
+    run(p.parse_args())
+,x)) or
+            bool(re.search(r'(?:^|__)freeze_(?:parent|reference)
+    root=a.root
+    archive=a.collection
+    out=a.output
+    if out.exists():raise ValueError('will not overwrite prior S43 research')
+    inp=data(root/'analysis/evidence/v273-regression-loops/prepared/inputs.npz')
+    y,ids,fold,freeze,s18,ref=find_reference(root,archive,inp)
+    out.mkdir(parents=True)
+    provenance=json.loads((archive/'source_manifest.json').read_text())
+    excluded=[]
+    vector_rows=[]
+    by_hash={}
+    rawvectors={}
+    per_vector_audits={}
+    covered_all=np.zeros(len(y),bool)
+    covered_poly=np.zeros(len(y),bool)
+    all_fix_count=0
+    original_vectors=0
+    for family,file in source_files(root,archive):
+        try:
+            z=data(file)
+            variants=extract_views(z,ids,y,file)
+            for variant,pred in variants:
+                if any(x in variant.lower() for x in AVOID):
+                    excluded.append(dict(source=family,file=str(file),
+                        variant=variant,reason='forbidden oracle or YourMT3+ head'))
+                    continue
+                hashkey=digest(pred)
+                fixed_s18,lost_s18,neutral_s18=metrics(pred,y,s18)
+                fixed_fr,lost_fr,neutral_fr=metrics(pred,y,freeze)
+                if not (fixed_s18.any() or fixed_fr.any()):
+                    # Required to preserve all actual zero-positive vectors
+                    # for complete audits, not candidate heads.
+                    pass
+                origin='head_vector'
+                duplicate=by_hash.get(hashkey)
+                if duplicate is None:
+                    by_hash[hashkey]=f'{family}::{variant}'
+                    rawvectors[hashkey]=pred.copy()
+                    original_vectors+=1
+                else:origin='alias_identical_vector'
+                all_fix_count+=int(fixed_s18.sum())
+                covered_all|=fixed_s18
+                covered_poly|=(fixed_s18&(y>=2))
+                cor_by_k=[int(np.sum(fixed_s18&(y==k))) for k in range(7)]
+                reg_by_k=[int(np.sum(lost_s18&(y==k))) for k in range(7)]
+                per_fold=[
+                    dict(fold=f,corrections=int(np.sum(fixed_s18&(fold==f))),
+                        regressions=int(np.sum(lost_s18&(fold==f))))
+                    for f in FOLDS]
+                row=dict(source=family,variant=str(variant),
+                    evidence_file=str(file.relative_to(root) if file.is_relative_to(root)
+                                      else file.relative_to(archive)),
+                    evidence_sha256=hashkey,
+                    original_or_duplicate=origin,
+                    alias_of=duplicate or '',
+                    gross_fixes_vs_S18=int(fixed_s18.sum()),
+                    regressions_vs_S18=int(lost_s18.sum()),
+                    neutral_vs_S18=int(neutral_s18.sum()),
+                    net_vs_S18=int(fixed_s18.sum()-lost_s18.sum()),
+                    gross_poly_fixes_vs_S18=int(np.sum(fixed_s18&(y>=2))),
+                    poly_regressions_vs_S18=int(np.sum(lost_s18&(y>=2))),
+                    net_poly_vs_S18=int(np.sum((pred==y)&(y>=2))-
+                                        np.sum((s18==y)&(y>=2))),
+                    gross_fixes_vs_freeze=int(fixed_fr.sum()),
+                    regressions_vs_freeze=int(lost_fr.sum()),
+                    net_vs_freeze=int(fixed_fr.sum()-lost_fr.sum()),
+                    global_correct=int((pred==y).sum()),
+                    poly_correct=int(np.sum((pred==y)&(y>=2))),
+                    per_true_K_fixes=cor_by_k,
+                    per_true_K_regressions=reg_by_k,
+                    per_fold=per_fold,
+                    previously_implemented_no_new_head_promotion=True)
+                vector_rows.append(row)
+                if duplicate is None:
+                    per_vector_audits[hashkey]=(fixed_s18.copy(),lost_s18.copy())
+        except Exception as exc:
+            excluded.append(dict(source=family,file=str(file),
+                reason=f'{type(exc).__name__}: {str(exc)[:450]}'))
+        print(json.dumps(dict(source=family,file=file.name,
+                  all_candidates=len(vector_rows),distinct=original_vectors,
+                  exclusions=len(excluded))),flush=True)
+
+    require_total=len(vector_rows)
+    if require_total<100:
+        raise ValueError(f'insufficient native historical vectors {require_total}')
+    # Register historical metrics even if the NPZ had missing IDs, and flag
+    # registry-only (never pretend overlap was measured).
+    registry=registry_sources(root)
+    registry_by_id={r.get('name'):r for r in registry if 'name' in r}
+    for row in vector_rows:
+        source_info=registry_by_id.get(row['variant'])
+        if source_info is not None:
+            assert source_info['gross_fixes']==row['gross_fixes_vs_freeze']
+            assert source_info['gross_regressions']==row['regressions_vs_freeze']
+            source_info['state']='native_predictions_crosschecked'
+            source_info['gross_fixes_vs_S18']=row['gross_fixes_vs_S18']
+            source_info['gross_regressions_vs_S18']=row['regressions_vs_S18']
+    ranking=sorted(vector_rows,key=lambda r:(
+        -r['gross_fixes_vs_S18'],-r['gross_poly_fixes_vs_S18'],
+         -r['net_vs_S18'],r['source'],r['variant']))
+    rank_fr=sorted(vector_rows,key=lambda r:(
+        -r['gross_fixes_vs_freeze'],
+        -r['net_vs_freeze'],r['source'],r['variant']))
+    # Never intermix reference spaces; save two distinct complete tables.
+    rows_csv(out/'rank_all_vs_S18.csv',ranking)
+    rows_csv(out/'rank_all_vs_freeze.csv',rank_fr)
+    rows_csv(out/'historical_metric_registry.csv',registry)
+    rows_csv(out/'excluded_or_incomparable_sources.csv',excluded)
+    seen=set()
+    distinct_rank=[]
+    for row in ranking:
+        h=row['evidence_sha256']
+        if h not in seen:
+            seen.add(h)
+            distinct_rank.append(row)
+    top=distinct_rank[:128]
+    # Actual measured overlap of corrected events among distinct top heads.
+    overlap=[]
+    alltop=np.zeros((N,),np.uint16)
+    for row in top:
+        c,_=per_vector_audits[row['evidence_sha256']]
+        alltop+=c.astype(np.uint16)
+    current=np.zeros(N,bool)
+    for idx,row in enumerate(top):
+        changed,reg=per_vector_audits[row['evidence_sha256']]
+        unique=int(((alltop==1)&changed).sum())
+        novel=int((changed&~current).sum())
+        novel_poly=int((changed&~current&(y>=2)).sum())
+        ov=int((changed&current).sum())
+        current|=changed
+        overlap.append(dict(rank=idx+1,source=row['source'],
+            variant=row['variant'],
+            gross_corrections=int(changed.sum()),
+            regressions=int(reg.sum()),
+            exclusive_among_top_128=unique,
+            marginal_new_over_ranked_prior=novel,
+            overlap_with_prior=ov,
+            marginal_new_poly_over_ranked_prior=novel_poly,
+            cumul_union_correctable_events=int(current.sum()),
+            cumulative_union_is_truth_oracle_not_deployable=True))
+    rows_csv(out/'head_correction_overlap.csv',overlap)
+    # Dedicated transition audit for best 128 (not only positive net).
+    granular={}
+    for row in top:
+        v=rawvectors[row['evidence_sha256']]
+        fc,rc=per_vector_audits[row['evidence_sha256']]
+        changes=v!=s18
+        trans=[]
+        for a0 in range(7):
+            for a1 in range(7):
+                if a0==a1:continue
+                mask=changes&(s18==a0)&(v==a1)
+                n=int(mask.sum())
+                if n==0:continue
+                fixes=int((fc&mask).sum())
+                breaks=int((rc&mask).sum())
+                trans.append(dict(source_K=a0,candidate_K=a1,
+                    events=n,corrections=fixes,regressions=breaks,
+                    neutral=n-fixes-breaks,
+                    empirical_mean_utility_on_historical_data=(fixes-breaks)/n))
+        granular[f"{row['source']}::{row['variant']}"]=trans
+    jdump(out/'transition_audit_top128.json',granular)
+
+    # Rank best branch per series, even if negative or absent.
+    groups=defaultdict(list)
+    for row in vector_rows:groups[row['source']].append(row)
+    best=[]
+    for fam in sorted(groups):
+        ordered=sorted(groups[fam],key=lambda r:-r['gross_fixes_vs_S18'])
+        best.append(dict(series=fam,variant_count=len(ordered),
+            distinct_vectors=len({r['evidence_sha256'] for r in ordered}),
+            max_gross_corrections=ordered[0]['gross_fixes_vs_S18'],
+            associated_regressions=ordered[0]['regressions_vs_S18'],
+            associated_net=ordered[0]['net_vs_S18'],
+            best_variant=ordered[0]['variant'],
+            poly_corrections=ordered[0]['gross_poly_fixes_vs_S18'],
+            poly_regressions=ordered[0]['poly_regressions_vs_S18']))
+    best.sort(key=lambda r:-r['max_gross_corrections'])
+    rows_csv(out/'best_per_loop.csv',best)
+
+    # Keep corrections of single families with a negative global net;
+    # rank potential new selectors by correction volume and diversity.
+    proposer=[]
+    for idx,row in enumerate(distinct_rank[:256]):
+        fix,lost=per_vector_audits[row['evidence_sha256']]
+        observed=np.asarray(row['per_true_K_fixes'])
+        counts=[d['corrections'] for d in row['per_fold']]
+        # No true labels may be used in a deployed gate: these are
+        # retrospective audit annotations, not a user-facing control.
+        exceptional=row['gross_fixes_vs_S18']>=80
+        allfold=sum(c>0 for c in counts)
+        if not exceptional:continue
+        family=row['source'].lower()
+        headtype=('temporal_morphology' if 'S40' in row['source'] else
+          'neural_fusion' if 'S41' in row['source'] else
+          'acoustic_k_expert' if 'S38' in row['source'] else
+          'historical_corrector_or_selector')
+        mask=fix&(y>=2)
+        topK=int(np.argmax(observed))
+        proposer.append(dict(head_id=f'S43_ARCHIVE_{len(proposer)+1:03d}',
+            variant=row['variant'],source=row['source'],
+            rank_by_gross_corrections=idx+1,
+            type=headtype,
+            action='consider_new_specialized_selection',
+            full_native_prediction_saved=True,
+            historic_corrections=row['gross_fixes_vs_S18'],
+            historic_regressions=row['regressions_vs_S18'],
+            historic_poly_corrections=int(mask.sum()),
+            leading_true_K_diagnostic=topK,
+            folds_with_any_correction=allfold,
+            allow_prediction_using_true_K=False,
+            possible_input_features=[
+              'original_spectrum_42x49','birth_attack_morphology',
+              'S18_current_K','proposed_K',
+              'relative_harmonic_energy','audited_path_history'
+            ],
+            prevent_promotion=True,
+            no_held_fold_validation_of_new_head_yet=True,
+            available_vectors_hash=row['evidence_sha256'],
+            alias_count=sum(r['evidence_sha256']==row['evidence_sha256']
+                             for r in vector_rows)-1))
+        if len(proposer)>=100:break
+    jdump(out/'candidate_head_registry.json',dict(
+        schema='S43_ARCHIVED_HEAD_PROPOSALS_NOT_PRODUCTION',
+        score_data_uses_held_truth_for_audit_only=True,
+        maximum_candidates=len(proposer),
+        proposal_heads=proposer,
+        banned_expert='H9_YourMT3',
+        retained_modules_existing_S35=18,
+        input_source_only_no_new_weights_trained=True,
+        enabled_for_inference=False))
+
+    # Count source runs with no prediction data; preserve missing artifacts.
+    found={r['source'] for r in vector_rows}
+    missing=[x for x in provenance['sources']
+             if x['series'] not in found]
+    uncovered_summary=[]
+    for x in missing:
+        uncovered_summary.append(dict(series=x['series'],
+           status=x['status'],reason=x.get('warnings',[]),
+           data_files=x.get('prediction_archives',[])))
+    jdump(out/'uncovered_series.json',uncovered_summary)
+    report=dict(status='completed',
+        reference_freeze_exact=48454,reference_S18_exact=49178,
+        reference_freeze_poly_exact=2530,
+        reference_S18_poly_exact=2998,
+        reference_S18_cor_vs_freeze=2934,
+        reference_S18_reg_vs_freeze=2210,
+        all_native_rows=N,poly_rows=int((y>=2).sum()),
+        source_total_declared=len(provenance['sources']),
+        source_series_with_valid_vectors=len([v for v in found if v.startswith('S')]),
+        source_series_without_valid_vectors=uncovered_summary,
+        total_valid_native_variants=len(vector_rows),
+        distinct_prediction_vectors=len(by_hash),
+        total_archived_legacy_registry_entries=len(registry),
+        registry_entries_native_crosschecked=sum(
+              x.get('state')=='native_predictions_crosschecked' for x in registry),
+        source_alignment_or_schema_exceptions=len(excluded),
+        max_fix_S18=ranking[0] if ranking else None,
+        max_fix_freeze=rank_fr[0] if rank_fr else None,
+        best_by_source=best,
+        retrospective_all_variants_oracle_union_correctable_S18=
+            int(covered_all.sum()),
+        retrospective_poly_oracle_union_correctable_S18=
+            int(covered_poly.sum()),
+        oracle_is_not_a_prediction=True,
+        no_new_correction_selection_model_trained=True,
+        produced_candidate_head_proposals=len(proposer),
+        never_seen_music_validation=False,
+        no_model_promotion=True,
+        H9_excluded_from_candidate_head_registry=True,
+        source_reference=ref)
+    jdump(out/'report.json',report)
+
+    lines=['# S43 — Classement de toutes les corrections réellement récupérables',
+        '', '**Comptage par correction brute, sans filtrer les régressions ni choisir les vrais labels lors de l inférence.**',
+        f'Archives séries valides: {report["source_series_with_valid_vectors"]}/{report["source_total_declared"]}; '
+        f'variantes: {len(vector_rows)}, vecteurs distincts: {len(by_hash)}.',
+        f'Registres historiques: {len(registry)} variantes, dont '
+        f'{report["registry_entries_native_crosschecked"]} recoupées sur valeurs natives.',
+        'Références distinctes: S18 49 178/59 309, freeze 48 454/59 309; '
+        'S18 vs freeze +2934/−2210.',
+        '', '## Meilleure source de corrections vs S18 (classement brut)',
+        '', '| Rang | Boucle | Variante | Corrections | Régressions | Poly corrigés | Poly perdus |',
+        '|---|---|---|---:|---:|---:|---:|']
+    for i,r in enumerate(best[:30],1):
+        lines.append(f"| {i} | {r['series']} | {r['best_variant']} | "
+            f"{r['max_gross_corrections']} | {r['associated_regressions']} | "
+            f"{r['poly_corrections']} | {r['poly_regressions']} |")
+    lines+=['','## Couverture et distinction des corrections',
+        f"Union-oracle NON DÉPLOYABLE, toutes variantes: {int(covered_all.sum())} événements erronés S18 disposant d'au moins une bonne proposition ; poly {int(covered_poly.sum())}.",
+        f"Union-oracle NON DÉPLOYABLE des 128 premiers: {int(current.sum())}.",
+        'Les corrections « unique » par vecteur et « ajoutées par rang » figurent dans head_correction_overlap.csv.',
+        f"Sources incomplètes/non comparables: {len(uncovered_summary)} séries; "
+        f"fichiers au schéma incompatible: {len(excluded)}.",
+        'Ne pas transformer ce classement en résultat de modèle. '
+        'Chaque future tête doit apprendre une porte depuis les observables sur folds tenus à l écart.',
+        f'Candidats d adaptation non activés: {len(proposer)}, liste détaillée dans candidate_head_registry.json.',
+        'H9/YourMT3 exclue ; anciens producteurs conservés ; aucune promotion.']
+    (out/'report.md').write_text('\n'.join(lines)+'\n')
+    print('\n'.join(lines),flush=True)
+
+if __name__=='__main__':
+    p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--root',type=Path,default=Path('.'))
+    p.add_argument('--collection',type=Path,required=True)
+    p.add_argument('--output',type=Path,required=True)
+    run(p.parse_args())
+,x)))
+
+
 def run(a):
     root=a.root
     archive=a.collection
