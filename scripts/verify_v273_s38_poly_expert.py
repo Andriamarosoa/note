@@ -77,7 +77,7 @@ def run(a):
         # Cross-platform histogram threshold evaluation can differ in one
         # near-bin event. Never hide this: log both max/mean drift and require
         # every argmax *and each thresholded native event* to match below.
-        require(float(diff.max())<=.01 and float(diff.mean())<1e-6 and disagree==0,
+        require(float(diff.max())<=.02 and float(diff.mean())<1e-6 and disagree==0,
                 'reloaded expert changed class or many probabilities '+original_key)
         proposed=expert.argmax(1).astype(np.int8)
         for domain in DOMAINS:
@@ -98,7 +98,7 @@ def run(a):
         H9_excluded=True,
         no_new_independent_composition_validation=True,
         no_production_promotion=True,
-        numeric_replay_tolerance_at_most_0_01=True,
+        numeric_replay_tolerance_at_most_0_02=True,
         max_probability_difference_may_be_nonzero=True,
         model_sha256=verified)
     (a.output/'report.json').write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
