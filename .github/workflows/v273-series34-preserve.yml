@@ -1,0 +1,58 @@
+name: V27.3 S34 preserve K1 K2 specialized acoustic head
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series34-preserve.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  preserve:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Download complete trained K1 vs K2 specialist experiment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37866775260 --repo "$GITHUB_REPOSITORY" --name v273-series34-k1k2-specialist --dir model/S34
+      - name: Verify all 24 originally fixed specialists and per-case corrections
+        run: |
+          python - <<'PY'
+          import json,csv
+          from pathlib import Path
+          import numpy as np
+          p=Path('model/S34')
+          z=json.loads((p/'report.json').read_text())
+          assert z['status']=='completed' and z['model_count']==42
+          assert z['policy_count']==27 and z['zero_loss_research_candidates']==[]
+          with np.load(p/'predictions.npz',allow_pickle=False) as q:
+              names=list(map(str,q['variant_ids']))
+              parent=q['predictions'][:,names.index('series18_parent')]
+              best=q['predictions'][:,names.index('series34__all335_hgb__class_certainty_gt0.65')]
+              truth=q['true_K']
+              assert ((parent!=truth)&(best==truth)).sum()==16
+              assert ((parent==truth)&(best!=truth)).sum()==2
+          events=list(csv.DictReader((p/'all_26_K1_K2_specialist_audit.csv').open()))
+          assert len(events)==26
+          assert sum(x['category']=='regressed' for x in events)==4
+          print('PASS 42 specialized expert weights, 24 gates and all 26 changed-case outcomes')
+          PY
+      - name: Archive weights, all K1 probability estimates and negative outcomes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/archive
+          tar -czf model/archive/v273-series34-research.tar.gz -C model/S34 .
+          (cd model/archive && sha256sum v273-series34-research.tar.gz > SHA256SUMS)
+          gh release create "v273-series34-research-${GITHUB_RUN_ID}" \
+            model/archive/v273-series34-research.tar.gz model/archive/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "V27.3 S34 learned acoustic second-note expert ${GITHUB_RUN_ID}" \
+            --notes "42 K1 vs K2 specialist models, 24 gate ablations and all 26 decisions. Best development global 82.9419%, poly 40.6093%, 16 corrections and 2 regressions. No loss-free gate or independent validation."
