@@ -42,7 +42,17 @@ class TestScopeRescue(unittest.TestCase):
         margin = np.array([.7,.6,.5])
         selected = choose_threshold(y, base, offer, margin)
         self.assertEqual(selected["actions"], 0)
-        self.assertTrue(np.isinf(selected["threshold"]))
+        self.assertGreater(selected["threshold"], 1.0)
+
+    def test_regression_penalty_raises_threshold_on_borderline_case(self):
+        y = np.array([1,0,1,0])
+        base = np.zeros(4, dtype=int)
+        offer = np.ones(4, dtype=int)
+        margin = np.array([.9,.8,.7,.6])
+        normal = choose_threshold(y, base, offer, margin, 1.)
+        guarded = choose_threshold(y, base, offer, margin, 1.5)
+        self.assertGreaterEqual(guarded["threshold"], normal["threshold"])
+        self.assertLessEqual(guarded["actions"], normal["actions"])
 
     def test_unchanged_action_is_not_counted(self):
         chosen = choose_threshold(
