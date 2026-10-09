@@ -106,10 +106,10 @@ def run(a):
     # alternate candidates from the same source group).
     agreement=np.zeros((N,len(families)),np.int16)
     for j in range(len(families)):
-        agreement[:,j]=np.sum(
+        agreement[:,j]=(np.sum(
             (candidate==candidate[:,j,None])&
-            (candidate!=old[:,None]),axis=1).astype(np.int16)-
-            (candidate[:,j]!=old).astype(np.int16)
+            (candidate!=old[:,None]),axis=1).astype(np.int16)
+            -(candidate[:,j]!=old).astype(np.int16))
     risk=np.full((N,len(families),2),np.nan,np.float32)
     models=[]
     a.output.mkdir(parents=True)
