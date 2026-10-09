@@ -17,7 +17,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
 from scripts.summarize_v273_harmonic_global import load_cohort, get_matrix
-from scripts.yourmt3_exactk_common import FOLDS, metrics, paired, require
+from scripts.yourmt3_exactk_common import FOLDS, metrics, paired, require, digest
 
 SOURCES = (0, 1, 5)
 CLASSES = np.arange(7)
@@ -69,6 +69,52 @@ def read_scope(root, y, base, ids, fold, member, start):
     keys = sorted(samples[0]["features"])
     require(all(sorted(r["features"]) == keys for r in samples), "feature schema mismatch")
     return positions, samples, keys
+
+
+
+def read_precomputed_full(root, y, base, ids, fold, member, start):
+    """Read PR16 58D acoustic summaries extracted independently of labels/base."""
+    mapping = {int(v): i for i, v in enumerate(ids)}
+    seen = set()
+    pieces = []
+    names = None
+    for outer in FOLDS:
+        found = list(root.rglob(f"features-fold-{outer}.npz"))
+        require(len(found) == 1, "precomputed fold missing or ambiguous")
+        file = found[0]
+        report = json.loads(file.with_name("report.json").read_text())
+        require(report["status"] == "completed" and report["fold"] == outer and
+                digest(file) == report["feature_sha256"] and
+                report["labels_used_in_features"] is False and
+                report["baseline_used_in_features"] is False and
+                report["yourmt3_used_in_features"] is False,
+                "full-native feature provenance invalid")
+        with np.load(file, allow_pickle=False) as archive:
+            keys = archive["feature_names"].tolist()
+            if names is None: names = keys
+            require(keys == names, "feature schema changed")
+            file_ids = archive["global_index"]
+            require(len(set(map(int, file_ids))) == len(file_ids) and
+                    all(int(v) in mapping for v in file_ids), "feature IDs incorrect")
+            at = np.asarray([mapping[int(v)] for v in file_ids], int)
+            require(not (set(at.tolist()) & seen), "duplicate feature event")
+            seen.update(at.tolist())
+            require(np.array_equal(fold[at], archive["fold"]) and
+                    np.array_equal(y[at], archive["k"]) and
+                    np.array_equal(base[at], archive["baseline"]) and
+                    np.array_equal(member[at].astype(str), archive["member"].astype(str)) and
+                    np.array_equal(start[at], archive["starts"]),
+                    "acoustic source and original event mismatch")
+            eligible = np.isin(base[at], SOURCES)
+            pieces.append((at[eligible], archive["summary"][eligible].astype(np.float64)))
+    require(seen == set(range(len(ids))), "native feature coverage incomplete")
+    pos = np.concatenate([p[0] for p in pieces])
+    raw = np.vstack([p[1] for p in pieces])
+    order = np.argsort(pos)
+    pos, raw = pos[order], raw[order]
+    require(len(pos) == 51816 and raw.shape == (len(pos), 58) and
+            np.isfinite(raw).all(), "full-native acoustic design invalid")
+    return pos, raw, names
 
 
 def model():
@@ -135,15 +181,18 @@ def tune_outer(train_x, train_y, train_base, train_fold, costs):
             for k in SOURCES}
 
 
-def run(cohort, input_root, output, costs=None):
+def run(cohort, input_root, output, costs=None, reuse_full=False):
     require(not output.exists(), "refusing overwrite")
     if costs is None:
         costs = {k: 1. for k in SOURCES}
     y, b, ids, fold, member, start = load_cohort(cohort)
-    pos, rows, names = read_scope(input_root, y, b, ids, fold, member, start)
+    if reuse_full:
+        pos, acoustic, names = read_precomputed_full(input_root, y, b, ids, fold, member, start)
+    else:
+        pos, rows, names = read_scope(input_root, y, b, ids, fold, member, start)
+        acoustic = get_matrix(rows, names, "features", tuple())
     require(len(pos) == 51816, "expected historic K0/K1/K5 cohort missing")
-    x = np.column_stack([get_matrix(rows, names, "features", tuple()),
-                         np.eye(7)[b[pos]]])
+    x = np.column_stack([acoustic, np.eye(7)[b[pos]]])
     yp, bp, fp = y[pos], b[pos], fold[pos]
     predicted = b.copy()
     fold_reports = {}
@@ -175,6 +224,7 @@ def run(cohort, input_root, output, costs=None):
                   validation="outer recording-fold OOF with train-only nested thresholds; historically exposed folds",
                   source_baselines=list(SOURCES), rows=int(len(y)),
                   eligible=int(len(pos)), actions=int(np.sum(predicted != b)),
+                  reuse_pr16_full=bool(reuse_full),
                   regression_costs={str(k):float(costs[k]) for k in SOURCES},
                   baseline=metrics(y, b), candidate=metrics(y, predicted),
                   paired=paired(y, b, predicted), folds=fold_reports,
@@ -203,12 +253,15 @@ def main():
     p.add_argument("--cohort", type=Path, required=True)
     p.add_argument("--input-root", type=Path, required=True)
     p.add_argument("--output", type=Path, required=True)
+    p.add_argument("--reuse-pr16-full", action="store_true",
+                   help="Use independently extracted full-cohort PR16 acoustic features")
     p.add_argument("--regression-cost-0", type=float, default=1.)
     p.add_argument("--regression-cost-1", type=float, default=1.)
     p.add_argument("--regression-cost-5", type=float, default=1.)
     args = p.parse_args()
     run(args.cohort, args.input_root, args.output,
-        costs={0:args.regression_cost_0,1:args.regression_cost_1,5:args.regression_cost_5})
+        costs={0:args.regression_cost_0,1:args.regression_cost_1,5:args.regression_cost_5},
+        reuse_full=args.reuse_pr16_full)
 
 
 if __name__ == "__main__":
