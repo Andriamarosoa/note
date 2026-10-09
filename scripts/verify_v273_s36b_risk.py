@@ -97,11 +97,17 @@ def audit(a):
     require(len(corrected)==2 and len(regressed)==0,'advertised 2/0 not reproduced')
     require(int(((validated==d['y'])&(d['y']>=2)).sum())==3000,
             'poly 3000 / 7385 accuracy not reproduced')
-    # Three previously declared cutoffs yield EXACT same 2 corrections.
+    # The three cutoffs have the same 2/0 COUNT, not necessarily the
+    # same event IDs. Preserve each corrected set to avoid a false claim.
+    threshold_cases={}
     for cut in CUTS:
         name=f'series36b__series35__lambda4__threshold0__full_path__lambda2__threshold{cut:g}'
-        require(np.array_equal(out[name],validated),
-                'three threshold results do not actually match')
+        v=out[name]
+        fixes=np.flatnonzero((parent!=d['y'])&(v==d['y']))
+        losses=np.flatnonzero((parent==d['y'])&(v!=d['y']))
+        require(len(fixes)==2 and len(losses)==0,
+                'expected score count differs in cutoff '+str(cut))
+        threshold_cases[str(cut)]=[int(d['ids'][j]) for j in fixes]
     a.output.mkdir(parents=True)
     with (a.output/'two_confirmed_corrections.csv').open('w',newline='') as f:
         wr=csv.writer(f)
@@ -123,6 +129,7 @@ def audit(a):
         independent_unseen_validation=False,
         no_production_promotion=True,
         two_native_corrected_ids=[int(d['ids'][i]) for i in corrected],
+        corrected_ids_by_cutoff=threshold_cases,
         model_SHA256=sha,fit_provenance=fit_reports)
     (a.output/'report.json').write_text(json.dumps(res,indent=2,sort_keys=True)+'\n')
     (a.output/'report.md').write_text(
