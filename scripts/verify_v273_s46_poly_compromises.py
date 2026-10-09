@@ -36,8 +36,22 @@ def run(a):
         lost=int(((original==y)&(z!=y)).sum())
         if (corrected,lost)!=(sc['corrections'],sc['regressions']):
             raise ValueError('false correction counts '+name)
+    joint=[(k,v) for k,v in report['audits'].items()
+           if k.startswith('series46__') and
+              v['net']>=0 and v['poly_net']>0]
+    joint.sort(key=lambda item:(-item[1]['poly_net'],-item[1]['net']))
+    print('JOINT_GLOBAL_NONNEGATIVE_AND_POLY_POSITIVE',json.dumps([
+        dict(policy=k,corrections=v['corrections'],
+             regressions=v['regressions'],poly_plus=v['poly_net'],
+             exact_global=round(100*v['global_exact'],4),
+             exact_poly=round(100*v['poly_exact'],4))
+        for k,v in joint[:20]],ensure_ascii=False),flush=True)
     a.output.mkdir(parents=True)
+    (a.output/'best_joint_compromises.json').write_text(
+        json.dumps([dict(policy=k,**v) for k,v in joint[:30]],
+                   indent=2,sort_keys=True)+'\\n')
     summary=dict(status='verified',S18_verified=True,
+        jointly_nonnegative_global_positive_poly_count=len(joint),
         all_192_class_conditional_policies_verified=True,
         no_true_K_used_for_decision=True,no_H9_expert=True,
         already_used_historical_cohort=True,no_production_promotion=True)
