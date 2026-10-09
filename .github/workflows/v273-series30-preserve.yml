@@ -1,0 +1,45 @@
+name: V27.3 S30 archive corroboration including five neutral changes
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series30-preserve.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  preserve:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover corrected 26-case S30 experiment output and models
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37865974760 --repo "$GITHUB_REPOSITORY" --name v273-series30-corroboration --dir model/S30
+      - name: Verify all five neutral changes and no loss-free gate
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          z=json.loads(Path('model/S30/report.json').read_text())
+          assert z['original_26_changes']==26
+          assert z['original_corrected']==17 and z['original_regressed']==4
+          assert z['positive_zero_loss_research_candidates']==[]
+          assert len(z['learned_quality_models'])==14
+          assert Path('model/S30/all_26_S29_changed_cases.csv').is_file()
+          print('PASS 26-case source regression audit preserved')
+          PY
+      - name: Upload every selected and rejected case and saved models to immutable prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/archive
+          tar -czf model/archive/v273-series30-research.tar.gz -C model/S30 .
+          (cd model/archive && sha256sum v273-series30-research.tar.gz > SHA256SUMS)
+          gh release create "v273-series30-research-${GITHUB_RUN_ID}" \
+            model/archive/v273-series30-research.tar.gz model/archive/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "V27.3 S30 corroboration and 26 changed selections ${GITHUB_RUN_ID}" \
+            --notes "S29: 26 changes are 17 corrections, 4 regressions and 5 neutral, audit both A-first/B-first and 14 held-piece quality models. No zero-regression candidate; never promoted."
