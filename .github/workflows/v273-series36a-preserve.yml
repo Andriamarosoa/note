@@ -26,7 +26,7 @@ jobs:
           z=json.loads(Path('model/S36a/report.json').read_text())
           assert z['status']=='completed'
           assert z['strict_zero_loss_candidates']==[]
-          assert z['all_policies']['series36a__series35__lambda1__threshold0.05__source_le3']['corrected']==323
+          assert z['all_policies']['series36a__series35__lambda1__threshold0.05__source_le3']['corrections']==323
           assert z['all_policies']['series36a__series35__lambda1__threshold0.05__source_le3']['regressions']==243
           print('PASS: 22 source-K policies, zero loss-free positive gains')
           PY
