@@ -1,0 +1,63 @@
+name: V27.3 S33 inspect unresolved S29 regressions acoustically
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series33-regression-features.yml'
+      - 'scripts/audit_v273_s33_regression_features.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Download original harmonic spectral features
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/raw
+          gh release download v273-open-k0-k6-37837235723 --repo "$GITHUB_REPOSITORY" --pattern 'v273-open-features-*.tar' --dir model/raw
+          for fold in 0 1 2 4; do
+            mkdir -p "model/features/fold-$fold"
+            tar -xf "model/raw/v273-open-features-$fold.tar" -C "model/features/fold-$fold"
+          done
+      - name: Recover unchanged S18 parent, S29 routes and held-piece S31 acoustic trust
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 37856499212 --repo "$GITHUB_REPOSITORY" --name v273-series18-k43-k21 --dir model/S18
+          gh run download 37865173636 --repo "$GITHUB_REPOSITORY" --name v273-series29-stepwise-scheduler --dir model/S29
+          gh run download 37866124959 --repo "$GITHUB_REPOSITORY" --name v273-series31-acoustic-flow --dir model/S31
+      - name: Audit all 4 regressions, 17 corrections, 5 neutral acoustically
+        run: >-
+          python -m scripts.audit_v273_s33_regression_features
+          --features model/features
+          --s18 model/S18/predictions.npz
+          --s29 model/S29/predictions.npz
+          --routes model/S29/routes.npz
+          --s31 model/S31/acoustic_scores.npz
+          --output model/S33
+      - name: Publish numerical case-audit without invented causes
+        run: cat model/S33/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series33-regression-features
+          path: model/S33/
+          retention-days: 90
