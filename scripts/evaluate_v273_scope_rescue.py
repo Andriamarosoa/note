@@ -94,14 +94,15 @@ def proposals(scores, base):
     return p, delta
 
 
-def choose_threshold(truth, base, proposal, margin):
+def choose_threshold(truth, base, proposal, margin, regression_cost=1.):
     """Fast exact O(n log n) sweep; never used on the outer test fold."""
+    require(regression_cost >= 1., "cost must not reward regressions")
     eligible = (proposal != base) & np.isfinite(margin)
     if not eligible.any():
-        return dict(threshold=float("inf"), net=0, actions=0)
+        return dict(threshold=2., net=0, actions=0)
     order = np.argsort(-margin[eligible], kind="stable")
-    weights = (proposal[eligible] == truth[eligible]).astype(int) - (
-        base[eligible] == truth[eligible]).astype(int)
+    weights = (proposal[eligible] == truth[eligible]).astype(float) - (
+        regression_cost * (base[eligible] == truth[eligible]).astype(float))
     scores = margin[eligible][order]
     weights = weights[order]
     cumulative = np.cumsum(weights)
@@ -111,14 +112,14 @@ def choose_threshold(truth, base, proposal, margin):
     # Abstention wins ties at zero; nonzero net ties prefer fewer actions.
     valid = np.flatnonzero(gain > 0)
     if len(valid) == 0:
-        return dict(threshold=float("inf"), net=0, actions=0)
-    max_gain = int(gain[valid].max())
+        return dict(threshold=2., net=0, actions=0)
+    max_gain = float(gain[valid].max())
     pick = int(valid[np.flatnonzero(gain[valid] == max_gain)[0]])
-    return dict(threshold=float(scores[ends[pick]]), net=max_gain,
+    return dict(threshold=float(scores[ends[pick]]), weighted_utility=max_gain,
                 actions=int(actions[pick]))
 
 
-def tune_outer(train_x, train_y, train_base, train_fold):
+def tune_outer(train_x, train_y, train_base, train_fold, costs):
     """Crossfit inside the outer training folds; separate gates per source."""
     oof = np.full((len(train_y), 7), np.nan)
     for inner in sorted(set(train_fold)):
@@ -130,12 +131,14 @@ def tune_outer(train_x, train_y, train_base, train_fold):
     p, margin = proposals(oof, train_base)
     return {k: choose_threshold(train_y[train_base == k],
                                 train_base[train_base == k],
-                                p[train_base == k], margin[train_base == k])
+                                p[train_base == k], margin[train_base == k], costs[k])
             for k in SOURCES}
 
 
-def run(cohort, input_root, output):
+def run(cohort, input_root, output, costs=None):
     require(not output.exists(), "refusing overwrite")
+    if costs is None:
+        costs = {k: 1. for k in SOURCES}
     y, b, ids, fold, member, start = load_cohort(cohort)
     pos, rows, names = read_scope(input_root, y, b, ids, fold, member, start)
     require(len(pos) == 51816, "expected historic K0/K1/K5 cohort missing")
@@ -148,7 +151,7 @@ def run(cohort, input_root, output):
         fit = fp != outer
         held = fp == outer
         require(fit.any() and held.any(), "outer split empty")
-        thresholds = tune_outer(x[fit], yp[fit], bp[fit], fp[fit])
+        thresholds = tune_outer(x[fit], yp[fit], bp[fit], fp[fit], costs)
         probability = probabilities(x[fit], yp[fit], x[held])
         offer, delta = proposals(probability, bp[held])
         accept = np.zeros(int(held.sum()), bool)
@@ -172,6 +175,7 @@ def run(cohort, input_root, output):
                   validation="outer recording-fold OOF with train-only nested thresholds; historically exposed folds",
                   source_baselines=list(SOURCES), rows=int(len(y)),
                   eligible=int(len(pos)), actions=int(np.sum(predicted != b)),
+                  regression_costs={str(k):float(costs[k]) for k in SOURCES},
                   baseline=metrics(y, b), candidate=metrics(y, predicted),
                   paired=paired(y, b, predicted), folds=fold_reports,
                   limitations=["No independent never-used cohort",
@@ -199,8 +203,12 @@ def main():
     p.add_argument("--cohort", type=Path, required=True)
     p.add_argument("--input-root", type=Path, required=True)
     p.add_argument("--output", type=Path, required=True)
+    p.add_argument("--regression-cost-0", type=float, default=1.)
+    p.add_argument("--regression-cost-1", type=float, default=1.)
+    p.add_argument("--regression-cost-5", type=float, default=1.)
     args = p.parse_args()
-    run(args.cohort, args.input_root, args.output)
+    run(args.cohort, args.input_root, args.output,
+        costs={0:args.regression_cost_0,1:args.regression_cost_1,5:args.regression_cost_5})
 
 
 if __name__ == "__main__":
