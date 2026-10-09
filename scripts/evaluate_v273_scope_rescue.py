@@ -161,8 +161,11 @@ def choose_threshold(truth, base, proposal, margin, regression_cost=1.):
         return dict(threshold=2., net=0, actions=0)
     max_gain = float(gain[valid].max())
     pick = int(valid[np.flatnonzero(gain[valid] == max_gain)[0]])
-    return dict(threshold=float(scores[ends[pick]]), weighted_utility=max_gain,
-                actions=int(actions[pick]))
+    raw_weights = (proposal[eligible] == truth[eligible]).astype(int) - (
+        base[eligible] == truth[eligible]).astype(int)
+    observed_net = int(np.cumsum(raw_weights[order])[ends[pick]])
+    return dict(threshold=float(scores[ends[pick]]), net=observed_net,
+                weighted_utility=max_gain, actions=int(actions[pick]))
 
 
 def tune_outer(train_x, train_y, train_base, train_fold, costs):
