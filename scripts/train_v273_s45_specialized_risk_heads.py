@@ -159,7 +159,7 @@ def run(a):
                 corrected_train=int(fix.sum()),regressed_train=int(lose.sum())))
         print(json.dumps(dict(piece=piece,fold=fold,
             models_completed=len(models),seconds=round(time.monotonic()-started,1))),flush=True)
-    require(np.isfinite(risk[candidate!=old]).all(),
+    require(np.isfinite(risk[candidate!=old[:,None]]).all(),
             'unscored proposed correction risk')
     # There is no action at unchanged candidate K; it is never selected.
     per_family={}
