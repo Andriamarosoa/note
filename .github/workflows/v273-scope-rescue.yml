@@ -1,0 +1,194 @@
+name: V27.3 scope rescue K0 K1 K5 (experimental)
+
+on:
+  pull_request:
+    branches: [codex/v273-regression-loops]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+
+jobs:
+  tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned dependencies
+        run: python -m pip install -r requirements-train.txt numpy==1.26.4 scipy==1.17.1 scikit-learn==1.4.2
+      - name: Check syntax and scope-rescue invariants
+        run: |
+          python -m py_compile scripts/extract_v273_harmonic_global.py scripts/evaluate_v273_scope_rescue.py scripts/experimental_v273_regression_heads.py test/test_v273_scope_rescue.py test/test_experimental_v273_regression_heads.py
+          python -m unittest -v test.test_v273_scope_rescue test.test_experimental_v273_regression_heads
+
+  reuse_archived:
+    needs: tests
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install deterministic numerical prerequisites
+        run: python -m pip install numpy==1.26.4 scipy==1.17.1 scikit-learn==1.4.2
+      - name: Fetch original native cohort
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37605163312
+          name: yourmt3-exactk-cohort
+          path: model/cohort
+      - name: Fetch previously extracted label-blind 58D features for the full 59k cohort
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          pattern: v273-open-features-*
+          path: model/pr16-features
+      - name: Evaluate S53 with train-fold-only abstention thresholds
+        run: |
+          python -m scripts.evaluate_v273_scope_rescue \
+            --cohort model/cohort --input-root model/pr16-features \
+            --reuse-pr16-full --output model/scope-reuse-s53
+      - name: Evaluate S54 with train-fold-only cost of regressions
+        run: |
+          python -m scripts.evaluate_v273_scope_rescue \
+            --cohort model/cohort --input-root model/pr16-features \
+            --reuse-pr16-full --regression-cost-0 1.15 --regression-cost-1 1.15 \
+            --output model/scope-reuse-s54
+      - name: Recheck true labels, retained actions, and paired score identity
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          import numpy as np
+          for system in ('s53','s54'):
+              path=Path('model/scope-reuse-'+system)
+              report=json.loads((path/'report.json').read_text())
+              with np.load(path/'predictions.npz') as z:
+                  b,y,p=z['frozen_baseline_K'],z['true_K'],z['predicted_K']
+                  mask=np.isin(b,[0,1,5])
+                  assert len(y)==59309 and mask.sum()==51816
+                  assert np.array_equal(p[~mask],b[~mask])
+                  assert int((p==y).sum())==report['candidate']['correct']
+                  assert int((p==y).sum()-(b==y).sum())==report['paired']['global']['net']
+              print(system,'net',report['paired']['global']['net'],
+                    'fixes',report['paired']['global']['corrections'],
+                    'regressions',report['paired']['global']['regressions'])
+          PY
+      - name: Publish source-specific recovery results
+        run: |
+          cat model/scope-reuse-s53/report.md >> "$GITHUB_STEP_SUMMARY"
+          cat model/scope-reuse-s54/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-scope-rescue-pr16-replay
+          path: |
+            model/scope-reuse-s53/
+            model/scope-reuse-s54/
+          retention-days: 90
+
+  extract:
+    if: github.event_name == 'workflow_dispatch'
+    needs: tests
+    strategy:
+      fail-fast: false
+      matrix:
+        fold: [0, 1, 2, 4]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned native audio environment
+        run: python -m pip install -r requirements-train.txt numpy==1.26.4 scipy==1.17.1 scikit-learn==1.4.2
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37605163312
+          name: yourmt3-exactk-cohort
+          path: model/cohort
+      - uses: actions/cache@v4
+        id: guitarset
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+      - name: Restore original GuitarSet audio
+        if: steps.guitarset.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+      - name: Verify original audio
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Extract all frozen baseline K0/K1/K5 events without looking at true labels
+        run: |
+          python -B scripts/extract_v273_harmonic_global.py \
+            --cohort model/cohort --dataset data/GuitarSet \
+            --fold ${{ matrix.fold }} \
+            --candidate-baselines 0 1 5 --primary-only \
+            --output model/scope-rescue-fold-${{ matrix.fold }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-scope-rescue-fold-${{ matrix.fold }}
+          path: model/scope-rescue-fold-${{ matrix.fold }}/
+          retention-days: 90
+
+  evaluate:
+    needs: extract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned numerical environment
+        run: python -m pip install numpy==1.26.4 scipy==1.17.1 scikit-learn==1.4.2
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37605163312
+          name: yourmt3-exactk-cohort
+          path: model/cohort
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v273-scope-rescue-fold-*
+          path: model/scope-rescue-features
+      - name: Evaluate seven-class rescues with train-only fold abstention
+        run: |
+          python -B -m scripts.evaluate_v273_scope_rescue \
+            --cohort model/cohort \
+            --input-root model/scope-rescue-features \
+            --output model/scope-rescue-evaluation
+      - name: Publish all-class correction and regression counts
+        run: cat model/scope-rescue-evaluation/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-scope-rescue-evaluation
+          path: model/scope-rescue-evaluation/
+          retention-days: 90
