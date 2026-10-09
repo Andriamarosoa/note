@@ -1,0 +1,56 @@
+name: V27.3 S35 independently verify and preserve all non-H9 heads
+on:
+  push:
+    branches: [codex/v273-open-k0-k6]
+    paths:
+      - '.github/workflows/v273-series35-verify-preserve.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install fixed NumPy for original event auditor
+        run: python -m pip install numpy==1.26.4
+      - name: Require the training-and-audit integration to succeed first
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run watch 37868356632 --repo "$GITHUB_REPOSITORY" --exit-status --interval 10
+      - name: Retrieve all fitted heads complete dynamics and per-event predictions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37868356632 --repo "$GITHUB_REPOSITORY" --name v273-series35-extended-head-router --dir model/S35
+      - name: Independently verify native identities nested producer provenance risk and H9 exclusion
+        run: >-
+          python -m scripts.verify_v273_extended_router
+          --input model/S35
+          --output model/S35-verify
+      - name: Publish complete measured head-use table
+        run: cat model/S35-verify/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-series35-independent-verification
+          path: model/S35-verify/
+          retention-days: 90
+      - name: Preserve every executed/nonexecuted adapter and model with checksum
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/archive
+          tar -czf model/archive/v273-series35-extended-heads.tar.gz -C model S35 S35-verify
+          (cd model/archive && sha256sum v273-series35-extended-heads.tar.gz > SHA256SUMS)
+          gh release create "v273-series35-research-${GITHUB_RUN_ID}" \
+            model/archive/v273-series35-extended-heads.tar.gz model/archive/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "V27.3 S35 dynamic 18-head bank without H9 ${GITHUB_RUN_ID}" \
+            --notes "18 declared adapters and native 59309-event K0-K6 routing; H9 excluded, H8 masked until verified waveform-transformed OOF source. 144 nested/outer acoustics fitted; all selected heads and regressions archived. Research cohort previously used; no promotion."
