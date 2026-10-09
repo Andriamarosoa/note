@@ -1,0 +1,126 @@
+name: V27.3 scope rescue K0 K1 K5 (experimental)
+
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/extract_v273_harmonic_global.py'
+      - 'scripts/evaluate_v273_scope_rescue.py'
+      - 'test/test_v273_scope_rescue.py'
+      - '.github/workflows/v273-scope-rescue.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONPATH: '.:src'
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+
+jobs:
+  tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned dependencies
+        run: python -m pip install -r requirements-train.txt numpy==1.26.4 scipy==1.17.1 scikit-learn==1.4.2
+      - name: Check syntax and scope-rescue invariants
+        run: |
+          python -m py_compile scripts/extract_v273_harmonic_global.py scripts/evaluate_v273_scope_rescue.py test/test_v273_scope_rescue.py
+          python -m unittest -v test.test_v273_scope_rescue
+
+  extract:
+    needs: tests
+    strategy:
+      fail-fast: false
+      matrix:
+        fold: [0, 1, 2, 4]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned native audio environment
+        run: python -m pip install -r requirements-train.txt numpy==1.26.4 scipy==1.17.1 scikit-learn==1.4.2
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37605163312
+          name: yourmt3-exactk-cohort
+          path: model/cohort
+      - uses: actions/cache@v4
+        id: guitarset
+        with:
+          path: data/GuitarSet
+          key: ${{ env.GUITARSET_CACHE_KEY }}
+      - name: Restore original GuitarSet audio
+        if: steps.guitarset.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          curl -L --fail --retry 3 -o data/GuitarSet/audio_mono-pickup_mix.zip https://zenodo.org/records/3371780/files/audio_mono-pickup_mix.zip
+      - name: Verify original audio
+        run: |
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+          echo "aecce79f425a44e2055e46f680e10f6a  data/GuitarSet/audio_mono-pickup_mix.zip" | md5sum -c -
+      - name: Extract all frozen baseline K0/K1/K5 events without looking at true labels
+        run: |
+          python -B scripts/extract_v273_harmonic_global.py \
+            --cohort model/cohort --dataset data/GuitarSet \
+            --fold ${{ matrix.fold }} \
+            --candidate-baselines 0 1 5 --primary-only \
+            --output model/scope-rescue-fold-${{ matrix.fold }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-scope-rescue-fold-${{ matrix.fold }}
+          path: model/scope-rescue-fold-${{ matrix.fold }}/
+          retention-days: 90
+
+  evaluate:
+    needs: extract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned numerical environment
+        run: python -m pip install numpy==1.26.4 scipy==1.17.1 scikit-learn==1.4.2
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37605163312
+          name: yourmt3-exactk-cohort
+          path: model/cohort
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v273-scope-rescue-fold-*
+          path: model/scope-rescue-features
+      - name: Evaluate seven-class rescues with train-only fold abstention
+        run: |
+          python -B -m scripts.evaluate_v273_scope_rescue \
+            --cohort model/cohort \
+            --input-root model/scope-rescue-features \
+            --output model/scope-rescue-evaluation
+      - name: Publish all-class correction and regression counts
+        run: cat model/scope-rescue-evaluation/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-scope-rescue-evaluation
+          path: model/scope-rescue-evaluation/
+          retention-days: 90
