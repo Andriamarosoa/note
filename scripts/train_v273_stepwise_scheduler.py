@@ -173,8 +173,8 @@ def selftest():
     with torch.no_grad():
         nodes,vals=grid_features(m,x,base)
         assert nodes.shape==(6,7,126) and vals.shape==(6,7,2)
-        pA,ma,da=act(m,x,prior,torch.from_numpy(base.astype(np.int64)),*initial,1)
-        pD,md,dd=act(m,x,prior,torch.from_numpy(base.astype(np.int64)),*initial,2)
+        pA,ma,da=act(m,x,prior,torch.from_numpy(base.astype(np.int64)),initial[0],initial[1],1)
+        pD,md,dd=act(m,x,prior,torch.from_numpy(base.astype(np.int64)),initial[0],initial[1],2)
         assert pA.shape==pD.shape==(6,7)
         assert not torch.allclose(pA,pD),'B first does not change A'
         assert torch.allclose(pA.sum(1),torch.ones(6),atol=1e-6)
