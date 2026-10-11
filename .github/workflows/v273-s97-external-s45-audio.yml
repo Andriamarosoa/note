@@ -1,0 +1,69 @@
+name: S97 run original S45 audio feature extraction on unseen GOAT
+on:
+  pull_request:
+    branches: [codex/v273-regression-loops]
+    paths:
+      - 'scripts/s97_external_s45_original_features.py'
+      - '.github/workflows/v273-s97-external-s45-audio.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  external_features:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned original feature dependencies
+        run: |
+          pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Selftest original 335D assembly
+        run: python -m scripts.s97_external_s45_original_features --self-test
+      - name: Restore original V84-native GOAT event groups
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38176406465
+          name: v273-s83-native-v84-pr16-external
+          path: model/s83
+      - name: Download only GOAT audio; do not read annotations
+        run: |
+          set -euo pipefail
+          mkdir -p model/goat
+          BASE="https://raw.githubusercontent.com/JackJamesLoth/GOAT-Dataset/55c6e6668ef4546e4635c5e7eaad3062cf7f036b/audio-examples"
+          for n in 1 2; do
+            curl -fLsS --retry 3 --max-time 180 "${BASE}/example${n}/example${n}_di.wav" -o "model/goat/example${n}_di.wav"
+          done
+      - name: Extract original label-free 58+245+3 features from native GOAT groups
+        run: |
+          GROUPS="$(find model/s83 -type f -name native_groups.npz | head -1)"
+          test -n "$GROUPS"
+          python -m scripts.s97_external_s45_original_features --groups "$GROUPS" --audio model/goat --output model/s97
+          python - <<'PY'
+          import json, numpy as np
+          r=json.load(open('model/s97/report.json'))
+          assert r['external_audio_events']==57,r
+          assert not r['midi_read'] and not r['promotion'] and not r['S45_335_features_ready']
+          with np.load('model/s97/original_s45_audio_only.npz',allow_pickle=False) as z:
+              n=r['external_audio_events']
+              assert z['summary58'].shape==(n,58)
+              assert z['flow245'].shape==(n,245)
+              assert z['geometry3'].shape==(n,3)
+              assert all(np.isfinite(z[k]).all() for k in ('summary58','flow245','geometry3'))
+          print('S97 ORIGINAL GOAT SIGNAL FEATURES VERIFIED, NO LABELS')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s97-original-goat-s45-audio-features
+          path: model/s97/
+          retention-days: 90
