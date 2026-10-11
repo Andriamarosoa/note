@@ -19,7 +19,7 @@ def audit(root,out):
         for step in model._predictors:
             for tree in step:
                 nodes=tree.nodes
-                splits=nodes[~nodes['is_leaf']]
+                splits=nodes[nodes['is_leaf']==0]
                 c.update(int(x) for x in splits['feature_idx'])
         if not c:raise ValueError('no trained splits detected')
         if not all(0<=i<527 for i in c):raise ValueError('invalid split index')
