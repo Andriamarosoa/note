@@ -63,9 +63,9 @@ jobs:
           done
       - name: Extract original label-free 58+245+3 features from native GOAT groups
         run: |
-          GROUPS="model/s97-native/native_groups.npz"
-          test -s "$GROUPS"
-          python -m scripts.s97_external_s45_original_features --groups "$GROUPS" --audio model/goat --output model/s97
+          GROUP_FILE="model/s97-native/native_groups.npz"
+          test -s "$GROUP_FILE"
+          python -m scripts.s97_external_s45_original_features --groups "$GROUP_FILE" --audio model/goat --output model/s97
           python - <<'PY'
           import json, numpy as np
           r=json.load(open('model/s97/report.json'))
