@@ -88,6 +88,42 @@ jobs:
               print(k,r['development'][k])
           print('PROMOTION BLOCKED: no new player05/fold3 paired predictions or fully nested upstream model provenance.')
           PY
+      - name: S81 external audio preflight — DO NOT read MIDI labels
+        run: |
+          set -euo pipefail
+          mkdir -p model/s81-external model/s81-check
+          BASE="https://raw.githubusercontent.com/JackJamesLoth/GOAT-Dataset/55c6e6668ef4546e4635c5e7eaad3062cf7f036b/audio-examples"
+          for n in 1 2; do
+            curl -fLsS --retry 3 --connect-timeout 15 --max-time 180 "${BASE}/example${n}/example${n}_di.wav" -o "model/s81-external/example${n}_di.wav"
+            curl -fLsS --retry 3 --connect-timeout 15 --max-time 180 "${BASE}/example${n}/example${n}.mid" -o "model/s81-external/example${n}.mid"
+          done
+          python - <<'PY'
+          import json,pathlib,hashlib,wave
+          expected={'example1_di.wav':4673498,'example2_di.wav':12312044,'example1.mid':748,'example2.mid':5698}
+          out={}
+          for name,size in expected.items():
+              p=pathlib.Path('model/s81-external')/name
+              assert p.stat().st_size==size
+              d={'bytes':size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+              if name.endswith('.wav'):
+                  with wave.open(str(p),'rb') as w:
+                      d['sample_rate']=w.getframerate()
+                      d['channels']=w.getnchannels()
+                      d['seconds']=round(w.getnframes()/w.getframerate(),3)
+              out[name]=d
+          res={'status':'EXTERNAL_AUDIO_VERIFIED_NO_S80_INFERENCE',
+               'sources_sha':'55c6e6668ef4546e4635c5e7eaad3062cf7f036b',
+               'files':out,'opened_MIDI':False,'scored_S80':False,'independent_accuracy':None,
+               'promotion':False}
+          pathlib.Path('model/s81-check/report.json').write_text(json.dumps(res,indent=2)+'\n')
+          print('GOAT EXTERNAL MEDIA VERIFIED; S80 end-to-end on audio is still required.')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s81-external-source-preflight
+          path: model/s81-check/
+          retention-days: 90
       - uses: actions/upload-artifact@v4
         if: always()
         with:
