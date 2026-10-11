@@ -61,14 +61,30 @@ def candidate_starts(samples, max_events=60):
         starts=starts[keep]
     return starts
 
-def infer(model_dir, audio_root, output, max_events):
+def infer(model_dir, audio_root, output, max_events, native_groups=None):
     require(not output.exists(),'do not overwrite experiment')
+    groups=None
+    if native_groups is not None:
+        with np.load(native_groups,allow_pickle=False) as z:
+            require(set(z.files)=={'member','starts','ends'},'native group fields')
+            groups={k:z[k].copy() for k in z.files}
+        require(len(groups['member'])==len(groups['starts'])==len(groups['ends'])>0,
+                'empty native group archive')
     records=[]
     for filename in ('example1_di.wav','example2_di.wav'):
         path=audio_root/filename
-        samples=load_wav(path);starts=candidate_starts(samples,max_events)
-        require(15<=len(starts)<=max_events,'audio onset candidate failure '+filename)
-        ends=starts.copy()
+        samples=load_wav(path)
+        if groups is None:
+            starts=candidate_starts(samples,max_events)
+            ends=starts.copy()
+            require(15<=len(starts)<=max_events,'audio onset candidate failure '+filename)
+        else:
+            select=(groups['member']==filename)
+            starts=groups['starts'][select].astype(np.int64)
+            ends=groups['ends'][select].astype(np.int64)
+            require(0<len(starts)<=max_events and np.all(ends>=starts) and
+                    np.all(ends-starts<=1764) and np.all(starts[1:]>ends[:-1]),
+                    'native group timing invalid '+filename)
         summary=[];seq=[];geom=[];names=None
         for i,s in enumerate(starts):
             spec,t=_frames(samples,int(s))
@@ -81,7 +97,7 @@ def infer(model_dir, audio_root, output, max_events):
             mask=ownership(starts,ends,i,query)
             before=(s-ends[i-1])/10584 if i else 1.
             after=(starts[i+1]-s)/10584 if i+1<len(starts) else 1.
-            geom.append(np.r_[mask,0,np.clip(before,0,1),np.clip(after,0,1),mask.mean()])
+            geom.append(np.r_[mask,(ends[i]-starts[i])/1764,np.clip(before,0,1),np.clip(after,0,1),mask.mean()])
         require(len(names)==58,'wrong acoustic features')
         rec=dict(name=filename,sha256=sha(path),sample_rate=SR,
                  audio_seconds=len(samples)/SR,starts=starts,
@@ -125,7 +141,8 @@ def infer(model_dir, audio_root, output, max_events):
         probabilities=probabilities,producer_names=np.asarray(pnames))
     manifest={'status':'EXTERNAL_PR16_NEURAL_PRODUCER_INFERENCE_COMPLETED_NOT_S80',
        'label_fields_present':False,'midi_accessed':False,'s80_scored':False,
-       'candidate_source':'TEMPORARY_LABEL_BLIND_SPECTRAL_FLUX_NOT_NATIVE_V8',
+       'candidate_source':('ORIGINAL_V84_V86_V90_NATIVE_GROUPS' if groups is not None else 'TEMPORARY_LABEL_BLIND_SPECTRAL_FLUX_NOT_NATIVE_V8'),
+       'native_groups_sha256':sha(native_groups) if native_groups is not None else None,
        'producer_model_fold':0,'producer_count':12,'n_external_events':len(names),
        'files':[{k:v for k,v in r.items() if k in ('name','sha256','sample_rate','audio_seconds')}|
                 {'n_events':len(r['starts'])} for r in records],
@@ -140,5 +157,6 @@ if __name__=='__main__':
     p.add_argument('--audio',type=Path,required=True)
     p.add_argument('--output',type=Path,required=True)
     p.add_argument('--max-events',type=int,default=60)
+    p.add_argument('--native-groups',type=Path)
     a=p.parse_args()
-    infer(a.model,a.audio,a.output,a.max_events)
+    infer(a.model,a.audio,a.output,a.max_events,a.native_groups)
