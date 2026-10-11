@@ -1,0 +1,59 @@
+name: S116 original 111D S4 acoustic control input on GOAT
+on:
+  pull_request:
+    branches: [codex/v273-regression-loops]
+    paths:
+      - 'scripts/s116_external_s4_control111.py'
+      - '.github/workflows/v273-s116-external-s4-control.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  external_control:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2
+      - name: Restore label-free GOAT S97 original acoustic and temporal evidence
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38182078525
+          name: v273-s97-original-goat-s45-audio-features
+          path: model/s97
+      - name: Restore S85 exact original frozen baseline events
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38176406465
+          name: v273-s85-original-pr16-external-policies
+          path: model/s85
+      - name: Compute original S4 58 plus 46 plus 7 input with non-overlap proof
+        env:
+          PYTHONPATH: '.:src'
+        run: |
+          set -euo pipefail
+          S97="$(find model/s97 -type f -name original_s45_audio_only.npz -print -quit)"
+          S85="$(find model/s85 -type f -name pr16_external_36_policies.npz -print -quit)"
+          test -n "$S97" && test -n "$S85"
+          python -m scripts.s116_external_s4_control111 --s97 "$S97" --s85 "$S85" --out model/s116
+          python - <<'PY'
+          import json
+          r=json.load(open('model/s116/report.json'))
+          assert r['event_count']==57
+          assert r['S4_111D_schema_ready'],r['member_overlap_conflicts']
+          assert not r['S4_owned_527D_ready'] and not r['promotion']
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s116-original-S4-control111-GOAT
+          path: model/s116/
+          retention-days: 90
