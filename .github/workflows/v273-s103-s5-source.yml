@@ -1,0 +1,20 @@
+name: S103 trace original S5 upstream training code
+on:
+  pull_request:
+    branches: [codex/v273-regression-loops]
+    paths:
+      - 'scripts/s103_s5_provenance_search.py'
+      - '.github/workflows/v273-s103-s5-source.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  trace:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: python scripts/s103_s5_provenance_search.py --out model/s103/report.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-s103-upstream-s5-source
+          path: model/s103/report.json
