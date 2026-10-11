@@ -33,7 +33,7 @@ def run(a):
     for fold in (0,1,2,4):
         p=a.root/'series5'/'models'/f'fold{fold}'
         rep=json.loads((p/'report.json').read_text())
-        info=load(p/'model.joblib')
+        _,info=load(p/'model.joblib')
         if info['sha256']!=rep['model_sha256']:raise ValueError('S5 pinned checkpoint drift')
         if info['feature_dimensions']!=527:raise ValueError('S5 527 contract drift')
         s5.append(dict(fold=fold,**info))
@@ -43,7 +43,7 @@ def run(a):
                 if not file.is_file():
                     missing.append(str(file.relative_to(a.root)))
                     continue
-                info=load(file)
+                _,info=load(file)
                 s4.append(dict(fold=fold,variant=variant,poly=poly,**info))
     report={'status':'S108_S4_S5_FROZEN_CHECKPOINT_PROVENANCE',
             'S4_feature_dimensions':sorted(set(q['feature_dimensions'] for q in s4)),
