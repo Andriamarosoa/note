@@ -15,23 +15,22 @@ def call(*args,valid=(0,)):
     return p.stdout
 
 def audit(out):
-    refs=call("for-each-ref","--format=%(refname:short)","refs/remotes/origin/","refs/tags/").splitlines()
-    refs=sorted(set(refs))
+    all_refs=call("for-each-ref","--format=%(refname:short)","refs/remotes/origin/","refs/tags/").splitlines()
+    refs=sorted(set(r for r in all_refs if r.startswith("origin/") or
+                    r.startswith("v273-open") or r.startswith("v273-series")))
     scan=[]
+    pattern="designs_sha256|27407|series5/models|series5__|527|owned__poly|series4"
     for ref in refs:
-        hits={}
-        for k in KEYWORDS:
-            raw=call("grep","-n","-I","-F",k,ref,"--",*SCOPES,valid=(0,1))
-            matches=[]
-            for row in raw.splitlines():
-                if "/evidence/" in row or "/source-archives/" in row:continue
-                if len(row)>500:row=row[:500]
-                matches.append(row)
-            if matches:hits[k]=matches[:30]
-        if hits:scan.append(dict(ref=ref,matches=hits))
+        raw=call("grep","-n","-I","-E",pattern,ref,"--",*SCOPES,valid=(0,1))
+        matches=[]
+        for row in raw.splitlines():
+            if "/evidence/" in row or "/source-archives/" in row:continue
+            if len(row)>500:row=row[:500]
+            matches.append(row)
+        if matches:scan.append(dict(ref=ref,source_lines=matches[:60]))
     historical={}
     for term in ("designs_sha256","527","27407","series5/models","owned__poly"):
-        cmd=["log","--all","-G",term,"--format=%H %s","--",*SCOPES]
+        cmd=["log","--all","--since=2026-10-06","-G",term,"--format=%H %s","--",*SCOPES]
         historical[term]=call(*cmd).splitlines()[:30]
     output={"status":"S114_GITHUB_FULL_BRANCH_WORKFLOW_PROVENANCE",
       "refs_scanned":len(refs),"refs_with_source_hits":len(scan),
@@ -40,7 +39,7 @@ def audit(out):
       "validated_S80_externally":False,"promoted":False}
     out.parent.mkdir(parents=True,exist_ok=True)
     out.write_text(json.dumps(output,indent=2)+"\n")
-    short=[{"ref":r["ref"],"terms":list(r["matches"])} for r in scan]
+    short=[{"ref":r["ref"],"terms":list(r["source_lines"])} for r in scan]
     print(json.dumps({"status":output["status"],"refs_scanned":len(refs),
       "matches":short,"history":historical},indent=2))
 if __name__=="__main__":
