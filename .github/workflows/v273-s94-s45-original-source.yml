@@ -5,6 +5,7 @@ on:
     paths:
       - 'scripts/train_v273_s45_specialized_risk_heads.py'
       - 'scripts/verify_v273_s45_specialized_risk_heads.py'
+      - 'scripts/train_v273_aba_recurrent.py'
       - '.github/workflows/v273-s94-s45-original-source.yml'
   workflow_dispatch:
 permissions:
