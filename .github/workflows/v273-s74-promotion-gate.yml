@@ -12,6 +12,7 @@ on:
       - 'scripts/verify_v273_s80_frozen_inference.py'
       - 'scripts/audit_v273_s46_classwise_compromise.py'
       - 'scripts/s88_unlabeled_s46_runtime.py'
+      - 'scripts/s89_label_blind_s69_runtime.py'
       - 'scripts/extract_v273_harmonic_trajectory.py'
       - 'analysis/README_V273_S74_REFERENCE_PROMOTION_AUDIT.md'
       - 'analysis/v273_reference_candidate.json'
@@ -521,6 +522,62 @@ jobs:
       - name: Promote only reusable label-free S46 runtime code, not S80 model
         run: |
           echo 'Original S46 label-free 193 selector verified. Original 16 S45 source family inputs on new WAV not yet available.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Restore pinned S69 frozen rule audit (no fit needed in S89 runtime)
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38177948016
+          name: v273-s69-s46-risk-replay
+          path: model/original-S69
+      - name: Restore pinned PR16 36 votes (must remove truth before S89)
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          name: v273-open-summary
+          path: model/original-PR16
+      - name: Build strictly label-free S69 input bridge with original row order
+        run: |
+          python - <<'PY'
+          import pathlib,numpy as np
+          base=pathlib.Path('model/S89');base.mkdir(parents=True,exist_ok=True)
+          with np.load('model/original-S46/predictions.npz',allow_pickle=False) as s:
+              np.savez_compressed(base/'S46_only.npz',
+                 row_id=s['global_index'],fold=s['fold'],
+                 variant_ids=s['variant_ids'],predictions=s['predictions'])
+          with np.load('model/original-PR16/predictions.npz',allow_pickle=False) as p:
+              np.savez_compressed(base/'PR16_only.npz',
+                 row_id=p['global_index'],predictions=p['predictions'])
+          PY
+      - name: Apply S69 saved fold-threshold rules without any label access
+        run: |
+          python -m scripts.s89_label_blind_s69_runtime \
+            --s46 model/S89/S46_only.npz \
+            --pr16 model/S89/PR16_only.npz \
+            --rules model/original-S69/report.json \
+            --output model/S89/runtime
+          python - <<'PY'
+          import json,numpy as np
+          with np.load('model/original-S69/predictions.npz',allow_pickle=False) as o, \
+               np.load('model/S89/runtime/predictions.npz',allow_pickle=False) as n:
+              np.testing.assert_array_equal(n['row_id'],o['global_index'])
+              np.testing.assert_array_equal(n['fold'],o['fold'])
+              for k in ('s18_K','balanced_s46_K','balanced_protected_K',
+                        'polymax_s46_K','polymax_protected_K'):
+                  np.testing.assert_array_equal(n[k],o[k])
+          r=json.load(open('model/S89/runtime/report.json'))
+          assert r['status']=='S69_FROZEN_RULES_OOF_EXACT_INFERENCE'
+          assert not r['new_audio_supported'] and r['no_truth_labels_read']
+          print('S69 2 frozen policy decisions bit-exact, 59309 rows, label-free')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s89-frozen-s69-label-free-rules
+          path: model/S89/runtime/
+          retention-days: 90
       - name: Require equality on all 59309 rows x 193 policies and document external blockers
         run: |
           python - <<'PY'
