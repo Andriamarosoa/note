@@ -5,6 +5,7 @@ on:
     branches: [codex/v273-regression-loops]
     paths:
       - 'scripts/audit_v273_reference_promotion.py'
+      - 'scripts/s82_external_pr16_neural_inference.py'
       - 'analysis/README_V273_S74_REFERENCE_PROMOTION_AUDIT.md'
       - 'analysis/v273_reference_candidate.json'
       - '.github/workflows/v273-s74-promotion-gate.yml'
