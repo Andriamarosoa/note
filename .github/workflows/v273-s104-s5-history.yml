@@ -1,0 +1,27 @@
+name: S104 search deleted S5 feature generator across git history
+on:
+  pull_request:
+    branches: [codex/v273-regression-loops]
+    paths:
+      - 'scripts/s104_deleted_s5_history.py'
+      - '.github/workflows/v273-s104-s5-history.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  history:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fetch historical branches
+        run: git fetch origin '+refs/heads/*:refs/remotes/origin/*'
+      - name: Find source changes including deleted code
+        run: python scripts/s104_deleted_s5_history.py --out model/s104/report.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-s104-original-S5-527-feature-history
+          path: model/s104/report.json
+          retention-days: 90
