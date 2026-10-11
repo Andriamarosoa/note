@@ -1,0 +1,18 @@
+name: S92 inspect producer manifests
+on:
+  pull_request:
+    branches: [codex/v273-regression-loops]
+    paths: ['scripts/s92_audit_producer_manifests.py','.github/workflows/v273-s92-manifests.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: python scripts/s92_audit_producer_manifests.py --out model/s92/report.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-s92-manifest-audit
+          path: model/s92/report.json
