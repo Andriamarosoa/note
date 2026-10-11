@@ -27,32 +27,32 @@ jobs:
       - name: Download S72 (fixed, unmodified)
         uses: actions/download-artifact@v4
         with:
-          github-token: \${{ github.token }}
-          repository: \${{ github.repository }}
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
           run-id: 38155427761
           name: v273-s72-temporal-risk
           path: model/s72
       - name: Download PR16 36 policy heads and probabilities
         uses: actions/download-artifact@v4
         with:
-          github-token: \${{ github.token }}
-          repository: \${{ github.repository }}
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
           run-id: 37837235723
           name: v273-open-summary
           path: model/pr16
       - name: Download S46 policy votes
         uses: actions/download-artifact@v4
         with:
-          github-token: \${{ github.token }}
-          repository: \${{ github.repository }}
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
           run-id: 37891336823
           name: v273-series46-poly-class-compromises
           path: model/s46
       - name: Download verified acoustic features from original PR16 source
         uses: actions/download-artifact@v4
         with:
-          github-token: \${{ github.token }}
-          repository: \${{ github.repository }}
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
           run-id: 37837235723
           pattern: v273-open-features-*
           path: model/features
