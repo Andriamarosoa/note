@@ -6,6 +6,10 @@ on:
       - 'scripts/train_v273_s45_specialized_risk_heads.py'
       - 'scripts/verify_v273_s45_specialized_risk_heads.py'
       - 'scripts/train_v273_aba_recurrent.py'
+      - 'scripts/loop_v273_native_risk.py'
+      - 'scripts/loop_v273_birth_flow.py'
+      - 'scripts/loop_v273_policy_gate.py'
+      - 'scripts/train_v273_open_cohort.py'
       - '.github/workflows/v273-s94-s45-original-source.yml'
   workflow_dispatch:
 permissions:
