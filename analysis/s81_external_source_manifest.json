@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "registered_date": "2026-10-11",
-  "status": "PREREGISTERED_NOT_SCORED",
+  "status": "EXTERNAL_GOAT_AUDIO_VERIFIED_MODEL_NOT_SCORED",
   "official_reference": "freeze_local_combo",
   "candidate": "S80",
   "sources": {
@@ -29,7 +29,31 @@
         "example2_di.wav",
         "example2.mid"
       ],
-      "smoke_only": true
+      "smoke_only": true,
+      "verified_files": {
+        "example1_di.wav": {
+          "bytes": 4673498,
+          "sha256": "d05060b71ea19ba2093aef23ba411bafbbeb8f402973b45eb32933c2bd10a458",
+          "sample_rate": 44100,
+          "channels": 1,
+          "duration_seconds": 52.987
+        },
+        "example2_di.wav": {
+          "bytes": 12312044,
+          "sha256": "0e12f7bbb3ca210d3e245f10d24ba19547cfe97d58db087de89bdd4bd375384b",
+          "sample_rate": 44100,
+          "channels": 1,
+          "duration_seconds": 139.592
+        },
+        "example1.mid": {
+          "bytes": 748,
+          "sha256": "9a7551c0aa24bf512d98f505c0c59832617904d3b6117ec4cd1d73729e7cb7e5"
+        },
+        "example2.mid": {
+          "bytes": 5698,
+          "sha256": "a795c561041ec8093c75cd4ca501336c0aefbc93aba6c20593f85edf5da01ab8"
+        }
+      }
     }
   },
   "metric": {
@@ -69,5 +93,11 @@
   "existing_S80_historical_predictions_do_not_qualify": true,
   "external_predictions_available": false,
   "scored_external_samples": 0,
-  "promotion": false
+  "promotion": false,
+  "ci": {
+    "run_id": 38173157255,
+    "conclusion": "success",
+    "preflight_artifact_id": 11714891932,
+    "artifact": "v273-s81-external-source-preflight"
+  }
 }
