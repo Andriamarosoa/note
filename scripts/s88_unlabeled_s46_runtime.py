@@ -36,7 +36,9 @@ def run(inp,output):
     require(len(families)==16 and len(set(families))==16,'family IDs incomplete')
     require(props.shape==(n,16) and risks.shape==(n,16,2) and votes.shape==(n,16),'family output shape')
     require(np.isin(parent,range(7)).all() and np.isin(props,range(7)).all(),'invalid K0..6')
-    require(np.isfinite(risks).all() and np.isfinite(votes).all(),'invalid S45 risk values')
+    changed=props!=parent[:,None]
+    require(np.isfinite(risks[changed]).all() and np.isfinite(votes).all(),
+            'invalid S45 risk for changed proposals; unchanged can have NaN risk')
     require(not any('h9' in k.lower() or 'yourmt3' in k.lower() for k in families),
             'H9/competitor prohibited')
     result={'series18_parent':parent.copy()}
