@@ -9,7 +9,8 @@ from numpy.lib import format as npformat
 
 def header(f):
     version=npformat.read_magic(f)
-    shape,fortran,dtype=npformat._read_array_header(f,version)
+    shape,fortran,dtype=(npformat.read_array_header_1_0(f) if version==(1,0)
+        else npformat.read_array_header_2_0(f))
     return {'shape':list(shape),'dtype':str(dtype),'fortran':fortran}
 
 def inventory(root,out):
