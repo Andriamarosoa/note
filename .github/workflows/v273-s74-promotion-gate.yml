@@ -8,6 +8,7 @@ on:
       - 'scripts/s82_external_pr16_neural_inference.py'
       - 'scripts/s83_external_native_v84_groups.py'
       - 'scripts/s84_external_freeze_native_count.py'
+      - 'scripts/s85_external_pr16_policies.py'
       - 'scripts/extract_v273_harmonic_trajectory.py'
       - 'analysis/README_V273_S74_REFERENCE_PROMOTION_AUDIT.md'
       - 'analysis/v273_reference_candidate.json'
@@ -297,6 +298,54 @@ jobs:
               assert 'true_K' not in q.files
           print('V84→V88→freeze_local_combo external predictions exist. S80 not yet scored.')
           PY
+      - name: Fetch archived original PR16 OOF predictions to verify all 36 formula columns
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          name: v273-open-summary
+          path: model/s85-reference
+      - name: Independently reproduce all 36 original PR16 policies on 59309 historical rows
+        run: |
+          python - <<'PY'
+          import numpy as np
+          from scripts.s85_external_pr16_policies import original_pr16_policies
+          with np.load('model/s85-reference/predictions.npz',allow_pickle=False) as a, \
+               np.load('model/s85-reference/probabilities.npz',allow_pickle=False) as b:
+              y=original_pr16_policies(b['probabilities'],a['baseline_K'])
+              assert y.shape==(59309,36)
+              np.testing.assert_array_equal(y,a['predictions'])
+          print('EXACT REPLAY: all 36 original PR16 policies match every one of 59309 historical rows')
+          PY
+      - name: Align external native V84 groups and rebuild all 36 original PR16 policies
+        run: |
+          python -m scripts.s85_external_pr16_policies \
+            --groups model/s83-native-groups/native_groups.npz \
+            --probabilities model/s83-external-pr16/label_blind_pr16_predictions.npz \
+            --incumbent model/s84-external-freeze/external_freeze_local_combo_predictions.npz \
+            --output model/s85-external-policies
+      - name: Assert source-aligned PR16 policy22 and 36 vote columns with no truth
+        run: |
+          python - <<'PY'
+          import json,numpy as np
+          a=json.load(open('model/s85-external-policies/report.json'))
+          assert a['status']=='EXTERNAL_NATIVE_PR16_36_POLICY_RECONSTRUCTION_COMPLETE'
+          assert a['matched_events']>0 and not a['external_truth_used'] and not a['full_S80_executed']
+          with np.load('model/s85-external-policies/pr16_external_36_policies.npz',allow_pickle=False) as p:
+              assert p['pr16_policy_K'].shape==(a['matched_events'],36)
+              assert p['pr16_vote_count'].shape==(a['matched_events'],7)
+              assert np.all(p['pr16_vote_count'].sum(1)==36)
+              assert np.array_equal(p['pr16_policy22_K'],p['pr16_policy_K'][:,22])
+              assert 'true_K' not in p.files
+          print('S85 new-audio 36 PR16 policies + policy22: completed and label-blind')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s85-original-pr16-external-policies
+          path: model/s85-external-policies/
+          retention-days: 90
       - uses: actions/upload-artifact@v4
         if: always()
         with:
