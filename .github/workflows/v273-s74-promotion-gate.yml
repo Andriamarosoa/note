@@ -10,6 +10,7 @@ on:
       - 'scripts/s84_external_freeze_native_count.py'
       - 'scripts/s85_external_pr16_policies.py'
       - 'scripts/verify_v273_s80_frozen_inference.py'
+      - 'scripts/audit_v273_s46_classwise_compromise.py'
       - 'scripts/extract_v273_harmonic_trajectory.py'
       - 'analysis/README_V273_S74_REFERENCE_PROMOTION_AUDIT.md'
       - 'analysis/v273_reference_candidate.json'
@@ -445,4 +446,70 @@ jobs:
         with:
           name: v273-s86-verified-frozen-s80-tail
           path: model/s86-s80-frozen-proof/
+          retention-days: 90
+
+  frozen_s46_reconstruction:
+    name: S46 recompute all 193 original policies from S45 fixed risk source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.3.5
+      - name: Restore original 16-family S45 predictions and 304 trained risk heads archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/download-S45 model
+          gh release download v273-series45-research-37891074478 \
+            --repo "${{ github.repository }}" --pattern v273-series45-specialized-heads.tar.gz \
+            --dir model/download-S45
+          tar -xzf model/download-S45/v273-series45-specialized-heads.tar.gz -C model
+          test -f model/S45/predictions.npz
+          test -f model/S45/risk_scores.npz
+      - name: Fetch previously frozen S46 193 outputs for full-column equality
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37891336823
+          name: v273-series46-poly-class-compromises
+          path: model/original-S46
+      - name: Recalculate all 193 S46 original policies (no learning and no new source proposals)
+        run: |
+          python -m scripts.audit_v273_s46_classwise_compromise --self-test
+          python -m scripts.audit_v273_s46_classwise_compromise \
+            --s45pred model/S45/predictions.npz \
+            --s45risk model/S45/risk_scores.npz \
+            --output model/S87-reproduced-S46
+      - name: Require equality on all 59309 rows x 193 policies and document external blockers
+        run: |
+          python - <<'PY'
+          import json,numpy as np,pathlib
+          with np.load('model/original-S46/predictions.npz',allow_pickle=False) as old, \
+               np.load('model/S87-reproduced-S46/predictions.npz',allow_pickle=False) as new:
+            assert len(old['global_index'])==59309
+            for k in ('global_index','fold','true_K','variant_ids','predictions'):
+              np.testing.assert_array_equal(old[k],new[k])
+            assert new['predictions'].shape==(59309,193)
+          outcome={'status':'S46_ALL_193_POLICIES_BIT_EXACT_REPLAY',
+            'historical_rows':59309,'policies':193,
+            'external_S80_validation':False,'official_reference_changed':False,
+            'missing_external_dependencies':['16 S45 new-audio family proposals',
+              'per-new-composition risk routing for 304 S45 per-piece classifiers',
+              'new-audio S69/S70/S71/S72 K parent'],
+            'no_holdout_labels_used':True}
+          pathlib.Path('model/S87-reproduced-S46/verify_report.json').write_text(json.dumps(outcome,indent=2)+'\n')
+          print('S46 all original 193 policy columns reproduced. Source is HISTORICAL only.')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s87-s46-original-frozen-selector-replay
+          path: model/S87-reproduced-S46/
           retention-days: 90
