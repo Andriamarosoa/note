@@ -33,8 +33,9 @@ def inspect(report_path,output):
             'note':'A champion is a frozen prediction vector; each source producer needs its actual audio inference pipeline.'}
     output.parent.mkdir(parents=True,exist_ok=True)
     output.write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
-    print(json.dumps({'status':result['status'],'families':list(mapping),
-         'verified_external_producers':0},indent=2))
+    print(json.dumps({'status':result['status'],'champions':[
+         {'family':k,'variant':v['original_variant'],'sha256':v['original_vector_sha256']}
+         for k,v in mapping.items()], 'verified_external_producers':0},indent=2))
     return result
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--s44-report',type=Path,required=True)
