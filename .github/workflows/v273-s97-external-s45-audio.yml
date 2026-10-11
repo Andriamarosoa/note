@@ -45,7 +45,7 @@ jobs:
           paths=list(Path('model/s85').rglob('pr16_external_36_policies.npz'))
           assert len(paths)==1,('missing native S85 groups',str(paths))
           with np.load(paths[0],allow_pickle=False) as z:
-              names=np.asarray([canon_name(m) for m in z['member']])
+              names=np.asarray([str(m) if str(m) in ('example1_di.wav','example2_di.wav') else canon_name(m) for m in z['member']])
               starts=z['start_samples']
               ends=z['end_samples']
           assert len(names)==len(starts)==len(ends)==57
