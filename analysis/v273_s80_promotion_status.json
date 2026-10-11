@@ -6,9 +6,10 @@
   "official_promotion": false,
   "independent_S80_accuracy_measured": false,
   "latest_run": {
-    "id": 38177874961,
-    "conclusion": "s46_source_and_unlabeled_replay_success",
-    "note": "S88 passed; remaining V84 job still running at last check"
+    "id": 38178147414,
+    "component": "S89",
+    "status": "S46/S69 label-free frozen historical replay SUCCESS",
+    "independent_S80_score": false
   },
   "validated_frozen_components": {
     "original_native_audio_inference": {
@@ -41,13 +42,26 @@
       "annotations_present_in_runtime_input": false,
       "run_id": 38177874961,
       "artifact_id": 11716197528
+    },
+    "s69_label_free_historical_rules": {
+      "status": "BIT_EXACT_OOF_HISTORICAL",
+      "exact_historical_rows": 59309,
+      "policies": [
+        "balanced",
+        "polymax"
+      ],
+      "fold_specific_rule_sets": true,
+      "new_unseen_fold_supported": false,
+      "run_id": 38178147414,
+      "artifact_id": 11716267343
     }
   },
   "missing_external_components": [
-    "Unseen audio: 16 genuine source-family S43/S44 proposals and S45 risk_fix_break predictions",
-    "New-piece risk aggregation/assignment for 304 S45 per-piece Ridge models",
-    "New-audio S69/S70/S71/S72 parent count predictions",
-    "Frozen, prespecified S80 K1-gate deployment ensemble or independently trained model"
+    "Original 16 S43/S44 proposal family generators plus 16 S45 risk scores for new WAV",
+    "New-piece deployment assignment or retraining of original 304 S45 piece-exclusion models",
+    "Prespecified new-piece deployment for S69 fold-specific veto rules",
+    "New-piece deployable S70/S71/S72 meta learner K parent",
+    "Prespecified S80 four-fold K1 classifier policy for new recordings"
   ],
   "external_label_leakage_avoided": true,
   "disallowed_claims": [
