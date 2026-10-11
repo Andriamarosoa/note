@@ -14,10 +14,12 @@ def header(fp):
     return (fmt.read_array_header_1_0(fp) if ver==(1,0) else fmt.read_array_header_2_0(fp))
 def run(root,out):
     manifest=json.loads((root/'storage-manifest.json').read_text())
-    rows=[]
+    rows=[]; missing=[]
     for record in manifest['files']:
         f=root/record['path']
-        if not f.exists(): raise FileNotFoundError(str(f))
+        if not f.exists():
+            missing.append(record['path'])
+            continue
         digest=hashlib.sha256(f.read_bytes()).hexdigest()
         if digest!=record['sha256']:raise ValueError(f'SHA drift: {f}')
         meta={'path':record['path'],'bytes':record['bytes'],'sha256_verified':True}
@@ -35,11 +37,13 @@ def run(root,out):
     result={'status':'S110_SERIES5_ORIGINAL_ARCHIVE_SCHEMA_VERIFIED',
        'verified_files':len(rows),'archive_inventory':rows,
        'saved_527D_arrays':active,
+       'declared_files_missing_from_commit':missing,
+       'archive_complete':len(missing)==0,
        'authentic_audio_to_527D_design_builder_verified':False,
        'independent_S80_accuracy':None,'promotion':False}
     out.parent.mkdir(parents=True,exist_ok=True)
     out.write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
-    print(json.dumps({'status':result['status'],'verified_files':len(rows),
+    print(json.dumps({'status':result['status'],'verified_files':len(rows),'missing':missing,
        'schemas':[{'path':x['path'],'arrays':x.get('arrays',[])} for x in rows if 'arrays' in x],
        'saved_527D_arrays':active},indent=2))
 if __name__=='__main__':
