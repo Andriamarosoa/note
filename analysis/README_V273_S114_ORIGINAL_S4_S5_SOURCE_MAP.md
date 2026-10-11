@@ -55,10 +55,21 @@ validation. Original reference remains `freeze_local_combo`.
 
 - S97/S106: 57 GOAT audio events, 58D summaries and 42×49 real
   time-harmonic trajectories recovered without MIDI.
-- S116: restores original 46D geometry using the historic source and
-  aligns the 7D official frozen parent K from S85. The raw schema can
-  form 111D when event-boundary ownership constraints hold.
-  This alone is not a verified 527D source, nor S4/S5 output replay.
+- [S116](https://github.com/Andriamarosoa/note/actions/runs/38184381730):
+  **SUCCESS**. The original 46D ownership function was restored from the
+  historical open-K0-K6 branch, combined with acoustic summary58 and
+  original frozen one-hot K. All 57 GOAT events yield finite **111D**
+  control features. No incompatible intervals or MIDI labels.
+- [S117](https://github.com/Andriamarosoa/note/actions/runs/38184550844):
+  **SUCCESS**. Eight genuine pinned S4 `control` checkpoints (4 folds × 2
+  poly weights) executed their 111D forward on all 57 GOAT events. Mean
+  fold posterior argmax histograms, K0..K6:
+  poly1 = [47,9,1,0,0,0,0],
+  poly2 = [47,8,2,0,0,0,0].
+  Changed vs frozen reference: 5 and 4 events. These are not Exact-K
+  accuracy measures (GOAT annotations were deliberately not read).
+  The assumed column order still requires original-fold replay to prove
+  numeric identity; and S4 `owned` 527D and full S80 remain blocked.
 - The next required gate is an exact 527D `owned` reconstruction and
   historical checkpoint replay; only then should S45/S46/S80 undergo
   real external inference and an independent Exact-K comparison.
