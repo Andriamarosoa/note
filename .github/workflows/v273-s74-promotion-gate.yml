@@ -9,6 +9,7 @@ on:
       - 'scripts/s83_external_native_v84_groups.py'
       - 'scripts/s84_external_freeze_native_count.py'
       - 'scripts/s85_external_pr16_policies.py'
+      - 'scripts/verify_v273_s80_frozen_inference.py'
       - 'scripts/extract_v273_harmonic_trajectory.py'
       - 'analysis/README_V273_S74_REFERENCE_PROMOTION_AUDIT.md'
       - 'analysis/v273_reference_candidate.json'
@@ -359,4 +360,89 @@ jobs:
           path: |
             model/s83-native-groups/
             model/s83-external-pr16/
+          retention-days: 90
+
+  frozen_s80_tail:
+    name: S80 saved-weight inference exact audit on historical folds (NOT independent)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      actions: read
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+      - name: Original saved S80 models and case-level decisions
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38170647237
+          name: v273-s80-traceable-repair
+          path: model/frozen-s80
+      - name: Previously fixed S72 upstream predictions
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38155427761
+          name: v273-s72-temporal-risk
+          path: model/s72
+      - name: Original PR16 policy proposals
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          name: v273-open-summary
+          path: model/pr16
+      - name: Historical S46 193-policy producer data
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37891336823
+          name: v273-series46-poly-class-compromises
+          path: model/s46
+      - name: Acoustic feature signatures and arrays (PR16 original)
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          pattern: v273-open-features-*
+          path: model/features
+      - name: Verify all saved S80 OOF classifiers and 59309 final decisions
+        run: |
+          python -m py_compile scripts/verify_v273_s80_frozen_inference.py
+          python -m scripts.verify_v273_s80_frozen_inference \
+            --s80 model/frozen-s80 \
+            --s72 model/s72 \
+            --s46 model/s46 \
+            --pr16 model/pr16 \
+            --features model/features \
+            --output model/s86-s80-frozen-proof
+      - name: Fail closed on unverified external S80
+        run: |
+          python - <<'PY'
+          import json
+          p=json.load(open('model/s86-s80-frozen-proof/report.json'))
+          assert p['status']=='FROZEN_S80_LAST_STAGE_EXACT_REPLAY'
+          assert not p['full_external_S80_validation'] and not p['official_reference_changed']
+          assert p['global_correct']==49281 and p['poly_correct']==3240
+          assert p['K1_score_max_abs_error']<1e-5
+          assert sum(d['accepted'] for d in p['fold_decisions'].values())==67
+          print('Saved S80 final model verified; S46/S72 new-WAV generation remains required.')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s86-verified-frozen-s80-tail
+          path: model/s86-s80-frozen-proof/
           retention-days: 90
