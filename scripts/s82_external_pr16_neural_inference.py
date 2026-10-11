@@ -10,8 +10,27 @@ from pathlib import Path
 import numpy as np
 from scipy.signal import find_peaks, stft
 from scripts.extract_v273_harmonic_trajectory import _frames, features_from_spectrogram
-from scripts.train_v273_open_cohort import numpy_forward
-from scripts.extract_v273_open_cohort import ownership
+from scipy.special import erf, softmax
+def numpy_forward(x,weights,batch=256):
+    out=[]
+    for start in range(0,len(x),batch):
+        a=np.asarray(x[start:start+batch],np.float64)
+        for layer in range(3):
+            a=a@weights[2*layer]+weights[2*layer+1]
+            if layer<2:a=.5*a*(1+erf(a/np.sqrt(2)))
+        out.append(softmax(a,axis=1))
+    return np.concatenate(out)
+def ownership(starts,ends,i,query):
+    starts,ends,query=map(np.asarray,(starts,ends,query))
+    distance=np.maximum(np.maximum(starts[i]-query,query-ends[i]),0)
+    own=distance<=882
+    if i:
+        prev=np.maximum(np.maximum(starts[i-1]-query,query-ends[i-1]),0)
+        own &= distance<prev
+    if i+1<len(starts):
+        nxt=np.maximum(np.maximum(starts[i+1]-query,query-ends[i+1]),0)
+        own &= distance<=nxt
+    return own
 
 SR=44100
 def require(x,m):
