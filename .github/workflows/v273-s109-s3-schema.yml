@@ -1,0 +1,33 @@
+name: S109 search original S3 archive for saved 527D feature arrays
+on:
+  pull_request:
+    branches: [codex/v273-regression-loops]
+    paths:
+      - 'scripts/s109_inventory_s3_source_archive.py'
+      - '.github/workflows/v273-s109-s3-schema.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  provenance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==2.3.5
+      - name: Restore original S3 evidence archive from pinned S45 tag
+        run: |
+          mkdir -p model/history
+          git fetch origin 'refs/tags/v273-series45-research-37891074478:refs/tags/v273-series45-research-37891074478'
+          git archive 854ada718ac9bf1556f00c96b8e1aa90402d6ab3 analysis/evidence/v273-open-k0-k6/series3 | tar -x -C model/history
+      - name: Inspect array metadata without reading target labels
+        run: python scripts/s109_inventory_s3_source_archive.py --root model/history/analysis/evidence/v273-open-k0-k6/series3 --out model/s109/report.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s109-original-S3-array-schema
+          path: model/s109/report.json
+          retention-days: 90
