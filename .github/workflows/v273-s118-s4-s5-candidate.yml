@@ -1,0 +1,75 @@
+name: S118 S4-owned and S5 candidate 527D diagnostic (not promotion)
+on:
+  pull_request:
+    branches: [codex/v273-regression-loops]
+    paths:
+      - 'scripts/s118_s4_owned527_candidate.py'
+      - '.github/workflows/v273-s118-s4-s5-candidate.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  candidate_forward:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install historical checkpoint-compatible dependencies
+        run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+      - name: Unit test constructor and invariants
+        run: python -m scripts.s118_s4_owned527_candidate --self-test
+      - name: Recover genuine S4 owned and S5 original models, pinned commit
+        run: |
+          set -euo pipefail
+          mkdir -p model/history
+          git fetch origin 'refs/tags/v273-series45-research-37891074478:refs/tags/v273-series45-research-37891074478'
+          git archive 854ada718ac9bf1556f00c96b8e1aa90402d6ab3 \
+            analysis/evidence/v273-open-k0-k6/series4/models \
+            analysis/evidence/v273-open-k0-k6/series5/models | tar -x -C model/history
+      - name: Recover independently extracted label-free GOAT acoustic evidence
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38182078525
+          name: v273-s97-original-goat-s45-audio-features
+          path: model/s97
+      - name: Recover S116 111D control and native ownership
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38184381730
+          name: v273-s116-original-S4-control111-GOAT
+          path: model/s116
+      - name: Assemble 527D candidate and smoke-test genuine historical weights
+        env:
+          PYTHONPATH: '.:src'
+        run: |
+          set -euo pipefail
+          S97="$(find model/s97 -type f -name original_s45_audio_only.npz -print -quit)"
+          S116="$(find model/s116 -type f -name external_s4_control111.npz -print -quit)"
+          test -n "$S97" && test -n "$S116"
+          python -m scripts.s118_s4_owned527_candidate \
+            --s97 "$S97" --s116 "$S116" --out model/s118 \
+            --s4-models model/history/analysis/evidence/v273-open-k0-k6/series4/models \
+            --s5-models model/history/analysis/evidence/v273-open-k0-k6/series5/models
+          python - <<'PY'
+          import json
+          r=json.load(open('model/s118/report.json'))
+          assert r['event_count']==57 and r['candidate_total_dimensions']==527
+          assert r['genuine_original_checkpoints_smoke_executed']==10
+          assert not r['S4_owned_527_exact_original_equivalence']
+          assert not r['S5_original_527_input_equivalence']
+          assert not r['S80_promoted']
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s118-unvalidated-candidate-527-s4-s5-smoke
+          path: model/s118/
+          retention-days: 30
