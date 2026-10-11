@@ -4,6 +4,7 @@ on:
     branches: [codex/v273-regression-loops]
     paths:
       - 'scripts/s116_external_s4_control111.py'
+      - 'scripts/extract_v273_open_cohort.py'
       - '.github/workflows/v273-s116-external-s4-control.yml'
   workflow_dispatch:
 permissions:
