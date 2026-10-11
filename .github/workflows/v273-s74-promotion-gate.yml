@@ -7,6 +7,7 @@ on:
       - 'scripts/audit_v273_reference_promotion.py'
       - 'scripts/s82_external_pr16_neural_inference.py'
       - 'scripts/s83_external_native_v84_groups.py'
+      - 'scripts/s84_external_freeze_native_count.py'
       - 'scripts/extract_v273_harmonic_trajectory.py'
       - 'analysis/README_V273_S74_REFERENCE_PROMOTION_AUDIT.md'
       - 'analysis/v273_reference_candidate.json'
@@ -262,6 +263,46 @@ jobs:
               assert 'true_K' not in p.files
           print('Native audio events + real PR16 forward succeeded; S46/S72/S80 NOT reconstructed.')
           PY
+      - name: Restore untouched V27.3 freeze_local_combo trained checkpoint
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/s84-weights model/s84-download
+          gh release download v273-uniform-anchored-freeze-37233793945 \
+            --repo "${{ github.repository }}" \
+            --pattern v273-uniform-anchored-freeze-result.tgz \
+            --dir model/s84-download
+          tar -xzf model/s84-download/v273-uniform-anchored-freeze-result.tgz \
+            -C model/s84-weights
+          test -f model/s84-weights/freeze_local_combo.weights.h5
+      - name: Infer V8-V88 original runtime and untouched freeze count on new external WAVs
+        run: |
+          python -m py_compile scripts/s84_external_freeze_native_count.py
+          python -m scripts.s84_external_freeze_native_count \
+            --sources model/s83-source \
+            --audio model/s83-wav \
+            --freeze-weights model/s84-weights/freeze_local_combo.weights.h5 \
+            --output model/s84-external-freeze \
+            --seconds 6
+      - name: Verify frozen base really predicted without external labels
+        run: |
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/s84-external-freeze/report.json'))
+          assert r['status']=='EXTERNAL_ORIGINAL_V8_STACK_AND_FROZEN_COUNT_PREDICTIONS'
+          assert not r['full_S80_executed'] and not r['midi_labels_read']
+          with np.load('model/s84-external-freeze/external_freeze_local_combo_predictions.npz',allow_pickle=False) as q:
+              assert q['incumbent_probabilities'].shape==(r['native_group_count'],7)
+              assert q['incumbent_K'].shape==(r['native_group_count'],)
+              assert 'true_K' not in q.files
+          print('V84→V88→freeze_local_combo external predictions exist. S80 not yet scored.')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s84-native-external-frozen-reference
+          path: model/s84-external-freeze/
+          retention-days: 90
       - uses: actions/upload-artifact@v4
         if: always()
         with:
