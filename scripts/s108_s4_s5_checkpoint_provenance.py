@@ -29,7 +29,7 @@ def load(path):
                       classes=np.asarray(getattr(model,'classes_',[])).tolist())
 
 def run(a):
-    s4=[];s5=[]
+    s4=[];s5=[];missing=[]
     for fold in (0,1,2,4):
         p=a.root/'series5'/'models'/f'fold{fold}'
         rep=json.loads((p/'report.json').read_text())
@@ -40,6 +40,9 @@ def run(a):
         for variant in ('control','owned'):
             for poly in (1,2):
                 file=a.root/'series4'/'models'/f'fold{fold}__{variant}__poly{poly}.joblib'
+                if not file.is_file():
+                    missing.append(str(file.relative_to(a.root)))
+                    continue
                 info=load(file)
                 s4.append(dict(fold=fold,variant=variant,poly=poly,**info))
     report={'status':'S108_S4_S5_FROZEN_CHECKPOINT_PROVENANCE',
@@ -48,7 +51,7 @@ def run(a):
             'S4_model_count':len(s4),'S5_model_count':len(s5),
             'S4_saved_keys':sorted(set(k for q in s4 for k in q['saved_keys'])),
             'S5_saved_keys':sorted(set(k for q in s5 for k in q['saved_keys'])),
-            'S4_models':s4,'S5_models':s5,
+            'S4_models':s4,'S5_models':s5,'missing_S4_checkpoints':missing,
             'source_feature_builder_verified':False,
             'external_S80_predictions':0,'promotion':False}
     a.out.parent.mkdir(parents=True,exist_ok=True)
