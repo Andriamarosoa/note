@@ -200,7 +200,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          mkdir -p model/s83-source model/s83-download
+          mkdir -p model/s83-download
           gh release download v273-source-recovery-35086829802 \
             --repo "${{ github.repository }}" \
             --pattern v273-rebuilt-proposal-sources.zip --dir model/s83-download
