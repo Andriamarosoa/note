@@ -1,0 +1,86 @@
+name: V27.3 S81 external corpus preregistration (NOT a model evaluation)
+
+on:
+  pull_request:
+    branches: [codex/v273-regression-loops]
+    paths:
+      - 'analysis/s81_external_source_manifest.json'
+      - 'analysis/README_V273_S81_INDEPENDENT_VALIDATION.md'
+      - '.github/workflows/v273-s81-external-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  external_preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check frozen independent source registry
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('analysis/s81_external_source_manifest.json'))
+          assert r['status']=='PREREGISTERED_NOT_SCORED'
+          assert r['existing_S80_historical_predictions_do_not_qualify']
+          assert r['scored_external_samples']==0 and not r['promotion']
+          assert r['metric']['radius_samples']==882 and r['metric']['max_interval_samples']==1764
+          PY
+      - name: Download independent GOAT audio and MIDI (annotations remain unopened)
+        run: |
+          set -euo pipefail
+          mkdir -p model/s81-external-data model/s81-external-audit
+          BASE="https://raw.githubusercontent.com/JackJamesLoth/GOAT-Dataset/55c6e6668ef4546e4635c5e7eaad3062cf7f036b/audio-examples"
+          for n in 1 2; do
+            curl -fLsS --retry 3 --connect-timeout 15 --max-time 180 \
+              "${BASE}/example${n}/example${n}_di.wav" \
+              -o "model/s81-external-data/example${n}_di.wav"
+            curl -fLsS --retry 3 --connect-timeout 15 --max-time 180 \
+              "${BASE}/example${n}/example${n}.mid" \
+              -o "model/s81-external-data/example${n}.mid"
+          done
+      - name: Verify external WAV metadata and source hashes without decoding MIDI
+        run: |
+          python - <<'PY'
+          import json, hashlib, pathlib, wave
+          base=pathlib.Path('model/s81-external-data')
+          data={}
+          expected={'example1_di.wav':4673498,'example2_di.wav':12312044,
+                    'example1.mid':748,'example2.mid':5698}
+          for name,nbytes in expected.items():
+              p=base/name
+              assert p.exists() and p.stat().st_size==nbytes,(name,'unexpected size')
+              d={'size_bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+              if name.endswith('.wav'):
+                  with wave.open(str(p),'rb') as audio:
+                      d['sample_rate']=audio.getframerate()
+                      d['channels']=audio.getnchannels()
+                      d['duration_seconds']=round(audio.getnframes()/audio.getframerate(),3)
+              data[name]=d
+          result={'status':'EXTERNAL_AUDIO_VERIFIED_NO_S80_INFERENCE',
+                  'source_repo':'JackJamesLoth/GOAT-Dataset',
+                  'source_commit':'55c6e6668ef4546e4635c5e7eaad3062cf7f036b',
+                  'files':data,'midi_labels_decoded':False,
+                  'external_predictions_available':False,'scored':False,'promotion':False,
+                  'next_required_step':'Reconstruct complete S72/PR16/S46 producer for unseen WAV then S80.'}
+          out=pathlib.Path('model/s81-external-audit');out.mkdir(exist_ok=True)
+          (out/'report.json').write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
+          print('S81 EXTERNAL SOURCE VERIFIED, NO INDEPENDENT S80 SCORE AVAILABLE')
+          PY
+      - name: Assert fail-closed: no external scores or promotion
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('model/s81-external-audit/report.json'))
+          assert r['status']=='EXTERNAL_AUDIO_VERIFIED_NO_S80_INFERENCE'
+          assert not r['scored'] and not r['promotion']
+          print('Preflight only; no independent validation result.')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s81-external-source-preflight
+          path: model/s81-external-audit/
+          retention-days: 90
