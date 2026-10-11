@@ -1,0 +1,96 @@
+name: V27.3 S74 official reference promotion gate
+
+on:
+  pull_request:
+    branches: [codex/v273-regression-loops]
+    paths:
+      - 'scripts/audit_v273_reference_promotion.py'
+      - 'analysis/README_V273_S74_REFERENCE_PROMOTION_AUDIT.md'
+      - 'analysis/v273_reference_candidate.json'
+      - '.github/workflows/v273-s74-promotion-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  audit_pinned_baseline:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install fixed audit dependency
+        run: python -m pip install numpy==2.3.5
+      - name: Fetch untouched official frozen reference
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          name: v273-open-summary
+          path: model/pr16
+      - name: Fetch completed S72 development candidate
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38155427761
+          name: v273-s72-temporal-risk
+          path: model/s72
+      - name: Fetch all archived and hash-pinned raw acoustic features
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          pattern: v273-open-features-*
+          path: model/features
+      - name: Run fail-closed native reference comparison
+        run: |
+          python -m py_compile scripts/audit_v273_reference_promotion.py
+          python -m scripts.audit_v273_reference_promotion \
+            --reference model/pr16/predictions.npz \
+            --candidate model/s72/predictions.npz \
+            --features model/features \
+            --output model/s74-audit
+      - name: Verify report has not promoted the reference
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('model/s74-audit/report.json'))
+          assert r['promotion_status']=='BLOCKED_MISSING_INDEPENDENT_EVIDENCE'
+          assert r['holdout']['status']=='MISSING'
+          d=r['development']
+          assert d['overall']['correct_reference']==48454
+          assert d['overall']['correct_candidate']==49238
+          assert d['overall']['corrections']==2558
+          assert d['overall']['regressions']==1774
+          assert d['poly']['correct_reference']==2530
+          assert d['poly']['correct_candidate']==3202
+          assert len(d['by_K'])==7 and len(d['by_fold'])==4
+          assert [d['by_fold'][str(k)]['gain'] for k in (0,1,2,4)]==[221,166,132,265]
+          assert [d['by_K'][str(k)]['gain'] for k in range(7)]==[-101,213,547,128,-28,24,1]
+          assert len(r['sources']['features'])==4
+          print('Native S74 matched, no independent promotion evidence: OFFICIAL REFERENCE PRESERVED')
+          PY
+      - name: Human-readable audit verdict
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          r=json.load(open('model/s74-audit/report.json'))
+          print('S74 official reference audit — research only')
+          print('Incumbent',r['reference'],'candidate',r['candidate'])
+          for k in ('overall','poly'):
+              print(k,r['development'][k])
+          print('PROMOTION BLOCKED: no new player05/fold3 paired predictions or fully nested upstream model provenance.')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s74-reference-promotion-audit
+          path: model/s74-audit/
+          retention-days: 90
