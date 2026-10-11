@@ -1,0 +1,32 @@
+name: S111 original S4 S5 527 feature coordinate overlap
+on:
+  pull_request:
+    branches: [codex/v273-regression-loops]
+    paths:
+      - 'scripts/s111_compare_s4_s5_splits.py'
+      - '.github/workflows/v273-s111-compare-s4-s5.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+      - name: Restore original S4 and S5 checkpoints
+        run: |
+          mkdir -p model/history
+          git fetch origin 'refs/tags/v273-series45-research-37891074478:refs/tags/v273-series45-research-37891074478'
+          git archive 854ada718ac9bf1556f00c96b8e1aa90402d6ab3 analysis/evidence/v273-open-k0-k6/series4/models analysis/evidence/v273-open-k0-k6/series5/models | tar -x -C model/history
+      - name: Compare actual tree split feature indices
+        run: python scripts/s111_compare_s4_s5_splits.py --root model/history/analysis/evidence/v273-open-k0-k6 --out model/s111/report.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s111-s4-s5-coordinate-overlap
+          path: model/s111/report.json
