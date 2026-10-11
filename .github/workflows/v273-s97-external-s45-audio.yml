@@ -27,14 +27,32 @@ jobs:
           pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
       - name: Selftest original 335D assembly
         run: python -m scripts.s97_external_s45_original_features --self-test
-      - name: Restore original V84-native GOAT event groups
+      - name: Restore native event timing from verified S85 alignment
         uses: actions/download-artifact@v4
         with:
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
           run-id: 38176406465
-          name: v273-s83-native-v84-pr16-external
-          path: model/s83
+          name: v273-s85-original-pr16-external-policies
+          path: model/s85
+      - name: Reconstruct original grouped event keys without labels
+        run: |
+          find model/s85 -maxdepth 5 -type f -print
+          python - <<'PY'
+          from pathlib import Path
+          import numpy as np
+          from scripts.s85_external_pr16_policies import canon_name
+          paths=list(Path('model/s85').rglob('pr16_external_36_policies.npz'))
+          assert len(paths)==1,('missing native S85 groups',str(paths))
+          with np.load(paths[0],allow_pickle=False) as z:
+              names=np.asarray([canon_name(m) for m in z['member']])
+              starts=z['start_samples']
+              ends=z['end_samples']
+          assert len(names)==len(starts)==len(ends)==57
+          Path('model/s97-native').mkdir(parents=True,exist_ok=True)
+          np.savez_compressed('model/s97-native/native_groups.npz',member=names,starts=starts,ends=ends)
+          print('S97 recovered 57 exact native group event positions from S85')
+          PY
       - name: Download only GOAT audio; do not read annotations
         run: |
           set -euo pipefail
@@ -45,8 +63,8 @@ jobs:
           done
       - name: Extract original label-free 58+245+3 features from native GOAT groups
         run: |
-          GROUPS="$(find model/s83 -type f -name native_groups.npz | head -1)"
-          test -n "$GROUPS"
+          GROUPS="model/s97-native/native_groups.npz"
+          test -s "$GROUPS"
           python -m scripts.s97_external_s45_original_features --groups "$GROUPS" --audio model/goat --output model/s97
           python - <<'PY'
           import json, numpy as np
