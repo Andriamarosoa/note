@@ -4,6 +4,7 @@ on:
     branches: [codex/v273-regression-loops]
     paths:
       - 'scripts/s97_external_s45_original_features.py'
+      - 'scripts/v273_extended_head_bank.py'
       - '.github/workflows/v273-s97-external-s45-audio.yml'
   workflow_dispatch:
 permissions:
@@ -71,12 +72,16 @@ jobs:
           r=json.load(open('model/s97/report.json'))
           assert r['external_audio_events']==57,r
           assert not r['midi_read'] and not r['promotion'] and not r['S45_335_features_ready']
+          assert r['original_morphology490_ready'] and r['original_physics294_ready']
           with np.load('model/s97/original_s45_audio_only.npz',allow_pickle=False) as z:
               n=r['external_audio_events']
               assert z['summary58'].shape==(n,58)
               assert z['flow245'].shape==(n,245)
               assert z['geometry3'].shape==(n,3)
-              assert all(np.isfinite(z[k]).all() for k in ('summary58','flow245','geometry3'))
+              assert z['sequence42x49'].shape==(n,42,49)
+              assert z['morphology490'].shape==(n,490)
+              assert z['physics294'].shape==(n,294)
+              assert all(np.isfinite(z[k]).all() for k in ('summary58','flow245','geometry3','sequence42x49','morphology490','physics294'))
           print('S97 ORIGINAL GOAT SIGNAL FEATURES VERIFIED, NO LABELS')
           PY
       - uses: actions/upload-artifact@v4
