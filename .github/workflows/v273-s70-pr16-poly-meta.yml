@@ -1,0 +1,94 @@
+name: V27.3 S70 PR16 poly meta-selection (experimental)
+on:
+  pull_request:
+    branches: [codex/v273-regression-loops]
+    paths:
+      - 'scripts/audit_v273_s70_pr16_poly_meta.py'
+      - '.github/workflows/v273-s70-pr16-poly-meta.yml'
+      - 'analysis/README_V273_S70_POLY_META.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  crossfit_replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install fixed S70 numerical environment
+        run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0
+      - name: Retrieve frozen S69 proposals and true native IDs
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38151710659
+          name: v273-s69-s46-risk-replay
+          path: model/s69
+      - name: Retrieve 36 PR16 policies and 12 raw neural distributions
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          name: v273-open-summary
+          path: model/pr16
+      - name: Fit new K-aware polyphonic meta head excluding each tested fold
+        run: |
+          python -m py_compile scripts/audit_v273_s70_pr16_poly_meta.py
+          OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -m scripts.audit_v273_s70_pr16_poly_meta \
+            --s69 model/s69/predictions.npz \
+            --votes model/pr16/predictions.npz \
+            --probabilities model/pr16/probabilities.npz \
+            --output model/s70-poly
+      - name: Independently check 59309 row coverage, invariants and score identities
+        run: |
+          python - <<'PY'
+          import json
+          import numpy as np
+          from pathlib import Path
+          root=Path('model/s70-poly')
+          r=json.loads((root/'report.json').read_text())
+          with np.load(root/'predictions.npz') as z:
+              ids=z['global_index'];y=z['true_K'];fold=z['fold'];b=z['s69_poly_K']
+              assert len(ids)==len(set(ids))==59309
+              assert set(fold)=={0,1,2,4} and (y>=2).sum()==7385
+              assert (b==y).sum()==49148 and ((b==y)&(y>=2)).sum()==3094
+              for domain,counts in {
+                  'proposed_poly':(49202,3166,451,397,54,72),
+                  'downward_poly':(49208,3154,281,221,60,60),
+              }.items():
+                  p=z[domain+'_K']
+                  correct=p==y;orig=b==y
+                  actual=(int(correct.sum()),int((correct&(y>=2)).sum()),
+                          int((correct&~orig).sum()),int((~correct&orig).sum()),
+                          int(correct.sum()-orig.sum()),
+                          int(((correct.astype(int)-orig.astype(int))*(y>=2)).sum()))
+                  assert actual==counts,(domain,actual,counts)
+                  assert np.all(p[~((b>=2)|(p>=2))]==b[~((b>=2)|(p>=2))])
+                  assert r['results'][domain]['net']==actual[4]
+                  print(domain,'checks passed',counts)
+          PY
+      - name: Publish experimental results and limitations
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          z=json.load(open('model/s70-poly/report.json'))
+          print('S70 new poly meta head: folds 0/1/2/4 already exposed to historical development.')
+          for k,v in z['results'].items():
+              print(k, 'global',v['global_correct'],'poly',v['poly_correct'],
+                    'fixes',v['corrections'],'regressions',v['regressions'])
+          print('Research only. Upstream neural producers are NOT nested with this second-stage fit.')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s70-poly-meta-replay
+          path: model/s70-poly/
+          retention-days: 90
