@@ -1,0 +1,86 @@
+name: V27.3 S69 S46 vote-guard replay (experimental)
+on:
+  pull_request:
+    branches: [codex/v273-regression-loops]
+    paths:
+      - 'scripts/audit_v273_s69_s46_vote_guard.py'
+      - 'analysis/README_V273_S69_S46_S62_S63_FUSION.md'
+      - '.github/workflows/v273-s69-s46-guard.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install audited numerical dependency
+        run: python -m pip install numpy==1.26.4
+      - name: Retrieve all 192 S46 frozen research outputs
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37891336823
+          name: v273-series46-poly-class-compromises
+          path: model/s46
+      - name: Retrieve 36 PR16 frozen producer decisions
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          name: v273-open-summary
+          path: model/pr16
+      - name: Replay S46 plus learned train-fold-only transition vetoes
+        run: |
+          python -m py_compile scripts/audit_v273_s69_s46_vote_guard.py
+          python -m scripts.audit_v273_s69_s46_vote_guard \
+            --s46 model/s46/predictions.npz \
+            --votes model/pr16/predictions.npz \
+            --output model/s69-results
+      - name: Reverify native coverage, zero unknown decisions and paired counts
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import numpy as np
+          root=Path('model/s69-results')
+          report=json.loads((root/'report.json').read_text())
+          expected={'balanced':(49210,3063,604,572),
+                    'polymax':(49148,3094,649,679)}
+          with np.load(root/'predictions.npz') as z:
+              y=z['true_K'];old=z['s18_K'];f=z['fold']
+              assert len(y)==59309 and set(f)=={0,1,2,4}
+              for name,(glob,poly,c,r) in expected.items():
+                  parent=z[name+'_s46_K'];p=z[name+'_protected_K']
+                  correct=p==y;original=old==y
+                  assert np.all((p==old)|(p==parent))
+                  assert (int(correct.sum()),int((correct&(y>=2)).sum()),
+                          int((correct&~original).sum()),
+                          int((~correct&original).sum()))==(glob,poly,c,r)
+                  assert report['policies'][name]['after']['correct']==glob
+          print('S69 measured paired outcomes reproduced; research only')
+          PY
+      - name: Show paired research results
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          d=json.load(open('model/s69-results/report.json'))
+          print('S69 research replay — historically exposed folds only')
+          for name,rec in d['policies'].items():
+              print(name,rec['before'],'→',rec['after'])
+          print('Not validated on fresh music; never promote automatically.')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-s69-s46-risk-replay
+          path: model/s69-results/
+          retention-days: 90
