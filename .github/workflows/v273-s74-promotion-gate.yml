@@ -11,6 +11,7 @@ on:
       - 'scripts/s85_external_pr16_policies.py'
       - 'scripts/verify_v273_s80_frozen_inference.py'
       - 'scripts/audit_v273_s46_classwise_compromise.py'
+      - 'scripts/s88_unlabeled_s46_runtime.py'
       - 'scripts/extract_v273_harmonic_trajectory.py'
       - 'analysis/README_V273_S74_REFERENCE_PROMOTION_AUDIT.md'
       - 'analysis/v273_reference_candidate.json'
@@ -487,6 +488,39 @@ jobs:
             --s45pred model/S45/predictions.npz \
             --s45risk model/S45/risk_scores.npz \
             --output model/S87-reproduced-S46
+      - name: Build STRICTLY label-free S45 source contract (without historical truth)
+        run: |
+          python - <<'PY'
+          import numpy as np,pathlib
+          with np.load('model/S45/predictions.npz',allow_pickle=False) as p, \
+               np.load('model/S45/risk_scores.npz',allow_pickle=False) as q:
+              assert np.array_equal(p['global_index'],q['global_index'])
+              parent=p['predictions'][:,0]
+              pathlib.Path('model/S88').mkdir(exist_ok=True)
+              np.savez_compressed('model/S88/source_only.npz',
+                  row_id=q['global_index'],parent_K=parent,
+                  family_ids=q['family_ids'],proposal_K=q['proposal_K'],
+                  risks=q['risks'],independent_votes=q['independent_votes'])
+          PY
+      - name: Reproduce all 193 S46 policies from ZERO-LABEL inference inputs
+        run: |
+          python -m scripts.s88_unlabeled_s46_runtime \
+            --input model/S88/source_only.npz --output model/S88/runtime
+          python - <<'PY'
+          import json,numpy as np
+          with np.load('model/S88/runtime/predictions.npz',allow_pickle=False) as real, \
+               np.load('model/original-S46/predictions.npz',allow_pickle=False) as original:
+              assert len(real['row_id'])==59309
+              np.testing.assert_array_equal(real['row_id'],original['global_index'])
+              np.testing.assert_array_equal(real['variant_ids'],original['variant_ids'])
+              np.testing.assert_array_equal(real['predictions'],original['predictions'])
+          p=json.load(open('model/S88/runtime/report.json'))
+          assert not p['labels_opened'] and p['variants']==193
+          print('PASS original S46 193 policies from label-free source arrays')
+          PY
+      - name: Promote only reusable label-free S46 runtime code, not S80 model
+        run: |
+          echo 'Original S46 label-free 193 selector verified. Original 16 S45 source family inputs on new WAV not yet available.' >> "$GITHUB_STEP_SUMMARY"
       - name: Require equality on all 59309 rows x 193 policies and document external blockers
         run: |
           python - <<'PY'
@@ -507,6 +541,12 @@ jobs:
           pathlib.Path('model/S87-reproduced-S46/verify_report.json').write_text(json.dumps(outcome,indent=2)+'\n')
           print('S46 all original 193 policy columns reproduced. Source is HISTORICAL only.')
           PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s88-unlabeled-original-s46-runtime
+          path: model/S88/runtime/
+          retention-days: 90
       - uses: actions/upload-artifact@v4
         if: always()
         with:
