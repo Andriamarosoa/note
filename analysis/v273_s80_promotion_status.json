@@ -6,10 +6,9 @@
   "official_promotion": false,
   "independent_S80_accuracy_measured": false,
   "latest_run": {
-    "id": 38177477884,
-    "conclusion": "success",
-    "total_jobs": 4,
-    "job_successes": 4
+    "id": 38177874961,
+    "conclusion": "s46_source_and_unlabeled_replay_success",
+    "note": "S88 passed; remaining V84 job still running at last check"
   },
   "validated_frozen_components": {
     "original_native_audio_inference": {
@@ -34,14 +33,21 @@
       "poly_correct": 3240,
       "k1_interventions": 67,
       "probability_max_abs_error": 0
+    },
+    "s46_unlabeled_runtime": {
+      "status": "BIT_EXACT_HISTORICAL",
+      "exact_historical_rows": 59309,
+      "policy_columns": 193,
+      "annotations_present_in_runtime_input": false,
+      "run_id": 38177874961,
+      "artifact_id": 11716197528
     }
   },
   "missing_external_components": [
-    "on-new-audio original 16 source-family proposals for S45",
-    "per-new-piece routing or retraining protocol of 304 S45 per-piece risk models",
-    "external S46 source N×16 risk/proposal/agree arrays",
-    "external retrained S69/S70/S71/S72 source K predictor",
-    "single precommitted S80 K1-gate rule for new recordings"
+    "Unseen audio: 16 genuine source-family S43/S44 proposals and S45 risk_fix_break predictions",
+    "New-piece risk aggregation/assignment for 304 S45 per-piece Ridge models",
+    "New-audio S69/S70/S71/S72 parent count predictions",
+    "Frozen, prespecified S80 K1-gate deployment ensemble or independently trained model"
   ],
   "external_label_leakage_avoided": true,
   "disallowed_claims": [
