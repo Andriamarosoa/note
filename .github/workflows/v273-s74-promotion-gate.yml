@@ -118,6 +118,47 @@ jobs:
           pathlib.Path('model/s81-check/report.json').write_text(json.dumps(res,indent=2)+'\n')
           print('GOAT EXTERNAL MEDIA VERIFIED; S80 end-to-end on audio is still required.')
           PY
+      - name: Install original PR16 scipy/sklearn forward dependencies
+        run: python -m pip install scipy==1.17.0 scikit-learn==1.8.0
+      - name: Restore genuine PR16 fold0 neural checkpoints
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          name: v273-open-model-0
+          path: model/s82-pr16
+      - name: Execute label-blind original PR16 neural weights on external guitar WAVs
+        env:
+          PYTHONPATH: '.:src'
+          OPENBLAS_NUM_THREADS: '1'
+          OMP_NUM_THREADS: '1'
+        run: |
+          python -m py_compile scripts/s82_external_pr16_neural_inference.py
+          python -m scripts.s82_external_pr16_neural_inference \
+            --model model/s82-pr16/fold-0 \
+            --audio model/s81-external \
+            --output model/s82-neural-inference \
+            --max-events 60
+      - name: Verify true new-audio inference and no false independent S80 score
+        run: |
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/s82-neural-inference/report.json'))
+          assert r['status']=='EXTERNAL_PR16_NEURAL_PRODUCER_INFERENCE_COMPLETED_NOT_S80'
+          assert r['producer_count']==12 and r['n_external_events']>=30
+          assert not r['label_fields_present'] and not r['midi_accessed'] and not r['s80_scored']
+          with np.load('model/s82-neural-inference/label_blind_pr16_predictions.npz',allow_pickle=False) as p:
+              assert p['probabilities'].shape==(r['n_external_events'],12,7)
+              assert set(p.files)=={'member','start_samples','probabilities','producer_names'}
+          print('External actual PR16 forward completed. S80 validation remains pending S46/S72.')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s82-original-pr16-external-inference
+          path: model/s82-neural-inference/
+          retention-days: 90
       - uses: actions/upload-artifact@v4
         if: always()
         with:
