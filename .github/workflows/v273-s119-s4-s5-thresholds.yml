@@ -1,0 +1,62 @@
+name: S119 audit 527D numerical feature thresholds against original S4/S5
+on:
+  pull_request:
+    branches: [codex/v273-regression-loops]
+    paths:
+      - 'scripts/s119_s4_s5_tree_threshold_coverage.py'
+      - '.github/workflows/v273-s119-s4-s5-thresholds.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  threshold_audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+      - name: Get original immutable S4/S5 checkpoints
+        run: |
+          set -euo pipefail
+          mkdir -p model/history
+          git fetch origin 'refs/tags/v273-series45-research-37891074478:refs/tags/v273-series45-research-37891074478'
+          git archive 854ada718ac9bf1556f00c96b8e1aa90402d6ab3 \
+            analysis/evidence/v273-open-k0-k6/series4/models \
+            analysis/evidence/v273-open-k0-k6/series5/models | tar -x -C model/history
+      - name: Restore non-validated S118 527D feature candidate
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38185461967
+          name: v273-s118-unvalidated-candidate-527-s4-s5-smoke
+          path: model/s118
+      - name: Analyze physical threshold crossing and feature saturation (no labels)
+        env:
+          PYTHONPATH: '.:src'
+        run: |
+          set -euo pipefail
+          X="$(find model/s118 -name CANDIDATE_only_527.npz -type f -print -quit)"
+          test -n "$X"
+          python -m scripts.s119_s4_s5_tree_threshold_coverage \
+            --candidate "$X" \
+            --s4-models model/history/analysis/evidence/v273-open-k0-k6/series4/models \
+            --s5-models model/history/analysis/evidence/v273-open-k0-k6/series5/models \
+            --out model/s119
+          python - <<'PY'
+          import json
+          r=json.load(open('model/s119/report.json'))
+          assert r['audited_genuine_original_models']==10
+          assert not r['feature_equivalence_proven']
+          assert not r['S80_promoted']
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s119-original-s4-s5-threshold-audit-non-equivalent
+          path: model/s119/
+          retention-days: 30
