@@ -6,6 +6,7 @@ on:
     paths:
       - 'scripts/audit_v273_reference_promotion.py'
       - 'scripts/s82_external_pr16_neural_inference.py'
+      - 'scripts/s83_external_native_v84_groups.py'
       - 'scripts/extract_v273_harmonic_trajectory.py'
       - 'analysis/README_V273_S74_REFERENCE_PROMOTION_AUDIT.md'
       - 'analysis/v273_reference_candidate.json'
@@ -172,4 +173,100 @@ jobs:
         with:
           name: v273-s74-reference-promotion-audit
           path: model/s74-audit/
+          retention-days: 90
+
+  external_native_v84_pr16:
+    name: Genuine V84 event groups and PR16 forward on independent guitar WAV
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    permissions:
+      contents: read
+      actions: read
+    env:
+      PYTHONPATH: '.:src'
+      TF_CPP_MIN_LOG_LEVEL: '2'
+      TF_NUM_INTRAOP_THREADS: '2'
+      TF_NUM_INTEROP_THREADS: '2'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Frozen native-V8 inference dependencies
+        run: python -m pip install -r requirements-train.txt numpy==1.26.4 scikit-learn==1.4.2
+      - name: Fetch original frozen V84-V88 producer sources
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/s83-source model/s83-download
+          gh release download v273-source-recovery-35086829802 \
+            --repo "${{ github.repository }}" \
+            --pattern v273-rebuilt-proposal-sources.zip --dir model/s83-download
+          python - <<'PY'
+          from pathlib import Path
+          from scripts.restore_v273_original_backup import extract_verified
+          from scripts.rebuild_v273_sources import validate_sources
+          extract_verified(Path('model/s83-download/v273-rebuilt-proposal-sources.zip'),
+              Path('model/s83-source'),
+              'fb6bb1049b87c0517936f4f40e5bc1442722fc20b9eba5045a62bb0a12cf2994',
+              validate=validate_sources)
+          PY
+      - name: Fetch original PR16 fold-0 network weights
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          name: v273-open-model-0
+          path: model/s83-pr16
+      - name: Fetch only independent external audio, not annotations
+        run: |
+          set -euo pipefail
+          mkdir -p model/s83-wav
+          base="https://raw.githubusercontent.com/JackJamesLoth/GOAT-Dataset/55c6e6668ef4546e4635c5e7eaad3062cf7f036b/audio-examples"
+          for n in 1 2; do
+            curl -fLsS --retry 3 --connect-timeout 15 --max-time 180 \
+              "${base}/example${n}/example${n}_di.wav" \
+              -o "model/s83-wav/example${n}_di.wav"
+          done
+      - name: Native V84-V86-V90 candidate generation without any labels
+        run: |
+          python -m py_compile scripts/s83_external_native_v84_groups.py
+          python -m scripts.s83_external_native_v84_groups \
+            --sources model/s83-source \
+            --audio model/s83-wav \
+            --output model/s83-native-groups \
+            --seconds 6 --max-events 100
+      - name: Original 12 PR16 frozen neural heads on native audio event groups
+        run: |
+          python -m scripts.s82_external_pr16_neural_inference \
+            --model model/s83-pr16/fold-0 \
+            --audio model/s83-wav \
+            --native-groups model/s83-native-groups/native_groups.npz \
+            --max-events 100 \
+            --output model/s83-external-pr16
+      - name: Independent native deployment component audit (not S80 scoring)
+        run: |
+          python - <<'PY'
+          import json,numpy as np
+          a=json.load(open('model/s83-native-groups/report.json'))
+          b=json.load(open('model/s83-external-pr16/report.json'))
+          assert a['status']=='NATIVE_V84_GROUPS_FROM_EXTERNAL_AUDIO_LABEL_BLIND'
+          assert b['candidate_source']=='ORIGINAL_V84_V86_V90_NATIVE_GROUPS'
+          assert not a['used_midi_labels'] and not b['midi_accessed']
+          assert b['n_external_events']==a['groups_count']
+          with np.load('model/s83-external-pr16/label_blind_pr16_predictions.npz',allow_pickle=False) as p:
+              assert p['probabilities'].shape==(a['groups_count'],12,7)
+              assert 'true_K' not in p.files
+          print('Native audio events + real PR16 forward succeeded; S46/S72/S80 NOT reconstructed.')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s83-native-v84-pr16-external
+          path: |
+            model/s83-native-groups/
+            model/s83-external-pr16/
           retention-days: 90
