@@ -81,7 +81,7 @@ def _moment(out, prefix, v):
     out[prefix + "_std"] = float(np.std(a))
     out[prefix + "_max"] = float(np.max(a))
 
-def features_from_spectrogram(spec, times, bank=None):
+def features_from_spectrogram(spec, times, bank=None, return_states=False):
     bank = HARMONIC_BANK if bank is None else bank
     spec = np.asarray(spec, float)
     times = np.asarray(times, float)
@@ -206,7 +206,7 @@ def features_from_spectrogram(spec, times, bank=None):
         out[f"birth__{mname}_mass_fraction"] = float(birth[m].sum() / (birth.sum() + EPS))
         out[f"damping__{mname}_mass_fraction"] = float(sink[m].sum() / (sink.sum() + EPS))
     require(all(np.isfinite(x) for x in out.values()), "nonfinite harmonic feature")
-    return out
+    return (out, A) if return_states else out
 
 def trajectory_features(samples, start, perturb=None, seed=0):
     spec, t = _frames(samples, start)
