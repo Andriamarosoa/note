@@ -23,7 +23,7 @@ def run(out):
     out.parent.mkdir(parents=True,exist_ok=True)
     out.write_text(json.dumps(data,indent=2,sort_keys=True)+'\n')
     print(json.dumps({'status':data['status'],
-       'sources':sorted({line.split(':')[0] for vv in results.values() for line in vv})},
+       'source_lines':{k:v[:10] for k,v in results.items()}},
        indent=2))
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--out',type=Path,required=True)
