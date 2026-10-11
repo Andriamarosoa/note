@@ -11,6 +11,7 @@ from scripts.s82_external_pr16_neural_inference import load_wav
 from scripts.extract_v273_harmonic_trajectory import _frames,features_from_spectrogram
 from scripts.loop_v273_birth_flow import flow_profile
 from scripts.loop_v273_native_risk import designs
+from scripts.v273_extended_head_bank import audio_temporal_views
 
 BAD=('true_K','truth','label','labels','y','target','midi')
 def require(v,why):
@@ -52,11 +53,15 @@ def extract(groups_path,audio_root,out,decisions_path=None):
     require(np.isfinite(summaries).all() and np.isfinite(sequences).all(),'nonfinite audio evidence')
     flow=flow_profile(sequences)
     geom=geometry(members,starts,ends)
-    # All 58+245+3 dimensions originate from audio and frozen event timings.
+    morphology,physics=audio_temporal_views(sequences)
+    require(morphology.shape==(n,490) and physics.shape==(n,294), 'original temporal morphology drift')
+    require(np.isfinite(morphology).all() and np.isfinite(physics).all(), 'nonfinite temporal morphology')
+    # Independent original audio-only signal descriptors; no pseudo K decision sources.
     out.mkdir(parents=True)
     row_id=np.asarray([f'{m}:{int(s)}' for m,s in zip(members,starts)])
     np.savez_compressed(out/'original_s45_audio_only.npz',row_id=row_id,
-       summary58=summaries,flow245=flow,geometry3=geom,member=members,
+       summary58=summaries,flow245=flow,geometry3=geom,
+       sequence42x49=sequences,morphology490=morphology,physics294=physics,member=members,
        start_samples=starts,end_samples=ends)
     full=False
     if decisions_path is not None:
@@ -75,6 +80,7 @@ def extract(groups_path,audio_root,out,decisions_path=None):
         full=True
     report={'status':'S97_ORIGINAL_AUDIO_FEATURES_REBUILT',
             'external_audio_events':n,'raw_dimensions':[58,245,3],
+            'original_morphology490_ready':True,'original_physics294_ready':True,
             'S45_335_features_ready':full,'requires_true_S5_global_poly_sources':not full,
             'midi_read':False,'S43_S44_families_generated':False,
             'S80_independent_score':None,'promotion':False}
@@ -93,8 +99,10 @@ def selftest():
     votes=designs(prepared,ids,np.array([0,2,3,1]),np.array([1,2,4,1]),
                   np.array([0,3,3,2]),geom)['votes_time']
     seq=np.zeros((n,42,49),np.float32);f=flow_profile(seq)
+    morph,phys=audio_temporal_views(seq)
+    assert morph.shape==(n,490) and phys.shape==(n,294)
     assert np.column_stack((votes,summary,f)).shape==(n,335)
-    print('S97 PASS: original geometry3, vote32, summary58, flow245, full 335D')
+    print('S106 PASS: original geometry3, vote32, summary58, flow245, morph490, physics294, sequence42x49')
 if __name__=='__main__':
     p=argparse.ArgumentParser()
     p.add_argument('--groups',type=Path);p.add_argument('--audio',type=Path)
