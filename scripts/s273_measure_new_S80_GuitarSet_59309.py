@@ -38,11 +38,11 @@ def run(source,candidate,old,out):
         require(set(z.files)==expected,'S272 score input is original frozen exact full new S80 output only')
         new={k:z[k].copy() for k in z.files}
     with np.load(old,allow_pickle=False) as z:
-        require({'global_index','true_K','s80_K','baseline_K'}.issubset(z.files),
+        require({'global_index','true_K','s80_K','fold'}.issubset(z.files),
               'original S80 43.87 comparator must be historical unretrained fixture')
-        ids=z['global_index'].copy();t=z['true_K'].copy();h=z['s80_K'].copy();b=z['baseline_K'].copy()
+        ids=z['global_index'].copy();t=z['true_K'].copy();h=z['s80_K'].copy();original_fold=z['fold'].copy()
     order=np.argsort(ids)
-    ids,t,h,b=ids[order],t[order],h[order],b[order]
+    ids,t,h,original_fold=ids[order],t[order],h[order],original_fold[order]
     n=len(t)
     true=src['true_K'].astype(np.int16)
     cand=new['s80_K'].astype(np.int16)
@@ -51,7 +51,7 @@ def run(source,candidate,old,out):
             'immutable GuitarSet original 59309 and 7385 true poly counts')
     require(np.array_equal(src['row_id'].astype(str),ids.astype(str)) and
             np.array_equal(new['row_id'].astype(str),ids.astype(str)) and
-            np.array_equal(t,true) and np.array_equal(parent,b) and
+            np.array_equal(t,true) and np.array_equal(original_fold,src['original_fold']) and
             np.array_equal(parent,new['incumbent_freeze_K']),
             'old S80 vs new full S80 source misaligned event IDs, reference, original held-out labels')
     require(np.isin(cand,range(7)).all() and
