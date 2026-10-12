@@ -69,3 +69,18 @@ ne constituent pas le S80 complet.
 **S148 restaure la source originale S18** et valide son selftest,
 sans prétendre rétablir automatiquement ses parents et checkpoints
 sur de nouveaux audios.
+
+## Résultats vérifiés des deux workflows
+
+- [S147 — reproduction exacte de la queue K0/K2](https://github.com/Andriamarosoa/note/actions/runs/38194275444) :
+  **59 309 prédictions identiques**, **0 divergence**, 46 actions K0 et 61 actions K2.
+  Entrée et sortie d'exécution sans vérités terrain. **Ce n'est pas le S80 complet**.
+- [S148 — graphe exhaustif, 21 dépendances et 16 familles](https://github.com/Andriamarosoa/note/actions/runs/38194433107) :
+  contrôle de présence des fichiers, absence de cycles, non-promotion,
+  restauration et selftest réussis du script S18 d'origine.
+- Sur les 21 nœuds du chemin historique, **2** sont confirmés directement
+  sur nouvel audio sans remplacement de leurs entrées ; les autres sont
+  en état adapté, historique, logique disponible sans entrées, ou bloqué.
+  Le nombre de nœuds **n'est pas un pourcentage d'avancement**.
+- Les 58 checkpoints déjà sauvés en S146 restent conservés.
+- Le statut de référence ne change **pas** : `freeze_local_combo`.

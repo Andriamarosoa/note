@@ -6,11 +6,12 @@
   "official_promotion": false,
   "independent_S80_accuracy_measured": false,
   "latest_run": {
-    "id": 38193466752,
-    "component": "S146",
+    "component": "S148",
+    "id": 38194433107,
     "status": "success",
-    "source_models_permanently_archived": true,
-    "release_url": "https://github.com/Andriamarosoa/note/releases/tag/v273-original-S12-S38-S40-S41-trained-recovery-38193181798"
+    "single_dependency_contract_validated": true,
+    "restored_S18_source_selftest_passed": true,
+    "official_promotion": false
   },
   "validated_frozen_components": {
     "original_native_audio_inference": {
@@ -71,7 +72,7 @@
     "S80 already independently validated",
     "historical 43.87% guaranteed on new music"
   ],
-  "next_protocol": "For exact original S80, restore authentic new-piece S18 and S11/S12 upstream votes (not freeze/S135/PR16 substitutes), then all 16 S43/S44 S45 original family trained-source predictions and risks, 193 S46, S69->S72, frozen S80 policy and independent IDMT-SMT guitar validation; prevent posthoc GOAT tuning.",
+  "next_protocol": "Follow the full fixed 21-node, 16-family dependency map in analysis/v273_s80_full_dependency_contract.json; critical path true S11/S18 new-audio parent, exact or versioned replacement 16 S45 champions/risks, S46->S69->S72->S79, already runnable K0/K2 S147, then preregister and score IDMT independent. Do not announce new hidden components or original S80 promotion from historical parity.",
   "experimental_deployability_research_S128_S131": {
     "scope": "Reconstruction of historical S5 upstream audio producers; new student alternative is NOT original S5/S80",
     "original_s5_527D_feature_equivalence_verified": false,
@@ -305,5 +306,28 @@
       "sha256_manifest": "FILES_SHA256SUMS",
       "release_is_not_S80_promotion": true
     }
+  },
+  "single_authoritative_dependency_inventory": "analysis/v273_s80_full_dependency_contract.json",
+  "single_authoritative_dependency_explanation": "analysis/README_V273_S148_FULL_DEPENDENCIES.md",
+  "historical_S147_truth_free_final_route": {
+    "run_id": 38194275444,
+    "source": "scripts/s147_s80_tail_runtime.py",
+    "historical_rows": 59309,
+    "exact_S80_predicted_K_mismatches": 0,
+    "exact_K0_mask_mismatches": 0,
+    "exact_K2_mask_mismatches": 0,
+    "K0_actions": 46,
+    "K2_actions": 61,
+    "true_K_read": false,
+    "new_audio_full_original_S80_supported": false,
+    "promotion": false
+  },
+  "original_S18_source_restoration": {
+    "run_id": 38194433107,
+    "original_sha": "854ada718ac9bf1556f00c96b8e1aa90402d6ab3",
+    "original_script": "scripts/loop_v273_k43_k21.py",
+    "selftest_passed": true,
+    "historical_S18_producer_equivalence_on_unseen_WAV": false,
+    "missing_upstream_new_audio": "original S11 and original S5 global/poly votes"
   }
 }
