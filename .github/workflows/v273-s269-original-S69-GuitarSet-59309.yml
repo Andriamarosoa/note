@@ -28,10 +28,10 @@ jobs:
           python-version: '3.11'
       - run: python -m pip install numpy==1.26.4
       - name: Require S268 real original S46 193-policy fold-neutral 59309 branch inference success
-        run: gh run watch 38313858145 --exit-status --interval 15
+        run: gh run watch 38313950269 --exit-status --interval 15
       - name: Obtain genuine original source from all 19 S46 expert branches and historical 36 PR16
         run: |
-          gh run download 38313858145 -n s268-GuitarSet-original-S46-193foldneutral-59309 -D model/S268
+          gh run download 38313950269 -n s268-GuitarSet-original-S46-193foldneutral-59309 -D model/S268
           gh run download 38311525987 -n s258-full-guitarset-59309-real-original-native-527D-58D-46D-42x49-and-OOF-PR16 -D model/S258
           gh run download 38177948016 -n v273-s69-s46-risk-replay -D model/S69original
       - name: Run original historical S69 veto thresholds with exact S268 and real OOF PR16
