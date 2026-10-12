@@ -48,11 +48,25 @@ def run(source,pr16,out):
         require(set(z.files)=={'global_index','variant_ids','probabilities'},
                 'original PR16 12 heldfold probability schema')
         p={key:z[key].copy() for key in z.files}
-    require(np.array_equal(arrays['global_index'],ref['global_index']) and
-            np.array_equal(arrays['global_index'],p['global_index']) and
-            np.array_equal(arrays['baseline'],ref['baseline_K']) and
-            np.array_equal(arrays['k'],ref['true_K']) and
-            np.array_equal(arrays['fold'],ref['fold']),
+    # PR16 historical archives are ordered by original held-fold, whereas
+    # native source features were explicitly sorted by global_index.
+    # Align on the immutable numerical event ID, NEVER by array position.
+    pr_order=np.argsort(ref['global_index'],kind='stable')
+    q_order=np.argsort(p['global_index'],kind='stable')
+    ref={key:(value[pr_order] if len(value)==N else value) for key,value in ref.items()}
+    p={key:(value[q_order] if len(value)==N else value) for key,value in p.items()}
+    checks=dict(ids=np.array_equal(arrays['global_index'],ref['global_index']),
+         p_ids=np.array_equal(arrays['global_index'],p['global_index']),
+         baseline=np.array_equal(arrays['baseline'],ref['baseline_K']),
+         true_K=np.array_equal(arrays['k'],ref['true_K']),
+         fold=np.array_equal(arrays['fold'],ref['fold']))
+    print(json.dumps(dict(S258_IMMUTABLE_EVENT_ID_JOIN_PROOF=checks,
+         mismatch_counts={k:int(np.count_nonzero(
+         arrays[{ 'baseline':'baseline','true_K':'k','fold':'fold','ids':'global_index','p_ids':'global_index'}[k]]
+         != ({'baseline':ref['baseline_K'],'true_K':ref['true_K'],
+             'fold':ref['fold'],'ids':ref['global_index'],'p_ids':p['global_index']}[k])))
+         for k in checks})),flush=True)
+    require(all(checks.values()),
             'same 59309 exact GuitarSet native OOF ids, true pitch K, and incumbent freeze')
     row=np.asarray(arrays['global_index']).astype(str)
     base=arrays['baseline'].astype(np.int8)
