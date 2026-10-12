@@ -1,0 +1,101 @@
+name: S274 S46 two-active-fold risk gate (source-only candidate + development-only audit)
+on:
+  push:
+    branches: [codex/s274-s46-twofold-audit]
+    paths:
+      - 'scripts/s274_audit_s46_twofold_gate_GuitarSet.py'
+      - '.github/workflows/v273-s274-s46-twofold-gate-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s274-S46-twofold-GuitarSet
+  cancel-in-progress: true
+jobs:
+  frozen_label_free_candidate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Test fold support logic with synthetic inputs
+        run: python -m scripts.s274_audit_s46_twofold_gate_GuitarSet --self-test
+      - name: Fetch source-only original expert proposals and original S18 consensus
+        run: |
+          gh run download 38314164725 -n s268-GuitarSet-original-S46-193foldneutral-59309 -D model/S268
+          gh run download 38311907661 -n s261-guitarset-59309-actual-fourfold-S18-neutral-consensus -D model/S261
+      - name: Produce and freeze proposal WITHOUT accessing any y/true_K or IDMT labels
+        run: |
+          python -u -m scripts.s274_audit_s46_twofold_gate_GuitarSet \
+            --mode propose \
+            --s268 model/S268/S268_original_193_S46_foldneutral_59309_GUITARSET.npz \
+            --s261 model/S261/S261_original_S18_foldneutral_59309_GUITARSET.npz \
+            --out model/S274
+          python - <<'PY'
+          import json
+          r = json.load(open('model/S274/label_free_report.json'))
+          assert r['native_events'] == 59309 and r['S46_policies'] == 193
+          assert r['no_true_K_or_midi_read'] and r['IDMT_XML_never_used']
+          assert r['onefold_interventions_suppressed'] + r['two_or_more_fold_interventions_retained'] == r['originally_active_intervention_cells']
+          assert not r['S80_promoted']
+          print('S274 source-only S46 original vs >=2 folds frozen; no labels available')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s274-source-only-S46-twofold-candidate-59309
+          path: model/S274/
+          retention-days: 90
+
+  development_only_audit:
+    needs: frozen_label_free_candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Restore already frozen label-free candidate (from prior completed job)
+        uses: actions/download-artifact@v4
+        with:
+          name: s274-source-only-S46-twofold-candidate-59309
+          path: model/S274
+      - name: Fetch frozen historical S69 selectors; THEN historical DEV-only labels
+        run: |
+          gh run download 38314191759 -n s269-GuitarSet-59309-original-S69-fourfold -D model/S269
+          gh run download 38311525987 -n s258-full-guitarset-59309-real-original-native-527D-58D-46D-42x49-and-OOF-PR16 -D model/S258
+      - name: Score selected S46 balanced/polymax DEV stage, never call this independent or full-S80
+        run: |
+          python -u -m scripts.s274_audit_s46_twofold_gate_GuitarSet \
+            --mode audit \
+            --s274 model/S274/S274_label_free_S46_twofold_GuitarSet_59309.npz \
+            --s269 model/S269/S269_original_S69_fourfold_rule_consensus_GUITARSET.npz \
+            --labels model/S258/S258_GuitarSet_59309_true_K_ONLY_FOR_FINAL_AUDIT.npz \
+            --out model/S274_audit
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S274_audit/development_audit.json'))
+          assert r['native_events']==59309 and r['native_true_poly']==7385
+          assert r['original_GuitarSet_training_overlap_in_three_folds']
+          assert r['comparison_scope']=='S46 selected policies BEFORE S69; not full S80'
+          assert not r['independent_promotion_gate_satisfied'] and not r['S80_promoted']
+          print('S274 dev-only stage causal ablation PASS; official freeze_local_combo unchanged')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s274-S46-twofold-development-audit-NOT-independent
+          path: model/S274_audit/
+          retention-days: 90
