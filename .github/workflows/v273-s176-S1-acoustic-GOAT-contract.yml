@@ -25,7 +25,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Numerical acoustic feature source dependencies
-        run: python -m pip install numpy==1.26.4 scipy==1.14.1
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2
       - name: Original class eligibility and order selftest
         run: python -m scripts.s176_verify_original_s1_acoustic_goat_inputs --self-test
       - name: Original GOAT S97 58D tensors; no MIDI
