@@ -101,7 +101,7 @@ def run(five_path, eleven_path, s18_path, s97_path, models, catalog, out):
             mismatch=parent!=eleven['S18_parent_K']
             source_disagree=np.any(eleven['source_K']!=parent[:,None],axis=1)
             summary.append({
-                'fold':fold,'selected_historical_branch_index':branch,
+                'fold':fold,'selected_historical_branch_index':int(branch),
                 'other_historical_branches_not_evaluated':0,
                 'S18_true_vs_S173_adapter_parent_disagreements':int(mismatch.sum()),
                 'S18_true_vs_S173_adapter_parent_disagreements_poly':int(
