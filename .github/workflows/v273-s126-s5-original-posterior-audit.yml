@@ -1,0 +1,75 @@
+name: S126 audit original S5 per-event posteriors versus frozen 527D hypotheses
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s126_original_s5_per_event_posterior_audit.py'
+      - '.github/workflows/v273-s126-s5-original-posterior-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  posterior:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==2.3.5
+      - name: Selftest posterior comparison and no-label contract
+        run: python -m scripts.s126_original_s5_per_event_posterior_audit --self-test
+      - name: Recover SHA-pinned original S5 fold0 raw posteriors and manifest
+        run: |
+          set -euo pipefail
+          mkdir -p model/historical
+          git fetch origin 'refs/tags/v273-series45-research-37891074478:refs/tags/v273-series45-research-37891074478'
+          git archive 854ada718ac9bf1556f00c96b8e1aa90402d6ab3 \
+            analysis/evidence/v273-open-k0-k6/series5/models/fold0/report.json \
+            analysis/evidence/v273-open-k0-k6/series5/models/fold0/predictions.npz | tar -x -C model/historical
+      - name: Recover original S123 fixed log-activation S5 replay (no truth)
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38186603580
+          name: v273-s123-original-S5-fold-0-replay-candidate
+          path: model/s123
+      - name: Recover original S125 fixed three-layout K predictions (no truth)
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38187467369
+          name: v273-s125-fixed-fold0-S5-527D-forensic-diagnostics
+          path: model/s125
+      - name: Audit original versus reconstructed posteriors without accessing labels
+        run: |
+          set -euo pipefail
+          S123="$(find model/s123 -type f -name replay_predictions.npz -print -quit)"
+          S125="$(find model/s125 -type f -name candidate_predictions.npz -print -quit)"
+          test -s "$S123" && test -s "$S125"
+          python -m scripts.s126_original_s5_per_event_posterior_audit \
+            --original model/historical/analysis/evidence/v273-open-k0-k6/series5/models/fold0/predictions.npz \
+            --original-report model/historical/analysis/evidence/v273-open-k0-k6/series5/models/fold0/report.json \
+            --s123 "$S123" --s125 "$S125" --out model/s126
+          python - <<'PY'
+          import json
+          r=json.load(open('model/s126/report.json'))
+          assert r['rows']==15952 and r['raw_prediction_sha256_verified']
+          assert len(r['layouts'])==3 and not r['source_archive_truth_field_accessed']
+          assert not r['accuracy_evaluated'] and not r['S80_promoted']
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s126-original-S5-per-event-fidelity
+          path: model/s126/
+          retention-days: 30
