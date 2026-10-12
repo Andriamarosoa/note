@@ -573,5 +573,32 @@
     "run_id": 38224327985,
     "artifact_id": 11735608748,
     "implementation_commit": "76d3e47bfe4a3eb382f529f03bd05d8d42badb5a"
+  },
+  "recovered_eight_vote_255_runtime": {
+    "status": "HISTORICAL_GROUP_PARITY_AND_GOAT_255x9_LOCAL_VERIFIED",
+    "original_training_recipe_refit_specialists": 70,
+    "original_frozen_neural_correctors": 14,
+    "historical_group_decisions_checked": 13375005,
+    "historical_group_decision_mismatches": 0,
+    "GOAT_events": 57,
+    "freeze_K234_eligible_events": 5,
+    "fold_branches": [
+      0,
+      1,
+      2,
+      4
+    ],
+    "GOAT_group_audits_shape": [
+      4,
+      5,
+      255,
+      9
+    ],
+    "anchor": "freeze_local_combo, not S18",
+    "receiver_annotations_read": false,
+    "S1_S4_risk_logits_ready": false,
+    "full_S45_sixteen_families_ready": false,
+    "official_promotion": false,
+    "report": "analysis/README_V273_RECOVERED_255_PRODUCERS.md"
   }
 }
