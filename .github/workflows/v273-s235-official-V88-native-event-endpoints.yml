@@ -90,8 +90,8 @@ jobs:
           path: model/S233-original
       - name: Run exact frozen official reference for each song and fingerprint true V88 native groups
         run: |
-          python -m py_compile scripts/s235_official_freeze_on_IDMT_rank33to48.py
-          python -u -m scripts.s235_official_freeze_on_IDMT_rank33to48 \
+          python -m py_compile scripts/s235_true_official_V88_event_endpoints_on_IDMT.py
+          python -u -m scripts.s235_true_official_V88_event_endpoints_on_IDMT \
             --sources model/original-sources \
             --weights model/freeze-original/freeze_local_combo.weights.h5 \
             --s231 model/S231/report.json \
