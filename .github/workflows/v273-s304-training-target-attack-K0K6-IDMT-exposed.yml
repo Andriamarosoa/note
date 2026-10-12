@@ -54,7 +54,7 @@ jobs:
           assert r['cohort_events']==506 and r['recordings']==5
           assert sum(r['XML_derived_attacks_K0to6_histogram'])==506
           assert r['source_original_K_semantics_verified']
-          assert r['cohort_already_exposed_to_S299']
+          assert r['corpus_already_exposed_to_S299']
           assert not r['XML_all_note_transcription_completeness_independently_proven']
           assert not r['true_negative_K0_exhaustiveness_independently_proven']
           assert not r['official_K0toK6_exactk_measured']
