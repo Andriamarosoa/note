@@ -50,7 +50,12 @@ class HttpRangeZIP:
         self.network_bytes+=len(data);self.range_requests+=1
         return data
     def read(self,n=-1):
-        if n<0:raise ValueError('unbounded ZIP read forbidden')
+        if n<0:
+            # zipfile._EndRecData intentionally calls read() after seeking into
+            # the final 65,557-byte EOCD/comment search window.
+            # Allow THAT only; never an unbounded archive scan.
+            n=self.size-self.pos
+            if n>65557:raise ValueError('unbounded ZIP read forbidden')
         remaining=min(n,self.size-self.pos)
         chunks=[]
         while remaining:
