@@ -72,3 +72,27 @@ sur 59 309 décisions historiques. Il faut une évaluation
 **indépendante**, préenregistrée, sur de nouveaux morceaux polyphoniques.
 
 **Référence officielle : `freeze_local_combo`; S80 non promu.**
+
+## S156–S159 — Sources originales S8 et S13/S14 archivées
+
+- [S156 — sauvegarde S13/S14 réussie](https://github.com/Andriamarosoa/note/actions/runs/38195953248) :
+  152 checkpoints originaux et preuves S153/S154 conservés dans la
+  [release de recherche](https://github.com/Andriamarosoa/note/releases/tag/v273-original-S13-S14-trained-S153-S154-cascade-archive).
+- [S157 — vrais checkpoints S8 exécutés](https://github.com/Andriamarosoa/note/actions/runs/38196167459) :
+  19 modèles originaux de sélection 28D + règle S9 originale ; une seule
+  divergence g/p sur 57 groupes, aucune intervention, S9=[45,10,2,0,0,0,0].
+- [S158 — comparaison source S9 indépendante des labels](https://github.com/Andriamarosoa/note/actions/runs/38196307750) :
+  **0 différence sur 57 IDs** entre le S9 produit par S157 et les vecteurs S9
+  gelés de S153/S154. Pas besoin de relancer les 596 forwards S13–S18.
+- [S159 — archivage S8 réussi](https://github.com/Andriamarosoa/note/actions/runs/38196392548) :
+  19 poids S8 authentiques avec preuves S157/S158 et SHA-256 conservés dans la
+  [release permanente de recherche](https://github.com/Andriamarosoa/note/releases/tag/v273-original-S8-weights-S157-S158-GOAT-proof).
+
+**État sur nouvel audio : S8 et S9 passent de « indisponibles » à «
+exécutables avec entrées S5 adaptées ».** Ce changement de statut
+ne prouve jamais l'équivalence avec les sorties S5 global/poly originales.
+
+Le S80 historique complet reste **non déployé**, non évalué
+indépendamment et **non promu**. Le verrou racine 527D S5 et les
+16 producteurs/risques S45 sont toujours présents.
+

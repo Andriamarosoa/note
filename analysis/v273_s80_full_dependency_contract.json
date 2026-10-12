@@ -1,5 +1,5 @@
 {
-  "schema": "v273-S155-s80-correct-original-ancestry-v2",
+  "schema": "v273-S160-s80-28-node-source-status-v3",
   "reference": "freeze_local_combo",
   "official_promotion": false,
   "target_options": [
@@ -137,20 +137,20 @@
     },
     {
       "id": "S8_original_parent",
-      "state": "missing_new_audio",
+      "state": "adapted_new_audio",
       "requires": [
         "S5_original527",
         "wav_groups"
       ],
-      "proof": "Original S8 parent depends on S5 global/poly heads and old piece-excluded routing; not restored on GOAT"
+      "proof": "S157: 19 authentic S8 trained 28D checkpoints executed on 57 GOAT audio events. Inputs g=S135,p=PR16#22 adapted and not original S5 heads."
     },
     {
       "id": "S9_original_parent",
-      "state": "missing_new_audio",
+      "state": "adapted_new_audio",
       "requires": [
         "S8_original_parent"
       ],
-      "proof": "Original source scripts/audit_v273_series9_posthoc.py veto_P_ge5_and_G_le3 needs original S8 proposal plus original S5 global/poly"
+      "proof": "S157 original K5 veto applied on 57 GOAT; S158 0/57 S9 differences vs S153/S154 upstream. Adapted S5 global/poly inputs not historically equivalent."
     },
     {
       "id": "S13_K0_birth",
@@ -347,7 +347,7 @@
     "Promote only with independently verified better global AND poly Exact-K and no unresolved regressions"
   ],
   "independent_full_S80_accuracy_measured": false,
-  "last_implemented_verified_stage": "S154: original S13/S14/S15/S16/S17/S18 trained weights and original source policy names on fresh GOAT via adapted S9; original S80 not yet complete",
+  "last_implemented_verified_stage": "S157/S158 genuine S8 trained checkpoints and S9 exact veto on GOAT produce 0/57 upstream changes vs original-weight S13-S18 adapted cascade (S154). Original S5 global/poly and 16 S45 producers missing.",
   "evidence_runs": {
     "original_models_preserved": 38193466752,
     "s80_tail_historical_exact": 38194275444,
@@ -358,7 +358,12 @@
     "S11_S16_S17_S18_checkpoint_archive": 38195167284,
     "S16_S17_S18_cascade": 38195310657,
     "S13_S14_S15_trained": 38195528700,
-    "S15_to_S18_cascade": 38195685473
+    "S15_to_S18_cascade": 38195685473,
+    "S155_correct_ancestry": 38195864313,
+    "S156_S13_S14_weights_archived": 38195953248,
+    "S157_authentic_S8_forward": 38196167459,
+    "S158_S9_parent_parity": 38196307750,
+    "S159_original_S8_archived": 38196392548
   },
   "ancestry_correction": {
     "prior_graph": "S148 mistakenly represented S11 as direct prerequisite of S18",
@@ -366,5 +371,15 @@
     "S11_relation": "S11 risk/votes family is parallel to S13-S18 ancestry; feeds a candidate family, not direct S18 parent",
     "user_visible_note": "Source code audit from historical commit 854ada718ac9bf1556f00c96b8e1aa90402d6ab3",
     "new_wave_equivalence": "false: original S5/S8/S9 still missing"
+  },
+  "external_S8_S9_source_provenance": {
+    "checkpoint_run": 37851172129,
+    "trained_checkpoints": 19,
+    "adapted_parents": "g=S135,p=PR16#22,b=freeze_local_combo",
+    "same_57_events": true,
+    "S9_vs_prior_S153_S154_mismatches": 0,
+    "true_original_S5_527D_features_available": false,
+    "official_promotion": false,
+    "permanent_release_url": "https://github.com/Andriamarosoa/note/releases/tag/v273-original-S8-weights-S157-S158-GOAT-proof"
   }
 }

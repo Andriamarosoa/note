@@ -6,9 +6,10 @@
   "official_promotion": false,
   "independent_S80_accuracy_measured": false,
   "latest_run": {
-    "component": "S155",
-    "status": "updating authoritative dependency corrections",
-    "last_successful_runtime_S154": 38195685473,
+    "id": 38196392548,
+    "component": "S159",
+    "status": "success",
+    "original_S8_weights_permanently_archived": true,
     "official_promotion": false
   },
   "validated_frozen_components": {
@@ -70,7 +71,7 @@
     "S80 already independently validated",
     "historical 43.87% guaranteed on new music"
   ],
-  "next_protocol": "Follow corrected S155 graph: original S5 527D/S8/S9 (or separately identified S80-deploy-v1 replacement) -> original S13/S14->S15->S16->S17->S18 verified adapted, then missing 16 S43-S45 family producers+risks -> S46->S69->S72->S79->S80 K0/K2 existing S147, and song-disjoint independent paired Exact-K validation. S11 is parallel family, not direct S18 ancestor.",
+  "next_protocol": "Follow canonical corrected 28-node source graph: original S5 527D/global/poly source restoration (or explicit distinct S80-deploy-v1), then 16 original S43/S44/S45 family producers and risk heads on new WAV; S46->S69->S72->S79->S80, seal independent song-disjoint annotations, require positive paired Exact-K global AND poly vs freeze_local_combo. S11 is parallel source, S8/S9/S13-S18 are checkpoint-forwarded only with S5-adapted inputs.",
   "experimental_deployability_research_S128_S131": {
     "scope": "Reconstruction of historical S5 upstream audio producers; new student alternative is NOT original S5/S80",
     "original_s5_527D_feature_equivalence_verified": false,
@@ -364,5 +365,19 @@
     "original_S5_527D_not_restored": true,
     "original_S80_external_accuracy_measured": false,
     "promotion": false
+  },
+  "S155_S159_provenance": {
+    "original_ancestry_corrected_run": 38195864313,
+    "graph_nodes": 28,
+    "original_family_count": 16,
+    "original_S13_S14_permanent_release": "https://github.com/Andriamarosoa/note/releases/tag/v273-original-S13-S14-trained-S153-S154-cascade-archive",
+    "original_S8_permanent_release": "https://github.com/Andriamarosoa/note/releases/tag/v273-original-S8-weights-S157-S158-GOAT-proof",
+    "run_S157": 38196167459,
+    "run_S158": 38196307750,
+    "original_S8_model_count": 19,
+    "original_S8_S9_recovered_with_adapted_S5_parents": true,
+    "original_S5_527D_restored": false,
+    "original_S80_externally_validated": false,
+    "official_promotion": false
   }
 }
