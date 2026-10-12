@@ -54,7 +54,7 @@ def audit(root,out):
     for fold in FOLDS:
         rows=bank[fold];base=rows[0][1]
         ref=rows[0][2]
-        diff_cells=0; diff_rows=set(); diff_family=0
+        diff_cells=0; diff_rows=set(); diff_family=0; finite_mask_diff=0
         max_risk_delta=0.
         for _,pred,r in rows[1:]:
             delta=(pred!=base)
@@ -62,13 +62,14 @@ def audit(root,out):
             diff_rows.update(np.flatnonzero(delta.any(1)).tolist())
             diff_family+=int(np.count_nonzero(r['proposal_K']!=ref['proposal_K']))
             q=r['risks'];p=ref['risks'];finite=np.isfinite(q)&np.isfinite(p)
-            need(np.array_equal(np.isfinite(q),np.isfinite(p)), 'risk null mask inconsistency')
+            finite_mask_diff+=int(np.count_nonzero(np.isfinite(q)!=np.isfinite(p)))
             if np.any(finite):
                 max_risk_delta=max(max_risk_delta,float(np.abs(q[finite]-p[finite]).max()))
         details.append({'fold':fold,'branches':len(rows),
                         'S46_different_cells_vs_first_in_same_fold':diff_cells,
                         'S46_events_with_any_different_policy':len(diff_rows),
                         'S45_source_family_different_cells':diff_family,
+                        'different_Ridge_risk_availability_cells':finite_mask_diff,
                         'max_absolute_Ridge_risk_difference':max_risk_delta})
         representatives.append(base)
     stack=np.stack(representatives)
