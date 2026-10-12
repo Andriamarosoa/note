@@ -28,11 +28,11 @@ jobs:
           python-version: '3.12'
       - run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
       - name: Require full original S70 trained 4fold on 59309 groups
-        run: gh run watch 38314025360 --exit-status --interval 15
+        run: gh run watch 38314219940 --exit-status --interval 15
       - name: Retrieve original S269 S69 S270 S70 native model outputs and original S97 59k
         run: |
-          gh run download 38313983301 -n s269-GuitarSet-59309-original-S69-fourfold -D model/S269
-          gh run download 38314025360 -n s270-guitarset-59309-original-S70-four-checkpoints -D model/S270
+          gh run download 38314191759 -n s269-GuitarSet-59309-original-S69-fourfold -D model/S269
+          gh run download 38314219940 -n s270-guitarset-59309-original-S70-four-checkpoints -D model/S270
           gh run download 38312084676 -n s262-guitarset-59309-native-real-S97-source -D model/S262source
           gh run download 38296880555 -n s224-original-four-S71-acoustic-risk-checkpoints-historic-exact -D model/S224
           gh run download 38297080728 -n s225-recovered-original-S72-four-temporal-risk-checkpoints -D model/S225
