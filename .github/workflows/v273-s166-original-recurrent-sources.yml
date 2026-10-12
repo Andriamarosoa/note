@@ -1,0 +1,110 @@
+name: S166 three more original trained recurrent S45 source families S19 S20 S27 on new GOAT
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s166_external_original_S19_S20_S27.py'
+      - '.github/workflows/v273-s166-original-recurrent-sources.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s166-actual-original-recurrent-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  real_saved_neural_weights:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Verify original two recurrent architectures plus S27 adaptive stop
+        run: python -m scripts.s166_external_original_S19_S20_S27 --self-test
+      - name: Original 19 S19 recurrent A-B-A trained piece-held neural checkpoints
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37858017067
+          name: v273-series19-recurrent
+          path: model/S19
+      - name: Original 19 S20 residual recurrent trained piece-held neural checkpoints
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37858383973
+          name: v273-series20-residual
+          path: model/S20
+      - name: Adapted original checkpoint S154 S18 native GOAT parent
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38195685473
+          name: v273-s154-original-S13-S14-S15-S16-S17-S18-checkpoint-cascade-GOAT
+          path: model/S154
+      - name: Native GOAT S97 acoustic original 335D ingredient
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38182078525
+          name: v273-s97-original-goat-s45-audio-features
+          path: model/S97
+      - name: Native GOAT S85 original PR16 frozen policy
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38176406465
+          name: v273-s85-original-pr16-external-policies
+          path: model/S85
+      - name: Original S5 unavailable, explicit S135 adapter
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38190945241
+          name: v273-s135-K-anchored-S5-student-soft-posteriors
+          path: model/S135
+      - name: Execute 19 S19 and 19 S20 ORIGINAL saved neural weights, S27 early-stable loops, no MIDI
+        run: |
+          set -euo pipefail
+          S97="$(find model/S97 -name original_s45_audio_only.npz -print -quit)"
+          S85="$(find model/S85 -name pr16_external_36_policies.npz -print -quit)"
+          S135="$(find model/S135 -name GOAT_57_label_blind_soft_Kanchored.npz -print -quit)"
+          S154="$(find model/S154 -name original_S15_to_S18_trained_GOAT_adapted_S9.npz -print -quit)"
+          for f in "$S97" "$S85" "$S135" "$S154"; do test -s "$f"; done
+          python -u -m scripts.s166_external_original_S19_S20_S27 \
+            --s97 "$S97" --s85 "$S85" --s135 "$S135" --s154 "$S154" \
+            --s19 model/S19 --s20 model/S20 --out model/S166
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S166/report.json'))
+          assert r['GOAT_audio_events']==57
+          assert r['source_original_saved_models_S19']==19
+          assert r['source_original_saved_models_S20']==19
+          assert r['original_S27_early_stable_005_policy_replayed']
+          assert not r['GOAT_truth_MIDI_read'] and not r['official_S80_promotion']
+          with np.load('model/S166/authentic_S19_S20_S27_original_weights_GOAT.npz',allow_pickle=False) as z:
+              assert z['S19_ABA_pass2_K'].shape==(57,)
+              assert z['S20_pass1_K'].shape==(57,)
+              assert z['S27_early_stable_005_K'].shape==(57,)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s166-authentic-trained-S19-S20-S27-recurrent-sources-newGOAT
+          path: model/S166/
+          retention-days: 90
