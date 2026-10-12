@@ -66,6 +66,15 @@ jobs:
                   print('S222 ORIGINAL_SOURCE_FORENSIC', key,
                         int(np.count_nonzero(a[key]!=b[key])),flush=True)
           PY
+          python - <<'PY'
+          import json
+          a=json.load(open('model/S70_original_recomputed/report.json'))
+          b=json.load(open('model/S70_original/report.json'))
+          for name in ('proposed_poly','downward_poly'):
+              print('S222 FORENSIC_THRESHOLD',name,
+                    'recomputed',a['results'][name]['thresholds'],
+                    'saved',b['results'][name]['thresholds'],flush=True)
+          PY
       - name: Reproduce four original trained logistic models and original threshold selection
         run: >-
           python -m scripts.s222_recover_original_S70_fold_models
