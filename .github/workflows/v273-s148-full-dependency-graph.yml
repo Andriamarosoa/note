@@ -1,4 +1,4 @@
-name: S148 single immutable full S80 dependency graph and S18 source test
+name: S155 corrected full 28-stage S80 ancestry graph and original S13-S18 proof
 on:
   push:
     branches: [codex/v273-scope-rescue]
@@ -6,6 +6,7 @@ on:
       - 'analysis/v273_s80_full_dependency_contract.json'
       - 'scripts/s148_verify_full_s80_dependencies.py'
       - 'scripts/loop_v273_k43_k21.py'
+      - 'scripts/audit_v273_series9_posthoc.py'
       - '.github/workflows/v273-s148-full-dependency-graph.yml'
   workflow_dispatch:
 permissions:
@@ -32,7 +33,7 @@ jobs:
           python -m scripts.s148_verify_full_s80_dependencies \
             --registry analysis/v273_s80_full_dependency_contract.json \
             --status analysis/v273_s80_promotion_status.json \
-            --root . --out model/s148/report.json
+            --root . --out model/s155/report.json
       - name: Original S18 veto code syntax and independent original selftest
         run: |
           python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
@@ -41,6 +42,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: v273-s148-one-complete-S80-dependency-register-verification
-          path: model/s148/
+          name: v273-s155-corrected-28-stage-S80-original-ancestry
+          path: model/s155/
           retention-days: 90

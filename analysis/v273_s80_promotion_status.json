@@ -6,11 +6,9 @@
   "official_promotion": false,
   "independent_S80_accuracy_measured": false,
   "latest_run": {
-    "component": "S148",
-    "id": 38194433107,
-    "status": "success",
-    "single_dependency_contract_validated": true,
-    "restored_S18_source_selftest_passed": true,
+    "component": "S155",
+    "status": "updating authoritative dependency corrections",
+    "last_successful_runtime_S154": 38195685473,
     "official_promotion": false
   },
   "validated_frozen_components": {
@@ -72,7 +70,7 @@
     "S80 already independently validated",
     "historical 43.87% guaranteed on new music"
   ],
-  "next_protocol": "Follow the full fixed 21-node, 16-family dependency map in analysis/v273_s80_full_dependency_contract.json; critical path true S11/S18 new-audio parent, exact or versioned replacement 16 S45 champions/risks, S46->S69->S72->S79, already runnable K0/K2 S147, then preregister and score IDMT independent. Do not announce new hidden components or original S80 promotion from historical parity.",
+  "next_protocol": "Follow corrected S155 graph: original S5 527D/S8/S9 (or separately identified S80-deploy-v1 replacement) -> original S13/S14->S15->S16->S17->S18 verified adapted, then missing 16 S43-S45 family producers+risks -> S46->S69->S72->S79->S80 K0/K2 existing S147, and song-disjoint independent paired Exact-K validation. S11 is parallel family, not direct S18 ancestor.",
   "experimental_deployability_research_S128_S131": {
     "scope": "Reconstruction of historical S5 upstream audio producers; new student alternative is NOT original S5/S80",
     "original_s5_527D_feature_equivalence_verified": false,
@@ -308,7 +306,7 @@
     }
   },
   "single_authoritative_dependency_inventory": "analysis/v273_s80_full_dependency_contract.json",
-  "single_authoritative_dependency_explanation": "analysis/README_V273_S148_FULL_DEPENDENCIES.md",
+  "single_authoritative_dependency_explanation": "analysis/README_V273_S155_FULL_DEPENDENCIES_AUDIT.md",
   "historical_S147_truth_free_final_route": {
     "run_id": 38194275444,
     "source": "scripts/s147_s80_tail_runtime.py",
@@ -329,5 +327,42 @@
     "selftest_passed": true,
     "historical_S18_producer_equivalence_on_unseen_WAV": false,
     "missing_upstream_new_audio": "original S11 and original S5 global/poly votes"
+  },
+  "original_S13_S18_new_music_adapted": {
+    "source_runs": {
+      "S13": 37854384791,
+      "S14": 37855070118,
+      "S16": 37855705158,
+      "S17": 37856164138,
+      "S18": 37856499212
+    },
+    "new_audio_runs": {
+      "S149": 38194821806,
+      "S150": 38195035112,
+      "S152": 38195310657,
+      "S153": 38195528700,
+      "S154": 38195685473
+    },
+    "S11_original_trained_models_new_audio": 76,
+    "S13_original_trained_models_new_audio": 76,
+    "S14_original_trained_models_new_audio": 76,
+    "S16_original_trained_models_new_audio": 152,
+    "S17_original_trained_models_new_audio": 152,
+    "S18_original_trained_models_new_audio": 140,
+    "repaired_original_chain": "S13 + S14 -> S15 safe_OR -> S16 -> S17 -> S18",
+    "S15_adapted_S9_K_histogram": [
+      45,
+      10,
+      2,
+      0,
+      0,
+      0,
+      0
+    ],
+    "S154_original_fit_checkpoint_forward_success": true,
+    "original_S8_S9_parent_not_restored": true,
+    "original_S5_527D_not_restored": true,
+    "original_S80_external_accuracy_measured": false,
+    "promotion": false
   }
 }

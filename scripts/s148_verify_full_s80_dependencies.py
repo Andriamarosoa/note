@@ -1,4 +1,4 @@
-"""S148: fail-closed, exhaustive S80 original/deploy-v1 dependency contract."""
+"""S155: corrected fail-closed original S8/S9->S13/S14->S15->S16->S17->S18 chain; S11 parallel."""
 import argparse,json
 from pathlib import Path
 STATES={'verified_new_audio','adapted_new_audio','historical_only',
@@ -16,7 +16,7 @@ def validate(d,status,root):
     families=d['families'];nodes=d['nodes']
     need(len(families)==16 and set(f['id'] for f in families)==set(EXPECTED),
          'historical family missing or duplicate')
-    need(len(nodes)==21 and len({n['id'] for n in nodes})==21,
+    need(len(nodes)==28 and len({n['id'] for n in nodes})==28,
          'missing or duplicate source node')
     bank={n['id']:n for n in nodes}
     for n in nodes:
@@ -34,6 +34,24 @@ def validate(d,status,root):
     need(ordered[-1]=='promote_S80' and
          bank['promote_S80']['requires']==['independent_ExactK'],
          'incomplete promotion chain')
+    ancestry={
+      'S8_original_parent':['S5_original527','wav_groups'],
+      'S9_original_parent':['S8_original_parent'],
+      'S13_K0_birth':['S9_original_parent','wav_groups'],
+      'S14_K0_rollback':['S9_original_parent','wav_groups'],
+      'S15_safe_OR':['S13_K0_birth','S14_K0_rollback'],
+      'S16_K12_K23':['S15_safe_OR'],
+      'S17_K32_K34':['S16_K12_K23'],
+      'S18_parent':['S17_K32_K34']
+    }
+    for id,expected in ancestry.items():
+        need(bank[id]['requires']==expected, id+' original ancestry drift')
+        if id not in ('S8_original_parent','S9_original_parent'):
+            need(bank[id]['state']=='adapted_new_audio',id+' original parents not proven')
+    need('S11_original_votes' not in bank['S18_parent']['requires'],
+         'S11 incorrectly represented as direct historical S18 ancestor')
+    need('S11_original_votes' in bank['S43_S44_16_champions']['requires'],
+         'S11 parallel champion missing from S45 provenance')
     need(bank['S80_K0_K2_tail']['state']=='logic_ready_inputs_missing',
          'S147 tail is not a complete S80 model')
     need(bank['S5_original527']['state']=='historical_only',
@@ -53,9 +71,16 @@ def validate(d,status,root):
       'scripts/s88_unlabeled_s46_runtime.py',
       'scripts/s89_label_blind_s69_runtime.py',
       'scripts/loop_v273_k43_k21.py',
+      'scripts/loop_v273_k12_k23.py',
+      'scripts/loop_v273_k32_k34.py',
+      'scripts/loop_v273_conditional_k01.py',
+      'scripts/verify_v273_series15_union.py',
+      'scripts/audit_v273_series9_posthoc.py',
+      'scripts/s153_original_s13_s15_GOAT.py',
+      'scripts/s154_source_s15_s18_GOAT.py',
       'scripts/train_v273_s45_specialized_risk_heads.py')
     for path in paths:need((root/path).is_file(),'missing actual source '+path)
-    return {'status':'S148_ONE_VERIFIED_DEPENDENCY_GRAPH',
+    return {'status':'S155_CORRECTED_28_STAGE_ORIGINAL_DEPENDENCY_GRAPH',
       'nodes':len(nodes),'families':len(families),
       'new_audio_verified_count':sum(n['state']=='verified_new_audio' for n in nodes),
       'not_fully_ready_count':sum(n['state']!='verified_new_audio' for n in nodes),
@@ -67,7 +92,7 @@ def selftest():
     try:need(False,'expected negative check')
     except ValueError:pass
     else:raise AssertionError('fail-closed guard absent')
-    print('S148 PASS: sixteen source families, immutable fail-closed promotion guard')
+    print('S155 PASS: sixteen source families, corrected S8/S9 to S18 ancestry, fail-closed promotion guard')
 if __name__=='__main__':
     p=argparse.ArgumentParser()
     p.add_argument('--self-test',action='store_true')
