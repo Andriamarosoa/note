@@ -31,18 +31,20 @@ def run(s237file,s234file,s235file,cache,out):
     s5=read(s237file,{'row_id','incumbent_freeze_K','fold_ids',
        'original_S5_raw_probability_by_fold','original_S5_prior_probability_by_fold',
        'original_S5_K_by_fold','all_four_folds_agree'})
-    audio=read(s234file,{'row_id','member','start_samples',
+    # The original four GuitarSet fold feature archives contain the
+    # true S5 46D ownership and exact native V88 start/end boundaries.
+    # No proxy timing/probabilities are introduced for historical rows.
+    fields={'row_id','member','start_samples','end_samples',
        'incumbent_freeze_K','summary58','sequence42x49','flow245',
-       'morphology490','physics294'})
-    timing=read(s235file,{'row_id','member','start_samples','end_samples',
-       'incumbent_K','incumbent_probabilities',
-       'nearest_S232_V84_onset_distance_samples'})
+       'morphology490','physics294','original_PR16_geometry46','geometry3'}
+    audio=read(s234file,fields)
+    timing=read(s235file,fields)
     ids=s5['row_id'];n=len(ids);b=s5['incumbent_freeze_K']
     need(n==59309 and np.array_equal(s5['fold_ids'],np.asarray(FOLDS)) and
        np.array_equal(ids,audio['row_id']) and
        np.array_equal(ids,timing['row_id']) and
        np.array_equal(b,audio['incumbent_freeze_K']) and
-       np.array_equal(b,timing['incumbent_K']) and
+       np.array_equal(b,timing['incumbent_freeze_K']) and
        np.array_equal(timing['member'],audio['member']) and
        np.array_equal(timing['start_samples'],audio['start_samples']),
        'S260 59309 original native event identities or baseline K differ')
