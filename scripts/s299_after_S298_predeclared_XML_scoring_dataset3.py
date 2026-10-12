@@ -73,7 +73,7 @@ def bootstrap(y,old,new,composition_by_row,mask):
     for _ in range(BOOT):
         pick=rng.integers(0,len(parts),size=len(parts))
         idx=np.concatenate([parts[j] for j in pick])
-        draws.append(float(np.mean((new[idx]==y[idx])-(old[idx]==y[idx]))))
+        draws.append(float(np.mean((new[idx]==y[idx]).astype(float)-(old[idx]==y[idx]).astype(float))))
     ci=np.quantile(draws,[.025,.975]).tolist()
     return dict(compositions=len(groups),bootstrap_replicates=BOOT,seed=SEED,
        exploratory_composition_cluster_CI95=list(map(float,ci)),
@@ -82,7 +82,7 @@ def bootstrap(y,old,new,composition_by_row,mask):
 
 def selftest():
     y=np.array([2,3,1,2],np.int16);a=np.array([3,3,2,2])
-    b=np.array([2,2,1,3])
+    b=np.array([2,2,1,2])
     q=ledger(y,a,b,np.ones(4,bool))
     need(q['corrections']==2 and q['regressions']==1
          and q['candidate_correct']-q['baseline_correct']==1,
@@ -197,7 +197,7 @@ def run(s276,s298,s277,oldfile,newfile,out):
     eligibility=dict(
         exact_native_original_reference_and_two_complete_S80_506_frozen=True,
         training_weights_unchanged=True,
-        user_selected_WAVs_unread_before_prelabel_freeze=True,
+        original_XML_annotations_unread_before_prelabel_freeze=True,
         certified_composition_disjoint_from_all_training=False,
         independent_exactk_global_K0to6_available=False,
         complete_negative_K0_annotations=False,
