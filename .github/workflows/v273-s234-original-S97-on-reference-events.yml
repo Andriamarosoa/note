@@ -1,0 +1,83 @@
+name: S234 original S97 audio views on official frozen native IDMT ranks33to48 groups
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s234_S97_unseen_original_freeze_native_views.py'
+      - '.github/workflows/v273-s234-original-S97-on-reference-events.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s234-original-native-reference-S97-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  original_audio_only_views_on_exact_official_reference_event_ids:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Original label-free signal feature dependencies
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Ensure actual official S233 native count model completed before aligning any audio events
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run watch 38301633310 --repo "${{ github.repository }}" --exit-status --interval 15
+      - name: Recover sealed original baseline native event source, not provisional RMS events
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38301633310
+          name: s233-official-unchanged-freeze-local-combo-original-IDMT-native-predictions
+          path: model/S233
+      - name: Confirm immutable S231 original 16 untouched ranked recordings
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38299545404
+          name: s231-IDMT-ranks33to48-unopened-song-WAV-feature-hash-preseal
+          path: model/S231
+      - name: Compute original real acoustic 58/42x49/245/490/294 on reference event times
+        run: |
+          python -m py_compile scripts/s234_S97_unseen_original_freeze_native_views.py
+          python -u -m scripts.s234_S97_unseen_original_freeze_native_views \
+            --s233 model/S233/S233_official_freeze_local_combo_IDMT_new_native_16songs.npz \
+            --s231 model/S231/report.json --out model/S234
+      - name: Validate native row identity coverage and truth-free original acoustic views
+        run: |
+          python - <<'PY'
+          import json,numpy as np,hashlib
+          from pathlib import Path
+          p=Path('model/S234/S234_original_S97_audio_views_on_real_freeze_native_events.npz')
+          r=json.loads(Path('model/S234/report.json').read_text())
+          assert hashlib.sha256(p.read_bytes()).hexdigest()==r['output_SHA256']
+          assert not r['annotation_XML_read'] and not r['annotation_MIDI_read']
+          assert not r['independent_exactK_measured'] and not r['official_S80_promotion']
+          assert r['exact_original_geometry46_not_yet_available']
+          with np.load(p,allow_pickle=False) as z:
+            n=r['original_official_freeze_native_event_count']
+            assert z['summary58'].shape==(n,58)
+            assert z['sequence42x49'].shape==(n,42,49)
+            assert z['flow245'].shape==(n,245)
+            assert z['morphology490'].shape==(n,490)
+            assert z['physics294'].shape==(n,294)
+            assert len(set(z['row_id'].astype(str)))==n
+          print('S234 PASS exact reference-native events and true original audio-only views, not S5/S80')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s234-idmt-unseen-original-S97-features-aligned-to-official-freeze-event-IDs
+          path: model/S234/
+          retention-days: 90
