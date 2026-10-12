@@ -1,0 +1,41 @@
+name: S182 audit fast ranged access to IDMT external ZIP without duplicate full download
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s182_probe_idmt_http_range.py'
+      - '.github/workflows/v273-s182-probe-IDMT-range.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s182-idmt-range-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  metadata_only_http_tail:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Probe only last 64KiB via fixed-size Range request (abort immediately on status 200)
+        run: python -u -m scripts.s182_probe_idmt_http_range --out model/S182/report.json
+      - name: No annotation and truthful transfer audit
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('model/S182/report.json'))
+          assert d['bytes_read']<=65536
+          assert not d['raw_WAV_read']
+          assert not d['annotations_read']
+          assert not d['S80_independent_ExactK_scored']
+          assert not d['S80_promoted']
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s182-public-IDMT-range-probe-64KiB-only
+          path: model/S182/
+          retention-days: 30
