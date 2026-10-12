@@ -1,0 +1,86 @@
+name: S247 precommitted S219 sparse conditional S46 consensus on 1034 original native IDMT events
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s247_precommitted_S46_specialist_consensus_IDMT.py'
+      - '.github/workflows/v273-s247-original-S46-fold-consensus-IDMT.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s247-original-S46-consensus-IDMT-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  original_s219_4fold_no_heldpiece_oracle:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install original label-free NumPy S219 voting runtime
+        run: python -m pip install numpy==1.26.4
+      - name: Require all sixteen original S45 families and 193 original S46 policies are produced successfully
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run watch 38307036985 --repo "${{ github.repository }}" --exit-status --interval 15
+      - name: Download certified original 19 branch S45/S46 source K predictions on canonical 1034 IDMT native events
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38307036985
+          name: s246-full-original-16-S45-304-Ridge-193-S46-native-IDMT-1034
+          path: model/S246
+      - name: Restore S239 majority3of4 original S18 native parent and frozen original baseline K
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38304758311
+          name: s239-original-S217-S18-4fold-majority-on-1034-IDMT-native-events
+          path: model/S239
+      - name: Run exact S219 precommitted specialist voting rule on all genuine original S46 policy source branches
+        run: |
+          python -m py_compile scripts/s247_precommitted_S46_specialist_consensus_IDMT.py
+          python -u -m scripts.s247_precommitted_S46_specialist_consensus_IDMT \
+            --s246 model/S246 \
+            --s239 model/S239/S239_original_S18_foldneutral_1034_IDMT.npz \
+            --out model/S247
+      - name: Reject label leak and ensure all 193 original policy outputs use 1034 identical original official event IDs
+        run: |
+          python - <<'PY'
+          import json,numpy as np,hashlib
+          from pathlib import Path
+          r=json.load(open('model/S247/report.json'))
+          assert r['original_native_reference_event_count']==1034
+          assert r['original_S246_source_branch_count']==19
+          assert r['original_S246_family_count']==16
+          assert r['original_S246_ridge_model_count']==304
+          assert r['original_S246_policy_count']==193
+          assert r['source_branch_reordering_invariance_verified']
+          assert not r['IDMT_XML_MIDI_content_read']
+          assert not r['models_refitted'] and not r['independent_accuracy_measured']
+          assert not r['S80_promoted']
+          p=Path('model/S247/S247_original_193_S46_foldneutral_1034_IDMT.npz')
+          assert hashlib.sha256(p.read_bytes()).hexdigest()==r['output_SHA256']
+          with np.load(p,allow_pickle=False) as z:
+              assert z['S46_193_policy_K'].shape==(1034,193)
+              assert z['original_freeze_K'].shape==(1034,)
+              assert np.array_equal(z['S46_193_policy_K'][:,0],z['S18_parent_K'])
+              assert np.isin(z['S46_193_policy_K'],range(7)).all()
+          print('S247 PASS all 193 authentic conditional S46 policies on 1034 original native IDMT groups')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s247-genuine-S46-193-specialist-consensus-IDMT-native-1034
+          path: model/S247/
+          retention-days: 90
