@@ -80,6 +80,17 @@ def run(s234file,s235file,s231file,out):
          'original fundamental views missing on native IDMT events')
     normalized=np.max(np.abs(primary-ref['summary58'])/
                        (1+np.abs(ref['summary58'])))
+    scaled_deviation=np.abs(primary-ref['summary58'])/(1+np.abs(ref['summary58']))
+    strongest=np.unravel_index(np.argmax(scaled_deviation),scaled_deviation.shape)
+    offenders=np.flatnonzero(np.max(scaled_deviation,axis=1)>=1e-3)
+    print(json.dumps(dict(S244_PRIMARY_VS_S234_FORENSIC=True,
+         max_scaled_difference=float(normalized),
+         max_absolute_difference=float(np.max(np.abs(primary-ref['summary58']))),
+         differing_original_events_over_1e3=int(len(offenders)),
+         largest_event_id=str(ids[strongest[0]]),
+         largest_feature=str(name_list[strongest[1]]),
+         S234_value=float(ref['summary58'][strongest]),
+         S244_value=float(primary[strongest]))),flush=True)
     need(float(normalized)<1e-3,
          'S244 original primary summaries differ too much from S234 source features')
     out.mkdir(parents=True)
