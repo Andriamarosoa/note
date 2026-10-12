@@ -94,5 +94,8 @@ Les 58 vrais checkpoints constituent un progrès important en
 disponibilité technique, mais leur existence seule ne suffit pas
 à établir une supériorité indépendante.
 
-*Préservation des poids originaux lancée via le
-[workflow S146](https://github.com/Andriamarosoa/note/actions/runs/38193466752).*
+**Préservation S146 réussie** : [workflow vérifié](https://github.com/Andriamarosoa/note/actions/runs/38193466752).
+[Prerelease permanente des 58 checkpoints originaux et des preuves S141–S145](https://github.com/Andriamarosoa/note/releases/tag/v273-original-S12-S38-S40-S41-trained-recovery-38193181798).
+Archive de 250 009 706 octets, avec les modèles non modifiés et les empreintes
+SHA-256 fichier par fichier. Aucun résultat d'Exact-K indépendant de S80
+n'est revendiqué.

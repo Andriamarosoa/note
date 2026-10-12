@@ -8,8 +8,9 @@
   "latest_run": {
     "id": 38193466752,
     "component": "S146",
-    "status": "in_progress",
-    "summary": "preserve original S12/S38/S40/S41 trained checkpoints and S141-S145 label-free outputs"
+    "status": "success",
+    "source_models_permanently_archived": true,
+    "release_url": "https://github.com/Andriamarosoa/note/releases/tag/v273-original-S12-S38-S40-S41-trained-recovery-38193181798"
   },
   "validated_frozen_components": {
     "original_native_audio_inference": {
@@ -287,6 +288,22 @@
       "S145": 38193316422,
       "S146": 38193466752
     },
-    "promotion": false
+    "promotion": false,
+    "permanent_archive": {
+      "status": "verified_success",
+      "run": 38193466752,
+      "release_url": "https://github.com/Andriamarosoa/note/releases/tag/v273-original-S12-S38-S40-S41-trained-recovery-38193181798",
+      "original_model_count": {
+        "S12_logistic": 19,
+        "S38": 16,
+        "S40": 4,
+        "S41": 19
+      },
+      "total_verified_source_checkpoints": 58,
+      "bundle_size_bytes": 250009706,
+      "bundle": "v273-S12-S38-S40-S41-original-trained-checkpoints-and-S141-S145-evidence.tar.gz",
+      "sha256_manifest": "FILES_SHA256SUMS",
+      "release_is_not_S80_promotion": true
+    }
   }
 }
