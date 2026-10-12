@@ -15,16 +15,6 @@ def req(cond, why):
     if not cond: raise ValueError(why)
 def sha(b):
     return hashlib.sha256(b).hexdigest()
-def basic_set():
-    files=[
-       "IDMT-SMT-GUITAR_V2/dataset3/audio/songA.wav",
-       "IDMT-SMT-GUITAR_V2/dataset3/audio/songB.wav",
-       "IDMT-SMT-GUITAR_V2/dataset3/annotation/songA.xml",
-       "IDMT-SMT-GUITAR_V2/dataset3/annotation/songB.xml",
-       "IDMT-SMT-GUITAR_V2/dataset1/audio/AR_Lick1_FN.wav",
-       "IDMT-SMT-GUITAR_V2/dataset1/annotation/AR_Lick1_FN.xml",
-    ] + [f"IDMT-SMT-GUITAR_V2/dataset2/audio/clip{i}.wav" for i in range(261)]
-    return files
 def ismember(n, dataset, extension):
     p=PurePosixPath(n)
     return (dataset.lower() in (seg.lower() for seg in p.parts)
@@ -55,19 +45,25 @@ def cohort(names):
     exposed=wav["dataset2"][:48]
     remaining=wav["dataset2"][48:]
     first=wav["dataset3"]  # all five pieces, candidate, no labels touched
-    licks=[p for p in wav["dataset1"] if re.search("lick",PurePosixPath(p).stem,re.I)]
-    # One candidate per canonical lick stem, avoiding same-named repeats.
+    # Filename-only prioritization; no label/XML content. Do not infer K here.
+    priority=[p for p in wav["dataset1"] if re.search(
+        r"lick|chord|poly|major|minor|_maj|_min",PurePosixPath(p).stem,re.I)]
+    pool=priority if priority else wav["dataset1"]
+    # Avoid duplicate exact stems while retaining deterministic order.
     grouped=defaultdict(list)
-    for p in licks:
+    for p in pool:
         core=PurePosixPath(p).stem.lower()
         core=re.sub(r"^(ar|fs|lp|ib|gt)_","",core)
         grouped[core].append(p)
-    first_lucks=[min(v,key=orderhash) for k,v in sorted(grouped.items())]
-    first_lucks=sorted(first_lucks,key=orderhash)[:12]
-    following=remaining[:16]
+    first_dataset1=sorted((min(v,key=orderhash) for v in grouped.values()),
+                          key=orderhash)[:12]
+    # Missing or ambiguous XML pairs must not be included in final reserve.
+    following=[p for p in remaining
+               if match_annotation(p,xml["dataset2"])[0] is not None][:16]
+    req(len(following)==16,"not enough non-exposed dataset2 XML-WAV pairs")
     chosen={"dataset3_first":first,
-            "dataset1_licks_second":first_lucks,
-            "dataset2_ranks49to64_exploratory":following}
+            "dataset1_filename_prioritized_second":first_dataset1,
+            "dataset2_unexposed_XML_paired_reserve":following}
     crosswalk={}
     all_wav=[w for p in chosen.values() for w in p]
     req(len(set(all_wav))==len(all_wav),"duplicate WAV path across cohorts")
@@ -103,6 +99,8 @@ def run(out):
         zip_central_names_sha256=sha("\n".join(sorted(names)).encode()),
         counts_WAV={k:len(v) for k,v in inventory_wav.items()},
         counts_XML={k:len(v) for k,v in inventory_xml.items()},
+        dataset1_first_25_names_sorted=sorted(inventory_wav["dataset1"])[:25],
+        dataset1_selected_filename_priority_only=True,
         dataset2_previous_48_wav_names_sha256=[orderhash(n) for n in exposed],
         dataset2_unexposed_rank49to261_count=len(remaining),
         candidate_groups={k:[crosswalk[w] for w in v] for k,v in chosen.items()},
@@ -118,8 +116,8 @@ def run(out):
         promotion_permitted=False,
         notes=[
           "All dataset3 five candidate files are included; musical-composition identity not certified.",
-          "Dataset1 candidate licks selected label-blind from unique stems; avoid extrapolating K0.",
-          "Dataset2 rank49to64 is reserve only, already opened rank1to48 banned for independent reuse.",
+          "Dataset1 candidates prioritized from filename hints only; do not infer polyphonic K or K0 without XML.",
+          "Dataset2 selection comes from unexposed SHA ranks49to261 with nonambiguous XML-paired filenames; prior rank1to48 banned.",
           "XML existence by names does not prove exhaustive ground-truth K0 coverage.",
           "Next: verify composition disjointness from training and previously exposed cohorts, then freeze native events and both models before labels."
         ],
