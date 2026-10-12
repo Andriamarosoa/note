@@ -51,6 +51,21 @@ jobs:
           run-id: 38153394681
           name: v273-s70-poly-meta-replay
           path: model/S70_original
+      - name: Forensic comparison using unchanged original historical S70 trainer
+        run: |
+          python -m scripts.audit_v273_s70_pr16_poly_meta \
+            --s69 model/S69/predictions.npz \
+            --votes model/PR16/predictions.npz \
+            --probabilities model/PR16/probabilities.npz \
+            --output model/S70_original_recomputed
+          python - <<'PY'
+          import numpy as np
+          with np.load('model/S70_original_recomputed/predictions.npz') as a, \
+               np.load('model/S70_original/predictions.npz') as b:
+              for key in ('s69_poly_K','proposed_poly_K','downward_poly_K'):
+                  print('S222 ORIGINAL_SOURCE_FORENSIC', key,
+                        int(np.count_nonzero(a[key]!=b[key])),flush=True)
+          PY
       - name: Reproduce four original trained logistic models and original threshold selection
         run: >-
           python -m scripts.s222_recover_original_S70_fold_models
