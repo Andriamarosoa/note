@@ -61,13 +61,13 @@ def run(s268file,pr16file,rulesfile,out):
         'original_19_branch_folds','S46_193_policy_K','per_fold_specialist_K',
         'active_fold_count','parent_incompatible_specialists',
         'contradictory_specialists'})
-    v=load(pr16file,{'member','start_samples','end_samples',
+    v=load(pr16file,{'row_id','global_index','member','start_samples','end_samples',
         'incumbent_freeze_K','pr16_policy_K','pr16_vote_count',
         'pr16_policy22_K','pr16_network_probabilities'})
     ids=list(map(str,s['row_id']))
     n=len(ids);need(n==59309 and len(set(ids))==n,'59309 original official native GUITARSET events')
-    orig=list(map(str,v['member']))
-    keys=[f'{x}:{int(y)}' for x,y in zip(orig,v['start_samples'])]
+    # Original GuitarSet native event keys are immutable global_index IDs.
+    keys=list(map(str,v['row_id']))
     need(len(keys)==len(set(keys)),'PR16 duplicate acoustic events')
     idx={k:i for i,k in enumerate(keys)}
     need(all(k in idx for k in ids),'PR16 cannot join 59309 S268 native events')
