@@ -1,0 +1,104 @@
+name: S251 eight authentic frozen original S71 S72 risk models on 1034 official IDMT native events
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s251_S71_S72_original_native_IDMT.py'
+      - '.github/workflows/v273-s251-original-S71-S72-native-IDMT.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s251-original-8-model-S71-S72-IDMT-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  genuine_S71_S72_8_pretrained_models:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Original pretrained S71 S72 model weights numeric ABI
+        run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+      - name: Require all authentic original S70 trained models execute on untouched 1034 native IDMT events
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run watch 38307852360 --repo "${{ github.repository }}" --exit-status --interval 15
+      - name: Original S249 polymax S69 and S46 S248 no-label model source
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38307579536
+          name: s249-original-S69-4fold-genuine-S46-PR16-1034-IDMT
+          path: model/S249
+      - name: S250 original frozen trained S70 fourfold probabilities and decisions
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38307852360
+          name: s250-original-trained-S70-4fold-1034-IDMT-native-no-labels
+          path: model/S250
+      - name: Original native 1034 audio summary58 sequence42x49 and exact V88 timestamps geometry3
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38305601838
+          name: s240-original-S97-native-1034-audio-join-for-S29-S35
+          path: model/S240bridge
+      - name: Restore original four trained S71 119D acoustic classifier weights and fold-specific thresholds
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38296880555
+          name: s224-original-four-S71-acoustic-risk-checkpoints-historic-exact
+          path: model/S224
+      - name: Restore original four S72 trained temporal HGB weights and 465D feature thresholds
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38297080728
+          name: s225-recovered-original-S72-four-temporal-risk-checkpoints
+          path: model/S225
+      - name: Run eight original trained risk models on genuine S250 candidate and original S249 plus 1034 actual acoustic V88 events
+        run: |
+          python -m py_compile scripts/s251_S71_S72_original_native_IDMT.py
+          python -u -m scripts.s251_S71_S72_original_native_IDMT \
+            --s69 model/S249/S249_original_S69_fourfold_rule_consensus_IDMT.npz \
+            --s70 model/S250/S250_original_S70_4fold_no_oracle_IDMT.npz \
+            --s97 model/S240bridge/s240_original_IDMT_native_S97_audio.npz \
+            --s71 model/S224 --s72 model/S225 --out model/S251
+      - name: Require true model checkpoint provenance, valid K and no truth use
+        run: |
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S251/report.json'))
+          assert r['events']==1034 and r['real_original_model_count']==8
+          assert r['model_S71_count']==4 and r['model_S72_count']==4
+          assert r['original_S71_input_width']==119 and r['original_S72_input_width']==465
+          assert r['label_free_S82_geom46_recomputed']
+          assert not r['labels_read'] and not r['new_models_trained'] and not r['S80_promoted']
+          with np.load('model/S251/S251_original_S71_S72_native_IDMT.npz',allow_pickle=False) as z:
+            assert z['row_id'].shape==(1034,)
+            assert z['original_pr16_geometry46'].shape==(1034,46)
+            for name in ('s72_risk_all_K','s72_risk_poly_guard_K','s72_poly_all_K','s72_poly_poly_guard_K'):
+              assert z[name].shape==(1034,) and np.isin(z[name],range(7)).all()
+          print('S251 PASS true original 8 S71 and S72 models on 1034 matched native IDMT events, no labels or training')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s251-real-original-8-S71-S72-1034-native-IDMT
+          path: model/S251/
+          retention-days: 90
