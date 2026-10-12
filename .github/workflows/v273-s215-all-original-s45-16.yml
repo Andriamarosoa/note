@@ -1,0 +1,122 @@
+name: S215 full 16 real original S45 families 304 Ridge and S46 193
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s215_full_s45_16_original_sources.py'
+      - '.github/workflows/v273-s215-all-original-s45-16.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s215-complete-s45-sources-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  full_original_s45_technical_inference:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install original S45 Ridge model environment
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Download original S45 304 trained ridge models
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37891039201
+          name: v273-series45-specialized-risk-heads
+          path: model/S45
+      - name: Download preserved original S173 source inventory for independent family joins
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38206160849
+          name: v273-s173-real-trained-S35-adapted-11-source-S45-risks-NO-S80
+          path: model/S173
+      - name: Download original S29-fed S35 source
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38238673938
+          name: s210-original-S29-original-S35-19-branches-experimental
+          path: model/S210
+      - name: Download S11 S12 S38 S40 S41 genuine recovered-parent producers
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38241942489
+          name: s212-five-authentic-S45-source-families-recovered-S5-S18
+          path: model/S212
+      - name: Download S19 S20 S24 S25 S27 real recurrent outputs on S18 parents
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38242790294
+          name: s214-five-rebased-original-recurrent-S45-19-branches
+          path: model/S214
+      - name: Download sealed S213 S45/S46 baseline to independently prove only five recurrent sources changed
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38242384204
+          name: s213-rebased-five-s45-all19-s46-comparison-no-promotion
+          path: model/S213
+      - name: Run complete 16 genuine-original-checkpoint S45 and 193 S46 policies on all 19 branches
+        run: |
+          set -euo pipefail
+          ELEVEN="$(find model/S173 -name S173_S35_adapted_11_family_GOAT.npz -print -quit)"
+          S210="$(find model/S210 -name original_s29_to_s35_GOAT.npz -print -quit)"
+          S212="$(find model/S212 -name five_rebased_S11_S12_S38_S40_S41.npz -print -quit)"
+          S214="$(find model/S214 -name five_rebased_recurrent_S19_S20_S24_S25_S27.npz -print -quit)"
+          test -s "$ELEVEN" && test -s "$S210" && test -s "$S212" && test -s "$S214"
+          test -d model/S45/models && test -s model/S213/report.json
+          python -m scripts.s215_full_s45_16_original_sources \
+            --five analysis/evidence/v273-recovered-five-families/external_five_families.npz \
+            --eleven "$ELEVEN" --s210 "$S210" --s212 "$S212" --s214 "$S214" \
+            --s18 analysis/evidence/v273-recovered-s5-s18/external_s5_to_s18.npz \
+            --s97 analysis/evidence/v273-recovered-s5-s18/inputs/original_s45_audio_only.npz \
+            --models model/S45/models \
+            --catalog analysis/v273_s45_original_champion_catalog.json \
+            --previous213 model/S213 --out model/S215
+      - name: Enforce all 16 original source models while preventing premature promotion
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import numpy as np,json
+          r=json.load(open('model/S215/report.json'))
+          assert r['original_S45_sources']==16 and r['branch_count']==19
+          assert r['historical_S45_ridge_checkpoints']==304 and r['S46_policy_columns']==193
+          assert r['recovered_s1_s4_coherent']==5
+          assert r['reexecuted_genuine_S11_S12_S38_S40_S41']==5
+          assert r['reexecuted_genuine_recurrent_S19_S20_S24_S25_S27']==5
+          assert r['reexecuted_original_S29_S35']==1
+          assert not r['remaining_adapted_S45_original_sources']
+          assert r['prespecified_new_piece_aggregation_unresolved']
+          assert not r['original_S80_promoted'] and not r['independent_ExactK_performance_measured']
+          assert not r['truth_labels_opened'] and not r['models_retrained']
+          assert len(list(Path('model/S215').glob('branch*_fold*/s46/predictions.npz')))==19
+          print('S215 PASS real 16 S45 original-source K producers + 304 original risk models and 193 S46 policies; no official promotion')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s215-complete-16-original-source-S45-S46-all19-branches
+          path: model/S215/
+          retention-days: 90
