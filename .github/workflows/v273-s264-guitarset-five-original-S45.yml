@@ -92,7 +92,7 @@ jobs:
           path: model/S262source
       - name: Run five genuine trained S45 source families on recovered S5/S18 parent folds
         run: >-
-          python -m scripts.s264_five_S45_genuine_original_GUITARSET
+          python -m scripts.s264_original_S45_five_audio_guitarset_59309
           --s18 model/S260/S260_original_S5_to_S18_true_V88_native_GUITARSET_59309.npz
           --s97 model/S262source/original_GuitarSet_59309_S97.npz
           --s11 model/S11 --s12 model/S12 --s38 model/S38
