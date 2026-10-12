@@ -1,0 +1,72 @@
+name: S309 133 original frozen S8-S18 heads on 964 IDMT dataset2 reference native rows PREXML
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s309_original_S8_S18_133_heads_dataset2_964.py'
+      - '.github/workflows/v273-s309-original-S18-133heads-dataset2-964.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s309-original-S18-964-native-no-labels
+  cancel-in-progress: true
+jobs:
+  historical_S8_S18_four_fold_checkpoint_bank:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Require original S306/S307 acoustics and SHA pinned S308 four S5 checkpoints succeed
+        run: |
+          gh run watch 38323508991 --repo ${{ github.repository }} --exit-status --interval 15
+          gh run watch 38323592430 --repo ${{ github.repository }} --exit-status --interval 15
+      - name: Restore original genuine four S5 held-fold trained predictions on all 964 V88 native events
+        run: |
+          gh run download 38323592430 \
+            -n s308-IDMT-dataset2-964-original-S5-fourfold-527D-trained-predictions-PREXML \
+            -D model/S308 --repo ${{ github.repository }}
+      - name: Restore original 964 S97 audio features and the frozen official V88 reference
+        run: |
+          gh run download 38323508991 \
+            -n s306-s307-IDMT-dataset2-964-original-S97-S5-527D-audio-before-XML \
+            -D model/S306S307 --repo ${{ github.repository }}
+          gh run download 38322507433 \
+            -n s302-IDMT-dataset2-16WAV-true-original-V88-native-official-unlabelled \
+            -D model/S302 --repo ${{ github.repository }}
+      - name: Replay original 133 archived S8 through S18 fitted classifiers without using any new truth
+        run: |
+          python -u -m scripts.s309_original_S8_S18_133_heads_dataset2_964 \
+            --s308 model/S308/S308_original_S5_fourfold_964_dataset2_native_unlabelled.npz \
+            --s306 model/S306S307/S306/S306_IDMT_dataset2_original_S97_on_frozen_native_events.npz \
+            --s302 model/S302/S302_official_V88_dataset2_rank49plus_16_WAV_predictions.npz \
+            --cache model/S309_original-checkpoints \
+            --out model/S309
+          python - <<'PY'
+          import json,numpy as np
+          x=json.load(open('model/S309/report.json'))
+          assert x['count']==964 and x['original_risk_checkpoint_count']==133
+          assert x['original_decoded_stage_count']==8
+          assert not x['XML_MIDI_annotation_content_read']
+          assert not x['official_S80_promotion']
+          with np.load('model/S309/S309_original_S5_to_S18_true_V88_native_IDMT_964.npz',allow_pickle=False) as z:
+            assert z['S18_K'].shape==(4,964)
+            assert z['row_id'].shape==(964,)
+          print('S309 PASS 133 original historical heads on 964 new V88 native event IDs, XML unopened')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s309-original-133S18-fourfold-on-964-IDMT-dataset2-native-PREXML
+          path: model/S309/
+          retention-days: 90
