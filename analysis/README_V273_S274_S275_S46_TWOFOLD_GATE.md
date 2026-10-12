@@ -54,6 +54,31 @@ original complet (79,24 % exploratoire).
 Cette comparaison restera un diagnostic de développement biaisé et
 ne prouvera pas que S80 généralise mieux sur des compositions inédites.
 
+
+## Résultat S275 — Validation du rejeu technique (CI 38316309802 : SUCCESS)
+
+La version S274 a été rejouée via les modèles sauvegardés S69, S70,
+S71/S72 et S79/S80, sans aucune lecture des étiquettes dans le premier
+job. Les sorties ont été figées avant la comparaison appariée avec S272.
+
+| Exact-K | S272 original | S275 deux folds | Gain |
+|---|---:|---:|---:|
+| Global sur 59 309 événements | 53 327 (89,9138 %) | 53 645 (90,4500 %) | +318, +0,5362 point |
+| Poly vrai K2+ sur 7 385 | 5 852 (79,2417 %) | 5 870 (79,4854 %) | +18, +0,2437 point |
+
+Corrections et régressions **de S275 par rapport au S272** :
+
+- Global : 345 corrections, 27 régressions, 9 changements où les deux restent faux.
+- Vrai poly K2–K6 : 20 corrections, 2 régressions, 4 changements où
+  les deux restent faux.
+- Comparatif exécuté sur les mêmes lignes identifiables en Exact-K.
+- Preuve : https://github.com/Andriamarosoa/note/actions/runs/38316309802
+
+**Attention fondamentale : entraînement et évaluation se chevauchent
+sur GuitarSet pour trois des quatre folds. Il s'agit d'un gain local
+dans un benchmark de développement, PAS d'un résultat OOF ni
+song-disjoint indépendant. Le score officiel reste inchangé.**
+
 ## Conditions impératives pour toute promotion ultérieure
 
 - Analyser le comportement après les étapes S69, S70, S71/S72 et S80,
