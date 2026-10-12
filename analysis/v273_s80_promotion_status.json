@@ -4,12 +4,12 @@
   "reference": "freeze_local_combo",
   "experimental_candidate": "S80",
   "official_promotion": false,
-  "independent_S80_accuracy_measured": false,
+  "independent_S80_accuracy_measured": true,
   "latest_run": {
-    "component": "S239 genuine historical S18 133-checkpoint IDMT deploy route plus S217 4-fold consensus",
-    "id": 38304758311,
+    "component": "S255 posthoc causal audit of 6 XML-verified S80 regressions after S254 independent paired Exact-K",
+    "id": 38309041257,
     "status": "success",
-    "independent_S80_accuracy_measured": false,
+    "independent_S80_accuracy_measured": true,
     "official_promotion": false
   },
   "validated_frozen_components": {
@@ -286,14 +286,86 @@
       "original_S29_S35_S45_S46_S69_S80_predicted_on_these_1034_events": false,
       "independent_accuracy_measured": false,
       "official_promotion": false
+    },
+    "S240_S255_all_trained_original_S80_IDMT_1034_full_sealed_and_paired": {
+      "status": "FULL_SOURCE_CHAIN_ORIGINAL_WEIGHT_EXPERIMENTAL_DEPLOY_INDEPENDENT_ARITHMETIC_REPLAY_PASSED_INDEPENDENT_ANNOTATION_COMPARISON_FAILED_PROMOTION_GATE",
+      "original_source_runs": {
+        "S240_S29": 38305601838,
+        "S241_S35": 38305786093,
+        "S242_five_original": 38306159169,
+        "S243_five_recurrent": 38305925734,
+        "S244_original_fundamental": 38306685204,
+        "S245_five_rare": 38307013187,
+        "S246_all_16_S45_304_Ridge_193_S46": 38307036985,
+        "S247_fold_consensus": 38307178111,
+        "S248_twelve_PR16_36_policies": 38307419228,
+        "S249_original_S69": 38307579536,
+        "S250_original_S70": 38307852360,
+        "S251_S71_S72": 38307945164,
+        "S252_S79_S80_full_original_weights": 38308087090,
+        "S253_independent_tail_arithmetic": 38308395030,
+        "S254_postfrozen_XML_paired": 38308757247,
+        "S255_six_regressions_causal": 38309041257
+      },
+      "original_unseen_wave_SHA256_filename_ranks": [
+        33,
+        48
+      ],
+      "WAV_count": 16,
+      "genuine_official_V88_native_total_events": 1034,
+      "S80_immutable_output_SHA256": "5689b5098a6462acc343d4ce11e8da536f0757848908fdf1300187727edc0106",
+      "freeze_immutable_output_SHA256": "6f18a476a865e0791e17c7e826ca630042b206be463f2cc5b500108bf8c626da",
+      "different_full_S80_and_official_K": 33,
+      "XML_pitch_onset_matched_events": 206,
+      "XML_pitch_onset_unmatched_events": 828,
+      "matched_coverage_fraction": 0.19922630560928434,
+      "match_max_time_seconds": 0.08,
+      "independent_XML_matched_K1to6_reference_correct": 83,
+      "independent_XML_matched_K1to6_candidate_correct": 80,
+      "independent_XML_matched_K1to6_reference_accuracy": 0.4029126213592233,
+      "independent_XML_matched_K1to6_S80_accuracy": 0.3883495145631068,
+      "independent_XML_matched_K1to6_delta": -0.014563106796116505,
+      "independent_true_polyphonic_K2to6_count": 39,
+      "independent_true_polyphonic_ref_correct": 4,
+      "independent_true_polyphonic_S80_correct": 4,
+      "paired_matched_corrections": 3,
+      "paired_matched_regressions": 6,
+      "paired_changed_both_wrong": 7,
+      "S255_posthoc_stage_correction_delta_matched": {
+        "S18": 1,
+        "S46_polymax": -9,
+        "S69_veto": 4,
+        "S70": 1,
+        "S71": 0,
+        "S72": 0,
+        "S79": 0,
+        "S80_final": 0
+      },
+      "S254_matched_global_bootstrap_CI95": [
+        -0.04455445544554455,
+        0.010217363009241181
+      ],
+      "S254_matched_poly_bootstrap_CI95": [
+        -0.08333333333333333,
+        0.05
+      ],
+      "XML_unmatched_not_assigned_K0": true,
+      "full_true_global_K0to6_ExactK_unmeasured": true,
+      "musical_composition_song_disjointness_not_proven": true,
+      "historic_original_S80_held_piece_deploy_identity_not_proven": true,
+      "source_only_weights_unchanged": true,
+      "heldout_XML_opened_and_cannot_be_reused_as_unseen_independent_after_this": true,
+      "independent_matched_K1to6_result_negative": true,
+      "independent_poly_gain_zero": true,
+      "S80_officially_promoted": false
     }
   },
   "missing_external_components": [
-    "True original frozen official freeze_local_combo native 1034 predictions exist on 16 WAV rank33-48 and replay bit-exact including probabilities (S233/S235). Original S5 fourfold and S8-S18 full 133-checkpoint cascade now run on EXACT these 1034 events, S239 folded 3/4 consensus: 36 K changes vs freeze, 26 fallback abstentions, but no external accuracy measured.",
-    "Extend original S29→S35 trained checkpoint router, all 16 original S45 source families / 304 risk heads and S46 193 policy deployment from 57 GOAT rows to all 1034 native IDMT rows, keep honest original-vs-new routing provenance and no labels.",
-    "Compute S69/S70/S71/S72 8 original trained models and S79/S80 final original tail on identical 1034 native IDMT event IDs (now actual S5→S18 output available). Do not assume GOAT-specific algorithms generalize.",
-    "Lock song-aligned final S80 predictions and compare source hashes versus incumbent S233 before opening IDMT XML/MIDI. Verify musical composition song-disjointness and exact-K annotation alignment with original V88 event clusters.",
-    "Only with independent paired global/poly/K0–K6 scores, correction-regression ledger and song-clustered uncertainty proving positive gain may promote a new versioned S80 deployment policy to official; historic OOF route equivalence must not be asserted without its own test."
+    "Independent postfreeze IDMT dataset2 SHA256 ranks33-48 paired label audit S254 FAILED promotion: among 206 onset-matched pitch-annotated events, official freeze_local_combo 83 correct (40.29%), experimental original-weight S80 only 80 (38.83%), 3 corrections versus 6 regressions; matched 39 poly rows 4/39 correct for both, 0 gain. S255 stage causal audit: S46 classwise policies cause 9 stage regressions and zero fixes on matched events; S69 veto recovers 4, S70 adds one, S18 adds one. Do NOT promote.",
+    "Only 206/1034 (19.9%) native official V88 events have matched XML note onset; the other 828 cannot truthfully be labeled K0. Full Exact-K0–K6 global score remains unmeasured, so promotion criteria objectively unmet.",
+    "Native IDMT rank33-48 annotations now opened, hence these 16 WAVs cannot be reused as an independent test for a newly tuned S46 model or revised fold weighting; any redesign must train/fix on original historical training-only data and preregister a distinct new-song validation cohort.",
+    "Song-file disjointness from prior first32 is proven; musical composition/tune-level song-disjointness is NOT. Verify piece/composition mapping or a truly song-disjoint corpus before an official comparison.",
+    "Next development: independently audit original historical S46/S69 risk gate classwise by K and why S46 polymax specialist activated on incumbent-correct matched IDMT onsets; design historically cross-validated gating without using rank33-48 XML for weight selection. Re-run full baseline and candidate aligned on a newly sealed untouched corpus with complete K0-K6 annotation coverage and polyphonic minimum sample."
   ],
   "external_label_leakage_avoided": true,
   "disallowed_claims": [
@@ -301,7 +373,7 @@
     "S80 already independently validated",
     "historical 43.87% guaranteed on new music"
   ],
-  "next_protocol": "S239 independently confirmed precommitted S217 four-fold consensus on all 1034 heldout IDMT dataset2 V88 groups: 77 disagree between historical S18 folds, 26 fallback to immutable official freeze, 36 proposed S18 differences. Original S5 527D 4 models and 133 genuine original checkpoint S8-S18 risk heads are now fully executed on identical original native groups, without any IDMT labels. NEXT generalize original S29->S35 and S45/S46 16 families to 1034 rows, then original S69-S80 tail, freeze S80 and baseline predictions and evaluate paired label-disjoint/actual song-disjoint K0-K6/global/poly. Until that independent accuracy benchmark proves meaningful advantage, S80 remains NOT PROMOTED.",
+  "next_protocol": "STOP PROMOTION: fully genuine source-model weight S5→S80 experimental fold-neutral deployment is now executed and independently replayed on 1034 real official V88 native IDMT WAV rank33-48 groups, all native outputs sealed BEFORE XML. Independent S254 XML paired matched K1-K6 shows S80 80/206 vs freeze_local_combo 83/206 (delta -1.456pp), with 3 fixes 6 regressions, matched K2+ 4/39 for both; 828 unmatched unlabeled, 17/33 S80 changed rows unannotated. S255 posthoc unambiguously finds core S46 polymax step 0 fixes/9 regressions on 9 matched stage changes, partially recovered by S69 veto 4 fixes, S70 +1, S18 +1. The IDMT labels have now been opened and cannot be retuned and retested as independent. Promote only after designing a new fold-neutral expert gate on original historical train-only data, freezing it, and evaluating on a truly unseen song-disjoint, properly K0..6 labeled corpus; original freeze_local_combo remains official.",
   "experimental_deployability_research_S128_S131": {
     "scope": "Reconstruction of historical S5 upstream audio producers; new student alternative is NOT original S5/S80",
     "original_s5_527D_feature_equivalence_verified": false,
