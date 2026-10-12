@@ -1,0 +1,69 @@
+name: S179 honest new 255 polyphonic groups from pretrained S35 votes
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s179_s35_real_experts_255_new_groups.py'
+      - '.github/workflows/v273-s179-new-original-S35-255group-bridge.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s179-255-new-real-original-S35-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  original_subset_formula_new_producers:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Installed numerical matrix dependencies
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Test mathematically original group enumeration with new model identity
+        run: python -m scripts.s179_s35_real_experts_255_new_groups --self-test
+      - name: Wait only for the already running original IDMT audio research once; never restart download
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run watch 38208164454 --repo "${{ github.repository }}" --exit-status --interval 15
+      - name: Fetch existing derived WAV-only S35 votes, no raw audio and no annotations
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38208164454
+          name: v273-s178-IDMT-real-original-S35-audio-only-features-no-labels-no-raw-WAV-NO-S80
+          path: model/S178
+      - name: Compose 255 subset groups and fail closed on historical S1-S4 equivalence
+        run: |
+          set -euo pipefail
+          python -u -m scripts.s179_s35_real_experts_255_new_groups \
+            --source model/S178/S178_IDMT_audio_only_S35_source_heads.npz --out model/S179
+          python - <<'PY'
+          import json
+          import numpy as np
+          d=json.load(open('model/S179/report.json'))
+          assert sum(d['new_parent_prediction_histogram_K0to6'])==d['native_external_audio_events']
+          assert d['255_group_proposals_on_poly_events']
+          assert not d['old_255_source_model_proposals_reproduced']
+          assert not d['original_S1_S4_old_calibration_executable_on_new_inputs']
+          assert not d['experiment_corpus_annotations_read']
+          assert not d['S80_promoted']
+          with np.load('model/S179/S179_new_8vote_255group_audio_only.npz',allow_pickle=False) as z:
+              n=d['new_S35_expert_poly_eligible_rows']
+              assert z['new_255_group_proposal_K'].shape==(n,255)
+              assert z['new_255_group_direct_features'].shape==(n,255,61)
+          PY
+      - name: Preserve only no-label derived new experiment, not original S80
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s179-new-8vote-255groups-not-original-S1-S4-not-promoted
+          path: model/S179/
+          retention-days: 90
