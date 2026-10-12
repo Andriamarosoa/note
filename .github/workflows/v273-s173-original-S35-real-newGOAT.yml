@@ -1,0 +1,113 @@
+name: S173 original S35 trained gates on GOAT and eleven partial S45 risks
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s173_original_s35_weights_new_goat.py'
+      - '.github/workflows/v273-s173-original-S35-real-newGOAT.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s173-original-S35-adapted-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  original_s35_adapted:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Pin original estimator compatible versions
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Historical nine-source and dynamic Q risk feature selftest
+        run: python -m scripts.s173_original_s35_weights_new_goat --self-test
+      - name: Authentic original S35 nested-fit artifacts (not re-trained)
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37868356632
+          name: v273-series35-extended-head-router
+          path: model/S35
+      - name: Original 304 genuine S45 Ridge risk fits
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37891039201
+          name: v273-series45-specialized-risk-heads
+          path: model/S45
+      - name: Frozen S169 ten genuine adapted source family output
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38199247838
+          name: v273-s169-ten-of-sixteen-original-S45-source-190-original-ridge-models
+          path: model/S169
+      - name: Real native GOAT audio-only original S45 feature tensors
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38182078525
+          name: v273-s97-original-goat-s45-audio-features
+          path: model/S97
+      - name: Original PR16 votes for adapted b/g/p
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38176406465
+          name: v273-s85-original-pr16-external-policies
+          path: model/S85
+      - name: Preserved S135 student soft K posterior adapter
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38190945241
+          name: v273-s135-K-anchored-S5-student-soft-posteriors
+          path: model/S135
+      - name: Actual original trained S35 experts gates and S45 11-family Ridge scoring
+        run: |
+          set -euo pipefail
+          S97="$(find model/S97 -name original_s45_audio_only.npz -print -quit)"
+          S85="$(find model/S85 -name pr16_external_36_policies.npz -print -quit)"
+          S135="$(find model/S135 -name GOAT_57_label_blind_soft_Kanchored.npz -print -quit)"
+          S169="$(find model/S169 -name ten_source_S45_original_ridge_GOAT.npz -print -quit)"
+          for f in "$S97" "$S85" "$S135" "$S169"; do test -s "$f"; done
+          python -u -m scripts.s173_original_s35_weights_new_goat \
+            --s97 "$S97" --s85 "$S85" --s135 "$S135" \
+            --s169 "$S169" --s35 model/S35 --s45 model/S45 \
+            --catalog analysis/v273_s45_original_champion_catalog.json \
+            --out model/S173
+          python - <<'PY'
+          import json,numpy as np
+          d=json.load(open("model/S173/report.json"))
+          assert d["original_trained_S35_expert_outer_models"]==36
+          assert d["S45_original_ridge_models_checked"]==209
+          assert d["S45_partial_family_count"]==11
+          assert not d["S35_original_new_wav_equivalent"]
+          assert not d["GOAT_MIDI_or_true_K_opened"]
+          assert not d["official_S80_promotion"]
+          with np.load("model/S173/S173_S35_adapted_11_family_GOAT.npz",allow_pickle=False) as z:
+              assert z["source_K"].shape==(57,11)
+              assert z["trained_Ridge_risks"].shape==(57,11,2)
+              assert z["S35_selected_actions"].shape==(57,3)
+          PY
+      - name: Preserve real-original S35-weight-based proposals and proof
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s173-real-trained-S35-adapted-11-source-S45-risks-NO-S80
+          path: model/S173/
+          retention-days: 90
