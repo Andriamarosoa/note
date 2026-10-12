@@ -1,0 +1,60 @@
+name: S140 restore original S12 S24 S27 S20 producer source and check executable selftests
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/loop_v273_full_audio_risk.py'
+      - 'scripts/train_v273_aba_residual.py'
+      - 'scripts/audit_v273_inverse_ab_order.py'
+      - 'scripts/audit_v273_partial_revisits.py'
+      - 'scripts/train_v273_message_reliability.py'
+      - 'scripts/audit_v273_inverse_order_consensus.py'
+      - '.github/workflows/v273-s140-original-producer-restoration.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s140-original-source-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source_restore_test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Verify restored files are byte-identical to pinned original historical Git commit
+        run: |
+          git fetch --depth=1 origin 854ada718ac9bf1556f00c96b8e1aa90402d6ab3 || true
+          python - <<'PY'
+          import subprocess,hashlib
+          files=["scripts/loop_v273_full_audio_risk.py","scripts/train_v273_aba_residual.py","scripts/audit_v273_inverse_ab_order.py","scripts/audit_v273_partial_revisits.py","scripts/train_v273_message_reliability.py","scripts/audit_v273_inverse_order_consensus.py"]
+          sha='854ada718ac9bf1556f00c96b8e1aa90402d6ab3'
+          for path in files:
+              original=subprocess.check_output(['git','show',f'{sha}:{path}'])
+              now=open(path,'rb').read()
+              assert original==now,(path,'historical source modified')
+              print(path,hashlib.sha256(now).hexdigest())
+          PY
+      - name: Original producer and control branch selftests
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/loop_v273_full_audio_risk.py scripts/train_v273_aba_residual.py scripts/audit_v273_inverse_ab_order.py scripts/audit_v273_partial_revisits.py scripts/train_v273_message_reliability.py scripts/audit_v273_inverse_order_consensus.py
+          python -m scripts.loop_v273_full_audio_risk --self-test
+          python -m scripts.train_v273_aba_residual --self-test
+          python -m scripts.audit_v273_inverse_ab_order --self-test
+          python -m scripts.audit_v273_partial_revisits --self-test
+          python -m scripts.train_v273_message_reliability --self-test
+          python -m scripts.audit_v273_inverse_order_consensus --self-test
+      - name: Fail closed without external checkpoint/replay proofs
+        run: |
+          echo 'S140: original S12/S20/S24/S27 source restored and selftested. Not an S45 GOAT forward; S80 remains unpromoted.' >> "$GITHUB_STEP_SUMMARY"
