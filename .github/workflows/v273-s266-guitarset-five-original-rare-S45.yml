@@ -41,12 +41,21 @@ jobs:
             ids=z['row_id'].copy();x=z['summary58'].copy();b=z['incumbent_freeze_K'].copy()
           with np.load(PREPARED,allow_pickle=False) as z:
             idx=z['global_index'];names=z['feature_names'].copy()
-            assert len(idx)==59309 and len(names)==58
+            assert len(names)==58  # original rarity-prepared registry is intentionally K2/K3/K4 only
           with np.load('analysis/evidence/v273-recovered-255/inputs/historical_fundamental58.npz',allow_pickle=False) as z:
             key=z['global_index'];f=z['fundamental']
-          sort=np.argsort(key)
-          assert np.array_equal(key[sort],ids.astype(int))
-          f=f[sort].astype(np.float32)
+          # Original historical fundamental archive contains only the
+          # preselected K2/K3/K4 rows (not all 59309). Fill just those
+          # exact native positions, never infer fundamental values.
+          allidx=ids.astype(np.int64)
+          where=np.searchsorted(allidx,key.astype(np.int64))
+          assert np.all(where<len(allidx)) and np.array_equal(allidx[where],key)
+          eligible=np.isin(b,[2,3,4])
+          assert len(where)==int(eligible.sum())
+          assert np.array_equal(np.sort(where),np.flatnonzero(eligible))
+          f_full=np.zeros((len(ids),58),np.float32)
+          f_full[where]=f.astype(np.float32)
+          f=f_full
           assert f.shape==(59309,58) and x.shape==(59309,58)
           np.savez_compressed('model/S266src/original_historic_59309_fundamentals.npz',
             row_id=ids,features=x,fundamental=f,feature_names=names)
