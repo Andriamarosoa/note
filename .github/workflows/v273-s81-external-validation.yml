@@ -63,7 +63,7 @@ jobs:
           (out/'report.json').write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
           print('S81 EXTERNAL SOURCE VERIFIED, NO INDEPENDENT S80 SCORE AVAILABLE')
           PY
-      - name: Assert fail-closed: no external scores or promotion
+      - name: "Assert fail-closed: no external scores or promotion"
         run: |
           python - <<'PY'
           import json
