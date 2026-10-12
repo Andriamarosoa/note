@@ -1,0 +1,61 @@
+name: S194 verify H7 pretrained morphology versus adapted gate on second genuinely disjoint XML cohort
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s194_independent_two_cohort_H7_gate_audit.py'
+      - '.github/workflows/v273-s194-two-disjoint-H7-XML-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s194-disjoint-frozen-H7-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  independent_two_cohort_comparison:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify no-label refit comparison math before loading actual results
+        run: python -m scripts.s194_independent_two_cohort_H7_gate_audit --self-test
+      - name: Reuse already measured S190 first benchmark; avoid rerunning model or XML
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38210607635
+          name: v273-s190-postfreeze-independent-dataset2-real-XML-pitch-exactK-adapted-only
+          path: model/S190
+      - name: Reuse held-out S193 third cohort XML assessment; no new label access
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38211069503
+          name: v273-s193-postfreeze-third-disjoint-dataset2-H7-vs-adapted-trueXML-ExactK
+          path: model/S193
+      - name: Assert track disjointness and paired ExactK H7 gain with no new tuning
+        run: |
+          python -u -m scripts.s194_independent_two_cohort_H7_gate_audit \
+            --dev model/S190/report.json --fresh model/S193/report.json --out model/S194/report.json
+          python - <<'PY'
+          import json
+          d=json.load(open('model/S194/report.json'))
+          assert d['identical_wav_hashes_across_benchmarks']==0
+          assert d['fresh_disjoint_evaluation_S193']['matched']==65
+          assert d['two_cohort_total_matched']==127
+          assert not d['any_model_retrained_on_XML']
+          assert not d['comparison_is_official_S80_reference']
+          assert not d['S80_promoted']
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s194-genuinely-disjoint-first-then-fresh-H7-frozen-adapted-XML-exactK
+          path: model/S194/
+          retention-days: 90
