@@ -1,0 +1,62 @@
+# S276/S277 — New-music prelabel cohort for S275 (IDMT-SMT-GUITAR)
+
+**Status: selection verified; full S275 independent accuracy not yet measured.**
+Source branch: codex/s276-idmt-song-disjoint-candidate-audit.
+Official reference: freeze_local_combo (NOT promoted).
+Source: Zenodo 7544110, pinned archive MD5 06796e08731bccffaed6ae59361486e4.
+
+## S276 — ZIP central-directory WAV/XML FILENAMES ONLY
+
+Successful run: https://github.com/Andriamarosoa/note/actions/runs/38318827219
+
+| Partition | WAV | XML |
+|---|---:|---:|
+| Dataset 1 | 400 | 400 |
+| Dataset 2 | 261 | 261 |
+| Dataset 3 | 5 | 5 |
+
+33 preliminary WAV candidates, XML member names present:
+
+- Dataset 3 five files: pathetique_mono.wav, pathetique_poly.wav, promenade_mono.wav,
+  nocturneNr2.wav, quintfall.wav. These represent AT MOST four named music
+  families because Pathétique mono and poly share a composition family.
+- Dataset 1 12 filenames deterministically chosen using hints of chord,
+  polyphony, lick, major and minor; unique stem selection, no XML reads.
+- Dataset 2 reserve 16 files from SHA filename ranks 49–261, requiring a
+  uniquely named matching XML member. 213 WAV files remain after removing
+  the already annotated first 48; actual composition-level novelty
+  NOT independently certified.
+
+**Caveat:** WAV filename/hash differences do not establish song/composition
+disjointness, nor that two performances contain different note sequences.
+Dataset 1 same-stem guitar recordings require grouping. No annotation
+or WAV content was read in S276; all proposed filenames were sealed
+in immutable CI artifacts.
+
+## S277 — real native reference, source-only
+
+Workflow: https://github.com/Andriamarosoa/note/actions/workflows/v273-s277-official-native-IDMT-dataset3.yml
+
+S277 runs original frozen V84/V86/V87/V88 trained source pipeline and
+freeze_local_combo on five Dataset 3 files. The run is explicitly limited
+to the first ten seconds of each recording and excludes XML/MIDI reads.
+It records true original-native V88 event start/end positions and
+baseline K0–K6 predictions; it must be scored ONLY after full S275
+predictions on identical native event IDs are sealed.
+
+## Strict gates before independent Exact-K and promotion
+
+1. Complete original-source S5/S18, sixteen S45 producers, S46 quorum
+   S274, and original S69 through S80 on these exact V88 events.
+2. Prove the evaluated compositions are not shared with model training
+   and exposed previously scored sets. The two Pathétique recordings
+   must be the SAME statistical composition group.
+3. Freeze the note-level annotation alignment protocol and BOTH
+   prediction sets before opening new XML labels.
+4. Never invent a K0 label for an unmatched onset. Complete global K0–K6
+   requires exhaustive validated annotations, not merely XML onset matches.
+5. Compare paired changes by K0–K6, true K2+ poly, bootstrap at composition
+   level, plus regression and confidence limits against freeze_local_combo.
+
+If any condition fails: NO independent S275 improvement claim, and NO
+official promotion. The original freeze_local_combo remains in place.
