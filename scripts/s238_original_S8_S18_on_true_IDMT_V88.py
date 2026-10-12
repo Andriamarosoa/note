@@ -59,7 +59,7 @@ def run(s237file,s234file,s235file,cache,out):
     votes=[vote_design({'features':summary},b,g[i],p[i])['votes']
            for i in range(4)]
     need(all(x.shape==(n,335) for x in acoustic) and
-       all(x.shape==(n,32) for x in votes),
+       all(x.shape==(n,28) for x in votes),
        'historic trained risk model input widths differ')
     model_roots=prepare_models(cache)
     required={'S8','S13','S14','S16','S17','S18'}
