@@ -87,9 +87,9 @@ et il reste **1 333 désaccords K** sur l'historique.
 - La promotion de **S80 historique** reste bloquée par l'absence des
   caractéristiques originales `owned527` et des producteurs nécessaires.
 - Les archives de modèles étudiants devaient être préservées au-delà
-  des 30 jours de rétention des Actions ; un workflow S136 est
-  prévu pour créer une prerelease GitHub immuable avec les trois jeux
-  de preuves et leurs SHA.
+  des 30 jours de rétention des Actions ; le [workflow S136](https://github.com/Andriamarosoa/note/actions/runs/38191099101)
+  a été exécuté avec succès. La [prerelease permanente de recherche](https://github.com/Andriamarosoa/note/releases/tag/v273-s133-s135-student-research-38190945241)
+  conserve les trois jeux de preuves, les checkpoints et leurs SHA-256.
 
 **Tous les chiffres de ce rapport sont de la fidélité aux sorties
 du professeur S5 historique, pas des pourcentages d'accuracy Exact-K.**

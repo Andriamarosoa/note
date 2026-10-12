@@ -6,10 +6,10 @@
   "official_promotion": false,
   "independent_S80_accuracy_measured": false,
   "latest_run": {
-    "id": 38190945241,
-    "component": "S135",
+    "id": 38191099101,
+    "component": "S136",
     "status": "success",
-    "artifact_id": 11720997747
+    "saved_research_release": "https://github.com/Andriamarosoa/note/releases/tag/v273-s133-s135-student-research-38190945241"
   },
   "validated_frozen_components": {
     "original_native_audio_inference": {
@@ -199,6 +199,22 @@
       "S135": 38190945241
     },
     "preregistered_independent_test_complete": false,
-    "calibration_note": "S133/S134 and anchoring were developed using same exposed historic heldfold metrics, not unbiased independent validation"
+    "calibration_note": "S133/S134 and anchoring were developed using same exposed historic heldfold metrics, not unbiased independent validation",
+    "permanent_archive": {
+      "type": "GitHub prerelease (research only)",
+      "tag": "v273-s133-s135-student-research-38190945241",
+      "url": "https://github.com/Andriamarosoa/note/releases/tag/v273-s133-s135-student-research-38190945241",
+      "preservation_run": 38191099101,
+      "bundle": "v273-S133-S135-teacher-students.tar.gz",
+      "bundle_bytes": 6290086,
+      "includes": [
+        "checkpoints S133",
+        "checkpoint S134",
+        "heldout fold0 pseudolabel replays",
+        "GOAT label-blind posteriors S133-S135",
+        "reports and SHA256"
+      ],
+      "original_S5_model_restored": false
+    }
   }
 }
