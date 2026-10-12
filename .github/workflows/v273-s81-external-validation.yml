@@ -1,17 +1,6 @@
 name: V27.3 S81 external corpus preregistration (NOT a model evaluation)
 
 on:
-  push:
-    branches: [codex/v273-scope-rescue]
-    paths:
-      - '.github/workflows/v273-s81-external-validation.yml'
-      - 'analysis/s81_external_source_manifest.json'
-  pull_request:
-    branches: [codex/v273-regression-loops]
-    paths:
-      - 'analysis/s81_external_source_manifest.json'
-      - 'analysis/README_V273_S81_INDEPENDENT_VALIDATION.md'
-      - '.github/workflows/v273-s81-external-validation.yml'
   workflow_dispatch:
 
 permissions:
