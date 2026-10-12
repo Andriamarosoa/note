@@ -1,0 +1,70 @@
+name: S217 choose one piece-neutral S18 and S46 decision across 19 branches
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s217_label_blind_hierarchical_branch_consensus.py'
+      - '.github/workflows/v273-s217-hierarchical-19-branch-consensus.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s217-hierarchical-consensus-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  frozen_consensus:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install minimal label-blind numpy audit
+        run: python -m pip install numpy==1.26.4
+      - name: Independently test deterministic tie handling and no branch-order oracle
+        run: python -m scripts.s217_label_blind_hierarchical_branch_consensus --self-test
+      - name: Restore fully original-checkpoint S45 S46 19-branch sealed experiment
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38242983478
+          name: s215-complete-16-original-source-S45-S46-all19-branches
+          path: model/S215
+      - name: Produce one S18 and 193 policy outputs with confidence masks
+        run: >-
+          python -m scripts.s217_label_blind_hierarchical_branch_consensus
+          --s215 model/S215
+          --s18 analysis/evidence/v273-recovered-s5-s18/external_s5_to_s18.npz
+          --out model/S217
+      - name: Verify no labels no oracle and single deployment output per audio event
+        run: |
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S217/report.json'))
+          assert r['source_branch_count']==19 and r['source_folds']==[0,1,2,4]
+          assert r['S46_policy_count']==193 and r['fold_quorum']==3
+          assert r['sample_count']==57 and r['originally_disagreeing_S18_events']==6
+          assert r['remaining_multi_valued_S18_decisions']==0
+          assert r['branch_permutation_invariant'] and r['decision_has_no_fold_or_piece_oracle']
+          assert not r['source_truth_or_MIDI_read'] and not r['model_weights_changed']
+          assert not r['new_song_independent_ExactK_measured'] and not r['S80_promoted']
+          with np.load('model/S217/one_piece_neutral_193_policy_prediction.npz',allow_pickle=False) as z:
+              assert z['policy_consensus_K'].shape==(57,193)
+              assert z['s18_consensus_K'].shape==(57,)
+              assert z['policy_has_three_fold_votes'].shape==(57,193)
+              assert np.array_equal(z['s18_consensus_K'],z['policy_consensus_K'][:,0])
+              assert np.isin(z['policy_consensus_K'],range(7)).all()
+          print('S217 PASS 19 branch 4-fold deploy consistency, branch permutation, original S18, no accuracy claims')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s217-19branch-piece-neutral-frozen-S18-S46-consensus-NO-accuracy
+          path: model/S217/
+          retention-days: 90
