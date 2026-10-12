@@ -410,7 +410,8 @@
     "S170_audited_preserved": 38199557501,
     "S172_recovered_S1_S3_S4_archives": 38205875589,
     "S173_S35_original_weights_11_sources": 38206160849,
-    "S5_owned527_exact_numerical_recovery": 38221478587
+    "S5_owned527_exact_numerical_recovery": 38221478587,
+    "recovered_S5_to_S18_exact_cascade": 38224327985
   },
   "ancestry_correction": {
     "prior_graph": "S148 mistakenly represented S11 as direct prerequisite of S18",
@@ -566,8 +567,11 @@
     "truth_labels_read": false,
     "independent_S80_accuracy_measured": false,
     "official_promotion": false,
-    "github_ci_status": "pending",
+    "github_ci_status": "success",
     "report": "analysis/README_V273_RECOVERED_S5_S18.md",
-    "workflow": ".github/workflows/v273-recovered-s5-s18.yml"
+    "workflow": ".github/workflows/v273-recovered-s5-s18.yml",
+    "run_id": 38224327985,
+    "artifact_id": 11735608748,
+    "implementation_commit": "76d3e47bfe4a3eb382f529f03bd05d8d42badb5a"
   }
 }

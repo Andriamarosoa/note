@@ -1,9 +1,9 @@
 """S155: corrected fail-closed original S8/S9->S13/S14->S15->S16->S17->S18 chain; S11 parallel."""
-import argparse,json
+import argparse,hashlib,json
 from pathlib import Path
 STATES={'verified_new_audio','adapted_new_audio','historical_only',
  'rejected_on_exposed_smoke','missing_new_audio','logic_ready_inputs_missing',
- 'pending_independent'}
+ 'pending_independent','original_weights_new_audio_with_explicit_fold_aggregation'}
 EXPECTED=(
  "S1_acoustic","S2_source","S3_repair","S4_repair",
  "historical_repair_coherent","S25_Bfirst","S24_Bfirst",
@@ -12,6 +12,44 @@ EXPECTED=(
  "S27_early_stop","S41_neural_fusion","S35_multiroute")
 def need(x,msg):
     if not x:raise ValueError(msg)
+RECOVERED='original_weights_new_audio_with_explicit_fold_aggregation'
+def verify_recovered_evidence(status,root):
+    folder=root/'analysis/evidence/v273-recovered-s5-s18'
+    s5=json.loads((folder/'s5_report.json').read_text())
+    s18=json.loads((folder/'s18_report.json').read_text())
+    need(status.get('original_S5_527D_reconstructed') is True and
+         status.get('original_S5_forward_reproduced_on_new_audio') is True,
+         'recovered node without matching top-level proof')
+    need(s5['historical_constructor_exact'] and s5['historical_rows']==59309 and
+         s5['historical_parent_decisions_checked']==118618 and
+         s5['historical_parent_mismatches']==0 and s5['external_events']==57,
+         'S5 historical/new-audio evidence incomplete')
+    need({c['fold'] for c in s5['checkpoints']}=={0,1,2,4} and len(s5['checkpoints'])==4,
+         'original four S5 checkpoints incomplete')
+    stages=s18['historical_selected_stages_verified']
+    need(len(stages)==6 and {s['stage'] for s in stages}==
+         {'S8','S13','S14','S16','S17','S18'} and
+         all(s['historical_rows']==59309 and s['historical_K_mismatches']==0 for s in stages),
+         'selected historical cascade proof incomplete')
+    need(s18['original_selected_checkpoints_executed']==133 and
+         len(s18['checkpoints'])==133 and s18['external_events']==57 and
+         s18['external_branches']==[0,1,2,4] and s18['new_piece_aggregation_is_new_policy'],
+         'original cascade checkpoint/deployment contract mismatch')
+    need(not s18['S135_or_PR16_substitutes_used'] and
+         not s18['full_external_S80_executed'] and
+         not s18['full_S45_16_families_complete'],
+         'recovery falsely claims completed S80')
+    for report in (s5,s18):
+        need(not report['truth_labels_read'] and not report['models_retrained'] and
+             not report['independent_accuracy_measured'] and not report['S80_promoted'],
+             'recovery proof changed label/training/promotion scope')
+    for name,expected in (
+        ('external_s5.npz',s5['external_predictions_sha256']),
+        ('external_s5_to_s18.npz',s18['external_prediction_sha256'])):
+        need(hashlib.sha256((folder/name).read_bytes()).hexdigest()==expected,
+             'saved external prediction digest mismatch: '+name)
+    return True
+
 def validate(d,status,root):
     families=d['families'];nodes=d['nodes']
     need(len(families)==16 and set(f['id'] for f in families)==set(EXPECTED),
@@ -34,6 +72,8 @@ def validate(d,status,root):
     need(ordered[-1]=='promote_S80' and
          bank['promote_S80']['requires']==['independent_ExactK'],
          'incomplete promotion chain')
+    recovered=any(n['state']==RECOVERED for n in nodes)
+    if recovered:verify_recovered_evidence(status,root)
     ancestry={
       'S8_original_parent':['S5_original527','wav_groups'],
       'S9_original_parent':['S8_original_parent'],
@@ -47,14 +87,14 @@ def validate(d,status,root):
     for id,expected in ancestry.items():
         need(bank[id]['requires']==expected, id+' original ancestry drift')
         if id not in ('S8_original_parent','S9_original_parent'):
-            need(bank[id]['state']=='adapted_new_audio',id+' original parents not proven')
+            need(bank[id]['state'] in ({'adapted_new_audio',RECOVERED} if recovered else {'adapted_new_audio'}),id+' original parents not proven')
     need('S11_original_votes' not in bank['S18_parent']['requires'],
          'S11 incorrectly represented as direct historical S18 ancestor')
     need('S11_original_votes' in bank['S43_S44_16_champions']['requires'],
          'S11 parallel champion missing from S45 provenance')
     need(bank['S80_K0_K2_tail']['state']=='logic_ready_inputs_missing',
          'S147 tail is not a complete S80 model')
-    need(bank['S5_original527']['state']=='historical_only',
+    need(bank['S5_original527']['state'] in ({'historical_only',RECOVERED} if recovered else {'historical_only'}),
          'unverified S5 originally reconstructed')
     need(bank['S5_student135']['state']=='rejected_on_exposed_smoke',
          'negative GOAT evidence erased')
@@ -85,6 +125,7 @@ def validate(d,status,root):
       'new_audio_verified_count':sum(n['state']=='verified_new_audio' for n in nodes),
       'not_fully_ready_count':sum(n['state']!='verified_new_audio' for n in nodes),
       'topological_order':ordered,
+      'recovered_S5_S18_evidence_verified':recovered,
       'promotion':False,'full_external_score':None,
       'source_scripts_verified':list(paths)}
 def selftest():

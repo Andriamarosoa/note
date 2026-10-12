@@ -27,7 +27,7 @@ Il s'agit de nombres de **prédictions**, pas de notes correctement comptées. S
 - [Rapport S5](evidence/v273-recovered-s5-s18/s5_report.json) et [rapport S18](evidence/v273-recovered-s5-s18/s18_report.json), avec empreinte de chaque checkpoint exécuté.
 - Prédictions sans annotations : [S5](evidence/v273-recovered-s5-s18/external_s5.npz) et [S5→S18](evidence/v273-recovered-s5-s18/external_s5_to_s18.npz).
 
-S5 exige scikit-learn 1.8.0 ; les poids historiques S8–S18 exigent 1.4.2. Le workflow utilise deux environnements isolés, vérifie les empreintes des sources originales, rejoue toute la cohorte historique puis l'inférence GOAT. Les archives de poids proviennent de trois releases permanentes épinglées dans le script. Le rejeu local a réussi ; le résultat CI sera ajouté après exécution.
+S5 exige scikit-learn 1.8.0 ; les poids historiques S8–S18 exigent 1.4.2. Le workflow utilise deux environnements isolés, vérifie les empreintes des sources originales, rejoue toute la cohorte historique puis l'inférence GOAT. Les archives de poids proviennent de trois releases permanentes épinglées dans le script. **Le rejeu local et la [CI #38224327985](https://github.com/Andriamarosoa/note/actions/runs/38224327985) ont réussi.** Les empreintes des sorties S5 et S18 sont identiques entre les deux exécutions. [Preuve CI conservée](evidence/v273-recovered-s5-s18/github_ci.json), artefact `11735608748`.
 
 ## Limites restantes
 
