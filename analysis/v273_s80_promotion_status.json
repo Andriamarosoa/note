@@ -6,8 +6,8 @@
   "official_promotion": false,
   "independent_S80_accuracy_measured": false,
   "latest_run": {
-    "component": "Recovered original S5 to S18",
-    "id": 38224327985,
+    "component": "S216 independent 16-source S45/S46 fold and parent stability audit",
+    "id": 38243390558,
     "status": "success",
     "independent_S80_accuracy_measured": false,
     "official_promotion": false
@@ -113,10 +113,37 @@
       "run_id": 38224327985,
       "artifact_id": 11735608748,
       "implementation_commit": "76d3e47bfe4a3eb382f529f03bd05d8d42badb5a"
+    },
+    "recovered_16_S45_sources_into_S46": {
+      "status": "ALL_16_ORIGINAL_CHECKPOINT_SOURCE_FORWARD_ON_EXPOSED_GOAT_NOT_HISTORICAL_NEW_MUSIC_EQUIVALENCE",
+      "source_run_id": 38242983478,
+      "audit_run_id": 38243390558,
+      "external_events": 57,
+      "heldpiece_branches": 19,
+      "original_source_families": 16,
+      "original_S45_Ridge_models": 304,
+      "S46_policies": 193,
+      "source_architecture": "S1/S2/S3/S4/coherent recovered 5; S11/S12/S38/S40/S41 original checkpoint rebase 5; S19/S20/S24/S25/S27 original recurrent checkpoint rebase 5; S29-fed S35 original 1",
+      "all_models_pretrained": true,
+      "training_on_GOAT": false,
+      "GOAT_truth_read": false,
+      "same_fold_S46_differing_cells_vs_first": [
+        4,
+        96,
+        6,
+        0
+      ],
+      "across_fourfold_unstable_policy_event_cells": 1058,
+      "all_acrossfold_instabilities_have_differing_S18_parents": true,
+      "original_historical_new_WAV_inference_equivalence_proven": false,
+      "piece_and_fold_rule_for_new_compositions_fixed": false,
+      "S69_S80_external_inference_completed": false,
+      "independent_ExactK_evaluated": false,
+      "promotion": false
     }
   },
   "missing_external_components": [
-    "Original 16 S43/S44 proposal family generators and S45 risk models on new WAV",
+    "Sixteen original-weight S45 source forwards exist on exposed GOAT, but historical out-of-piece/new-WAV parity and preregistered deployment aggregation of 19 held-piece branches/four S18 folds remain unproved",
     "Prespecified new-piece S69 fold-specific veto deployment",
     "New-piece deployable S70/S71/S72 parent models",
     "Prespecified deployment of S80 four-fold K1 classifiers on unseen compositions",
@@ -128,7 +155,7 @@
     "S80 already independently validated",
     "historical 43.87% guaranteed on new music"
   ],
-  "next_protocol": "S5 and the original selected S8/S9/S13/S14/S15/S16/S17/S18 chain now replay exactly on 59309 historical events and execute on 57 GOAT events using real S5 parents in four separate fold branches. Continue original five missing S45 producers, full 16-family proposals and 304 risks, then S46 through S80. Freeze an explicit final new-piece aggregation and validate paired global AND poly Exact-K on truly unseen compositions. GOAT is exposed smoke evidence, no independent S80 score or promotion.",
+  "next_protocol": "S215 successfully ran all 16 genuine original checkpoint S45 source families, 304 S45 risk models and 193 S46 decisions in all 19 branches on exposed GOAT. S216 proved 1058 crossfold divergent event-policy cells (all involving distinct S18 parents in representative branches), with within-fold differences [4,96,6,0]. Next: independently audit and fix branch/piece rule without opening GOAT truth, complete S69-S72-S79-S80 label-blind new-WAV inference with a frozen deployment identity, and validate paired Exact-K global and poly on genuinely unexposed song-disjoint recordings against freeze_local_combo. No historical equivalence or promotion yet.",
   "experimental_deployability_research_S128_S131": {
     "scope": "Reconstruction of historical S5 upstream audio producers; new student alternative is NOT original S5/S80",
     "original_s5_527D_feature_equivalence_verified": false,
