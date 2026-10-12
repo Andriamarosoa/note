@@ -133,7 +133,7 @@ def selftest():
     require(np.array_equal(np.sort(reordered),a),"variant permutation drift")
     aa=np.zeros((7,7),np.int64)
     y=np.array([0,1,1,2]);p=np.array([0,1,0,2])
-    np.add.at(aa,(y,p))
+    np.add.at(aa,(y,p),1)
     require(np.array_equal(confusion(y,p),aa),"posthoc confusion mismatch")
     print("S125 PASS: label-isolated replay, row/order and permutation invariants")
 if __name__=="__main__":
