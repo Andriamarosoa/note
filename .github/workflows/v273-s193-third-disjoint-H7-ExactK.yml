@@ -4,13 +4,13 @@ on:
     branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/s193_score_third_disjoint_dataset2_H7_postfreeze.py'
-      - '.github/workflows/v273-s190-postfreeze-real-dataset2-ExactK.yml'
+      - '.github/workflows/v273-s193-third-disjoint-H7-ExactK.yml'
   workflow_dispatch:
 permissions:
   contents: read
   actions: read
 concurrency:
-  group: s190-dataset2-real-pitch-postfreeze-${{ github.ref }}
+  group: s193-third-disjoint-real-pitch-postfreeze-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   score_real_XML_only_after_saved_audio_predictions:
@@ -37,8 +37,8 @@ jobs:
         with:
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
-          run-id: 38210431886
-          name: v273-s189-frozen-dataset2-note-XML-16WAV-genuine-S35-preregistered-no-label
+          run-id: 38211006832
+          name: v273-s192-third-unseen-note-XML-16WAV-genuine-S35-frozen-no-label
           path: model/S192
       - name: Read exact paired XML MIDI note labels and compute only matched-audio postfreeze ExactK report
         run: |
@@ -58,6 +58,6 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: v273-s190-postfreeze-independent-dataset2-real-XML-pitch-exactK-adapted-only
+          name: v273-s193-postfreeze-third-disjoint-dataset2-H7-vs-adapted-trueXML-ExactK
           path: model/S193/
           retention-days: 90
