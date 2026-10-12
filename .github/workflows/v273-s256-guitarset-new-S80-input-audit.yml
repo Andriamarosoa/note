@@ -1,0 +1,122 @@
+name: S256 GuitarSet 59309 new-S80 fold-neutral replay input audit
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - '.github/workflows/v273-s256-guitarset-new-S80-input-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s256-guitarset-new-S80-inventory-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  inventory_original_historical_4fold_all_rows:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install exact original historical array tooling
+        run: python -m pip install numpy==1.26.4
+      - name: Original GuitarSet 59309 native event reference and frozen PR16
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          name: v273-open-summary
+          path: model/pr16
+      - name: Exact historical 59309 original S18 fitted fold model outputs
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37856499212
+          name: v273-series18-k43-k21
+          path: model/s18
+      - name: Original 193 S46 full native historical policies, all 4 heldfold labels
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37891336823
+          name: v273-series46-poly-class-compromises
+          path: model/s46
+      - name: Frozen historical genuine trained S80 43.87 percent comparator
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38187186049
+          name: v273-s80-traceable-repair
+          path: model/old_s80
+      - name: Audit actual fold-wise prediction arrays, original native event IDs and historical Exact-K comparators
+        run: |
+          mkdir -p model/S256
+          python - <<'PY'
+          import numpy as np,json,os
+          from pathlib import Path
+          groups=['pr16','s18','s46','old_s80']
+          report={'status':'S256_GUITARSET_59309_FOLD_NEUTRAL_SOURCE_AUDIT',
+                  'population':59309,'source_archives':{},'actual_old_S80_exact_K_poly':None,
+                  'new_S80_fourfold_aggregated_exact_K_poly':None,
+                  'requires_full_counterfactual_fold_replay':None}
+          for g in groups:
+              d={}
+              for f in Path('model',g).rglob('*'):
+                  if not f.is_file():continue
+                  relative=str(f.relative_to(Path('model',g)))
+                  if f.suffix=='.npz':
+                      try:
+                          with np.load(f,allow_pickle=False) as z:
+                              d[relative]={'fields':{k:{'shape':list(z[k].shape),'dtype':str(z[k].dtype)} for k in z.files}}
+                              if g=='old_s80' and relative=='predictions.npz':
+                                  assert 'true_K' in z.files and 's80_K' in z.files
+                                  y=z['true_K'];p=z['s80_K']
+                                  poly=y>=2
+                                  assert len(y)==59309 and int(poly.sum())==7385
+                                  report['actual_old_S80_exact_K_poly']=float(np.mean(p[poly]==y[poly]))
+                                  report['old_historical_S80_poly_correct']=int(np.count_nonzero(p[poly]==y[poly]))
+                      except Exception as exc:
+                          d[relative]={'error':str(exc)}
+                  elif f.suffix=='.json':
+                      try:
+                          obj=json.loads(f.read_text())
+                          d[relative]={'metadata_keys':list(obj)[:35]}
+                      except Exception as exc:d[relative]={'error':str(exc)}
+              report['source_archives'][g]=d
+          # Can score new fold-neutral policy only if we have all 4 *full-cohort*
+          # S18 and all 19 full-cohort S45/S46 sources, not just OOF outputs.
+          fourfold_s18=False
+          nineteen_s46=False
+          for f,v in report['source_archives']['s18'].items():
+              if 'fields' not in v:continue
+              if any(x['shape'] in ([4,59309],[59309,4])
+                      for x in v['fields'].values()):fourfold_s18=True
+          for f,v in report['source_archives']['s46'].items():
+              if 'fields' not in v:continue
+              if any(x['shape'] in ([19,59309,193],[59309,19,193])
+                      for x in v['fields'].values()):nineteen_s46=True
+          report['full_native_59309_S18_counterfactual_fold_bank_present']=fourfold_s18
+          report['full_native_59309_S46_all_19_counterfactual_piece_bank_present']=nineteen_s46
+          report['requires_full_counterfactual_fold_replay']=not(fourfold_s18 and nineteen_s46)
+          Path('model/S256/report.json').write_text(json.dumps(report,indent=2)+'\n')
+          print(json.dumps({'old_true_GuitarSet_ExactK_poly':report['actual_old_S80_exact_K_poly'],
+          'S18_fold_all59k_present':fourfold_s18,
+          'S46_19branches_all59k_present':nineteen_s46,
+          'new_S80_score':report['new_S80_fourfold_aggregated_exact_K_poly'],
+          'source_file_inventory':report['source_archives']},indent=2),flush=True)
+          assert report['actual_old_S80_exact_K_poly'] is not None
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s256-guitarset-59309-original-vs-new-S80-input-availability
+          path: model/S256/
+          retention-days: 90
