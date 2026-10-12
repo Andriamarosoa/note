@@ -1,0 +1,128 @@
+name: S134 S5 teacher posterior regression fidelity (research only)
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s134_s5_soft_probabilities.py'
+      - '.github/workflows/v273-s134-s5-soft-probabilities.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s134-soft-teacher-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  evaluate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3 lightgbm==4.6.0
+      - run: python -m scripts.s134_s5_soft_probabilities --self-test
+      - name: Restore original SHA-verified S5 fold posteriors
+        run: |
+          set -euo pipefail
+          mkdir -p model/history
+          git fetch origin 'refs/tags/v273-series45-research-37891074478:refs/tags/v273-series45-research-37891074478'
+          for FOLD in 0 1 2 4; do
+            git archive 854ada718ac9bf1556f00c96b8e1aa90402d6ab3 \
+              "analysis/evidence/v273-open-k0-k6/series5/models/fold$FOLD/report.json" \
+              "analysis/evidence/v273-open-k0-k6/series5/models/fold$FOLD/predictions.npz" | tar -x -C model/history
+          done
+      - name: Original GuitarSet fold0
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          name: v273-open-features-0
+          path: model/features/fold0
+      - name: Original GuitarSet fold1
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          name: v273-open-features-1
+          path: model/features/fold1
+      - name: Original GuitarSet fold2
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          name: v273-open-features-2
+          path: model/features/fold2
+      - name: Original GuitarSet fold4
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          name: v273-open-features-4
+          path: model/features/fold4
+      - name: GOAT native 111D control features
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38184381730
+          name: v273-s116-original-S4-control111-GOAT
+          path: model/s116
+      - name: GOAT native 245D flow
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38182078525
+          name: v273-s97-original-goat-s45-audio-features
+          path: model/s97
+      - name: Frozen S129 heldout teacher baseline
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38188446402
+          name: v273-s129-new-s5-student111-goat-blind
+          path: model/s129
+      - name: Frozen S133 LightGBM student heldout probabilities
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38190510117
+          name: v273-s133-two-lightgbm-S5-teacher-students
+          path: model/s133
+      - name: Train frozen seven-regressor soft-posterior student
+        run: |
+          set -euo pipefail
+          S116="$(find model/s116 -name external_s4_control111.npz -print -quit)"
+          S97="$(find model/s97 -name original_s45_audio_only.npz -print -quit)"
+          S129="$(find model/s129 -name held_fold0_teacher_fidelity.npz -print -quit)"
+          S133="$(find model/s133 -name control111_fold0.npz -print -quit)"
+          test -s "$S116" && test -s "$S129" && test -s "$S133"
+          python -u -m scripts.s134_s5_soft_probabilities \
+            --features-root model/features \
+            --teacher-root model/history/analysis/evidence/v273-open-k0-k6/series5/models \
+            --s116 "$S116" --s129 "$S129" --s133 "$S133" --out model/s134
+          python - <<'PY'
+          import json
+          r=json.load(open('model/s134/report.json'))
+          assert r["heldout_rows"]==15952 and r["GOAT_external_event_count"]==57
+          assert not r["historic_true_K_read"] and not r["GOAT_MIDI_labels_read"]
+          assert not r["original_S5_reproduced"] and not r["S80_promoted"]
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s134-soft-original-S5-teacher-student
+          path: model/s134/
+          retention-days: 30
