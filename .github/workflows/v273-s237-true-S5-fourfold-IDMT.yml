@@ -47,13 +47,13 @@ jobs:
       - name: Confirm correct historical 527D original S5 source inputs were reconstructed on original native groups
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh run watch 38302785264 --repo "${{ github.repository }}" --exit-status --interval 15
+        run: gh run watch 38303479914 --repo "${{ github.repository }}" --exit-status --interval 15
       - name: Download 1034 official reference native rows reconstructed to exact original 527D S5 input
         uses: actions/download-artifact@v4
         with:
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
-          run-id: 38302785264
+          run-id: 38303479914
           name: s236-idmt-1034-real-original-V88-geometry46-and-S5-owned527-features
           path: model/S236
       - name: Forward all four original unchanged S5 trained fold estimators
