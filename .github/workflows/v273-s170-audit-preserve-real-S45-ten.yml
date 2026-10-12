@@ -103,18 +103,18 @@ jobs:
           (cd model/S170 && sha256sum v273-S163-S170-real-trained-partial-S45-GOAT-evidence.tar.gz > BUNDLE_SHA256)
       - name: Permanent original-weight-derived evidence prerelease, explicitly NOT S80
         env:
-          GH_${{ github.token }}: ${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           TAG='v273-S163-S170-real-original-S45-10of16-GOAT-research'
-          if gh release view "$TAG" --repo "$GITHUB_${{ github.repository }}SITORY" >/dev/null 2>&1; then
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             echo 'Immutable research release already exists, refusing to overwrite'
             exit 1
           fi
           gh release create "$TAG" \
             model/S170/v273-S163-S170-real-trained-partial-S45-GOAT-evidence.tar.gz \
             model/S170/FILES_SHA256SUMS model/S170/BUNDLE_SHA256 \
-            --repo "$GITHUB_${{ github.repository }}SITORY" --target "$GITHUB_SHA" --prerelease \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
             --title 'S163-S170 10/16 original S45 trained producers + 190 Ridge fits, NO S80 PROMOTION' \
             --notes 'Label-blind research-only evidence: original trained S19 S20 S24 S25 S27 S11 S12 S38 S40 S41 model sources, 190 original S45 fitted Ridge checkpoints, 10-of-16 source agreement, one risk-selected action on GOAT, not proven corrected. Remaining six producers and original S5 upstream missing. No independent S80 Exact-K score. freeze_local_combo remains official.'
       - uses: actions/upload-artifact@v4
