@@ -1,0 +1,107 @@
+name: S144 S38+S40 original experts and original S41 gates on real new audio
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s144_external_s41_complete_neural_source.py'
+      - '.github/workflows/v273-s144-original-s41-fusion.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s144-S41-original-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  original_neural_source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - run: python -m scripts.s144_external_s41_complete_neural_source --self-test
+      - name: Fetch sixteen ORIGINAL S38 tabular classifiers
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37880386031
+          name: v273-series38-poly-harmonic-expert
+          path: model/s38
+      - name: Fetch four ORIGINAL S40 temporal Conv1d classifiers
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37880762289
+          name: v273-series40-temporal-cnn
+          path: model/s40
+      - name: Fetch original piece-excluded S41 gate checkpoints
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37881191015
+          name: v273-series41-six-head-neural-fusion
+          path: model/s41
+      - name: Download native GOAT acoustics
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38182078525
+          name: v273-s97-original-goat-s45-audio-features
+          path: model/s97
+      - name: Download official frozen reference and original PR16 head policy
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38176406465
+          name: v273-s85-original-pr16-external-policies
+          path: model/s85
+      - name: Download NEW S135 student parent adapter
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38190945241
+          name: v273-s135-K-anchored-S5-student-soft-posteriors
+          path: model/s135
+      - name: Execute S38 16 + S40 4 + S41 19 genuine original weights WITHOUT any MIDI
+        run: |
+          set -euo pipefail
+          S97="$(find model/s97 -name original_s45_audio_only.npz -print -quit)"
+          S85="$(find model/s85 -name pr16_external_36_policies.npz -print -quit)"
+          S135="$(find model/s135 -name GOAT_57_label_blind_soft_Kanchored.npz -print -quit)"
+          test -s "$S97" && test -s "$S85" && test -s "$S135"
+          python -u -m scripts.s144_external_s41_complete_neural_source \
+            --s97 "$S97" --s85 "$S85" --s135 "$S135" \
+            --s38 model/s38 --s40 model/s40 --s41 model/s41 --out model/s144
+          python - <<'PY'
+          import json,numpy as np
+          d=json.load(open('model/s144/report.json'))
+          assert d['checkpoint_count']==39
+          assert d['all_39_original_weight_checkpoints_executed']
+          assert d['native_GOAT_audio_events']==57
+          assert not d['MIDI_labels_read'] and not d['promotion']
+          assert not d['full_historical_S41_equivalence_verified']
+          with np.load('model/s144/original_s41_new_deploy_composite_GOAT.npz',allow_pickle=False) as z:
+              assert z['proposal_K'].shape==(57,6)
+              assert z['gate_scores'].shape==(57,6)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s144-original-S38-S40-S41-39-models-GOAT-conditional
+          path: model/s144/
+          retention-days: 90
