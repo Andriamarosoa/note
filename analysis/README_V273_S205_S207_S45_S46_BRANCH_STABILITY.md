@@ -48,3 +48,34 @@ des interfaces et des divergences, non un score de candidat S80.
 
 Aucun changement de référence officielle, aucune déclaration de promotion,
 aucun résultat d'Exact-K indépendant.
+
+
+## S208 — Attribution des 904 divergences au parent S18
+
+[S208 — Run indépendant réussi (38237895315)](https://github.com/Andriamarosoa/note/actions/runs/38237895315) ;
+[preuve archivée](https://github.com/Andriamarosoa/note/actions/runs/38237895315/artifacts/11741313372).
+Le script [S208](../scripts/s208_s46_parent_divergence_attribution.py)
+relit les seuls vecteurs S206, confirme le résultat S207 (904 couples divergents)
+et classe chaque couple sans consulter les annotations.
+
+| Diagnostic entre les quatre folds | Mesure |
+|---|---:|
+| Événements dont les 4 parents S18 divergent | **6 / 57** |
+| Événements dont les 4 parents S18 sont égaux | **51 / 57** |
+| Couples événement–politique divergents entre folds | **904 / 11 001** |
+| Couples divergents sans aucun changement S46 par rapport aux 4 parents | **858 / 904** |
+| Couples divergents avec au moins un changement S46 par rapport à son parent | **46 / 904** |
+| Couples divergents lorsque les 4 parents sont déjà unanimes | **0** |
+
+**Conclusion circonscrite :** parmi les 904 cellules instables, **858
+reproduisent directement les divergences entre les parents S18**,
+sans qu'aucun des quatre S46 ne modifie son parent. Les 46 autres
+incluent une intervention S46 dans au moins un fold ; ceci n'établit
+pas une causalité exclusive de S46. Aucune divergence n'apparaît
+lorsque les parents sont unanimes, sur les 57 événements GOAT.
+
+Il faut donc **prioriser la stabilité et le routage des parents S5→S18
+entre folds** avant d'attribuer la fragilité à la logique S46. Les
+résultats GOAT sont du diagnostic exposé, **pas** une validation
+indépendante, encore moins une preuve que S80 est supérieur à la
+référence gelée. Aucune politique de fusion ou promotion n'est choisie.
