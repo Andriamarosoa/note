@@ -1,4 +1,4 @@
-"""S306: real S97 acoustic views on S302's original V88 Dataset3 native events.
+"""S306: real S97 acoustic views on S302's original V88 Dataset2 native events.
 
 Every row comes from frozen original native start and recording SHA. Audio is
 the EXACT same deterministic mono-44.1k preprocessing as S302. Never opens
@@ -24,7 +24,7 @@ def run(s302,s302report,s276,out):
     need(not out.exists(),"S306 must not overwrite prelabel native acoustic views")
     seal=json.loads(s276.read_text())
     ref_report=json.loads(s302report.read_text())
-    need(ref_report["status"]=="S302_TRUE_OFFICIAL_FREEZE_ON_DATASET3_FIVE_WAV_UNLABELLED"
+    need(ref_report["status"]=="S302_TRUE_OFFICIAL_FREEZE_ON_UNEXPOSED_DATASET2_16_WAV_UNLABELLED"
          and not ref_report["XML_MIDI_annotated_contents_read"],
          "must use truly native pretrained frozen unlabelled S302 archive")
     need(sha(s302.read_bytes())==ref_report["sealed_original_predictions_SHA256"],
@@ -38,7 +38,7 @@ def run(s302,s302report,s276,out):
     member=native["member"].astype(str)
     starts=native["start_samples"]
     n=len(rid)
-    need(n>0 and all(r==m+":"+str(int(s)) for r,m,s in zip(rid,member,starts))
+    need(n==964 and all(r==m+":"+str(int(s)) for r,m,s in zip(rid,member,starts))
          and len(set(rid))==n,
          "S302 genuine native identities must be unchanged")
     selected=seal["candidate_groups"]["dataset2_unexposed_XML_paired_reserve"]
@@ -97,7 +97,7 @@ def run(s302,s302report,s276,out):
         incumbent_freeze_K=native["incumbent_K"],summary58=summary,
         sequence42x49=seq,flow245=flow,morphology490=morph,
         physics294=physics)
-    report=dict(status="S306_ORIGINAL_AUDIO_S97_NATIVE_IDMT_DATASET3_NO_LABELS",
+    report=dict(status="S306_ORIGINAL_AUDIO_S97_NATIVE_IDMT_DATASET2_NO_LABELS",
         events=n,WAV_count=16,
         source_S302_SHA256=sha(s302.read_bytes()),
         first_ten_seconds_only=True,
