@@ -79,10 +79,40 @@
       "artifact_id": 11734537945,
       "implementation_commit": "6064def1713432e54cf8b01dc07b153b58056716",
       "ci_evidence": "analysis/evidence/v273-s5-owned527-recovery/github_ci.json"
+    },
+    "recovered_S5_to_S18": {
+      "status": "HISTORICAL_EXACT_AND_GOAT_ORIGINAL_CHECKPOINT_FORWARD",
+      "historical_rows": 59309,
+      "selected_S5_decisions_checked": 118618,
+      "downstream_selected_checkpoints": 133,
+      "downstream_selected_stages": [
+        "S8",
+        "S13",
+        "S14",
+        "S16",
+        "S17",
+        "S18"
+      ],
+      "historical_K_mismatches": 0,
+      "external_events": 57,
+      "external_fold_branches": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "new_piece_rule": "Keep four original S5 branches; average same-fold piece-held risk checkpoints; preserve original thresholds and eligibility.",
+      "S135_or_PR16_substitutes_used": false,
+      "models_retrained": false,
+      "truth_labels_read": false,
+      "independent_S80_accuracy_measured": false,
+      "official_promotion": false,
+      "github_ci_status": "pending",
+      "report": "analysis/README_V273_RECOVERED_S5_S18.md",
+      "workflow": ".github/workflows/v273-recovered-s5-s18.yml"
     }
   },
   "missing_external_components": [
-    "Integrate the recovered and historically exact S4-owned/S5 527D constructor with the original external-audio inputs and replay unchanged saved S5 models on new WAV",
     "Original 16 S43/S44 proposal family generators and S45 risk models on new WAV",
     "Prespecified new-piece S69 fold-specific veto deployment",
     "New-piece deployable S70/S71/S72 parent models",
@@ -95,7 +125,7 @@
     "S80 already independently validated",
     "historical 43.87% guaranteed on new music"
   ],
-  "next_protocol": "Use the numerically recovered owned527 constructor (all 59309 S5 historical probabilities and 412350 input-bin thresholds exactly reproduced) with the corrected 28-node/16-family inventory. Run original saved S5 models on new-audio features, then complete original S43/S44 sixteen-family proposals and the original 304 S45 Ridge risks; replay S46->S69->S72->S79->S80 with prespecified new-piece deployment rules. Finally require song-disjoint independent paired Exact-K global AND poly > freeze_local_combo. Historical source-search and student experiments remain archival evidence; they do not supersede the new exact S5 numerical replay. Original source text and original design-file serialization remain unavailable. No promotion or independent S80 score is claimed.",
+  "next_protocol": "S5 and the original selected S8/S9/S13/S14/S15/S16/S17/S18 chain now replay exactly on 59309 historical events and execute on 57 GOAT events using real S5 parents in four separate fold branches. Continue original five missing S45 producers, full 16-family proposals and 304 risks, then S46 through S80. Freeze an explicit final new-piece aggregation and validate paired global AND poly Exact-K on truly unseen compositions. GOAT is exposed smoke evidence, no independent S80 score or promotion.",
   "experimental_deployability_research_S128_S131": {
     "scope": "Reconstruction of historical S5 upstream audio producers; new student alternative is NOT original S5/S80",
     "original_s5_527D_feature_equivalence_verified": false,
@@ -184,7 +214,7 @@
     "interpretation": "Git -G covers source diff matches on reachable commits and explicitly bounded date; absence of matches does not prove original local or unreachable code never existed."
   },
   "original_S5_527D_reconstructed": true,
-  "original_S5_forward_reproduced_on_new_audio": false,
+  "original_S5_forward_reproduced_on_new_audio": true,
   "experimental_S133_S135_teacher_student_research": {
     "original_S5_checkpoint_unchanged": true,
     "source_416D_recovered": false,
@@ -478,5 +508,6 @@
     "permanent_research_release": "https://github.com/Andriamarosoa/note/releases/tag/v273-S163-S170-real-original-S45-10of16-GOAT-research"
   },
   "original_S5_527D_reconstruction_scope": "Numerical runtime verified on all 59309 original S5 event probabilities and all 527 training-bin signatures in each of four folds. Original source text and original designs_sha256 serialization remain unavailable.",
-  "historical_sections_note": "Sections named for earlier S-series retain their observations at the time. Current S5 feature recovery status is recorded in original_S5_527D_reconstructed and validated_frozen_components.s5_owned527_numerical_recovery; prior negative source searches remain valid only for original source text."
+  "historical_sections_note": "Sections named for earlier S-series retain their observations at the time. Current S5 feature recovery status is recorded in original_S5_527D_reconstructed and validated_frozen_components.s5_owned527_numerical_recovery; prior negative source searches remain valid only for original source text.",
+  "original_S5_forward_new_audio_scope": "57 already-exposed GOAT events, four original frozen S5 models, historically exact recovered constructor and selected global/poly decoders. No independent accuracy measured."
 }

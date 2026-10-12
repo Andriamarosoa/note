@@ -153,11 +153,11 @@
     },
     {
       "id": "S5_original527",
-      "state": "historical_only",
+      "state": "original_weights_new_audio_with_explicit_fold_aggregation",
       "requires": [
         "S4_control111"
       ],
-      "proof": "Exact S5 numerical reconstruction: all 59309 archived raw/prior probabilities from all four unchanged original checkpoints and all 412350 training-bin thresholds match exactly. Reconstructed acoustic builder is scripts/v273_s4_owned527.py. Original source text remains unavailable; the new-WAV integration has not yet been executed.",
+      "proof": "Recovered S5-to-S18 runtime: original selected policy and parent replay exact on all 59309 historical events; 57 GOAT audio events forwarded in four original S5 branches, without S135/PR16 substitutions. Same-fold piece-gate averaging is an explicit new-piece deployment rule. See analysis/README_V273_RECOVERED_S5_S18.md.",
       "reconstructed_runtime": "scripts/v273_s4_owned527.py",
       "replay_evidence": "analysis/evidence/v273-s5-owned527-recovery/report.json"
     },
@@ -171,63 +171,63 @@
     },
     {
       "id": "S8_original_parent",
-      "state": "adapted_new_audio",
+      "state": "original_weights_new_audio_with_explicit_fold_aggregation",
       "requires": [
         "S5_original527",
         "wav_groups"
       ],
-      "proof": "S157: 19 authentic S8 trained 28D checkpoints executed on 57 GOAT audio events. Inputs g=S135,p=PR16#22 adapted and not original S5 heads."
+      "proof": "Recovered S5-to-S18 runtime: original selected policy and parent replay exact on all 59309 historical events; 57 GOAT audio events forwarded in four original S5 branches, without S135/PR16 substitutions. Same-fold piece-gate averaging is an explicit new-piece deployment rule. See analysis/README_V273_RECOVERED_S5_S18.md."
     },
     {
       "id": "S9_original_parent",
-      "state": "adapted_new_audio",
+      "state": "original_weights_new_audio_with_explicit_fold_aggregation",
       "requires": [
         "S8_original_parent"
       ],
-      "proof": "S157 original K5 veto applied on 57 GOAT; S158 0/57 S9 differences vs S153/S154 upstream. Adapted S5 global/poly inputs not historically equivalent."
+      "proof": "Recovered S5-to-S18 runtime: original selected policy and parent replay exact on all 59309 historical events; 57 GOAT audio events forwarded in four original S5 branches, without S135/PR16 substitutions. Same-fold piece-gate averaging is an explicit new-piece deployment rule. See analysis/README_V273_RECOVERED_S5_S18.md."
     },
     {
       "id": "S13_K0_birth",
-      "state": "adapted_new_audio",
+      "state": "original_weights_new_audio_with_explicit_fold_aggregation",
       "requires": [
         "S9_original_parent",
         "wav_groups"
       ],
-      "proof": "S153 76 original risk checkpoints S13 executed; 26 policies, S9 adapted, not exact original"
+      "proof": "Recovered S5-to-S18 runtime: original selected policy and parent replay exact on all 59309 historical events; 57 GOAT audio events forwarded in four original S5 branches, without S135/PR16 substitutions. Same-fold piece-gate averaging is an explicit new-piece deployment rule. See analysis/README_V273_RECOVERED_S5_S18.md."
     },
     {
       "id": "S14_K0_rollback",
-      "state": "adapted_new_audio",
+      "state": "original_weights_new_audio_with_explicit_fold_aggregation",
       "requires": [
         "S9_original_parent",
         "wav_groups"
       ],
-      "proof": "S153 76 original risk checkpoints S14 executed; 32 policies, S9 adapted, not exact original"
+      "proof": "Recovered S5-to-S18 runtime: original selected policy and parent replay exact on all 59309 historical events; 57 GOAT audio events forwarded in four original S5 branches, without S135/PR16 substitutions. Same-fold piece-gate averaging is an explicit new-piece deployment rule. See analysis/README_V273_RECOVERED_S5_S18.md."
     },
     {
       "id": "S15_safe_OR",
-      "state": "adapted_new_audio",
+      "state": "original_weights_new_audio_with_explicit_fold_aggregation",
       "requires": [
         "S13_K0_birth",
         "S14_K0_rollback"
       ],
-      "proof": "S153 exact original nine union formulas; S15 safe_OR gives [45,10,2,0,0,0,0] on GOAT from adapted S9"
+      "proof": "Recovered S5-to-S18 runtime: original selected policy and parent replay exact on all 59309 historical events; 57 GOAT audio events forwarded in four original S5 branches, without S135/PR16 substitutions. Same-fold piece-gate averaging is an explicit new-piece deployment rule. See analysis/README_V273_RECOVERED_S5_S18.md."
     },
     {
       "id": "S16_K12_K23",
-      "state": "adapted_new_audio",
+      "state": "original_weights_new_audio_with_explicit_fold_aggregation",
       "requires": [
         "S15_safe_OR"
       ],
-      "proof": "S154 152 original trained checkpoint heads and 108 veto policies, stage parent matches original selected S15 policy but S9 adapted"
+      "proof": "Recovered S5-to-S18 runtime: original selected policy and parent replay exact on all 59309 historical events; 57 GOAT audio events forwarded in four original S5 branches, without S135/PR16 substitutions. Same-fold piece-gate averaging is an explicit new-piece deployment rule. See analysis/README_V273_RECOVERED_S5_S18.md."
     },
     {
       "id": "S17_K32_K34",
-      "state": "adapted_new_audio",
+      "state": "original_weights_new_audio_with_explicit_fold_aggregation",
       "requires": [
         "S16_K12_K23"
       ],
-      "proof": "S154 152 original trained checkpoint heads and 108 veto policies, stage parent matches original selected S16 policy but S9 adapted"
+      "proof": "Recovered S5-to-S18 runtime: original selected policy and parent replay exact on all 59309 historical events; 57 GOAT audio events forwarded in four original S5 branches, without S135/PR16 substitutions. Same-fold piece-gate averaging is an explicit new-piece deployment rule. See analysis/README_V273_RECOVERED_S5_S18.md."
     },
     {
       "id": "S11_original_votes",
@@ -241,11 +241,11 @@
     },
     {
       "id": "S18_parent",
-      "state": "adapted_new_audio",
+      "state": "original_weights_new_audio_with_explicit_fold_aggregation",
       "requires": [
         "S17_K32_K34"
       ],
-      "proof": "S154 exact original 108 K43/K21 veto policy formulas and 140 original trained checkpoints; needs genuine original S9; 0 eligible GOAT changes"
+      "proof": "Recovered S5-to-S18 runtime: original selected policy and parent replay exact on all 59309 historical events; 57 GOAT audio events forwarded in four original S5 branches, without S135/PR16 substitutions. Same-fold piece-gate averaging is an explicit new-piece deployment rule. See analysis/README_V273_RECOVERED_S5_S18.md."
     },
     {
       "id": "S43_S44_16_champions",
@@ -538,5 +538,36 @@
     "report": "analysis/README_V273_S5_OWNED527_RECOVERY.md",
     "artifact_id": 11734537945
   },
-  "historical_snapshot_note": "S-series experiment fields preserve the results known at their execution. Latest S5 numerical feature-recovery evidence is in s5_owned527_recovery and the S5_original527 node. Prior absence of original source text is not absence of the newly verified reconstructed runtime."
+  "historical_snapshot_note": "S-series experiment fields preserve the results known at their execution. Latest S5 numerical feature-recovery evidence is in s5_owned527_recovery and the S5_original527 node. Prior absence of original source text is not absence of the newly verified reconstructed runtime.",
+  "recovered_S5_to_S18": {
+    "status": "HISTORICAL_EXACT_AND_GOAT_ORIGINAL_CHECKPOINT_FORWARD",
+    "historical_rows": 59309,
+    "selected_S5_decisions_checked": 118618,
+    "downstream_selected_checkpoints": 133,
+    "downstream_selected_stages": [
+      "S8",
+      "S13",
+      "S14",
+      "S16",
+      "S17",
+      "S18"
+    ],
+    "historical_K_mismatches": 0,
+    "external_events": 57,
+    "external_fold_branches": [
+      0,
+      1,
+      2,
+      4
+    ],
+    "new_piece_rule": "Keep four original S5 branches; average same-fold piece-held risk checkpoints; preserve original thresholds and eligibility.",
+    "S135_or_PR16_substitutes_used": false,
+    "models_retrained": false,
+    "truth_labels_read": false,
+    "independent_S80_accuracy_measured": false,
+    "official_promotion": false,
+    "github_ci_status": "pending",
+    "report": "analysis/README_V273_RECOVERED_S5_S18.md",
+    "workflow": ".github/workflows/v273-recovered-s5-s18.yml"
+  }
 }
