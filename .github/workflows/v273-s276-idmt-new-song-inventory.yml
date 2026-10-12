@@ -1,0 +1,48 @@
+name: S276 prelabel IDMT dataset3 dataset1 dataset2 source ZIP inventory
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s276_idmt_prelabel_song_cohort_inventory.py'
+      - '.github/workflows/v273-s276-idmt-new-song-inventory.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s276-idmt-unseen-metadata-inventory
+  cancel-in-progress: true
+jobs:
+  audit_IDMT_archive_directory_without_labels:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies for reusable bounded ZIP range reader
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2
+      - name: Read ONLY pinned Zenodo central-directory member names and freeze proposed cohort
+        run: |
+          python -u -m scripts.s276_idmt_prelabel_song_cohort_inventory --out model/S276
+          python - <<'PY'
+          import json
+          j=json.load(open('model/S276/S276_IDMT_filename_only_cohort_manifest.json'))
+          assert j['counts_WAV']['dataset2']==261
+          assert j['counts_WAV']['dataset3']==5
+          assert j['dataset2_unexposed_rank49to261_count']==213
+          assert len(j['candidate_groups']['dataset3_first'])==5
+          assert j['WAV_file_contents_read'] is False
+          assert j['XML_MIDI_annotation_contents_read'] is False
+          assert j['predicted_event_K_frozen'] is False
+          assert j['promotion_permitted'] is False
+          print('S276 PRE-LABEL selection frozen: no audio or XML read, no score claimed')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s276-IDMT-central-directory-only-prospective-WAV-cohort
+          path: model/S276/
+          retention-days: 90
