@@ -29,11 +29,11 @@ def run(s221,s85,s222,out):
         'balanced_protected_K','polymax_s46_K','polymax_protected_K',
         'balanced_fold_veto','balanced_veto_three_folds',
         'polymax_fold_veto','polymax_veto_three_folds'})
-    p=get(s85,{'member','start_samples','end_samples','incumbent_freeze_K',
+    p=get(s85,{'row_id','global_index','member','start_samples','end_samples','incumbent_freeze_K',
       'pr16_policy_K','pr16_vote_count','pr16_policy22_K',
       'pr16_network_probabilities'})
     ids=list(map(str,a['row_id']));n=len(ids)
-    keys=[f'{member}:{int(start)}' for member,start in zip(p['member'],p['start_samples'])]
+    keys=list(map(str,p['row_id']))
     need(n==59309 and len(set(keys))==len(keys) and len(set(ids))==n,
          'source GUITARSET native audio event IDs')
     pos={key:i for i,key in enumerate(keys)}
