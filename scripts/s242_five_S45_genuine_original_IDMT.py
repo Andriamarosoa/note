@@ -13,7 +13,20 @@ import joblib,numpy as np,torch
 from scripts.loop_v273_native_risk import designs
 from scripts.train_v273_s38_poly_harmonic_expert import score_predictions
 from scripts.train_v273_s41_neural_fusion import FusionGate,make_proposals,gated_prediction
-from scripts.s141_external_original_s40_cnn import forward as s40_forward
+from scripts.s141_external_original_s40_cnn import safe_checkpoint
+
+def s40_forward(src,x,seq,fold):
+    """Identical frozen S141 model arithmetic; population size now 1034, not GOAT 57."""
+    net,mean,scale,tmean,tstd=safe_checkpoint(src,fold)
+    acoustic=np.clip((x-mean)/scale,-5,5).astype(np.float32)
+    temporal=np.clip((seq-tmean)/tstd,-5,5).transpose(0,2,1).copy()
+    with torch.no_grad():
+        raw=net(torch.from_numpy(temporal),torch.from_numpy(acoustic))
+        posterior=torch.softmax(raw,dim=1).numpy()
+    probs=np.column_stack((np.zeros(len(x),np.float32),posterior.astype(np.float32)))
+    need(probs.shape==(len(x),7) and np.isfinite(probs).all() and
+         np.allclose(probs.sum(1),1,atol=1e-5),'genuine S40 checkpoint posteriors changed')
+    return probs
 FOLDS=(0,1,2,4)
 FAMILIES=('S11_votes_time_audio','S12_audio_logistic','S38_morphology',
           'S40_temporal_CNN','S41_neural_fusion')
