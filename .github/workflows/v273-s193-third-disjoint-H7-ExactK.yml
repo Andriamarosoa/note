@@ -1,0 +1,63 @@
+name: S193 independent heldout verify morphologic H7 versus adapted gate score frozen S192 independent IDMT dataset2 XML MIDI pitch ExactK no S80 promotion
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s193_score_third_disjoint_dataset2_H7_postfreeze.py'
+      - '.github/workflows/v273-s190-postfreeze-real-dataset2-ExactK.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s190-dataset2-real-pitch-postfreeze-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  score_real_XML_only_after_saved_audio_predictions:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Original reader and NumPy dependencies; no new training
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Validate frozen 80ms annotation rule against synthetic XML
+        run: python -m scripts.s193_score_third_disjoint_dataset2_H7_postfreeze --self-test
+      - name: Wait explicitly until S192 has successfully saved predictions BEFORE any XML is opened
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run watch 38211006832 --repo "${{ github.repository }}" --exit-status --interval 15
+      - name: Retrieve original pretrained audio source predictions frozen in earlier separate CI run
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38210431886
+          name: v273-s189-frozen-dataset2-note-XML-16WAV-genuine-S35-preregistered-no-label
+          path: model/S192
+      - name: Read exact paired XML MIDI note labels and compute only matched-audio postfreeze ExactK report
+        run: |
+          set -euo pipefail
+          python -u -m scripts.s193_score_third_disjoint_dataset2_H7_postfreeze --source-dir model/S192 --out model/S193
+          python - <<'PY'
+          import json
+          d=json.load(open('model/S193/report.json'))
+          assert d['source_wav_count']==16
+          assert d['annotation_matched_events']+d['annotation_unmatched_events']==d['source_acoustic_only_selected_events']
+          assert d['dataset2_true_pitch_cardinality_from_XML_not_chordname']
+          assert not d['original_freeze_local_combo_run_executed']
+          assert not d['S80_vs_official_reference_proven']
+          assert not d['S80_promoted']
+          PY
+      - name: Preserve immutable source-proof plus true XML annotation score report only
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s190-postfreeze-independent-dataset2-real-XML-pitch-exactK-adapted-only
+          path: model/S193/
+          retention-days: 90
