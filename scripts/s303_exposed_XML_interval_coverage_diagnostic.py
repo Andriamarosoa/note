@@ -82,11 +82,12 @@ def run(s276,s299report,s299pred,out):
             need(sha(payload)==original_proofs[identity]["XML_SHA256"],
                  "S303 XML differs from S299 first post-freeze annotation opening")
             notes=parse_original_pitch_events(payload)
+            ordered=rows[np.argsort(starts[rows],kind='stable')]
             onset_check,_,_=nearest_annotated_k(notes,
-                starts[rows]/SR,.080)
+                starts[ordered]/SR,.080)
             # Recheck each original S299 onset association in its stored
             # per-WAV native-order, WITHOUT introducing a new scoring rule.
-            need(np.array_equal(onset_check,onset_truth[rows]),
+            need(np.array_equal(onset_check,onset_truth[ordered]),
                  "original S299 matched onset labels cannot be reproduced")
             onset=np.array([note[0] for note in notes],dtype=np.float64)
             end=np.array([note[1] for note in notes],dtype=np.float64)
