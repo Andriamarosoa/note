@@ -72,7 +72,7 @@ d'amélioration d'Exact-K. Aucune nouvelle précision n'est revendiquée ici.
 - [Runtime](../scripts/recover_v273_255_producers.py) : étapes `prepare`,
   `extract`, `recover`, `infer`.
 - [Workflow](../.github/workflows/v273-recovered-255-producers.yml) : versions
-  numériques épinglées, contrôle des SHA, reconstruction, puis comparaison
+  numériques épinglées, contrôle des SHA, rejeu des poids conservés, puis comparaison
   indépendante des sorties locales et CI. Un groupe de concurrence évite les doublons.
 - [Rapport historique](evidence/v273-recovered-255/recovery_report.json),
   [rapport GOAT](evidence/v273-recovered-255/goat_report.json),
@@ -81,6 +81,14 @@ d'amélioration d'Exact-K. Aucune nouvelle précision n'est revendiquée ici.
 - [Entrées et provenance](evidence/v273-recovered-255/inputs) : matrices
   acoustiques historiques et GOAT, identifiants, noms de colonnes et empreintes
   des archives originales. Elles restent disponibles après expiration des artefacts CI.
+
+Le premier run CI `38230762655` a échoué au contrôle strict des postérieurs
+lors d'un nouveau réentraînement sur le runner GitHub. Le run de dépendances
+`38230762422` a réussi. Le workflow de déploiement vérifie maintenant les poids
+déjà reconstruits, conservés et SHA-épinglés, sans les réentraîner à chaque
+machine. Le contrôle d'égalité des postérieurs et des décisions reste inchangé.
+L'étape locale `recover` conserve la recette originale de reconstruction ;
+`--saved-specialists` et `--saved-recovery-report` déclenchent son rejeu gelé.
 
 ## Raccordements encore nécessaires
 

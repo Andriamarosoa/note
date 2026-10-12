@@ -47,10 +47,12 @@ jobs:
               assert len(data)==record['bytes']
               assert hashlib.sha256(data).hexdigest()==record['sha256'],name
           PY
-      - name: Reconstruct all 70 specialists and verify 14 frozen correctors
+      - name: Replay the preserved 70 specialists and 14 frozen correctors
         run: >-
           python -m scripts.recover_v273_255_producers --stage recover
           --fundamentals analysis/evidence/v273-recovered-255/inputs/historical_fundamental58.npz
+          --saved-specialists analysis/evidence/v273-recovered-255/specialists.joblib
+          --saved-recovery-report analysis/evidence/v273-recovered-255/recovery_report.json
           --out model/recovered-255/runtime
       - name: Infer all 255 groups and nine reference audits on real GOAT inputs
         run: >-
@@ -71,6 +73,7 @@ jobs:
           assert r['specialist_cached_probabilities_bit_exact']
           assert r['logistic_models_reconstructed']==70
           assert not r['receiver_labels_used_for_fit'] and not r['corrector_retrained']
+          assert not r['specialists_refitted_this_run']
           with np.load(root/'GOAT/external_255x9.npz',allow_pickle=False) as actual, np.load('analysis/evidence/v273-recovered-255/external_255x9.npz',allow_pickle=False) as expected:
               assert set(actual.files)==set(expected.files)
               for key in actual.files:

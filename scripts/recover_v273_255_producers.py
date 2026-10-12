@@ -190,7 +190,7 @@ def votes(models, features, raw, baseline, correctors, record):
     return np.concatenate([seven_candidates(p), project_actions(q, baseline)[:, None]], axis=1), p, q
 
 
-def recover(root, fundamentals, output):
+def recover(root, fundamentals, output, saved_specialists=None, saved_report=None):
     need(not output.exists(), 'refuse to overwrite producer evidence')
     source_manifest = json.loads((root/PREPARED.parent/'input-manifest.json').read_text())
     need(sha(root/PREPARED) == source_manifest['inputs_sha256'], 'prepared historical source SHA')
@@ -213,14 +213,30 @@ def recover(root, fundamentals, output):
     corrector = FrozenCorrector(truth, d['baseline'], d['fold'], d['global_index'], original/'learned_corrector')
     catalogue = CataloguePool(frozen, corrector)
     records = {tuple(r['train_folds']): r for r in corrector.manifest['producers']}
+    saved = None
+    if saved_specialists is not None:
+        need(saved_report is not None, 'saved model provenance required')
+        provenance = json.loads(saved_report.read_text())
+        need(sha(saved_specialists) == provenance['reconstructed_models_sha256'] and
+             sha(root/PREPARED) == provenance['original_inputs_sha256'] and
+             sha(fundamentals) == provenance['fundamental_input_sha256'], 'saved runtime/input SHA')
+        need(provenance['specialist_cached_probabilities_bit_exact'] and
+             provenance['group_decision_mismatches'] == 0, 'saved reconstruction was not verified')
+        saved = joblib.load(saved_specialists)
+        need(set(saved) == {cache_key(k) for k in records}, 'saved fourteen configurations')
     report_rows = []
     weights = {}
     for key in sorted(records, key=lambda k: (len(k), k)):
         at = np.flatnonzero(~np.isin(d['fold'], key))
-        p = pool.predict(key, at, set(FOLDS)-set(key))
+        if saved is None:
+            p = pool.predict(key, at, set(FOLDS)-set(key))
+            need(pool.manifests[key]['train_id_sha256'] == frozen.manifests[key]['train_id_sha256'], 'original training split changed')
+            models = pool.models[key]
+        else:
+            models = saved[cache_key(key)]
+            p = specialist_probabilities(models, {k: a[at] for k, a in x.items()}, d['baseline'][at])
         expected = frozen.predict(key, at, set(FOLDS)-set(key))
-        need(pool.manifests[key]['train_id_sha256'] == frozen.manifests[key]['train_id_sha256'], 'original training split changed')
-        need(np.array_equal(p, expected), f'{key}: specialist cached posteriors differ')
+        need(np.array_equal(p, expected), f'{key}: specialist cached posteriors differ; max abs {float(np.max(np.abs(p-expected)))}')
         q = corrector_probabilities(original/'learned_corrector', records[key], raw[at], d['baseline'][at])
         q0 = corrector.probabilities(key, at, set(FOLDS)-set(key))
         error = float(np.max(np.abs(q-q0)))
@@ -229,7 +245,7 @@ def recover(root, fundamentals, output):
         pred = joint_groups(v, d['baseline'][at])[0]
         reference = joint_groups(catalogue.predict(key, at, set(FOLDS)-set(key)), d['baseline'][at])[0]
         need(np.array_equal(pred, reference), f'{key}: reconstructed group decisions differ')
-        weights[cache_key(key)] = pool.models[key]
+        weights[cache_key(key)] = models
         r = dict(train_folds=list(key), receiver_rows=len(at),
                  original_training_ids_sha256=frozen.manifests[key]['train_id_sha256'],
                  specialist_probability_max_error=0., corrector_probability_max_error=error,
@@ -244,6 +260,8 @@ def recover(root, fundamentals, output):
         group_decisions_checked=sum(r['group_decisions_checked'] for r in report_rows),
         group_decision_mismatches=0, configurations=report_rows,
         reconstruction_method='Original ProducerPool fixed hyperparameters refit on original manifest training IDs; frozen corrector weights, NumPy GELU forward.',
+        specialists_refitted_this_run=saved is None,
+        saved_specialists_sha256=sha(saved_specialists) if saved_specialists is not None else None,
         original_development_training_labels_used=True, receiver_labels_used_for_fit=False,
         corrector_retrained=False, new_audio_labels_read=False,
         source_archive_sha256=source_sha, original_inputs_sha256=sha(root/PREPARED),
@@ -323,6 +341,8 @@ if __name__ == '__main__':
     p.add_argument('--stage', choices=('prepare', 'extract', 'recover', 'infer'), required=True)
     p.add_argument('--root', type=Path, default=Path('.'))
     p.add_argument('--fundamentals', type=Path)
+    p.add_argument('--saved-specialists', type=Path)
+    p.add_argument('--saved-recovery-report', type=Path)
     p.add_argument('--archives', type=Path)
     p.add_argument('--s97', type=Path)
     p.add_argument('--audio', type=Path)
@@ -339,7 +359,7 @@ if __name__ == '__main__':
         extract_goat(a.s97, a.audio, a.out)
     elif a.stage == 'recover':
         need(a.fundamentals is not None, 'original fundamental features required')
-        recover(a.root, a.fundamentals, a.out)
+        recover(a.root, a.fundamentals, a.out, a.saved_specialists, a.saved_recovery_report)
     else:
         need(all(v is not None for v in (a.runtime, a.external, a.s5)), 'sealed runtime/acoustic/S5 inputs required')
         infer(a.root, a.runtime, a.external, a.s5, a.out)
