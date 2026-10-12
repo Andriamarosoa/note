@@ -44,6 +44,31 @@ It records true original-native V88 event start/end positions and
 baseline K0–K6 predictions; it must be scored ONLY after full S275
 predictions on identical native event IDs are sealed.
 
+
+## Confirmed S277–S280 pre-label numerical checkpoints
+
+Successful CI:
+- S277: https://github.com/Andriamarosoa/note/actions/runs/38319155819
+- S278: https://github.com/Andriamarosoa/note/actions/runs/38319390256
+- S279: https://github.com/Andriamarosoa/note/actions/runs/38319535537
+- S280: https://github.com/Andriamarosoa/note/actions/runs/38319717743
+
+On first 10 seconds of each of the five Dataset3 recordings:
+- **506 genuine original V88 events**; official freeze_local_combo K0..6
+  prediction histogram: 457, 26, 5, 8, 10, 0, 0.
+- One WAV is stereo: documented deterministic stereo->mono downmix,
+  while all inputs are 44.1 kHz 16-bit PCM.
+- Original S97 audio features recovered on exactly 506 baseline native IDs,
+  58D summary, 42x49 sequence, 245D flow, 490D morphology, 294D physics.
+- Original S5 527D input and PR16 original temporal 46D ownership
+  reconstructed without model fitting.
+- Four SHA-256-checked original S5 held-fold models executed: all four
+  agree on 490 native events and disagree on 16, without selecting any
+  original held-piece oracle.
+
+**These counts are model predictions, not measured true Exact-K.** NO XML
+contents read; no claim of composition-disjoint independent validation.
+
 ## Strict gates before independent Exact-K and promotion
 
 1. Complete original-source S5/S18, sixteen S45 producers, S46 quorum
