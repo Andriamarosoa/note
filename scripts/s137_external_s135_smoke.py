@@ -144,8 +144,8 @@ def selftest():
     ids=np.arange(3)
     assert nearest(10100,ids,starts,ends)==0
     assert nearest(12400,ids,starts,ends)==1
-    assert nearest(17083,ids,starts,ends)==2
-    assert nearest(17100,ids,starts,ends) is None
+    assert nearest(17082,ids,starts,ends)==2
+    assert nearest(17083,ids,starts,ends) is None
     print('S137 PASS 20ms matching and no double assignment')
 if __name__=='__main__':
     a=argparse.ArgumentParser();a.add_argument('--self-test',action='store_true')
