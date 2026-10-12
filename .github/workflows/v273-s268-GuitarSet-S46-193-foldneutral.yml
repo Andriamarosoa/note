@@ -26,10 +26,7 @@ jobs:
         with:
           python-version: '3.11'
       - run: python -m pip install numpy==1.26.4
-      - name: Require full 304 original trained S45 Ridge heads and all 193 S46 policies (successful S267)
-        env:
-          S267_EVIDENCE: '38313440938'
-      - name: Require 304 original S45 risks and 193 S46 all 19 branches complete
+      - name: Require SUCCESS of S267 38313440938 original 304-risk 193-policy 19-branch producer source
         run: gh run watch 38312898359 --exit-status --interval 15
       - name: Restore original full source decisions and precommitted S18 3 of 4 parent
         run: |
