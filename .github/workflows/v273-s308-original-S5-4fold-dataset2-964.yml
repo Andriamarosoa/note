@@ -1,0 +1,76 @@
+name: S308 verify four original S5 trained models on 964 prospective Dataset2 native events PREXML
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s308_original_4S5_trained_fold_964_dataset2.py'
+      - '.github/workflows/v273-s308-original-S5-4fold-dataset2-964.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s308-original-S5-fourfold-964-dataset2
+  cancel-in-progress: true
+jobs:
+  four_original_SHA_verified_S5_models_on_964:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Original S5 sklearn joblib version and original trained 527D model ABI
+        run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+      - name: Fetch and SHA-verify all four ORIGINAL trained S5 historical checkpoints
+        run: |
+          set -euo pipefail
+          for f in 0 1 2 4; do
+            mkdir -p "model/S5original/fold$f"
+            curl -fLsS --retry 3 --connect-timeout 15 --max-time 120 \
+              "https://raw.githubusercontent.com/Andriamarosoa/note/7165e1ef54510aa9effc9f597b2783c832ca907a/analysis/evidence/v273-open-k0-k6/series5/models/fold$f/model.joblib" \
+              -o "model/S5original/fold$f/model.joblib"
+          done
+          python - <<'PY'
+          from pathlib import Path
+          from scripts.verify_v273_s5_owned527_recovery import FOLDS,MODEL_DIGEST,digest
+          for f in FOLDS:
+            assert digest(Path(f'model/S5original/fold{f}/model.joblib'))==MODEL_DIGEST[f]
+          print('S308 original S5 four training-model weights hashed and unchanged')
+          PY
+      - name: Require complete original S97/S5 source views stage finished for 964 new native V88 events
+        run: gh run watch 38323508991 --repo ${{ github.repository }} --exit-status --interval 15
+      - name: Restore S307 exactly original 527D S5 input matrix, with no XML
+        run: |
+          gh run download 38323508991 \
+            -n s306-s307-IDMT-dataset2-964-original-S97-S5-527D-audio-before-XML \
+            -D model/S306S307 --repo ${{ github.repository }}
+      - name: Reexecute actual 4 historically trained S5 on 964 locked new WAV events, NO retrain
+        run: |
+          python -u -m scripts.s308_original_4S5_trained_fold_964_dataset2 \
+            --s307 model/S306S307/S307/S307_IDMT_dataset2_true_original_S5_527D_input.npz \
+            --models model/S5original --out model/S308
+          python - <<'PY'
+          import numpy as np,json
+          r=json.load(open('model/S308/report.json'))
+          assert r['original_native_reference_event_count']==964
+          assert r['original_trained_S5_fold_count']==4
+          assert r['original_fold_models_never_retrained']
+          assert not r['unseen_IDMT_XML_MIDI_contents_read']
+          assert not r['official_S80_promotion']
+          with np.load('model/S308/S308_original_S5_fourfold_964_dataset2_native_unlabelled.npz',allow_pickle=False) as z:
+            assert z['original_S5_K_by_fold'].shape==(4,964)
+            assert z['original_S5_raw_probability_by_fold'].shape==(4,964,7)
+          print('S308 PASS all 4 original S5 folds produce 964 source-only new V88 K0..K6 hypotheses')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s308-IDMT-dataset2-964-original-S5-fourfold-527D-trained-predictions-PREXML
+          path: model/S308/
+          retention-days: 90
