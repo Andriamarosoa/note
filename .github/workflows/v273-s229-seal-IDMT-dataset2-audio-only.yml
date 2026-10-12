@@ -1,0 +1,62 @@
+name: S229 seal untouched 16 IDMT dataset2 audio-only WAV S97 feature banks
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s229_idmt_dataset2_sealed_audio_only_S97.py'
+      - '.github/workflows/v273-s229-seal-IDMT-dataset2-audio-only.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s229-untouched-IDMT-sealed-audio-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  freeze_unseen_song_audio_only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install original compatible acoustic numerical dependencies without label parsers
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Verify deterministic 16 unknown audio file selection without labels
+        run: python -m scripts.s229_idmt_dataset2_sealed_audio_only_S97 --self-test
+      - name: Read ONLY ZIP WAV bytes, never XML annotations, and save preselected original acoustic features
+        run: python -u -m scripts.s229_idmt_dataset2_sealed_audio_only_S97 --out model/S229
+      - name: Validate originality and seal SHA256 of untouched dataset2 event/features
+        run: |
+          python - <<'PY'
+          import json,numpy as np
+          from pathlib import Path
+          r=json.loads(Path('model/S229/report.json').read_text())
+          assert r['chosen_song_count']==16
+          assert len(r['chosen_track_provenance'])==16
+          assert len(set(x['WAV_name_SHA256'] for x in r['chosen_track_provenance']))==16
+          assert not r['XML_note_annotation_content_read']
+          assert not r['MIDI_content_read']
+          assert not r['original_freeze_local_combo_on_these_events']
+          assert not r['independent_ExactK_measured'] and not r['S80_promoted']
+          with np.load('model/S229/IDMT_dataset2_unseen_audio_only_original_S97_features.npz',
+                       allow_pickle=False) as z:
+              n=r['total_acoustic_onset_groups']
+              assert len(z['row_id'])==n and z['summary58'].shape==(n,58)
+              assert z['sequence42x49'].shape==(n,42,49)
+              assert z['morphology490'].shape==(n,490)
+              assert z['physics294'].shape==(n,294)
+              assert len(set(map(str,z['row_id'])))==n
+          print('S229 PASS untouched 16 WAV feature hash seal; XML unobserved, no score')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s229-idmt-16-song-audio-only-feature-preseal-xml-unopened
+          path: model/S229/
+          retention-days: 90

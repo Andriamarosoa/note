@@ -1,0 +1,82 @@
+name: S225 reconstruct four original trained S72 temporal risk fold checkpoints
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s225_recover_original_S72_temporal_heldfold_models.py'
+      - '.github/workflows/v273-s225-recover-original-S72-models.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s225-S72-temporal-risk-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  reconstruct_four_real_original_S72:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Pinned original S72 learner dependencies
+        run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+      - name: Original saved S71 fold-excluded predictions
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38154433492
+          name: v273-s71-acoustic-risk
+          path: model/S71
+      - name: Immutable original S72 historic target predictions
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38155427761
+          name: v273-s72-temporal-risk
+          path: model/S72_original
+      - name: Original four-fold PR16 acoustic trajectories, no GOAT labels
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          pattern: v273-open-features-*
+          path: model/features
+      - name: Reconstruct four original S72 fitted HistGradientBoosting critics and source-only thresholds
+        run: >-
+          python -m scripts.s225_recover_original_S72_temporal_heldfold_models
+          --s71 model/S71/predictions.npz
+          --features model/features
+          --s72 model/S72_original/predictions.npz
+          --out model/S225
+      - name: Ensure exact 59309 original K predictions and no independent accuracy claims
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          r=json.load(open('model/S225/report.json'))
+          assert r['historical_event_count']==59309 and r['original_S71_interventions']==1029
+          assert r['feature_original_acoustic_view']==450 and r['model_input_feature_width']==465
+          assert r['recovered_model_count']==4
+          assert set(r['original_decisions_replayed_exact'])=={'risk_all','risk_poly_guard','poly_all','poly_poly_guard'}
+          assert all(z['historical_mismatches']==0 for z in r['original_decisions_replayed_exact'].values())
+          assert len(list(Path('model/S225/models').glob('*.joblib')))==4
+          assert r['external_song_labels_read'] is False and not r['new_song_accuracy_measured']
+          assert not r['S80_promoted']
+          print('S225 PASS original trained S72 model recovery and 59309 exact saved historical outputs')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s225-recovered-original-S72-four-temporal-risk-checkpoints
+          path: model/S225/
+          retention-days: 90

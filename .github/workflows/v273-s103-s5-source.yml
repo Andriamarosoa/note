@@ -1,0 +1,25 @@
+name: S103 trace original S5 upstream training code
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s103_s5_provenance_search.py'
+      - '.github/workflows/v273-s103-s5-source.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  trace:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: git fetch origin 'refs/tags/v273-series45-research-37891074478:refs/tags/v273-series45-research-37891074478'
+      - run: python scripts/s103_s5_provenance_search.py --out model/s103/report.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-s103-upstream-s5-source
+          path: model/s103/report.json

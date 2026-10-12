@@ -1,0 +1,47 @@
+name: S175 restore original 4 coherent selector fold weights checksum verified
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s175_recover_original_coherent_selector_weights.py'
+      - '.github/workflows/v273-s175-original-coherent-checkpoints.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s175-original-neural-source-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  recover_original_coherent:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install h5py only, no TensorFlow model refitting
+        run: python -m pip install h5py==3.15.1 numpy==1.26.4
+      - name: Verify original historical coherent neural source contract
+        run: python -m scripts.s175_recover_original_coherent_selector_weights --self-test
+      - name: Reconstruct and audit original four held-piece coherent Keras weights by SHA256
+        run: |
+          set -euo pipefail
+          python -m scripts.s175_recover_original_coherent_selector_weights --root . --out model/S175
+          python - <<'PY'
+          import json
+          d=json.load(open('model/S175/report.json'))
+          assert d["original_Keras_weights_fold_count"]==4
+          assert all(x["weight_files"]>5 for x in d["fold_model_proofs"])
+          assert not d["unseen_WAV_predictions_generated"]
+          assert not d["true_K_or_MIDI_read"]
+          assert not d["S80_independent_accuracy_measured"]
+          assert not d["S80_promoted"]
+          PY
+      - name: Preserve original restored neural models with certified source SHA
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s175-original-coherent-fourfold-keras-weights-NO-WAV-NO-S80
+          path: model/S175/
+          retention-days: 90

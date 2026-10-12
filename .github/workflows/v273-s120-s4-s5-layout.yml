@@ -1,0 +1,80 @@
+name: S120 compare S4 416D original feature layout hypotheses (nonvalidated)
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s120_s4_s5_416_layout_audit.py'
+      - '.github/workflows/v273-s120-s4-s5-layout.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install historical checkpoint compatible dependencies
+        run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+      - name: Selftest strictly label-blind 416D ordering
+        env:
+          PYTHONPATH: '.:src'
+        run: python -m scripts.s120_s4_s5_416_layout_audit --self-test
+      - name: Recover original pinned S4 and S5 checkpoints
+        run: |
+          set -euo pipefail
+          mkdir -p model/history
+          git fetch origin 'refs/tags/v273-series45-research-37891074478:refs/tags/v273-series45-research-37891074478'
+          git archive 854ada718ac9bf1556f00c96b8e1aa90402d6ab3 \
+            analysis/evidence/v273-open-k0-k6/series4/models \
+            analysis/evidence/v273-open-k0-k6/series5/models | tar -x -C model/history
+      - name: Recover independently extracted GOAT acoustic signal
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38182078525
+          name: v273-s97-original-goat-s45-audio-features
+          path: model/s97
+      - name: Recover frozen original S4 control111 on GOAT
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38184381730
+          name: v273-s116-original-S4-control111-GOAT
+          path: model/s116
+      - name: Compare S4 and S5 split thresholds across original hypotheses
+        env:
+          PYTHONPATH: '.:src'
+        run: |
+          set -euo pipefail
+          S97="$(find model/s97 -type f -name original_s45_audio_only.npz -print -quit)"
+          S116="$(find model/s116 -type f -name external_s4_control111.npz -print -quit)"
+          test -s "$S97" && test -s "$S116"
+          python -m scripts.s120_s4_s5_416_layout_audit \
+            --s97 "$S97" --s116 "$S116" \
+            --s4-models model/history/analysis/evidence/v273-open-k0-k6/series4/models \
+            --s5-models model/history/analysis/evidence/v273-open-k0-k6/series5/models \
+            --out model/s120
+          python - <<'PY'
+          import json
+          r=json.load(open('model/s120/report.json'))
+          assert len(r['variants'])==3 and r['original_models']==10
+          assert not r['numeric_feature_equivalence_proven']
+          assert not r['accuracy_measured'] and not r['S80_promoted']
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s120-s4-s5-416D-layout-nonvalidated
+          path: model/s120/
+          retention-days: 30

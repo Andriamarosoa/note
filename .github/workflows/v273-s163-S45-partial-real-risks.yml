@@ -1,0 +1,157 @@
+name: S163 five authentic S45 source family decisions and original 95 Ridge fit risks
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s163_s45_partial_real_producers.py'
+      - '.github/workflows/v273-s163-S45-partial-real-risks.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s163-partial-five-S45-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  real_five_producers:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Original numerical dependencies plus trained neural imports
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - run: python -m scripts.s163_s45_partial_real_producers --self-test
+      - name: Original 304 trained S45 family risk models
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37891039201
+          name: v273-series45-specialized-risk-heads
+          path: model/S45
+      - name: Original S11 76 saved trained-risk models actual new-audio forward
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38194821806
+          name: v273-s149-original-S11-risk-heads-new-GOAT-adapted-S16-S17-source-tested
+          path: model/S11
+      - name: Original S12 19 logistic models actual new-audio forward
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38193017646
+          name: v273-s143-original-S12-logistic-crosspiece-trained-models-GOAT
+          path: model/S12
+      - name: Original S38 real acoustic/morph posterior forward
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38192916733
+          name: v273-s142-original-S38-morph825-fold0-1-2-4-new-GOAT-adapted
+          path: model/S38
+      - name: Original S40 temporal CNN original trained forward
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38192776863
+          name: v273-s141-original-S40-four-trained-checkpoints-real-GOAT-conditional
+          path: model/S40
+      - name: Original S41 19 gate checkpoints with adapted S18 parent
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38196667499
+          name: v273-s161-original-S41-gate-with-proper-adapted-S18-parent
+          path: model/S41
+      - name: S154 adapted S18 genuine trained-risk cascade
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38195685473
+          name: v273-s154-original-S13-S14-S15-S16-S17-S18-checkpoint-cascade-GOAT
+          path: model/S154
+      - name: S157 original S8 19 risk fit sources and S9 original logic
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38196167459
+          name: v273-s157-original-S8-learned-checkpoints-exact-S9-rule-GOAT-no-MIDI
+          path: model/S157
+      - name: Unchanged original acoustic-native S45 335D audio views
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38182078525
+          name: v273-s97-original-goat-s45-audio-features
+          path: model/S97
+      - name: Official native PR16 real original freeze plus 36 selection source
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38176406465
+          name: v273-s85-original-pr16-external-policies
+          path: model/S85
+      - name: New K-only S135 parent remains explicitly non-equivalent
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38190945241
+          name: v273-s135-K-anchored-S5-student-soft-posteriors
+          path: model/S135
+      - name: Verify five real source families and 95 original Ridge models on same GOAT events
+        run: |
+          set -euo pipefail
+          S97="$(find model/S97 -name original_s45_audio_only.npz -print -quit)"
+          S85="$(find model/S85 -name pr16_external_36_policies.npz -print -quit)"
+          S135="$(find model/S135 -name GOAT_57_label_blind_soft_Kanchored.npz -print -quit)"
+          S11="$(find model/S11 -name S11_real_original_weights_new_GOAT_adapted.npz -print -quit)"
+          S12="$(find model/S12 -name S12_original_logistic_risk_models_GOAT.npz -print -quit)"
+          S38="$(find model/S38 -name s38_original_morph825_real_GOAT_unlabeled.npz -print -quit)"
+          S40="$(find model/S40 -name native_s40_GOAT_research.npz -print -quit)"
+          S41="$(find model/S41 -name original_S41_gate_with_authentic_weight_S18_parent_GOAT.npz -print -quit)"
+          S154="$(find model/S154 -name original_S15_to_S18_trained_GOAT_adapted_S9.npz -print -quit)"
+          S157="$(find model/S157 -name s8_s9_original_trained_veto_GOAT_adapted_sources.npz -print -quit)"
+          for f in "$S97" "$S85" "$S135" "$S11" "$S12" "$S38" "$S40" "$S41" "$S154" "$S157"; do test -s "$f"; done
+          python -u -m scripts.s163_s45_partial_real_producers \
+            --s97 "$S97" --s85 "$S85" --s135 "$S135" --s11 "$S11" \
+            --s12 "$S12" --s38 "$S38" --s40 "$S40" --s41 "$S41" \
+            --s154 "$S154" --s157 "$S157" --s45 model/S45 --out model/S163
+          python - <<'PY'
+          import json,numpy as np
+          x=json.load(open('model/S163/report.json'))
+          assert x['new_audio_native_events']==57
+          assert x['genuine_original_ridge_checkpoints_verified']==95
+          assert len(x['five_of_original_sixteen_families'])==5
+          assert not x['original_16_family_agreement_available']
+          assert not x['full_S46_S69_S80_input_valid']
+          assert not x['GOAT_truth_or_MIDI_read'] and not x['official_S80_promotion']
+          with np.load('model/S163/five_of_sixteen_original_weight_risk_GOAT.npz',allow_pickle=False) as q:
+              assert q['partial_proposal_K'].shape==(57,5)
+              assert q['partial_risk_two_scores'].shape==(57,5,2)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s163-five-of-sixteen-original-S45-family-Ridge-95-models-GOAT
+          path: model/S163/
+          retention-days: 90

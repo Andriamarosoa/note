@@ -1,0 +1,65 @@
+name: S192 third disjoint dataset2 note XML cohort audio-only freeze rank17to32 28 original S35 and 255 new groups
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s192_freeze_third_dataset2_audio_H7_comparison.py'
+      - '.github/workflows/v273-s192-third-dataset2-preXML-H7-freeze.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s192-third-dataset2-labelblind-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  audio_and_frozen_predictions_before_XML:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Genuine S35 model-compatible dependencies no training
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Freeze exact acoustic onset label matching rule before annotation access
+        run: python -m scripts.s192_freeze_third_dataset2_audio_H7_comparison --self-test
+      - name: Retrieve original four-fold true-trained S35 acoustic checkpoint experts
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37868356632
+          name: v273-series35-extended-head-router
+          path: model/S35
+      - name: Extract third disjoint dataset2 WAV ranks 17to32 only and save all source predictions plus predeclared XML evaluation contract
+        run: |
+          set -euo pipefail
+          python -u -m scripts.s192_freeze_third_dataset2_audio_H7_comparison --models model/S35 --out model/S192
+          python - <<'PY'
+          import json,numpy as np
+          d=json.load(open('model/S192/report.json'))
+          assert d['dataset2_independent_WAVs']==16
+          assert d['audio_only_selected_onsets']>=16
+          assert d['S35_unmodified_genuine_original_checkpoint_count']==28
+          assert d['preregistered_label_matching_and_exactK_cardinality_policy']['max_onset_difference_seconds']==0.080
+          assert not d['XML_ground_truth_content_read']
+          assert not d['ExactK_ground_truth_scored']
+          assert not d['S80_promoted']
+          with np.load('model/S192/S192_frozen_event_index_no_labels.npz',allow_pickle=False) as z:
+              assert set(z.files)=={'row_id','source_wav_path','acoustic_onset_sample'}
+              assert len(z['row_id'])==d['audio_only_selected_onsets']
+          PY
+      - name: Persist frozen audio-only evidence before separate annotation evaluator exists
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s192-third-unseen-note-XML-16WAV-genuine-S35-frozen-no-label
+          path: model/S192/
+          retention-days: 90

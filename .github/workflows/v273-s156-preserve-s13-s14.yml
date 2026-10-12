@@ -1,0 +1,100 @@
+name: S156 preserve original S13 S14 weights and S153 S154 source cascade proof
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - '.github/workflows/v273-s156-preserve-s13-s14.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: s156-preservation-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  original_checkpoint_bundle:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37854384791
+          name: v273-series13-birth-flow
+          path: original/S13
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37855070118
+          name: v273-series14-conditional-k01
+          path: original/S14
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38195528700
+          name: v273-s153-original-trained-S13-S14-S15-safe-union-newGOAT-adaptedS9
+          path: evidence/S153
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38195685473
+          name: v273-s154-original-S13-S14-S15-S16-S17-S18-checkpoint-cascade-GOAT
+          path: evidence/S154
+      - name: Confirm unchanged original S13/S14 trained checkpoints with negative claims
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          counts={k:len(list(Path('original',k,'models').glob('*.joblib'))) for k in ('S13','S14')}
+          assert counts=={'S13':76,'S14':76},counts
+          a=json.loads(Path('evidence/S153/report.json').read_text())
+          b=json.loads(Path('evidence/S154/report.json').read_text())
+          assert a['original_checkpoints_S13']==76 and a['original_checkpoints_S14']==76
+          assert b['genuine_original_checkpoint_count_S16_to_S18']==444
+          assert not a['original_S9_S5_equivalence_on_GOAT']
+          assert not b['authentic_historical_S80_equivalence']
+          assert not a['MIDI_or_true_K_accessed'] and not b['MIDI_truth_read']
+          assert not a['promoted_S80'] and not b['promotion']
+          Path('source_checkpoint_count.json').write_text(json.dumps(counts,indent=2)+'\n')
+          print('S156 PASS original trained S13 S14 weights verified',counts)
+          PY
+      - name: Archive evidence, checkpoints and SHA256 manifests
+        run: |
+          set -euo pipefail
+          mkdir -p model/s156
+          cp source_checkpoint_count.json model/s156/
+          find original evidence -type f -print0 | sort -z | xargs -0 sha256sum > model/s156/FILES_SHA256SUMS
+          tar --sort=name --mtime='@0' --owner=0 --group=0 --numeric-owner \
+            -czf model/s156/v273-S13-S14-original-trained-models-and-S153-S154-evidence.tar.gz original evidence
+          (cd model/s156 && sha256sum v273-S13-S14-original-trained-models-and-S153-S154-evidence.tar.gz > BUNDLE_SHA256)
+          du -h model/s156/*.tar.gz
+      - name: Permanently preserve recovered trained sources
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG='v273-original-S13-S14-trained-S153-S154-cascade-archive'
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo 'Already preserved, refusing overwrite'
+            exit 1
+          fi
+          gh release create "$TAG" \
+            model/s156/v273-S13-S14-original-trained-models-and-S153-S154-evidence.tar.gz \
+            model/s156/BUNDLE_SHA256 model/s156/FILES_SHA256SUMS model/s156/source_checkpoint_count.json \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title 'Original trained S13 S14 checkpoints and S153 S154 original veto cascade evidence' \
+            --notes '152 authentic S13/S14 trained original models with proof, plus original S15->S16->S17->S18 connected on 57 true GOAT audio groups. S9 remains adapted PR16 policy22, original S5/S8/S9 missing; NO independent S80 score and NO promotion.'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s156-source-S13-S14-archive-SHA-receipt
+          path: |
+            model/s156/BUNDLE_SHA256
+            model/s156/FILES_SHA256SUMS
+            model/s156/source_checkpoint_count.json
+          retention-days: 30

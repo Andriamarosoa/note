@@ -1,0 +1,89 @@
+name: S237 four authentic historical S5 trained models on 1034 unseen IDMT native events
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s237_original_S5_models_on_true_IDMT_V88_events.py'
+      - '.github/workflows/v273-s237-true-S5-fourfold-IDMT.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s237-original-S5-on-native-IDMT-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  all_four_genuine_S5_folds:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Original genuine S5 trained model numerical versions
+        run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+      - name: Download four original immutable fold-specific S5 trained checkpoint joblib sources
+        run: |
+          set -euo pipefail
+          for f in 0 1 2 4; do
+            mkdir -p "model/S5original/fold${f}"
+            curl -fLsS --retry 3 --connect-timeout 15 --max-time 120 \
+              "https://raw.githubusercontent.com/Andriamarosoa/note/7165e1ef54510aa9effc9f597b2783c832ca907a/analysis/evidence/v273-open-k0-k6/series5/models/fold${f}/model.joblib" \
+              -o "model/S5original/fold${f}/model.joblib"
+          done
+          python - <<'PY'
+          from pathlib import Path
+          from scripts.verify_v273_s5_owned527_recovery import MODEL_DIGEST,FOLDS,digest
+          for fold in FOLDS:
+            p=Path(f'model/S5original/fold{fold}/model.joblib')
+            assert digest(p)==MODEL_DIGEST[fold]
+          print('S237 PASS 4 original immutably archived historical trained checkpoint SHA256')
+          PY
+      - name: Confirm correct historical 527D original S5 source inputs were reconstructed on original native groups
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run watch 38303479914 --repo "${{ github.repository }}" --exit-status --interval 15
+      - name: Download 1034 official reference native rows reconstructed to exact original 527D S5 input
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38303479914
+          name: s236-idmt-1034-real-original-V88-geometry46-and-S5-owned527-features
+          path: model/S236
+      - name: Forward all four original unchanged S5 trained fold estimators
+        run: |
+          python -m py_compile scripts/s237_original_S5_models_on_true_IDMT_V88_events.py
+          python -m scripts.s237_original_S5_models_on_true_IDMT_V88_events \
+            --s236 model/S236/S236_original_owned527_native_reference_IDMT.npz \
+            --models model/S5original --out model/S237
+      - name: Verify all 1034 K0-K6 original S5 estimates and no independent truth leakage
+        run: |
+          python - <<'PY'
+          import json,numpy as np,hashlib
+          from pathlib import Path
+          r=json.loads(Path('model/S237/report.json').read_text())
+          assert r['original_native_reference_event_count']==1034
+          assert r['original_trained_S5_fold_count']==4
+          assert len(r['original_S5_fold_model_proofs'])==4
+          assert r['original_fold_models_never_retrained']
+          assert not r['unseen_IDMT_XML_MIDI_contents_read']
+          assert not r['independent_accuracy_measured'] and not r['official_S80_promotion']
+          with np.load('model/S237/S237_original_S5_fourfold_1034_original_native_unlabelled.npz',allow_pickle=False) as z:
+            assert z['original_S5_raw_probability_by_fold'].shape==(4,1034,7)
+            assert z['original_S5_prior_probability_by_fold'].shape==(4,1034,7)
+            assert z['original_S5_K_by_fold'].shape==(4,1034)
+            assert np.isin(z['original_S5_K_by_fold'],range(7)).all()
+          print('S237 PASS all four REAL pretrained S5 models on 1034 matched incumbent-native IDMT events, unscored')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s237-original-four-S5-trained-models-IDMT-1034-true-native-events
+          path: model/S237/
+          retention-days: 90

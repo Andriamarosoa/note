@@ -1,0 +1,80 @@
+name: S202 historic original S5 saved posterior identity against all 120 fixed internal activation20+4lag21 orders
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s202_s5_original_527D_120_internal_zone_orders.py'
+      - '.github/workflows/v273-s202-original-S5-527D-120-within-zone-orders.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s202-fixed-120-intra-zone-orders-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  fixed_candidate_order_posterior_fidelity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      PYTHONPATH: '.:src'
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Reuse exact S123 original trained-model runtime
+        run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+      - name: Test 120 distinct within-zone group placements
+        run: python -m scripts.s202_s5_original_527D_120_internal_zone_orders --self-test
+      - name: Restore pinned original S5 fold0 model and saved unmodified original raw probabilities
+        run: |
+          set -euo pipefail
+          mkdir -p model/S202/pinned
+          git fetch origin 'refs/tags/v273-series45-research-37891074478:refs/tags/v273-series45-research-37891074478'
+          git archive 854ada718ac9bf1556f00c96b8e1aa90402d6ab3 \
+             analysis/evidence/v273-open-k0-k6/series5/models/fold0 | tar -x -C model/S202/pinned
+      - name: Retrieve original acoustic 58 plus 46 plus 42x49 waveform trajectory input on historical fold0
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          name: v273-open-features-0
+          path: model/S202/audio
+      - name: Retrieve original S123 output of fixed log-layout candidate for independent identity parity
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38186603580
+          name: v273-s123-original-S5-fold-0-replay-candidate
+          path: model/S202/cache
+      - name: Read original raw checkpoint posterior but no ground-truth and assess 5 factorial internal activation/lag group orders
+        run: |
+          set -euo pipefail
+          AUDIO="$(find model/S202/audio -name features-fold-0.npz -print -quit)"
+          CACHED="$(find model/S202/cache -name replay_predictions.npz -print -quit)"
+          P="model/S202/pinned/analysis/evidence/v273-open-k0-k6/series5/models/fold0"
+          test -s "$AUDIO" && test -s "$CACHED" && test -s "$P/model.joblib" && test -s "$P/predictions.npz"
+          python -u -m scripts.s202_s5_original_527D_120_internal_zone_orders \
+            --features "$AUDIO" --original "$P/predictions.npz" \
+            --model "$P/model.joblib" --checkpoint-report "$P/report.json" \
+            --cached "$CACHED" --count 512 --out model/S202/results/report.json
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S202/results/report.json'))
+          assert r['permutations_predeclared']==120
+          assert r['source_original_audio_events_tested']==512
+          assert not r['historical_truth_or_MIDI_used']
+          assert not r['S5_527D_builder_exact_original_verified']
+          assert not r['S80_promoted']
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s202-original-S5-120-intra-zone-order-original-posterior-fidelity-512-historical-no-labels
+          path: model/S202/results/
+          retention-days: 90

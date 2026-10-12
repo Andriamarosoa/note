@@ -1,0 +1,38 @@
+name: S90 archived S45 producer inventory (no promotion)
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s90_inventory_archived_s45_producers.py'
+      - '.github/workflows/v273-s90-s45-producer-inventory.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  inspect_archives:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect ZIP inventories without labels
+        run: |
+          python scripts/s90_inventory_archived_s45_producers.py --root . --output model/s90/archive-inventory.json
+      - name: Enforce non-promotion until external end-to-end validation
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('model/s90/archive-inventory.json'))
+          assert d['status']=='S90_PRODUCER_ARCHIVE_INVENTORY_ONLY'
+          assert not d['promotion_approved']
+          assert not d['external_s80_score_measured']
+          assert len(d['archives'])==2
+          print('S90 archive inspection complete; S80 remains experimental')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-s90-archived-producer-inventory
+          path: model/s90/archive-inventory.json
+          retention-days: 90

@@ -1,0 +1,94 @@
+name: S238 run 133 original S8 S18 risk checkpoints on 1034 IDMT V88 native events
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s238_original_S8_S18_on_true_IDMT_V88.py'
+      - '.github/workflows/v273-s238-original-S8-S18-IDMT-native.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s238-original-S8-S18-IDMT-native-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  original_s8_to_s18_fourfold_on_unopened_idmt:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install originally verified S8 to S18 numeric ABI
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Restore four truly original pretrained S5 held-fold posteriors on exactly 1034 original V88 native events
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38303503793
+          name: s237-original-four-S5-trained-models-IDMT-1034-true-native-events
+          path: model/S237
+      - name: Restore original summary58 flow245 acoustic trajectories on same sealed native baseline groups
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38302179397
+          name: s234-idmt-unseen-original-S97-features-aligned-to-official-freeze-event-IDs
+          path: model/S234
+      - name: Restore native V88 cluster ends independently proven against unmodified frozen reference
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38303449423
+          name: s235-original-V88-native-endpoints-sealed-events
+          path: model/S235
+      - name: Retrieve original 133 S8 to S18 trained checkpoint heads and infer four original fold routes without MIDI
+        run: |
+          python -m py_compile scripts/s238_original_S8_S18_on_true_IDMT_V88.py
+          python -u -m scripts.s238_original_S8_S18_on_true_IDMT_V88 \
+            --s237 model/S237/S237_original_S5_fourfold_1034_original_native_unlabelled.npz \
+            --s234 model/S234/S234_original_S97_audio_views_on_real_freeze_native_events.npz \
+            --s235 model/S235/S235_official_freeze_local_combo_IDMT_new_native_16songs.npz \
+            --cache model/S238original-checkpoints \
+            --out model/S238
+      - name: Independently validate 1034 exact native aligned K fold predictions and model source inventory
+        run: |
+          python - <<'PY'
+          import json,hashlib,numpy as np
+          from pathlib import Path
+          r=json.loads(Path('model/S238/report.json').read_text())
+          assert r['count']==1034 and r['original_baseline_V88_native']
+          assert r['original_risk_checkpoint_count']==133
+          assert r['original_decoded_stage_count']==8
+          assert r['original_risk_models_not_retrained']
+          assert r['unknown_song_fold_not_selected']
+          assert not r['XML_MIDI_annotation_content_read']
+          assert not r['independent_ExactK_accuracy_measured']
+          assert not r['official_S80_promotion']
+          p=Path('model/S238/S238_original_S5_to_S18_true_V88_native_IDMT_1034.npz')
+          assert hashlib.sha256(p.read_bytes()).hexdigest()==r['prediction_artifact_SHA256']
+          with np.load(p,allow_pickle=False) as z:
+            assert z['S18_K'].shape==(4,1034)
+            assert np.isin(z['S18_K'],range(7)).all()
+            assert len(set(map(str,z['row_id'])))==1034
+            assert z['S15_K'].shape==(4,1034) and z['S9_K'].shape==(4,1034)
+          with np.load('model/S238/S238_original_335D_acoustic_by_fold_1034.npz',allow_pickle=False) as z:
+            assert z['acoustic335_by_fold'].shape==(4,1034,335)
+          print('S238 PASS original 133 trained stage heads on real official 1034 native IDMT events, no labels')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s238-idmt-original-full-S5-S18-133-checkpoint-4fold-1034-predictions
+          path: model/S238/
+          retention-days: 90

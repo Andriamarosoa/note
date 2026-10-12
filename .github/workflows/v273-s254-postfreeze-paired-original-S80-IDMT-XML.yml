@@ -1,0 +1,121 @@
+name: S254 postfreeze paired original S80 versus official freeze on 16 IDMT song XML notes
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s254_postfreeze_paired_S80_IDMT_XML_ExactK.py'
+      - '.github/workflows/v273-s254-postfreeze-paired-original-S80-IDMT-XML.yml'
+      - 'analysis/README_V273_S254_PREDECLARED_S80_IDMT_XML_SCORING_POLICY.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s254-S80-postfreeze-paired-XML-IDMT-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  actual_annotated_paired_S80_vs_reference_after_immutable_prelabel_checks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install annotation XML parser and original S190 note onset matching numeric stack
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Verify original S190 XML 80ms/20ms/30ms predeclared selftest without opening any IDMT XML content
+        run: |
+          python -m scripts.s190_score_frozen_dataset2_XML_exactk --self-test
+          python -m scripts.s254_postfreeze_paired_S80_IDMT_XML_ExactK --self-test
+      - name: Verify independent S253 source-only numerical S80 replay SUCCESS before reading any IDMT XML labels
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run watch 38308395030 --repo "${{ github.repository }}" --exit-status --interval 15
+      - name: Retrieve immutable genuine S252 full-trained-model S80 1034-event predictions sealed pre-XML
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38308087090
+          name: s252-full-original-S80-preXML-1034-IDMT-native-frozen-predictions
+          path: model/S252
+      - name: Retrieve immutable original exact V88 official freeze_local_combo 1034 event source outputs
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38301633310
+          name: s233-official-unchanged-freeze-local-combo-original-IDMT-native-predictions
+          path: model/S233
+      - name: Retrieve independent verified S253 original K0 K1 K2 arithmetic source-only audit
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38308395030
+          name: s253-independent-sealed-full-S80-arithmetic-1034-native-IDMT
+          path: model/S253
+      - name: Retrieve original SHA256-selected 16 WAV ranks33-48 identity; original XML must still be unopened here
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38299545404
+          name: s231-IDMT-ranks33to48-unopened-song-WAV-feature-hash-preseal
+          path: model/S231
+      - name: Explicit BEFORE any XML read verify frozen hashes against prelabel declared source evidence
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          path=Path('model/S252/S252_full_original_S80_unseen_IDMT_1034_frozen.npz')
+          base=Path('model/S233/S233_official_freeze_local_combo_IDMT_new_native_16songs.npz')
+          assert hashlib.sha256(path.read_bytes()).hexdigest()=='5689b5098a6462acc343d4ce11e8da536f0757848908fdf1300187727edc0106'
+          assert hashlib.sha256(base.read_bytes()).hexdigest()=='6f18a476a865e0791e17c7e826ca630042b206be463f2cc5b500108bf8c626da'
+          chk=json.load(open('model/S253/report.json'))
+          assert chk['event_count']==1034 and all(chk['independent_formula_checks'].values())
+          assert not chk['truth_or_MIDI_read']
+          r=json.load(open('model/S231/report.json'))
+          assert r['chosen_song_count']==16 and not r['XML_note_annotation_content_read']
+          print('S254 BEFORE ANNOTATIONS: original reference, full S80, independent check and 16 audio SHA selection all locked')
+          PY
+      - name: ONLY NOW read matching IDMT note XML and independently compute paired global-matched/poly ExactK with frozen 80ms rule
+        run: |
+          python -u -m scripts.s254_postfreeze_paired_S80_IDMT_XML_ExactK \
+            --s252 model/S252/S252_full_original_S80_unseen_IDMT_1034_frozen.npz \
+            --s233 model/S233/S233_official_freeze_local_combo_IDMT_new_native_16songs.npz \
+            --s253 model/S253/report.json \
+            --s231 model/S231/report.json \
+            --out model/S254
+      - name: Validate paired K correction and regression ledger, coverage, population, and no false official K0 promotion
+        run: |
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S254/report.json'))
+          assert r['original_native_events']==1034
+          assert r['selected_WAV_count']==16
+          assert r['XML_matched_events']+r['XML_unmatched_events']==1034
+          assert r['original_S80_change_event_count']==33
+          assert r['original_S80_changed_and_XML_matched']+r['original_S80_changed_and_XML_unmatched']==33
+          assert r['XML_opened_only_after_SHA_S252_S233_and_S253_verified']
+          assert not r['model_fits_after_XML_opened'] and not r['S80_promoted']
+          assert not r['promotion_gates']['complete_labelled_K0_through_K6']
+          assert not r['promotion_gates']['official_S80_promotion_eligible']
+          x=r['metric_global_matched_onset_K1_K6_only']
+          assert x['S80_correct']-x['reference_correct']==x['fixes']-x['regressions']
+          with np.load('model/S254/S254_frozen_IDMT_paired_XML_matching_only.npz',allow_pickle=False) as z:
+            assert z['row_id'].shape==(1034,) and z['XML_true_K_or_minus1'].shape==(1034,)
+            assert np.isin(z['XML_true_K_or_minus1'],[-1,1,2,3,4,5,6]).all()
+          print('S254 PASS signed independent correction/regression Exact-K comparison; full K0-K6 official promotion guarded')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s254-independent-postfreeze-paired-S80-vs-freeze-IDMT-16XML-native-1034
+          path: model/S254/
+          retention-days: 90

@@ -1,0 +1,86 @@
+name: S223 infer four original S70 frozen models on 57 native WAV events
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s223_original_S70_recovered_models_new_audio.py'
+      - '.github/workflows/v273-s223-S70-on-original-WAV.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s223-original-S70-new-wav-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  S70_real_pretrained_fold_models_on_original_audio:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install original S70 training/inference package ABI
+        run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+      - name: Restore S221 genuinely original label-free S69 folded decisions
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38295588099
+          name: s221-original-S69-veto-fourfold-no-fold-oracle
+          path: model/S221
+      - name: Restore original PR16 36 policies and 12 neural model posteriors
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38176406465
+          name: v273-s85-original-pr16-external-policies
+          path: model/S85
+      - name: Restore four trained original S70 classifiers and frozen thresholds, historically bit-exact
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38296428889
+          name: s222-recovered-original-S70-four-fold-checkpoints-exact-history
+          path: model/S222
+      - name: Execute S70 four-fold original historical fitted models on original native WAV events
+        run: |
+          set -euo pipefail
+          S85="$(find model/S85 -name pr16_external_36_policies.npz -print -quit)"
+          test -s "$S85"
+          test "$(find model/S222 -name 'original_S70_poly_meta_heldfold*.joblib' | wc -l)" -eq 4
+          python -m scripts.s223_original_S70_recovered_models_new_audio \
+            --s221 model/S221/original_S69_fourfold_rule_consensus.npz \
+            --s85 "$S85" --s222 model/S222 --out model/S223
+      - name: Audit no labels, actual fitted model inference and explicit S80 guard
+        run: |
+          python - <<'PY'
+          import numpy as np,json
+          r=json.load(open('model/S223/report.json'))
+          assert r['rows']==57 and r['original_S70_fitted_models']==4
+          assert r['original_PR16_policies']==36 and r['original_PR16_neural_heads']==12
+          assert set(r['policies'])=={'proposed_poly','downward_poly'}
+          assert not r['external_true_K_read'] and not r['model_weights_retrained']
+          assert not r['independent_ExactK_measured'] and not r['S80_promoted']
+          with np.load('model/S223/original_S70_4fold_no_oracle_GOAT.npz') as z:
+            assert z['proposed_poly_K'].shape==(57,)
+            assert z['downward_poly_K'].shape==(57,)
+            assert z['proposed_poly_fold_K'].shape==(4,57)
+            assert z['downward_poly_fold_K'].shape==(4,57)
+            assert np.isin(z['proposed_poly_K'],range(7)).all()
+          print('S223 PASS original four S70 models, original PR16 and S69 sources, label blind')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s223-original-S70-four-frozen-models-GOAT-foldfree
+          path: model/S223/
+          retention-days: 90

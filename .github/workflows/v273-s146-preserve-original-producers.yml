@@ -1,0 +1,151 @@
+name: S146 permanently preserve recovered ORIGINAL S12 S38 S40 S41 checkpoints and audit
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - '.github/workflows/v273-s146-preserve-original-producers.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: s146-original-trained-preserve-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  original_models:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Retrieve S12 original LOPO logistic/HGB checkpoints (historical run)
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37853979683
+          name: v273-series12-full-audio
+          path: original/S12
+      - name: Retrieve S38 original four K1-K6 expert models over four folds
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37880386031
+          name: v273-series38-poly-harmonic-expert
+          path: original/S38
+      - name: Retrieve S40 original four temporal CNNs
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37880762289
+          name: v273-series40-temporal-cnn
+          path: original/S40
+      - name: Retrieve S41 original 19 six-action gate networks
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37881191015
+          name: v273-series41-six-head-neural-fusion
+          path: original/S41
+      - name: Retrieve S141 real new audio actual trained S40 forwards
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38192776863
+          name: v273-s141-original-S40-four-trained-checkpoints-real-GOAT-conditional
+          path: evidence/S141
+      - name: Retrieve S142 real new audio trained S38 forwards
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38192916733
+          name: v273-s142-original-S38-morph825-fold0-1-2-4-new-GOAT-adapted
+          path: evidence/S142
+      - name: Retrieve S143 new audio trained S12 risk heads
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38193017646
+          name: v273-s143-original-S12-logistic-crosspiece-trained-models-GOAT
+          path: evidence/S143
+      - name: Retrieve S144 39 genuine S38 S40 S41 checkpoint fusion
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38193181798
+          name: v273-s144-original-S38-S40-S41-39-models-GOAT-conditional
+          path: evidence/S144
+      - name: Retrieve S145 fail-closed zero-action causal audit
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38193316422
+          name: v273-s145-original-neural-fusion-S41-zero-action-diagnostic
+          path: evidence/S145
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify model inventory and no false S80 promotion
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          root=Path('original')
+          counts={
+            'S12':len(list((root/'S12/models').glob('*__logistic.joblib'))),
+            'S38':len(list((root/'S38/models').glob('fold*__*.joblib'))),
+            'S40':len(list((root/'S40/models').glob('fold*__temporalKnet.pt'))),
+            'S41':len(list((root/'S41/models').glob('*__sixhead_fusion.pt')))}
+          assert counts=={'S12':19,'S38':16,'S40':4,'S41':19},counts
+          d={n:json.loads((Path('evidence')/n/'report.json').read_text())
+             for n in ('S141','S142','S143','S144','S145')}
+          assert d['S141']['GOAT_audio_event_count']==d['S142']['GOAT_events']==57
+          assert d['S143']['source_S12_model_count']==19
+          assert d['S144']['checkpoint_count']==39
+          assert d['S145']['KEEP_argmax']==57
+          assert not d['S144']['promotion'] and not d['S145']['promotion']
+          assert not d['S141']['S40_parent_inputs_original_equivalence']
+          assert not d['S142']['original_S18_S45_source_equivalent']
+          print('S146 PASS preserved ORIGINAL trained checkpoints; no original S80 validation',counts)
+          PY
+      - name: Archive original source models, new-audio outputs, SHA-256 checksums
+        run: |
+          set -euo pipefail
+          mkdir -p model/s146
+          find original evidence -type f -print0 | sort -z | xargs -0 sha256sum > model/s146/FILES_SHA256SUMS
+          tar --sort=name --mtime='@0' --owner=0 --group=0 --numeric-owner \
+            -czf model/s146/v273-S12-S38-S40-S41-original-trained-checkpoints-and-S141-S145-evidence.tar.gz original evidence
+          (cd model/s146 && sha256sum v273-S12-S38-S40-S41-original-trained-checkpoints-and-S141-S145-evidence.tar.gz > BUNDLE_SHA256)
+          du -h model/s146/v273-S12-S38-S40-S41-original-trained-checkpoints-and-S141-S145-evidence.tar.gz
+      - name: Create immutable original source-weight research prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG='v273-original-S12-S38-S40-S41-trained-recovery-38193181798'
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo 'Immutable provenance release already exists; refusing overwrite'
+            exit 1
+          fi
+          gh release create "$TAG" \
+            model/s146/v273-S12-S38-S40-S41-original-trained-checkpoints-and-S141-S145-evidence.tar.gz \
+            model/s146/FILES_SHA256SUMS model/s146/BUNDLE_SHA256 \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title 'Historical S12/S38/S40/S41 genuine trained weights and GOAT provenance (NOT S80)' \
+            --notes 'Original 19 S12 logistic, 16 S38, four S40 and 19 S41 checkpoints recovered unchanged from original runs, plus S141-S145 new-audio label-free evidence. Parents use a NEW adaptation, no original S45 16-family completeness, no end-to-end S80, no independent Exact-K improvement, freeze_local_combo remains official.'
+          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json url -q .url
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s146-original-model-preservation-SHA-receipt
+          path: |
+            model/s146/FILES_SHA256SUMS
+            model/s146/BUNDLE_SHA256
+          retention-days: 30

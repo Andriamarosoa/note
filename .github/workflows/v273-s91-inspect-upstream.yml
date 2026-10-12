@@ -1,0 +1,26 @@
+name: S91 inspect archived upstream producer arrays
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths: ['scripts/s91_inspect_upstream_producers.py', '.github/workflows/v273-s91-inspect-upstream.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy==1.26.4
+      - run: python scripts/s91_inspect_upstream_producers.py --out model/s91/report.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-s91-upstream-producer-schema
+          path: model/s91/report.json

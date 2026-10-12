@@ -1,0 +1,39 @@
+name: S94 restored original S45 source smoke test
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/train_v273_s45_specialized_risk_heads.py'
+      - 'scripts/verify_v273_s45_specialized_risk_heads.py'
+      - 'scripts/train_v273_aba_recurrent.py'
+      - 'scripts/loop_v273_native_risk.py'
+      - 'scripts/loop_v273_birth_flow.py'
+      - 'scripts/loop_v273_policy_gate.py'
+      - 'scripts/train_v273_open_cohort.py'
+      - '.github/workflows/v273-s94-s45-original-source.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test_s45_source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install compatible source dependencies
+        run: |
+          pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Check original S45 source imports and 156D contract
+        env:
+          PYTHONPATH: '.:src'
+        run: |
+          python -m py_compile scripts/train_v273_s45_specialized_risk_heads.py scripts/verify_v273_s45_specialized_risk_heads.py
+          python -m scripts.train_v273_s45_specialized_risk_heads --self-test

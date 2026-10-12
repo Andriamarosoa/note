@@ -1,0 +1,46 @@
+name: S199 exhaustive branch NPZ ZIP original S5 527D input and 416D array forensic census
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s199_full_tracked_binary_S5_527_schema_search.py'
+      - '.github/workflows/v273-s199-exhaustive-current-source-S5-527-archive-scan.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s199-original-S5-source-census-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  check_every_binary_array_header:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Numpy only for original source header format
+        run: python -m pip install numpy==1.26.4
+      - name: Strict shape schema census test
+        run: python -m scripts.s199_full_tracked_binary_S5_527_schema_search --self-test
+      - name: Exhaustive metadata-only scan of every tracked original NPZ and nested ZIP
+        run: |
+          python -u -m scripts.s199_full_tracked_binary_S5_527_schema_search --root . --out model/S199/report.json
+          python - <<'PY'
+          import json
+          d=json.load(open('model/S199/report.json'))
+          assert d['versioned_binary_files_scanned']>=35
+          assert d['numpy_array_headers_scanned']>=90
+          assert not d['all_source_npy_array_values_opened']
+          assert not d['all_truth_or_MIDI_content_opened']
+          assert not d['S80_promoted']
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s199-exhaustive-branch-array-schema-provenance-S5-527D-no-guessed-builder
+          path: model/S199/
+          retention-days: 90

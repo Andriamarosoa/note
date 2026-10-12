@@ -1,0 +1,95 @@
+name: V27.3 S71 acoustic transition-risk replay (research only)
+
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/audit_v273_s71_acoustic_risk.py'
+      - '.github/workflows/v273-s71-acoustic-risk.yml'
+      - 'analysis/README_V273_S71_ACOUSTIC_RISK.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  s71_replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install exact S71 local numerical environment
+        run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0
+      - name: Retrieve independently replayed S70 predictions
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38153394681
+          name: v273-s70-poly-meta-replay
+          path: model/s70
+      - name: Retrieve original full-native PR16 acoustic features from all four folds
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          pattern: v273-open-features-*
+          path: model/archived-acoustic
+      - name: Refit S71 vetoes with fold-exclusive scoring and nested train thresholds
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+          OMP_NUM_THREADS: '1'
+        run: |
+          python -m py_compile scripts/audit_v273_s71_acoustic_risk.py
+          python -m scripts.audit_v273_s71_acoustic_risk \
+            --s70 model/s70/predictions.npz \
+            --features model/archived-acoustic \
+            --output model/s71-risk
+      - name: Verify paired metrics and protected legacy classes
+        run: |
+          python - <<'PY'
+          import numpy as np,json
+          root='model/s71-risk'
+          with np.load(root+'/predictions.npz') as z:
+              y,b,p=z['true_K'],z['s69_poly_K'],z['s70_K']
+              assert len(y)==59309 and len(set(z['global_index']))==59309
+              with open(root+'/report.json') as f:d=json.load(f)
+              assert set(d['results'])=={'risk','poly'}
+              for key in ('risk','poly'):
+                  cur=z['s71_'+key+'_K']
+                  assert np.all((cur==p)|(cur==b))
+                  correct=cur==y;old=b==y;r=d['results'][key]
+                  assert int(correct.sum())==r['correct']
+                  assert int((correct&(y>=2)).sum())==r['poly_correct']
+                  assert int((correct&~old).sum())==r['corrections']
+                  assert int((~correct&old).sum())==r['regressions']
+                  assert r['correct']>=int((p==y).sum()),'loss of held-fold aggregate performance'
+                  print(key,r['correct'],r['poly_correct'],r['corrections'],r['regressions'])
+          PY
+      - name: Report non-promoted S71 results
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          j=json.load(open('model/s71-risk/report.json'))
+          print('S71 audit: held recording folds, historically exposed, NOT independent validation')
+          for k,v in j['results'].items():
+              print(k,v['correct'],v['poly_correct'],
+                    'corrections',v['corrections'],
+                    'regressions',v['regressions'],
+                    'delta_from_S70',v['change_from_s70'])
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s71-acoustic-risk
+          path: model/s71-risk/
+          retention-days: 90

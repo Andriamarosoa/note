@@ -1,0 +1,52 @@
+name: S191 postfreeze audit compare seven original trained S35 heads and failed allK gate no fitting
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s191_compare_labelled_s190_seven_head_selection.py'
+      - '.github/workflows/v273-s191-postfreeze-poly-gate-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s191-postfreeze-expert-audit-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  compare_frozen_model_errors_only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Original allclass versus poly-only head contract sanity check
+        run: python -m scripts.s191_compare_labelled_s190_seven_head_selection --self-test
+      - name: Load immutable already postfreeze-scored real XML note cardinality report
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38210607635
+          name: v273-s190-postfreeze-independent-dataset2-real-XML-pitch-exactK-adapted-only
+          path: model/S190
+      - name: Evaluate individual true held-out K1/K2-K4 experts without optimizing a new classifier
+        run: |
+          python -u -m scripts.s191_compare_labelled_s190_seven_head_selection             --source model/S190/report.json --out model/S191/report.json
+          python - <<'PY'
+          import json
+          d=json.load(open('model/S191/report.json'))
+          assert len(d['individual_checkpoint_diagnostic'])==7
+          assert d['true_polyK2K3K4_count']==11
+          assert d['adapted_parent_ExactK_poly']==0
+          assert not d['any_new_cutoff_optimized']
+          assert not d['S190_labels_used_for_model_training']
+          assert not d['S80_promoted']
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s191-true-XML-seven-expert-K1-poly-K2K4-audit-no-refit
+          path: model/S191/
+          retention-days: 90

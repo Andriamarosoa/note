@@ -1,0 +1,36 @@
+name: S112 compare S4 S5 527-dimensional numeric split thresholds
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s112_s4_s5_threshold_signatures.py'
+      - '.github/workflows/v273-s112-thresholds.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  threshold_audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+      - name: Restore original S4 and S5 checkpoints
+        run: |
+          mkdir -p model/history
+          git fetch origin 'refs/tags/v273-series45-research-37891074478:refs/tags/v273-series45-research-37891074478'
+          git archive 854ada718ac9bf1556f00c96b8e1aa90402d6ab3 analysis/evidence/v273-open-k0-k6/series4/models analysis/evidence/v273-open-k0-k6/series5/models | tar -x -C model/history
+      - name: Measure numeric split threshold agreement without labels
+        run: python scripts/s112_s4_s5_threshold_signatures.py --root model/history/analysis/evidence/v273-open-k0-k6 --out model/s112/report.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s112-s4-s5-threshold-overlap
+          path: model/s112/report.json

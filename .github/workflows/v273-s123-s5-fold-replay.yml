@@ -1,0 +1,76 @@
+name: S123 replay S5 raw fold0 from original GuitarSet feature archive
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s123_replay_s5_original_fold_design.py'
+      - '.github/workflows/v273-s123-s5-fold-replay.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fold_replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        fold: [0]
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+      - name: Selftest genuine historical inference isolation
+        run: python -m scripts.s123_replay_s5_original_fold_design --self-test
+      - name: Restore pinned original Series5 model checkpoints and report
+        run: |
+          set -euo pipefail
+          mkdir -p model/historical
+          git fetch origin 'refs/tags/v273-series45-research-37891074478:refs/tags/v273-series45-research-37891074478'
+          git archive 854ada718ac9bf1556f00c96b8e1aa90402d6ab3 \
+            analysis/evidence/v273-open-k0-k6/series5/models \
+            analysis/evidence/v273-open-k0-k6/series5/report.json | tar -x -C model/historical
+      - name: Restore original saved wave-derived 58+42x49+46D GuitarSet fold evidence
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          name: v273-open-features-${{ matrix.fold }}
+          path: model/original-features
+      - name: Build fixed candidate and compare original raw S5 confusion
+        run: |
+          set -euo pipefail
+          FOLD=${{ matrix.fold }}
+          FEATURES="$(find model/original-features -type f -name "features-fold-$FOLD.npz" -print -quit)"
+          test -s "$FEATURES"
+          python -u -m scripts.s123_replay_s5_original_fold_design \
+            --fold "$FOLD" --features "$FEATURES" \
+            --models model/historical/analysis/evidence/v273-open-k0-k6/series5/models \
+            --original-report model/historical/analysis/evidence/v273-open-k0-k6/series5/report.json \
+            --out "model/s123/fold$FOLD"
+          python - <<'PY'
+          import json
+          r=json.load(open("model/s123/fold${{ matrix.fold }}/report.json"))
+          assert r["source_rows"]>10000
+          assert r["labels_used_only_for_posthoc_historical_confusion"]
+          assert not r["truth_used_for_features"]
+          assert not r["feature_sha_match_proven"]
+          assert not r["independent_S80_validation"] and not r["S80_promoted"]
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s123-original-S5-fold-${{ matrix.fold }}-replay-candidate
+          path: model/s123/
+          retention-days: 30

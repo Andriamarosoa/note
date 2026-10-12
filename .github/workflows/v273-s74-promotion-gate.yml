@@ -1,0 +1,616 @@
+name: V27.3 S74 official reference promotion gate
+
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/audit_v273_reference_promotion.py'
+      - 'scripts/s82_external_pr16_neural_inference.py'
+      - 'scripts/s83_external_native_v84_groups.py'
+      - 'scripts/s84_external_freeze_native_count.py'
+      - 'scripts/s85_external_pr16_policies.py'
+      - 'scripts/verify_v273_s80_frozen_inference.py'
+      - 'scripts/audit_v273_s46_classwise_compromise.py'
+      - 'scripts/s88_unlabeled_s46_runtime.py'
+      - 'scripts/s89_label_blind_s69_runtime.py'
+      - 'scripts/extract_v273_harmonic_trajectory.py'
+      - 'analysis/README_V273_S74_REFERENCE_PROMOTION_AUDIT.md'
+      - 'analysis/v273_reference_candidate.json'
+      - '.github/workflows/v273-s74-promotion-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit_pinned_baseline:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install fixed audit dependency
+        run: python -m pip install numpy==2.3.5
+      - name: Fetch untouched official frozen reference
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          name: v273-open-summary
+          path: model/pr16
+      - name: Fetch completed S72 development candidate
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38155427761
+          name: v273-s72-temporal-risk
+          path: model/s72
+      - name: Fetch all archived and hash-pinned raw acoustic features
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          pattern: v273-open-features-*
+          path: model/features
+      - name: Run fail-closed native reference comparison
+        run: |
+          python -m py_compile scripts/audit_v273_reference_promotion.py
+          python -m scripts.audit_v273_reference_promotion \
+            --reference model/pr16/predictions.npz \
+            --candidate model/s72/predictions.npz \
+            --features model/features \
+            --output model/s74-audit
+      - name: Verify report has not promoted the reference
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('model/s74-audit/report.json'))
+          assert r['promotion_status']=='BLOCKED_MISSING_INDEPENDENT_EVIDENCE'
+          assert r['holdout']['status']=='MISSING'
+          d=r['development']
+          assert d['overall']['correct_reference']==48454
+          assert d['overall']['correct_candidate']==49238
+          assert d['overall']['corrections']==2558
+          assert d['overall']['regressions']==1774
+          assert d['poly']['correct_reference']==2530
+          assert d['poly']['correct_candidate']==3202
+          assert len(d['by_K'])==7 and len(d['by_fold'])==4
+          assert [d['by_fold'][str(k)]['gain'] for k in (0,1,2,4)]==[221,166,132,265]
+          assert [d['by_K'][str(k)]['gain'] for k in range(7)]==[-101,213,547,128,-28,24,1]
+          assert len(r['sources']['features'])==4
+          print('Native S74 matched, no independent promotion evidence: OFFICIAL REFERENCE PRESERVED')
+          PY
+      - name: Human-readable audit verdict
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          r=json.load(open('model/s74-audit/report.json'))
+          print('S74 official reference audit — research only')
+          print('Incumbent',r['reference'],'candidate',r['candidate'])
+          for k in ('overall','poly'):
+              print(k,r['development'][k])
+          print('PROMOTION BLOCKED: no new player05/fold3 paired predictions or fully nested upstream model provenance.')
+          PY
+      - name: S81 external audio preflight — DO NOT read MIDI labels
+        run: |
+          set -euo pipefail
+          mkdir -p model/s81-external model/s81-check
+          BASE="https://raw.githubusercontent.com/JackJamesLoth/GOAT-Dataset/55c6e6668ef4546e4635c5e7eaad3062cf7f036b/audio-examples"
+          for n in 1 2; do
+            curl -fLsS --retry 3 --connect-timeout 15 --max-time 180 "${BASE}/example${n}/example${n}_di.wav" -o "model/s81-external/example${n}_di.wav"
+            curl -fLsS --retry 3 --connect-timeout 15 --max-time 180 "${BASE}/example${n}/example${n}.mid" -o "model/s81-external/example${n}.mid"
+          done
+          python - <<'PY'
+          import json,pathlib,hashlib,wave
+          expected={'example1_di.wav':4673498,'example2_di.wav':12312044,'example1.mid':748,'example2.mid':5698}
+          out={}
+          for name,size in expected.items():
+              p=pathlib.Path('model/s81-external')/name
+              assert p.stat().st_size==size
+              d={'bytes':size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+              if name.endswith('.wav'):
+                  with wave.open(str(p),'rb') as w:
+                      d['sample_rate']=w.getframerate()
+                      d['channels']=w.getnchannels()
+                      d['seconds']=round(w.getnframes()/w.getframerate(),3)
+              out[name]=d
+          res={'status':'EXTERNAL_AUDIO_VERIFIED_NO_S80_INFERENCE',
+               'sources_sha':'55c6e6668ef4546e4635c5e7eaad3062cf7f036b',
+               'files':out,'opened_MIDI':False,'scored_S80':False,'independent_accuracy':None,
+               'promotion':False}
+          pathlib.Path('model/s81-check/report.json').write_text(json.dumps(res,indent=2)+'\n')
+          print('GOAT EXTERNAL MEDIA VERIFIED; S80 end-to-end on audio is still required.')
+          PY
+      - name: Install original PR16 scipy/sklearn forward dependencies
+        run: python -m pip install scipy==1.17.0 scikit-learn==1.8.0
+      - name: Restore genuine PR16 fold0 neural checkpoints
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          name: v273-open-model-0
+          path: model/s82-pr16
+      - name: Execute label-blind original PR16 neural weights on external guitar WAVs
+        env:
+          PYTHONPATH: '.:src'
+          OPENBLAS_NUM_THREADS: '1'
+          OMP_NUM_THREADS: '1'
+        run: |
+          python -m py_compile scripts/s82_external_pr16_neural_inference.py
+          python -m scripts.s82_external_pr16_neural_inference \
+            --model model/s82-pr16/fold-0 \
+            --audio model/s81-external \
+            --output model/s82-neural-inference \
+            --max-events 60
+      - name: Verify true new-audio inference and no false independent S80 score
+        run: |
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/s82-neural-inference/report.json'))
+          assert r['status']=='EXTERNAL_PR16_NEURAL_PRODUCER_INFERENCE_COMPLETED_NOT_S80'
+          assert r['producer_count']==12 and r['n_external_events']>=30
+          assert not r['label_fields_present'] and not r['midi_accessed'] and not r['s80_scored']
+          with np.load('model/s82-neural-inference/label_blind_pr16_predictions.npz',allow_pickle=False) as p:
+              assert p['probabilities'].shape==(r['n_external_events'],12,7)
+              assert set(p.files)=={'member','start_samples','probabilities','producer_names'}
+          print('External actual PR16 forward completed. S80 validation remains pending S46/S72.')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s82-original-pr16-external-inference
+          path: model/s82-neural-inference/
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s81-external-source-preflight
+          path: model/s81-check/
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s74-reference-promotion-audit
+          path: model/s74-audit/
+          retention-days: 90
+
+  external_native_v84_pr16:
+    name: Genuine V84 event groups and PR16 forward on independent guitar WAV
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    permissions:
+      contents: read
+      actions: read
+    env:
+      PYTHONPATH: '.:src'
+      TF_CPP_MIN_LOG_LEVEL: '2'
+      TF_NUM_INTRAOP_THREADS: '2'
+      TF_NUM_INTEROP_THREADS: '2'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Frozen native-V8 inference dependencies
+        run: python -m pip install -r requirements-train.txt numpy==1.26.4 scikit-learn==1.4.2
+      - name: Fetch original frozen V84-V88 producer sources
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/s83-download
+          gh release download v273-source-recovery-35086829802 \
+            --repo "${{ github.repository }}" \
+            --pattern v273-rebuilt-proposal-sources.zip --dir model/s83-download
+          python - <<'PY'
+          from pathlib import Path
+          from scripts.restore_v273_original_backup import extract_verified
+          from scripts.rebuild_v273_sources import validate_sources
+          extract_verified(Path('model/s83-download/v273-rebuilt-proposal-sources.zip'),
+              Path('model/s83-source'),
+              'fb6bb1049b87c0517936f4f40e5bc1442722fc20b9eba5045a62bb0a12cf2994',
+              validate=validate_sources)
+          PY
+      - name: Fetch original PR16 fold-0 network weights
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          name: v273-open-model-0
+          path: model/s83-pr16
+      - name: Fetch only independent external audio, not annotations
+        run: |
+          set -euo pipefail
+          mkdir -p model/s83-wav
+          base="https://raw.githubusercontent.com/JackJamesLoth/GOAT-Dataset/55c6e6668ef4546e4635c5e7eaad3062cf7f036b/audio-examples"
+          for n in 1 2; do
+            curl -fLsS --retry 3 --connect-timeout 15 --max-time 180 \
+              "${base}/example${n}/example${n}_di.wav" \
+              -o "model/s83-wav/example${n}_di.wav"
+          done
+      - name: Native V84-V86-V90 candidate generation without any labels
+        run: |
+          python -m py_compile scripts/s83_external_native_v84_groups.py
+          python -m scripts.s83_external_native_v84_groups \
+            --sources model/s83-source \
+            --audio model/s83-wav \
+            --output model/s83-native-groups \
+            --seconds 6 --max-events 100
+      - name: Original 12 PR16 frozen neural heads on native audio event groups
+        run: |
+          python -m scripts.s82_external_pr16_neural_inference \
+            --model model/s83-pr16/fold-0 \
+            --audio model/s83-wav \
+            --native-groups model/s83-native-groups/native_groups.npz \
+            --max-events 100 \
+            --output model/s83-external-pr16
+      - name: Independent native deployment component audit (not S80 scoring)
+        run: |
+          python - <<'PY'
+          import json,numpy as np
+          a=json.load(open('model/s83-native-groups/report.json'))
+          b=json.load(open('model/s83-external-pr16/report.json'))
+          assert a['status']=='NATIVE_V84_GROUPS_FROM_EXTERNAL_AUDIO_LABEL_BLIND'
+          assert b['candidate_source']=='ORIGINAL_V84_V86_V90_NATIVE_GROUPS'
+          assert not a['used_midi_labels'] and not b['midi_accessed']
+          assert b['n_external_events']==a['groups_count']
+          with np.load('model/s83-external-pr16/label_blind_pr16_predictions.npz',allow_pickle=False) as p:
+              assert p['probabilities'].shape==(a['groups_count'],12,7)
+              assert 'true_K' not in p.files
+          print('Native audio events + real PR16 forward succeeded; S46/S72/S80 NOT reconstructed.')
+          PY
+      - name: Restore untouched V27.3 freeze_local_combo trained checkpoint
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/s84-weights model/s84-download
+          gh release download v273-uniform-anchored-freeze-37233793945 \
+            --repo "${{ github.repository }}" \
+            --pattern v273-uniform-anchored-freeze-result.tgz \
+            --dir model/s84-download
+          tar -xzf model/s84-download/v273-uniform-anchored-freeze-result.tgz \
+            -C model/s84-weights
+          test -f model/s84-weights/freeze_local_combo.weights.h5
+      - name: Infer V8-V88 original runtime and untouched freeze count on new external WAVs
+        run: |
+          python -m py_compile scripts/s84_external_freeze_native_count.py
+          python -m scripts.s84_external_freeze_native_count \
+            --sources model/s83-source \
+            --audio model/s83-wav \
+            --freeze-weights model/s84-weights/freeze_local_combo.weights.h5 \
+            --output model/s84-external-freeze \
+            --seconds 6
+      - name: Verify frozen base really predicted without external labels
+        run: |
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/s84-external-freeze/report.json'))
+          assert r['status']=='EXTERNAL_ORIGINAL_V8_STACK_AND_FROZEN_COUNT_PREDICTIONS'
+          assert not r['full_S80_executed'] and not r['midi_labels_read']
+          with np.load('model/s84-external-freeze/external_freeze_local_combo_predictions.npz',allow_pickle=False) as q:
+              assert q['incumbent_probabilities'].shape==(r['native_group_count'],7)
+              assert q['incumbent_K'].shape==(r['native_group_count'],)
+              assert 'true_K' not in q.files
+          print('V84→V88→freeze_local_combo external predictions exist. S80 not yet scored.')
+          PY
+      - name: Fetch archived original PR16 OOF predictions to verify all 36 formula columns
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          name: v273-open-summary
+          path: model/s85-reference
+      - name: Independently reproduce all 36 original PR16 policies on 59309 historical rows
+        run: |
+          python - <<'PY'
+          import numpy as np
+          from scripts.s85_external_pr16_policies import original_pr16_policies
+          with np.load('model/s85-reference/predictions.npz',allow_pickle=False) as a, \
+               np.load('model/s85-reference/probabilities.npz',allow_pickle=False) as b:
+              y=original_pr16_policies(b['probabilities'],a['baseline_K'])
+              assert y.shape==(59309,36)
+              np.testing.assert_array_equal(y,a['predictions'])
+          print('EXACT REPLAY: all 36 original PR16 policies match every one of 59309 historical rows')
+          PY
+      - name: Align external native V84 groups and rebuild all 36 original PR16 policies
+        run: |
+          python -m scripts.s85_external_pr16_policies \
+            --groups model/s83-native-groups/native_groups.npz \
+            --probabilities model/s83-external-pr16/label_blind_pr16_predictions.npz \
+            --incumbent model/s84-external-freeze/external_freeze_local_combo_predictions.npz \
+            --output model/s85-external-policies
+      - name: Assert source-aligned PR16 policy22 and 36 vote columns with no truth
+        run: |
+          python - <<'PY'
+          import json,numpy as np
+          a=json.load(open('model/s85-external-policies/report.json'))
+          assert a['status']=='EXTERNAL_NATIVE_PR16_36_POLICY_RECONSTRUCTION_COMPLETE'
+          assert a['matched_events']>0 and not a['external_truth_used'] and not a['full_S80_executed']
+          with np.load('model/s85-external-policies/pr16_external_36_policies.npz',allow_pickle=False) as p:
+              assert p['pr16_policy_K'].shape==(a['matched_events'],36)
+              assert p['pr16_vote_count'].shape==(a['matched_events'],7)
+              assert np.all(p['pr16_vote_count'].sum(1)==36)
+              assert np.array_equal(p['pr16_policy22_K'],p['pr16_policy_K'][:,22])
+              assert 'true_K' not in p.files
+          print('S85 new-audio 36 PR16 policies + policy22: completed and label-blind')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s85-original-pr16-external-policies
+          path: model/s85-external-policies/
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s84-native-external-frozen-reference
+          path: model/s84-external-freeze/
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s83-native-v84-pr16-external
+          path: |
+            model/s83-native-groups/
+            model/s83-external-pr16/
+          retention-days: 90
+
+  frozen_s80_tail:
+    name: S80 saved-weight inference exact audit on historical folds (NOT independent)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      actions: read
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+      - name: Original saved S80 models and case-level decisions
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38170647237
+          name: v273-s80-traceable-repair
+          path: model/frozen-s80
+      - name: Previously fixed S72 upstream predictions
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38155427761
+          name: v273-s72-temporal-risk
+          path: model/s72
+      - name: Original PR16 policy proposals
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          name: v273-open-summary
+          path: model/pr16
+      - name: Historical S46 193-policy producer data
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37891336823
+          name: v273-series46-poly-class-compromises
+          path: model/s46
+      - name: Acoustic feature signatures and arrays (PR16 original)
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          pattern: v273-open-features-*
+          path: model/features
+      - name: Verify all saved S80 OOF classifiers and 59309 final decisions
+        run: |
+          python -m py_compile scripts/verify_v273_s80_frozen_inference.py
+          python -m scripts.verify_v273_s80_frozen_inference \
+            --s80 model/frozen-s80 \
+            --s72 model/s72 \
+            --s46 model/s46 \
+            --pr16 model/pr16 \
+            --features model/features \
+            --output model/s86-s80-frozen-proof
+      - name: Fail closed on unverified external S80
+        run: |
+          python - <<'PY'
+          import json
+          p=json.load(open('model/s86-s80-frozen-proof/report.json'))
+          assert p['status']=='FROZEN_S80_LAST_STAGE_EXACT_REPLAY'
+          assert not p['full_external_S80_validation'] and not p['official_reference_changed']
+          assert p['global_correct']==49281 and p['poly_correct']==3240
+          assert p['K1_score_max_abs_error']<1e-5
+          assert sum(d['accepted'] for d in p['fold_decisions'].values())==67
+          print('Saved S80 final model verified; S46/S72 new-WAV generation remains required.')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s86-verified-frozen-s80-tail
+          path: model/s86-s80-frozen-proof/
+          retention-days: 90
+
+  frozen_s46_reconstruction:
+    name: S46 recompute all 193 original policies from S45 fixed risk source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.3.5
+      - name: Restore original 16-family S45 predictions and 304 trained risk heads archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/download-S45 model
+          gh release download v273-series45-research-37891074478 \
+            --repo "${{ github.repository }}" --pattern v273-series45-specialized-heads.tar.gz \
+            --dir model/download-S45
+          tar -xzf model/download-S45/v273-series45-specialized-heads.tar.gz -C model
+          test -f model/S45/predictions.npz
+          test -f model/S45/risk_scores.npz
+      - name: Fetch previously frozen S46 193 outputs for full-column equality
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37891336823
+          name: v273-series46-poly-class-compromises
+          path: model/original-S46
+      - name: Recalculate all 193 S46 original policies (no learning and no new source proposals)
+        run: |
+          python -m scripts.audit_v273_s46_classwise_compromise --self-test
+          python -m scripts.audit_v273_s46_classwise_compromise \
+            --s45pred model/S45/predictions.npz \
+            --s45risk model/S45/risk_scores.npz \
+            --output model/S87-reproduced-S46
+      - name: Build STRICTLY label-free S45 source contract (without historical truth)
+        run: |
+          python - <<'PY'
+          import numpy as np,pathlib
+          with np.load('model/S45/predictions.npz',allow_pickle=False) as p, \
+               np.load('model/S45/risk_scores.npz',allow_pickle=False) as q:
+              assert np.array_equal(p['global_index'],q['global_index'])
+              parent=p['predictions'][:,0]
+              pathlib.Path('model/S88').mkdir(exist_ok=True)
+              np.savez_compressed('model/S88/source_only.npz',
+                  row_id=q['global_index'],parent_K=parent,
+                  family_ids=q['family_ids'],proposal_K=q['proposal_K'],
+                  risks=q['risks'],independent_votes=q['independent_votes'])
+          PY
+      - name: Reproduce all 193 S46 policies from ZERO-LABEL inference inputs
+        run: |
+          python -m scripts.s88_unlabeled_s46_runtime \
+            --input model/S88/source_only.npz --output model/S88/runtime
+          python - <<'PY'
+          import json,numpy as np
+          with np.load('model/S88/runtime/predictions.npz',allow_pickle=False) as real, \
+               np.load('model/original-S46/predictions.npz',allow_pickle=False) as original:
+              assert len(real['row_id'])==59309
+              np.testing.assert_array_equal(real['row_id'],original['global_index'])
+              np.testing.assert_array_equal(real['variant_ids'],original['variant_ids'])
+              np.testing.assert_array_equal(real['predictions'],original['predictions'])
+          p=json.load(open('model/S88/runtime/report.json'))
+          assert not p['labels_opened'] and p['variants']==193
+          print('PASS original S46 193 policies from label-free source arrays')
+          PY
+      - name: Promote only reusable label-free S46 runtime code, not S80 model
+        run: |
+          echo 'Original S46 label-free 193 selector verified. Original 16 S45 source family inputs on new WAV not yet available.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Restore pinned S69 frozen rule audit (no fit needed in S89 runtime)
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38177948016
+          name: v273-s69-s46-risk-replay
+          path: model/original-S69
+      - name: Restore pinned PR16 36 votes (must remove truth before S89)
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          name: v273-open-summary
+          path: model/original-PR16
+      - name: Build strictly label-free S69 input bridge with original row order
+        run: |
+          python - <<'PY'
+          import pathlib,numpy as np
+          base=pathlib.Path('model/S89');base.mkdir(parents=True,exist_ok=True)
+          with np.load('model/original-S46/predictions.npz',allow_pickle=False) as s:
+              np.savez_compressed(base/'S46_only.npz',
+                 row_id=s['global_index'],fold=s['fold'],
+                 variant_ids=s['variant_ids'],predictions=s['predictions'])
+          with np.load('model/original-PR16/predictions.npz',allow_pickle=False) as p:
+              np.savez_compressed(base/'PR16_only.npz',
+                 row_id=p['global_index'],predictions=p['predictions'])
+          PY
+      - name: Apply S69 saved fold-threshold rules without any label access
+        run: |
+          python -m scripts.s89_label_blind_s69_runtime \
+            --s46 model/S89/S46_only.npz \
+            --pr16 model/S89/PR16_only.npz \
+            --rules model/original-S69/report.json \
+            --output model/S89/runtime
+          python - <<'PY'
+          import json,numpy as np
+          with np.load('model/original-S69/predictions.npz',allow_pickle=False) as o, \
+               np.load('model/S89/runtime/predictions.npz',allow_pickle=False) as n:
+              np.testing.assert_array_equal(n['row_id'],o['global_index'])
+              np.testing.assert_array_equal(n['fold'],o['fold'])
+              for k in ('s18_K','balanced_s46_K','balanced_protected_K',
+                        'polymax_s46_K','polymax_protected_K'):
+                  np.testing.assert_array_equal(n[k],o[k])
+          r=json.load(open('model/S89/runtime/report.json'))
+          assert r['status']=='S69_FROZEN_RULES_OOF_EXACT_INFERENCE'
+          assert not r['new_audio_supported'] and r['no_truth_labels_read']
+          print('S69 2 frozen policy decisions bit-exact, 59309 rows, label-free')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s89-frozen-s69-label-free-rules
+          path: model/S89/runtime/
+          retention-days: 90
+      - name: Require equality on all 59309 rows x 193 policies and document external blockers
+        run: |
+          python - <<'PY'
+          import json,numpy as np,pathlib
+          with np.load('model/original-S46/predictions.npz',allow_pickle=False) as old, \
+               np.load('model/S87-reproduced-S46/predictions.npz',allow_pickle=False) as new:
+            assert len(old['global_index'])==59309
+            for k in ('global_index','fold','true_K','variant_ids','predictions'):
+              np.testing.assert_array_equal(old[k],new[k])
+            assert new['predictions'].shape==(59309,193)
+          outcome={'status':'S46_ALL_193_POLICIES_BIT_EXACT_REPLAY',
+            'historical_rows':59309,'policies':193,
+            'external_S80_validation':False,'official_reference_changed':False,
+            'missing_external_dependencies':['16 S45 new-audio family proposals',
+              'per-new-composition risk routing for 304 S45 per-piece classifiers',
+              'new-audio S69/S70/S71/S72 K parent'],
+            'no_holdout_labels_used':True}
+          pathlib.Path('model/S87-reproduced-S46/verify_report.json').write_text(json.dumps(outcome,indent=2)+'\n')
+          print('S46 all original 193 policy columns reproduced. Source is HISTORICAL only.')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s88-unlabeled-original-s46-runtime
+          path: model/S88/runtime/
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s87-s46-original-frozen-selector-replay
+          path: model/S87-reproduced-S46/
+          retention-days: 90

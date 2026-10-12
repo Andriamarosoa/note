@@ -1,0 +1,48 @@
+name: S188 index IDMT dataset2 WAV and note XML pairs without opening truth
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s188_idmt_dataset2_note_xml_index.py'
+      - '.github/workflows/v273-s188-IDMT-dataset2-WAV-XML-index.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s188-new-note-label-index-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  note_dataset_metadata:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Shared range reader import dependencies
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Candidate pairing test
+        run: python -m scripts.s188_idmt_dataset2_note_xml_index --self-test
+      - name: Read names only and freeze filename-hash selection of genuinely independent dataset2 WAV events
+        run: python -u -m scripts.s188_idmt_dataset2_note_xml_index --out model/S188/report.json
+      - name: Guard clean new benchmark
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('model/S188/report.json'))
+          assert x['dataset2_wav_count']>0
+          assert x['dataset2_XML_count']>0
+          assert not x['XML_content_read']
+          assert not x['audio_content_read']
+          assert not x['exact_K_accuracy_measured']
+          assert not x['S80_promoted']
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s188-genuine-independent-dataset2-WAV-XML-pair-index-no-labels
+          path: model/S188/
+          retention-days: 90

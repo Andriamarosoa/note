@@ -1,0 +1,54 @@
+name: S197 replay real old 255 actions and 9 local audit columns from pinned 14+14 trained source caches
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s197_replay_original_255x9_from_frozen_28_caches.py'
+      - '.github/workflows/v273-s197-original-255x9-fold0-frozen-producer-replay.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s197-true-original-255x9-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  genuine_frozen_source_replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Exact compatible replay numerical environment without retraining
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Verify original nonempty subset contract
+        run: python -m scripts.s197_replay_original_255x9_from_frozen_28_caches --self-test
+      - name: Restore original 14 specialized and 14 learned-corrector fold caches and regenerate historical fold0 original full 255x9
+        run: |
+          set -euo pipefail
+          python -u -m scripts.s197_replay_original_255x9_from_frozen_28_caches \
+            --root . --fold 0 --limit 128 --out model/S197
+          python - <<'PY'
+          import json,numpy as np
+          d=json.load(open('model/S197/report.json'))
+          assert d['held_rows']==128
+          assert d['original_group_proposal_mismatches']==0
+          assert d['original_9D_per_group_audits_shape']==[128,255,9]
+          assert not d['receiver_truth_used_for_features_or_audits']
+          assert not d['S80_promoted']
+          with np.load('model/S197/original_9D_fold_audits_REPLAY.npz',allow_pickle=False) as z:
+              assert z['rebuilt_original_255x9_group_audits'].shape==(128,255,9)
+              assert not {'truth','true_K','labels','y'}&set(z.files)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s197-original-pinned-28-upstream-255-nine-local-audit-historical-fold0-probe
+          path: model/S197/
+          retention-days: 90

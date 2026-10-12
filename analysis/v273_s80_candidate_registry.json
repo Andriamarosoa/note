@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "experiment": "S80",
+  "parent": "S72_poly_poly_guard",
+  "status": "EXPERIMENTAL_REPLAY_VERIFIED_NOT_PROMOTED",
+  "official_reference": "freeze_local_combo",
+  "official_reference_changed": false,
+  "ci": {
+    "run_id": 38170647237,
+    "artifact_id": 11713568434,
+    "artifact_name": "v273-s80-traceable-repair",
+    "conclusion": "success"
+  },
+  "validation": {
+    "historical_exposed_folds": [
+      0,
+      1,
+      2,
+      4
+    ],
+    "native_rows": 59309,
+    "poly_rows": 7385,
+    "independent": false,
+    "upstream_fully_nested": false
+  },
+  "results": {
+    "s72": {
+      "global_correct": 49238,
+      "poly_correct": 3202
+    },
+    "s79": {
+      "global_correct": 49244,
+      "poly_correct": 3232
+    },
+    "s80": {
+      "global_correct": 49281,
+      "poly_correct": 3240,
+      "corrections": 86,
+      "regressions": 43,
+      "actions": 174,
+      "poly_net_gain": 38,
+      "global_net_gain": 43
+    }
+  },
+  "by_true_k": {
+    "0": 37931,
+    "1": 8110,
+    "2": 1764,
+    "3": 1047,
+    "4": 389,
+    "5": 39,
+    "6": 1
+  },
+  "by_fold_global_gain": {
+    "0": 4,
+    "1": 22,
+    "2": 7,
+    "4": 10
+  },
+  "gate_readme": "analysis/README_V273_S80_TRACEABLE_REPAIR.md",
+  "code": "scripts/audit_v273_s80_traceable_repair.py",
+  "blockers": [
+    "K0/K2 routes and policy22 selected after historical development audits",
+    "PR16 upstream producers not fully nested",
+    "Need independently collected unseen-composition test"
+  ]
+}

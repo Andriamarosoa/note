@@ -1,0 +1,135 @@
+name: S246 full sixteen authentic S45 families 304 Ridge checkpoints and S46 193 policies on 1034 native IDMT
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s246_full_original_16_S45_193_S46_native_IDMT.py'
+      - '.github/workflows/v273-s246-full-original-16-S45-S46-IDMT.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s246-all-original16-S45-S46-native-IDMT-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  original_16_families_all_19_branches:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 110
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Original original Ridge and S46 numeric environment
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Require genuine five rare historical S1–S4 coherent models are fully executed on IDMT without labels
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run watch 38307013187 --repo "${{ github.repository }}" --exit-status --interval 15
+      - name: Restore 19-branch five original rare S1 S2 S3 S4/coherent
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38307013187
+          name: s245-five-original-historic-S1-S2-S3-S4-coherent-on-1034-IDMT
+          path: model/S245
+      - name: Restore S241 actual original S29-fed S35 original bank of 36 experts and 72 quality gates
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38305786093
+          name: s241-original-authentic-S29-to-S35-19branches-IDMT1034
+          path: model/S241
+      - name: Restore S242 genuine S11 S12 S38 S40 S41 pre-trained source families
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38306159169
+          name: s242-five-authentic-S45-source-families-recovered-S5-S18
+          path: model/S242
+      - name: Restore S243 true original S19 S20 S24 S25 S27 recurrent source families
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38305925734
+          name: s243-five-rebased-original-recurrent-S45-19-branches
+          path: model/S243
+      - name: Restore all four S238 original S5→S18 fold parents
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38304553740
+          name: s238-idmt-original-full-S5-S18-133-checkpoint-4fold-1034-predictions
+          path: model/S238
+      - name: Restore exact IDMT V88 native acoustic 335D from S240 bridge
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38305601838
+          name: s240-original-S97-native-1034-audio-join-for-S29-S35
+          path: model/S240bridge
+      - name: Restore original 304 saved trained S45 Ridge risk estimators
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37891039201
+          name: v273-series45-specialized-risk-heads
+          path: model/S45
+      - name: Execute all 16 original producer families, 304 historical Ridge risk weights, all 193 original S46 policies 19 branches
+        run: |
+          python -m py_compile scripts/s246_full_original_16_S45_193_S46_native_IDMT.py
+          python -u -m scripts.s246_full_original_16_S45_193_S46_native_IDMT \
+            --five model/S245/external_five_families.npz \
+            --s35 model/S241/original_s29_to_s35_IDMT.npz \
+            --s242 model/S242/five_rebased_S11_S12_S38_S40_S41.npz \
+            --s243 model/S243/five_rebased_recurrent_S19_S20_S24_S25_S27.npz \
+            --s18 model/S238/S238_original_S5_to_S18_true_V88_native_IDMT_1034.npz \
+            --s97 model/S240bridge/s240_original_IDMT_native_S97_audio.npz \
+            --models model/S45/models \
+            --catalog analysis/v273_s45_original_champion_catalog.json \
+            --out model/S246
+      - name: Check every authentic 19 branch S46 policy and original-source proof before promotion claims
+        run: |
+          python - <<'PY'
+          import json,numpy as np
+          from pathlib import Path
+          r=json.load(open('model/S246/report.json'))
+          assert r['original_native_reference_event_count']==1034
+          assert r['original_s45_ridge_checkpoint_count']==304
+          assert r['original_s46_policy_count']==193
+          assert r['original_fold_held_piece_branches']==19
+          assert r['original_4fold_branch_sizes']==[5,4,5,5]
+          assert len(r['original_16_source_champion_family_names'])==16
+          assert not r['S173_adapted_proxies_used'] and not r['H9_models_used']
+          assert not r['IDMT_XML_MIDI_content_read']
+          assert not r['independent_ExactK_accuracy_measured'] and not r['S80_promoted']
+          files=list(Path('model/S246').glob('branch*_fold*/s46/predictions.npz'))
+          assert len(files)==19
+          for f in files:
+            with np.load(f,allow_pickle=False) as z:
+              assert z['predictions'].shape==(1034,193)
+              assert z['row_id'].shape==(1034,)
+              assert np.isin(z['predictions'],range(7)).all()
+          print('S246 PASS 19 original branches * 16 S45 source heads * 193 S46 policies on 1034 unlabeled IDMT events')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s246-full-original-16-S45-304-Ridge-193-S46-native-IDMT-1034
+          path: model/S246/
+          retention-days: 90

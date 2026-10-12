@@ -1,0 +1,78 @@
+name: S253 independent original full S80 arithmetic replay on sealed 1034 IDMT native events
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s253_independent_full_S80_IDMT_1034_audit.py'
+      - '.github/workflows/v273-s253-independent-full-S80-IDMT.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s253-independent-S80-IDMT-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  second_numeric_implementation_all_K:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install independent basic numpy arithmetic
+        run: python -m pip install numpy==1.26.4
+      - name: Frozen original entire S80 model inferencer K0 K1 K2 unlabelled native IDMT outputs
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38308087090
+          name: s252-full-original-S80-preXML-1034-IDMT-native-frozen-predictions
+          path: model/S252
+      - name: Full genuine original 193 S46 outputs with 16 original source families S247
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38307178111
+          name: s247-genuine-S46-193-specialist-consensus-IDMT-native-1034
+          path: model/S247
+      - name: Original PR16 all 36 model outputs and 12 model neural softmax source rows
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38307419228
+          name: s248-genuine-original-12-PR16-36policy-1034-native-IDMT
+          path: model/S248
+      - name: Independently recompute each original S80 K0 K1 K2 rule and compare every native 1034 row to S252
+        run: |
+          python -m scripts.s253_independent_full_S80_IDMT_1034_audit \
+            --s252 model/S252/S252_full_original_S80_unseen_IDMT_1034_frozen.npz \
+            --s219 model/S247/S247_original_193_S46_foldneutral_1034_IDMT.npz \
+            --s85 model/S248/pr16_external_36_policies.npz \
+            --out model/S253
+      - name: Require independent 1034-event arithmetic identity before opening XML and no promotion yet
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S253/report.json'))
+          assert r['event_count']==1034 and r['PR16_votes']==36 and r['S46_original_policies']==193
+          assert r['S79_trained_fold_models']==4
+          assert all(r['independent_formula_checks'].values())
+          assert r['independent_ExactK_global'] is None and r['independent_ExactK_poly'] is None
+          assert not r['truth_or_MIDI_read'] and not r['official_S80_promoted']
+          assert r['prediction_source_locked_before_XML']
+          print('S253 PASS independently reimplemented final S80 on all 1034 source-native IDMT events, no XML opened')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s253-independent-sealed-full-S80-arithmetic-1034-native-IDMT
+          path: model/S253/
+          retention-days: 90

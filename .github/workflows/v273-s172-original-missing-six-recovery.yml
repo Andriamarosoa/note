@@ -1,0 +1,51 @@
+name: S172 restore checksum-pinned S1 S3 S4 archives and audit six missing S45 sources
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s172_recover_original_missing_s45_archives.py'
+      - '.github/workflows/v273-s172-original-missing-six-recovery.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s172-original-S45-missing-six-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify_restoration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Strict identity and no-surrogate selftest
+        run: python -m scripts.s172_recover_original_missing_s45_archives --self-test
+      - name: Independently reconstruct historic original S1 S3 S4 model files
+        run: |
+          set -euo pipefail
+          python -m scripts.s172_recover_original_missing_s45_archives --root . --out model/S172
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report=json.loads(Path('model/S172/report.json').read_text())
+          assert report['historical_model_archives_restored']==3
+          assert report['historical_router_proofs_verified']==['S2','S3','S4']
+          assert report['s45_new_audio_sources_verified_after']==10
+          assert len(report['six_missing_unseen_sources'])==6
+          assert not report['new_wav_predictions_produced']
+          assert not report['true_K_or_MIDI_opened']
+          assert not report['independent_ExactK_measured']
+          assert not report['S80_promoted']
+          print('S172 recovered original historical model archives, NOT new WAV producers')
+          PY
+      - name: Preserve archive recovery proof
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s172-original-S1-S3-S4-recovered-archive-checksums-not-full-S45
+          path: model/S172/
+          retention-days: 90

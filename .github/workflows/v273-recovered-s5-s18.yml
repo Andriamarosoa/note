@@ -1,0 +1,58 @@
+name: Verify recovered S5 to S18 historical cascade and original models on GOAT
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - scripts/v273_recovered_s5_s18.py
+      - .github/workflows/v273-recovered-s5-s18.yml
+      - analysis/evidence/v273-recovered-s5-s18/inputs/**
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: recovered-s5-s18-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  frozen-cascade:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: .
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            scripts
+            analysis/evidence/v273-recovered-s5-s18/inputs
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Original S5 numerical environment
+        run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+      - name: Rebuild all historical S5 probabilities, verify selected parents, infer GOAT
+        run: >-
+          python -m scripts.v273_recovered_s5_s18 --stage s5 --fetch
+          --cache model/source
+          --s97 analysis/evidence/v273-recovered-s5-s18/inputs/original_s45_audio_only.npz
+          --s116 analysis/evidence/v273-recovered-s5-s18/inputs/external_s4_control111.npz
+          --out model/proof/s5
+      - name: Separate original S8 to S18 environment
+        run: |
+          python -m venv model/sklearn14
+          model/sklearn14/bin/python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Verify historical cascade and run unchanged checkpoints on real GOAT features
+        run: >-
+          model/sklearn14/bin/python -m scripts.v273_recovered_s5_s18 --stage s18
+          --cache model/source --s5 model/proof/s5
+          --s97 analysis/evidence/v273-recovered-s5-s18/inputs/original_s45_audio_only.npz
+          --s116 analysis/evidence/v273-recovered-s5-s18/inputs/external_s4_control111.npz
+          --out model/proof/s18
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: original-s5-s18-historical-and-GOAT-cascade-proof
+          path: model/proof/
+          retention-days: 90

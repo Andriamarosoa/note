@@ -1,0 +1,103 @@
+{
+  "schema": 1,
+  "registered_date": "2026-10-11",
+  "status": "EXTERNAL_GOAT_AUDIO_VERIFIED_MODEL_NOT_SCORED",
+  "official_reference": "freeze_local_combo",
+  "candidate": "S80",
+  "sources": {
+    "primary": {
+      "name": "IDMT-SMT-GUITAR_V2",
+      "record": "https://zenodo.org/records/7544110",
+      "url": "https://zenodo.org/records/7544110/files/IDMT-SMT-GUITAR_V2.zip?download=1",
+      "md5": "06796e08731bccffaed6ae59361486e4",
+      "roles": [
+        "polyphonic guitar onset reference",
+        "cross-corpus generalization"
+      ]
+    },
+    "technical_smoke": {
+      "name": "GOAT-EXAMPLES-1-2",
+      "github": "JackJamesLoth/GOAT-Dataset",
+      "commit": "55c6e6668ef4546e4635c5e7eaad3062cf7f036b",
+      "members": [
+        "example1",
+        "example2"
+      ],
+      "files": [
+        "example1_di.wav",
+        "example1.mid",
+        "example2_di.wav",
+        "example2.mid"
+      ],
+      "smoke_only": true,
+      "verified_files": {
+        "example1_di.wav": {
+          "bytes": 4673498,
+          "sha256": "d05060b71ea19ba2093aef23ba411bafbbeb8f402973b45eb32933c2bd10a458",
+          "sample_rate": 44100,
+          "channels": 1,
+          "duration_seconds": 52.987
+        },
+        "example2_di.wav": {
+          "bytes": 12312044,
+          "sha256": "0e12f7bbb3ca210d3e245f10d24ba19547cfe97d58db087de89bdd4bd375384b",
+          "sample_rate": 44100,
+          "channels": 1,
+          "duration_seconds": 139.592
+        },
+        "example1.mid": {
+          "bytes": 748,
+          "sha256": "9a7551c0aa24bf512d98f505c0c59832617904d3b6117ec4cd1d73729e7cb7e5"
+        },
+        "example2.mid": {
+          "bytes": 5698,
+          "sha256": "a795c561041ec8093c75cd4ca501336c0aefbc93aba6c20593f85edf5da01ab8"
+        }
+      }
+    }
+  },
+  "metric": {
+    "name": "native Exact-K of note-onset counts per label-blind candidate group",
+    "sample_rate": 44100,
+    "max_interval_samples": 1764,
+    "radius_samples": 882,
+    "cap_K": 6,
+    "poly": "true_K>=2",
+    "tie": "earliest group"
+  },
+  "fixed_pass_rule": {
+    "global_gain_strictly_positive": true,
+    "poly_gain_strictly_positive": true,
+    "same_candidate_groups": true,
+    "per_K_0_to_6_report": true,
+    "unseen_recordings_excluded_from_training": true,
+    "labels_opened_after_prediction_hash": true
+  },
+  "pipeline_requirements": [
+    "freeze_local_combo inference from external audio",
+    "PR16 12 models probabilities from external audio",
+    "S46 policy variants inference from external audio",
+    "S69-S72 inference cascade",
+    "S80 new K1 and K0/K2 routes",
+    "pair and score only after predictions are sealed"
+  ],
+  "prediction_contract": [
+    "row_id",
+    "member",
+    "starts",
+    "ends",
+    "sample_rate",
+    "incumbent_K",
+    "candidate_K"
+  ],
+  "existing_S80_historical_predictions_do_not_qualify": true,
+  "external_predictions_available": false,
+  "scored_external_samples": 0,
+  "promotion": false,
+  "ci": {
+    "run_id": 38173157255,
+    "conclusion": "success",
+    "preflight_artifact_id": 11714891932,
+    "artifact": "v273-s81-external-source-preflight"
+  }
+}

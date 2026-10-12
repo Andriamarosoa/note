@@ -1,0 +1,57 @@
+name: S268 precommitted S219 19 branch foldneutral vote 193 original S46 policies GuitarSet 59309
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s268_S46_original_foldneutral_GuitarSet_59309.py'
+      - '.github/workflows/v273-s268-GuitarSet-S46-193-foldneutral.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s268-S46-original-GuitarSet-59309-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  all_19_trained_branches_193_foldneutral:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Require SUCCESS of S267 38313440938 original 304-risk 193-policy 19-branch producer source
+        run: gh run watch 38313440938 --exit-status --interval 15
+      - name: Restore original full source decisions and precommitted S18 3 of 4 parent
+        run: |
+          gh run download 38313440938 -n s267-full-original-S45-16families-304Ridge-193S46-59309-GuitarSet -D model/S267
+          gh run download 38311907661 -n s261-guitarset-59309-actual-fourfold-S18-neutral-consensus -D model/S261
+      - name: Execute original S219 sparse fold-neutral consensus for all 193 policy variants, 59309 events
+        run: |
+          python -u -m scripts.s268_S46_original_foldneutral_GuitarSet_59309 \
+            --s267 model/S267 \
+            --s261 model/S261/S261_original_S18_foldneutral_59309_GUITARSET.npz \
+            --out model/S268
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S268/report.json'))
+          assert r['original_native_reference_event_count']==59309
+          assert r['original_S267_source_branch_count']==19
+          assert r['original_S267_policy_count']==193
+          assert r['GuitarSet_historical_train_overlap_for_three_folds']
+          with np.load('model/S268/S268_original_193_S46_foldneutral_59309_GUITARSET.npz') as z:
+            assert z['S46_193_policy_K'].shape==(59309,193)
+          print('S268 PASS 193 fully trained original S46 policies folded over GuitarSet, non-independent')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s268-GuitarSet-original-S46-193foldneutral-59309
+          path: model/S268/
+          retention-days: 90

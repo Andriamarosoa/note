@@ -1,0 +1,93 @@
+{
+  "source": "S44 original trained champion manifest, pinned S98 run 38187185860 and S45 original run 37891039201",
+  "source_commit": "854ada718ac9bf1556f00c96b8e1aa90402d6ab3",
+  "S98_workflow_run_id": 38187185860,
+  "S45_trained_run_id": 37891039201,
+  "original_families": [
+    {
+      "family": "S1_acoustic",
+      "original_variant": "regression_loops_s1__acoustic43__cost_1.3",
+      "original_vector_sha256": "471f7ccab3d7ae8d842628ac53ef2049bab13ca6131fc202efd5668a12531030"
+    },
+    {
+      "family": "S2_source",
+      "original_variant": "regression_loops_s2__source_count90",
+      "original_vector_sha256": "7dfc1725d077a376ee4dd63f594efe717ab216116a3599800f5d047ab2a29451"
+    },
+    {
+      "family": "S3_repair",
+      "original_variant": "regression_loops_s3__tree_nested_source_count90",
+      "original_vector_sha256": "57e0a05634bfceac1816d457425255f6cc693176f1f7f134658663e8692e4cf2"
+    },
+    {
+      "family": "S4_repair",
+      "original_variant": "regression_loops_s4__guard_acoustic58__blend_1__cost_2",
+      "original_vector_sha256": "867f139ef08f1be688b16d1b2178c379fca180e4d0f55c56ed197b6dfc858677"
+    },
+    {
+      "family": "historical_repair_coherent",
+      "original_variant": "repair_coherent",
+      "original_vector_sha256": "efc52aa32147d54af38206da17ca54f76ecd673a0378dd3596e23cb5e2f77a41"
+    },
+    {
+      "family": "S25_Bfirst",
+      "original_variant": "Bbefore_A0__raw",
+      "original_vector_sha256": "c498bed86d9c31dee2aefd03282037737fd6ff6f325d937b2ecc68b14d055c00"
+    },
+    {
+      "family": "S24_Bfirst",
+      "original_variant": "Bfirst_B0__raw",
+      "original_vector_sha256": "ebe78578e557b62b3886beb1e4b2e293d887d04dc8197155b24c6b12e033ce07"
+    },
+    {
+      "family": "S40_temporal_CNN",
+      "original_variant": "series40__temporalCNN__source_K1to6__argmax",
+      "original_vector_sha256": "c620c58b500a59f04d8b2d32abe893d75dc350280416f2f1348b8659014fa613"
+    },
+    {
+      "family": "S19_recurrent_ABA",
+      "original_variant": "ABA_pass2",
+      "original_vector_sha256": "25339d479fc8d4007bdab38b0ee367d39cb07b83dedb8c692cb8c14b9d551cf7"
+    },
+    {
+      "family": "S11_votes_time_audio",
+      "original_variant": "series11__votes_time_audio__hgb__all__cost0",
+      "original_vector_sha256": "98a0b2118781bb6b2d6485f3af4fcfcda7c81c47ace487f51ce2a5717f485656"
+    },
+    {
+      "family": "S38_morphology",
+      "original_variant": "series38__morph825__extra_trees__source_K1to6__argmax",
+      "original_vector_sha256": "9066b04ad2be14b34e9d0644e944096c3f748682c894daae117075899ec33695"
+    },
+    {
+      "family": "S12_audio_logistic",
+      "original_variant": "series12__logistic__all__cost0",
+      "original_vector_sha256": "c3ba79c9fe9356f00fb07373fd37103c5d5caf7914ada579e7c7ad92bdce215e"
+    },
+    {
+      "family": "S20_repeated_ABA",
+      "original_variant": "series20__pass1__raw",
+      "original_vector_sha256": "3d7e6463dffb1881e87d3ba191c7186ea7695761487b0a1cb4d827c0b4ec7d91"
+    },
+    {
+      "family": "S27_early_stop",
+      "original_variant": "series27__early_stable_005__raw",
+      "original_vector_sha256": "82c801d13d36915ace23e51a7ee5f8d6adf037153e5055915db347fa3ca652b7"
+    },
+    {
+      "family": "S41_neural_fusion",
+      "original_variant": "series41__neural_fusion__source_K1to6__margin0",
+      "original_vector_sha256": "eaf8e090baac4f20d5e85f37f04e9aa99e023de20b38233a004d61f650cc896d"
+    },
+    {
+      "family": "S35_multiroute",
+      "original_variant": "series35__lambda1__threshold0",
+      "original_vector_sha256": "ef12ec77ee2cd4e9852e469faf8a69ae29940487f5b44b499948f300857e71e7"
+    }
+  ],
+  "original_family_count": 16,
+  "original_ridge_models_per_family": 19,
+  "total_original_ridge_fits": 304,
+  "external_S45_all_sixteen_source_compatible": false,
+  "original_S80_promoted": false
+}

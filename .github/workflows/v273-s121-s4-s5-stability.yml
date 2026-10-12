@@ -1,0 +1,79 @@
+name: S121 compare original S4 S5 model stability across 527D hypotheses
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s121_s4_s5_prediction_stability.py'
+      - '.github/workflows/v273-s121-s4-s5-stability.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  stability:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+      - name: Selftest prediction stability metrics
+        env:
+          PYTHONPATH: '.:src'
+        run: python -m scripts.s121_s4_s5_prediction_stability --self-test
+      - name: Restore SHA-pinned original historical S4 S5 checkpoints
+        run: |
+          set -euo pipefail
+          mkdir -p model/history
+          git fetch origin 'refs/tags/v273-series45-research-37891074478:refs/tags/v273-series45-research-37891074478'
+          git archive 854ada718ac9bf1556f00c96b8e1aa90402d6ab3 \
+            analysis/evidence/v273-open-k0-k6/series4/models \
+            analysis/evidence/v273-open-k0-k6/series5/models | tar -x -C model/history
+      - name: Restore S97 original GOAT acoustic trajectory
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38182078525
+          name: v273-s97-original-goat-s45-audio-features
+          path: model/s97
+      - name: Restore S116 original 111D S4 control
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38184381730
+          name: v273-s116-original-S4-control111-GOAT
+          path: model/s116
+      - name: Compare unlabelled prediction stability across 3 original-protocol variants
+        env:
+          PYTHONPATH: '.:src'
+        run: |
+          set -euo pipefail
+          S97="$(find model/s97 -type f -name original_s45_audio_only.npz -print -quit)"
+          S116="$(find model/s116 -type f -name external_s4_control111.npz -print -quit)"
+          test -s "$S97" && test -s "$S116"
+          python -m scripts.s121_s4_s5_prediction_stability \
+            --s97 "$S97" --s116 "$S116" \
+            --s4-models model/history/analysis/evidence/v273-open-k0-k6/series4/models \
+            --s5-models model/history/analysis/evidence/v273-open-k0-k6/series5/models \
+            --out model/s121
+          python - <<'PY'
+          import json
+          r=json.load(open('model/s121/report.json'))
+          assert r['event_count']==57 and len(r['variants'])==3
+          assert not r['accuracy_measured'] and not r['feature_equivalence_proven']
+          assert not r['ground_truth_used'] and not r['S80_promoted']
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s121-s4-s5-nonvalidated-prediction-stability
+          path: model/s121/
+          retention-days: 30

@@ -1,0 +1,46 @@
+name: S132 historical Git commit archaeology for deleted original S5 source
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s132_find_deleted_original_s5_source.py'
+      - '.github/workflows/v273-s132-archaeology.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s132-original-git-history-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  archeology:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m scripts.s132_find_deleted_original_s5_source --self-test
+      - name: Audit deleted original source across all reachable pre-checkpoint Git commits
+        run: |
+          set -euo pipefail
+          git cat-file -e 7165e1ef54510aa9effc9f597b2783c832ca907a^{commit}
+          git cat-file -e 8a9410a4232c653615eb32db401410202831377f^{commit}
+          python -u -m scripts.s132_find_deleted_original_s5_source --out model/s132
+          python - <<'PY'
+          import json
+          r=json.load(open('model/s132/report.json'))
+          assert not r["S80_promotion"] and r["GOAT_independent_S80_score"] is None
+          assert len(r["checkpoint_commit_source_or_workflow_files"])==0
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s132-deleted-s5-source-history-search
+          path: model/s132/
+          retention-days: 30

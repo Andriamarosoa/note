@@ -1,0 +1,30 @@
+name: S93 recover original S45 source provenance
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s93_recover_s45_git_history.py'
+      - '.github/workflows/v273-s93-s45-history.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  recover:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fetch historical branches for producer search
+        run: git fetch origin '+refs/heads/*:refs/remotes/origin/*'
+      - name: Find historical S45 source and deletion commits
+        run: python scripts/s93_recover_s45_git_history.py --output model/s93/report.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v273-s93-s45-source-history
+          path: model/s93/report.json

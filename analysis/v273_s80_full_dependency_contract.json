@@ -1,0 +1,604 @@
+{
+  "schema": "v273-S173-28-node-S45-11of16-adapted-source-v6",
+  "reference": "freeze_local_combo",
+  "official_promotion": false,
+  "target_options": [
+    {
+      "path": "S80-historical-identical",
+      "constraint": "exact original S4/S5 527D, S18, all 16 S45 original producers, original S69-S80 new-wave gating",
+      "current_readiness": "blocked"
+    },
+    {
+      "path": "S80-deploy-v1",
+      "constraint": "may replace missing components ONLY under new model identity and completely new independent scores",
+      "current_readiness": "blocked"
+    }
+  ],
+  "families": [
+    {
+      "id": "S1_acoustic",
+      "state": "historical_vector_only",
+      "proof": "Original selected S44 variant and original SHA256 known from S164, original source on new GOAT remains unverified. No surrogate source counted.",
+      "original_variant": "regression_loops_s1__acoustic43__cost_1.3",
+      "original_vector_sha256": "471f7ccab3d7ae8d842628ac53ef2049bab13ca6131fc202efd5668a12531030"
+    },
+    {
+      "id": "S2_source",
+      "state": "historical_vector_only",
+      "proof": "Original selected S44 variant and original SHA256 known from S164, original source on new GOAT remains unverified. No surrogate source counted.",
+      "original_variant": "regression_loops_s2__source_count90",
+      "original_vector_sha256": "7dfc1725d077a376ee4dd63f594efe717ab216116a3599800f5d047ab2a29451"
+    },
+    {
+      "id": "S3_repair",
+      "state": "historical_vector_only",
+      "proof": "Original selected S44 variant and original SHA256 known from S164, original source on new GOAT remains unverified. No surrogate source counted.",
+      "original_variant": "regression_loops_s3__tree_nested_source_count90",
+      "original_vector_sha256": "57e0a05634bfceac1816d457425255f6cc693176f1f7f134658663e8692e4cf2"
+    },
+    {
+      "id": "S4_repair",
+      "state": "historical_vector_only",
+      "proof": "Original selected S44 variant and original SHA256 known from S164, original source on new GOAT remains unverified. No surrogate source counted.",
+      "original_variant": "regression_loops_s4__guard_acoustic58__blend_1__cost_2",
+      "original_vector_sha256": "867f139ef08f1be688b16d1b2178c379fca180e4d0f55c56ed197b6dfc858677"
+    },
+    {
+      "id": "historical_repair_coherent",
+      "state": "historical_vector_only",
+      "proof": "Original selected S44 variant and original SHA256 known from S164, original source on new GOAT remains unverified. No surrogate source counted.",
+      "original_variant": "repair_coherent",
+      "original_vector_sha256": "efc52aa32147d54af38206da17ca54f76ecd673a0378dd3596e23cb5e2f77a41"
+    },
+    {
+      "id": "S25_Bfirst",
+      "state": "adapted_checkpoint_forward_not_original_full_family",
+      "proof": "Authentic originally trained checkpoint weights and historical policy logic actually forwarded on 57 GOAT native audio events, but adapted S5/S18 source and new held-piece ensemble. Proven S163 S166 S168 S169. This is not exact historical source vector parity.",
+      "original_variant": "Bbefore_A0__raw",
+      "original_vector_sha256": "c498bed86d9c31dee2aefd03282037737fd6ff6f325d937b2ecc68b14d055c00"
+    },
+    {
+      "id": "S24_Bfirst",
+      "state": "adapted_checkpoint_forward_not_original_full_family",
+      "proof": "Authentic originally trained checkpoint weights and historical policy logic actually forwarded on 57 GOAT native audio events, but adapted S5/S18 source and new held-piece ensemble. Proven S163 S166 S168 S169. This is not exact historical source vector parity.",
+      "original_variant": "Bfirst_B0__raw",
+      "original_vector_sha256": "ebe78578e557b62b3886beb1e4b2e293d887d04dc8197155b24c6b12e033ce07"
+    },
+    {
+      "id": "S40_temporal_CNN",
+      "state": "adapted_checkpoint_forward_not_original_full_family",
+      "proof": "Authentic originally trained checkpoint weights and historical policy logic actually forwarded on 57 GOAT native audio events, but adapted S5/S18 source and new held-piece ensemble. Proven S163 S166 S168 S169. This is not exact historical source vector parity.",
+      "original_variant": "series40__temporalCNN__source_K1to6__argmax",
+      "original_vector_sha256": "c620c58b500a59f04d8b2d32abe893d75dc350280416f2f1348b8659014fa613"
+    },
+    {
+      "id": "S19_recurrent_ABA",
+      "state": "adapted_checkpoint_forward_not_original_full_family",
+      "proof": "Authentic originally trained checkpoint weights and historical policy logic actually forwarded on 57 GOAT native audio events, but adapted S5/S18 source and new held-piece ensemble. Proven S163 S166 S168 S169. This is not exact historical source vector parity.",
+      "original_variant": "ABA_pass2",
+      "original_vector_sha256": "25339d479fc8d4007bdab38b0ee367d39cb07b83dedb8c692cb8c14b9d551cf7"
+    },
+    {
+      "id": "S11_votes_time_audio",
+      "state": "adapted_checkpoint_forward_not_original_full_family",
+      "proof": "Authentic originally trained checkpoint weights and historical policy logic actually forwarded on 57 GOAT native audio events, but adapted S5/S18 source and new held-piece ensemble. Proven S163 S166 S168 S169. This is not exact historical source vector parity.",
+      "original_variant": "series11__votes_time_audio__hgb__all__cost0",
+      "original_vector_sha256": "98a0b2118781bb6b2d6485f3af4fcfcda7c81c47ace487f51ce2a5717f485656"
+    },
+    {
+      "id": "S38_morphology",
+      "state": "adapted_checkpoint_forward_not_original_full_family",
+      "proof": "Authentic originally trained checkpoint weights and historical policy logic actually forwarded on 57 GOAT native audio events, but adapted S5/S18 source and new held-piece ensemble. Proven S163 S166 S168 S169. This is not exact historical source vector parity.",
+      "original_variant": "series38__morph825__extra_trees__source_K1to6__argmax",
+      "original_vector_sha256": "9066b04ad2be14b34e9d0644e944096c3f748682c894daae117075899ec33695"
+    },
+    {
+      "id": "S12_audio_logistic",
+      "state": "adapted_checkpoint_forward_not_original_full_family",
+      "proof": "Authentic originally trained checkpoint weights and historical policy logic actually forwarded on 57 GOAT native audio events, but adapted S5/S18 source and new held-piece ensemble. Proven S163 S166 S168 S169. This is not exact historical source vector parity.",
+      "original_variant": "series12__logistic__all__cost0",
+      "original_vector_sha256": "c3ba79c9fe9356f00fb07373fd37103c5d5caf7914ada579e7c7ad92bdce215e"
+    },
+    {
+      "id": "S20_repeated_ABA",
+      "state": "adapted_checkpoint_forward_not_original_full_family",
+      "proof": "Authentic originally trained checkpoint weights and historical policy logic actually forwarded on 57 GOAT native audio events, but adapted S5/S18 source and new held-piece ensemble. Proven S163 S166 S168 S169. This is not exact historical source vector parity.",
+      "original_variant": "series20__pass1__raw",
+      "original_vector_sha256": "3d7e6463dffb1881e87d3ba191c7186ea7695761487b0a1cb4d827c0b4ec7d91"
+    },
+    {
+      "id": "S27_early_stop",
+      "state": "adapted_checkpoint_forward_not_original_full_family",
+      "proof": "Authentic originally trained checkpoint weights and historical policy logic actually forwarded on 57 GOAT native audio events, but adapted S5/S18 source and new held-piece ensemble. Proven S163 S166 S168 S169. This is not exact historical source vector parity.",
+      "original_variant": "series27__early_stable_005__raw",
+      "original_vector_sha256": "82c801d13d36915ace23e51a7ee5f8d6adf037153e5055915db347fa3ca652b7"
+    },
+    {
+      "id": "S41_neural_fusion",
+      "state": "adapted_checkpoint_forward_not_original_full_family",
+      "proof": "Authentic originally trained checkpoint weights and historical policy logic actually forwarded on 57 GOAT native audio events, but adapted S5/S18 source and new held-piece ensemble. Proven S163 S166 S168 S169. This is not exact historical source vector parity.",
+      "original_variant": "series41__neural_fusion__source_K1to6__margin0",
+      "original_vector_sha256": "eaf8e090baac4f20d5e85f37f04e9aa99e023de20b38233a004d61f650cc896d"
+    },
+    {
+      "id": "S35_multiroute",
+      "state": "adapted_checkpoint_forward_not_original_full_family",
+      "proof": "S173 success 38206160849: 36 authentic S35 outer-fold pretrained acoustic experts and 72 authentic 115D risk Q gates executed on 57 native GOAT events, no training; original 3-pass lambda1/cut0 policy with NEW S20-for-S29 adapter and 4-fold mean ensemble. 0 S35 changes vs adapted S18. 19 original S45 Ridge heads scored S35 family; no original S29/new-WAV source parity or historical equivalent.",
+      "original_variant": "series35__lambda1__threshold0",
+      "original_vector_sha256": "ef12ec77ee2cd4e9852e469faf8a69ae29940487f5b44b499948f300857e71e7"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "wav_groups",
+      "state": "verified_new_audio",
+      "requires": [],
+      "proof": "S83-S85: WAV to 57 native GOAT audio events"
+    },
+    {
+      "id": "PR16",
+      "state": "verified_new_audio",
+      "requires": [
+        "wav_groups"
+      ],
+      "proof": "S85: original 36 voting policies + 12 probabilities"
+    },
+    {
+      "id": "S4_control111",
+      "state": "adapted_new_audio",
+      "requires": [
+        "wav_groups"
+      ],
+      "proof": "S116/S117: original control architecture, 111D input"
+    },
+    {
+      "id": "S5_original527",
+      "state": "original_weights_new_audio_with_explicit_fold_aggregation",
+      "requires": [
+        "S4_control111"
+      ],
+      "proof": "Recovered S5-to-S18 runtime: original selected policy and parent replay exact on all 59309 historical events; 57 GOAT audio events forwarded in four original S5 branches, without S135/PR16 substitutions. Same-fold piece-gate averaging is an explicit new-piece deployment rule. See analysis/README_V273_RECOVERED_S5_S18.md.",
+      "reconstructed_runtime": "scripts/v273_s4_owned527.py",
+      "replay_evidence": "analysis/evidence/v273-s5-owned527-recovery/report.json"
+    },
+    {
+      "id": "S5_student135",
+      "state": "rejected_on_exposed_smoke",
+      "requires": [
+        "S4_control111"
+      ],
+      "proof": "S133-S137: new student; no gain GOAT 44/57 global, poly down 2/3 -> 1/3"
+    },
+    {
+      "id": "S8_original_parent",
+      "state": "original_weights_new_audio_with_explicit_fold_aggregation",
+      "requires": [
+        "S5_original527",
+        "wav_groups"
+      ],
+      "proof": "Recovered S5-to-S18 runtime: original selected policy and parent replay exact on all 59309 historical events; 57 GOAT audio events forwarded in four original S5 branches, without S135/PR16 substitutions. Same-fold piece-gate averaging is an explicit new-piece deployment rule. See analysis/README_V273_RECOVERED_S5_S18.md."
+    },
+    {
+      "id": "S9_original_parent",
+      "state": "original_weights_new_audio_with_explicit_fold_aggregation",
+      "requires": [
+        "S8_original_parent"
+      ],
+      "proof": "Recovered S5-to-S18 runtime: original selected policy and parent replay exact on all 59309 historical events; 57 GOAT audio events forwarded in four original S5 branches, without S135/PR16 substitutions. Same-fold piece-gate averaging is an explicit new-piece deployment rule. See analysis/README_V273_RECOVERED_S5_S18.md."
+    },
+    {
+      "id": "S13_K0_birth",
+      "state": "original_weights_new_audio_with_explicit_fold_aggregation",
+      "requires": [
+        "S9_original_parent",
+        "wav_groups"
+      ],
+      "proof": "Recovered S5-to-S18 runtime: original selected policy and parent replay exact on all 59309 historical events; 57 GOAT audio events forwarded in four original S5 branches, without S135/PR16 substitutions. Same-fold piece-gate averaging is an explicit new-piece deployment rule. See analysis/README_V273_RECOVERED_S5_S18.md."
+    },
+    {
+      "id": "S14_K0_rollback",
+      "state": "original_weights_new_audio_with_explicit_fold_aggregation",
+      "requires": [
+        "S9_original_parent",
+        "wav_groups"
+      ],
+      "proof": "Recovered S5-to-S18 runtime: original selected policy and parent replay exact on all 59309 historical events; 57 GOAT audio events forwarded in four original S5 branches, without S135/PR16 substitutions. Same-fold piece-gate averaging is an explicit new-piece deployment rule. See analysis/README_V273_RECOVERED_S5_S18.md."
+    },
+    {
+      "id": "S15_safe_OR",
+      "state": "original_weights_new_audio_with_explicit_fold_aggregation",
+      "requires": [
+        "S13_K0_birth",
+        "S14_K0_rollback"
+      ],
+      "proof": "Recovered S5-to-S18 runtime: original selected policy and parent replay exact on all 59309 historical events; 57 GOAT audio events forwarded in four original S5 branches, without S135/PR16 substitutions. Same-fold piece-gate averaging is an explicit new-piece deployment rule. See analysis/README_V273_RECOVERED_S5_S18.md."
+    },
+    {
+      "id": "S16_K12_K23",
+      "state": "original_weights_new_audio_with_explicit_fold_aggregation",
+      "requires": [
+        "S15_safe_OR"
+      ],
+      "proof": "Recovered S5-to-S18 runtime: original selected policy and parent replay exact on all 59309 historical events; 57 GOAT audio events forwarded in four original S5 branches, without S135/PR16 substitutions. Same-fold piece-gate averaging is an explicit new-piece deployment rule. See analysis/README_V273_RECOVERED_S5_S18.md."
+    },
+    {
+      "id": "S17_K32_K34",
+      "state": "original_weights_new_audio_with_explicit_fold_aggregation",
+      "requires": [
+        "S16_K12_K23"
+      ],
+      "proof": "Recovered S5-to-S18 runtime: original selected policy and parent replay exact on all 59309 historical events; 57 GOAT audio events forwarded in four original S5 branches, without S135/PR16 substitutions. Same-fold piece-gate averaging is an explicit new-piece deployment rule. See analysis/README_V273_RECOVERED_S5_S18.md."
+    },
+    {
+      "id": "S11_original_votes",
+      "state": "adapted_new_audio",
+      "requires": [
+        "S9_original_parent",
+        "S5_original527",
+        "wav_groups"
+      ],
+      "proof": "S149 original trained S11 76 risk checkpoints and 24 veto policies on GOAT; new S9 adapter p=PR16#22; parallel candidate source, not ancestor of S18"
+    },
+    {
+      "id": "S18_parent",
+      "state": "original_weights_new_audio_with_explicit_fold_aggregation",
+      "requires": [
+        "S17_K32_K34"
+      ],
+      "proof": "Recovered S5-to-S18 runtime: original selected policy and parent replay exact on all 59309 historical events; 57 GOAT audio events forwarded in four original S5 branches, without S135/PR16 substitutions. Same-fold piece-gate averaging is an explicit new-piece deployment rule. See analysis/README_V273_RECOVERED_S5_S18.md."
+    },
+    {
+      "id": "S43_S44_16_champions",
+      "state": "historical_only",
+      "requires": [
+        "S18_parent",
+        "S11_original_votes"
+      ],
+      "proof": "16 archived S43/S44 champions, including parallel S11 head; some original sources run on GOAT, full 16 not yet equivalent"
+    },
+    {
+      "id": "S12_original_risks",
+      "state": "adapted_new_audio",
+      "requires": [
+        "wav_groups"
+      ],
+      "proof": "S143: 19 original cross-piece logistic checkpoints; S9 eligibility missing"
+    },
+    {
+      "id": "S38_experts",
+      "state": "adapted_new_audio",
+      "requires": [
+        "wav_groups"
+      ],
+      "proof": "S142/S144: 16 original trained model checkpoints"
+    },
+    {
+      "id": "S40_temporal",
+      "state": "adapted_new_audio",
+      "requires": [
+        "wav_groups"
+      ],
+      "proof": "S141/S144: four original 42x49 CNN checkpoints"
+    },
+    {
+      "id": "S41_gate",
+      "state": "adapted_new_audio",
+      "requires": [
+        "S38_experts",
+        "S40_temporal"
+      ],
+      "proof": "S161 19 genuine original S41 trained gates on GOAT with adapted S18 parent (instead of S144 freeze); 57/57 KEEP, zero accepted; four predicted K differ vs S144 due to changed parent. S5/S9 remain adapted."
+    },
+    {
+      "id": "S45_family_risks",
+      "state": "historical_only",
+      "requires": [
+        "S43_S44_16_champions",
+        "S41_gate"
+      ],
+      "proof": "All 304 original S45 piece-held Ridge risk checkpoints (19 per 16 families) archived in v273-series45-research-37891074478, original run 37891039201. S96 156D label-free risk decoder ready but refuses any less than 16 genuine proposal columns; original new-piece deployment aggregation not historically verified."
+    },
+    {
+      "id": "S46_193",
+      "state": "logic_ready_inputs_missing",
+      "requires": [
+        "S18_parent",
+        "S43_S44_16_champions",
+        "S45_family_risks"
+      ],
+      "proof": "S88 label-free exact 193-policy decoder from 16 family proposals, risk and votes"
+    },
+    {
+      "id": "S69",
+      "state": "historical_only",
+      "requires": [
+        "S46_193",
+        "PR16"
+      ],
+      "proof": "S89 exact historical veto rules are keyed by old outer folds"
+    },
+    {
+      "id": "S70_S71_S72",
+      "state": "historical_only",
+      "requires": [
+        "S69",
+        "wav_groups"
+      ],
+      "proof": "S72 risk and poly guard fitted/tested on exposed historical folds"
+    },
+    {
+      "id": "S79_K1",
+      "state": "historical_only",
+      "requires": [
+        "S70_S71_S72",
+        "PR16",
+        "S46_193"
+      ],
+      "proof": "Four saved K1 logistic models with fold-specific choices; no novel-piece deployment rule"
+    },
+    {
+      "id": "S80_K0_K2_tail",
+      "state": "logic_ready_inputs_missing",
+      "requires": [
+        "S79_K1",
+        "S70_S71_S72",
+        "PR16",
+        "S46_193"
+      ],
+      "proof": "S147: zero mismatches on 59309 historical rows, 46 K0 and 61 K2 actions"
+    },
+    {
+      "id": "S80_full",
+      "state": "missing_new_audio",
+      "requires": [
+        "S80_K0_K2_tail"
+      ],
+      "proof": "No full end-to-end predictor producing new-wave outputs through all original inputs"
+    },
+    {
+      "id": "independent_ExactK",
+      "state": "pending_independent",
+      "requires": [
+        "S80_full"
+      ],
+      "proof": "External preregistered IDMT-SMT-GUITAR V2 heldout not performed"
+    },
+    {
+      "id": "promote_S80",
+      "state": "pending_independent",
+      "requires": [
+        "independent_ExactK"
+      ],
+      "proof": "Must beat freeze_local_combo in global and poly Exact-K on unseen pieces"
+    }
+  ],
+  "required_acceptance": [
+    "Define final new-wave model version, parents, routing order and policies before opening labels",
+    "Run fully unseen-audio S4/S5->S18->16 S45->S46->S69->S72->S79->S80",
+    "Freeze model, code, checkpoints and independent predictions with SHA256",
+    "Evaluate song-disjoint unseen and unexposed guitar polyphony data against freeze_local_combo",
+    "Report global, K0-K6, K2plus, paired corrections and regressions with uncertainty",
+    "Promote only with independently verified better global AND poly Exact-K and no unresolved regressions"
+  ],
+  "independent_full_S80_accuracy_measured": false,
+  "last_implemented_verified_stage": "S173: historical S1/S3/S4 fitted archives recovered checksum exact in S172; S35 36 original experts and 72 original Q risk gates executed on GOAT with a documented NEW S20-for-S29 adapter; partial S45 11/16 original-trained families and 209 genuine Ridge checkpoints scored, 1 partial action, not independently proven correct. No exact S80 promotion.",
+  "evidence_runs": {
+    "original_models_preserved": 38193466752,
+    "s80_tail_historical_exact": 38194275444,
+    "source_restore": 38192579770,
+    "real_goat_negative": 38191739817,
+    "S11_original_run": 38194821806,
+    "S18_source_model": 38195035112,
+    "S11_S16_S17_S18_checkpoint_archive": 38195167284,
+    "S16_S17_S18_cascade": 38195310657,
+    "S13_S14_S15_trained": 38195528700,
+    "S15_to_S18_cascade": 38195685473,
+    "S155_correct_ancestry": 38195864313,
+    "S156_S13_S14_weights_archived": 38195953248,
+    "S157_authentic_S8_forward": 38196167459,
+    "S158_S9_parent_parity": 38196307750,
+    "S159_original_S8_archived": 38196392548,
+    "S161_correct_S41_parent": 38196667499,
+    "S45_original_304_fit_archive": 37891074478,
+    "S163_partial_five_sources": 38198248491,
+    "S164_304_models": 38198384234,
+    "S165_negative_veto": 38198578807,
+    "S166_recurrent_three_sources": 38198716623,
+    "S167_partial_eight": 38198877007,
+    "S168_Bfirst_two": 38199078698,
+    "S169_partial_ten": 38199247838,
+    "S170_audited_preserved": 38199557501,
+    "S172_recovered_S1_S3_S4_archives": 38205875589,
+    "S173_S35_original_weights_11_sources": 38206160849,
+    "S5_owned527_exact_numerical_recovery": 38221478587,
+    "recovered_S5_to_S18_exact_cascade": 38224327985
+  },
+  "ancestry_correction": {
+    "prior_graph": "S148 mistakenly represented S11 as direct prerequisite of S18",
+    "actual_source": "S9 -> S13 and S14 -> S15 safe_OR -> S16 K12/K23 -> S17 K32/K34 -> S18 K43/K21",
+    "S11_relation": "S11 risk/votes family is parallel to S13-S18 ancestry; feeds a candidate family, not direct S18 parent",
+    "user_visible_note": "Source code audit from historical commit 854ada718ac9bf1556f00c96b8e1aa90402d6ab3",
+    "new_wave_equivalence": "false: original S5/S8/S9 still missing"
+  },
+  "external_S8_S9_source_provenance": {
+    "checkpoint_run": 37851172129,
+    "trained_checkpoints": 19,
+    "adapted_parents": "g=S135,p=PR16#22,b=freeze_local_combo",
+    "same_57_events": true,
+    "S9_vs_prior_S153_S154_mismatches": 0,
+    "true_original_S5_527D_features_available": false,
+    "official_promotion": false,
+    "permanent_release_url": "https://github.com/Andriamarosoa/note/releases/tag/v273-original-S8-weights-S157-S158-GOAT-proof"
+  },
+  "negative_experimental_results": {
+    "S161_corrected_S41_parent": {
+      "GOAT_events": 57,
+      "original_S41_checkpoints": 19,
+      "KEEP_count": 57,
+      "changes_vs_S154_S18": 0,
+      "changes_vs_S144": 4,
+      "mean_keep_probability": 0.9146082401275635,
+      "historical_S18_equivalence": false,
+      "official_promotion": false
+    }
+  },
+  "known_S45_source_archive": {
+    "source_run": 37891039201,
+    "trained_original_ridge_models": 304,
+    "original_families": 16,
+    "models_per_family": 19,
+    "risk_feature_width": 156,
+    "archive_url": "https://github.com/Andriamarosoa/note/releases/tag/v273-series45-research-37891074478",
+    "label_free_runtime": "scripts/s96_external_s45_risk_runtime.py",
+    "full_external_risk_forward_verified": false,
+    "remaining_blocker": "all 16 S43/S44 authentic source K proposal vectors for new audio, same row IDs and parent S18",
+    "official_promotion": false
+  },
+  "original_S45_family_manifest": "analysis/v273_s45_original_champion_catalog.json",
+  "S45_original_16_family_identifiers_validated_against_S98": true,
+  "S45_checkpoints_304_trained_archive_available": true,
+  "verified_external_source_families_with_adapted_inputs": [
+    "S11_votes_time_audio",
+    "S12_audio_logistic",
+    "S19_recurrent_ABA",
+    "S20_repeated_ABA",
+    "S24_Bfirst",
+    "S25_Bfirst",
+    "S27_early_stop",
+    "S38_morphology",
+    "S40_temporal_CNN",
+    "S41_neural_fusion",
+    "S35_multiroute"
+  ],
+  "not_yet_executable_original_source_families": [
+    "S1_acoustic",
+    "S2_source",
+    "S3_repair",
+    "S4_repair",
+    "historical_repair_coherent"
+  ],
+  "note_10of16": "Ten original champion algorithm families forwarded with original trained weights and unchanged formula on real GOAT, but historical S45 outputs not reproduced bit-exact, six families absent, S5 upstream adapted, and only ten-family vote agreement known. No S80 promotion.",
+  "S45_partial_ten_family_research": {
+    "evidence_source_run": 38199247838,
+    "archive_audit_run": 38199557501,
+    "permanent_research_release": "https://github.com/Andriamarosoa/note/releases/tag/v273-S163-S170-real-original-S45-10of16-GOAT-research",
+    "GOAT_native_events": 57,
+    "trained_ridge_models_verified": 190,
+    "trained_ridge_models_that_scored": 95,
+    "proposed_nonparent_source_votes": 6,
+    "events_with_alternatives": 3,
+    "accepted_source_action_count": 1,
+    "accepted_source_family": "S25_Bfirst",
+    "accepted_action": {
+      "row_id": "example2_di.wav:161909",
+      "from_K": 1,
+      "to_K": 0,
+      "agreeing_families": [
+        "S11_votes_time_audio",
+        "S12_audio_logistic",
+        "S24_Bfirst",
+        "S25_Bfirst"
+      ],
+      "model_expected_correction": 0.45647650957107544,
+      "model_expected_regression": 0.36834585666656494,
+      "model_net_score": 0.0881306529045105
+    },
+    "action_truth_unknown": true,
+    "polyphonic_independent_ExactK_test_done": false,
+    "original_full_S45_proven": false,
+    "S80_promoted": false
+  },
+  "note_11of16": "Eleven historical S45 champion-family CHECKPOINTS/rules have now been executed on native GOAT with new deployment adapters; not original bit-identical S45. S35 uses S20 for missing original S29 and four outer-fold means; S35 itself made 0 K changes. Five S1/S2/S3/S4/historical repair producer families still missing on new WAV. S5-527D original missing; independent S80 score missing.",
+  "S45_partial_eleven_family_research": {
+    "evidence_run": 38206160849,
+    "GOAT_native_events": 57,
+    "adapted_original_trained_expert_S35_checkpoints": 36,
+    "adapted_original_trained_S35_risk_gate_checkpoints": 72,
+    "source_original_ridge_fits_verified": 209,
+    "S35_changes_vs_adapted_S18": 0,
+    "partial_eleven_changes_vs_adapted_S18": 1,
+    "original_S29_for_S35_available": false,
+    "original_S5_527D_on_GOAT_available": false,
+    "independent_ExactK_measured": false,
+    "promoted": false
+  },
+  "s5_owned527_recovery": {
+    "status": "EXACT_HISTORICAL_S5_RECONSTRUCTION",
+    "rows": 59309,
+    "models": 4,
+    "bin_thresholds": 412350,
+    "raw_probability_max_abs": 0,
+    "prior_probability_max_abs": 0,
+    "original_source_text_recovered": false,
+    "original_design_file_byte_identity_proven": false,
+    "new_audio_forward_executed": false,
+    "full_S80_promoted": false,
+    "implementation_commit": "6064def1713432e54cf8b01dc07b153b58056716",
+    "workflow_run": 38221478587,
+    "workflow_status": "success",
+    "report": "analysis/README_V273_S5_OWNED527_RECOVERY.md",
+    "artifact_id": 11734537945
+  },
+  "historical_snapshot_note": "S-series experiment fields preserve the results known at their execution. Latest S5 numerical feature-recovery evidence is in s5_owned527_recovery and the S5_original527 node. Prior absence of original source text is not absence of the newly verified reconstructed runtime.",
+  "recovered_S5_to_S18": {
+    "status": "HISTORICAL_EXACT_AND_GOAT_ORIGINAL_CHECKPOINT_FORWARD",
+    "historical_rows": 59309,
+    "selected_S5_decisions_checked": 118618,
+    "downstream_selected_checkpoints": 133,
+    "downstream_selected_stages": [
+      "S8",
+      "S13",
+      "S14",
+      "S16",
+      "S17",
+      "S18"
+    ],
+    "historical_K_mismatches": 0,
+    "external_events": 57,
+    "external_fold_branches": [
+      0,
+      1,
+      2,
+      4
+    ],
+    "new_piece_rule": "Keep four original S5 branches; average same-fold piece-held risk checkpoints; preserve original thresholds and eligibility.",
+    "S135_or_PR16_substitutes_used": false,
+    "models_retrained": false,
+    "truth_labels_read": false,
+    "independent_S80_accuracy_measured": false,
+    "official_promotion": false,
+    "github_ci_status": "success",
+    "report": "analysis/README_V273_RECOVERED_S5_S18.md",
+    "workflow": ".github/workflows/v273-recovered-s5-s18.yml",
+    "run_id": 38224327985,
+    "artifact_id": 11735608748,
+    "implementation_commit": "76d3e47bfe4a3eb382f529f03bd05d8d42badb5a"
+  },
+  "recovered_eight_vote_255_runtime": {
+    "status": "HISTORICAL_GROUP_PARITY_AND_GOAT_255x9_LOCAL_VERIFIED",
+    "original_training_recipe_refit_specialists": 70,
+    "original_frozen_neural_correctors": 14,
+    "historical_group_decisions_checked": 13375005,
+    "historical_group_decision_mismatches": 0,
+    "GOAT_events": 57,
+    "freeze_K234_eligible_events": 5,
+    "fold_branches": [
+      0,
+      1,
+      2,
+      4
+    ],
+    "GOAT_group_audits_shape": [
+      4,
+      5,
+      255,
+      9
+    ],
+    "anchor": "freeze_local_combo, not S18",
+    "receiver_annotations_read": false,
+    "S1_S4_risk_logits_ready": false,
+    "full_S45_sixteen_families_ready": false,
+    "official_promotion": false,
+    "report": "analysis/README_V273_RECOVERED_255_PRODUCERS.md"
+  }
+}

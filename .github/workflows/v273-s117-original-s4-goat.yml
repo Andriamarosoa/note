@@ -1,0 +1,52 @@
+name: S117 8 genuine S4 control models infer on 57 unseen GOAT audio events
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s117_external_original_s4_control_forward.py'
+      - '.github/workflows/v273-s117-original-s4-goat.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  forward:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+      - name: Restore exact S4 original 8 control checkpoints
+        run: |
+          mkdir -p model/history
+          git fetch origin 'refs/tags/v273-series45-research-37891074478:refs/tags/v273-series45-research-37891074478'
+          git archive 854ada718ac9bf1556f00c96b8e1aa90402d6ab3 analysis/evidence/v273-open-k0-k6/series4/models | tar -x -C model/history
+      - name: Download S116 verified acoustic control features (without labels)
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38184381730
+          name: v273-s116-original-S4-control111-GOAT
+          path: model/s116
+      - name: Run original control models on 57 native GOAT event features
+        run: |
+          set -euo pipefail
+          FEATURES="$(find model/s116 -name external_s4_control111.npz -type f -print -quit)"
+          test -n "$FEATURES"
+          python scripts/s117_external_original_s4_control_forward.py \
+            --checkpoints model/history/analysis/evidence/v273-open-k0-k6/series4/models \
+            --features "$FEATURES" --out model/s117
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s117-original-S4-control-GOAT-forward
+          path: model/s117/
+          retention-days: 90

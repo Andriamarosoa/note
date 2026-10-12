@@ -1,0 +1,117 @@
+name: S168 authentic B-first S24 S25 source family trained weights on GOAT
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s168_original_S24_S25_Bfirst_GOAT.py'
+      - 'scripts/train_v273_Bfirst_recurrent.py'
+      - '.github/workflows/v273-s168-actual-original-Bfirst.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s168-original-S24-S25-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  original_Bfirst_inference:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Verify original B-first source identical to pinned original research
+        run: |
+          git fetch --depth=1 origin 854ada718ac9bf1556f00c96b8e1aa90402d6ab3 || true
+          python - <<'PY'
+          import subprocess
+          path='scripts/train_v273_Bfirst_recurrent.py'
+          assert open(path,'rb').read()==subprocess.check_output([
+            'git','show','854ada718ac9bf1556f00c96b8e1aa90402d6ab3:'+path])
+          PY
+      - run: |
+          python -m scripts.train_v273_Bfirst_recurrent --self-test
+          python -m scripts.audit_v273_inverse_ab_order --self-test
+          python -m scripts.s168_original_S24_S25_Bfirst_GOAT --self-test
+      - name: Original 19 S20 weights for S24 reverse B->A
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37858383973
+          name: v273-series20-residual
+          path: model/S20
+      - name: Original 19 trained B-first S25 checkpoints
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37862417522
+          name: v273-series25-trained-Bfirst
+          path: model/S25
+      - name: Frozen S154 genuine trained S18-risk source parent on GOAT
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38195685473
+          name: v273-s154-original-S13-S14-S15-S16-S17-S18-checkpoint-cascade-GOAT
+          path: model/S154
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38182078525
+          name: v273-s97-original-goat-s45-audio-features
+          path: model/S97
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38176406465
+          name: v273-s85-original-pr16-external-policies
+          path: model/S85
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38190945241
+          name: v273-s135-K-anchored-S5-student-soft-posteriors
+          path: model/S135
+      - name: Run original S24 BbeforeA0 and S25 trained BbeforeA0 on 57 native GOAT rows
+        run: |
+          set -euo pipefail
+          S97="$(find model/S97 -name original_s45_audio_only.npz -print -quit)"
+          S85="$(find model/S85 -name pr16_external_36_policies.npz -print -quit)"
+          S135="$(find model/S135 -name GOAT_57_label_blind_soft_Kanchored.npz -print -quit)"
+          S154="$(find model/S154 -name original_S15_to_S18_trained_GOAT_adapted_S9.npz -print -quit)"
+          for x in "$S97" "$S85" "$S135" "$S154"; do test -s "$x"; done
+          python -u -m scripts.s168_original_S24_S25_Bfirst_GOAT \
+            --s97 "$S97" --s85 "$S85" --s135 "$S135" --s154 "$S154" \
+            --s20 model/S20 --s25 model/S25 --out model/S168
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S168/report.json'))
+          assert r['native_new_audio_events']==57
+          assert r['original_S20_fixed_checkpoint_count_for_S24']==19
+          assert r['original_S25_trained_checkpoint_count']==19
+          assert not r['GOAT_labels_MIDI_opened'] and not r['S80_promoted']
+          with np.load('model/S168/original_S24_S25_38_trained_Bfirst_GOAT.npz',allow_pickle=False) as z:
+              assert z['original_S24_Bfirst_B0_K'].shape==(57,)
+              assert z['original_S25_Bbefore_A0_K'].shape==(57,)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s168-original-S24-S25-Bfirst-trained-source-producers-GOAT
+          path: model/S168/
+          retention-days: 90

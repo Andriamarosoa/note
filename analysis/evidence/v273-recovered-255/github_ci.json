@@ -1,0 +1,64 @@
+{
+  "status": "GITHUB_CI_SUCCESS_FROZEN_255_PRODUCERS",
+  "repository": "Andriamarosoa/note",
+  "branch": "codex/v273-scope-rescue",
+  "tested_commit": "4e5e3fc278f885e1b608e18476ec24a32ad1edff",
+  "tested_tree": "428fc0c6849419e492d578e7ca2c74f9bd7ab3f7",
+  "workflow_file": ".github/workflows/v273-recovered-255-producers.yml",
+  "workflow_run_id": 38232069185,
+  "workflow_run_url": "https://github.com/Andriamarosoa/note/actions/runs/38232069185",
+  "workflow_job_id": 114753697793,
+  "conclusion": "success",
+  "created_at": "2026-10-12T09:46:41Z",
+  "completed_at": "2026-10-12T09:47:32Z",
+  "historical_configurations": 14,
+  "historical_group_decisions_checked": 13375005,
+  "historical_group_decision_mismatches": 0,
+  "specialist_cached_probabilities_bit_exact": true,
+  "maximum_corrector_probability_error": 0.0000010132789611816406,
+  "specialists_refitted_in_CI": false,
+  "corrector_retrained": false,
+  "GOAT_external_events": 57,
+  "GOAT_eligible_events": 5,
+  "GOAT_group_audits_shape": [
+    4,
+    5,
+    255,
+    9
+  ],
+  "GOAT_inputs_sha256": "90ed9d28e3506067874d6231672d99aefb4714ab7e71bf9059435176ada695b2",
+  "GOAT_CI_output_sha256": "b4377c9bafb7beda6f41d8ae722b02b2508e09acaaec3dd549a228304811f4a2",
+  "GOAT_local_output_sha256": "b4377c9bafb7beda6f41d8ae722b02b2508e09acaaec3dd549a228304811f4a2",
+  "GOAT_output_archive_byte_identical_to_local": true,
+  "success_log": "255 GROUPS: ORIGINAL HISTORICAL PARITY AND SAME NEW AUDIO OUTPUTS VERIFIED",
+  "new_audio_annotations_read": false,
+  "GOAT_is_exposed_smoke_data": true,
+  "full_S45_16_families_complete": false,
+  "independent_ExactK_measured": false,
+  "S80_promoted": false,
+  "artifact": {
+    "id": 11739260840,
+    "name": "recovered-eight-producers-255-group-runtime-and-GOAT-proof",
+    "bytes": 7966225,
+    "digest": "sha256:d3ef181f985da8e310becbd8b3235a91292bedd307430e8accb3959c438bbd21",
+    "expires_at": "2027-01-10T09:46:41Z"
+  },
+  "prior_runs": [
+    {
+      "id": 38230762655,
+      "conclusion": "failure",
+      "cause": "Fresh refit on GitHub failed exact specialist posterior parity; replaced by replay of preserved verified model bytes."
+    },
+    {
+      "id": 38231100456,
+      "conclusion": "failure",
+      "cause": "Historical decisions and GOAT audits passed; one direct-feature standard deviation exceeded unchanged 2e-5 cross-machine tolerance. Corrector forward accumulation changed to float64 with float32 inputs, weights and posteriors."
+    },
+    {
+      "id": 38230762422,
+      "conclusion": "success",
+      "scope": "S80 dependency contract remains blocked and unpromoted."
+    }
+  ],
+  "source": "GitHub run metadata, artifact metadata and decoded job logs fetched after completion."
+}

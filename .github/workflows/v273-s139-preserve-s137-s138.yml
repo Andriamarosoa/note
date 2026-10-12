@@ -1,0 +1,96 @@
+name: S139 preserve real S137-S138 external GOAT negative evidence immutably
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - '.github/workflows/v273-s139-preserve-s137-s138.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: s139-preserve-evidence-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  evidence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==2.3.5
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38191739817
+          name: v273-s137-sealed-before-truth-s135-new-student
+          path: evidence/sealed
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38191739817
+          name: v273-s137-real-paired-GOAT-K-smoke
+          path: evidence/scored
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38191885587
+          name: v273-s138-real-GOAT-native-onset-coverage-audit
+          path: evidence/coverage
+      - name: Assert independent seal predates labels and S135 REJECTED
+        run: |
+          python - <<'PY'
+          import json,hashlib,pathlib,numpy as np
+          base=pathlib.Path('evidence')
+          m=json.loads((base/'sealed/seal.json').read_text())
+          s=json.loads((base/'scored/report.json').read_text())
+          c=json.loads((base/'coverage/report.json').read_text())
+          assert hashlib.sha256((base/'sealed/predictions_before_labels.npz').read_bytes()).hexdigest()==m['prediction_sha256']==s['proof_predicted_before_opening_MIDI_SHA256']
+          assert s['overall']['events']==57 and s['overall']['incumbent_correct']==44
+          assert s['overall']['candidate_correct']==44
+          assert s['overall']['corrections']==s['overall']['regressions']==1
+          assert s['poly_true_K2plus']['events']==3
+          assert s['poly_true_K2plus']['incumbent_correct']==2
+          assert s['poly_true_K2plus']['candidate_correct']==1
+          assert c['total_note_on_first_6s']==14 and c['total_note_on_first_6s_covered_20ms']==11
+          assert not s['original_S80_tested'] and not s['official_reference_promoted']
+          assert not c['models_changed'] and not c['promotion']
+          with np.load(base/'scored/revealed_true_K.npz',allow_pickle=False) as z:
+              assert len(z['row_id'])==57 and np.bincount(z['true_K'],minlength=7).tolist()==[49,5,3,0,0,0,0]
+          print('S139 PASS: external negative evidence sealed and independent, NO PROMOTION')
+          PY
+      - name: Pack fixed evidence with all file hashes
+        run: |
+          set -euo pipefail
+          mkdir -p model/s139
+          find evidence -type f -print0 | sort -z | xargs -0 sha256sum > model/s139/FILES_SHA256SUMS
+          tar --sort=name --mtime='@0' --owner=0 --group=0 --numeric-owner \
+            -czf model/s139/v273-S137-S138-GOAT-negative-evidence.tar.gz evidence
+          (cd model/s139 && sha256sum v273-S137-S138-GOAT-negative-evidence.tar.gz > BUNDLE_SHA256)
+      - name: Create immutable research-only GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG="v273-s137-s138-goat-rejected-38191739817"
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo 'Already preserved; refusing overwrites'
+            exit 1
+          fi
+          gh release create "$TAG" \
+            model/s139/v273-S137-S138-GOAT-negative-evidence.tar.gz \
+            model/s139/BUNDLE_SHA256 model/s139/FILES_SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "S137-S138: independently sealed GOAT Exact-K mini-smoke, NO PROMOTION" \
+            --notes "Only a new S135 student, NOT historical S80. 57 groups; freeze 44/57, student 44/57; true poly 2/3 vs 1/3; 14 MIDI onsets in first six seconds, 11 covered. Two clips and disclosed MIDI not suitable for posthoc tuning/official promotion."
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s139-preserved-GOAT-negative-research-receipt
+          path: model/s139/
+          retention-days: 30

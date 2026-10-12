@@ -1,0 +1,118 @@
+name: S242 replay five authentic S45 source families on recovered S5 S18
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s242_five_S45_genuine_original_IDMT.py'
+      - '.github/workflows/v273-s242-S45-five-original-IDMT.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s242-five-family-source-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  recovered_source_forward:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install original compatible numpy sklearn torch
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Restore 19 original S11 saved risk models
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37853663514
+          name: v273-series11-native-risk
+          path: model/S11
+      - name: Restore 19 original S12 logistic models
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37853979683
+          name: v273-series12-full-audio
+          path: model/S12
+      - name: Restore original S38 four expert heads from four folds
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37880386031
+          name: v273-series38-poly-harmonic-expert
+          path: model/S38
+      - name: Restore four original S40 temporal CNNs
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37880762289
+          name: v273-series40-temporal-cnn
+          path: model/S40
+      - name: Restore 19 original S41 six-route fusion gates
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37881191015
+          name: v273-series41-six-head-neural-fusion
+          path: model/S41
+      - name: True S238 original trained 133-head S18 predictions on 1034 native IDMT events
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38304553740
+          name: s238-idmt-original-full-S5-S18-133-checkpoint-4fold-1034-predictions
+          path: model/S238
+      - name: Original native S97 original audio source 1034 matched event IDs
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38305601838
+          name: s240-original-S97-native-1034-audio-join-for-S29-S35
+          path: model/S240bridge
+      - name: Run five genuine trained S45 source families on recovered S5/S18 parent folds
+        run: >-
+          python -m scripts.s242_five_S45_genuine_original_IDMT
+          --s18 model/S238/S238_original_S5_to_S18_true_V88_native_IDMT_1034.npz
+          --s97 model/S240bridge/s240_original_IDMT_native_S97_audio.npz
+          --s11 model/S11 --s12 model/S12 --s38 model/S38
+          --s40 model/S40 --s41 model/S41 --out model/S242
+      - name: Verify all original families, genuine 19 branches and label-free proof
+        run: |
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S242/report.json'))
+          assert r['branches']==19 and r['events']==1034
+          assert r['fold_branches']==[5,4,5,5] and len(r['family_ids'])==5
+          assert r['former_S135_PR16_source_replaced']
+          assert r['S11_S12_original_S9_parent_used']
+          assert r['S38_S40_S41_original_S18_parent_used']
+          assert not r['S80_promoted'] and not r['independent_accuracy_measured']
+          assert not r['labels_read'] and not r['new_models_trained']
+          with np.load('model/S242/five_rebased_S11_S12_S38_S40_S41.npz',allow_pickle=False) as z:
+              assert z['proposals_K'].shape==(19,1034,5)
+              assert len(set(map(str,z['branch_piece'])))==19
+          print('S242 PASS 5 re-based trained S45 families, authentic S9/S18 parents, 19 branches, no promotion')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s242-five-authentic-S45-source-families-recovered-S5-S18
+          path: model/S242/
+          retention-days: 90

@@ -1,0 +1,58 @@
+name: S138 assess V84 group coverage on pinned first-6s GOAT truth (no retraining)
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s138_native_goat_coverage.py'
+      - '.github/workflows/v273-s138-coverage.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s138-coverage-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==2.3.5 mido==1.3.3
+      - run: python -m scripts.s138_native_goat_coverage --self-test
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38191739817
+          name: v273-s137-sealed-before-truth-s135-new-student
+          path: model/sealed
+      - name: Use exact pinned GOAT example1/example2 MIDI ONLY for post-seal coverage
+        run: |
+          mkdir -p model/midi
+          base="https://raw.githubusercontent.com/JackJamesLoth/GOAT-Dataset/55c6e6668ef4546e4635c5e7eaad3062cf7f036b/audio-examples"
+          for n in 1 2; do
+            curl -fLsS --retry 3 --connect-timeout 15 --max-time 180 \
+              "$base/example$n/example$n.mid" -o "model/midi/example$n.mid"
+          done
+      - name: Count notes in only observed first six seconds and detection within fixed 20ms
+        run: |
+          python -m scripts.s138_native_goat_coverage \
+            --sealed model/sealed/predictions_before_labels.npz \
+            --manifest model/sealed/seal.json \
+            --midi model/midi --out model/s138
+          python - <<'PY'
+          import json
+          d=json.load(open('model/s138/report.json'))
+          assert d['native_groups_total']==57
+          assert not d['models_changed'] and not d['promotion']
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s138-real-GOAT-native-onset-coverage-audit
+          path: model/s138/
+          retention-days: 90

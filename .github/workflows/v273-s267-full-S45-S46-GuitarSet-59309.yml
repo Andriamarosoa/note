@@ -1,0 +1,78 @@
+name: S267 full original 16 S45 producer families 304 Ridge 193 S46 policies on 59309 GuitarSet
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s267_full_original_16S45_193S46_guitarset_59309.py'
+      - '.github/workflows/v273-s267-full-S45-S46-GuitarSet-59309.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s267-full-original-S46-GuitarSet-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  nineteen_real_branches_full_dataset:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      GH_TOKEN: ${{ github.token }}
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Require all sixteen true original GuitarSet S45 source families saved and validated
+        run: |
+          gh run watch 38312238125 --exit-status --interval 15
+          gh run watch 38312455957 --exit-status --interval 15
+          gh run watch 38312298435 --exit-status --interval 15
+          gh run watch 38312985513 --exit-status --interval 15
+      - name: Download authentic sixteen sources, 19 piece branch predictions and original audio/fold parents
+        run: |
+          gh run download 38312238125 -n s263-original-trained-S29-S35-19branches-guitarset-59309 -D model/S263
+          gh run download 38312455957 -n s264-guitarset-five-original-S45-59309 -D model/S264
+          gh run download 38312298435 -n s265-guitarset-five-recurrent-S45-59309 -D model/S265
+          gh run download 38312985513 -n s266-original-five-rare-S45-guitarset-59309-all-19-branches -D model/S266
+          gh run download 38311814895 -n s260-guitarset-59309-true-original-S5-S18-fourfold-133-checkpoints -D model/S260
+          gh run download 38312084676 -n s262-guitarset-59309-native-real-S97-source -D model/S262source
+          gh run download 37891039201 -n v273-series45-specialized-risk-heads -D model/S45
+      - name: Recompute all 304 trained original S45 Ridge model risks plus original 193 S46 policies for each of 19 GuitarSet branch assignments
+        run: |
+          python -u -m scripts.s267_full_original_16S45_193S46_guitarset_59309 \
+            --five model/S266/external_five_families.npz \
+            --s35 model/S263/original_s29_to_s35_GUITARSET.npz \
+            --s242 model/S264/five_rebased_S11_S12_S38_S40_S41.npz \
+            --s243 model/S265/five_rebased_recurrent_S19_S20_S24_S25_S27.npz \
+            --s18 model/S260/S260_original_S5_to_S18_true_V88_native_GUITARSET_59309.npz \
+            --s97 model/S262source/original_GuitarSet_59309_S97.npz \
+            --models model/S45/models \
+            --catalog analysis/v273_s45_original_champion_catalog.json \
+            --out model/S267
+          python - <<'PY'
+          import json,numpy as np
+          from pathlib import Path
+          r=json.load(open('model/S267/report.json'))
+          assert r['original_native_reference_event_count']==59309
+          assert r['original_s45_ridge_checkpoint_count']==304 and r['original_s46_policy_count']==193
+          assert r['original_fold_held_piece_branches']==19
+          assert r['GuitarSet_fourfold_training_overlap_for_three_folds']
+          files=list(Path('model/S267').glob('branch*_fold*/s46/predictions.npz'))
+          assert len(files)==19
+          with np.load(files[0]) as z:assert z['predictions'].shape==(59309,193)
+          print('S267 PASS all 16 original S45 sources, 304 risks, 193 policy decisions x19 historical branches on 59309 GuitarSet rows, not valid independent OOF')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s267-full-original-S45-16families-304Ridge-193S46-59309-GuitarSet
+          path: model/S267/
+          retention-days: 90
