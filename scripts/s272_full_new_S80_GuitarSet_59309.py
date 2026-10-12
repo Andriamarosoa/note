@@ -58,7 +58,7 @@ def run(s226file,s219file,s85file,s97file,s80_models,out):
     policy22=pr['pr16_policy22_K'][pos].astype(np.int8)
     truthfree_s46=s46['S46_193_policy_K'].astype(np.int8)
     need(np.array_equal(s46['original_freeze_K'],pr['incumbent_freeze_K'][pos]) and
-         len(set(ids))==59309 and all(':' in k for k in ids),
+         len(set(ids))==59309 and all(k.isdecimal() for k in ids),
          'original official baseline freeze K drift or duplicate native event IDs')
     b=base['s72_poly_poly_guard_K'].astype(np.int8)
     geom=base['original_pr16_geometry46'].astype(np.float32)
@@ -139,8 +139,11 @@ def run(s226file,s219file,s85file,s97file,s80_models,out):
        external_accuracy_poly=None,
        historical_original_S80_new_piece_identity_proven=False,
        deployment_rule_new='S217-S226 original trained checkpoint sources + fold-equal consensus; S79 3of4 gate votes; S147 historical final tail',
-       GUITARSET_events_previously_exposed=False,
-       native_WAV_rank_set='dataset2_SHA256_filenames_33to48',
+       GUITARSET_events_previously_exposed=True,
+       historical_training_overlap_other_fold_models=True,
+       diagnostic_only_not_out_of_fold=True,
+       native_WAV_rank_set=None,
+       population='original_GuitarSet_59309_V88_native_dev_with_training_overlap',
        song_disjoint_independent_accuracy_measured=False,
        truth_MIDI_read=False,weights_retrained_on_external_audio=False,
        official_promotion=False)
