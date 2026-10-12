@@ -8,7 +8,16 @@ from __future__ import annotations
 import argparse,json,hashlib
 from pathlib import Path
 import numpy as np
-from scripts.train_v273_s45_specialized_risk_heads import choose_best
+# Independent reproduction of the original seven-line S45 choose_best rule.
+# Avoid importing its training-only PyTorch dependencies in this read-only audit.
+def choose_best(parent,proposal,risk,lam,cut):
+    score=risk[:,:,0]-float(lam)*risk[:,:,1]
+    score=np.where(np.isfinite(score),score,-np.inf)
+    j=np.argmax(score,axis=1)
+    top=score[np.arange(len(parent)),j]
+    good=np.isfinite(top)&(top>cut)
+    return (np.where(good,proposal[np.arange(len(parent)),j],parent).astype(np.int8),
+            np.where(good,j,-1).astype(np.int8))
 def need(c,msg):
     if not c:raise ValueError(msg)
 def audit(source,out):
