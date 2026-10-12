@@ -4,7 +4,7 @@ on:
     branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/s192_freeze_third_dataset2_audio_H7_comparison.py'
-      - '.github/workflows/v273-s189-dataset2-preXML-S35-freeze.yml'
+      - '.github/workflows/v273-s192-third-dataset2-preXML-H7-freeze.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -60,6 +60,6 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: v273-s189-frozen-dataset2-note-XML-16WAV-genuine-S35-preregistered-no-label
+          name: v273-s192-third-unseen-note-XML-16WAV-genuine-S35-frozen-no-label
           path: model/S192/
           retention-days: 90
