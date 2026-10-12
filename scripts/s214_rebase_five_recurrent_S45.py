@@ -102,8 +102,8 @@ def run(s18_path,s97,s19,s20,s25,out):
                 k27=stable.argmax(1).numpy().astype(np.int8)
                 _,b24=infer_reverse(neural20,xx20,original_parent,passes=1)
                 k24=torch.sigmoid(b24[0]).argmax(1).numpy().astype(np.int8)
-                _,b25,_=neural25(xx25,original_parent,passes=1)
-                k25=torch.sigmoid(b25[0]).argmax(1).numpy().astype(np.int8)
+                _,b25_logits,_=neural25(xx25,original_parent,passes=1)
+                k25=torch.sigmoid(b25_logits[0]).argmax(1).numpy().astype(np.int8)
             ks=np.column_stack((k19,k20,k24,k25,k27)).astype(np.int8)
             need(ks.shape==(n,5) and np.isin(ks,range(7)).all(),
                  'five real recurrent source K classes')
