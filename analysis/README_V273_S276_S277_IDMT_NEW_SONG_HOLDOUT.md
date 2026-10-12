@@ -69,6 +69,24 @@ On first 10 seconds of each of the five Dataset3 recordings:
 **These counts are model predictions, not measured true Exact-K.** NO XML
 contents read; no claim of composition-disjoint independent validation.
 
+
+## S281 — original S8 through S18 achieved without truth access
+
+S281 succeeded: https://github.com/Andriamarosoa/note/actions/runs/38319911630
+
+The 133 original archived risk checkpoints were executed on the same
+506 original V88 native events, with four separate folds and the
+historical S8/S9/S13/S14/S15/S16/S17/S18 decoding rules. No new fit.
+The original S18 folds disagree on **15 events**. This indicates
+cross-fold uncertainty, not a measured Exact-K accuracy.
+
+**Still missing for an unbiased S275 accuracy**: native Dataset3
+S29/S35, all 16 real S45 producers and 193 S46 policies, apply S274
+two-fold gate, original S69/S70/S71/S72/S79/S80 tail, freeze both
+complete predictions BEFORE any new XML content, then verify true
+composition disjointness and note-level labels. Until then:
+no new independent Exact-K percentage and no official promotion.
+
 ## Strict gates before independent Exact-K and promotion
 
 1. Complete original-source S5/S18, sixteen S45 producers, S46 quorum
