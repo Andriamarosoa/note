@@ -1,0 +1,108 @@
+name: S252 frozen full original pretrained S79 S80 on 1034 untouched native IDMT events
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s252_original_trained_S79_S80_on_native_IDMT.py'
+      - '.github/workflows/v273-s252-full-original-S80-native-IDMT.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s252-original-S80-native-IDMT-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  seal_full_original_trained_S80_before_any_XML_labels:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install original S79 four trained K1 logistic checkpoints numeric ABI
+        run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+      - name: Original genuine S71 S72 eight pretrained risk model fold decisions on original V88 native groups
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38307945164
+          name: s251-real-original-8-S71-S72-1034-native-IDMT
+          path: model/S251
+      - name: True 193 original S46 pretrained source policies and precommitted 19 piece branch consensus
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38307178111
+          name: s247-genuine-S46-193-specialist-consensus-IDMT-native-1034
+          path: model/S247
+      - name: Twelve original trained PR16 networks and 36 historical frozen policies with exact incumbent event IDs
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38307419228
+          name: s248-genuine-original-12-PR16-36policy-1034-native-IDMT
+          path: model/S248
+      - name: Original summary58 flow245 geometry3 real IDMT native V88 timing for all 1034 group positions
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38305601838
+          name: s240-original-S97-native-1034-audio-join-for-S29-S35
+          path: model/S240bridge
+      - name: Restore four original saved trained S79 K1 fold-specific models and thresholds
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38187186049
+          name: v273-s80-traceable-repair
+          path: model/S80historic
+      - name: Assert unchanged original frozen S147 S80 K0 K2 arithmetic independently before new-IDMT inference
+        run: python -m scripts.s147_s80_tail_runtime --self-test
+      - name: Execute original four S79 K1 trained checkpoints and original K0 K2 S80 rules, sealing 1034 rows BEFORE XML
+        run: |
+          python -m py_compile scripts/s252_original_trained_S79_S80_on_native_IDMT.py
+          python -u -m scripts.s252_original_trained_S79_S80_on_native_IDMT \
+            --s226 model/S251/S251_original_S71_S72_native_IDMT.npz \
+            --s219 model/S247/S247_original_193_S46_foldneutral_1034_IDMT.npz \
+            --s85 model/S248/pr16_external_36_policies.npz \
+            --s97 model/S240bridge/s240_original_IDMT_native_S97_audio.npz \
+            --s80 model/S80historic --out model/S252
+      - name: Freeze original S80 IDMT K0-K6 predictions on EXACT 1034 official native events, no label leakage
+        run: |
+          python - <<'PY'
+          import numpy as np,json,hashlib
+          from pathlib import Path
+          r=json.load(open('model/S252/report.json'))
+          assert r['original_native_WAV_events']==1034
+          assert r['S79_original_trained_K1_models']==4
+          assert r['S80_K0_K2_original_final_formula_exact']
+          assert r['original_PR16_predictions']==36 and r['S46_policy_inputs']==193
+          assert r['original_official_V88_native_event_IDs_matched']
+          assert not r['truth_MIDI_read'] and not r['song_disjoint_independent_accuracy_measured']
+          assert not r['official_promotion']
+          p=Path('model/S252/S252_full_original_S80_unseen_IDMT_1034_frozen.npz')
+          with np.load(p,allow_pickle=False) as z:
+              assert z['s80_K'].shape==(1034,)
+              assert z['K1_by_fold_threshold_action'].shape==(4,1034)
+              assert len(set(map(str,z['row_id'])))==1034
+              assert np.isin(z['s80_K'],range(7)).all()
+          print('S252 SHA256 SEALED:',hashlib.sha256(p.read_bytes()).hexdigest())
+          print('S252 PASS complete original S80 K0-K6 outputs, annotation XML not opened')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s252-full-original-S80-preXML-1034-IDMT-native-frozen-predictions
+          path: model/S252/
+          retention-days: 90
