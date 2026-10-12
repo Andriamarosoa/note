@@ -4,13 +4,13 @@ on:
     branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/s202_s5_original_527D_120_internal_zone_orders.py'
-      - '.github/workflows/v273-s201-original-S5-527D-120-within-zone-orders-fidelity.yml'
+      - '.github/workflows/v273-s202-original-S5-527D-120-within-zone-orders.yml'
   workflow_dispatch:
 permissions:
   contents: read
   actions: read
 concurrency:
-  group: s201-fixed-24-original-S5-zone-orders-${{ github.ref }}
+  group: s202-fixed-120-intra-zone-orders-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   fixed_candidate_order_posterior_fidelity:
@@ -67,14 +67,14 @@ jobs:
           import json
           r=json.load(open('model/S202/results/report.json'))
           assert r['permutations_predeclared']==120
-          assert r['original_historical_fold0_sample_size']==512
-          assert not r['archived_S5_training_labels_read']
+          assert r['source_original_audio_events_tested']==512
+          assert not r['historical_truth_or_MIDI_used']
           assert not r['S5_527D_builder_exact_original_verified']
           assert not r['S80_promoted']
           PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: v273-s201-original-S5-24-104D-block-order-original-posterior-fidelity-512-historical-no-labels
+          name: v273-s202-original-S5-120-intra-zone-order-original-posterior-fidelity-512-historical-no-labels
           path: model/S202/results/
           retention-days: 90
