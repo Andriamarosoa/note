@@ -1,0 +1,78 @@
+name: S310 S311 original S217 S18 foldneutral and S97 bridge 964 V88 Dataset2 events PREXML
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s310_S217_fold_consensus_dataset2_964.py'
+      - 'scripts/s311_S97_bridge_dataset2_964.py'
+      - '.github/workflows/v273-s310-s311-original-S18-consensus-S97-dataset2.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s310-s311-original-S18-quorum-S97-dataset2-964
+  cancel-in-progress: true
+jobs:
+  original_S18_foldneutral_and_source_S97_bridge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2
+      - name: Restore true original unmodified S309 trained S18 heads on all 964 new native groups
+        run: |
+          gh run download 38323677107 \
+            -n s309-original-133S18-fourfold-on-964-IDMT-dataset2-native-PREXML \
+            -D model/S309 --repo ${{ github.repository }}
+      - name: Restore official 964 V88 freeze and exact original S97 acoustic features
+        run: |
+          gh run download 38323508991 \
+            -n s306-s307-IDMT-dataset2-964-original-S97-S5-527D-audio-before-XML \
+            -D model/S306S307 --repo ${{ github.repository }}
+          gh run download 38322507433 \
+            -n s302-IDMT-dataset2-16WAV-true-original-V88-native-official-unlabelled \
+            -D model/S302 --repo ${{ github.repository }}
+      - name: Reproduce original S217 majority-three-of-four fold-neutral consensus without heldpiece oracle
+        run: |
+          python -u -m scripts.s310_S217_fold_consensus_dataset2_964 \
+            --s309 model/S309/S309_original_S5_to_S18_true_V88_native_IDMT_964.npz \
+            --out model/S310
+      - name: Derive identical 964-row S97 source bridge for original S29 through S80
+        run: |
+          python -u -m scripts.s311_S97_bridge_dataset2_964 \
+            --s309 model/S309/S309_original_S5_to_S18_true_V88_native_IDMT_964.npz \
+            --s306 model/S306S307/S306/S306_IDMT_dataset2_original_S97_on_frozen_native_events.npz \
+            --s302 model/S302/S302_official_V88_dataset2_rank49plus_16_WAV_predictions.npz \
+            --out model/S311
+          python - <<'PY'
+          import json,numpy as np
+          x=json.load(open('model/S310/report.json'))
+          y=json.load(open('model/S311/report.json'))
+          assert x['native_event_count']==y['original_canonical_reference_events']==964
+          assert x['original_fold_count']==4
+          assert x['all_964_votes_independently_reproduced_with_Collections_Counter']
+          assert not x['labelled_song_annotations_read']
+          assert not y['labels_MIDI_XML_read']
+          with np.load('model/S310/S310_original_S18_foldneutral_964_IDMT.npz',allow_pickle=False) as z:
+            assert z['original_S18_by_fold_K'].shape==(4,964)
+            assert z['S18_piece_neutral_consensus_K'].shape==(964,)
+          with np.load('model/S311/S311_original_IDMT_dataset2_native_S97_audio.npz',allow_pickle=False) as z:
+            assert z['summary58'].shape==(964,58)
+            assert z['geometry3'].shape==(964,3)
+          print('S310-S311 PASS original consensus and unchanged audio views on 964 frozen event IDs, no XML')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s310-s311-original-S18-quorum-S97-native-dataset2-964-PREXML
+          path: |
+            model/S310/
+            model/S311/
+          retention-days: 90
