@@ -93,7 +93,7 @@ def selftest():
     b=np.array([0,2,2,1,3],np.int8);s79=b.copy();s79[3]=2
     pr=np.zeros((5,36),np.int8);v=np.zeros((5,193),np.int8)
     p=np.zeros((5,12,7),float);p[:,:,0]=1
-    p[0,:,0]=0;p[0,:,2]=1;v[1,:]=3;v[2,:]=2
+    p[0,:,0]=0;p[0,:,2]=1;p[1,:,0]=0;p[1,:,3]=1;pr[1,:]=3;v[1,:]=3;v[2,:]=2
     out,u,w=tail(b,s79,pr,p,v)
     req(out.tolist()==[2,3,2,2,3] and u.sum()==w.sum()==1,
         "S80 K0/K2 math drift")
