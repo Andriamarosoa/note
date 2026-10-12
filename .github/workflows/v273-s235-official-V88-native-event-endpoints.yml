@@ -1,0 +1,139 @@
+name: S235 S235 frozen V88 native sample boundaries on rank33to48, exact original reference validation
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s235_true_official_V88_event_endpoints_on_IDMT.py'
+      - '.github/workflows/v273-s235-official-V88-native-event-endpoints.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s235-real-original-official-freeze-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  actual_official_incumbent_native_V8:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      PYTHONPATH: '.:src'
+      TF_CPP_MIN_LOG_LEVEL: '2'
+      TF_NUM_INTRAOP_THREADS: '2'
+      TF_NUM_INTEROP_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install exact original V8 and official count weights ABI
+        run: python -m pip install -r requirements-train.txt numpy==1.26.4 scikit-learn==1.4.2
+      - name: Fetch original candidate stack models SHA-pinned reconstruction
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/source-download
+          gh release download v273-source-recovery-35086829802 \
+            --repo ${{ github.repository }} \
+            --pattern v273-rebuilt-proposal-sources.zip \
+            --dir model/source-download
+          python - <<'PY'
+          from pathlib import Path
+          from scripts.restore_v273_original_backup import extract_verified
+          from scripts.rebuild_v273_sources import validate_sources
+          extract_verified(Path('model/source-download/v273-rebuilt-proposal-sources.zip'),
+            Path('model/original-sources'),
+            'fb6bb1049b87c0517936f4f40e5bc1442722fc20b9eba5045a62bb0a12cf2994',
+            validate=validate_sources)
+          PY
+      - name: Fetch official unchanged freeze_local_combo original checkpoint
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/freeze-original model/freeze-download
+          gh release download v273-uniform-anchored-freeze-37233793945 \
+            --repo ${{ github.repository }} \
+            --pattern v273-uniform-anchored-freeze-result.tgz \
+            --dir model/freeze-download
+          tar -xzf model/freeze-download/v273-uniform-anchored-freeze-result.tgz -C model/freeze-original
+          test -s model/freeze-original/freeze_local_combo.weights.h5
+      - name: S231 untouched original 16 sealed WAV hashes and song identities
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38299545404
+          name: s231-IDMT-ranks33to48-unopened-song-WAV-feature-hash-preseal
+          path: model/S231
+      - name: Ensure S232 native IDMT ranks33to48 prediction artifact is completed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run watch 38301241411 --repo "${{ github.repository }}" --exit-status --interval 15
+      - name: S232 original V84-native event samples, no XML
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38301241411
+          name: s232-idmt-ranks33to48-original-V84-V86-native-groups-XML-unopened
+          path: model/S232
+      - name: Original sealed S233 official baseline reference, must exactly match new end-sample replay
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38301633310
+          name: s233-official-unchanged-freeze-local-combo-original-IDMT-native-predictions
+          path: model/S233-original
+      - name: Run exact frozen official reference for each song and fingerprint true V88 native groups
+        run: |
+          python -m py_compile scripts/s235_official_freeze_on_IDMT_rank33to48.py
+          python -u -m scripts.s235_official_freeze_on_IDMT_rank33to48 \
+            --sources model/original-sources \
+            --weights model/freeze-original/freeze_local_combo.weights.h5 \
+            --s231 model/S231/report.json \
+            --s232 model/S232/IDMT_dataset2_true_V84_native_unlabeled_groups.npz \
+            --original model/S233-original/S233_official_freeze_local_combo_IDMT_new_native_16songs.npz \
+            --out model/S235
+      - name: Ensure frozen original official baseline scores are native and label-free
+        run: |
+          python - <<'PY'
+          import json,numpy as np
+          from pathlib import Path
+          r=json.loads(Path('model/S235/report.json').read_text())
+          assert r['chosen_WAV_count']==16
+          assert r['original_native_V8_full_stack_used']
+          assert r['original_freeze_local_combo_weights_used']
+          assert r['original_official_native_event_count']==1034
+          assert r['true_original_V88_event_end_samples_present']
+          assert r['S233_original_unchanged_weights_all_1034_prediction_rows_verified']
+          assert sum(r['candidate_K_histogram'])==r['original_official_native_event_count']
+          assert r['baseline_predictions_locked_before_XML_content_read']
+          assert not r['new_audio_XML_content_read'] and not r['new_audio_MIDI_content_read']
+          assert not r['new_data_model_fit']
+          assert not r['original_S80_same_event_predictions_completed']
+          assert not r['independent_paired_ExactK_scored'] and not r['official_S80_promotion']
+          with np.load('model/S235/S235_official_freeze_local_combo_IDMT_new_native_16songs.npz',
+                       allow_pickle=False) as z:
+            n=r['original_official_native_event_count']
+            assert z['incumbent_K'].shape==(n,) and z['incumbent_probabilities'].shape==(n,7)
+            assert z['end_samples'].shape==(n,) and (z['end_samples']>=z['start_samples']).all()
+            assert len(set(map(str,z['row_id'])))==n
+            assert np.isin(z['incumbent_K'],range(7)).all()
+          print('S235 PASS official actual freeze_local_combo predictions on new original native events, unscored')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s235-original-V88-native-endpoints-reference-verification
+          path: model/S235/report.json
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s235-original-V88-native-endpoints-sealed-events
+          path: model/S235/S235_official_freeze_local_combo_IDMT_new_native_16songs.npz
+          retention-days: 90
