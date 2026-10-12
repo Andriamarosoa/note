@@ -1,0 +1,44 @@
+name: Verify recovered original S5 owned527 features and all frozen posteriors
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - scripts/v273_s4_owned527.py
+      - scripts/verify_v273_s5_owned527_recovery.py
+      - .github/workflows/v273-s5-owned527-recovery.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s5-owned527-recovery-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  original-replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: .
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install versions of original saved estimators
+        run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+      - name: Verify pinned original audio and models, then replay all 59309 events
+        run: >-
+          python -m scripts.verify_v273_s5_owned527_recovery
+          --fetch --cache-root model/s5-recovery --output model/s5-recovery-proof
+      - name: Publish numerical reconstruction result
+        if: always()
+        run: test ! -f model/s5-recovery-proof/report.md || cat model/s5-recovery-proof/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: original-s5-owned527-reconstruction-proof
+          path: model/s5-recovery-proof/
+          retention-days: 90

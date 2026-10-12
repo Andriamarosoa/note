@@ -1,0 +1,76 @@
+{
+  "status": "EXACT_HISTORICAL_S5_RECONSTRUCTION",
+  "original_checkpoint_commit": "7165e1ef54510aa9effc9f597b2783c832ca907a",
+  "feature_release": "v273-open-k0-k6-37837235723",
+  "rows": 59309,
+  "columns": 527,
+  "original_bin_columns_checked": 2108,
+  "original_bin_thresholds_checked": 412350,
+  "folds": [
+    {
+      "fold": 0,
+      "rows": 15952,
+      "train_rows": 43357,
+      "bin_columns_checked": 527,
+      "bin_thresholds_checked": 103068,
+      "bin_column_mismatches": [],
+      "raw_probability_max_abs": 0.0,
+      "bit_exact_probability_rows": 15952,
+      "predicted_K_mismatches": 0,
+      "prior_probability_max_abs": 0.0
+    },
+    {
+      "fold": 1,
+      "rows": 13868,
+      "train_rows": 45441,
+      "bin_columns_checked": 527,
+      "bin_thresholds_checked": 103098,
+      "bin_column_mismatches": [],
+      "raw_probability_max_abs": 0.0,
+      "bit_exact_probability_rows": 13868,
+      "predicted_K_mismatches": 0,
+      "prior_probability_max_abs": 0.0
+    },
+    {
+      "fold": 2,
+      "rows": 14665,
+      "train_rows": 44644,
+      "bin_columns_checked": 527,
+      "bin_thresholds_checked": 103077,
+      "bin_column_mismatches": [],
+      "raw_probability_max_abs": 0.0,
+      "bit_exact_probability_rows": 14665,
+      "predicted_K_mismatches": 0,
+      "prior_probability_max_abs": 0.0
+    },
+    {
+      "fold": 4,
+      "rows": 14824,
+      "train_rows": 44485,
+      "bin_columns_checked": 527,
+      "bin_thresholds_checked": 103107,
+      "bin_column_mismatches": [],
+      "raw_probability_max_abs": 0.0,
+      "bit_exact_probability_rows": 14824,
+      "predicted_K_mismatches": 0,
+      "prior_probability_max_abs": 0.0
+    }
+  ],
+  "full_historical_probability_equivalence": true,
+  "reconstructed_float32_matrix_sha256": "6ef3cd8fb437f08ec9ce6f2e35580ce2dcf8cce30affbb3bebb1f6fa955c2f77",
+  "historical_designs_sha256": "fd4d4d32872e5d3856bf994db386e9f2976ce57a418a21b56b876bf6f6d349cd",
+  "historical_design_hash_serialization_known": false,
+  "historical_matrix_byte_identity_proven": false,
+  "hash_note": "The original designs_sha256 serialization is unavailable. Raw reconstructed matrix SHA is reported separately; no original-file hash identity is claimed.",
+  "original_source_code_recovered": false,
+  "truth_labels_read": false,
+  "models_retrained": false,
+  "independent_S80_accuracy_measured": false,
+  "S80_promoted": false,
+  "versions": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "scikit_learn": "1.8.0",
+    "joblib": "1.5.3"
+  }
+}
