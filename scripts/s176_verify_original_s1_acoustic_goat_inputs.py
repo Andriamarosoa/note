@@ -8,9 +8,9 @@ from __future__ import annotations
 import argparse,json
 from pathlib import Path
 import numpy as np
-from scripts.s141_external_original_s40_cnn import strict
 from scripts.extract_v273_harmonic_trajectory import _frames,features_from_spectrogram
-from scripts.s169_s45_ten_original_sources_risks import need
+def need(ok,why):
+    if not ok: raise ValueError(why)
 OLD=Path("analysis/evidence/v273-regression-loops")
 def run(root,s97,s173,out):
     need(not out.exists(),"S176 must be immutable")
