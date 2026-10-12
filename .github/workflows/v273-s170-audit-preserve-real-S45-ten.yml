@@ -90,7 +90,7 @@ jobs:
           assert b['accepted_action_count']==1
           assert b['original_missing_source_families']==6
           assert not b['GOAT_MIDI_or_trueK_used']
-          assert not b['S80_promoted'] and not a['S80_promoted']
+          assert not b['S80_promoted'] and not a['official_S80_promotion']
           print('S170 original S45 1 selected action verified without labels')
           PY
       - name: Preserve SHA-256 evidence and original risk model sources references
