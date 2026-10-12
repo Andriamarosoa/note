@@ -6,9 +6,9 @@
   "official_promotion": false,
   "independent_S80_accuracy_measured": false,
   "latest_run": {
-    "id": 38178147414,
-    "component": "S89",
-    "status": "S46/S69 label-free frozen historical replay SUCCESS",
+    "id": 38188773741,
+    "component": "S131",
+    "status": "Genuine temporal audio feature student exploratory replay SUCCESS; historical teacher fidelity NEGATIVE",
     "independent_S80_score": false
   },
   "validated_frozen_components": {
@@ -57,11 +57,12 @@
     }
   },
   "missing_external_components": [
-    "Original 16 S43/S44 proposal family generators plus 16 S45 risk scores for new WAV",
-    "New-piece deployment assignment or retraining of original 304 S45 piece-exclusion models",
-    "Prespecified new-piece deployment for S69 fold-specific veto rules",
-    "New-piece deployable S70/S71/S72 meta learner K parent",
-    "Prespecified S80 four-fold K1 classifier policy for new recordings"
+    "Exact original S4-owned / S5 527D 416-column acoustic producer and checkpoint-equivalent sample-by-sample replay",
+    "Original 16 S43/S44 proposal family generators and S45 risk models on new WAV",
+    "Prespecified new-piece S69 fold-specific veto deployment",
+    "New-piece deployable S70/S71/S72 parent models",
+    "Prespecified deployment of S80 four-fold K1 classifiers on unseen compositions",
+    "Full external S80 vs freeze_local_combo paired scoring on a genuinely unseen independent corpus"
   ],
   "external_label_leakage_avoided": true,
   "disallowed_claims": [
@@ -69,5 +70,78 @@
     "S80 already independently validated",
     "historical 43.87% guaranteed on new music"
   ],
-  "next_protocol": "Implement and freeze deployable S80 variant, validate end-to-end on development audio, infer new audio without labels, then separately score sealed predictions against new annotations"
+  "next_protocol": "Implement and freeze deployable S80 variant, validate end-to-end on development audio, infer new audio without labels, then separately score sealed predictions against new annotations",
+  "experimental_deployability_research_S128_S131": {
+    "scope": "Reconstruction of historical S5 upstream audio producers; new student alternative is NOT original S5/S80",
+    "original_s5_527D_feature_equivalence_verified": false,
+    "s128": {
+      "run_id": 38188250730,
+      "historical_rows": 15952,
+      "original_vs_replay_mismatches": 1882,
+      "ordinal_beta_0p32_fixes": 352,
+      "ordinal_beta_0p32_breaks": 152,
+      "remaining_disagreements": 1682,
+      "accuracy_metric": false
+    },
+    "s129": {
+      "run_id": 38188446402,
+      "new_student_name": "S5-student111",
+      "heldout_teacher_correct": 14557,
+      "heldout_rows": 15952,
+      "original_S5_teacher_fidelity": 0.912550150451354,
+      "original_s5_checkpoint_equivalent": false,
+      "goat_label_blind_predictions": 57,
+      "goat_histogram_k0_to_k6": [
+        46,
+        9,
+        2,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "s130": {
+      "run_id": 38188595287,
+      "rare_class_teacher_recall_k2to4_unweighted": 0.585414266182119,
+      "exponents": [
+        {
+          "alpha": 0.25,
+          "macro_recall": 0.6107917449868728,
+          "fixes": 202,
+          "breaks": 210
+        },
+        {
+          "alpha": 0.5,
+          "macro_recall": 0.6311620040124936,
+          "fixes": 252,
+          "breaks": 277
+        },
+        {
+          "alpha": 0.75,
+          "macro_recall": 0.6531784410337074,
+          "fixes": 294,
+          "breaks": 376
+        }
+      ],
+      "experimental_no_promotion": true
+    },
+    "s131": {
+      "run_id": 38188773741,
+      "real_temporal_356D": {
+        "teacher_correct": 14520,
+        "fixes": 178,
+        "breaks": 215
+      },
+      "real_temporal_morph_846D": {
+        "teacher_correct": 14507,
+        "fixes": 193,
+        "breaks": 243
+      },
+      "true_accuracy_measured": false
+    },
+    "external_true_K_scored": false,
+    "official_reference_unchanged": true,
+    "next_required": "Recover original 416D S4/S5 producer and 16 S45 original family inference or freeze a separately versioned deploy model; then run full S69-S80 label-free predictions and independent same-audio comparison."
+  }
 }
