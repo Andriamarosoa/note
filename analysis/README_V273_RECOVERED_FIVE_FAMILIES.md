@@ -2,6 +2,11 @@
 
 12 octobre 2026. **S80 non promu.** Référence officielle : `freeze_local_combo`.
 
+**CI indépendante réussie** : [run 38234363815](https://github.com/Andriamarosoa/note/actions/runs/38234363815),
+commit `8301b6195cb9546c2e731e025e42922d3f08bbc6`.
+Les cinq empreintes de champions historiques et les décisions GOAT sont
+vérifiées sur le runner GitHub. [Preuve conservée](evidence/v273-recovered-five-families/github_ci.json).
+
 Les cinq familles auparavant absentes sur nouvel audio sont désormais
 exécutables à partir des vrais producteurs restaurés, avec leurs poids et leurs
 règles historiques. Le rejeu local retrouve **37 465 décisions de champions**
