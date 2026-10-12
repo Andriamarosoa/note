@@ -1,0 +1,81 @@
+name: S224 recover four original frozen S71 acoustic-risk heldfold models
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s224_recover_original_S71_heldfold_risk_models.py'
+      - '.github/workflows/v273-s224-recover-original-S71-models.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s224-original-S71-rebuild-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  recover:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install original S71 risk head numeric versions
+        run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+      - name: Retrieve historical S70 59309 selected fold-exclusive outputs
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38153394681
+          name: v273-s70-poly-meta-replay
+          path: model/S70
+      - name: Retrieve original unmodified S71 historic predictions and decisions
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38154433492
+          name: v273-s71-acoustic-risk
+          path: model/S71
+      - name: Retrieve authentic original acoustic 104D features for 59309 rows
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          pattern: v273-open-features-*
+          path: model/features
+      - name: Train and audit four S71 historical fold classifiers and training thresholds
+        run: >-
+          python -m scripts.s224_recover_original_S71_heldfold_risk_models
+          --s70 model/S70/predictions.npz
+          --features model/features
+          --s71 model/S71/predictions.npz
+          --out model/S224
+      - name: Validate exactly reproducing archived original S71 and no misleading external score
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.load(open('model/S224/report.json'))
+          assert r['historical_rows']==59309 and r['original_eligible_actions']==1263
+          assert r['acoustic_feature_width']==104 and r['original_checkpoint_count']==4
+          assert r['zero_historical_decision_mismatch']=={'risk':0,'poly':0}
+          assert len(list(Path('model/S224/models').glob('*.joblib')))==4
+          assert r['original_S71_models_recovered_bit_exact']
+          assert not r['external_truth_used'] and not r['independent_accuracy_measured']
+          assert not r['S80_promoted']
+          print('S224 PASS original S71 historical 59309 outcomes exact, checkpoints sealed')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s224-original-four-S71-acoustic-risk-checkpoints-historic-exact
+          path: model/S224/
+          retention-days: 90
