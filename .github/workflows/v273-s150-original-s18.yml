@@ -1,0 +1,96 @@
+name: S150 original S18 K43/K21 trained checkpoints on 57 new GOAT groups
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s150_original_s18_external.py'
+      - '.github/workflows/v273-s150-original-s18.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s150-original-S18-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  original_s18_risks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - run: python -m scripts.s150_original_s18_external --self-test
+      - name: Original S18 archived fit weights
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37856499212
+          name: v273-series18-k43-k21
+          path: model/s18
+      - name: S149 original S11 checkpoint forwards saved before S150
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38194821806
+          name: v273-s149-original-S11-risk-heads-new-GOAT-adapted-S16-S17-source-tested
+          path: model/s11
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38182078525
+          name: v273-s97-original-goat-s45-audio-features
+          path: model/s97
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38176406465
+          name: v273-s85-original-pr16-external-policies
+          path: model/s85
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38190945241
+          name: v273-s135-K-anchored-S5-student-soft-posteriors
+          path: model/s135
+      - name: Forward authentic S18 saved risk heads on real GOAT WAV-derived audio with adapted parent
+        run: |
+          set -euo pipefail
+          S97="$(find model/s97 -name original_s45_audio_only.npz -print -quit)"
+          S85="$(find model/s85 -name pr16_external_36_policies.npz -print -quit)"
+          S135="$(find model/s135 -name GOAT_57_label_blind_soft_Kanchored.npz -print -quit)"
+          S11="$(find model/s11 -name S11_real_original_weights_new_GOAT_adapted.npz -print -quit)"
+          test -s "$S97" && test -s "$S85" && test -s "$S135" && test -s "$S11"
+          python -m scripts.s150_original_s18_external \
+            --s97 "$S97" --s85 "$S85" --s135 "$S135" \
+            --s11 "$S11" --s18 model/s18 --out model/s150
+          python - <<'PY'
+          import json,numpy as np
+          d=json.load(open('model/s150/report.json'))
+          assert d['GOAT_real_events']==57
+          assert d['original_saved_S18_models_executed']>=4
+          assert d['108_original_veto_policy_formulas_executed']
+          assert not d['S16_S17_original_parent_chain_connected']
+          assert not d['promotion'] and not d['GOAT_MIDI_labels_read']
+          with np.load('model/s150/s18_original_weights_GOAT_from_adapted_S11.npz',allow_pickle=False) as z:
+              assert z['policy_predicted_K'].shape==(57,110)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s150-genuine-S18-trained-K43-K21-risk-models-GOAT-no-labels
+          path: model/s150/
+          retention-days: 90
