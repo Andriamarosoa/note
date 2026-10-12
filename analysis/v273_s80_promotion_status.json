@@ -6,8 +6,8 @@
   "official_promotion": false,
   "independent_S80_accuracy_measured": true,
   "latest_run": {
-    "component": "S255 posthoc causal audit of 6 XML-verified S80 regressions after S254 independent paired Exact-K",
-    "id": 38309041257,
+    "component": "S273 new full S80 fourfold GuitarSet 59309 measured, historical training-overlap diagnostic only",
+    "id": 38314932866,
     "status": "success",
     "independent_S80_accuracy_measured": true,
     "official_promotion": false
@@ -358,6 +358,48 @@
       "independent_matched_K1to6_result_negative": true,
       "independent_poly_gain_zero": true,
       "S80_officially_promoted": false
+    },
+    "S256_S273_full_original_weight_fourfold_GuitarSet_59309_measured_training_overlap": {
+      "status": "SUCCESS_FULL_GUITARSET_RECONSTRUCTION_AND_ACCURACY_MEASUREMENT__TRAIN_OVERLAP_NOT_OOF",
+      "source_runs": {
+        "S258": 38311525987,
+        "S259": 38311582199,
+        "S260": 38311814895,
+        "S261": 38311907661,
+        "S262": 38312084676,
+        "S263": 38312238125,
+        "S264": 38312455957,
+        "S265": 38312298435,
+        "S266": 38312985513,
+        "S267": 38313440938,
+        "S268": 38314164725,
+        "S269": 38314191759,
+        "S270": 38314219940,
+        "S271": 38314244883,
+        "S272": 38314291222,
+        "S273": 38314932866
+      },
+      "original_GuitarSet_native_total": 59309,
+      "original_true_poly_K2plus": 7385,
+      "historical_S80_outofpiece_OOF_poly_correct": 3240,
+      "historical_S80_outofpiece_OOF_poly_exactK": 0.43872714962762355,
+      "new_fourfold_S80_poly_correct": 5852,
+      "new_fourfold_S80_poly_exactK": 0.7924170616113744,
+      "historical_S80_outofpiece_OOF_global_correct": 49281,
+      "historical_S80_outofpiece_OOF_global_exactK": 0.8309194220101502,
+      "new_fourfold_S80_global_correct": 53327,
+      "new_fourfold_S80_global_exactK": 0.8991384106965216,
+      "new_fourfold_poly_Fixes_vs_historic": 2668,
+      "new_fourfold_poly_Regressions_vs_historic": 56,
+      "new_fourfold_global_Fixes_vs_historic": 4223,
+      "new_fourfold_global_Regressions_vs_historic": 177,
+      "historical_GuitarSet_dev_already_exposed": true,
+      "three_nonheldfold_trained_models_score_training_data": true,
+      "score_is_development_training_overlap_diagnostic_only": true,
+      "not_out_of_fold": true,
+      "not_independent": true,
+      "no_verified_improvement_in_generalization_from_this_score": true,
+      "official_promotion": false
     }
   },
   "missing_external_components": [
@@ -365,7 +407,8 @@
     "Only 206/1034 (19.9%) native official V88 events have matched XML note onset; the other 828 cannot truthfully be labeled K0. Full Exact-K0–K6 global score remains unmeasured, so promotion criteria objectively unmet.",
     "Native IDMT rank33-48 annotations now opened, hence these 16 WAVs cannot be reused as an independent test for a newly tuned S46 model or revised fold weighting; any redesign must train/fix on original historical training-only data and preregister a distinct new-song validation cohort.",
     "Song-file disjointness from prior first32 is proven; musical composition/tune-level song-disjointness is NOT. Verify piece/composition mapping or a truly song-disjoint corpus before an official comparison.",
-    "Next development: independently audit original historical S46/S69 risk gate classwise by K and why S46 polymax specialist activated on incumbent-correct matched IDMT onsets; design historically cross-validated gating without using rank33-48 XML for weight selection. Re-run full baseline and candidate aligned on a newly sealed untouched corpus with complete K0-K6 annotation coverage and polyphonic minimum sample."
+    "Next development: independently audit original historical S46/S69 risk gate classwise by K and why S46 polymax specialist activated on incumbent-correct matched IDMT onsets; design historically cross-validated gating without using rank33-48 XML for weight selection. Re-run full baseline and candidate aligned on a newly sealed untouched corpus with complete K0-K6 annotation coverage and polyphonic minimum sample.",
+    "S273 score: new fourfold S80 on GuitarSet produced 5852/7385=79.24% poly and 53327/59309=89.91% global; these are TRAINING-OVERLAP diagnostics, fundamentally not OOF comparable with historical S80 3240/7385=43.87% poly, 49281/59309=83.09% global. No independent promotion from this result."
   ],
   "external_label_leakage_avoided": true,
   "disallowed_claims": [
@@ -373,7 +416,7 @@
     "S80 already independently validated",
     "historical 43.87% guaranteed on new music"
   ],
-  "next_protocol": "STOP PROMOTION: fully genuine source-model weight S5→S80 experimental fold-neutral deployment is now executed and independently replayed on 1034 real official V88 native IDMT WAV rank33-48 groups, all native outputs sealed BEFORE XML. Independent S254 XML paired matched K1-K6 shows S80 80/206 vs freeze_local_combo 83/206 (delta -1.456pp), with 3 fixes 6 regressions, matched K2+ 4/39 for both; 828 unmatched unlabeled, 17/33 S80 changed rows unannotated. S255 posthoc unambiguously finds core S46 polymax step 0 fixes/9 regressions on 9 matched stage changes, partially recovered by S69 veto 4 fixes, S70 +1, S18 +1. The IDMT labels have now been opened and cannot be retuned and retested as independent. Promote only after designing a new fold-neutral expert gate on original historical train-only data, freezing it, and evaluating on a truly unseen song-disjoint, properly K0..6 labeled corpus; original freeze_local_combo remains official.",
+  "next_protocol": "STOP PROMOTION: fully genuine source-model weight S5→S80 experimental fold-neutral deployment is now executed and independently replayed on 1034 real official V88 native IDMT WAV rank33-48 groups, all native outputs sealed BEFORE XML. Independent S254 XML paired matched K1-K6 shows S80 80/206 vs freeze_local_combo 83/206 (delta -1.456pp), with 3 fixes 6 regressions, matched K2+ 4/39 for both; 828 unmatched unlabeled, 17/33 S80 changed rows unannotated. S255 posthoc unambiguously finds core S46 polymax step 0 fixes/9 regressions on 9 matched stage changes, partially recovered by S69 veto 4 fixes, S70 +1, S18 +1. The IDMT labels have now been opened and cannot be retuned and retested as independent. Promote only after designing a new fold-neutral expert gate on original historical train-only data, freezing it, and evaluating on a truly unseen song-disjoint, properly K0..6 labeled corpus; original freeze_local_combo remains official. S273 has measured new fourfold GuitarSet S80: 79.24% poly and 89.91% global, but old GuitarSet historical OOF 43.87%/83.09% comparison is biased by training overlap in 3/4 models. New-song IDMT matched true-poly remains 4/39 for both. Never promote based on S273 in-sample results.",
   "experimental_deployability_research_S128_S131": {
     "scope": "Reconstruction of historical S5 upstream audio producers; new student alternative is NOT original S5/S80",
     "original_s5_527D_feature_equivalence_verified": false,
