@@ -1,0 +1,81 @@
+name: S306 S307 964 new IDMT reserve V88 original S97 and S5 527D input features PREXML
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s306_original_IDMT_dataset2_964_S97_native_views.py'
+      - 'scripts/s307_original_S5_527D_IDMT_dataset2_964.py'
+      - '.github/workflows/v273-s306-s307-dataset2-964-original-S97-S5-features.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s306-s307-964-native-S97-S5-label-free
+  cancel-in-progress: true
+jobs:
+  genuine_frozen_S97_and_S5_527D_input:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      TF_CPP_MIN_LOG_LEVEL: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r requirements-train.txt numpy==1.26.4 scikit-learn==1.4.2
+      - name: Restore original SHA-pinned 16 prospective IDMT reserve WAV native model outputs
+        run: |
+          gh run download 38322507433 \
+            -n s302-IDMT-dataset2-16WAV-true-original-V88-native-official-unlabelled \
+            -D model/S302 --repo ${{ github.repository }}
+          gh run download 38318827219 \
+            -n s276-IDMT-central-directory-only-prospective-WAV-cohort \
+            -D model/S276 --repo ${{ github.repository }}
+      - name: Execute original full S97 58D/42x49/245D/490D/294D features on EXACT original 964 native events
+        run: |
+          python -u -m scripts.s306_original_IDMT_dataset2_964_S97_native_views \
+            --s302 model/S302/S302_official_V88_dataset2_rank49plus_16_WAV_predictions.npz \
+            --s302report model/S302/report.json \
+            --s276 model/S276/S276_IDMT_filename_only_cohort_manifest.json \
+            --out model/S306
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S306/report.json'))
+          assert r['events']==964 and r['WAV_count']==16
+          assert not r['annotation_XML_MIDI_read'] and not r['S80_official_promotion']
+          with np.load('model/S306/S306_IDMT_dataset2_original_S97_on_frozen_native_events.npz',allow_pickle=False) as z:
+            assert z['sequence42x49'].shape==(964,42,49)
+            assert z['summary58'].shape==(964,58)
+          print('S306 PASS genuine original spectral source views, new note XML unopened')
+          PY
+      - name: Recover original 527D S5 and 46D temporal owner geometry using same 964 native candidate groups
+        run: |
+          python -u -m scripts.s307_original_S5_527D_IDMT_dataset2_964 \
+            --s306 model/S306/S306_IDMT_dataset2_original_S97_on_frozen_native_events.npz \
+            --s302 model/S302/S302_official_V88_dataset2_rank49plus_16_WAV_predictions.npz \
+            --out model/S307
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S307/report.json'))
+          assert r['native_events']==964 and r['WAV_count']==16
+          assert r['original_feature_width']==527
+          assert not r['independent_ExactK_measured'] and not r['S80_promoted']
+          with np.load('model/S307/S307_IDMT_dataset2_true_original_S5_527D_input.npz',allow_pickle=False) as z:
+            assert z['original_S5_input_owned527'].shape==(964,527)
+            assert z['original_PR16_geometry46'].shape==(964,46)
+          print('S307 PASS original source 527D S5 inputs and 46D temporal owner geometry')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s306-s307-IDMT-dataset2-964-original-S97-S5-527D-audio-before-XML
+          path: |
+            model/S306/
+            model/S307/
+          retention-days: 90
