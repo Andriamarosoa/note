@@ -47,7 +47,7 @@ def run(root,out):
     need(not out.exists(),'immutable pinned checkpoint audit')
     details=[];s5_counts=collections.Counter()
     s4_counts=collections.Counter()
-    s5_folds=[];s4_folds=[];hashes=[]
+    s5_folds=[];s4_folds=[];hashes=[];missing_original_s4_owned=[]
     for fold in FOLDS:
         p=root/'series5'/'models'/f'fold{fold}'
         manifest=json.loads((p/'report.json').read_text())
@@ -62,6 +62,9 @@ def run(root,out):
                         'total_splits':sum(c.values()),'blocks':scoped(c)})
         for poly in (1,2):
             path=root/'series4'/'models'/f'fold{fold}__owned__poly{poly}.joblib'
+            if not path.is_file():
+                missing_original_s4_owned.append(str(path))
+                continue
             item,owned=checkpoint(path)
             need(owned.n_features_in_==527,'wrong S4 owned training schema')
             current=active(owned)
@@ -69,13 +72,15 @@ def run(root,out):
             details.append({'stage':'S4_owned','fold':fold,'poly':poly,
                             'unique_active':len(current),'total_splits':sum(current.values()),
                             'blocks':scoped(current)})
+    need(len(s4_folds)>=4,'too few verified S4 owned checkpoints')
     shared=set.intersection(*s5_folds)
     s5=set(s5_counts);s4=set(s4_counts)
     total=len(s5_counts)
     suffix=set(range(111,527))
     missing_all=sorted(suffix-(s5|s4))
     report={'status':'S200_ORIGINAL_527D_S4_OWNED_S5_TREE_ACTIVE_FEATURE_CENSUS',
-       'original_S5_model_count':4,'original_S4_owned_model_count':8,
+       'original_S5_model_count':4,'original_S4_owned_model_count':len(s4_folds),
+       'missing_original_S4_owned_models':missing_original_s4_owned,
        'S5_total_splits':sum(s5_counts.values()),
        'S4_owned_total_splits':sum(s4_counts.values()),
        'S5_active_527D_unique_columns':len(s5),
@@ -103,6 +108,7 @@ def run(root,out):
     out.write_text(json.dumps(report,indent=2)+'\n')
     print(json.dumps({key:report[key] for key in (
        'status','original_S5_model_count','original_S4_owned_model_count',
+       'missing_original_S4_owned_models',
        'S5_total_splits','S4_owned_total_splits',
        'S5_owned_suffix_416_active_columns','S4_owned_suffix_416_active_columns',
        'S5_S4_suffix_union_active','S5_S4_suffix_never_used_416_count',
