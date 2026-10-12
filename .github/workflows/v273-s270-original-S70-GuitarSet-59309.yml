@@ -28,10 +28,10 @@ jobs:
           python-version: '3.12'
       - run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
       - name: Require verified S269 frozen original S69 fourfold GuitarSet success
-        run: gh run watch 38313983301 --exit-status --interval 15
+        run: gh run watch 38314191759 --exit-status --interval 15
       - name: Retrieve sealed complete original S69 and 12 PR16 36 OOF sources
         run: |
-          gh run download 38313983301 -n s269-GuitarSet-59309-original-S69-fourfold -D model/S269
+          gh run download 38314191759 -n s269-GuitarSet-59309-original-S69-fourfold -D model/S269
           gh run download 38311525987 -n s258-full-guitarset-59309-real-original-native-527D-58D-46D-42x49-and-OOF-PR16 -D model/S258
           gh run download 38296428889 -n s222-recovered-original-S70-four-fold-checkpoints-exact-history -D model/S222
       - name: Run unchanged four original trained S70 classifiers over all original GuitarSet 59309 with fixed 3of4 gate
