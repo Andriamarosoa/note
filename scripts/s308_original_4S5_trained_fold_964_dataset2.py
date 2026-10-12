@@ -1,4 +1,4 @@
-"""S308 original S5 saved models on 964 Dataset3 native V88 rows, label free.
+"""S308 original S5 saved models on 964 Dataset2 native V88 rows, label free.
 
 Weights are downloaded by workflow from immutable commit
 7165e1ef54510aa9effc9f597b2783c832ca907a, SHA256-verified against
