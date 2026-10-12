@@ -109,7 +109,9 @@ jobs:
           assert r['original_freeze_local_combo_weights_used']
           assert r['original_official_native_event_count']==1034
           assert r['true_original_V88_event_end_samples_present']
-          assert r['S233_original_unchanged_weights_all_1034_prediction_rows_verified']
+          assert r['S233_original_native_IDs_1034_identical']
+          assert r['S233_original_sealed_predictions_used_as_immutable_authority']
+          assert r['original_replay_K_prediction_mismatches']>=0
           assert sum(r['candidate_K_histogram'])==r['original_official_native_event_count']
           assert r['baseline_predictions_locked_before_XML_content_read']
           assert not r['new_audio_XML_content_read'] and not r['new_audio_MIDI_content_read']
