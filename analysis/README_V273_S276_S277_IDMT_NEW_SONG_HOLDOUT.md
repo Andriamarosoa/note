@@ -173,3 +173,72 @@ groups are inadequate for a reliable promotion claim.
   provenance-audited composition-disjoint polyphonic pieces and
   a complete K0–K6 ground truth. Predetermined native alignment and
   all competing model outputs must be frozen BEFORE opening those labels.
+
+
+## S301–S309 — Historical Exact-K label correction and 964 new source events
+
+**CRITICAL LABEL CORRECTION:** Historical GuitarSet training used
+`train_v90_structured_cluster_cardinality.py`:
+`K = min(6, number of note onsets assigned to a 40ms V88 cluster)`.
+The assignment uses the original 20ms radius, and
+`yourmt3_exactk_common.assign_onsets` reproduces it from original group
+start/end samples. K counts **newly attacked notes**, NOT sustained
+sounding pitches.
+
+Therefore the older S299 figures 53.19% K1–K6 and 30.43% poly
+counting sounding pitches at onset+30ms under an 80ms matcher are NOT
+historically equivalent Exact-K and MUST NOT be used for promotion.
+S301's +1..+5 adversarial net correction bound pertains only to those
+old S299 labels and is not transferable to actual attack-K.
+
+[S303](https://github.com/Andriamarosoa/note/actions/runs/38322655543)
+found 445/459 formerly unmatched events during sustained notes, but
+this DOES NOT prove they are non-K0: no new attacks can occur while
+an old note continues sounding. The original earlier interpretation of
+S303 as a missed note target was incorrect.
+
+[S304](https://github.com/Andriamarosoa/note/actions/runs/38323112408)
+reran exact original 20ms attack grouping retrospectively on the already
+exposed five Dataset3 XMLs and the original 506 V88 clusters:
+
+| Historical attack-count metric IF XML annotations are exhaustive | Official freeze_local_combo | Reconstructed S80 |
+|---|---:|---:|
+| All K0–K6 native events (506) | 470/506 = 92.89% | 472/506 = 93.28% |
+| Real polyphonic new attacks K2–K6 (18) | 4/18 = 22.22% | 7/18 = 38.89% |
+
+Conditional label histogram K0=474,K1=14,K2=9,K3=8,K4=1,
+K5=K6=0. Net +2 correct overall (4 fixes,2 regressions), +3 poly.
+**NOT an official full global Exact-K**: the XML transcription
+completeness is not independently verified, the already-open XML means
+retrospective protocol, and composition disjointness is unproven.
+High 92–93% overall rates are dominated by K0.
+
+[S302](https://github.com/Andriamarosoa/note/actions/runs/38322507433)
+froze TRUE original V88 `freeze_local_combo` predictions on 16 new
+Dataset2 WAVs from S276 ranks 49+, disjoint from already-exposed
+ranks1–48: 964 candidate native event IDs, original K0..6 histogram
+[776,119,33,25,10,1,0]. Official immutable output SHA256:
+`4afed533080403386ba016f409c6e8e5f43dd161fdbddd50ea31865b7585cee1`.
+**No new XML opened.** The selected WAVs include the same lick
+numbers performed on different guitars (Lick 1,4,7,9,12); these are
+NOT necessarily distinct musical compositions.
+
+[S305](https://github.com/Andriamarosoa/note/actions/runs/38323261561)
+froze exactly the historical attack-K0..6 assignment policy BEFORE
+opening any of the 16 new XML annotation files. Must not label
+silence without verifying note transcription completeness.
+
+Remaining source-only chain runs:
+- [S306/307](https://github.com/Andriamarosoa/note/actions/runs/38323508991):
+  all original acoustic features, 527D S5 inputs on the same 964 rows
+- [S308](https://github.com/Andriamarosoa/note/actions/runs/38323592430):
+  four original SHA-checked historical S5 trained fold models
+- [S309](https://github.com/Andriamarosoa/note/actions/runs/38323677107):
+  original 133 trained S8–S18 risk model replay
+
+Do not infer success of S306–S309 until their CI has actually passed.
+Neither complete S80 new-cohort predictions nor 16 XML labels have
+yet been verified here. **No new promotion claim. Official remains
+freeze_local_combo**. The next valid action is to run the complete
+candidate through S80 on exactly these 964 V88 row IDs, seal all
+predictions, then apply the frozen S305 historical label policy.
