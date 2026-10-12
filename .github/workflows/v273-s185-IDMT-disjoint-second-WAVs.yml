@@ -1,0 +1,68 @@
+name: S185 second 10 disjoint IDMT WAVs frozen S35 and S179 new 255 groups no label
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s185_second_disjoint_idmt_s35_frozen_groups.py'
+      - '.github/workflows/v273-s185-IDMT-disjoint-second-WAVs.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s185-second-IDMT-no-labels-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  second_disjoint_unseen:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Unchanged original S35 trained estimator versions
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Non-overlap and frozen identity selftest
+        run: python -m scripts.s185_second_disjoint_idmt_s35_frozen_groups --self-test
+      - name: Retrieve unmodified original S35 checkpoint weights
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37868356632
+          name: v273-series35-extended-head-router
+          path: model/S35
+      - name: 10 hash-disjoint public WAVs S35 forward and unchanged S179 255 subgroup adaptation
+        run: |
+          set -euo pipefail
+          python -u -m scripts.s185_second_disjoint_idmt_s35_frozen_groups \
+            --models model/S35 --out model/S185
+          python - <<'PY'
+          import json,numpy as np
+          d=json.load(open('model/S185/report.json'))
+          assert d['disjoint_source_WAV_count']==10
+          assert d['audio_only_events']>=10
+          assert d['source_original_trained_pretrained_S35_models']==28
+          assert sum(d['parent_prediction_histogram_K0to6'])==d['audio_only_events']
+          assert d['frozen_S179_new_eight_votes_255_group_rule_applied_as_is']
+          assert not d['unseen_external_audio_truth_MIDI_XML_read']
+          assert not d['actual_freeze_local_combo_reference_run']
+          assert not d['independent_ExactK_measured']
+          assert not d['original_S80_promoted']
+          with np.load('model/S185/frozen_new_255/S179_new_8vote_255group_audio_only.npz',allow_pickle=False) as z:
+              n=d['frozen_S179_K2_K3_K4_eligible_audio_event_count']
+              assert z['new_255_group_proposal_K'].shape==(n,255)
+          PY
+      - name: Save source derived no-audio/no-truth frozen research artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s185-second-disjoint-IDMT-10WAV-original-S35-fixed-S179-no-label
+          path: model/S185/
+          retention-days: 90
