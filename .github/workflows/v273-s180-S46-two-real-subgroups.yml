@@ -1,0 +1,63 @@
+name: S180 partial real 11-family S46 96 policies from two fully available groups
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s180_s46_genuine_two_family_groups_goat.py'
+      - '.github/workflows/v273-s180-S46-two-real-subgroups.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s180-real-subset-S46-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  executable_two_original_S46_subgroups:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: NumPy only, no trained model refitting or labels
+        run: python -m pip install numpy==1.26.4
+      - name: S46 frozen original decision and exact subset size selftest
+        run: python -m scripts.s180_s46_genuine_two_family_groups_goat --self-test
+      - name: Download 11 actual original-trained risk source family GOAT output
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38206160849
+          name: v273-s173-real-trained-S35-adapted-11-source-S45-risks-NO-S80
+          path: model/S173
+      - name: Execute S46 unique_poly and ordering on 57 native GOAT events
+        run: |
+          set -euo pipefail
+          python -u -m scripts.s180_s46_genuine_two_family_groups_goat \
+            --source model/S173/S173_S35_adapted_11_family_GOAT.npz --out model/S180
+          python - <<'PY'
+          import json, numpy as np
+          d=json.load(open('model/S180/report.json'))
+          assert d['families_count']==11
+          assert d['S46_variants_excluding_adapted_S18']==96
+          assert d['two_fully_available_S46_groups']==['unique_poly','ordering']
+          assert not d['original_full_S46_equivalence']
+          assert not d['GOAT_annotations_MIDI_or_true_K_read']
+          assert not d['official_S80_promoted']
+          with np.load('model/S180/S180_partial_S46_two_groups_97_preds.npz',allow_pickle=False) as z:
+              assert z['predictions'].shape==(57,97)
+              assert not {'true_K','truth','labels','midi'}&set(z.files)
+          PY
+      - name: Preserve S46 real-partial 96 source decisions not full original S80
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s180-96-partial-original-S46-policies-on-11-sources-no-labels
+          path: model/S180/
+          retention-days: 90
