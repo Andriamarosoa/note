@@ -1,0 +1,59 @@
+name: S261 new 3of4 S18 consensus GuitarSet 59309 original model full cohort
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s261_S18_fourfold_foldneutral_GuitarSet_59309.py'
+      - '.github/workflows/v273-s261-guitarset-new-S18-3of4-59309.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s261-new-S18-59309-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  fold_neutral_59309_on_true_model_outputs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Require original 133 S8–S18 trained model inferences all four folds complete
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run watch 38311814895 --repo "${{ github.repository }}" --exit-status --interval 15
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38311814895
+          name: s260-guitarset-59309-true-original-S5-S18-fourfold-133-checkpoints
+          path: model/S260
+      - name: Original precommitted S217 3/4 vote plus official fallback, real GuitarSet 59309 predictions
+        run: |
+          python -u -m scripts.s261_S18_fourfold_foldneutral_GuitarSet_59309 \
+            --s260 model/S260/S260_original_S5_to_S18_true_V88_native_GUITARSET_59309.npz \
+            --out model/S261
+          python - <<'PY'
+          import numpy as np,json
+          r=json.load(open('model/S261/report.json'))
+          assert r['native_event_count']==59309 and r['original_fold_count']==4
+          assert r['historical_training_overlap_in_three_out_of_four_folds']
+          assert not r['independent_exactK_accuracy_measured']
+          with np.load('model/S261/S261_original_S18_foldneutral_59309_GUITARSET.npz') as z:
+            assert z['S18_piece_neutral_consensus_K'].shape==(59309,)
+          print('S261 PASS actual new S217 4fold S18 deployment, not an OOF accurate baseline')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s261-guitarset-59309-actual-fourfold-S18-neutral-consensus
+          path: model/S261/
+          retention-days: 90
