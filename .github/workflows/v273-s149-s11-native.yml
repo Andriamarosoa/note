@@ -1,0 +1,105 @@
+name: S149 original S11 trained risk models + recovered S16/S17 source on new audio
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s149_external_original_s11.py'
+      - 'scripts/loop_v273_k12_k23.py'
+      - 'scripts/loop_v273_k32_k34.py'
+      - '.github/workflows/v273-s149-s11-native.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s149-source-S11-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source_real_model_forward:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Restore two exact original S16/S17 scripts at pinned source commit
+        run: |
+          git fetch --depth=1 origin 854ada718ac9bf1556f00c96b8e1aa90402d6ab3 || true
+          python - <<'PY'
+          import subprocess
+          paths=['scripts/loop_v273_k12_k23.py','scripts/loop_v273_k32_k34.py']
+          for path in paths:
+              expected=subprocess.check_output(['git','show','854ada718ac9bf1556f00c96b8e1aa90402d6ab3:'+path])
+              assert open(path,'rb').read()==expected,'original script modified: '+path
+          print('S149 original S16/S17 source files byte-identical')
+          PY
+      - run: |
+          python -m scripts.loop_v273_native_risk --self-test
+          python -m scripts.loop_v273_k12_k23 --self-test
+          python -m scripts.loop_v273_k32_k34 --self-test
+          python -m scripts.loop_v273_k43_k21 --self-test
+          python -m scripts.s149_external_original_s11 --self-test
+      - name: Fetch ORIGINAL S11 cross-piece trained checkpoints
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37853663514
+          name: v273-series11-native-risk
+          path: model/s11
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38182078525
+          name: v273-s97-original-goat-s45-audio-features
+          path: model/s97
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38176406465
+          name: v273-s85-original-pr16-external-policies
+          path: model/s85
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38190945241
+          name: v273-s135-K-anchored-S5-student-soft-posteriors
+          path: model/s135
+      - name: Forward real original S11 models with transparently NEW S9 parent, NO MIDI
+        run: |
+          set -euo pipefail
+          S97="$(find model/s97 -name original_s45_audio_only.npz -print -quit)"
+          S85="$(find model/s85 -name pr16_external_36_policies.npz -print -quit)"
+          S135="$(find model/s135 -name GOAT_57_label_blind_soft_Kanchored.npz -print -quit)"
+          test -s "$S97" && test -s "$S85" && test -s "$S135"
+          python -m scripts.s149_external_original_s11 \
+            --s97 "$S97" --s85 "$S85" --s135 "$S135" \
+            --s11 model/s11 --out model/s149
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/s149/report.json'))
+          assert r['GOAT_real_audio_events']==57
+          assert r['S11_24_original_policy_formulas_executed']
+          assert r['S11_original_weights_and_scalers_used']
+          assert not r['original_series9_parent_verified_on_GOAT']
+          assert not r['promotion'] and not r['truth_MIDI_read']
+          with np.load('model/s149/S11_real_original_weights_new_GOAT_adapted.npz',allow_pickle=False) as d:
+              assert d['predicted_K'].shape==(57,26)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s149-original-S11-risk-heads-new-GOAT-adapted-S16-S17-source-tested
+          path: model/s149/
+          retention-days: 90
