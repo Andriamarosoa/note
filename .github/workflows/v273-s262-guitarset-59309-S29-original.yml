@@ -1,0 +1,113 @@
+name: S262 trained historical S29 38 Q and S20 19 nets on all 59309 GuitarSet with fold neutral parents
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s262_original_S29_guitarset_59309.py'
+      - '.github/workflows/v273-s262-guitarset-59309-S29-original.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s262-original-S29-GuitarSet-59309-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  historical_pretrained_S29_19_sources_full:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Original Q model and PyTorch 19 source ABI
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Require complete original S5 through S18 fourfold model forwards on 59309 native events
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run watch 38311814895 --repo "${{ github.repository }}" --exit-status --interval 15
+      - name: Source GuitarSet 59k audio features from four original native folds
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38311525987
+          name: s258-full-guitarset-59309-real-original-native-527D-58D-46D-42x49-and-OOF-PR16
+          path: model/S258
+      - name: Original S8-S18 fourfold real original model output for all 59309 V88 groups
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38311814895
+          name: s260-guitarset-59309-true-original-S5-S18-fourfold-133-checkpoints
+          path: model/S260
+      - name: Original S29 38 saved Q critics
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37865173636
+          name: v273-series29-stepwise-scheduler
+          path: model/S29
+      - name: Original S20 true 19 trained recurrent sources
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37858383973
+          name: v273-series20-residual
+          path: model/S20
+      - name: Construct original S97 interface from source folds without imputed model outputs
+        run: |
+          mkdir -p model/S262source
+          python - <<'PY'
+          import numpy as np
+          p='model/S258/S258_GuitarSet_59309_original_V88_S97_audio.npz'
+          keys=['row_id','summary58','flow245','geometry3','sequence42x49',
+               'morphology490','physics294','member','start_samples','end_samples']
+          with np.load(p,allow_pickle=False) as z:
+              assert len(z['row_id'])==59309
+              assert set(keys).issubset(z.files)
+              np.savez_compressed('model/S262source/original_GuitarSet_59309_S97.npz',
+                                  **{key:z[key] for key in keys})
+          print('S262 original S97 59309 audio features strict original schemas')
+          PY
+      - name: Genuine original 38 S29 Q heads, 19 S20 networks on all native rows
+        run: |
+          python -u -m scripts.s262_original_S29_guitarset_59309 \
+            --s29 model/S29 --s20 model/S20 \
+            --s18 model/S260/S260_original_S5_to_S18_true_V88_native_GUITARSET_59309.npz \
+            --s97 model/S262source/original_GuitarSet_59309_S97.npz \
+            --out model/S262
+      - name: Check all nineteen piece branch votes but mark non-OOF
+        run: |
+          python - <<'PY'
+          import numpy as np,json
+          r=json.load(open('model/S262/report.json'))
+          assert r['events']==59309 and r['branches']==19
+          assert r['original_S29_Q_models']==38 and r['original_S20_networks']==19
+          with np.load('model/S262/s29_original_all_19_GUITARSET.npz') as z:
+              assert z['predicted_K'].shape==(19,59309)
+          print('S262 PASS 19 original S29 trained branches on all 59309 historic data (train-overlap descriptive)')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s262-guitarset-59309-real-S29-38Q-19S20-trained
+          path: model/S262/
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s262-guitarset-59309-native-real-S97-source
+          path: model/S262source/
+          retention-days: 90
