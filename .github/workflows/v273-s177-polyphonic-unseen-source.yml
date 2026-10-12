@@ -1,0 +1,45 @@
+name: S177 verify preregistered independent guitar polyphonic archive source without labels
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s177_preregister_external_polyphony_source.py'
+      - '.github/workflows/v273-s177-polyphonic-unseen-source.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s177-unseen-data-metadata-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  preregister:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Pure checksum and no-label selftest
+        run: python -m scripts.s177_preregister_external_polyphony_source --self-test
+      - name: Verify public original dataset metadata and official expected MD5
+        run: |
+          set -euo pipefail
+          python -u -m scripts.s177_preregister_external_polyphony_source --out model/S177/report.json
+          python - <<'PY'
+          import json
+          d=json.load(open('model/S177/report.json'))
+          assert d['metadata_only']
+          assert not d['archive_downloaded']
+          assert not d['audio_access_tested']
+          assert not d['labels_read']
+          assert not d['S80_independent_ExactK_measured']
+          assert not d['S80_promoted']
+          PY
+      - name: Preserve preregistered source hash without heldout labels
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s177-external-unseen-polyphonic-source-prereg-no-labels
+          path: model/S177/
+          retention-days: 90
