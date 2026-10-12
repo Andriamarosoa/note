@@ -92,7 +92,7 @@ def run(source_dir,sealed_audio,out):
     end=np.asarray(ends,np.int64)
     ids=np.asarray([f'{m}:{int(s)}' for m,s in zip(member,start)])
     need(len(set(ids.tolist()))==len(ids) and
-         np.all((start>0)&(end>=start)&(end-start<=int(.04*SR)),
+         np.all((start>0)&(end>=start)&(end-start<=int(.04*SR))),
          'original native K events malformed')
     out.mkdir(parents=True)
     dest=out/'IDMT_dataset2_true_V84_native_unlabeled_groups.npz'
