@@ -16,7 +16,7 @@ for p in files:
     if expected not in text:errors.append((p,"branch-scoped push trigger missing"))
     if re.search(r"^  pull_request:\s*$",text,re.M):errors.append((p,"unwanted PR trigger"))
     if not re.search(r"^  workflow_dispatch:\s*$",text,re.M):errors.append((p,"manual dispatch lost"))
-    if not re.search(r"^    paths:\s*$",text,re.M):errors.append((p,"push path filters missing"))
+    if not re.search(r"^    paths:\s*(?:\\[.*\\])?\\s*$",text,re.M):errors.append((p,"push path filters missing"))
     if "'"+p+"'" not in text[:text.index("\njobs:")]:errors.append((p,"self workflow not in paths"))
     if "group: ${{ github.workflow }}-${{ github.ref }}" not in text:
         errors.append((p,"per-workflow concurrency missing"))
