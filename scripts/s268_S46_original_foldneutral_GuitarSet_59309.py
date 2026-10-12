@@ -92,6 +92,8 @@ def run(root,s261,out):
        S46_conflicting_active_specialist_cells=int(output['contradictory_fold_proposal'].sum()),
        source_branch_reordering_invariance_verified=True,
        models_refitted=False,GUITARSET_XML_MIDI_content_read=False,
+       GuitarSet_historical_train_overlap_for_three_folds=True,
+       historic_heldpiece_OOF_comparable=False,
        independent_accuracy_measured=False,S80_promoted=False,
        output_SHA256=sha(path))
     (out/'report.json').write_text(json.dumps(report,indent=2)+'\n')
