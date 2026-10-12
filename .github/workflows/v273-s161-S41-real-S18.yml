@@ -1,0 +1,104 @@
+name: S161 original S41 gate with real original-weight S18 parent (adapted S9)
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s161_S41_original_weight_adapted_S18_parent.py'
+      - '.github/workflows/v273-s161-S41-real-S18.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s161-S41-real-S18-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  original_source_neural_gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - run: python -m scripts.s161_S41_original_weight_adapted_S18_parent --self-test
+      - name: Load original 19 S41 neural gate checkpoints; do not retrain
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37881191015
+          name: v273-series41-six-head-neural-fusion
+          path: model/S41
+      - name: Load already frozen authentic trained S38/S40 forward outputs from S144
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38193181798
+          name: v273-s144-original-S38-S40-S41-39-models-GOAT-conditional
+          path: model/S144
+      - name: Load GOAT S154 adapted-S18 original trained checkpoint cascade
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38195685473
+          name: v273-s154-original-S13-S14-S15-S16-S17-S18-checkpoint-cascade-GOAT
+          path: model/S154
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38182078525
+          name: v273-s97-original-goat-s45-audio-features
+          path: model/S97
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38176406465
+          name: v273-s85-original-pr16-external-policies
+          path: model/S85
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38190945241
+          name: v273-s135-K-anchored-S5-student-soft-posteriors
+          path: model/S135
+      - name: Re-evaluate original 19 S41 saved networks with proper adapted S18 source parent
+        run: |
+          set -euo pipefail
+          S97="$(find model/S97 -name original_s45_audio_only.npz -print -quit)"
+          S85="$(find model/S85 -name pr16_external_36_policies.npz -print -quit)"
+          S135="$(find model/S135 -name GOAT_57_label_blind_soft_Kanchored.npz -print -quit)"
+          S144="$(find model/S144 -name original_s41_new_deploy_composite_GOAT.npz -print -quit)"
+          S154="$(find model/S154 -name original_S15_to_S18_trained_GOAT_adapted_S9.npz -print -quit)"
+          test -s "$S97" && test -s "$S85" && test -s "$S135" && test -s "$S144" && test -s "$S154"
+          python -u -m scripts.s161_S41_original_weight_adapted_S18_parent \
+            --s97 "$S97" --s85 "$S85" --s135 "$S135" \
+            --s144 "$S144" --s154 "$S154" --s41 model/S41 --out model/S161
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S161/report.json'))
+          assert r['original_checkpoint_count']==19 and r['GOAT_events']==57
+          assert r['source_S38_S40_scores_unchanged']
+          assert not r['genuine_S18_full_original_new_audio']
+          assert not r['GOAT_truth_MIDI_read'] and not r['official_S80_promoted']
+          with np.load('model/S161/original_S41_gate_with_authentic_weight_S18_parent_GOAT.npz',allow_pickle=False) as z:
+              assert z['gate_6_probabilities'].shape==(57,6)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s161-original-S41-gate-with-proper-adapted-S18-parent
+          path: model/S161/
+          retention-days: 90
