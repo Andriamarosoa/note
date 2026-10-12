@@ -6,9 +6,10 @@
   "official_promotion": false,
   "independent_S80_accuracy_measured": false,
   "latest_run": {
-    "id": 38192020272,
-    "component": "S139",
-    "status": "SUCCESS; S137/S138 evidence permanently archived; S135 rejected; S80 blocked"
+    "id": 38193466752,
+    "component": "S146",
+    "status": "in_progress",
+    "summary": "preserve original S12/S38/S40/S41 trained checkpoints and S141-S145 label-free outputs"
   },
   "validated_frozen_components": {
     "original_native_audio_inference": {
@@ -69,7 +70,7 @@
     "S80 already independently validated",
     "historical 43.87% guaranteed on new music"
   ],
-  "next_protocol": "Stop teacher fidelity loops and avoid tuning on exposed two-track GOAT. Build fully deployable S43/S44 16 S45 family producers, S46->S69->S72->S80 unseen-piece rule as separately versioned model; collect diverse independent IDMT-SMT-GUITAR_V2 poly events and seal predictions before first annotation access.",
+  "next_protocol": "For exact original S80, restore authentic new-piece S18 and S11/S12 upstream votes (not freeze/S135/PR16 substitutes), then all 16 S43/S44 S45 original family trained-source predictions and risks, 193 S46, S69->S72, frozen S80 policy and independent IDMT-SMT guitar validation; prevent posthoc GOAT tuning.",
   "experimental_deployability_research_S128_S131": {
     "scope": "Reconstruction of historical S5 upstream audio producers; new student alternative is NOT original S5/S80",
     "original_s5_527D_feature_equivalence_verified": false,
@@ -249,5 +250,43 @@
       "source_paired_score_run": 38191739817,
       "onset_coverage_run": 38191885587
     }
+  },
+  "experimental_S140_S146_original_source_recovery": {
+    "original_commit": "854ada718ac9bf1556f00c96b8e1aa90402d6ab3",
+    "original_scripts_restored_verbatim": 6,
+    "original_source_restore_selftests_run": 38192579770,
+    "original_train_runs": {
+      "S12": 37853979683,
+      "S38": 37880386031,
+      "S40": 37880762289,
+      "S41": 37881191015
+    },
+    "native_audio_events_GOAT": 57,
+    "recorded_checkpoints_original_S12_logistic": 19,
+    "recorded_checkpoints_original_S38": 16,
+    "recorded_checkpoints_original_S40": 4,
+    "recorded_checkpoints_original_S41": 19,
+    "actual_saved_original_checkpoint_forward_S141_S144": true,
+    "original_source_parent_S18_equivalence": false,
+    "S12_original_full_champion_policy_equivalence": false,
+    "S41_original_six_action_gate_policy_exact_on_GuitarSet_not_rechecked_in_this_loop": true,
+    "original_full_S45_16_family_proposals_on_external_audio": false,
+    "gate_S41_new_parent_57_keep": 57,
+    "gate_S41_source_alternatives_any": 47,
+    "gate_S41_source_alternatives_eligible": 3,
+    "gate_S41_source_alternatives_accepted": 0,
+    "gate_S41_mean_keep_probability": 0.9126807806784647,
+    "diagnostic_failure": "new-piece parent adaptation plus original S41 averaged gate chooses KEEP; cannot infer causal contribution of parent mismatch without cross-domain controls",
+    "actual_independent_S80_Exact_K_score": null,
+    "tests": {
+      "S140": 38192579770,
+      "S141": 38192776863,
+      "S142": 38192916733,
+      "S143": 38193017646,
+      "S144": 38193181798,
+      "S145": 38193316422,
+      "S146": 38193466752
+    },
+    "promotion": false
   }
 }
