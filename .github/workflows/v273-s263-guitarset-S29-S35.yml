@@ -1,0 +1,84 @@
+name: S263 true 36 S35 expert and 72 Q models across 59309 GuitarSet 19 branches
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s263_original_S29_S35_guitarset_59309.py'
+      - '.github/workflows/v273-s263-guitarset-S29-S35.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s263-original-S35-GuitarSet-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  S35_original_trained_19_branches:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Require authentic S29 all 19 fold branches
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run watch 38312084676 --repo "${{ github.repository }}" --exit-status --interval 15
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38312084676
+          name: s262-guitarset-59309-real-S29-38Q-19S20-trained
+          path: model/S262
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38312084676
+          name: s262-guitarset-59309-native-real-S97-source
+          path: model/S262source
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38311814895
+          name: s260-guitarset-59309-true-original-S5-S18-fourfold-133-checkpoints
+          path: model/S260
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37868356632
+          name: v273-series35-extended-head-router
+          path: model/S35
+      - name: Actual 36 original S35 trained experts + Q gates on all historical source heads/59309 GuitarSet
+        run: |
+          python -u -m scripts.s263_original_S29_S35_guitarset_59309 \
+            --s209 model/S262/s29_original_all_19_GUITARSET.npz \
+            --s18 model/S260/S260_original_S5_to_S18_true_V88_native_GUITARSET_59309.npz \
+            --s97 model/S262source/original_GuitarSet_59309_S97.npz \
+            --s35 model/S35 --out model/S263
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S263/report.json'))
+          assert r['events']==59309 and r['branches']==19
+          assert r['original_S35_expert_checkpoints']==36
+          with np.load('model/S263/original_s29_to_s35_GUITARSET.npz') as z:
+            assert z['S35_K'].shape==(19,59309)
+          print('S263 PASS true original S35 routed inference, 59k training-overlap not OOF')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s263-original-trained-S29-S35-19branches-guitarset-59309
+          path: model/S263/
+          retention-days: 90
