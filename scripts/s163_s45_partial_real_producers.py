@@ -120,6 +120,7 @@ def diagnose(s97,s85,s135,s11,s12,s38,s40,s41,s154,s157,s45,out):
           axis=1).astype(np.int16)-moved[:,j].astype(np.int16)
     risks=np.full((n,5,2),np.nan,np.float32)
     history=[]
+    scored_models=0
     for j,family in enumerate(FAMILIES):
         candidates=sorted((s45/"models").glob("*__"+family+".joblib"))
         need(len(candidates)==19,"expected original 19 per-piece S45 fits for "+family)
@@ -143,9 +144,10 @@ def diagnose(s97,s85,s135,s11,s12,s38,s40,s41,s154,s157,s45,out):
                             "sha256":digest(cp)})
         if selected.size:
             risks[selected,j]=np.clip(np.mean(np.stack(batch),axis=0),0,1)
+            scored_models+=len(batch)
     need(len(history)==95,"five families require 95 unchanged original S45 models")
     # A research-only what-if, NEVER emit it as full S80 or a 16-family policy.
-    candidate=choose_best(parent,proposals,risks,1.,0.)
+    candidate,selected_head=choose_best(parent,proposals,risks,1.,0.)
     change_count=int((candidate!=parent).sum())
     out.mkdir(parents=True)
     np.savez_compressed(out/"five_of_sixteen_original_weight_risk_GOAT.npz",
@@ -153,19 +155,23 @@ def diagnose(s97,s85,s135,s11,s12,s38,s40,s41,s154,s157,s45,out):
         partial_five_family_ids=np.asarray(FAMILIES),
         partial_proposal_K=proposals,partial_agreement_votes=agreement,
         partial_risk_two_scores=risks,
-        partial_research_candidate_K=candidate)
+        partial_research_candidate_K=candidate,
+        partial_research_selected_head=selected_head)
     r={"status":"S163_ONLY_5_OF_16_S45_SOURCES_WITH_GENUINE_95_RIDGE_MODELS",
        "new_audio_native_events":n,
        "five_of_original_sixteen_families":list(FAMILIES),
        "original_ridge_checkpoint_source_run":37891039201,
        "genuine_original_ridge_checkpoints_verified":len(history),
        "checkpoints":history,
+       "genuine_original_ridge_checkpoints_that_scored_events":scored_models,
        "original_S45_training_feature_width":156,
        "partial_proposal_nonparent_by_family":{
          f:int(moved[:,j].sum()) for j,f in enumerate(FAMILIES)},
        "partial_source_agreement_only_five":True,
        "original_16_family_agreement_available":False,
        "partial_candidate_changes_vs_S18":change_count,
+       "partial_research_head_counts":{f:int((selected_head==j).sum())
+            for j,f in enumerate(FAMILIES)},
        "partial_candidate_K_histogram":np.bincount(candidate,minlength=7).tolist(),
        "original_S5_S9_equivalence":False,
        "original_S45_all16_equivalence":False,
@@ -188,6 +194,12 @@ def selftest():
                    (c!=old[:,None]),axis=1)-changed[:,j]) for j in range(2)]).T
     need(v.shape==(4,2) and v[1].tolist()==[1,1] and v[2].tolist()==[0,0],
          "only AVAILABLE source votes should be counted")
+    r=np.full((2,2,2),np.nan,np.float32)
+    r[0,0]=[.7,.1]
+    prediction,chosen=choose_best(np.array([0,1],np.int8),
+         np.array([[2,3],[2,3]],np.int8),r,1.,0.)
+    need(prediction.tolist()==[2,1] and chosen.tolist()==[0,-1],
+         "S45 original decision function returns BOTH K and chosen head")
     need(len(FAMILIES)==5 and len(set(FAMILIES))==5,
          "partial S45 family names must be explicit")
     print("S163 PASS: 5/16 source-only risk schema, no fake absent families")
