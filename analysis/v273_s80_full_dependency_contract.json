@@ -253,7 +253,7 @@
         "S38_experts",
         "S40_temporal"
       ],
-      "proof": "S144: 19 original fusion checkpoints, new parent, S145 57/57 KEEP"
+      "proof": "S161 19 genuine original S41 trained gates on GOAT with adapted S18 parent (instead of S144 freeze); 57/57 KEEP, zero accepted; four predicted K differ vs S144 due to changed parent. S5/S9 remain adapted."
     },
     {
       "id": "S45_family_risks",
@@ -347,7 +347,7 @@
     "Promote only with independently verified better global AND poly Exact-K and no unresolved regressions"
   ],
   "independent_full_S80_accuracy_measured": false,
-  "last_implemented_verified_stage": "S157/S158 genuine S8 trained checkpoints and S9 exact veto on GOAT produce 0/57 upstream changes vs original-weight S13-S18 adapted cascade (S154). Original S5 global/poly and 16 S45 producers missing.",
+  "last_implemented_verified_stage": "S161: 19 original S41 gates with S154 adapted S18 and immutable S38/S40 genuine trained experts; 57 KEEP, zero expert modifications. S80 independent score absent.",
   "evidence_runs": {
     "original_models_preserved": 38193466752,
     "s80_tail_historical_exact": 38194275444,
@@ -363,7 +363,8 @@
     "S156_S13_S14_weights_archived": 38195953248,
     "S157_authentic_S8_forward": 38196167459,
     "S158_S9_parent_parity": 38196307750,
-    "S159_original_S8_archived": 38196392548
+    "S159_original_S8_archived": 38196392548,
+    "S161_correct_S41_parent": 38196667499
   },
   "ancestry_correction": {
     "prior_graph": "S148 mistakenly represented S11 as direct prerequisite of S18",
@@ -381,5 +382,17 @@
     "true_original_S5_527D_features_available": false,
     "official_promotion": false,
     "permanent_release_url": "https://github.com/Andriamarosoa/note/releases/tag/v273-original-S8-weights-S157-S158-GOAT-proof"
+  },
+  "negative_experimental_results": {
+    "S161_corrected_S41_parent": {
+      "GOAT_events": 57,
+      "original_S41_checkpoints": 19,
+      "KEEP_count": 57,
+      "changes_vs_S154_S18": 0,
+      "changes_vs_S144": 4,
+      "mean_keep_probability": 0.9146082401275635,
+      "historical_S18_equivalence": false,
+      "official_promotion": false
+    }
   }
 }

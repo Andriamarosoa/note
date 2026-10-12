@@ -96,3 +96,22 @@ Le S80 historique complet reste **non déployé**, non évalué
 indépendamment et **non promu**. Le verrou racine 527D S5 et les
 16 producteurs/risques S45 sont toujours présents.
 
+
+## S161 — Vrai parent S18 pour les modèles S41 récupérés
+
+[Run S161 réussi](https://github.com/Andriamarosoa/note/actions/runs/38196667499).
+
+S144 avait pris à tort `freeze_local_combo` comme parent de
+conservation de la tête S41. En S161, nous avons conservé les vrais
+scores des 16 experts S38 et quatre S40, conservé les 19 checkpoints
+S41 originaux, mais remplacé la classe parent par la sortie S18
+du pipeline adapté S154.
+
+**Résultat :** 19 réseaux exécutés sur 57 groupes ; **57 KEEP / 57**,
+aucune modification déclenchée par S41. **Quatre décisions diffèrent de
+S144** uniquement parce que son parent était différent. Le poids moyen
+KEEP passe de **0,912681** à **0,914608**.
+
+Ce résultat négatif est conservé. S18 dépend toujours du S9 adapté,
+pas du S5 historique avec son constructeur 527D ; il ne permet
+aucune promotion S80.

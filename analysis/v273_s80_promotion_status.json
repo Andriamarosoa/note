@@ -6,10 +6,10 @@
   "official_promotion": false,
   "independent_S80_accuracy_measured": false,
   "latest_run": {
-    "id": 38196392548,
-    "component": "S159",
+    "component": "S161",
+    "id": 38196667499,
     "status": "success",
-    "original_S8_weights_permanently_archived": true,
+    "original_S80_independent_test": false,
     "official_promotion": false
   },
   "validated_frozen_components": {
@@ -71,7 +71,7 @@
     "S80 already independently validated",
     "historical 43.87% guaranteed on new music"
   ],
-  "next_protocol": "Follow canonical corrected 28-node source graph: original S5 527D/global/poly source restoration (or explicit distinct S80-deploy-v1), then 16 original S43/S44/S45 family producers and risk heads on new WAV; S46->S69->S72->S79->S80, seal independent song-disjoint annotations, require positive paired Exact-K global AND poly vs freeze_local_combo. S11 is parallel source, S8/S9/S13-S18 are checkpoint-forwarded only with S5-adapted inputs.",
+  "next_protocol": "Follow canonical 28-node dependency graph and S161 S41 with S18 parent: original S5 527D remains missing, S9 adapted, full S45 16 family producers and risk models not on unseen WAV. Next integrate 16 S45 families -> S46 -> S69 -> S72 -> S79 -> S80 original K0/K2 tail, seal independent polyphonic song-disjoint Exact-K for promotion.",
   "experimental_deployability_research_S128_S131": {
     "scope": "Reconstruction of historical S5 upstream audio producers; new student alternative is NOT original S5/S80",
     "original_s5_527D_feature_equivalence_verified": false,
@@ -378,6 +378,17 @@
     "original_S8_S9_recovered_with_adapted_S5_parents": true,
     "original_S5_527D_restored": false,
     "original_S80_externally_validated": false,
+    "official_promotion": false
+  },
+  "experimental_S161": {
+    "source": "16 original S38 + 4 original S40 probs and original 19 S41 gates, new S154 S18 parent",
+    "comparison_source": "S144 had mistakenly used freeze as KEEP parent",
+    "GOAT_events": 57,
+    "KEEP_selected": 57,
+    "changes_vs_S144": 4,
+    "changes_vs_S18": 0,
+    "original_S80_equivalent": false,
+    "MIDI_label_read": false,
     "official_promotion": false
   }
 }
