@@ -62,7 +62,7 @@ jobs:
           assert r['original_fold_models_never_retrained']
           assert not r['unseen_IDMT_XML_MIDI_contents_read']
           assert not r['official_S80_promotion']
-          with np.load('model/S280/original_S5_fourfold_506_dataset3_native_unlabelled.npz',allow_pickle=False) as z:
+          with np.load('model/S280/S280_original_S5_fourfold_506_dataset3_native_unlabelled.npz',allow_pickle=False) as z:
             assert z['original_S5_raw_probability_by_fold'].shape==(4,506,7)
             assert z['original_S5_prior_probability_by_fold'].shape==(4,506,7)
             assert z['original_S5_K_by_fold'].shape==(4,506)
