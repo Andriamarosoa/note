@@ -1,5 +1,5 @@
 {
-  "schema": "v273-S171-28-node-S45-10of16-adapted-source-v5",
+  "schema": "v273-S173-28-node-S45-11of16-adapted-source-v6",
   "reference": "freeze_local_combo",
   "official_promotion": false,
   "target_options": [
@@ -122,8 +122,8 @@
     },
     {
       "id": "S35_multiroute",
-      "state": "historical_vector_only",
-      "proof": "Original selected S44 variant and original SHA256 known from S164, original source on new GOAT remains unverified. No surrogate source counted.",
+      "state": "adapted_checkpoint_forward_not_original_full_family",
+      "proof": "S173 success 38206160849: 36 authentic S35 outer-fold pretrained acoustic experts and 72 authentic 115D risk Q gates executed on 57 native GOAT events, no training; original 3-pass lambda1/cut0 policy with NEW S20-for-S29 adapter and 4-fold mean ensemble. 0 S35 changes vs adapted S18. 19 original S45 Ridge heads scored S35 family; no original S29/new-WAV source parity or historical equivalent.",
       "original_variant": "series35__lambda1__threshold0",
       "original_vector_sha256": "ef12ec77ee2cd4e9852e469faf8a69ae29940487f5b44b499948f300857e71e7"
     }
@@ -379,7 +379,7 @@
     "Promote only with independently verified better global AND poly Exact-K and no unresolved regressions"
   ],
   "independent_full_S80_accuracy_measured": false,
-  "last_implemented_verified_stage": "S170: source S45 10/16 original weights, 190 original risk heads, original rule accepts one K1->K0 action under 10-way agreement; risk action identity verified and SHA archived; not proven corrected or full S80.",
+  "last_implemented_verified_stage": "S173: historical S1/S3/S4 fitted archives recovered checksum exact in S172; S35 36 original experts and 72 original Q risk gates executed on GOAT with a documented NEW S20-for-S29 adapter; partial S45 11/16 original-trained families and 209 genuine Ridge checkpoints scored, 1 partial action, not independently proven correct. No exact S80 promotion.",
   "evidence_runs": {
     "original_models_preserved": 38193466752,
     "s80_tail_historical_exact": 38194275444,
@@ -405,7 +405,9 @@
     "S167_partial_eight": 38198877007,
     "S168_Bfirst_two": 38199078698,
     "S169_partial_ten": 38199247838,
-    "S170_audited_preserved": 38199557501
+    "S170_audited_preserved": 38199557501,
+    "S172_recovered_S1_S3_S4_archives": 38205875589,
+    "S173_S35_original_weights_11_sources": 38206160849
   },
   "ancestry_correction": {
     "prior_graph": "S148 mistakenly represented S11 as direct prerequisite of S18",
@@ -461,15 +463,15 @@
     "S27_early_stop",
     "S38_morphology",
     "S40_temporal_CNN",
-    "S41_neural_fusion"
+    "S41_neural_fusion",
+    "S35_multiroute"
   ],
   "not_yet_executable_original_source_families": [
     "S1_acoustic",
     "S2_source",
     "S3_repair",
     "S4_repair",
-    "historical_repair_coherent",
-    "S35_multiroute"
+    "historical_repair_coherent"
   ],
   "note_10of16": "Ten original champion algorithm families forwarded with original trained weights and unchanged formula on real GOAT, but historical S45 outputs not reproduced bit-exact, six families absent, S5 upstream adapted, and only ten-family vote agreement known. No S80 promotion.",
   "S45_partial_ten_family_research": {
@@ -501,5 +503,19 @@
     "polyphonic_independent_ExactK_test_done": false,
     "original_full_S45_proven": false,
     "S80_promoted": false
+  },
+  "note_11of16": "Eleven historical S45 champion-family CHECKPOINTS/rules have now been executed on native GOAT with new deployment adapters; not original bit-identical S45. S35 uses S20 for missing original S29 and four outer-fold means; S35 itself made 0 K changes. Five S1/S2/S3/S4/historical repair producer families still missing on new WAV. S5-527D original missing; independent S80 score missing.",
+  "S45_partial_eleven_family_research": {
+    "evidence_run": 38206160849,
+    "GOAT_native_events": 57,
+    "adapted_original_trained_expert_S35_checkpoints": 36,
+    "adapted_original_trained_S35_risk_gate_checkpoints": 72,
+    "source_original_ridge_fits_verified": 209,
+    "S35_changes_vs_adapted_S18": 0,
+    "partial_eleven_changes_vs_adapted_S18": 1,
+    "original_S29_for_S35_available": false,
+    "original_S5_527D_on_GOAT_available": false,
+    "independent_ExactK_measured": false,
+    "promoted": false
   }
 }
