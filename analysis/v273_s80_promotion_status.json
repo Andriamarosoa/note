@@ -6,8 +6,8 @@
   "official_promotion": false,
   "independent_S80_accuracy_measured": false,
   "latest_run": {
-    "component": "S216 independent 16-source S45/S46 fold and parent stability audit",
-    "id": 38243390558,
+    "component": "S220 independent Counter replay of S219 conditional S46 specialists and S217 parent consensus",
+    "id": 38294882827,
     "status": "success",
     "independent_S80_accuracy_measured": false,
     "official_promotion": false
@@ -140,10 +140,35 @@
       "S69_S80_external_inference_completed": false,
       "independent_ExactK_evaluated": false,
       "promotion": false
+    },
+    "piece_neutral_S18_S46_deploy_branch_aggregation_S217_S220": {
+      "status": "RESEARCH_CANDIDATE_ORIGINAL_19_BRANCH_VOTING_PROVEN_LABEL_FREE_NOT_HISTORICAL_OR_EXTERNAL_ACCURACY",
+      "input_original_S45_S46_run": 38242983478,
+      "S18_parent_majority_run": 38294189867,
+      "S18_independent_verification_run": 38294412914,
+      "S46_sparse_specialist_run": 38294699823,
+      "S46_independent_verification_run": 38294882827,
+      "sample_events": 57,
+      "source_branches": 19,
+      "source_folds": 4,
+      "S18_parent_fold_disagreements": 6,
+      "S18_parent_abstentions_to_freeze": 1,
+      "S18_parent_changed_vs_freeze": 4,
+      "S46_original_proposals_across_branches": 602,
+      "S46_sparse_specialist_candidate_cells_surviving": 2,
+      "S46_unique_audio_events_changed": 1,
+      "S46_mismatched_parent_proposals_excluded": 100,
+      "source_model_training": false,
+      "ground_truth_or_MIDI_opened": false,
+      "independent_ExactK_measured": false,
+      "historical_original_S80_equivalence": false,
+      "original_S80_promoted": false,
+      "policy_manifest": "analysis/v273_s217_s220_experimental_deployment_policy.json",
+      "audit_report": "analysis/README_V273_S217_S220_S18_BRANCH_RESOLUTION.md"
     }
   },
   "missing_external_components": [
-    "Sixteen original-weight S45 source forwards exist on exposed GOAT, but historical out-of-piece/new-WAV parity and preregistered deployment aggregation of 19 held-piece branches/four S18 folds remain unproved",
+    "Original-weight S45/S46 forwards and piece-neutral 19-branch/4-fold aggregation are now technically executed and independently audited (S217-S220); original historical held-piece selection equivalence and accuracy on genuinely unseen songs remain unproved",
     "Prespecified new-piece S69 fold-specific veto deployment",
     "New-piece deployable S70/S71/S72 parent models",
     "Prespecified deployment of S80 four-fold K1 classifiers on unseen compositions",
@@ -155,7 +180,7 @@
     "S80 already independently validated",
     "historical 43.87% guaranteed on new music"
   ],
-  "next_protocol": "S215 successfully ran all 16 genuine original checkpoint S45 source families, 304 S45 risk models and 193 S46 decisions in all 19 branches on exposed GOAT. S216 proved 1058 crossfold divergent event-policy cells (all involving distinct S18 parents in representative branches), with within-fold differences [4,96,6,0]. Next: independently audit and fix branch/piece rule without opening GOAT truth, complete S69-S72-S79-S80 label-blind new-WAV inference with a frozen deployment identity, and validate paired Exact-K global and poly on genuinely unexposed song-disjoint recordings against freeze_local_combo. No historical equivalence or promotion yet.",
+  "next_protocol": "S217/S218 verified deterministic unique S18 per event with four equal fold votes and freeze fallback: 6 discordant events handled, 1 fallback, 4 changed vs freeze on exposed GOAT. S219/S220 independently replayed sparse S46 specialist proposals, retaining 2 policy-event changes on one event of 57, with 100 source-parent incompatible proposals excluded. The stage-1 experimental routing problem is TECHNICALLY resolved, not validated for accuracy, and not original historical S80 fold/piece identity. Next finish new-audio S69/S70/S71/S72/S79/S80 tail, seal outputs on unseen song-disjoint corpus, compare paired Exact-K global/poly/K0-K6 vs freeze_local_combo and promote only if independently justified. Keep official reference unchanged.",
   "experimental_deployability_research_S128_S131": {
     "scope": "Reconstruction of historical S5 upstream audio producers; new student alternative is NOT original S5/S80",
     "original_s5_527D_feature_equivalence_verified": false,
