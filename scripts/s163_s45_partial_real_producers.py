@@ -17,7 +17,6 @@ from pathlib import Path
 import joblib,numpy as np
 from scripts.s141_external_original_s40_cnn import load_input
 from scripts.train_v273_s45_specialized_risk_heads import make_inputs,choose_best
-from scripts.loop_v273_full_audio_risk import emit_decisions
 from scripts.train_v273_s38_poly_harmonic_expert import score_predictions
 FAMILIES=(
  "S11_votes_time_audio","S12_audio_logistic",
@@ -89,9 +88,14 @@ def make_proposals(s97,s85,s135,s11,s12,s38,s40,s41,s154,s157):
     s9=z157["S9_original_formula_K"].astype(np.int8)
     # Historical S12 uses source S9 as proposal and freeze as rollback. Only
     # logistic posterior is used by this exact selected policy.
-    qh=np.full_like(q12,np.nan)
-    decoded,_=emit_decisions(s9,b,s9!=b,{"logistic":q12,"hgb":qh})
-    s12out=decoded[S12_NAME]
+    # The selected ORIGINAL S12 policy is logistic-only: rollback S9 to
+    # the frozen baseline iff the original logistic margin is > 0.
+    # Do not fabricate an HGB posterior for unused sibling policies.
+    ii=np.arange(n)
+    margin=q12[ii,b]-q12[ii,s9]
+    s12out=s9.copy()
+    veto=(s9!=b)&(margin>0.)
+    s12out[veto]=b[veto]
     # Source S38 and S40 original champion uses S18 parent for eligible K1+.
     s38out=score_predictions(parent,p38.argmax(1).astype(np.int8),p38,
                                "source_K1to6","argmax")
