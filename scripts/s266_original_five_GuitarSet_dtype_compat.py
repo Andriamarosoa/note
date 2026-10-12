@@ -35,7 +35,7 @@ def test():
 if __name__=="__main__":
     a=argparse.ArgumentParser()
     for k in ("runtime","historical_proof","external","s5","out"):
-        a.add_argument("--"+k,type=Path,required=True)
+        a.add_argument("--"+k.replace("_","-"),dest=k,type=Path,required=True)
     z=a.parse_args()
     test()
     original.reference_regimes=compatible
