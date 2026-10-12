@@ -1,0 +1,71 @@
+name: S231 preseal genuinely unlabelled IDMT dataset2 filename ranks 33to48
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s231_IDMT_rank33to48_seal_audio_only.py'
+      - '.github/workflows/v273-s231-IDMT-ranks33-48-untouched.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s231-ranks33to48-sealed-audio-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  original_songs_unopened:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install audio-only original numeric features without XML parsers
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Validate rank33to48 song selection excludes all earlier S190 S193 annotated WAVs
+        run: |
+          python -m scripts.s231_IDMT_rank33to48_seal_audio_only --self-test
+          python - <<'PY'
+          from scripts.s229_idmt_dataset2_sealed_audio_only_S97 import select_wavs as first
+          from scripts.s231_IDMT_rank33to48_seal_audio_only import select_wavs as held
+          names=['IDMT-SMT-GUITAR_V2/dataset2/'+f'{i:03d}.wav' for i in range(100)]
+          assert not set(first(names))&set(held(names))
+          assert len(held(names))==16
+          print('S231 guard: ranks 1-16 versus 33-48 do not overlap')
+          PY
+      - name: Extract only selected truly untouched dataset2 WAV bytes before opening XML ever
+        run: python -u -m scripts.s231_IDMT_rank33to48_seal_audio_only --out model/S231
+      - name: Freeze exact 16 ranked WAV hashes and original feature views as pre-annotation artifact
+        run: |
+          python - <<'PY'
+          import json,numpy as np,hashlib
+          from pathlib import Path
+          r=json.load(open('model/S231/report.json'))
+          assert r['chosen_song_count']==16
+          assert r['this_cohort_SHA256_filename_rank_start']==33
+          assert r['this_cohort_SHA256_filename_rank_end']==48
+          assert r['prior_XML_exposed_file_ranks']=='1-16 opened S190; 17-32 opened S193'
+          assert not r['XML_note_annotation_content_read']
+          assert not r['MIDI_content_read']
+          assert not r['independent_ExactK_measured'] and not r['S80_promoted']
+          p=Path('model/S231/IDMT_dataset2_rank33to48_audio_only_original_S97_features.npz')
+          assert hashlib.sha256(p.read_bytes()).hexdigest()==r['dataset_features_sha256']
+          with np.load(p,allow_pickle=False) as z:
+            n=r['total_acoustic_onset_groups']
+            assert z['summary58'].shape==(n,58)
+            assert z['sequence42x49'].shape==(n,42,49)
+            assert z['morphology490'].shape==(n,490)
+            assert z['physics294'].shape==(n,294)
+          print('S231 PASS unseen ranks33-48 SHA-256 locked without any XML annotations')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s231-IDMT-ranks33to48-unopened-song-WAV-feature-hash-preseal
+          path: model/S231/
+          retention-days: 90
