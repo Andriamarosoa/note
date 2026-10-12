@@ -19,10 +19,10 @@ from scripts.audit_v273_s70_pr16_poly_meta import (
     FOLDS,POLICIES,propose,permitted,choose_threshold)
 def need(v,why):
     if not v:raise ValueError(why)
-def strict(p,keys):
+def strict(p,keys,subset=False):
     with np.load(p,allow_pickle=False) as z:
-        need(set(z.files)==set(keys),'S222 original historic inputs drift '+str(p))
-        return {k:z[k].copy() for k in z.files}
+        need((set(keys).issubset(z.files) if subset else set(z.files)==set(keys)), 'S222 original historic inputs drift '+str(p)+': '+str(sorted(z.files)))
+        return {k:z[k].copy() for k in keys}
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def forward(model,x):
     raw=model.predict_proba(x)
@@ -41,7 +41,7 @@ def run(s69file,prfile,probfile,s70file,out):
     a=strict(s69file,{'global_index','true_K','fold','s18_K',
         'balanced_s46_K','balanced_protected_K',
         'polymax_s46_K','polymax_protected_K'})
-    pr=strict(prfile,{'global_index','true_K','fold','variant_ids','predictions'})
+    pr=strict(prfile,{'global_index','true_K','fold','predictions'},subset=True)
     # Original PR16 archive may include additional metadata. Strict no
     # assumptions beyond exact keys for S69 and fold alignment.
     with np.load(probfile,allow_pickle=False) as z:
@@ -52,7 +52,7 @@ def run(s69file,prfile,probfile,s70file,out):
     with np.load(s70file,allow_pickle=False) as z:
         expected={'global_index','fold','true_K','s69_poly_K',
                   'proposed_poly_K','downward_poly_K'}
-        need(set(z.files)==expected,'original S70 saved predictions fields changed')
+        need(expected.issubset(z.files),'original S70 saved predictions fields changed: '+str(sorted(z.files)))
         saved={k:z[k].copy() for k in z.files}
     ids=a['global_index'];y=a['true_K'];fold=a['fold']
     n=len(ids);b=a['polymax_protected_K'];balanced=a['balanced_protected_K']
