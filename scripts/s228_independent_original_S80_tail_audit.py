@@ -72,7 +72,7 @@ def run(s227,s219,s85,out):
        final_S80_exact=np.array_equal(recomputed,final['s80_K']),
        original_freeze_K_alignment=np.array_equal(final['incumbent_freeze_K'],
                                      pr['incumbent_freeze_K'][ix]),
-       K0_to_K6_only=np.isin(recomputed,range(7)).all())
+       K0_to_K6_only=bool(np.isin(recomputed,range(7)).all()))
     must(all(checks.values()),'independent S80 source replay disagrees '+str(checks))
     altered=np.flatnonzero(recomputed!=final['incumbent_freeze_K'])
     report=dict(status='S228_INDEPENDENT_COMPLETE_ORIGINAL_WEIGHT_S80_NEW_WAV_REPLAY',
