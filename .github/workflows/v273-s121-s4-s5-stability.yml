@@ -1,7 +1,7 @@
 name: S121 compare original S4 S5 model stability across 527D hypotheses
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/s121_s4_s5_prediction_stability.py'
       - '.github/workflows/v273-s121-s4-s5-stability.yml'
@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
   actions: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   stability:
     runs-on: ubuntu-24.04

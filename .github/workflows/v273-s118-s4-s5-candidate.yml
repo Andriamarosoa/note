@@ -1,7 +1,7 @@
 name: S118 S4-owned and S5 candidate 527D diagnostic (not promotion)
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/s118_s4_owned527_candidate.py'
       - '.github/workflows/v273-s118-s4-s5-candidate.yml'
@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
   actions: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   candidate_forward:
     runs-on: ubuntu-24.04

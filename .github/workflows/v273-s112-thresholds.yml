@@ -1,13 +1,17 @@
 name: S112 compare S4 S5 527-dimensional numeric split thresholds
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/s112_s4_s5_threshold_signatures.py'
       - '.github/workflows/v273-s112-thresholds.yml'
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   threshold_audit:
     runs-on: ubuntu-24.04

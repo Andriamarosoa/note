@@ -1,8 +1,8 @@
 name: V27.3 S80 traceable S73 repair (research only)
 
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/audit_v273_s80_traceable_repair.py'
       - '.github/workflows/v273-s80-traceable-repair.yml'
@@ -12,6 +12,10 @@ on:
 permissions:
   contents: read
   actions: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   s80:

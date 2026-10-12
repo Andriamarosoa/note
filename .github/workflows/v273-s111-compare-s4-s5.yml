@@ -1,13 +1,17 @@
 name: S111 original S4 S5 527 feature coordinate overlap
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/s111_compare_s4_s5_splits.py'
       - '.github/workflows/v273-s111-compare-s4-s5.yml'
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   compare:
     runs-on: ubuntu-24.04

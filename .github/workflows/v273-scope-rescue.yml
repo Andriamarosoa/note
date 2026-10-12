@@ -1,8 +1,10 @@
 name: V27.3 scope rescue K0 K1 K5 (experimental)
 
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - '.github/workflows/v273-scope-rescue.yml'
   workflow_dispatch:
 
 permissions:
@@ -15,6 +17,10 @@ env:
   OPENBLAS_NUM_THREADS: '1'
   OMP_NUM_THREADS: '1'
   GUITARSET_CACHE_KEY: guitarset-pickup-mix-b39b78e63d3446f2e54ddb7a54df9b10-aecce79f425a44e2055e46f680e10f6a
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   tests:

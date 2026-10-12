@@ -1,11 +1,15 @@
 name: S91 inspect archived upstream producer arrays
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths: ['scripts/s91_inspect_upstream_producers.py', '.github/workflows/v273-s91-inspect-upstream.yml']
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   inspect:
     runs-on: ubuntu-24.04

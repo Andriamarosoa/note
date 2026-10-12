@@ -1,13 +1,17 @@
 name: S109 search original S3 archive for saved 527D feature arrays
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/s109_inventory_s3_source_archive.py'
       - '.github/workflows/v273-s109-s3-schema.yml'
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   provenance:
     runs-on: ubuntu-24.04

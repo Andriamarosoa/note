@@ -1,7 +1,7 @@
 name: S117 8 genuine S4 control models infer on 57 unseen GOAT audio events
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/s117_external_original_s4_control_forward.py'
       - '.github/workflows/v273-s117-original-s4-goat.yml'
@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
   actions: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   forward:
     runs-on: ubuntu-24.04

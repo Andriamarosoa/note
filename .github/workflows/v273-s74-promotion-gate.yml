@@ -1,8 +1,8 @@
 name: V27.3 S74 official reference promotion gate
 
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/audit_v273_reference_promotion.py'
       - 'scripts/s82_external_pr16_neural_inference.py'
@@ -22,6 +22,10 @@ on:
 permissions:
   contents: read
   actions: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   audit_pinned_baseline:

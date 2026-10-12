@@ -1,13 +1,17 @@
 name: S113 test whether S4 527D augments original 111D design
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/s113_s4_111_to_527_prefix.py'
       - '.github/workflows/v273-s113-prefix.yml'
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   compare:
     runs-on: ubuntu-24.04

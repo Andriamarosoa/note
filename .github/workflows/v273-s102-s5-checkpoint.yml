@@ -1,13 +1,17 @@
 name: S102 S5 upstream model contract and weight integrity
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/s102_s5_upstream_checkpoint.py'
       - '.github/workflows/v273-s102-s5-checkpoint.yml'
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   inspect:
     runs-on: ubuntu-24.04

@@ -1,7 +1,7 @@
 name: S94 restored original S45 source smoke test
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/train_v273_s45_specialized_risk_heads.py'
       - 'scripts/verify_v273_s45_specialized_risk_heads.py'
@@ -14,6 +14,10 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test_s45_source:
     runs-on: ubuntu-24.04

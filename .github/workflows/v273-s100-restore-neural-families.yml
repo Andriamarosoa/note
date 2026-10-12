@@ -1,7 +1,7 @@
 name: S100 original S38 S40 S41 source neural selftests
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/train_v273_s38_poly_harmonic_expert.py'
       - 'scripts/train_v273_s40_temporal_cnn.py'
@@ -12,6 +12,10 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   original_selftests:
     runs-on: ubuntu-24.04

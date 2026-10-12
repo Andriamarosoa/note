@@ -1,7 +1,7 @@
 name: S123 replay S5 raw fold0 from original GuitarSet feature archive
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/s123_replay_s5_original_fold_design.py'
       - '.github/workflows/v273-s123-s5-fold-replay.yml'
@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
   actions: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   fold_replay:
     runs-on: ubuntu-24.04

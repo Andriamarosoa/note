@@ -1,7 +1,7 @@
 name: V27.3 S69 S46 vote-guard replay (experimental)
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/audit_v273_s69_s46_vote_guard.py'
       - 'analysis/README_V273_S69_S46_S62_S63_FUSION.md'
@@ -11,6 +11,10 @@ on:
 permissions:
   contents: read
   actions: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   replay:

@@ -1,7 +1,7 @@
 name: S97 run original S45 audio feature extraction on unseen GOAT
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/s97_external_s45_original_features.py'
       - 'scripts/v273_extended_head_bank.py'
@@ -10,6 +10,10 @@ on:
 permissions:
   contents: read
   actions: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   external_features:
     runs-on: ubuntu-24.04

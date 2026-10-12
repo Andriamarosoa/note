@@ -1,11 +1,15 @@
 name: S110 original S5 archived 527D matrix recovery audit
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths: ['scripts/s110_original_s5_array_schema.py','.github/workflows/v273-s110-s5-schema.yml']
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   inspect:
     runs-on: ubuntu-24.04

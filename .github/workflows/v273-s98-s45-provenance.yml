@@ -1,7 +1,7 @@
 name: S98 original S45 family provenance (label blind)
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/s98_s45_original_family_provenance.py'
       - '.github/workflows/v273-s98-s45-provenance.yml'
@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
   actions: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   provenance:
     runs-on: ubuntu-24.04

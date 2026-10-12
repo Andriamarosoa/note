@@ -1,13 +1,17 @@
 name: S122 diagnose 527D feature type placement from original tree split bounds
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/s122_original_s4_s5_feature_semantics.py'
       - '.github/workflows/v273-s122-original-feature-types.yml'
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   types:
     runs-on: ubuntu-24.04

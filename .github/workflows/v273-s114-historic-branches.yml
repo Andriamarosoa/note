@@ -1,7 +1,7 @@
 name: S114 forensic search all GitHub branches and original workflows
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/s114_github_original_s5_source_forensic.py'
       - '.github/workflows/v273-s114-historic-branches.yml'
@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
   actions: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   search:
     runs-on: ubuntu-24.04

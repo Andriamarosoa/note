@@ -1,8 +1,8 @@
 name: V27.3 S71 acoustic transition-risk replay (research only)
 
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/audit_v273_s71_acoustic_risk.py'
       - '.github/workflows/v273-s71-acoustic-risk.yml'
@@ -12,6 +12,10 @@ on:
 permissions:
   contents: read
   actions: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   s71_replay:

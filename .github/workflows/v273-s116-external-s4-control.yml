@@ -1,7 +1,7 @@
 name: S116 original 111D S4 acoustic control input on GOAT
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/s116_external_s4_control111.py'
       - 'scripts/extract_v273_open_cohort.py'
@@ -10,6 +10,10 @@ on:
 permissions:
   contents: read
   actions: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   external_control:
     runs-on: ubuntu-24.04

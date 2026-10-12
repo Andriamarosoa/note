@@ -1,7 +1,7 @@
 name: S120 compare S4 416D original feature layout hypotheses (nonvalidated)
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/s120_s4_s5_416_layout_audit.py'
       - '.github/workflows/v273-s120-s4-s5-layout.yml'
@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
   actions: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   compare:
     runs-on: ubuntu-24.04

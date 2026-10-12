@@ -1,13 +1,17 @@
 name: S90 archived S45 producer inventory (no promotion)
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/s90_inventory_archived_s45_producers.py'
       - '.github/workflows/v273-s90-s45-producer-inventory.yml'
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   inspect_archives:
     runs-on: ubuntu-24.04

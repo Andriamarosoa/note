@@ -1,11 +1,15 @@
 name: S92 inspect producer manifests
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths: ['scripts/s92_audit_producer_manifests.py','.github/workflows/v273-s92-manifests.yml']
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   inspect:
     runs-on: ubuntu-24.04

@@ -1,7 +1,7 @@
 name: S119 audit 527D numerical feature thresholds against original S4/S5
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/s119_s4_s5_tree_threshold_coverage.py'
       - '.github/workflows/v273-s119-s4-s5-thresholds.yml'
@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
   actions: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   threshold_audit:
     runs-on: ubuntu-24.04

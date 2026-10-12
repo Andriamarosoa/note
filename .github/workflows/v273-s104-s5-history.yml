@@ -1,13 +1,17 @@
 name: S104 search deleted S5 feature generator across git history
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/s104_deleted_s5_history.py'
       - '.github/workflows/v273-s104-s5-history.yml'
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   history:
     runs-on: ubuntu-24.04

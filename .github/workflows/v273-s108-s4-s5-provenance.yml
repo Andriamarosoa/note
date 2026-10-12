@@ -1,13 +1,17 @@
 name: S108 compare original S4 versus S5 feature checkpoint schemas
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/s108_s4_s5_checkpoint_provenance.py'
       - '.github/workflows/v273-s108-s4-s5-provenance.yml'
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   audit:
     runs-on: ubuntu-24.04

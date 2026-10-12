@@ -1,8 +1,8 @@
 name: V27.3 S72 temporal poly guard (research)
 
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/audit_v273_s72_temporal_poly_guard.py'
       - '.github/workflows/v273-s72-temporal-risk.yml'
@@ -12,6 +12,10 @@ on:
 permissions:
   contents: read
   actions: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   replay:

@@ -1,8 +1,8 @@
 name: V27.3 S56 consensus replay (development only)
 
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/audit_v273_scope_consensus.py'
       - 'test/test_v273_scope_consensus.py'
@@ -16,6 +16,10 @@ permissions:
 env:
   PYTHONPATH: '.:src'
   PYTHONUNBUFFERED: '1'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   replay:

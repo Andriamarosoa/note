@@ -1,7 +1,7 @@
 name: V27.3 S70 PR16 poly meta-selection (experimental)
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/audit_v273_s70_pr16_poly_meta.py'
       - '.github/workflows/v273-s70-pr16-poly-meta.yml'
@@ -11,6 +11,10 @@ on:
 permissions:
   contents: read
   actions: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   crossfit_replay:

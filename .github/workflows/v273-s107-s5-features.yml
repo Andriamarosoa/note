@@ -1,13 +1,17 @@
 name: S107 audit used S5 feature dimensions
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/s107_s5_active_feature_audit.py'
       - '.github/workflows/v273-s107-s5-features.yml'
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   audit:
     runs-on: ubuntu-24.04

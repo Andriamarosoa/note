@@ -1,13 +1,17 @@
 name: S105 original S5 frozen model forward pass
 on:
-  pull_request:
-    branches: [codex/v273-regression-loops]
+  push:
+    branches: [codex/v273-scope-rescue]
     paths:
       - 'scripts/s105_s5_frozen_forward.py'
       - '.github/workflows/v273-s105-s5-forward.yml'
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   original_forward:
     runs-on: ubuntu-24.04
