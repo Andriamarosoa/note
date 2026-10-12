@@ -26,6 +26,8 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3 h5py==3.16.0
+      - name: Require S288 immutable real audio fundamentals run succeeded
+        run: gh run watch 38320445824 --repo ${{ github.repository }} --exit-status --interval 15
       - name: Reuse S288 SHA frozen original 58D primary/fundamental source-only features
         run: |
           gh run download 38320445824 \
