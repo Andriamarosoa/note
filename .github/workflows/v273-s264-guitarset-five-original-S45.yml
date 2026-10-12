@@ -80,7 +80,7 @@ jobs:
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
           run-id: 38311814895
-          name: s238-guitarset-original-full-S5-S18-133-checkpoint-4fold-59309-predictions
+          name: s260-guitarset-59309-true-original-S5-S18-fourfold-133-checkpoints
           path: model/S260
       - name: Original native S97 original audio source 59309 matched event IDs
         uses: actions/download-artifact@v4
