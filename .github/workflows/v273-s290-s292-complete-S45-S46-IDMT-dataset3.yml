@@ -1,0 +1,135 @@
+name: S290 S292 16 real original S45 families to twofold S46 gate on 506 unseen Dataset3 events
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s290_full_16_S45_193_S46_dataset3_506.py'
+      - 'scripts/s291_original_S46_foldneutral_dataset3_506.py'
+      - 'scripts/s292_apply_S274_twofold_S46_gate_IDMT_dataset3_506.py'
+      - '.github/workflows/v273-s290-s292-complete-S45-S46-IDMT-dataset3.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s290-s292-full-original-S45-S46-dataset3
+  cancel-in-progress: true
+jobs:
+  complete_original_16_families_304_Ridge_193_policies_and_S274_gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install original 304 saved Ridge risk checkpoint compatible ABI
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Ensure successful original rare five-family source job; no XML has been opened
+        run: gh run watch 38320553022 --repo ${{ github.repository }} --exit-status --interval 15
+      - name: Restore the verified 5 original historical S1–S4/coherent source families
+        run: |
+          gh run download 38320553022 \
+            -n s289-original-five-rare-S45-source-models-506-IDMT-dataset3-no-label \
+            -D model/S289 --repo ${{ github.repository }}
+      - name: Restore 19 historical S29 S35 source branches
+        run: |
+          gh run download 38320247823 \
+            -n s284-s285-IDMT-dataset3-506-original-19-S29-S35-branches-prelabel \
+            -D model/S284S285 --repo ${{ github.repository }}
+      - name: Restore original S11/S12/S38/S40/S41 and recurrent S19/S20/S24/S25/S27 branches
+        run: |
+          gh run download 38320359920 \
+            -n s286-s287-original-ten-S45-families-19branches-dataset3-506-prelabel \
+            -D model/S286S287 --repo ${{ github.repository }}
+      - name: Restore sealed fourfold S18 K and strict source-only threefold S217 consensus
+        run: |
+          gh run download 38319911630 \
+            -n s281-IDMT-dataset3-506-original-S5-S18-fourfold-133trained \
+            -D model/S281 --repo ${{ github.repository }}
+          gh run download 38320164646 \
+            -n s282-s283-IDMT-dataset3-506-native-original-S18-quorum-S97-source \
+            -D model/S282S283 --repo ${{ github.repository }}
+      - name: Restore all 304 ORIGINAL trained specialized S45 Ridge risk heads and all historical 16 family IDs
+        run: |
+          gh run download 37891039201 \
+            -n v273-series45-specialized-risk-heads \
+            -D model/S45 --repo ${{ github.repository }}
+          test -f analysis/v273_s45_original_champion_catalog.json
+      - name: Compute all 19 historical S45 branches and all 193 original S46 policies
+        run: |
+          python -u -m scripts.s290_full_16_S45_193_S46_dataset3_506 \
+            --five model/S289/external_five_families.npz \
+            --s35 model/S284S285/S285/S285_original_s29_to_s35_dataset3.npz \
+            --s242 model/S286S287/S286/five_rebased_S11_S12_S38_S40_S41.npz \
+            --s243 model/S286S287/S287/five_rebased_recurrent_S19_S20_S24_S25_S27.npz \
+            --s18 model/S281/S281_original_S5_to_S18_true_V88_native_IDMT_506.npz \
+            --s97 model/S282S283/S283/S283_original_IDMT_dataset3_native_S97_audio.npz \
+            --models model/S45/models \
+            --catalog analysis/v273_s45_original_champion_catalog.json \
+            --out model/S290
+          python - <<'PY'
+          import json,numpy as np
+          from pathlib import Path
+          x=json.load(open('model/S290/report.json'))
+          assert x['original_native_reference_event_count']==506
+          assert x['original_s45_ridge_checkpoint_count']==304
+          assert x['original_s46_policy_count']==193
+          assert x['original_fold_held_piece_branches']==19
+          assert len(x['original_16_source_champion_family_names'])==16
+          assert not x['IDMT_XML_MIDI_content_read'] and not x['S80_promoted']
+          bank=list(Path('model/S290').glob('branch*_fold*/s46/predictions.npz'))
+          assert len(bank)==19
+          with np.load(bank[0],allow_pickle=False) as z:
+            assert z['predictions'].shape==(506,193)
+          print('S290 PASS complete original 16 S45 source families, original 304 risk checkpoint and 193 S46 policies')
+          PY
+      - name: Compute original S219 source-only fold-neutral consensus of all original S46 specialists
+        run: |
+          python -u -m scripts.s291_original_S46_foldneutral_dataset3_506 \
+            --s246 model/S290 \
+            --s282 model/S282S283/S282/S282_original_S18_foldneutral_506_IDMT.npz \
+            --out model/S291
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S291/report.json'))
+          assert r['original_native_reference_event_count']==506
+          assert r['original_S246_policy_count']==193
+          with np.load('model/S291/S291_original_193_S46_foldneutral_506_IDMT.npz',allow_pickle=False) as z:
+            assert z['S46_193_policy_K'].shape==(506,193)
+          print('S291 PASS true 506 native events original precommitted S46 bank, no labels')
+          PY
+      - name: Apply EXACT S274 2 compatible folds rule label blind and freeze both competing S46 banks
+        run: |
+          python -u -m scripts.s292_apply_S274_twofold_S46_gate_IDMT_dataset3_506 \
+            --s291 model/S291/S291_original_193_S46_foldneutral_506_IDMT.npz \
+            --s282 model/S282S283/S282/S282_original_S18_foldneutral_506_IDMT.npz \
+            --out model/S292
+          python - <<'PY'
+          import json,numpy as np
+          x=json.load(open('model/S292/report.json'))
+          assert x['native_events']==506 and x['policies']==193
+          assert x['true_K_or_XML_MIDI_read'] is False
+          assert x['onefold_interventions_suppressed']+x['two_or_more_fold_interventions_retained']==x['original_intervention_cells']
+          assert not x['S80_promoted'] and not x['independent_ExactK_measured']
+          with np.load('model/S292/S292_original_source_counterfactual_S274_gate_506.npz',allow_pickle=False) as z:
+            assert z['S46_193_policy_K'].shape==(506,193)
+          print('S292 PASS S274 strict two-fold S46 source-only candidate locked, no annotations')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s290-s292-full-original16-S45-304risk-S46twfold-IDMT-dataset3-506-prelabel
+          path: |
+            model/S290/report.json
+            model/S291/
+            model/S292/
+          retention-days: 90
