@@ -1,0 +1,68 @@
+name: S183 selective HTTP Range IDMT audio S35 original pretrained heads no full ZIP download
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s183_idmt_selective_http_range_s35.py'
+      - '.github/workflows/v273-s183-IDMT-fast-range-original-S35.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  # Replace the costly S178 complete-archive transfer with this proven HTTP 206 random-access method.
+  group: s178-idmt-original-audio-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  targeted_IDMT:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Frozen S35 source compatible numerical packages
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Test simulated real ZIP central directory random-access and WAV CRC
+        run: python -m scripts.s183_idmt_selective_http_range_s35 --self-test
+      - name: Retrieve the genuine frozen S35 audio-expert checkpoint collection
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37868356632
+          name: v273-series35-extended-head-router
+          path: model/S35
+      - name: Read 10 independent IDMT WAVs by ranges and forward only seven genuine S35 heads, no label
+        run: |
+          set -euo pipefail
+          python -u -m scripts.s183_idmt_selective_http_range_s35 \
+            --models model/S35 --out model/S183 --max-tracks 10 --max-events 10
+          python - <<'PY'
+          import json,numpy as np
+          d=json.load(open('model/S183/report.json'))
+          assert d['wav_files_chosen']==10
+          assert d['native_unseen_audio_events']>=10
+          assert d['source_pretrained_genuine_S35_checkpoint_count']==28
+          assert not d['full_zip_downloaded']
+          assert d['wav_CRC32_verified_by_Python_ZipFile']
+          assert not d['XML_MIDI_or_annotations_accessed']
+          assert not d['ExactK_ground_truth_accuracy_measured']
+          assert not d['original_S80_promoted']
+          with np.load('model/S183/S178_IDMT_audio_only_S35_source_heads.npz',allow_pickle=False) as z:
+              assert z['source_probabilities'].shape==(d['native_unseen_audio_events'],7,7)
+              assert not {'true_K','truth','midi','labels','target'}&set(z.files)
+          PY
+      - name: Save derived audio features and class posteriors only — no raw WAV, MIDI or XML
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s183-IDMT-real-original-S35-fast-range-derived-no-annotations-no-S80
+          path: model/S183/
+          retention-days: 90
