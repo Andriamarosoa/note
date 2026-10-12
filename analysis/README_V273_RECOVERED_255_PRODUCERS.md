@@ -8,6 +8,14 @@ neuf audits ont été produits sur les cinq événements GOAT éligibles, dans l
 quatre branches d'origine. Ce résultat ne constitue pas encore les sorties
 finales des cinq familles S45 manquantes.
 
+**Vérification GitHub réussie** : [run 38232069185](https://github.com/Andriamarosoa/note/actions/runs/38232069185),
+commit `4e5e3fc278f885e1b608e18476ec24a32ad1edff`. Le rejeu historique complet et
+la comparaison indépendante GOAT passent. Le fichier de sorties GOAT produit
+en CI est identique octet par octet au fichier local (SHA-256
+`b4377c9bafb7beda6f41d8ae722b02b2508e09acaaec3dd549a228304811f4a2`).
+La [preuve CI conservée](evidence/v273-recovered-255/github_ci.json) contient
+les identifiants du run, du job et de l'artefact, ainsi que les limites du résultat.
+
 ## Preuve historique
 
 - Les **70 régressions logistiques** (cinq spécialistes × quatorze ensembles
