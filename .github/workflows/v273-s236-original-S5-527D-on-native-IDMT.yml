@@ -30,7 +30,7 @@ jobs:
       - name: Ensure exact native V88 end boundaries match original baseline predictions
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh run watch 38302760217 --repo "${{ github.repository }}" --exit-status --interval 15
+        run: gh run watch 38303449423 --repo "${{ github.repository }}" --exit-status --interval 15
       - name: Restore original S234 acoustic-only original features on real official native events
         uses: actions/download-artifact@v4
         with:
@@ -44,7 +44,7 @@ jobs:
         with:
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
-          run-id: 38302760217
+          run-id: 38303449423
           name: s235-original-V88-native-endpoints-sealed-events
           path: model/S235
       - name: Reconstruct recovered exact historical 527D original S5 input with real 46D PR16 ownership
