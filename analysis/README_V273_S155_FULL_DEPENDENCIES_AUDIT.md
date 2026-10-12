@@ -115,3 +115,24 @@ KEEP passe de **0,912681** à **0,914608**.
 Ce résultat négatif est conservé. S18 dépend toujours du S9 adapté,
 pas du S5 historique avec son constructeur 527D ; il ne permet
 aucune promotion S80.
+
+## S45 — 304 vrais poids disponibles, le blocage est en amont
+
+L'audit des workflows d'origine confirme que les **304 modèles Ridge
+S45 entraînés** (19 modèles par famille, 16 familles) existaient déjà
+dans le [run source 37891039201](https://github.com/Andriamarosoa/note/actions/runs/37891039201)
+et sont archivés de façon permanente dans la
+[release S45 originale](https://github.com/Andriamarosoa/note/releases/tag/v273-series45-research-37891074478).
+
+Le module `scripts/s96_external_s45_risk_runtime.py` implémente un
+calcul de risque **sans labels**, sur 156 caractéristiques, avec
+moyenne des 19 modèles sauvegardés pour chaque famille.
+Cette règle de moyenne pour un morceau nouveau est expérimentale,
+pas la répétition garantie du score OOF historique.
+
+**L'obstacle d'exécution reste les 16 vrais vecteurs**
+`S43/S44 proposal_K` générés sur le nouvel audio, tous alignés
+aux mêmes `row_id` et au parent S18. Le runtime S96 échoue
+délibérément si l'une des 16 familles manque ; nous ne
+remplissons pas les manquantes par copies de la référence.
+Pas de score indépendant, donc pas de promotion.

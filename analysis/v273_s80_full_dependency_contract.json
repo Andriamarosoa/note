@@ -262,7 +262,7 @@
         "S43_S44_16_champions",
         "S41_gate"
       ],
-      "proof": "S45 historical piece-excluded family ridge; no new-piece model/aggregation policy"
+      "proof": "All 304 original S45 piece-held Ridge risk checkpoints (19 per 16 families) archived in v273-series45-research-37891074478, original run 37891039201. S96 156D label-free risk decoder ready but refuses any less than 16 genuine proposal columns; original new-piece deployment aggregation not historically verified."
     },
     {
       "id": "S46_193",
@@ -364,7 +364,8 @@
     "S157_authentic_S8_forward": 38196167459,
     "S158_S9_parent_parity": 38196307750,
     "S159_original_S8_archived": 38196392548,
-    "S161_correct_S41_parent": 38196667499
+    "S161_correct_S41_parent": 38196667499,
+    "S45_original_304_fit_archive": 37891074478
   },
   "ancestry_correction": {
     "prior_graph": "S148 mistakenly represented S11 as direct prerequisite of S18",
@@ -394,5 +395,17 @@
       "historical_S18_equivalence": false,
       "official_promotion": false
     }
+  },
+  "known_S45_source_archive": {
+    "source_run": 37891039201,
+    "trained_original_ridge_models": 304,
+    "original_families": 16,
+    "models_per_family": 19,
+    "risk_feature_width": 156,
+    "archive_url": "https://github.com/Andriamarosoa/note/releases/tag/v273-series45-research-37891074478",
+    "label_free_runtime": "scripts/s96_external_s45_risk_runtime.py",
+    "full_external_risk_forward_verified": false,
+    "remaining_blocker": "all 16 S43/S44 authentic source K proposal vectors for new audio, same row IDs and parent S18",
+    "official_promotion": false
   }
 }
