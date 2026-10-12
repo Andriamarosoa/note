@@ -33,13 +33,13 @@ jobs:
       - name: Require genuine five rare historical S1–S4 coherent models are fully executed on IDMT without labels
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh run watch 38306902209 --repo "${{ github.repository }}" --exit-status --interval 15
+        run: gh run watch 38307013187 --repo "${{ github.repository }}" --exit-status --interval 15
       - name: Restore 19-branch five original rare S1 S2 S3 S4/coherent
         uses: actions/download-artifact@v4
         with:
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
-          run-id: 38306902209
+          run-id: 38307013187
           name: s245-five-original-historic-S1-S2-S3-S4-coherent-on-1034-IDMT
           path: model/S245
       - name: Restore S241 actual original S29-fed S35 original bank of 36 experts and 72 quality gates
