@@ -16,17 +16,20 @@ def load(path):
         return {k:z[k].copy() for k in z.files}
 def run(root,out):
     need(not out.exists(),'immutable output')
-    all_rows=[]
+    all_rows=[];within_fold_diff=[]
     for f in FOLDS:
         paths=sorted(root.glob(f'branch*_fold{f}/s46/predictions.npz'))
         need(len(paths)=={0:5,1:4,2:5,4:5}[f],'missing original held-piece outputs')
         ref=load(paths[0])
+        diff=0
         for p in paths[1:]:
             trial=load(p)
             need(np.array_equal(trial['row_id'],ref['row_id']) and
                  np.array_equal(trial['variant_ids'],ref['variant_ids']) and
-                 np.array_equal(trial['predictions'],ref['predictions']),
-                 'S207 same-fold decision stability failed')
+                 trial['predictions'].shape==ref['predictions'].shape,
+                 'within-fold policy and event identity mismatch')
+            diff+=int(np.count_nonzero(trial['predictions']!=ref['predictions']))
+        within_fold_diff.append(diff)
         all_rows.append(ref)
     ids=all_rows[0]['row_id']
     for row in all_rows:
@@ -34,14 +37,14 @@ def run(root,out):
              np.array_equal(all_rows[0]['variant_ids'],row['variant_ids']),
              'row or policy identity shifted')
     pred=np.stack([z['predictions'] for z in all_rows])
-    need(pred.shape==(4,57,193),'S206 4fold matrices geometry')
+    need(pred.shape==(4,57,193),'S215 4fold matrices geometry')
     parent=pred[:,:,0]
     parent_unstable=(~np.all(parent==parent[0:1],axis=0))
     changes=(pred[:,:,1:]!=parent[:,:,None])
     all_same=np.all(pred==pred[0:1],axis=0)
     inconsistent=~all_same
     parent_only=np.all(pred==parent[:,:,None],axis=0)
-    # Count 193 columns per event. This explicitly decomposes the 904 divergent cells:
+    # Representative branch per fold for cross-fold comparison; intra-fold differences separately reported.
     pure_parent=inconsistent & parent_only
     gate_related=inconsistent & ~parent_only
     need(int((pure_parent|gate_related).sum())==int(inconsistent.sum()),'decomposition mismatch')
@@ -52,6 +55,7 @@ def run(root,out):
     restored=all_same & parent_unstable[:,None]
     output=dict(status='S216_ALL_16_SOURCE_FOLD_STABILITY_AND_GATE_ATTRIBUTION',
         audio_events=57,policies=193,folds=list(FOLDS),
+        within_fold_changed_cells_vs_first=within_fold_diff,
         parent_S18_unstable_events=int(parent_unstable.sum()),
         parent_S18_stable_events=int(parent_agree.sum()),
         unstable_event_policy_cells=int(inconsistent.sum()),
