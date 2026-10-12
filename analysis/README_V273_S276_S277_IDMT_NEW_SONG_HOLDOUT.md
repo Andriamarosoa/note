@@ -103,3 +103,73 @@ no new independent Exact-K percentage and no official promotion.
 
 If any condition fails: NO independent S275 improvement claim, and NO
 official promotion. The original freeze_local_combo remains in place.
+
+
+## S282–S300 — Full original S80 replay and first post-frozen annotations
+
+All remaining source-only workflows succeeded:
+- [S282–S283](https://github.com/Andriamarosoa/note/actions/runs/38320164646): genuine S18 S217 >=3/4 fold consensus and original S97 audio bridge.
+- [S284–S285](https://github.com/Andriamarosoa/note/actions/runs/38320247823): 38 original S29 Q models, 19 S20 parents, and all 19 original S35 branch results.
+- [S286–S287](https://github.com/Andriamarosoa/note/actions/runs/38320359920): 10 original trained S45 families.
+- [S288](https://github.com/Andriamarosoa/note/actions/runs/38320445824): fundamental58 validated against original 58D harmonic source.
+- [S289](https://github.com/Andriamarosoa/note/actions/runs/38320553022): five historically recovered S1/S2/S3/S4/coherent families.
+- [S290–S292](https://github.com/Andriamarosoa/note/actions/runs/38320668981): 16 original S45 family inputs, 304 Ridge checkpoints, 193 original S46 policies, fold neutral S219 and frozen S274 quorum2.
+- [S293](https://github.com/Andriamarosoa/note/actions/runs/38320764638): 12 original trained PR16 MLP heads and 36 PR16 policies.
+- [S294–S298](https://github.com/Andriamarosoa/note/actions/runs/38320939533): two COMPLETE S69/S70/S71/S72/S79/S80 source-only replays, with S291 original bank and S292 S274 bank, both locked BEFORE XML.
+- [S299](https://github.com/Andriamarosoa/note/actions/runs/38321142772): post-frozen original five Dataset3 XML note matcher (locked existing S190 20ms/80ms/+30ms protocol).
+- [S300](https://github.com/Andriamarosoa/note/actions/runs/38321299537): read-only per-K and grouped bootstrap audit; no re-training, recalibration or model selection.
+
+**CRITICAL REPRODUCIBLE OBSERVATION:** On five IDMT Dataset3 WAVs,
+506 original genuine V88 native events in first ten seconds of each,
+the two original S80 and S274-twofold S80 final predictions are
+IDENTICAL. The stricter quorum suppressed 51 of the 99 original
+S46 policy–event interventions and changed six S46 events but
+**zero final S80 events**, after all original learned downstream risk
+and selection heads. This is unlike the small *training-overlapping*
+GuitarSet S275 development gain, which cannot be transferred as a
+generalization claim.
+
+### First post-freeze observed Exact-K, annotation-MATCHED notes only
+
+Five XML recordings yield just **47 matched real K1–K6 labels**, of
+which **23 true polyphonic K2–K6**, among **506** candidate V88 events.
+Exactly **459 events** remain unmatched/unknown, NOT necessarily K0.
+Pathétique mono and Pathétique poly are a single composition, making
+at most four named composition families in this pilot.
+
+| TRUE note class | Events | frozen freeze_local_combo | original S80 | S274 S80 |
+|---|---:|---:|---:|---:|
+| K1 | 24 | 18 | 18 | 18 |
+| K2 | 12 | 0 | 3 | 3 |
+| K3 | 7 | 3 | 3 | 3 |
+| K4 | 4 | 1 | 1 | 1 |
+| K5 | 0 | n/a | n/a | n/a |
+| K6 | 0 | n/a | n/a | n/a |
+| **Matched K1–K6 only** | **47** | **22 (46.81%)** | **25 (53.19%)** | **25 (53.19%)** |
+| **True poly K2–K6 only** | **23** | **4 (17.39%)** | **7 (30.43%)** | **7 (30.43%)** |
+
+S80 versus freeze on these matched annotations: **4 corrections,
+1 regression, net +3**. Class K2 supplies net +3 (three new correct
+predictions). K3 has one correction and one regression, net zero.
+K1 and K4 have no net change. K5 and K6 are absent.
+
+The exploratory **bootstrap clustered by named composition** (four
+groups, 4,096 draws, seed299) gives a 95% interval for the paired S80
+gain of **[0.0, 0.1154] on matched K1–K6** and **[0.0, 0.2121]
+on matched poly K2–K6**. Both include zero; four composition
+groups are inadequate for a reliable promotion claim.
+
+### Promotion verdict
+
+- Original S80 and S274 final output are tied on this new cohort.
+- The observed 7/23 is NOT comparable to the old heldfold
+  GuitarSet poly 43.87% nor training-overlap S275 79.49%.
+- Full Exact-K K0–K6 **was NOT measured**. Unknown/unmatched events
+  cannot be assigned K0 by fiat, and song-disjoint provenance
+  against all model training compositions remains unverified.
+- No official reference change, no promoted S80, no PR merge.
+  **freeze_local_combo remains official**.
+- Next genuinely informative validation requires additional,
+  provenance-audited composition-disjoint polyphonic pieces and
+  a complete K0–K6 ground truth. Predetermined native alignment and
+  all competing model outputs must be frozen BEFORE opening those labels.
