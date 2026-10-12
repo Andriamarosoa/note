@@ -135,7 +135,8 @@ def run(zipfile_path,models,out,max_tracks=10,max_events=10):
     check(md5(zipfile_path)==ORIGINAL_MD5,'downloaded original IDMT source checksum changed')
     summaries=[];seqs=[];file_ids=[];samples_at=[];manifest=[]
     with zipfile.ZipFile(zipfile_path) as z:
-        check(z.testzip() is None,'invalid dataset integrity')
+        # Never use ZipFile.testzip(): it would read annotation contents.
+        # The complete original archive MD5 is checked before opening WAV members.
         selected,eligible=group_wav_names(z,max_tracks)
         for member in selected:
             check(not member.startswith('/') and '..' not in Path(member).parts,
