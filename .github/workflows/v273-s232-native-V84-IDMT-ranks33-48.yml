@@ -1,0 +1,93 @@
+name: S232 original frozen V84 native event groups on 16 unlabelled IDMT dataset2 SHA256 ranks33to48 WAVs
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s232_native_V84_IDMT_rank33to48_unseen_groups.py'
+      - '.github/workflows/v273-s232-native-V84-IDMT-sealed.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s232-native-IDMT-v84-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  infer_native_V84_V86_on_truly_unseen_WAV:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: '.:src'
+      TF_CPP_MIN_LOG_LEVEL: '2'
+      TF_NUM_INTRAOP_THREADS: '2'
+      TF_NUM_INTEROP_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install exact original native V84 TF and numerical stack
+        run: python -m pip install -r requirements-train.txt numpy==1.26.4 scikit-learn==1.4.2
+      - name: Restore SHA1 verified original V84 model and V86 threshold source archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p model/S232original-download
+          gh release download v273-source-recovery-35086829802 \
+            --repo ${{ github.repository }} \
+            --pattern v273-rebuilt-proposal-sources.zip \
+            --dir model/S232original-download
+          python - <<'PY'
+          from pathlib import Path
+          from scripts.restore_v273_original_backup import extract_verified
+          from scripts.rebuild_v273_sources import validate_sources
+          extract_verified(Path('model/S232original-download/v273-rebuilt-proposal-sources.zip'),
+              Path('model/S232original'),
+              'fb6bb1049b87c0517936f4f40e5bc1442722fc20b9eba5045a62bb0a12cf2994',
+              validate=validate_sources)
+          PY
+      - name: Restore S229 frozen SHA256 and preregistered WAV source song identity
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38299545404
+          name: s231-IDMT-ranks33to48-unopened-song-WAV-feature-hash-preseal
+          path: model/S231
+      - name: Original V84 10s neural onset stream and true V86 40ms clusters, XML not read
+        run: >-
+          python -u -m scripts.s232_native_V84_IDMT_rank33to48_unseen_groups
+          --sources model/S232original
+          --s229 model/S231/report.json
+          --out model/S232
+      - name: Prove identical preregistered song bytes, no truth, proper original native event timing
+        run: |
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S232/report.json'))
+          assert r['selected_song_count']==16 and r['native_event_count']>0
+          assert r['filename_sha256_rank_start']==33 and r['filename_sha256_rank_end']==48
+          assert r['prior_XML_exposed_ranks_1to32_excluded']
+          assert r['original_frozen_V84_V86_grouping']
+          assert r['untouched_IDMT_WAV_hashes_match_S231']
+          assert not r['XML_content_read'] and not r['MIDI_content_read']
+          assert not r['baseline_exactK_inference_ran']
+          assert not r['full_original_S80_inference_ran']
+          assert not r['independent_paired_ExactK_measured']
+          assert not r['official_S80_promotion']
+          with np.load('model/S232/IDMT_dataset2_true_V84_native_unlabeled_groups.npz',
+                 allow_pickle=False) as z:
+            assert len(z['starts'])==r['native_event_count']
+            assert np.all(z['starts']>0)
+            assert np.all(z['ends']>=z['starts'])
+          print('S232 PASS frozen V84 original source native event groups for unexposed IDMT songs')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s232-idmt-ranks33to48-original-V84-V86-native-groups-XML-unopened
+          path: model/S232/
+          retention-days: 90
