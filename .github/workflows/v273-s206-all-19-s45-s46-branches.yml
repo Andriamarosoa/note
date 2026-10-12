@@ -52,7 +52,7 @@ jobs:
           ELEVEN="$(find model/S173 -name S173_S35_adapted_11_family_GOAT.npz -print -quit)"
           test -s "$ELEVEN"
           test -d model/S45/models
-          python -m scripts.s205_experimental_s45_s46_bridge \
+          python -m scripts.s206_all_19_s45_s46_branches \
             --five analysis/evidence/v273-recovered-five-families/external_five_families.npz \
             --eleven "$ELEVEN" \
             --s18 analysis/evidence/v273-recovered-s5-s18/external_s5_to_s18.npz \
