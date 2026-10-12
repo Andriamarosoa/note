@@ -4,6 +4,8 @@ on:
     branches: [codex/v273-scope-rescue]
     paths:
       - 'analysis/v273_s80_full_dependency_contract.json'
+      - 'analysis/v273_s45_original_champion_catalog.json'
+      - 'scripts/s164_verify_s45_champion_checkpoint_catalog.py'
       - 'scripts/s148_verify_full_s80_dependencies.py'
       - 'scripts/loop_v273_k43_k21.py'
       - 'scripts/audit_v273_series9_posthoc.py'
@@ -39,6 +41,30 @@ jobs:
           python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
           python -m py_compile scripts/loop_v273_k43_k21.py
           python -m scripts.loop_v273_k43_k21 --self-test
+      - name: Retrieve original immutable sixteen S44 champion provenance
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38187185860
+          name: v273-s98-original-family-provenance
+          path: model/S98
+      - name: Retrieve authentic original 304 S45 trained family-specific Ridge heads
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37891039201
+          name: v273-series45-specialized-risk-heads
+          path: model/S45
+      - name: Reject wrong family aliases and verify all 304 saved Ridge weights source digests
+        run: |
+          python -m scripts.s164_verify_s45_champion_checkpoint_catalog --self-test
+          python -m scripts.s164_verify_s45_champion_checkpoint_catalog \
+            --catalog analysis/v273_s45_original_champion_catalog.json \
+            --graph analysis/v273_s80_full_dependency_contract.json \
+            --s98 model/S98/report.json --s45 model/S45 \
+            --out model/s155/verified_s45_original_catalog.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:

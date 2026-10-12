@@ -7,9 +7,9 @@ STATES={'verified_new_audio','adapted_new_audio','historical_only',
 EXPECTED=(
  "S1_acoustic","S2_source","S3_repair","S4_repair",
  "historical_repair_coherent","S25_Bfirst","S24_Bfirst",
- "S40_temporal_CNN","S19_recurrent_ABA","S11_votes",
- "S38_morphology","S12_logistic","S20_repeated_ABA",
- "S27_early_stop","S41_fusion","S35_multiroute")
+ "S40_temporal_CNN","S19_recurrent_ABA","S11_votes_time_audio",
+ "S38_morphology","S12_audio_logistic","S20_repeated_ABA",
+ "S27_early_stop","S41_neural_fusion","S35_multiroute")
 def need(x,msg):
     if not x:raise ValueError(msg)
 def validate(d,status,root):

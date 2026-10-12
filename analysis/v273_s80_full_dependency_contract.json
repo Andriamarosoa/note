@@ -1,5 +1,5 @@
 {
-  "schema": "v273-S160-s80-28-node-source-status-v3",
+  "schema": "v273-S164-28-node-original-S45-champion-catalog-v4",
   "reference": "freeze_local_combo",
   "official_promotion": false,
   "target_options": [
@@ -18,82 +18,114 @@
     {
       "id": "S1_acoustic",
       "state": "historical_vector_only",
-      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven"
+      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven",
+      "original_variant": "regression_loops_s1__acoustic43__cost_1.3",
+      "original_vector_sha256": "471f7ccab3d7ae8d842628ac53ef2049bab13ca6131fc202efd5668a12531030"
     },
     {
       "id": "S2_source",
       "state": "historical_vector_only",
-      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven"
+      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven",
+      "original_variant": "regression_loops_s2__source_count90",
+      "original_vector_sha256": "7dfc1725d077a376ee4dd63f594efe717ab216116a3599800f5d047ab2a29451"
     },
     {
       "id": "S3_repair",
       "state": "historical_vector_only",
-      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven"
+      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven",
+      "original_variant": "regression_loops_s3__tree_nested_source_count90",
+      "original_vector_sha256": "57e0a05634bfceac1816d457425255f6cc693176f1f7f134658663e8692e4cf2"
     },
     {
       "id": "S4_repair",
       "state": "historical_vector_only",
-      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven"
+      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven",
+      "original_variant": "regression_loops_s4__guard_acoustic58__blend_1__cost_2",
+      "original_vector_sha256": "867f139ef08f1be688b16d1b2178c379fca180e4d0f55c56ed197b6dfc858677"
     },
     {
       "id": "historical_repair_coherent",
       "state": "historical_vector_only",
-      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven"
+      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven",
+      "original_variant": "repair_coherent",
+      "original_vector_sha256": "efc52aa32147d54af38206da17ca54f76ecd673a0378dd3596e23cb5e2f77a41"
     },
     {
       "id": "S25_Bfirst",
       "state": "historical_vector_only",
-      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven"
+      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven",
+      "original_variant": "Bbefore_A0__raw",
+      "original_vector_sha256": "c498bed86d9c31dee2aefd03282037737fd6ff6f325d937b2ecc68b14d055c00"
     },
     {
       "id": "S24_Bfirst",
       "state": "historical_vector_only",
-      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven"
+      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven",
+      "original_variant": "Bfirst_B0__raw",
+      "original_vector_sha256": "ebe78578e557b62b3886beb1e4b2e293d887d04dc8197155b24c6b12e033ce07"
     },
     {
       "id": "S40_temporal_CNN",
       "state": "adapted_checkpoint_forward_not_original_full_family",
-      "proof": "S140-S145 original weights on GOAT, adapted parent inputs"
+      "proof": "S140-S145 original weights on GOAT, adapted parent inputs",
+      "original_variant": "series40__temporalCNN__source_K1to6__argmax",
+      "original_vector_sha256": "c620c58b500a59f04d8b2d32abe893d75dc350280416f2f1348b8659014fa613"
     },
     {
       "id": "S19_recurrent_ABA",
       "state": "historical_vector_only",
-      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven"
+      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven",
+      "original_variant": "ABA_pass2",
+      "original_vector_sha256": "25339d479fc8d4007bdab38b0ee367d39cb07b83dedb8c692cb8c14b9d551cf7"
     },
     {
-      "id": "S11_votes",
+      "id": "S11_votes_time_audio",
       "state": "historical_vector_only",
-      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven"
+      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven",
+      "original_variant": "series11__votes_time_audio__hgb__all__cost0",
+      "original_vector_sha256": "98a0b2118781bb6b2d6485f3af4fcfcda7c81c47ace487f51ce2a5717f485656"
     },
     {
       "id": "S38_morphology",
       "state": "adapted_checkpoint_forward_not_original_full_family",
-      "proof": "S140-S145 original weights on GOAT, adapted parent inputs"
+      "proof": "S140-S145 original weights on GOAT, adapted parent inputs",
+      "original_variant": "series38__morph825__extra_trees__source_K1to6__argmax",
+      "original_vector_sha256": "9066b04ad2be14b34e9d0644e944096c3f748682c894daae117075899ec33695"
     },
     {
-      "id": "S12_logistic",
+      "id": "S12_audio_logistic",
       "state": "adapted_checkpoint_forward_not_original_full_family",
-      "proof": "S140-S145 original weights on GOAT, adapted parent inputs"
+      "proof": "S140-S145 original weights on GOAT, adapted parent inputs",
+      "original_variant": "series12__logistic__all__cost0",
+      "original_vector_sha256": "c3ba79c9fe9356f00fb07373fd37103c5d5caf7914ada579e7c7ad92bdce215e"
     },
     {
       "id": "S20_repeated_ABA",
       "state": "historical_vector_only",
-      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven"
+      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven",
+      "original_variant": "series20__pass1__raw",
+      "original_vector_sha256": "3d7e6463dffb1881e87d3ba191c7186ea7695761487b0a1cb4d827c0b4ec7d91"
     },
     {
       "id": "S27_early_stop",
       "state": "historical_vector_only",
-      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven"
+      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven",
+      "original_variant": "series27__early_stable_005__raw",
+      "original_vector_sha256": "82c801d13d36915ace23e51a7ee5f8d6adf037153e5055915db347fa3ca652b7"
     },
     {
-      "id": "S41_fusion",
+      "id": "S41_neural_fusion",
       "state": "adapted_checkpoint_forward_not_original_full_family",
-      "proof": "S140-S145 original weights on GOAT, adapted parent inputs"
+      "proof": "S140-S145 original weights on GOAT, adapted parent inputs",
+      "original_variant": "series41__neural_fusion__source_K1to6__margin0",
+      "original_vector_sha256": "eaf8e090baac4f20d5e85f37f04e9aa99e023de20b38233a004d61f650cc896d"
     },
     {
       "id": "S35_multiroute",
       "state": "historical_vector_only",
-      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven"
+      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven",
+      "original_variant": "series35__lambda1__threshold0",
+      "original_vector_sha256": "ef12ec77ee2cd4e9852e469faf8a69ae29940487f5b44b499948f300857e71e7"
     }
   ],
   "nodes": [
@@ -407,5 +439,8 @@
     "full_external_risk_forward_verified": false,
     "remaining_blocker": "all 16 S43/S44 authentic source K proposal vectors for new audio, same row IDs and parent S18",
     "official_promotion": false
-  }
+  },
+  "original_S45_family_manifest": "analysis/v273_s45_original_champion_catalog.json",
+  "S45_original_16_family_identifiers_validated_against_S98": true,
+  "S45_checkpoints_304_trained_archive_available": true
 }

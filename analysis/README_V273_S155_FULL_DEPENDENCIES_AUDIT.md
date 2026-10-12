@@ -136,3 +136,21 @@ aux mêmes `row_id` et au parent S18. Le runtime S96 échoue
 délibérément si l'une des 16 familles manque ; nous ne
 remplissons pas les manquantes par copies de la référence.
 Pas de score indépendant, donc pas de promotion.
+
+## S164 — Rectification des noms exacts des 16 familles S45
+
+Les identifiants simplifiés inscrits dans une première version du
+registre n'étaient pas les noms originaux de trois familles.
+Le manifeste S98 et le dossier des 304 checkpoints S45 exigent :
+
+- `S11_votes_time_audio` (ancien alias `S11_votes`)
+- `S12_audio_logistic` (ancien alias `S12_logistic`)
+- `S41_neural_fusion` (ancien alias `S41_fusion`)
+
+Le [catalogue canonique](v273_s45_original_champion_catalog.json)
+contient pour chaque famille le vrai nom, la variante S44 exacte,
+et le SHA-256 des prédictions historiques. Le workflow S155/S164
+vérifie maintenant le nombre de modèles, la concordance avec le
+manifeste original S98 et la provenance de chaque checkpoint Ridge.
+Cela prouve les **poids de risque** disponibles, pas les 16 sources
+exécutables sur de nouveaux WAV.
