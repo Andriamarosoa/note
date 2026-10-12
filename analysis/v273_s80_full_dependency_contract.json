@@ -1,5 +1,5 @@
 {
-  "schema": "v273-S164-28-node-original-S45-champion-catalog-v4",
+  "schema": "v273-S171-28-node-S45-10of16-adapted-source-v5",
   "reference": "freeze_local_combo",
   "official_promotion": false,
   "target_options": [
@@ -18,112 +18,112 @@
     {
       "id": "S1_acoustic",
       "state": "historical_vector_only",
-      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven",
+      "proof": "Original selected S44 variant and original SHA256 known from S164, original source on new GOAT remains unverified. No surrogate source counted.",
       "original_variant": "regression_loops_s1__acoustic43__cost_1.3",
       "original_vector_sha256": "471f7ccab3d7ae8d842628ac53ef2049bab13ca6131fc202efd5668a12531030"
     },
     {
       "id": "S2_source",
       "state": "historical_vector_only",
-      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven",
+      "proof": "Original selected S44 variant and original SHA256 known from S164, original source on new GOAT remains unverified. No surrogate source counted.",
       "original_variant": "regression_loops_s2__source_count90",
       "original_vector_sha256": "7dfc1725d077a376ee4dd63f594efe717ab216116a3599800f5d047ab2a29451"
     },
     {
       "id": "S3_repair",
       "state": "historical_vector_only",
-      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven",
+      "proof": "Original selected S44 variant and original SHA256 known from S164, original source on new GOAT remains unverified. No surrogate source counted.",
       "original_variant": "regression_loops_s3__tree_nested_source_count90",
       "original_vector_sha256": "57e0a05634bfceac1816d457425255f6cc693176f1f7f134658663e8692e4cf2"
     },
     {
       "id": "S4_repair",
       "state": "historical_vector_only",
-      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven",
+      "proof": "Original selected S44 variant and original SHA256 known from S164, original source on new GOAT remains unverified. No surrogate source counted.",
       "original_variant": "regression_loops_s4__guard_acoustic58__blend_1__cost_2",
       "original_vector_sha256": "867f139ef08f1be688b16d1b2178c379fca180e4d0f55c56ed197b6dfc858677"
     },
     {
       "id": "historical_repair_coherent",
       "state": "historical_vector_only",
-      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven",
+      "proof": "Original selected S44 variant and original SHA256 known from S164, original source on new GOAT remains unverified. No surrogate source counted.",
       "original_variant": "repair_coherent",
       "original_vector_sha256": "efc52aa32147d54af38206da17ca54f76ecd673a0378dd3596e23cb5e2f77a41"
     },
     {
       "id": "S25_Bfirst",
-      "state": "historical_vector_only",
-      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven",
+      "state": "adapted_checkpoint_forward_not_original_full_family",
+      "proof": "Authentic originally trained checkpoint weights and historical policy logic actually forwarded on 57 GOAT native audio events, but adapted S5/S18 source and new held-piece ensemble. Proven S163 S166 S168 S169. This is not exact historical source vector parity.",
       "original_variant": "Bbefore_A0__raw",
       "original_vector_sha256": "c498bed86d9c31dee2aefd03282037737fd6ff6f325d937b2ecc68b14d055c00"
     },
     {
       "id": "S24_Bfirst",
-      "state": "historical_vector_only",
-      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven",
+      "state": "adapted_checkpoint_forward_not_original_full_family",
+      "proof": "Authentic originally trained checkpoint weights and historical policy logic actually forwarded on 57 GOAT native audio events, but adapted S5/S18 source and new held-piece ensemble. Proven S163 S166 S168 S169. This is not exact historical source vector parity.",
       "original_variant": "Bfirst_B0__raw",
       "original_vector_sha256": "ebe78578e557b62b3886beb1e4b2e293d887d04dc8197155b24c6b12e033ce07"
     },
     {
       "id": "S40_temporal_CNN",
       "state": "adapted_checkpoint_forward_not_original_full_family",
-      "proof": "S140-S145 original weights on GOAT, adapted parent inputs",
+      "proof": "Authentic originally trained checkpoint weights and historical policy logic actually forwarded on 57 GOAT native audio events, but adapted S5/S18 source and new held-piece ensemble. Proven S163 S166 S168 S169. This is not exact historical source vector parity.",
       "original_variant": "series40__temporalCNN__source_K1to6__argmax",
       "original_vector_sha256": "c620c58b500a59f04d8b2d32abe893d75dc350280416f2f1348b8659014fa613"
     },
     {
       "id": "S19_recurrent_ABA",
-      "state": "historical_vector_only",
-      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven",
+      "state": "adapted_checkpoint_forward_not_original_full_family",
+      "proof": "Authentic originally trained checkpoint weights and historical policy logic actually forwarded on 57 GOAT native audio events, but adapted S5/S18 source and new held-piece ensemble. Proven S163 S166 S168 S169. This is not exact historical source vector parity.",
       "original_variant": "ABA_pass2",
       "original_vector_sha256": "25339d479fc8d4007bdab38b0ee367d39cb07b83dedb8c692cb8c14b9d551cf7"
     },
     {
       "id": "S11_votes_time_audio",
-      "state": "historical_vector_only",
-      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven",
+      "state": "adapted_checkpoint_forward_not_original_full_family",
+      "proof": "Authentic originally trained checkpoint weights and historical policy logic actually forwarded on 57 GOAT native audio events, but adapted S5/S18 source and new held-piece ensemble. Proven S163 S166 S168 S169. This is not exact historical source vector parity.",
       "original_variant": "series11__votes_time_audio__hgb__all__cost0",
       "original_vector_sha256": "98a0b2118781bb6b2d6485f3af4fcfcda7c81c47ace487f51ce2a5717f485656"
     },
     {
       "id": "S38_morphology",
       "state": "adapted_checkpoint_forward_not_original_full_family",
-      "proof": "S140-S145 original weights on GOAT, adapted parent inputs",
+      "proof": "Authentic originally trained checkpoint weights and historical policy logic actually forwarded on 57 GOAT native audio events, but adapted S5/S18 source and new held-piece ensemble. Proven S163 S166 S168 S169. This is not exact historical source vector parity.",
       "original_variant": "series38__morph825__extra_trees__source_K1to6__argmax",
       "original_vector_sha256": "9066b04ad2be14b34e9d0644e944096c3f748682c894daae117075899ec33695"
     },
     {
       "id": "S12_audio_logistic",
       "state": "adapted_checkpoint_forward_not_original_full_family",
-      "proof": "S140-S145 original weights on GOAT, adapted parent inputs",
+      "proof": "Authentic originally trained checkpoint weights and historical policy logic actually forwarded on 57 GOAT native audio events, but adapted S5/S18 source and new held-piece ensemble. Proven S163 S166 S168 S169. This is not exact historical source vector parity.",
       "original_variant": "series12__logistic__all__cost0",
       "original_vector_sha256": "c3ba79c9fe9356f00fb07373fd37103c5d5caf7914ada579e7c7ad92bdce215e"
     },
     {
       "id": "S20_repeated_ABA",
-      "state": "historical_vector_only",
-      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven",
+      "state": "adapted_checkpoint_forward_not_original_full_family",
+      "proof": "Authentic originally trained checkpoint weights and historical policy logic actually forwarded on 57 GOAT native audio events, but adapted S5/S18 source and new held-piece ensemble. Proven S163 S166 S168 S169. This is not exact historical source vector parity.",
       "original_variant": "series20__pass1__raw",
       "original_vector_sha256": "3d7e6463dffb1881e87d3ba191c7186ea7695761487b0a1cb4d827c0b4ec7d91"
     },
     {
       "id": "S27_early_stop",
-      "state": "historical_vector_only",
-      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven",
+      "state": "adapted_checkpoint_forward_not_original_full_family",
+      "proof": "Authentic originally trained checkpoint weights and historical policy logic actually forwarded on 57 GOAT native audio events, but adapted S5/S18 source and new held-piece ensemble. Proven S163 S166 S168 S169. This is not exact historical source vector parity.",
       "original_variant": "series27__early_stable_005__raw",
       "original_vector_sha256": "82c801d13d36915ace23e51a7ee5f8d6adf037153e5055915db347fa3ca652b7"
     },
     {
       "id": "S41_neural_fusion",
       "state": "adapted_checkpoint_forward_not_original_full_family",
-      "proof": "S140-S145 original weights on GOAT, adapted parent inputs",
+      "proof": "Authentic originally trained checkpoint weights and historical policy logic actually forwarded on 57 GOAT native audio events, but adapted S5/S18 source and new held-piece ensemble. Proven S163 S166 S168 S169. This is not exact historical source vector parity.",
       "original_variant": "series41__neural_fusion__source_K1to6__margin0",
       "original_vector_sha256": "eaf8e090baac4f20d5e85f37f04e9aa99e023de20b38233a004d61f650cc896d"
     },
     {
       "id": "S35_multiroute",
       "state": "historical_vector_only",
-      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven",
+      "proof": "Original selected S44 variant and original SHA256 known from S164, original source on new GOAT remains unverified. No surrogate source counted.",
       "original_variant": "series35__lambda1__threshold0",
       "original_vector_sha256": "ef12ec77ee2cd4e9852e469faf8a69ae29940487f5b44b499948f300857e71e7"
     }
@@ -379,7 +379,7 @@
     "Promote only with independently verified better global AND poly Exact-K and no unresolved regressions"
   ],
   "independent_full_S80_accuracy_measured": false,
-  "last_implemented_verified_stage": "S161: 19 original S41 gates with S154 adapted S18 and immutable S38/S40 genuine trained experts; 57 KEEP, zero expert modifications. S80 independent score absent.",
+  "last_implemented_verified_stage": "S170: source S45 10/16 original weights, 190 original risk heads, original rule accepts one K1->K0 action under 10-way agreement; risk action identity verified and SHA archived; not proven corrected or full S80.",
   "evidence_runs": {
     "original_models_preserved": 38193466752,
     "s80_tail_historical_exact": 38194275444,
@@ -397,7 +397,15 @@
     "S158_S9_parent_parity": 38196307750,
     "S159_original_S8_archived": 38196392548,
     "S161_correct_S41_parent": 38196667499,
-    "S45_original_304_fit_archive": 37891074478
+    "S45_original_304_fit_archive": 37891074478,
+    "S163_partial_five_sources": 38198248491,
+    "S164_304_models": 38198384234,
+    "S165_negative_veto": 38198578807,
+    "S166_recurrent_three_sources": 38198716623,
+    "S167_partial_eight": 38198877007,
+    "S168_Bfirst_two": 38199078698,
+    "S169_partial_ten": 38199247838,
+    "S170_audited_preserved": 38199557501
   },
   "ancestry_correction": {
     "prior_graph": "S148 mistakenly represented S11 as direct prerequisite of S18",
@@ -442,5 +450,56 @@
   },
   "original_S45_family_manifest": "analysis/v273_s45_original_champion_catalog.json",
   "S45_original_16_family_identifiers_validated_against_S98": true,
-  "S45_checkpoints_304_trained_archive_available": true
+  "S45_checkpoints_304_trained_archive_available": true,
+  "verified_external_source_families_with_adapted_inputs": [
+    "S11_votes_time_audio",
+    "S12_audio_logistic",
+    "S19_recurrent_ABA",
+    "S20_repeated_ABA",
+    "S24_Bfirst",
+    "S25_Bfirst",
+    "S27_early_stop",
+    "S38_morphology",
+    "S40_temporal_CNN",
+    "S41_neural_fusion"
+  ],
+  "not_yet_executable_original_source_families": [
+    "S1_acoustic",
+    "S2_source",
+    "S3_repair",
+    "S4_repair",
+    "historical_repair_coherent",
+    "S35_multiroute"
+  ],
+  "note_10of16": "Ten original champion algorithm families forwarded with original trained weights and unchanged formula on real GOAT, but historical S45 outputs not reproduced bit-exact, six families absent, S5 upstream adapted, and only ten-family vote agreement known. No S80 promotion.",
+  "S45_partial_ten_family_research": {
+    "evidence_source_run": 38199247838,
+    "archive_audit_run": 38199557501,
+    "permanent_research_release": "https://github.com/Andriamarosoa/note/releases/tag/v273-S163-S170-real-original-S45-10of16-GOAT-research",
+    "GOAT_native_events": 57,
+    "trained_ridge_models_verified": 190,
+    "trained_ridge_models_that_scored": 95,
+    "proposed_nonparent_source_votes": 6,
+    "events_with_alternatives": 3,
+    "accepted_source_action_count": 1,
+    "accepted_source_family": "S25_Bfirst",
+    "accepted_action": {
+      "row_id": "example2_di.wav:161909",
+      "from_K": 1,
+      "to_K": 0,
+      "agreeing_families": [
+        "S11_votes_time_audio",
+        "S12_audio_logistic",
+        "S24_Bfirst",
+        "S25_Bfirst"
+      ],
+      "model_expected_correction": 0.45647650957107544,
+      "model_expected_regression": 0.36834585666656494,
+      "model_net_score": 0.0881306529045105
+    },
+    "action_truth_unknown": true,
+    "polyphonic_independent_ExactK_test_done": false,
+    "original_full_S45_proven": false,
+    "S80_promoted": false
+  }
 }
