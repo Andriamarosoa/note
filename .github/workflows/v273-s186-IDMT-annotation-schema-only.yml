@@ -22,6 +22,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Install inherited ZIP-reader numeric import requirements (no trained weights)
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
       - name: Only metadata, not pretrained models or source annotations
         run: python -m scripts.s186_idmt_groundtruth_schema_index_only --self-test
       - name: Read actual public ZIP central directory and compare 10 S185 frozen track names
