@@ -18,7 +18,9 @@ from scripts.s84_external_freeze_native_count import (
     build_model,predict,SEED)
 from scripts.s177_preregister_external_polyphony_source import API,audit
 from scripts.s183_idmt_selective_http_range_s35 import HttpRangeZIP
-from scripts.s178_idmt_audio_only_native_s35_heads import decode_wav
+from scipy.io import wavfile
+from scipy.signal import resample_poly
+from math import gcd
 
 SR=44100
 SECONDS=10
@@ -33,6 +35,38 @@ def pcm(samples):
         w.setnchannels(1);w.setsampwidth(2);w.setframerate(SR)
         w.writeframes(a.tobytes())
     return buffer.getvalue()
+
+def decode_external_wav(raw):
+    """Accommodate dataset3 WAV layouts without inspecting annotations."""
+    frequency,signal=wavfile.read(io.BytesIO(raw))
+    native_channels=signal.shape[1] if signal.ndim==2 else 1
+    need(native_channels in (1,2) and 20000<=int(frequency)<=96000,
+         "unsupported external WAV sample rate/channel count")
+    source_dtype=str(signal.dtype)
+    if signal.dtype==np.int16:
+        signal=signal.astype(np.float32)/32768.
+    elif signal.dtype==np.int32:
+        signal=signal.astype(np.float64)/2147483648.
+    elif signal.dtype==np.uint8:
+        signal=(signal.astype(np.float32)-128.)/128.
+    elif np.issubdtype(signal.dtype,np.floating):
+        signal=signal.astype(np.float64)
+    else:
+        raise ValueError("unknown external WAV PCM sample depth "+source_dtype)
+    if native_channels>1:
+        signal=signal.mean(axis=1)
+    if frequency!=SR:
+        g=gcd(int(frequency),SR)
+        signal=resample_poly(signal,SR//g,int(frequency)//g)
+    signal=np.clip(np.asarray(signal,dtype=np.float32),-1.0,1.0)
+    need(len(signal)>2*SR and np.isfinite(signal).all(),
+         "invalid normalized mono 44.1kHz waveform")
+    meta=dict(original_sample_rate_hz=int(frequency),
+              original_channels=int(native_channels),
+              original_dtype=source_dtype,
+              mono_downmix_applied=bool(native_channels>1),
+              resampling_to_44100_applied=bool(int(frequency)!=SR))
+    return signal,meta
 
 def run(source_dir,weights,s276,out):
     need(not out.exists(),"S277 must not overwrite immutable original reference")
@@ -72,8 +106,8 @@ def run(source_dir,weights,s276,out):
             tracks=[]
             for i,(name,hashname) in enumerate(zip(names,ids)):
                 raw=z.read(name) # CRC validated on WAV only
-                decoded=decode_wav(raw)
-                need(len(decoded)>2*SR,"IDMT dataset3 track shorter than 2 seconds")
+                decoded,format_meta=decode_external_wav(raw)
+                print(json.dumps(dict(source_name_SHA256=hashname,source_format=format_meta)),flush=True)
                 cut=pcm(decoded[:SECONDS*SR])
                 base=f'dataset3_{i:02d}_{hashname[:12]}_comp'
                 member=base+'.jams'
@@ -87,7 +121,8 @@ def run(source_dir,weights,s276,out):
                     original_WAV_SHA256=sha(raw),
                     reencoded_tensecond_PCM_SHA256=sha(cut),
                     original_audio_duration_seconds=len(decoded)/SR,
-                    audio_excerpt_seconds=min(SECONDS,len(decoded)/SR)))
+                    audio_excerpt_seconds=min(SECONDS,len(decoded)/SR),
+                    waveform_preparation=format_meta))
         args=proposal_args(source_dir)
         floor,retention,encoder86,encoder87,model88=_load_frozen_stack(args)
         scored=_predict_score_tracks(args.base_model,tracks)
@@ -147,6 +182,7 @@ def run(source_dir,weights,s276,out):
             WAV_source_read_only=[{k:v for k,v in rec.items()
                 if k!="original_archive_filename"} for rec in proof],
             original_audio_fingerprints=proof,
+            external_WAV_mono_resample_adaptation_disclosed=True,
             sealed_original_predictions_SHA256=sha(path.read_bytes()),
             XML_MIDI_annotated_contents_read=False,
             trained_original_weights_unchanged=True,
