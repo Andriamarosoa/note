@@ -115,7 +115,7 @@ jobs:
           b=json.load(open('model/S315/report.json'))
           assert a['events']==b['events']==964
           assert a['branches']==b['branches']==19
-          assert len(a['family_ids'])==len(b['family_ids'])==5
+          assert len(a['family_ids'])==len(b['source_variants'])==5
           assert not a['labels_read'] and not b['truth_labels_read']
           with np.load('model/S314/five_rebased_S11_S12_S38_S40_S41.npz',allow_pickle=False) as z:
             assert z['proposals_K'].shape==(19,964,5)
