@@ -1,0 +1,67 @@
+name: S281 all 133 original S8-S18 checkpoints on 506 IDMT dataset3 native events
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s281_original_S8_S18_on_506_dataset3.py'
+      - '.github/workflows/v273-s281-S8-S18-on-IDMT-dataset3.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s281-idmt-dataset3-506-real-S8-S18
+  cancel-in-progress: true
+jobs:
+  all_original_S8_S18_pretrained_risk_checkpoints:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Download S280 real original trained fourfold S5 estimates (all 506 native events)
+        run: |
+          gh run download 38319717743 \
+            -n s280-IDMT-dataset3-506-original-4S5-trained-folds-no-XML \
+            -D model/S280 --repo ${{ github.repository }}
+      - name: Download real native S278 acoustic views and S277 official V88 reference
+        run: |
+          gh run download 38319390256 \
+            -n s278-IDMT-dataset3-506-native-real-S97-no-XML \
+            -D model/S278 --repo ${{ github.repository }}
+          gh run download 38319155819 \
+            -n s277-IDMT-dataset3-5WAV-true-original-V88-native-official-unlabelled \
+            -D model/S277 --repo ${{ github.repository }}
+      - name: Run 133 original trained logistic/hgb stage checkpoints with exact saved source weights
+        run: |
+          python -u -m scripts.s281_original_S8_S18_on_506_dataset3 \
+            --s280 model/S280/S280_original_S5_fourfold_506_dataset3_native_unlabelled.npz \
+            --s278 model/S278/S278_IDMT_dataset3_original_S97_on_frozen_native_events.npz \
+            --s277 model/S277/S277_original_official_V88_dataset3_native_5_WAV_predictions.npz \
+            --cache model/S281_original-checkpoints \
+            --out model/S281
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S281/report.json'))
+          assert r['count']==506 and r['original_risk_checkpoint_count']==133
+          assert r['original_decoded_stage_count']==8
+          assert not r['XML_MIDI_annotation_content_read']
+          assert not r['official_S80_promotion']
+          with np.load('model/S281/S281_original_S5_to_S18_true_V88_native_IDMT_506.npz',allow_pickle=False) as z:
+            assert z['S18_K'].shape==(4,506)
+          print('S281 PASS genuine original 133 saved S8-S18 heads on 506 new V88 native events')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s281-IDMT-dataset3-506-original-S5-S18-fourfold-133trained
+          path: model/S281/
+          retention-days: 90
