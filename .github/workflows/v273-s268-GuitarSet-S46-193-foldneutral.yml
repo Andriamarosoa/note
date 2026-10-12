@@ -27,10 +27,10 @@ jobs:
           python-version: '3.11'
       - run: python -m pip install numpy==1.26.4
       - name: Require 304 original S45 risks and 193 S46 all 19 branches complete
-        run: gh run watch 38312632325 --exit-status --interval 15
+        run: gh run watch 38312898359 --exit-status --interval 15
       - name: Restore original full source decisions and precommitted S18 3 of 4 parent
         run: |
-          gh run download 38312632325 -n s267-full-original-S45-16families-304Ridge-193S46-59309-GuitarSet -D model/S267
+          gh run download 38312898359 -n s267-full-original-S45-16families-304Ridge-193S46-59309-GuitarSet -D model/S267
           gh run download 38311907661 -n s261-guitarset-59309-actual-fourfold-S18-neutral-consensus -D model/S261
       - name: Execute original S219 sparse fold-neutral consensus for all 193 policy variants, 59309 events
         run: |
