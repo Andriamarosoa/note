@@ -24,9 +24,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.12'
       - name: Install original rare S1-S4 full trained source environment
-        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0 h5py==3.11.0
+        run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3 h5py==3.16.0
       - name: Require original S244 spectrogram and fundamental58 truly original 1034 events
         env:
           GH_TOKEN: ${{ github.token }}
