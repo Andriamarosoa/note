@@ -1,0 +1,295 @@
+{
+  "schema": "v273-S148-s80-full-ancestry-v1",
+  "reference": "freeze_local_combo",
+  "official_promotion": false,
+  "target_options": [
+    {
+      "path": "S80-historical-identical",
+      "constraint": "exact original S4/S5 527D, S18, all 16 S45 original producers, original S69-S80 new-wave gating",
+      "current_readiness": "blocked"
+    },
+    {
+      "path": "S80-deploy-v1",
+      "constraint": "may replace missing components ONLY under new model identity and completely new independent scores",
+      "current_readiness": "blocked"
+    }
+  ],
+  "families": [
+    {
+      "id": "S1_acoustic",
+      "state": "historical_vector_only",
+      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven"
+    },
+    {
+      "id": "S2_source",
+      "state": "historical_vector_only",
+      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven"
+    },
+    {
+      "id": "S3_repair",
+      "state": "historical_vector_only",
+      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven"
+    },
+    {
+      "id": "S4_repair",
+      "state": "historical_vector_only",
+      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven"
+    },
+    {
+      "id": "historical_repair_coherent",
+      "state": "historical_vector_only",
+      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven"
+    },
+    {
+      "id": "S25_Bfirst",
+      "state": "historical_vector_only",
+      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven"
+    },
+    {
+      "id": "S24_Bfirst",
+      "state": "historical_vector_only",
+      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven"
+    },
+    {
+      "id": "S40_temporal_CNN",
+      "state": "adapted_checkpoint_forward_not_original_full_family",
+      "proof": "S140-S145 original weights on GOAT, adapted parent inputs"
+    },
+    {
+      "id": "S19_recurrent_ABA",
+      "state": "historical_vector_only",
+      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven"
+    },
+    {
+      "id": "S11_votes",
+      "state": "historical_vector_only",
+      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven"
+    },
+    {
+      "id": "S38_morphology",
+      "state": "adapted_checkpoint_forward_not_original_full_family",
+      "proof": "S140-S145 original weights on GOAT, adapted parent inputs"
+    },
+    {
+      "id": "S12_logistic",
+      "state": "adapted_checkpoint_forward_not_original_full_family",
+      "proof": "S140-S145 original weights on GOAT, adapted parent inputs"
+    },
+    {
+      "id": "S20_repeated_ABA",
+      "state": "historical_vector_only",
+      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven"
+    },
+    {
+      "id": "S27_early_stop",
+      "state": "historical_vector_only",
+      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven"
+    },
+    {
+      "id": "S41_fusion",
+      "state": "adapted_checkpoint_forward_not_original_full_family",
+      "proof": "S140-S145 original weights on GOAT, adapted parent inputs"
+    },
+    {
+      "id": "S35_multiroute",
+      "state": "historical_vector_only",
+      "proof": "S43/S44 archived native vectors; new-audio exact producer not proven"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "wav_groups",
+      "state": "verified_new_audio",
+      "requires": [],
+      "proof": "S83-S85: WAV to 57 native GOAT audio events"
+    },
+    {
+      "id": "PR16",
+      "state": "verified_new_audio",
+      "requires": [
+        "wav_groups"
+      ],
+      "proof": "S85: original 36 voting policies + 12 probabilities"
+    },
+    {
+      "id": "S4_control111",
+      "state": "adapted_new_audio",
+      "requires": [
+        "wav_groups"
+      ],
+      "proof": "S116/S117: original control architecture, 111D input"
+    },
+    {
+      "id": "S5_original527",
+      "state": "historical_only",
+      "requires": [
+        "S4_control111"
+      ],
+      "proof": "S125: missing original 416D acoustic constructor; 1882/15952 mismatched attempts"
+    },
+    {
+      "id": "S5_student135",
+      "state": "rejected_on_exposed_smoke",
+      "requires": [
+        "S4_control111"
+      ],
+      "proof": "S133-S137: new student; no gain GOAT 44/57 global, poly down 2/3 -> 1/3"
+    },
+    {
+      "id": "S11_original_votes",
+      "state": "missing_new_audio",
+      "requires": [
+        "PR16",
+        "S5_original527"
+      ],
+      "proof": "Genuine original S11 global/poly votes not executable on an unfamiliar recording"
+    },
+    {
+      "id": "S18_parent",
+      "state": "missing_new_audio",
+      "requires": [
+        "S11_original_votes"
+      ],
+      "proof": "Historical S17/S18 weights and veto parent exist; original new-wave upstream not reconstructed"
+    },
+    {
+      "id": "S43_S44_16_champions",
+      "state": "historical_only",
+      "requires": [
+        "S18_parent"
+      ],
+      "proof": "16 original champions recorded by S43/S44, only partially functional on GOAT"
+    },
+    {
+      "id": "S12_original_risks",
+      "state": "adapted_new_audio",
+      "requires": [
+        "wav_groups"
+      ],
+      "proof": "S143: 19 original cross-piece logistic checkpoints; S9 eligibility missing"
+    },
+    {
+      "id": "S38_experts",
+      "state": "adapted_new_audio",
+      "requires": [
+        "wav_groups"
+      ],
+      "proof": "S142/S144: 16 original trained model checkpoints"
+    },
+    {
+      "id": "S40_temporal",
+      "state": "adapted_new_audio",
+      "requires": [
+        "wav_groups"
+      ],
+      "proof": "S141/S144: four original 42x49 CNN checkpoints"
+    },
+    {
+      "id": "S41_gate",
+      "state": "adapted_new_audio",
+      "requires": [
+        "S38_experts",
+        "S40_temporal"
+      ],
+      "proof": "S144: 19 original fusion checkpoints, new parent, S145 57/57 KEEP"
+    },
+    {
+      "id": "S45_family_risks",
+      "state": "historical_only",
+      "requires": [
+        "S43_S44_16_champions",
+        "S41_gate"
+      ],
+      "proof": "S45 historical piece-excluded family ridge; no new-piece model/aggregation policy"
+    },
+    {
+      "id": "S46_193",
+      "state": "logic_ready_inputs_missing",
+      "requires": [
+        "S18_parent",
+        "S43_S44_16_champions",
+        "S45_family_risks"
+      ],
+      "proof": "S88 label-free exact 193-policy decoder from 16 family proposals, risk and votes"
+    },
+    {
+      "id": "S69",
+      "state": "historical_only",
+      "requires": [
+        "S46_193",
+        "PR16"
+      ],
+      "proof": "S89 exact historical veto rules are keyed by old outer folds"
+    },
+    {
+      "id": "S70_S71_S72",
+      "state": "historical_only",
+      "requires": [
+        "S69",
+        "wav_groups"
+      ],
+      "proof": "S72 risk and poly guard fitted/tested on exposed historical folds"
+    },
+    {
+      "id": "S79_K1",
+      "state": "historical_only",
+      "requires": [
+        "S70_S71_S72",
+        "PR16",
+        "S46_193"
+      ],
+      "proof": "Four saved K1 logistic models with fold-specific choices; no novel-piece deployment rule"
+    },
+    {
+      "id": "S80_K0_K2_tail",
+      "state": "logic_ready_inputs_missing",
+      "requires": [
+        "S79_K1",
+        "S70_S71_S72",
+        "PR16",
+        "S46_193"
+      ],
+      "proof": "S147: zero mismatches on 59309 historical rows, 46 K0 and 61 K2 actions"
+    },
+    {
+      "id": "S80_full",
+      "state": "missing_new_audio",
+      "requires": [
+        "S80_K0_K2_tail"
+      ],
+      "proof": "No full end-to-end predictor producing new-wave outputs through all original inputs"
+    },
+    {
+      "id": "independent_ExactK",
+      "state": "pending_independent",
+      "requires": [
+        "S80_full"
+      ],
+      "proof": "External preregistered IDMT-SMT-GUITAR V2 heldout not performed"
+    },
+    {
+      "id": "promote_S80",
+      "state": "pending_independent",
+      "requires": [
+        "independent_ExactK"
+      ],
+      "proof": "Must beat freeze_local_combo in global and poly Exact-K on unseen pieces"
+    }
+  ],
+  "required_acceptance": [
+    "Define final new-wave model version, parents, routing order and policies before opening labels",
+    "Run fully unseen-audio S4/S5->S18->16 S45->S46->S69->S72->S79->S80",
+    "Freeze model, code, checkpoints and independent predictions with SHA256",
+    "Evaluate song-disjoint unseen and unexposed guitar polyphony data against freeze_local_combo",
+    "Report global, K0-K6, K2plus, paired corrections and regressions with uncertainty",
+    "Promote only with independently verified better global AND poly Exact-K and no unresolved regressions"
+  ],
+  "independent_full_S80_accuracy_measured": false,
+  "last_implemented_verified_stage": "S147 K0/K2 exact logic 59309 historical rows, not full pipeline",
+  "evidence_runs": {
+    "original_models_preserved": 38193466752,
+    "s80_tail_historical_exact": 38194275444,
+    "source_restore": 38192579770,
+    "real_goat_negative": 38191739817
+  }
+}
