@@ -1,0 +1,78 @@
+name: S125 historic S5 fold0 replay compare three 416D layouts (research only)
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s125_replay_s5_416d_variants_original_fold.py'
+      - '.github/workflows/v273-s125-compare-historic-s5.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  fold0:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install original S5 checkpoint runtime
+        run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+      - name: Verify diagnostics never train/tune with heldout truth
+        run: python -m scripts.s125_replay_s5_416d_variants_original_fold --self-test
+      - name: Restore original Series5 fold0 checkpoint and archived report
+        run: |
+          set -euo pipefail
+          mkdir -p model/historical
+          git fetch origin 'refs/tags/v273-series45-research-37891074478:refs/tags/v273-series45-research-37891074478'
+          git archive 854ada718ac9bf1556f00c96b8e1aa90402d6ab3 \
+            analysis/evidence/v273-open-k0-k6/series5/models \
+            analysis/evidence/v273-open-k0-k6/series5/report.json | tar -x -C model/historical
+      - name: Fetch original GuitarSet source features of held development fold0
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37837235723
+          name: v273-open-features-0
+          path: model/original-features
+      - name: Fetch fixed S123 previously computed log-variant predictions
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38186603580
+          name: v273-s123-original-S5-fold-0-replay-candidate
+          path: model/s123
+      - name: Compute independent original model forward with two amplitude suffixes
+        run: |
+          set -euo pipefail
+          FEATURES="$(find model/original-features -name features-fold-0.npz -print -quit)"
+          S123="$(find model/s123 -name replay_predictions.npz -print -quit)"
+          test -s "$FEATURES" && test -s "$S123"
+          python -u -m scripts.s125_replay_s5_416d_variants_original_fold \
+            --features "$FEATURES" --s123 "$S123" \
+            --models model/historical/analysis/evidence/v273-open-k0-k6/series5/models \
+            --original-report model/historical/analysis/evidence/v273-open-k0-k6/series5/report.json \
+            --out model/s125
+          python - <<'PY'
+          import json
+          r=json.load(open("model/s125/report.json"))
+          assert r['events']==15952 and len(r['results'])==3
+          assert not r['features_used_truth'] and not r['historical_fold_used_for_model_selection']
+          assert not r['feature_equivalence_proven'] and not r['S80_promoted']
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s125-fixed-fold0-S5-527D-forensic-diagnostics
+          path: model/s125/
+          retention-days: 30
