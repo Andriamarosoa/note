@@ -1,0 +1,98 @@
+name: S136 preserve SHA-verified S133-S135 student research beyond CI artifact expiry
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - '.github/workflows/v273-s136-preserve-students.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: s136-preserve-student-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  preserve:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download immutable successful S133 student checkpoint and paired results
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38190510117
+          name: v273-s133-two-lightgbm-S5-teacher-students
+          path: model/s133
+      - name: Download immutable successful S134 student checkpoint and paired results
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38190754219
+          name: v273-s134-soft-original-S5-teacher-student
+          path: model/s134
+      - name: Download immutable successful S135 deterministic composite outputs
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38190945241
+          name: v273-s135-K-anchored-S5-student-soft-posteriors
+          path: model/s135
+      - name: Independent SHA, sample provenance and non-promotion gate
+        run: |
+          python - <<'PY'
+          import json,hashlib,pathlib
+          base=pathlib.Path('model')
+          r133=json.loads((base/'s133/report.json').read_text())
+          r134=json.loads((base/'s134/report.json').read_text())
+          r135=json.loads((base/'s135/report.json').read_text())
+          assert r133['heldout_rows']==r134['heldout_rows']==r135['historic_fold0_rows']==15952
+          assert r133['GOAT_new_wave_events']==r134['GOAT_external_event_count']==r135['GOAT_real_wave_events']==57
+          for name,metrics in r133['arms'].items():
+              file=base/'s133'/f'{name}_all_teacher.joblib'
+              assert hashlib.sha256(file.read_bytes()).hexdigest()==metrics['deploy_model_sha256']
+          file=base/'s134/soft_s5_111d_distilled.joblib'
+          assert hashlib.sha256(file.read_bytes()).hexdigest()==r134['new_checkpoint_SHA256']
+          assert r135['fold0_teacher_probabilities']['S135_anchored_soft']['original_teacher_topK_agreement']==14619
+          assert not r133['original_S5_527D_reproduced'] and not r134['original_S5_reproduced'] and not r135['original_S5_recovered']
+          assert not r133['S80_promoted'] and not r134['S80_promoted'] and not r135['S80_promoted']
+          print('S136 PASS: SHA and provenance of S133/S134/S135 checked, no exact-K claim')
+          PY
+      - name: Bundle the source research decisions with checksums
+        run: |
+          set -euo pipefail
+          mkdir -p model/s136
+          find model/s133 model/s134 model/s135 -type f -print0 | sort -z | xargs -0 sha256sum > model/s136/FILES_SHA256SUMS
+          tar --sort=name --mtime='@0' --owner=0 --group=0 --numeric-owner \
+            -czf model/s136/v273-S133-S135-teacher-students.tar.gz \
+            -C model s133 s134 s135
+          (cd model/s136 && sha256sum v273-S133-S135-teacher-students.tar.gz > BUNDLE_SHA256)
+      - name: Preserve as permanent explicit research-only GitHub prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG="v273-s133-s135-student-research-38190945241"
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release already exists; refusing to overwrite permanent proof"
+            exit 1
+          fi
+          gh release create "$TAG" \
+            model/s136/v273-S133-S135-teacher-students.tar.gz \
+            model/s136/BUNDLE_SHA256 model/s136/FILES_SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "S133-S135: original S5 teacher distillation research, not S80 promotion" \
+            --notes "Research-only teacher-output fidelity on exposed GuitarSet fold0; GOAT inference without labels. Three new student/correction versions and SHA-verified checkpoints, no original S5 feature 416D, no independent true Exact-K, freeze_local_combo remains official."
+          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json url -q '.url' | tee model/s136/RELEASE_URL.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s136-S133-S135-permanent-research-release-receipt
+          path: model/s136/
+          retention-days: 30

@@ -6,10 +6,10 @@
   "official_promotion": false,
   "independent_S80_accuracy_measured": false,
   "latest_run": {
-    "id": 38189691837,
-    "component": "S132",
-    "status": "Archived historical Git commit forensic search SUCCESS; original S5 owned527 source not recovered",
-    "independent_S80_score": false
+    "id": 38190945241,
+    "component": "S135",
+    "status": "success",
+    "artifact_id": 11720997747
   },
   "validated_frozen_components": {
     "original_native_audio_inference": {
@@ -157,5 +157,48 @@
     "raw_acoustic_operation_text_hits": 10,
     "original_owned527_source_recovered": false,
     "interpretation": "Git -G covers source diff matches on reachable commits and explicitly bounded date; absence of matches does not prove original local or unreachable code never existed."
+  },
+  "original_S5_527D_reconstructed": false,
+  "original_S5_forward_reproduced_on_new_audio": false,
+  "experimental_S133_S135_teacher_student_research": {
+    "original_S5_checkpoint_unchanged": true,
+    "source_416D_recovered": false,
+    "training_targets": "SHA-verified out-of-fold original S5 predictions, not original true K",
+    "heldout_fold": 0,
+    "historical_rows": 15952,
+    "hard_student_S129_K_agreement": 14557,
+    "hard_student_S133_K_agreement": 14619,
+    "hard_student_S133_fixes_vs_S129": 246,
+    "hard_student_S133_regressions_vs_S129": 184,
+    "hard_student_S133_teacher_K2_K4_macro_recall": 0.6085113735878006,
+    "temporal_S133_K_agreement": 14586,
+    "teacher_soft_MAE_S129": 0.028867,
+    "teacher_soft_MAE_S133": 0.030387465871467272,
+    "teacher_soft_MAE_S134": 0.022062732154729165,
+    "teacher_soft_MAE_S135": 0.02195535278733347,
+    "soft_student_S134_K_agreement": 14550,
+    "combined_S135_K_agreement": 14619,
+    "combined_S135_K_disagreement": 1333,
+    "S135_fold0_changed_probability_rows": 708,
+    "GOAT_events": 57,
+    "S135_GOAT_modified_probability_rows": 2,
+    "S135_GOAT_K0_K6_histogram": [
+      46,
+      9,
+      2,
+      0,
+      0,
+      0,
+      0
+    ],
+    "new_models_are_original_S5": false,
+    "S80_promoted": false,
+    "runs": {
+      "S133": 38190510117,
+      "S134": 38190754219,
+      "S135": 38190945241
+    },
+    "preregistered_independent_test_complete": false,
+    "calibration_note": "S133/S134 and anchoring were developed using same exposed historic heldfold metrics, not unbiased independent validation"
   }
 }
