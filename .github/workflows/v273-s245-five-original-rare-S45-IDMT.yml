@@ -30,13 +30,13 @@ jobs:
       - name: Require original S244 spectrogram and fundamental58 truly original 1034 events
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh run watch 38306376167 --repo "${{ github.repository }}" --exit-status --interval 15
+        run: gh run watch 38306685204 --repo "${{ github.repository }}" --exit-status --interval 15
       - name: Restore original 58D harmonic and fundamental views from S244 on native IDMT
         uses: actions/download-artifact@v4
         with:
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
-          run-id: 38306376167
+          run-id: 38306685204
           name: s244-idmt-original-58D-fundamental-all-1034-native-unlabelled
           path: model/S244
       - name: Restore original hash-verified five-family trained runtime and its COMPLETE 7493 historical proof
