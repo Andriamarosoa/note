@@ -1,0 +1,79 @@
+name: S228 independent original source S80 full new WAV inference replay and promotion gate
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s228_independent_original_S80_tail_audit.py'
+      - '.github/workflows/v273-s228-independent-full-S80.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s228-original-independent-tail-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  independent_end_to_end_source_check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install independent source-only numeric audit
+        run: python -m pip install numpy==1.26.4
+      - name: Immutable full S80 original checkpoint frozen new WAV forward from S227
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38297654063
+          name: s227-full-experimental-S80-new-WAV-57-unlabeled-not-promotion
+          path: model/S227
+      - name: Original 36 PR16 policy votes and 12 neural softmax outputs
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38176406465
+          name: v273-s85-original-pr16-external-policies
+          path: model/S85
+      - name: Original S45 S46 193-policy specialist bank S219
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38294699823
+          name: s219-conditional-specialist-S46-19-branch-4fold-candidate
+          path: model/S219
+      - name: Independent NumPy K0 K1 K2 S80 recomputation without S147 or S227 imports
+        run: |
+          set -euo pipefail
+          S85="$(find model/S85 -name pr16_external_36_policies.npz -print -quit)"
+          test -s "$S85"
+          python -m scripts.s228_independent_original_S80_tail_audit \
+            --s227 model/S227/S80_full_experimental_deploy_new_WAV.npz \
+            --s219 model/S219/conditional_sparse_193_policy_prediction.npz \
+            --s85 "$S85" --out model/S228
+      - name: Independently assert exact 57 original-model S80 predictions and block promotion without test labels
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S228/report.json'))
+          assert r['event_count']==57 and r['PR16_votes']==36 and r['S46_original_policies']==193
+          assert r['S79_trained_fold_models']==4
+          assert all(r['independent_formula_checks'].values())
+          assert r['independent_ExactK_global'] is None and r['independent_ExactK_poly'] is None
+          assert not r['truth_or_MIDI_read'] and not r['official_S80_promoted']
+          print('S228 PASS full independent S80 source replay, no independent quality metric yet')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s228-independent-complete-S80-original-source-replay-unlabeled
+          path: model/S228/
+          retention-days: 90
