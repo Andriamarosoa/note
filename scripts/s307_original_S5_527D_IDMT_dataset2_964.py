@@ -1,7 +1,7 @@
 """S307: recover 527D original S5 features and PR16 geometry on S302/S306 native rows.
 
 Label-free source, no checkpoints trained or revised. Inputs must be exact
-canonical new Dataset3 event IDs. Replay actual original historical
+canonical new Dataset2 event IDs. Replay actual original historical
 S4-owned 527 feature constructor and original PR16 temporal ownership.
 """
 from __future__ import annotations
@@ -23,10 +23,10 @@ def read(path,fields):
     with np.load(path,allow_pickle=False) as z:
         need(set(z.files)==fields,"unexpected label or source field: "+str(path))
         return {k:z[k].copy() for k in z.files}
-def run(s278,s277,out):
+def run(s306,s302,out):
     need(not out.exists(),"S307 native candidate feature bank must be immutable")
-    a=read(s278,AUDIO)
-    b=read(s277,BASELINE)
+    a=read(s306,AUDIO)
+    b=read(s302,BASELINE)
     n=len(a["row_id"])
     need(n==964 and all(np.array_equal(a[k],b[k]) for k in
         ("row_id","member","start_samples"))
@@ -49,10 +49,10 @@ def run(s278,s277,out):
       start_samples=b["start_samples"],end_samples=b["end_samples"],
       incumbent_freeze_K=b["incumbent_K"],
       original_PR16_geometry46=geom,original_S5_input_owned527=x)
-    rep=dict(status="S307_TRUE_EXTERNAL_IDMT_DATASET3_S5_527D_INPUT_NO_LABELS",
-       native_events=n,WAV_count=5,
-       true_original_S302_baseline_SHA256=sha(s277),
-       true_original_S306_S97_features_SHA256=sha(s278),
+    rep=dict(status="S307_TRUE_EXTERNAL_IDMT_DATASET2_S5_527D_INPUT_NO_LABELS",
+       native_events=n,WAV_count=16,
+       true_original_S302_baseline_SHA256=sha(s302),
+       true_original_S306_S97_features_SHA256=sha(s306),
        original_feature_width=527,
        original_46D_PR16_ownership=True,
        original_trained_S5_model_checkpoints_applied=False,
@@ -66,5 +66,5 @@ def run(s278,s277,out):
 
 if __name__=="__main__":
     p=argparse.ArgumentParser()
-    for k in ("s278","s277","out"):p.add_argument("--"+k,required=True,type=Path)
-    a=p.parse_args();run(a.s278,a.s277,a.out)
+    for k in ("s306","s302","out"):p.add_argument("--"+k,required=True,type=Path)
+    a=p.parse_args();run(a.s306,a.s302,a.out)
