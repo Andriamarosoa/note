@@ -6,8 +6,8 @@
   "official_promotion": false,
   "independent_S80_accuracy_measured": false,
   "latest_run": {
-    "component": "S228 independent complete checkpoint-based S80 new-audio label-blind replay",
-    "id": 38297962398,
+    "component": "S233 official freeze_local_combo true V8-native reference on IDMT dataset2 SHA256 WAV ranks33–48 (untouched annotations)",
+    "id": 38301633310,
     "status": "success",
     "independent_S80_accuracy_measured": false,
     "official_promotion": false
@@ -208,6 +208,44 @@
       "official_promotion": false,
       "original_historical_S80_out_of_piece_identity_proven": false,
       "new_version_policy": "analysis/v273_s217_s220_experimental_deployment_policy.json"
+    },
+    "S231_S233_new_IDMT_baseline_preannotation": {
+      "status": "PRESEALED_ORIGINAL_OFFICIAL_REFERENCE_K_PREDICTIONS_ON_NEW_FILE_DISJOINT_AUDIO",
+      "exposed_prior_songs_rank_1to32": true,
+      "chosen_unlabelled_filename_SHA256_ranks": [
+        33,
+        48
+      ],
+      "original_rank33to48_WAV_count": 16,
+      "S231_WAV_hash_preseal_run_id": 38299545404,
+      "S231_audio_RMS_provisional_event_count": 192,
+      "S232_original_V84_V86_native_run_id": 38301241411,
+      "S232_V84_native_event_count": 422,
+      "S233_actual_original_freeze_local_combo_V84_V88_run_id": 38301633310,
+      "S233_original_V8_native_event_count": 1034,
+      "S233_original_candidate_record_count": 12876,
+      "S233_original_weight_SHA256": "b69e64ac2c1253364013bf750cd1fe7f2b623e4ecc4abbb5792c16c22a3010e9",
+      "S233_original_baseline_predictions_SHA256": "6f18a476a865e0791e17c7e826ca630042b206be463f2cc5b500108bf8c626da",
+      "S233_official_K_prediction_histogram_K0toK6": [
+        828,
+        125,
+        49,
+        22,
+        9,
+        1,
+        0
+      ],
+      "S233_native_events_near_S232_any_V84_onset_within40ms": 422,
+      "S233_native_events_not_near_S232_any_V84_onset_within40ms": 612,
+      "S233_original_native_events_MUST_be_common_evaluation_population": true,
+      "S234_workflow_run_id": 38302179397,
+      "S234_status_at_this_commit": "in_progress",
+      "XML_MIDI_contents_read_for_this_cohort": false,
+      "WAV_filename_disjoint_from_prior_exposed_first32": true,
+      "musical_composition_song_disjoint_verified": false,
+      "full_original_S80_on_all_1034_baseline_event_ids": false,
+      "independent_ExactK_score_measured": false,
+      "official_promotion": false
     }
   },
   "missing_external_components": [
@@ -223,7 +261,7 @@
     "S80 already independently validated",
     "historical 43.87% guaranteed on new music"
   ],
-  "next_protocol": "Technical chain S5 through original-weight S80 complete on 57 previously exposed GOAT events; S228 independent arithmetic verification success and 4 differences versus incumbent but zero S79/K0/K2 final gate actions, no GOAT truth. Original-trained S70/S71/S72 checkpoints reproduced all original 59309 historic prediction rows. Promotion remains explicitly blocked by absence of genuinely unseen song-disjoint full-S80 versus freeze_local_combo paired Exact-K. Next step: native event and source-generalized pipeline on IDMT-SMT-GUITAR V2 dataset2, seal independent predictions BEFORE note-XML labels, then test with song-disjoint uncertainty and K0-K6 global/poly. Never promote automatically by technical CI success.",
+  "next_protocol": "S233 successfully froze authentic official freeze_local_combo original V8-native 1034 K predictions across filename-SHA256 ranks33-48; 612 of 1034 official groups have no V84-only S232 onset within 40ms. S231/S232 are NOT event-compatible with official baseline. Need original S80 S5→S79 runtime generalized from 57 GOAT events to exactly 1034 S233 reference-native group IDs, including original ownership geometry46 and all 16 source families, without reading rank33-48 XML. Lock S80 predictions and weights before any XML. Then independently score matched XML pitch cardinality, report coverage, paired global/K0..6/K2plus fixes and regressions clustered by musical composition, and only promote when significant independent gain. Song/composition disjointness among WAVs is NOT yet proven. S80 NOT PROMOTED.",
   "experimental_deployability_research_S128_S131": {
     "scope": "Reconstruction of historical S5 upstream audio producers; new student alternative is NOT original S5/S80",
     "original_s5_527D_feature_equivalence_verified": false,
