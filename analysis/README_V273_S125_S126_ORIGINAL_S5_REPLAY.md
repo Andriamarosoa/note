@@ -78,3 +78,30 @@ historical results.
   remains the non-negotiable promotion gate.
 
 **Official reference unchanged:** `freeze_local_combo`.
+
+## S127 — Direction of the reconstructed count errors
+
+[S127](https://github.com/Andriamarosoa/note/actions/runs/38187843029) completed
+SUCCESS, comparing *the original S5's predicted K* with S123's log-layout
+predicted K on the **same 15,952 historical events**, without reading
+their true K labels.
+
+- **1,882** original-vs-replay K disagreements.
+- **1,665 undercounts** (replay K smaller) and **217 overcounts**
+  (replay K greater).
+- Most common transitions: original K1→replay K0 (**667**);
+  K2→K1 (**335**); K3→K2 (**202**); K2→K0 (**189**);
+  K3→K1 (**119**).
+- **1,154** disagreements where the original S5 predicted K2+.
+  Only **23** where the original S5 predicted K0.
+- Mean original confidence on mismatched rows was **0.4817**;
+  just **28** of the 1,882 mismatches had original confidence ≥0.8
+  and **5** had confidence ≥0.9.
+
+**Implication:** the present 416D log-layout reconstruction systematically
+under-counts relative to the original frozen S5, especially on
+ambiguous note-count boundaries. This is a reproducibility diagnosis,
+*not* a proof that the model underestimates true K. The missing original
+S4-owned feature statistics, normalizations and exact column order
+still need original-source provenance or rigorous replay before any
+external S80 promotion.
