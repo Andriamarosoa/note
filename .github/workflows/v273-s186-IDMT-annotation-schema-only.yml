@@ -1,0 +1,46 @@
+name: S186 exact annotation filename inventory on frozen disjoint S185 IDMT 10 WAV
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s186_idmt_groundtruth_schema_index_only.py'
+      - '.github/workflows/v273-s186-IDMT-annotation-schema-only.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s186-only-annotation-index-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  names_not_labels:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Only metadata, not pretrained models or source annotations
+        run: python -m scripts.s186_idmt_groundtruth_schema_index_only --self-test
+      - name: Read actual public ZIP central directory and compare 10 S185 frozen track names
+        run: python -u -m scripts.s186_idmt_groundtruth_schema_index_only --output model/S186/annotation_names_only.json
+      - name: Fail closed if full-label content was opened or S80 is claimed
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('model/S186/annotation_names_only.json'))
+          assert d['S185_tracks']==10
+          assert d['total_dataset4_WAV']>=20
+          assert not d['raw_WAV_contents_opened']
+          assert not d['annotation_contents_opened']
+          assert not d['exactK_scored']
+          assert not d['S80_promoted']
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v273-s186-frozen-S185-IDMT-annotation-names-only-no-truth-read
+          path: model/S186/
+          retention-days: 90
