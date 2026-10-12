@@ -53,7 +53,7 @@ def run(s305,s302,s327,s327data,out):
     need(np.array_equal(a['row_id'],b['row_id']) and
          np.array_equal(a['incumbent_K'],b['official_freeze_K']),
          'S329 original native 964 event identities changed')
-    proofs={p['WAV_filename_SHA256']:p for p in score['per_WAV_annotation_proofs']}
+    proofs={p['wav_filename_SHA256']:p for p in score['per_WAV_annotation_proofs']}
     chosen=pre['per_WAV_preregistered']
     need(len(chosen)==len(proofs)==16,'all exact 16 selected original IDMT WAVs required')
     with urllib.request.urlopen(urllib.request.Request(API,headers={
