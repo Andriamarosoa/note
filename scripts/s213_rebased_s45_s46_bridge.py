@@ -69,7 +69,7 @@ def run(five_path,eleven_path,s210_path,s212_path,s18_path,s97_path,
             source=eleven['source_K'].copy()
             source[:,j35]=real35['S35_K'][hit35[0]]
             for fam in REBASED:
-                source[:,names11.index(fam)]=five_new['proposals_K'][hit212[0],names_new.index(fam)]
+                source[:,names11.index(fam)]=five_new['proposals_K'][int(hit212[0]),:,names_new.index(fam)]
             keys=names5+names11
             raw=np.column_stack((five['predictions'][branch],source)).astype(np.int8)
             proposals=np.column_stack([raw[:,keys.index(k)] for k in expected])
