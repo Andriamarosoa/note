@@ -53,7 +53,7 @@ jobs:
       - name: Independently recompute each original S80 K0 K1 K2 rule and compare every native 1034 row to S252
         run: |
           python -m scripts.s253_independent_full_S80_IDMT_1034_audit \
-            --s227 model/S252/S252_full_original_S80_unseen_IDMT_1034_frozen.npz \
+            --s252 model/S252/S252_full_original_S80_unseen_IDMT_1034_frozen.npz \
             --s219 model/S247/S247_original_193_S46_foldneutral_1034_IDMT.npz \
             --s85 model/S248/pr16_external_36_policies.npz \
             --out model/S253
