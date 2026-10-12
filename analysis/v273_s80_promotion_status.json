@@ -6,10 +6,9 @@
   "official_promotion": false,
   "independent_S80_accuracy_measured": false,
   "latest_run": {
-    "id": 38191885587,
-    "component": "S138",
-    "status": "SUCCESS",
-    "note": "Original S80 not scored; new S135 student rejected on external GOAT 2-clip smoke"
+    "id": 38192020272,
+    "component": "S139",
+    "status": "SUCCESS; S137/S138 evidence permanently archived; S135 rejected; S80 blocked"
   },
   "validated_frozen_components": {
     "original_native_audio_inference": {
@@ -243,6 +242,12 @@
     "comparator_candidate": "new S135-student111, NOT historical S80",
     "decision": "REJECT_NEW_STUDENT_FOR_PROMOTION_ON_THIS_SMOKE",
     "target_independent_benchmark": "IDMT-SMT-GUITAR_V2 pre-registered",
-    "note": "GOAT truth now opened; this two-clip sample is exposed and cannot become another unbiased selection/validation set after tuning"
+    "note": "GOAT truth now opened; this two-clip sample is exposed and cannot become another unbiased selection/validation set after tuning",
+    "permanent_research_release": {
+      "url": "https://github.com/Andriamarosoa/note/releases/tag/v273-s137-s138-goat-rejected-38191739817",
+      "preservation_run": 38192020272,
+      "source_paired_score_run": 38191739817,
+      "onset_coverage_run": 38191885587
+    }
   }
 }

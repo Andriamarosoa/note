@@ -93,3 +93,14 @@ fold historique pour S69/S72/S80. Cette nouvelle version devra être
 gelée puis testée sur une autre population audio annotée.
 
 L'original `freeze_local_combo` reste **inchangé**.
+
+## Archivage permanent
+
+- [S139 — workflow d'archivage réussi](https://github.com/Andriamarosoa/note/actions/runs/38192020272)
+- [Release GitHub S137–S138, évidence négative et checksums](https://github.com/Andriamarosoa/note/releases/tag/v273-s137-s138-goat-rejected-38191739817)
+- Contient le SHA du vecteur **avant MIDI**, les 57 prédictions scellées,
+  la vérité terrain ouverte ensuite, le score apparié K0–K6, les résultats
+  S138 de couverture et les sommes SHA-256 de tous les fichiers.
+- Cette conservation **n'approuve ni S135 ni S80**. Elle protège
+  explicitement les régressions et l'absence de gain contre l'oubli.
+
