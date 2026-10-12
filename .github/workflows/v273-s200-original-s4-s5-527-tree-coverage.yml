@@ -42,7 +42,8 @@ jobs:
           import json
           d=json.load(open('model/S200/audit/report.json'))
           assert d['original_S5_model_count']==4
-          assert d['original_S4_owned_model_count']==8
+          assert d['original_S4_owned_model_count']==6
+          assert len(d['missing_original_S4_owned_models'])==2
           assert d['S5_owned_suffix_416_active_columns']>0
           assert not d['original_527D_numeric_feature_constructor_recovered']
           assert not d['historical_truth_or_MIDI_read']
