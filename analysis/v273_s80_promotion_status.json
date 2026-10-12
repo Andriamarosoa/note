@@ -6,10 +6,10 @@
   "official_promotion": false,
   "independent_S80_accuracy_measured": false,
   "latest_run": {
-    "id": 38191099101,
-    "component": "S136",
-    "status": "success",
-    "saved_research_release": "https://github.com/Andriamarosoa/note/releases/tag/v273-s133-s135-student-research-38190945241"
+    "id": 38191885587,
+    "component": "S138",
+    "status": "SUCCESS",
+    "note": "Original S80 not scored; new S135 student rejected on external GOAT 2-clip smoke"
   },
   "validated_frozen_components": {
     "original_native_audio_inference": {
@@ -70,7 +70,7 @@
     "S80 already independently validated",
     "historical 43.87% guaranteed on new music"
   ],
-  "next_protocol": "Implement and freeze deployable S80 variant, validate end-to-end on development audio, infer new audio without labels, then separately score sealed predictions against new annotations",
+  "next_protocol": "Stop teacher fidelity loops and avoid tuning on exposed two-track GOAT. Build fully deployable S43/S44 16 S45 family producers, S46->S69->S72->S80 unseen-piece rule as separately versioned model; collect diverse independent IDMT-SMT-GUITAR_V2 poly events and seal predictions before first annotation access.",
   "experimental_deployability_research_S128_S131": {
     "scope": "Reconstruction of historical S5 upstream audio producers; new student alternative is NOT original S5/S80",
     "original_s5_527D_feature_equivalence_verified": false,
@@ -216,5 +216,33 @@
       ],
       "original_S5_model_restored": false
     }
+  },
+  "experimental_S135_external_GOAT_smoke": {
+    "dataset": "GOAT first 6 seconds each of example1/example2; true MIDI read after predicted data sealed",
+    "original_S80_tested": false,
+    "same_event_groups": 57,
+    "prediction_sha256": "620ef28fd2fb4cd7ca6190432c460361e4da7fb1ffda064770390953360a8f02",
+    "seal_run": 38191739817,
+    "seal_source": "v273-s137-sealed-before-truth-s135-new-student",
+    "label_scoring_run": 38191739817,
+    "coverage_run": 38191885587,
+    "official_freeze_correct": 44,
+    "new_S135_correct": 44,
+    "paired_corrections": 1,
+    "paired_regressions": 1,
+    "net_gain": 0,
+    "poly_true_K2plus_events": 3,
+    "poly_freeze_correct": 2,
+    "poly_S135_correct": 1,
+    "actual_note_on_first6s": 14,
+    "real_onsets_covered_20ms": 11,
+    "real_onsets_missed_20ms": 3,
+    "fraction_note_on_covered": 0.7857142857142857,
+    "K0_true_event_groups": 49,
+    "total_event_groups": 57,
+    "comparator_candidate": "new S135-student111, NOT historical S80",
+    "decision": "REJECT_NEW_STUDENT_FOR_PROMOTION_ON_THIS_SMOKE",
+    "target_independent_benchmark": "IDMT-SMT-GUITAR_V2 pre-registered",
+    "note": "GOAT truth now opened; this two-clip sample is exposed and cannot become another unbiased selection/validation set after tuning"
   }
 }
