@@ -15,7 +15,7 @@ Le constructeur acoustique manquant de S4-owned/S5 est maintenant reconstruit nu
 
 Les **412 350 seuils de discrétisation** des 2 108 colonnes de modèles contrôlées sont également identiques. Les identifiants des lignes d'entraînement et d'évaluation concordent avec chaque checkpoint. Le rapport brut est dans [report.json](evidence/v273-s5-owned527-recovery/report.json).
 
-La vérification locale a réussi. Le workflow GitHub dédié rejoue la même vérification en téléchargeant les sources immuables ; son résultat sera consigné après exécution.
+**La vérification locale et le [rejeu GitHub Actions #38221478587](https://github.com/Andriamarosoa/note/actions/runs/38221478587) ont réussi**, avec les mêmes écarts nuls dans les quatre folds. La CI a téléchargé les sources épinglées et exécuté le code du commit `6064def1713432e54cf8b01dc07b153b58056716`. Artefact : [`original-s5-owned527-reconstruction-proof`](https://github.com/Andriamarosoa/note/actions/runs/38221478587/artifacts/11734537945), ID `11734537945`. Les mesures lues dans les journaux CI et les métadonnées de l'artefact sont conservées dans [github_ci.json](evidence/v273-s5-owned527-recovery/github_ci.json).
 
 ## Ce qui a permis la reconstruction
 

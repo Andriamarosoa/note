@@ -6,8 +6,8 @@
   "official_promotion": false,
   "independent_S80_accuracy_measured": false,
   "latest_run": {
-    "component": "S170",
-    "id": 38199557501,
+    "component": "S5 owned527 exact historical reconstruction",
+    "id": 38221478587,
     "status": "success",
     "independent_S80_accuracy_measured": false,
     "official_promotion": false
@@ -74,7 +74,11 @@
       "evidence": "analysis/evidence/v273-s5-owned527-recovery/report.json",
       "explanation": "analysis/README_V273_S5_OWNED527_RECOVERY.md",
       "workflow": ".github/workflows/v273-s5-owned527-recovery.yml",
-      "github_ci_status": "pending"
+      "github_ci_status": "success",
+      "run_id": 38221478587,
+      "artifact_id": 11734537945,
+      "implementation_commit": "6064def1713432e54cf8b01dc07b153b58056716",
+      "ci_evidence": "analysis/evidence/v273-s5-owned527-recovery/github_ci.json"
     }
   },
   "missing_external_components": [
@@ -476,4 +480,3 @@
   "original_S5_527D_reconstruction_scope": "Numerical runtime verified on all 59309 original S5 event probabilities and all 527 training-bin signatures in each of four folds. Original source text and original designs_sha256 serialization remain unavailable.",
   "historical_sections_note": "Sections named for earlier S-series retain their observations at the time. Current S5 feature recovery status is recorded in original_S5_527D_reconstructed and validated_frozen_components.s5_owned527_numerical_recovery; prior negative source searches remain valid only for original source text."
 }
-

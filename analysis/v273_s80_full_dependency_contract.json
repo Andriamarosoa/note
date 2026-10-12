@@ -157,7 +157,9 @@
       "requires": [
         "S4_control111"
       ],
-      "proof": "S125: missing original 416D acoustic constructor; 1882/15952 mismatched attempts"
+      "proof": "Exact S5 numerical reconstruction: all 59309 archived raw/prior probabilities from all four unchanged original checkpoints and all 412350 training-bin thresholds match exactly. Reconstructed acoustic builder is scripts/v273_s4_owned527.py. Original source text remains unavailable; the new-WAV integration has not yet been executed.",
+      "reconstructed_runtime": "scripts/v273_s4_owned527.py",
+      "replay_evidence": "analysis/evidence/v273-s5-owned527-recovery/report.json"
     },
     {
       "id": "S5_student135",
@@ -407,7 +409,8 @@
     "S169_partial_ten": 38199247838,
     "S170_audited_preserved": 38199557501,
     "S172_recovered_S1_S3_S4_archives": 38205875589,
-    "S173_S35_original_weights_11_sources": 38206160849
+    "S173_S35_original_weights_11_sources": 38206160849,
+    "S5_owned527_exact_numerical_recovery": 38221478587
   },
   "ancestry_correction": {
     "prior_graph": "S148 mistakenly represented S11 as direct prerequisite of S18",
@@ -517,5 +520,23 @@
     "original_S5_527D_on_GOAT_available": false,
     "independent_ExactK_measured": false,
     "promoted": false
-  }
+  },
+  "s5_owned527_recovery": {
+    "status": "EXACT_HISTORICAL_S5_RECONSTRUCTION",
+    "rows": 59309,
+    "models": 4,
+    "bin_thresholds": 412350,
+    "raw_probability_max_abs": 0,
+    "prior_probability_max_abs": 0,
+    "original_source_text_recovered": false,
+    "original_design_file_byte_identity_proven": false,
+    "new_audio_forward_executed": false,
+    "full_S80_promoted": false,
+    "implementation_commit": "6064def1713432e54cf8b01dc07b153b58056716",
+    "workflow_run": 38221478587,
+    "workflow_status": "success",
+    "report": "analysis/README_V273_S5_OWNED527_RECOVERY.md",
+    "artifact_id": 11734537945
+  },
+  "historical_snapshot_note": "S-series experiment fields preserve the results known at their execution. Latest S5 numerical feature-recovery evidence is in s5_owned527_recovery and the S5_original527 node. Prior absence of original source text is not absence of the newly verified reconstructed runtime."
 }
