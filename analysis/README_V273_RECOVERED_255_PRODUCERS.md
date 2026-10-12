@@ -16,8 +16,8 @@ finales des cinq familles S45 manquantes.
   son manifeste original. Tous les postérieurs float32 enregistrés concordent
   **exactement**. Les poids reconstruits sont désormais conservés.
 - Les **14 réseaux correcteurs** utilisent les poids H5 d'origine, sans
-  réentraînement. Le rejeu NumPy GELU présente un écart maximal de
-  **1,0728836059570312 × 10⁻⁶** avec leurs probabilités TensorFlow archivées.
+  réentraînement. Le rejeu NumPy GELU avec accumulation float64 présente un
+  écart maximal de **1,0132789611816406 × 10⁻⁶** avec leurs probabilités TensorFlow archivées.
   Les probabilités de ces réseaux ne sont donc pas déclarées bit-identiques.
 - Les huit votes sont : action gelée, cinq spécialistes, moyenne des cinq
   spécialistes, correcteur projeté sur K2–K6. Les fonctions originales
@@ -75,6 +75,7 @@ d'amélioration d'Exact-K. Aucune nouvelle précision n'est revendiquée ici.
   numériques épinglées, contrôle des SHA, rejeu des poids conservés, puis comparaison
   indépendante des sorties locales et CI. Un groupe de concurrence évite les doublons.
 - [Rapport historique](evidence/v273-recovered-255/recovery_report.json),
+  [rejeu en précision stabilisée](evidence/v273-recovered-255/precision_replay_report.json),
   [rapport GOAT](evidence/v273-recovered-255/goat_report.json),
   [sorties 255×9](evidence/v273-recovered-255/external_255x9.npz),
   [poids spécialistes](evidence/v273-recovered-255/specialists.joblib).
@@ -89,6 +90,18 @@ déjà reconstruits, conservés et SHA-épinglés, sans les réentraîner à cha
 machine. Le contrôle d'égalité des postérieurs et des décisions reste inchangé.
 L'étape locale `recover` conserve la recette originale de reconstruction ;
 `--saved-specialists` et `--saved-recovery-report` déclenchent son rejeu gelé.
+
+Le deuxième run `38231100456` a retrouvé les **13 375 005 décisions** et
+tous les audits GOAT sans écart, mais sa comparaison des descripteurs a détecté
+une valeur d'écart-type différant de **6,78 × 10⁻⁵**. Les votes différaient
+d'au plus 2,98 × 10⁻⁷ ; la racine de la variance presque nulle amplifiait cet
+arrondi. La [comparaison complète](evidence/v273-recovered-255/first_frozen_CI_comparison.json)
+est conservée. Le correcteur garde désormais les entrées arrondies float32 et
+les poids originaux, accumule les opérations denses et GELU en float64, puis
+rend des probabilités float32. **Les contrôles n'ont pas été assouplis** :
+tolérance historique du correcteur 2 × 10⁻⁶, égalité exacte des décisions,
+tolérance intermachines des descripteurs 2 × 10⁻⁵. Le rejeu local complet
+conserve toutes les décisions et tous les audits après ce changement numérique.
 
 ## Raccordements encore nécessaires
 

@@ -159,19 +159,22 @@ def corrector_probabilities(directory, record, raw, baseline):
     path = directory/record['weights']
     need(sha(path) == record['weights_sha256'], 'corrector weights SHA')
     x = np.concatenate([np.clip((raw-record['scaler_mean'])/record['scaler_scale'], -6, 6),
-                        np.eye(7)[baseline]], axis=1).astype(np.float32)
+                        np.eye(7)[baseline]], axis=1).astype(np.float32).astype(np.float64)
     with h5py.File(path, 'r') as h:
-        layers = [(h[f'layers/{name}/vars/0'][:], h[f'layers/{name}/vars/1'][:])
+        layers = [(h[f'layers/{name}/vars/0'][:].astype(np.float64),
+                   h[f'layers/{name}/vars/1'][:].astype(np.float64))
                   for name in ('dense', 'dense_1', 'dense_2')]
     blocks = []
-    # Same original batch size; no fitting and no annotation-dependent branching.
+    # Preserve original float32 input rounding and weights. Float64 accumulation
+    # avoids hardware-dependent float32 noise amplified by joint_groups' sqrt
+    # of near-zero variance. The output is rounded back to original float32.
     for start in range(0, len(x), 192):
         a = x[start:start+192]
         for j, (weight, bias) in enumerate(layers):
             a = a@weight+bias
             if j < 2:
-                a = a*np.float32(.5)*(np.float32(1)+erf(a/np.float32(np.sqrt(2))))
-        blocks.append(softmax(a, axis=1))
+                a = a*.5*(1+erf(a/np.sqrt(2)))
+        blocks.append(softmax(a, axis=1).astype(np.float32))
     return np.concatenate(blocks) if blocks else np.empty((0, 7), np.float32)
 
 
@@ -252,7 +255,10 @@ def recover(root, fundamentals, output, saved_specialists=None, saved_report=Non
                  group_decisions_checked=int(pred.size), group_decision_mismatches=0)
         report_rows.append(r)
         print(json.dumps(r), flush=True)
-    joblib.dump(weights, output/'specialists.joblib', compress=3)
+    if saved is None:
+        joblib.dump(weights, output/'specialists.joblib', compress=3)
+    else:
+        (output/'specialists.joblib').write_bytes(saved_specialists.read_bytes())
     report = dict(status='RECOVERED_EIGHT_VOTE_RUNTIME_HISTORICAL_GROUP_DECISIONS_VERIFIED',
         historical_events=7493, original_fold_configurations=14, logistic_models_reconstructed=70,
         original_corrector_checkpoints=14, specialist_cached_probabilities_bit_exact=True,
@@ -260,6 +266,7 @@ def recover(root, fundamentals, output, saved_specialists=None, saved_report=Non
         group_decisions_checked=sum(r['group_decisions_checked'] for r in report_rows),
         group_decision_mismatches=0, configurations=report_rows,
         reconstruction_method='Original ProducerPool fixed hyperparameters refit on original manifest training IDs; frozen corrector weights, NumPy GELU forward.',
+        corrector_arithmetic='Original float32 inputs and weights, float64 dense/GELU accumulation, float32 posteriors; unchanged 2e-6 archive tolerance and exact group-decision gate.',
         specialists_refitted_this_run=saved is None,
         saved_specialists_sha256=sha(saved_specialists) if saved_specialists is not None else None,
         original_development_training_labels_used=True, receiver_labels_used_for_fit=False,
