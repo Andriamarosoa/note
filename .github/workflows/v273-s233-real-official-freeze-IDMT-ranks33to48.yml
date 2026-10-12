@@ -68,6 +68,10 @@ jobs:
           run-id: 38299545404
           name: s231-IDMT-ranks33to48-unopened-song-WAV-feature-hash-preseal
           path: model/S231
+      - name: Ensure S232 native IDMT ranks33to48 prediction artifact is completed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run watch 38301241411 --repo "${{ github.repository }}" --exit-status --interval 15
       - name: S232 original V84-native event samples, no XML
         uses: actions/download-artifact@v4
         with:
