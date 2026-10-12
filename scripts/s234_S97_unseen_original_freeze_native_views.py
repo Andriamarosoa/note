@@ -68,8 +68,8 @@ def process(s233file,s231file,out):
             audio=decode_wav(payload)
             for i in ii:
                 s=int(start[i])
-                req(int(.14*44100)<s<len(audio)-int(.2*44100),
-                    'real original native event outside audio')
+                req(0<=s<min(len(audio),int(10*44100)),
+                    'real original reference event outside 10s native inference coverage')
                 spectrum,times=_frames(audio,s)
                 props,activ=features_from_spectrogram(
                        spectrum,times,return_states=True)
