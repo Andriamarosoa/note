@@ -1,0 +1,72 @@
+name: S216 independent S215 all 16 family S46 stability and parent attribution
+on:
+  push:
+    branches: [codex/v273-scope-rescue]
+    paths:
+      - 'scripts/s216_audit_full_source_s46_fold_stability.py'
+      - '.github/workflows/v273-s216-all16-S46-stability.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s216-all16-independent-audit-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  independent_fold_audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install read-only numpy audit environment
+        run: python -m pip install numpy==1.26.4
+      - name: Restore exactly the completed 16-source original S45/S46 experiment S215
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38242983478
+          name: s215-complete-16-original-source-S45-S46-all19-branches
+          path: model/S215
+      - name: Independently verify S45 and S46 19 branches using existing S207 audit implementation
+        run: >-
+          python -m scripts.s207_audit_original_19_branch_stability
+          --s206 model/S215 --out model/S216_s207
+      - name: Independently attribute all divergences to upstream S18 parents versus gates
+        run: >-
+          python -m scripts.s216_audit_full_source_s46_fold_stability
+          --s215 model/S215 --out model/S216
+      - name: Assert independent audit agreement, four fold integrity, no model promotion
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          a=json.loads(Path('model/S216/report.json').read_text())
+          b=json.loads(Path('model/S216_s207/report.json').read_text())
+          assert a['audio_events']==b['events']==57
+          assert a['policies']==b['S46_columns']==193
+          assert b['branch_count']==19 and b['family_count']==16
+          assert b['fold_branch_counts']==[5,4,5,5]
+          assert a['unstable_event_policy_cells']==b['across_four_folds_unstable_event_policy_cells']
+          assert a['each_fold_gate_action_cells']==b['S46_alternative_vs_own_S18_parent_cells_by_fold']
+          assert (a['explained_by_four_parent_outputs_without_S46_changes']+
+                  a['unstable_cells_with_some_S46_gate_change']==a['unstable_event_policy_cells'])
+          assert not a['promoted'] and not b['promoted']
+          assert not a['independent_accuracy_measured'] and not b['independent_ExactK_accuracy_measured']
+          assert not b['truth_labels_read'] and a['no_label_inputs']
+          print('S216 INDEPENDENT PASS all 16 originals, all 19 branches, 193 S46 policies, no labels')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s216-16-original-S45-S46-independent-stability-and-parent-audit
+          path: |
+            model/S216/
+            model/S216_s207/
+          retention-days: 90
