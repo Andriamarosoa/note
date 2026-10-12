@@ -28,23 +28,23 @@ jobs:
         run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
       - name: Test mathematically original group enumeration with new model identity
         run: python -m scripts.s179_s35_real_experts_255_new_groups --self-test
-      - name: Wait only for the already running original IDMT audio research once; never restart download
+      - name: Wait only for the already running efficient IDMT remote ZIP-range research (no duplicate archive download)
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh run watch 38208164454 --repo "${{ github.repository }}" --exit-status --interval 15
-      - name: Fetch existing derived WAV-only S35 votes, no raw audio and no annotations
+        run: gh run watch 38208832159 --repo "${{ github.repository }}" --exit-status --interval 15
+      - name: Fetch existing range-read derived WAV-only S35 votes, no raw audio and no annotations
         uses: actions/download-artifact@v4
         with:
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
-          run-id: 38208164454
-          name: v273-s178-IDMT-real-original-S35-audio-only-features-no-labels-no-raw-WAV-NO-S80
-          path: model/S178
+          run-id: 38208832159
+          name: v273-s183-IDMT-real-original-S35-fast-range-derived-no-annotations-no-S80
+          path: model/S183
       - name: Compose 255 subset groups and fail closed on historical S1-S4 equivalence
         run: |
           set -euo pipefail
           python -u -m scripts.s179_s35_real_experts_255_new_groups \
-            --source model/S178/S178_IDMT_audio_only_S35_source_heads.npz --out model/S179
+            --source model/S183/S178_IDMT_audio_only_S35_source_heads.npz --out model/S179
           python - <<'PY'
           import json
           import numpy as np
