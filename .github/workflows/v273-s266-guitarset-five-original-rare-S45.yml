@@ -4,6 +4,7 @@ on:
     branches: [codex/v273-scope-rescue]
     paths:
       - '.github/workflows/v273-s266-guitarset-five-original-rare-S45.yml'
+      - 'scripts/s266_original_five_GuitarSet_dtype_compat.py'
   workflow_dispatch:
 permissions:
   contents: read
@@ -65,7 +66,7 @@ jobs:
           PY
       - name: Genuine five rare original trained historical championship models on 59309 GuitarSet events, all 19 heldpiece branches
         run: |
-          python -u -m scripts.recover_v273_missing_s45 \
+          python -u -m scripts.s266_original_five_GuitarSet_dtype_compat \
             --runtime model/rare/runtime \
             --historical-proof model/rare/historical/report.json \
             --external model/S266src/original_historic_59309_fundamentals.npz \
