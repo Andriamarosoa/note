@@ -1,0 +1,63 @@
+name: S293 original 12 PR16 trained networks and 36 policy votes on 506 IDMT dataset3 native
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s293_real_PR16_12_neural_36policies_dataset3_506.py'
+      - '.github/workflows/v273-s293-PR16-original-506-dataset3.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s293-original-PR16-dataset3-506
+  cancel-in-progress: true
+jobs:
+  original_twelve_MLPs_and_36_PR16_policies:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2
+      - name: Download original twelve neural checkpoints and training-only normalizers
+        run: |
+          gh run download 37837235723 -n v273-open-model-0 \
+            -D model/PR16-original --repo ${{ github.repository }}
+      - name: Restore all 506 native audio features and original 46D PR16 ownership
+        run: |
+          gh run download 38319390256 -n s278-IDMT-dataset3-506-native-real-S97-no-XML \
+            -D model/S278 --repo ${{ github.repository }}
+          gh run download 38319535537 -n s279-IDMT-dataset3-506-original-527D-S5-input-no-labels \
+            -D model/S279 --repo ${{ github.repository }}
+      - name: Replay twelve genuine original original neural heads and all 36 policies
+        run: |
+          python -u -m scripts.s293_real_PR16_12_neural_36policies_dataset3_506 \
+            --s278 model/S278/S278_IDMT_dataset3_original_S97_on_frozen_native_events.npz \
+            --s279 model/S279/S279_IDMT_dataset3_true_original_S5_527D_input.npz \
+            --models model/PR16-original/fold-0 \
+            --out model/S293
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S293/report.json'))
+          assert r['original_reference_native_event_count']==506
+          assert r['original_trained_network_checkpoints']==12
+          assert r['original_36_policy_definitions_exact']
+          assert not r['models_retrained'] and not r['XML_MIDI_content_read']
+          with np.load('model/S293/pr16_external_36_policies.npz',allow_pickle=False) as z:
+            assert z['pr16_policy_K'].shape==(506,36)
+            assert z['pr16_network_probabilities'].shape==(506,12,7)
+          print('S293 PASS original all 12 PR16 neural / 36 policy model outputs on 506 new events before XML')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s293-real-original-12PR16-36policies-IDMT-dataset3-506
+          path: model/S293/
+          retention-days: 90
