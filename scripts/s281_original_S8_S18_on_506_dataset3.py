@@ -35,8 +35,7 @@ def run(s280file,s278file,s277file,cache,out):
        'incumbent_freeze_K','summary58','sequence42x49','flow245',
        'morphology490','physics294'})
     timing=read(s277file,{'row_id','member','start_samples','end_samples',
-       'incumbent_K','incumbent_probabilities',
-       'dummy_not_used'})
+       'incumbent_K','incumbent_probabilities'})
     ids=s5['row_id'];n=len(ids);b=s5['incumbent_freeze_K']
     need(n==506 and np.array_equal(s5['fold_ids'],np.asarray(FOLDS)) and
        np.array_equal(ids,audio['row_id']) and
