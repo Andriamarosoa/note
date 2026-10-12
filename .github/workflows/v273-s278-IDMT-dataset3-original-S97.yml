@@ -1,0 +1,66 @@
+name: S278 true S97 audio views on 506 S277 dataset3 native rows, no XML
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s278_original_IDMT_dataset3_S97_native_views.py'
+      - '.github/workflows/v273-s278-IDMT-dataset3-original-S97.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s278-real-idmt-dataset3-s97
+  cancel-in-progress: true
+jobs:
+  derive_prelabel_real_native_S97:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      TF_CPP_MIN_LOG_LEVEL: '2'
+      TF_NUM_INTRAOP_THREADS: '2'
+      TF_NUM_INTEROP_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r requirements-train.txt numpy==1.26.4 scikit-learn==1.4.2
+      - name: Restore sealed S277 native 506 V88 predictions; no annotations
+        run: |
+          gh run download 38319155819 \
+            -n s277-IDMT-dataset3-5WAV-true-original-V88-native-official-unlabelled \
+            -D model/S277 --repo ${{ github.repository }}
+      - name: Restore S276 labels-unread filename manifest
+        run: |
+          gh run download 38318827219 \
+            -n s276-IDMT-central-directory-only-prospective-WAV-cohort \
+            -D model/S276 --repo ${{ github.repository }}
+      - name: Original 58D 42x49D 245D 490D 294D S97 features aligned to original native events
+        run: |
+          python -u -m scripts.s278_original_IDMT_dataset3_S97_native_views \
+            --s277 model/S277/S277_original_official_V88_dataset3_native_5_WAV_predictions.npz \
+            --s277report model/S277/report.json \
+            --s276 model/S276/S276_IDMT_filename_only_cohort_manifest.json \
+            --out model/S278
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S278/report.json'))
+          assert r['events']==506 and r['WAV_count']==5
+          assert not r['annotation_XML_MIDI_read']
+          assert not r['S275_same_native_event_output_not_yet_frozen'] is False
+          with np.load('model/S278/S278_IDMT_dataset3_original_S97_on_frozen_native_events.npz',allow_pickle=False) as z:
+            assert z['summary58'].shape==(506,58)
+            assert z['flow245'].shape==(506,245)
+            assert z['sequence42x49'].shape==(506,42,49)
+          print('S278 PASS original S97 native features and actual S277 row IDs, label-free')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s278-IDMT-dataset3-506-native-real-S97-no-XML
+          path: model/S278/
+          retention-days: 90
