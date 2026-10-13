@@ -33,6 +33,14 @@ jobs:
         run: |
           python -m py_compile scripts/s399_s80_exactK_constrained_midi_pitch_decoder.py scripts/s400_evaluate_S399_MIDI_note_pitches_GuitarSet.py
           python -m scripts.s399_s80_exactK_constrained_midi_pitch_decoder --self-test
+          python - <<'PY'
+          from scripts.s400_evaluate_S399_MIDI_note_pitches_GuitarSet import midi_value
+          assert midi_value(60.0)==60
+          assert midi_value(60.25)==60
+          assert midi_value(60.75)==61
+          assert midi_value({'midi':67.4})==67
+          print('S400 JAMS MIDI fractional pitch quantization selftest PASS')
+          PY
       - name: Restore original acoustic 42x49 pitch-harmonic trajectories for 59309 original events
         run: |
           gh run download 38311525987 -n s258-full-guitarset-59309-real-original-native-527D-58D-46D-42x49-and-OOF-PR16 -D model/S258 --repo ${{ github.repository }}
