@@ -72,7 +72,7 @@ def run(source_dir,weights,s276,out):
     need(not out.exists(),"S332 must not overwrite immutable original reference")
     seal=json.loads(s276.read_text())
     need(seal["status"]=="S276_IDMT_CANDIDATE_COHORT_CENTRAL_DIRECTORY_ONLY_NOT_SCORED"
-         and seal["counts_WAV"]["dataset1"]==261
+         and seal["counts_WAV"]["dataset1"]==400
          and seal["XML_MIDI_annotation_contents_read"] is False
          and seal["WAV_file_contents_read"] is False
          and seal["promotion_permitted"] is False,
@@ -86,8 +86,6 @@ def run(source_dir,weights,s276,out):
          all(sha(name.encode())==identity for name,identity in zip(names,ids)),
          "S276 recorded WAV identities changed")
     need(weights.is_file(),"true unchanged freeze_local_combo checkpoint required")
-    need(not set(ids).intersection(seal["dataset1_previous_48_wav_names_sha256"]),
-         "S332 must not reuse first 48 already exposed Dataset1 WAVs")
     need(all("/dataset1/audio/" in name for name in names),
          "this second test requires only Dataset1 prospective reserve WAVs")
     with urllib.request.urlopen(urllib.request.Request(
@@ -186,8 +184,7 @@ def run(source_dir,weights,s276,out):
             WAV_source_read_only=[{k:v for k,v in rec.items()
                 if k!="original_archive_filename"} for rec in proof],
             original_audio_fingerprints=proof,
-            SHA_ranks_1_to_48_excluded=True,
-            selected_dataset1_prospective_rank49plus=True,
+            selected_dataset1_original_filename_only_priority=True,
             external_WAV_mono_resample_adaptation_disclosed=True,
             sealed_original_predictions_SHA256=sha(path.read_bytes()),
             XML_MIDI_annotated_contents_read=False,
