@@ -242,3 +242,75 @@ yet been verified here. **No new promotion claim. Official remains
 freeze_local_combo**. The next valid action is to run the complete
 candidate through S80 on exactly these 964 V88 row IDs, seal all
 predictions, then apply the frozen S305 historical label policy.
+
+
+## S310–S329 — 964-event full historical S80 prospective test and native onset timing failure
+
+All source-only replay stages passed:
+- [S310–311](https://github.com/Andriamarosoa/note/actions/runs/38323902060): 4-fold S18 parent consensus; S97 964-row source.
+- [S312–315](https://github.com/Andriamarosoa/note/actions/runs/38324201233): 19 original S29/S35 branches, ten trained S45 source families. An earlier CI assertion was corrected; no predictor fit or change.
+- [S316–317](https://github.com/Andriamarosoa/note/actions/runs/38324157734): original five rare S1/S2/S3/S4/coherent trained families, authentic fundamental58 sources.
+- [S318–320](https://github.com/Andriamarosoa/note/actions/runs/38324317050): **all 16** S45 families, **304** trained Ridge risks, **193** original S46 policies, source S219 and strict S274 twofold gate.
+- [S321](https://github.com/Andriamarosoa/note/actions/runs/38324277092): **12** authentic pretrained PR16 neural heads / **36** original PR16 policies.
+- [S322–326](https://github.com/Andriamarosoa/note/actions/runs/38324398581): two complete S69/S70/S71/S72/S79/S80 source-trained forward passes, original S46 vs S274 S46, each on EXACT SAME **964 native V88 event IDs**. **Both full S80 predictions and original freeze_local_combo SHA-sealed BEFORE accessing any reserve 16 XML**.
+- [S327](https://github.com/Andriamarosoa/note/actions/runs/38324513980): first XML reads, after source SHA preflight, historical 20ms grouped note-attack K0–K6 cardinality match per S305, no fit.
+- [S328](https://github.com/Andriamarosoa/note/actions/runs/38324695741): forensic XML onset coverage in audio 10-second excerpt.
+- [S329](https://github.com/Andriamarosoa/note/actions/runs/38324894308): original native candidate **signed time** offset to original XML attacks, no model or threshold tuning.
+
+### NEW independent-file, not yet composition-certified test (16 IDMT Dataset2 WAVs)
+
+| Historical native new-attack K if annotations complete | Official freeze_local_combo | S80 reconstructed | S80 + S274 twofold |
+|---|---:|---:|---:|
+| All 964 events K0–K6 | 761/964 **78.94%** | 760/964 **78.84%** | 761/964 **78.94%** |
+| True K2–K6 (just SIX groups) | 1/6 **16.67%** | 1/6 **16.67%** | 1/6 **16.67%** |
+
+Attack-K histogram: **K0=924,K1=34,K2=5,K3=1,K4=K5=K6=0**.
+S80 without S274: 8 corrections, 9 regressions (net −1); with
+S274: 10 corrections, 10 regressions (net 0). S274 changes three
+FINAL native K values relative to reconstructed S80 (two fixes, one
+regression under these XML attack targets). The 95% cluster-by-lick-name
+bootstrap for global improvement of original S80 versus official
+includes zero, approx [−0.87,+0.84] percentage points. **NOT PROMOTED**.
+
+Importantly XML annotations are not certified exhaustive in this
+external corpus; tune-level disjointness not proven. Do not assert a
+certified official global K0–K6 score from these conditional labels.
+
+### Root-cause finding: historical 20ms native candidate vs IDMT annotations
+
+[S328] confirms that of **300** XML note-onset events across 16 WAVs,
+**50 lie outside** the first 10s portion actually fed into source
+V84/V88; of the **250 that occur inside** the audio excerpt, just
+**47** were assigned within the original 20ms trained target radius,
+**203 missed**. Attack-onset coverage is only **47/250 = 18.8%**.
+All 203 within-clip missed note onsets lie within **80ms** of at least
+one original V88 candidate interval; **106 within 40ms**.
+
+[S329] signed time audit:
+- **197/203** missed XML attacks occur BEFORE their closest V88
+  candidate group (**candidate time is later**, positive delay);
+  just **6/203** occur after a V88 group.
+- median candidate delay **+39.4104ms**;
+  signed Q10=+29.33ms, Q25=+35.65ms, Q75=+44.31ms,
+  Q90=+47.51ms.
+- The 47 matched attacks have signed median **0ms**.
+
+**Interpretation:** a STRONG candidate-versus-annotation **systematic
+timing offset** on IDMT Dataset2, possibly original V88 source time,
+the IDMT annotation onset convention, or both. The 20ms historical
+training label radius thus excludes most within-clip IDMT attacks
+even though a V88 proposal occurs shortly after. This is a
+**fundamental domain/timing compatibility defect** that must be
+understood before treating the high-K0 global score as evidence of
+successful model generalization.
+
+DO NOT fit a +/−40ms time shift to the now-exposed S327 test set,
+relabel K, increase matching radius on this test after seeing XML,
+or use such revised score to promote S80. The appropriate next
+independent validation is to establish the timing convention from
+training-only sources and/or fixed physically justified audio onset
+offset, then preregister the preprocessing and rerun on separate
+composition-disjoint polyphonic audio never opened.
+
+**Final official state after S329:** `freeze_local_combo` remains
+the reference; S80 and S274 cannot be promoted with these data.
