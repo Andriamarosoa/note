@@ -1,0 +1,79 @@
+name: S414 OFFICIAL YourMT3+ vs S408 S412 true onset pitch offset notes 190 GuitarSet
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s414_compare_official_yourmt3_full_notes_vs_S408_S412_guitarset.py'
+      - '.github/workflows/v273-s414-YourMT3-vs-S408-S412-real-MIDI-notes.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s414-original-yourmt3-vs-S408-S412-note-events-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  independently_score_original_YourMT3_full_note_outputs_vs_S408_S412:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install fixed note pairing and original JAMS parser deps
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Verify shared note-On+pitch+NoteOff metric
+        run: |
+          python -m py_compile scripts/s414_compare_official_yourmt3_full_notes_vs_S408_S412_guitarset.py
+          python -u -m scripts.s414_compare_official_yourmt3_full_notes_vs_S408_S412_guitarset --self-test
+      - name: Download ALREADY EXECUTED original official checkpoint YourMT3+ notes (NO new inference)
+        run: |
+          for fold in 0 1 2 4; do
+            mkdir -p "model/YourMT3Original/fold${fold}"
+            gh run download 37605163312 -n "yourmt3-exactk-fold-${fold}" -D "model/YourMT3Original/fold${fold}" --repo ${{ github.repository }}
+            test -f "model/YourMT3Original/fold${fold}/notes.jsonl"
+          done
+          sha256sum model/YourMT3Original/fold*/notes.jsonl
+      - name: Restore frozen user reference S408 and continuous challenger S412 exact same notes
+        run: |
+          gh run download 38375133317 -n s412-songheld-REAL-full-WAV-note-offset-vs-S408-user-baseline-NOPROMOTION -D model/S412 --repo ${{ github.repository }}
+          test -f model/S412/S412_continuous_MIC_note_offset_4fold_predictions.npz
+      - name: Retrieve original GuitarSet JAMS source for INDEPENDENT SCORING ONLY
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 --retry-delay 3 -o data/GuitarSet/annotation.zip https://huggingface.co/datasets/EZMONYI/music-ai-human-test-audio/resolve/main/external_controls/guitarset_source_v1/annotation.zip
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+      - name: Pairwise scored YourMT3+, S408, S412 same 190 WAVs ±50ms Pitch+Onset+Offset
+        run: |
+          python -u -m scripts.s414_compare_official_yourmt3_full_notes_vs_S408_S412_guitarset \
+            --fold0 model/YourMT3Original/fold0 \
+            --fold1 model/YourMT3Original/fold1 \
+            --fold2 model/YourMT3Original/fold2 \
+            --fold4 model/YourMT3Original/fold4 \
+            --s412 model/S412/S412_continuous_MIC_note_offset_4fold_predictions.npz \
+            --annotations data/GuitarSet/annotation.zip \
+            --out model/S414
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S414/report.json'))
+          assert r['status']=='S414_REAL_OFFICIAL_YOURMT3_PLUS_VS_S408_S412_SAME_GUITARSET_NOTES'
+          assert r['official_YourMT3_source_run_id']==37605163312
+          assert r['original_GuitarSet_tracks']==190
+          assert r['ground_truth_note_events']==34954
+          assert r['metrics']['S408']['correct_offsets_conditional_on_matched_pitch_onset']==13050
+          assert r['metrics']['S412_continuous']['correct_offsets_conditional_on_matched_pitch_onset']==14313
+          assert r['descriptive_development_only'] and r['no_model_weights_or_hyperparams_modified']
+          print('S414 original official full-transcription checkpoint vs our actual note model scored on same GuitarSet')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s414-OFFICIAL-YourMT3plus-real-full-MIDI-notes-vs-S408-S412-GuitarSet-AUDIT
+          path: model/S414/
+          retention-days: 90
