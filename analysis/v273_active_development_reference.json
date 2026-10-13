@@ -156,5 +156,28 @@
     "S80_reference_itself_has_training_overlap": true,
     "independent_external_music_validation_complete": false,
     "official_note_head_promotion": false
+  },
+  "next_note_architecture_prototype": {
+    "id": "S404_K_FIRST_TIME_PITCH_MULTITASK_ATTENTION",
+    "status": "CODE_TESTED_NO_SUPERVISED_TRAINING_NO_NOTE_SCORE",
+    "reference": "YourMT3+ time-frequency attention + Andriamarosoa/midi onset/frame/masked harmonic supervision",
+    "architecture_audit": "analysis/README_V273_S404_YOURMT3_MIDI_ARCHITECTURE_REFERENCE.md",
+    "model_source": "src/causal_note/k_first_multihead_notes_s404.py",
+    "workflow_run_id": 38363523474,
+    "workflow_url": "https://github.com/Andriamarosoa/note/actions/runs/38363523474",
+    "K_at_input_and_before_logits": true,
+    "active_frame_and_new_onset_separate_heads": true,
+    "harmonic_training_requires_valid_mask": true,
+    "exact_k_output_constraint": true,
+    "K0_returns_no_new_pitches": true,
+    "currently_uses_42x49_harmonic_bank": true,
+    "true_wideband_spectrogram_not_yet_connected": true,
+    "causal_streaming_not_yet_verified": true,
+    "trained_on_MIDI_labels": false,
+    "note_metric_measured": false,
+    "S80_count_reference_unchanged": true,
+    "S402_trained_pitch_reference_unchanged": true,
+    "external_validation": false,
+    "promotion": false
   }
 }
