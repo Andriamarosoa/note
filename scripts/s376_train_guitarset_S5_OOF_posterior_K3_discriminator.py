@@ -108,7 +108,7 @@ def run(audio_path,s5_path,s18_path,truth_path,out):
             trials.append(dict(threshold=threshold,changed=int(changed.sum()),
                 trueK_histogram=h.tolist(),K3_fixes=k3,all_regressions=reg,
                 K2_lost=int(h[2]),net=k3-reg,
-                eligible_for_external_promotion_gate=(k3>=3 and k3>reg and h[2]<=10)))
+                eligible_for_external_promotion_gate=bool(k3>=3 and k3>reg and h[2]<=10)))
         results[kind]=dict(feature_width=X.shape[1],source_heldfold_models=folds,
              original_guitarset_trigger_rows=len(loc),
              trigger_true_K_histogram=np.bincount(trueclass,minlength=7).tolist(),
