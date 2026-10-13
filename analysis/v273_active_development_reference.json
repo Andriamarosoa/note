@@ -66,5 +66,44 @@
     "This is the user-designated active development baseline, not a claim of independent external generalization.",
     "The guard was selected after examining GuitarSet labels; GuitarSet has training overlap in S272 and is not prospective.",
     "Keep legacy historical and independent trial results unchanged; comparator name must be explicit in future audit runs."
-  ]
+  ],
+  "note_detection_extension": {
+    "id": "S399_HARMONIC_MIDI_PITCH_RANKER",
+    "status": "IMPLEMENTED_SOURCE_ONLY_AND_MEASURED_EXPERIMENTAL_PITCH_HEAD",
+    "run_id": 38354784594,
+    "artifact_id": 11792925560,
+    "workflow": ".github/workflows/v273-s399-s400-midi-note-identification.yml",
+    "script": "scripts/s399_s80_exactK_constrained_midi_pitch_decoder.py",
+    "validation_script": "scripts/s400_evaluate_S399_MIDI_note_pitches_GuitarSet.py",
+    "prediction_npz_SHA256": "ae60bd6cd0bd9c1ba1c91d2eda039cf6a209efe008271e186f84e69eee2e920b",
+    "output_format": {
+      "event_count": 59309,
+      "midi_pitch_columns": 6,
+      "sentinel": -1,
+      "note_range_MIDI": [
+        40,
+        88
+      ],
+      "exactly_reference_K_notes": true
+    },
+    "observed_metrics_GuitarSet_development": {
+      "native_events": 59309,
+      "true_poly_events": 7385,
+      "true_poly_exact_pitch_chords": 1292,
+      "true_poly_exact_pitch_chords_rate": 0.17494922139471902,
+      "true_poly_midi_note_F1": 0.5866217634282646,
+      "true_poly_midi_note_precision": 0.5984663645869641,
+      "true_poly_midi_note_recall": 0.5752369101177371,
+      "oracle_true_K_pitch_full_chord_correct": 1526,
+      "oracle_true_K_pitch_full_chord_rate": 0.2066350710900474,
+      "exact_mono_K1_pitch_rate": 0.6204367666232073,
+      "exact_K5_full_chord_rate": 0.04507042253521127,
+      "same_pitch_duplicate_chords_not_supported": 100,
+      "labels_all_event_K_matched": true
+    },
+    "pitch_model_pretrained": false,
+    "independent_composition_validation": false,
+    "S80_count_baseline_changed": false,
+    "notes": "Do not present Exact-K poly 81.98% as full MIDI-note accuracy. S399 pitches require upstream model improvement and disjoint external validation."
+  }
 }
