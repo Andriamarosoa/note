@@ -1,0 +1,73 @@
+name: S370 find earliest S5 S8 S9 S13 S14 S15 S16 S17 S18 trained K3 to K2 cascade error
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s370_earliest_original_S5_S18_K3_underestimate_audit.py'
+      - '.github/workflows/v273-s370-earliest-original-S5-S18-K3-underestimate.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s370-actual-original-133-model-cascade-K3-debug
+  cancel-in-progress: true
+jobs:
+  original_four_heldfold_S5_to_S18_from_archived_stage_K_before_truth:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Restore SHA source-only genuine original S5 and S8 to S18 trained fourfold predictions on 967 events
+        run: |
+          gh run download 38331004943 \
+            -n s336-s337-original-967-S5-S18-folds-IDMT-dataset1-PREXML \
+            -D model/S336S337 --repo ${{ github.repository }}
+      - name: Verify source schemas BEFORE reading truth; do not fit 133 model weights
+        run: |
+          python - <<'PY'
+          import numpy as np
+          a='model/S336S337/S336/S336_original_S5_fourfold_967_dataset1_native_unlabelled.npz'
+          b='model/S336S337/S337/S337_original_S5_to_S18_true_V88_native_IDMT_967.npz'
+          with np.load(a,allow_pickle=False) as x,np.load(b,allow_pickle=False) as y:
+            assert np.array_equal(x['row_id'],y['row_id'])
+            assert x['original_S5_K_by_fold'].shape==(4,967)
+            for stage in ['S8','S9','S13','S14','S15','S16','S17','S18']:
+              assert y[stage+'_K'].shape==(4,967)
+          print('S370 PASS independent fourfold actual original 133 S8-S18 trained source identity')
+          PY
+      - name: Compare actual previously frozen original trained S5 all stages to already-exposed true K3 and corrected K2 cases, NO tune
+        run: |
+          gh run download 38331684749 \
+            -n s363-PROSPECTIVE-IDMT-dataset1-24chords-967-postfrozen-historical-plus-acoustic-not-promotion \
+            -D model/scored --repo ${{ github.repository }}
+          python -u -m scripts.s370_earliest_original_S5_S18_K3_underestimate_audit \
+            --s5 model/S336S337/S336/S336_original_S5_fourfold_967_dataset1_native_unlabelled.npz \
+            --s18 model/S336S337/S337/S337_original_S5_to_S18_true_V88_native_IDMT_967.npz \
+            --truth model/scored/S363_postfrozen_967_two_distinct_protocols.npz \
+            --out model/S370
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S370/report.json'))
+          assert r['six_K3_regressions']==6
+          assert r['K2_fixes_on_this_new24']==8
+          assert len(r['per_contrasting_K2_K3_cases'])==14
+          assert r['no_model_or_threshold_changed']
+          assert r['label_set_already_exposed_not_independent_for_feature_design']
+          assert not r['official_promotion']
+          print('S370 PASS original 133 saved trained risk cascade K2/K3 audit, no prospective promotion claim')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s370-original-four-S5-S18-trained-stages-six-K3-errors-vs-eight-K2-corrections
+          path: model/S370/
+          retention-days: 90
