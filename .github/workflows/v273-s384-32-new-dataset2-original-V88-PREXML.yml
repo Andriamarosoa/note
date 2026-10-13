@@ -4,7 +4,7 @@ on:
     branches: [codex/s276-idmt-song-disjoint-candidate-audit]
     paths:
       - 'scripts/s384_original_V88_source_32_new_IDMT_dataset2_unseen_WAV.py'
-      - '.github/workflows/v273-s374-new32-new-true-official-V88-PREXML.yml'
+      - '.github/workflows/v273-s384-32-new-dataset2-original-V88-PREXML.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -40,7 +40,7 @@ jobs:
           a=json.load(open('model/S383/report.json'))
           b=json.load(open('model/S376/report.json'))
           assert len(a['untouched_new_32'])==32 and not a['new_XML_contents_read'] and not a['new_WAV_audio_read']
-          assert b['trained_on_original_GuitarSet_only'] and b['selected_for_truly_unseen_external_S383_8WAV'] is not None
+          assert b['trained_on_original_GuitarSet_only'] and b['selected_for_truly_unseen_external_S372_8WAV'] is not None
           assert not b['any_IDMT_WAV_XML_read']
           print('S374 PASS original GuitarSet K3 specialist fully trained and SHA-frozen first, eight new WAVs never read')
           PY
@@ -78,14 +78,14 @@ jobs:
           python -u -m scripts.s384_original_V88_source_32_new_IDMT_dataset2_unseen_WAV \
             --sources model/original-sources \
             --weights model/freeze-original/freeze_local_combo.weights.h5 \
-            --s372 model/S383/report.json \
+            --s383 model/S383/report.json \
             --out model/S384
           python - <<'PY'
           import json,numpy as np
           r=json.load(open('model/S384/report.json'))
           assert r['status']=='S384_TRUE_OFFICIAL_FREEZE_ON_UNEXPOSED_DATASET2_32_WAV_UNLABELLED'
           assert r['count_WAV']==32 and r['original_native_event_count']>0
-          assert r['selected_dataset1_new_8_filename_only_priority']
+          assert r['selected_dataset2_prospective_rank49plus']
           assert not r['XML_MIDI_annotated_contents_read'] and not r['promotion_eligible']
           with np.load('model/S384/S384_official_V88_dataset2_new32_WAV_predictions.npz',allow_pickle=False) as z:
             assert len(set(map(str,z['member'])))==32
