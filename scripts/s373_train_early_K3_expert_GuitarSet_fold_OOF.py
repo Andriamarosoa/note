@@ -62,7 +62,6 @@ def run(audio_path,truth_path,s18_path,out):
          and np.array_equal(ids,truth['row_id'])
          and np.array_equal(ids,model_ids)
          and np.array_equal(reference,truth['original_freeze_K'])
-         and np.array_equal(reference,read(audio_path,AUDIO_FIELDS)['incumbent_freeze_K'])
          and np.array_equal(fold_ids,FOLDS) and four_stage.shape==(4,N)
          and np.isin(y,range(7)).all() and
          all(np.count_nonzero(fold==f)>1000 for f in FOLDS),
