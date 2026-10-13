@@ -416,5 +416,52 @@
     "prospective_external_music_validation_completed": false,
     "active_S408_baseline_unchanged": true,
     "promotion": false
+  },
+  "full_note_comparison_with_YourMT3plus": {
+    "id": "S414_REAL_OFFICIAL_YOURMT3PLUS_FULL_NOTE_COMPARISON",
+    "status": "SUCCESS_SAME_GUITARSET_190_SONGS_34954_JAMS_NOTES_DESCRIPTIVE",
+    "run_id": 38377420107,
+    "artifact_id": 11801872144,
+    "report": "analysis/README_V273_S414_OFFICIAL_YOURMT3_VS_S408_S412_FULL_MIDI_NOTE_AUDIT.md",
+    "script": "scripts/s414_compare_official_yourmt3_full_notes_vs_S408_S412_guitarset.py",
+    "original_pretrained_model_run_id": 37605163312,
+    "original_checkpoint": "YPTF.MoE+Multi (noPS)",
+    "same_tracks_and_GT": true,
+    "note_pitch_and_onset_tolerance_ms": 50,
+    "offset_tolerance_ms": 50,
+    "metrics": {
+      "S408": {
+        "pitch_onset_F1": 0.7341916438936709,
+        "conditional_offset_acc": 0.5195063694267515,
+        "full_note_F1": 0.3814172353826594,
+        "MAE_ms": 105.42506806331875
+      },
+      "S412": {
+        "pitch_onset_F1": 0.7341916438936709,
+        "conditional_offset_acc": 0.5697850318471338,
+        "full_note_F1": 0.4183314091978547,
+        "MAE_ms": 95.87331195747937
+      },
+      "YourMT3plus": {
+        "pitch_onset_F1": 0.8774360077436008,
+        "conditional_offset_acc": 0.8580767470745898,
+        "full_note_F1": 0.7529074352907436,
+        "MAE_ms": 41.790181763145654
+      }
+    },
+    "long_note_offsets_1000ms_plus": {
+      "S408_correct": 0,
+      "S408_matched": 737,
+      "S412_correct": 0,
+      "S412_matched": 737,
+      "YourMT3_correct": 565,
+      "YourMT3_matched": 830
+    },
+    "checkpoint_can_have_pretrained_GuitarSet_overlap": true,
+    "S80_has_historical_GuitarSet_train_overlap": true,
+    "S408_stays_user_selected_active_offset_reference": true,
+    "S412_stays_internal_challenger": true,
+    "official_promotion": false,
+    "conclusion": "YourMT3+ substantially better note completion and long duration tracking on this development GuitarSet protocol; independent generalization is unproven for both models."
   }
 }
