@@ -336,3 +336,99 @@ not validated causes. A fixed offset selected using exposed S327
 XML labels is ineligible for independent S80 promotion. First
 derive/verify timestamps using training-only or separate untouched
 audio, then freeze and validate on NEW composition-disjoint corpus.
+
+
+## S330–S356 — source debug and true frozen S80 evaluation on twelve IDMT Dataset1 chord WAVs
+
+The previous ~39ms IDMT Dataset2 XML-to-V88 delay is NOT a pure V88
+indexing offset. [S330](https://github.com/Andriamarosoa/note/actions/runs/38325866875)
+compared physical RMS and FFT flux rise locations with original XML:
+for 250 annotated onsets, original V88 group nearest onset had median
+XML difference +37.64ms, spectral flux peak +25.40ms and RMS energy
+rise +32.88ms. On 203 missed events, median V88-to-spectral-peak
+time is +12.63ms and V88-to-RMS-rise is +7.10ms. Physical peaks
+searched in a preregistered XML-local window are diagnostic, NOT
+independent exact acoustic onsets. Source timing is causal.
+
+[S331](https://github.com/Andriamarosoa/note/actions/runs/38326184979):
+actual originally trained V84 model streaming scores match for
+512/2048 stateful and 1024 fallback chunking, max onset-score absolute
+difference 7.45e-9; no sample-index/chunk desynchronization.
+
+### NEW separate prospective IDMT Dataset1 chord cohort — 477 native events
+
+The twelve WAV filenames and paired XML **names only** were selected
+in S276 before their annotation contents were opened. S332 official
+reference V88 SHA and first 477 candidate groups sealed with *no XML*,
+and [S333](https://github.com/Andriamarosoa/note/actions/runs/38326698570)
+fixed a second model-neutral physical-onset scoring protocol with
+unknown attack abstention BEFORE any XML.
+
+The trained stack was independently reconstructed on exactly 477
+real native V88 groups: S334/335 S97/527D, S336/337 four original
+S5 +133 S18 heads, S338/339 4fold source, S340–343 19 S29/S35
+branches and 10 S45 families, S344 true fundamental58 and five
+historically trained rare S45 heads, S345–347 16 S45, 304 original
+Ridge risk and 193 S46 policies and S274 twofold counterfactual,
+S348 12 original pretrained neural / 36 PR16 policies. Final
+S349–S353 original saved S69→S80 trained checkpoint inference
+successfully sealed on
+[S355](https://github.com/Andriamarosoa/note/actions/runs/38327686633)
+**before first Dataset1 XML was opened**.
+
+The two original-trained S80 branches (S274 gate versus original S46)
+are bit-identical on all 477 events; 28 K changed vs official.
+These are **new external fold-neutral policies**, NOT identical to the
+historical held-piece oracle deployment, and neither is refit using XML.
+
+### True pre-frozen paired comparison [S354](https://github.com/Andriamarosoa/note/actions/runs/38327717118)
+
+The first genuine read of all 12 XMLs was AFTER SHA seals. On the
+**original historical 20ms note-attack assignment**; conditional on
+the XML enumerating all original attacks:
+
+| Condition | frozen official `freeze_local_combo` | original-trained S80, 3/4 fold-neutral |
+|---|---:|---:|
+| K0–K6 all 477 native V88 groups | 442/477 **92.66%** | **455/477 95.39%** |
+| K1+ positive attack rows (31) | 7/31 **22.58%** | **15/31 48.39%** |
+| K2+ polyphonic attack rows (20) | 6/20 **30.00%** | **11/20 55.00%** |
+
+All-row corrections **17**, regressions **4**, still-wrong changed
+decisions **7**. Net **+13**. Poly correct +5 (7 corrections, 2
+regressions). Baseline/K fractions are contingent on complete
+transcribed XML and the historical timing convention.
+The alternate frozen S333 physical peak anchor method was **NOT
+evaluable on any complete WAV**: 14 of 65 onsets anchored, 51
+unanchored, zero wholly certifiable native rows. Do not claim it
+achieved higher S80 accuracy.
+
+### Strength and limits of gain [S356](https://github.com/Andriamarosoa/note/actions/runs/38328133819)
+
+- Net correct differences by the twelve WAV file hashes:
+  **[+1, +2, −1, 0, +1, +4, +1, +1, 0, 0, +2, +2]**.
+  8 WAV positive, 1 negative, 3 neutral.
+- Exact paired event-level McNemar p **0.00720** (17 vs 4 discordants).
+- Twelve-WAV signflip two-sided p **0.0234375** global; **0.0625**
+  K2+, with only 20 positive poly rows.
+- Cluster bootstrap by WAV for all-row improvement has 95% CI
+  **[+1.05, +4.43] percentage points**; for K2+ 95% CI
+  **[+11.11,+36.36]** points but K2+ sample is extremely sparse
+  and WAV-by-composition independence is NOT established. These
+  are NOT music-composition-clustered confidence intervals.
+- **Source of uncertainty**: the 12 preselected WAVs are not yet
+  proved independent compositions, and even non-exhaustive XML
+  onsets create potentially spurious negative K0 truth (446 of 477
+  groups are labelled K0). Original training was GuitarSet; source
+  split exposure and musical-family duplicates must be documented.
+- The independent external Dataset2 first attempt (16 WAV, 964
+  groups) found **S80 760/964 vs official 761/964**; S274
+  was 761/964. Thus improvement does NOT transfer unconditionally
+  to another available IDMT subcorpus with different onset timing.
+
+**Official promotion verdict after S356: PENDING, NOT AUTHORIZED.**
+S80 is a **measured superior challenger for Dataset1 on the sealed
+historical conditional 20ms attack benchmark**, not yet a replacement
+global baseline. Promote only after independent, composition-disjoint
+polyphonic data with verified complete annotations and relevant
+metrics confirm the improvement. Do not rename `freeze_local_combo`
+or erase historical reference while such evidence is missing.
