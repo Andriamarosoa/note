@@ -116,5 +116,45 @@
       "does_not_protect_S70_itself": true,
       "notes": "Counts must already come from S80 active reference deployment; S401 does not port guarded S70 models to new WAVs."
     }
+  },
+  "active_note_detection_head": {
+    "id": "S402_K_CONDITIONED_352D_MLP",
+    "status": "ACTIVE_PITCH_DEVELOPMENT_BASELINE_NOT_EXTERNALLY_PROMOTED",
+    "reference_count_system": "S80_S397_K5_GUARDED",
+    "description": "K is a model INPUT: S80 predicted K one-hot 7D plus K and K^2 scalars and pitch-acoustic interactions feed 352D shared MLP, producing 49 MIDI probabilities before exact K selection",
+    "source_script": "scripts/s402_k_input_first_supervised_midi_pitch_network.py",
+    "inference_script": "scripts/s403_runtime_K_first_MIDI_notes_on_new_S80_audio.py",
+    "train_evaluation_run_id": 38361853607,
+    "weights_artifact_id": 11795501155,
+    "runtime_verification_run_id": 38362257715,
+    "runtime_predictions_artifact_id": 11795203261,
+    "compared_with_old_note_head": "S399_HARMONIC_MIDI_PITCH_RANKER",
+    "original_events": 59309,
+    "K_input_is_predicted_not_truth": true,
+    "song_disjoint_fourfold_supervised_training": true,
+    "song_count": 38,
+    "any_composition_overlap_across_heldout_fold": false,
+    "poly_complete_midi_chords_correct": 2715,
+    "poly_complete_midi_chords_total": 7385,
+    "poly_complete_midi_chords_rate": 0.3676371022342586,
+    "prior_S399_poly_correct": 1292,
+    "corrections_vs_S399_poly": 1736,
+    "regressions_vs_S399_poly": 313,
+    "poly_note_micro_F1": 0.7470532249798667,
+    "poly_note_old_F1": 0.5866217634282647,
+    "K_input_ablation_poly_exact_chords": 2546,
+    "K_input_actual_poly_exact_chords": 2715,
+    "K_input_specific_extra_correct_poly": 169,
+    "trained_K_conditioned_model_weights_frozen": true,
+    "model_input_audio_features": "42 frames x 49 candidate MIDI pitches",
+    "predicted_pitch_midi_vocabulary": [
+      40,
+      88
+    ],
+    "active_S80_K_reference_untouched": true,
+    "prior_exposure_to_GuitarSet_qualifier": true,
+    "S80_reference_itself_has_training_overlap": true,
+    "independent_external_music_validation_complete": false,
+    "official_note_head_promotion": false
   }
 }
