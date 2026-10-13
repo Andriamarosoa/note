@@ -54,6 +54,32 @@ class KOnsetStateDecoder:
         self.inactive_votes[:]=0
         self.last_event_index=-1
 
+    def step_from_s404(self,*,event_index:int,predicted_k:int,
+                       model_output:dict[str,Tensor],
+                       batch_index:int=0)->dict:
+        """Directly consume S404 output heads; NO frame+onset summation.
+
+        This is inference wiring, not training: S404 must already have
+        separately trained onset/frame heads before qualitative performance
+        on real audio can be claimed.
+        """
+        required=("onset_logits","frame_logits","harmonic_amplitude_logits")
+        if not isinstance(model_output,dict) or not all(k in model_output for k in required):
+            raise ValueError("Missing S404 onset/frame/harmonic output heads")
+        if not isinstance(batch_index,int) or batch_index<0:
+            raise ValueError("Invalid S404 batch index")
+        onset=model_output["onset_logits"]
+        frame=model_output["frame_logits"]
+        harmonic=model_output["harmonic_amplitude_logits"]
+        if onset.ndim!=2 or frame.shape!=onset.shape or            harmonic.ndim!=3 or onset.shape[1]!=NUM_MIDI or            harmonic.shape[1:]!=(NUM_MIDI,HARMONICS) or            not batch_index<onset.shape[0]:
+            raise ValueError("S404 returned mismatched batch/head outputs")
+        return self.step(
+            event_index=event_index,predicted_k=predicted_k,
+            onset_logits=onset[batch_index],
+            frame_logits=frame[batch_index],
+            harmonic_amplitude_logits=harmonic[batch_index]
+        )
+
     @staticmethod
     def _vector(logits:Tensor,width:int,name:str)->Tensor:
         if not isinstance(logits,torch.Tensor) or logits.ndim!=1            or logits.shape[0]!=width or not bool(torch.isfinite(logits).all()):
@@ -211,6 +237,19 @@ def self_test():
        frame_logits=_logits([c3,c4]),
        harmonic_amplitude_logits=harmonic)
     assert not fresh["active_note_midi"] and fresh["new_note_midi"]==[]
+    # End-to-end model-output wiring, without reading/using labels.
+    from src.causal_note.k_first_multihead_notes_s404 import KFirstMultiHeadNoteNet
+    torch.manual_seed(405)
+    net=KFirstMultiHeadNoteNet(dimension=32,heads=4,layers=1).eval()
+    with torch.no_grad():
+        generated=net(torch.rand(1,42,NUM_MIDI)*.8,
+                      torch.tensor([0],dtype=torch.long))
+    connected=KOnsetStateDecoder().step_from_s404(
+        event_index=0,predicted_k=0,model_output=generated,batch_index=0)
+    assert connected["new_note_midi"]==[]
+    assert not any(e.action=="note_on" for e in connected["events"])
+    assert connected["frame_probabilities"].shape==(NUM_MIDI,)
+    assert connected["harmonic_amplitude_probabilities"].shape==(NUM_MIDI,HARMONICS)
     print("S405 PASS: K0 does not silence resonances or emit NoteOn; "
           "K1 with old sustain, K2 multiple attacks, releases, retriggers,"
           " harmonics cannot create notes and each piece resets its state")
