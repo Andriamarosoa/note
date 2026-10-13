@@ -632,5 +632,81 @@
       "Full MIDI F1 is evaluated on same 190 GuitarSet tracks; YourMT3+ 75.29% is descriptive and teacher-assisted S415 still depends on external checkpoint."
     ],
     "official_public_benchmark_promotion": false
+  },
+  "native_long_note_survival_development_challenger": {
+    "id": "S422_S80_K_LOCKED_5S_CONTINUOUS_MIC_PITCH_SURVIVAL_OFFSET",
+    "status": "BEST_MEASURED_NATIVE_NOTE_FULL_F1_DEVELOPMENT_CHALLENGER_UNPROMOTED",
+    "run_id": 38394264593,
+    "artifact_id": 11811400063,
+    "independent_paired_audit_run_id": 38394546659,
+    "independent_audit_artifact_id": 11810918948,
+    "script": "scripts/s422_train_full_WAV_pitch_survival_noteoffs_S80_Klocked.py",
+    "audit_script": "scripts/s423_independent_S422_survival_vs_S420_offset_same_notes_Klocked.py",
+    "report": "analysis/README_V273_S422_S423_CONTINUOUS_PITCH_SURVIVAL_AND_K_LOCK_AUDIT.md",
+    "source_native_2026_S420_run_id": 38384016298,
+    "total_S80_native_events": 59309,
+    "total_original_S80_NoteOn_count": 33475,
+    "exact_K_regressions": 0,
+    "identical_note_pitch_and_NoteOn_to_S420": true,
+    "original_exact_K_global_correct": 53529,
+    "new_exact_K_global_correct": 53529,
+    "original_exact_K_poly_correct": 6054,
+    "new_exact_K_poly_correct": 6054,
+    "actual_exported_JSONL_per_row_count_replayed_independently": true,
+    "true_original_GuitarSet_notes": 34954,
+    "matched_midi_pitch_and_onset_50ms": 25395,
+    "correct_complete_notes_S420_50ms": 16140,
+    "correct_complete_notes_S422_50ms": 16340,
+    "S420_full_note_F1_50ms": 0.471729822151427,
+    "S422_full_note_F1_50ms": 0.4775752970231919,
+    "S420_conditional_offset_correct_50ms": 0.635558180744241,
+    "S422_conditional_offset_correct_50ms": 0.6434337468005513,
+    "S420_MAE_ms": 91.03181523314845,
+    "S422_MAE_ms": 88.39987695544188,
+    "corrections_on_same_GT_notes": 1228,
+    "regressions_on_same_GT_notes": 1028,
+    "net_complete_notes_corrected": 200,
+    "by_GuitarSet_true_note_duration": {
+      "less_100ms": {
+        "original_2020": 564,
+        "S422": 670,
+        "total": 2263,
+        "net": 106
+      },
+      "from_100_to_499ms": {
+        "S420": 15043,
+        "S422": 15024,
+        "total": 28212,
+        "net": -19
+      },
+      "from_500_to_999ms": {
+        "S420": 504,
+        "S422": 577,
+        "total": 3579,
+        "net": 73
+      },
+      "at_least_1000ms": {
+        "S420": 29,
+        "S422": 69,
+        "total": 900,
+        "net": 40
+      }
+    },
+    "by_composition_holdout_fold_net": [
+      0,
+      107,
+      -65,
+      158
+    ],
+    "exact_K_0_to_6_unchanged_in_all_59309_events": true,
+    "original_S402_and_S408_refs_unchanged": true,
+    "no_external_YourMT3_at_training_or_inference": true,
+    "K_input_to_native_pitch_selection_unchanged": true,
+    "long_note_context_full_MIC_WAV_10ms_until_5000ms": true,
+    "inner_composition_only_offset_policy_selection": true,
+    "S80_historical_GuitarSet_training_overlap": true,
+    "S419_meta_gate_not_fully_nested": true,
+    "independent_external_validation_completed": false,
+    "official_promotion": false
   }
 }
