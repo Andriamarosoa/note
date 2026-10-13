@@ -148,9 +148,9 @@ def run(audio,source,source_report,original_truth,annotations,out):
                     if not MIDI_MIN<=pitch<=MIDI_MAX:out_of_vocab[ix2]=True
             members_valid+=1
     consistent=note_counts==yK
-    invalid_>6=(note_counts>6) if False else (note_counts>6)
+    invalid_more_than_six = note_counts > 6
     # Any count above six cannot be represented in 6 slots.
-    valid=consistent & ~out_of_vocab & ~invalid_>6
+    valid=consistent & ~out_of_vocab & ~invalid_more_than_six
     target_counter=collections.Counter()
     for i in np.flatnonzero(~valid):
         reason=('K mismatch' if not consistent[i] else
@@ -170,10 +170,11 @@ def run(audio,source,source_report,original_truth,annotations,out):
     }
     # Scoring samples expose labels ONLY here; no tuning allowed from the result
     errors=[]
-    for i in np.flatnonzero(valid & (yK>=2) &
-                             (np.array([collections.Counter(p for p in pred[j] if p>=0)!=
-                                        collections.Counter(p for p in true_pitch[j] if p>=0)
-                                        for j in [i]])[0]))[:25]:
+    for i in np.flatnonzero(valid & (yK>=2)):
+        if collections.Counter(int(p) for p in pred[i] if p>=0) == collections.Counter(int(p) for p in true_pitch[i] if p>=0):
+            continue
+        if len(errors)>=25:
+            break
         errors.append(dict(row_id=str(row[i]),real_K=int(yK[i]),S80_K=int(k[i]),
          true_midi=[int(x) for x in true_pitch[i] if x>=0],
          candidate_midi=[int(x) for x in pred[i] if x>=0],
