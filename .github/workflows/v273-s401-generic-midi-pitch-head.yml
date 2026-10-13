@@ -1,0 +1,27 @@
+name: S401 generic S80 on any native WAV to MIDI note transcript selftest
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s401_midi_pitch_head_on_any_s80_audio.py'
+      - '.github/workflows/v273-s401-generic-midi-pitch-head.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original_audio_compatible_note_identity_decoder:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Ensure Generic S80-note API is usable and preserves exact-K
+        run: |
+          python -m py_compile scripts/s399_s80_exactK_constrained_midi_pitch_decoder.py scripts/s401_midi_pitch_head_on_any_s80_audio.py
+          python -u -m scripts.s401_midi_pitch_head_on_any_s80_audio --self-test
