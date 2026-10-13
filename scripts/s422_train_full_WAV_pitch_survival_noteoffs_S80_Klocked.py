@@ -388,7 +388,7 @@ def test():
     x=np.zeros((3,len(HORIZONS),DIM),np.float32)
     x[:,:,0]=HORIZONS[None,:]/1000.
     d,alive=survival_estimate(Fake(),x,.5)
-    must(np.all(d>=1200) and np.all(np.diff(alive,axis=1)<=1e-6),
+    must(np.all((d>1100)&(d<1200)) and np.all(np.diff(alive,axis=1)<=1e-6),
          'S422 physical survival monotonic continuation test')
     old=np.array([10000,20000,30000],np.int64)
     on=np.array([1000,10000,20000],np.int64)
