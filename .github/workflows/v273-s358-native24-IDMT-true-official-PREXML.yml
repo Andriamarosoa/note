@@ -1,0 +1,92 @@
+name: S358 original official V88 and freeze_local_combo on 24 unseen IDMT Dataset1 WAVs PREXML
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s358_original_freeze_V88_24_IDMT_chords_PREXML.py'
+      - '.github/workflows/v273-s358-native24-IDMT-true-official-PREXML.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s358-new-24-original-V88-source-first
+  cancel-in-progress: true
+jobs:
+  original_freeze_V88_source_only_24:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 95
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      TF_CPP_MIN_LOG_LEVEL: '2'
+      TF_NUM_INTRAOP_THREADS: '2'
+      TF_NUM_INTEROP_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r requirements-train.txt numpy==1.26.4 scikit-learn==1.4.2
+      - name: Verify 24 preselected WAV names are sealed BEFORE audio retrieval and no XML was opened
+        run: |
+          gh run watch 38330431853 --repo ${{ github.repository }} --exit-status --interval 15
+          gh run download 38330431853 \
+            -n s357-original-IDMT-dataset1-24-new-chord-WAV-XML-NAMES-PREXML \
+            -D model/S357 --repo ${{ github.repository }}
+      - name: Restore original SHA verified V84-V88 source models, no training
+        run: |
+          mkdir -p model/source-download
+          gh release download v273-source-recovery-35086829802 \
+            --repo ${{ github.repository }} \
+            --pattern v273-rebuilt-proposal-sources.zip \
+            --dir model/source-download
+          python - <<'PY'
+          from pathlib import Path
+          from scripts.restore_v273_original_backup import extract_verified
+          from scripts.rebuild_v273_sources import validate_sources
+          extract_verified(Path('model/source-download/v273-rebuilt-proposal-sources.zip'),
+              Path('model/original-sources'),
+              'fb6bb1049b87c0517936f4f40e5bc1442722fc20b9eba5045a62bb0a12cf2994',
+              validate=validate_sources)
+          PY
+      - name: Restore exact original official reference weights
+        run: |
+          mkdir -p model/freeze-original model/freeze-download
+          gh release download v273-uniform-anchored-freeze-37233793945 \
+            --repo ${{ github.repository }} \
+            --pattern v273-uniform-anchored-freeze-result.tgz \
+            --dir model/freeze-download
+          tar -xzf model/freeze-download/v273-uniform-anchored-freeze-result.tgz -C model/freeze-original
+          test -s model/freeze-original/freeze_local_combo.weights.h5
+      - name: Predict true official frozen V88 rows on 24 new unexposed original chord recordings
+        run: |
+          python -u -m scripts.s358_original_freeze_V88_24_IDMT_chords_PREXML \
+            --sources model/original-sources \
+            --weights model/freeze-original/freeze_local_combo.weights.h5 \
+            --s357 model/S357/report.json \
+            --out model/S358
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S358/report.json'))
+          assert r['count_WAV']==24 and r['original_native_event_count']>0
+          assert r['status']=='S358_TRUE_OFFICIAL_FREEZE_ON_UNEXPOSED_DATASET1_24_WAV_UNLABELLED'
+          assert r['selected_dataset1_new_24_filename_only_priority']
+          assert not r['XML_MIDI_annotated_contents_read']
+          assert not r['promotion_eligible']
+          with np.load('model/S358/S358_official_V88_dataset1_prospective_24_WAV_predictions.npz',allow_pickle=False) as z:
+            n=len(z['row_id'])
+            assert z['incumbent_K'].shape==(n,)
+            assert z['incumbent_probabilities'].shape==(n,7)
+            assert len(set(map(str,z['member'])))==24
+          print('S358 PASS SHA-locked original reference 24 WAV events, XML NEVER opened')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s358-24-new-IDMT-dataset1-chords-original-V88-official-PREXML
+          path: |
+            model/S358/report.json
+            model/S358/S358_official_V88_dataset1_prospective_24_WAV_predictions.npz
+          retention-days: 90
