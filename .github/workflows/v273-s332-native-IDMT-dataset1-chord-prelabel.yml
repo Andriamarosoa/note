@@ -3,7 +3,7 @@ on:
   push:
     branches: [codex/s276-idmt-song-disjoint-candidate-audit]
     paths:
-      - 'scripts/s332_official_V88_dataset1_prospective_12_WAV_16_WAV_source_only.py'
+      - 'scripts/s332_original_V88_dataset1_12_prospective_chords.py'
       - '.github/workflows/v273-s332-native-IDMT-dataset1-chord-prelabel.yml'
   workflow_dispatch:
 permissions:
@@ -65,8 +65,8 @@ jobs:
             --repo ${{ github.repository }}
       - name: Execute original pretrained V84-V88 and freeze local combo on twelve prospective reserve WAVs
         run: |
-          python -m py_compile scripts/s332_official_V88_dataset1_prospective_12_WAV_16_WAV_source_only.py
-          python -u -m scripts.s332_official_V88_dataset1_prospective_12_WAV_16_WAV_source_only \
+          python -m py_compile scripts/s332_original_V88_dataset1_12_prospective_chords.py
+          python -u -m scripts.s332_original_V88_dataset1_12_prospective_chords \
             --sources model/original-sources \
             --weights model/freeze-original/freeze_local_combo.weights.h5 \
             --s276 model/S276/S276_IDMT_filename_only_cohort_manifest.json \
@@ -79,8 +79,8 @@ jobs:
           assert not r['XML_MIDI_annotated_contents_read']
           assert not r['S275_same_native_event_predictions_computed']
           assert not r['promotion_eligible']
-          assert r['SHA_ranks_1_to_48_excluded'] and r['selected_dataset1_prospective_prospective_12_WAV']
-          with np.load('model/S332/S332_official_V88_dataset1_prospective_12_WAV_16_WAV_predictions.npz',allow_pickle=False) as z:
+          assert r['selected_dataset1_original_filename_only_priority']
+          with np.load('model/S332/S332_official_V88_dataset1_prospective_12_WAV_predictions.npz',allow_pickle=False) as z:
             n=len(z['row_id'])
             assert z['incumbent_probabilities'].shape==(n,7)
             assert z['end_samples'].shape==(n,)
@@ -92,5 +92,5 @@ jobs:
           name: s332-IDMT-dataset1-12WAV-true-original-V88-native-official-unlabelled
           path: |
             model/S332/report.json
-            model/S332/S332_official_V88_dataset1_prospective_12_WAV_16_WAV_predictions.npz
+            model/S332/S332_official_V88_dataset1_prospective_12_WAV_predictions.npz
           retention-days: 90
