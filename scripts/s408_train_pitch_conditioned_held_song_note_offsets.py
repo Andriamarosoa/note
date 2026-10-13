@@ -111,7 +111,7 @@ def build_features(a,row,pitch,start,k,score=None):
           float(j)/48, float(kk)/6,
           float(np.log1p(max(0,t-native_start[ii])/SR*1000)),
           float((native_end[ii]-native_start[ii])/SR*1000/40),
-          float(score[ii,np.where(a['row_id'].astype(str)==a['row_id'][ii])[0][0] % 6]) if False else 0.,
+          0.,  # reserved S402 confidence slot; explicitly absent from this ablation
           np.log1p(selfpre),np.log1p(selfon),np.log1p(selflate),
           np.log1p(float(birth[ii,j])),np.log1p(float(decay[ii,j])),
           np.log1p(float(peak[ii,j])),
