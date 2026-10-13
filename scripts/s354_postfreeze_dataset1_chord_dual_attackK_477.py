@@ -115,6 +115,9 @@ def run(s276,s332,s332report,s333,s353,oldfile,newfile,out):
             annotation=z.read(item['annotation_path_name_only'])
             notes=parse_original_pitch_events(annotation)
             onset=np.asarray([float(note[0]) for note in notes],np.float64)
+            within=(onset>=0)&(onset<min(10.0,len(wave)/SR))
+            ignored_outside_clip=int(np.count_nonzero(~within))
+            onset=onset[within]
             onset_samples=np.rint(onset*SR).astype(np.int64)
             historical,assigned=assign_onsets(onset_samples,starts,ends)
             physical,stats,_=label_audio_anchored_attacks(wave[:min(len(wave),SR*10)],
@@ -134,6 +137,7 @@ def run(s276,s332,s332report,s333,s353,oldfile,newfile,out):
                 original_WAV_sha256=sha(raw),
                 original_native_V88_group_count=len(ix),
                 XML_note_count=len(notes),
+                XML_note_onsets_outside_audio_excerpt=ignored_outside_clip,
                 historical_attacks_assigned=int(np.count_nonzero(assigned>=0)),
                 historical_attacks_missed=int(np.count_nonzero(assigned<0)),
                 historical_attack_poly_groups=int(np.count_nonzero(historical>=2)),
