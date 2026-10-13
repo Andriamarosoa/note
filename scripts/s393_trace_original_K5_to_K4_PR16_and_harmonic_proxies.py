@@ -51,12 +51,12 @@ def run(audio,truth,pr,s80,your,out):
     max5=np.max(probs[:,:,5],axis=1)
     mean5=np.mean(probs[:,:,5],axis=1)
     # 42 real spectral frames, 49 harmonic templates, event anchored at -80ms.
-    z=a['sequence42x49'].astype(np.float64)
-    need(z.shape==(n,42,49) and np.isfinite(z).all(),'original audio harmonic trajectory 42x49 missing')
-    # Compute 1133D-derived physically interpretable proxies, only needed rows
     eligible = d==4
     selected_idx=np.flatnonzero(eligible)
-    x=np.expm1(z[selected_idx]); del z
+    # Avoid upcasting the full 59k×42×49 archive (unnecessary >1GB RAM).
+    z=a['sequence42x49'][selected_idx].astype(np.float64)
+    need(z.shape==(len(selected_idx),42,49) and np.isfinite(z).all(),'original audio harmonic trajectory 42x49 missing')
+    x=np.expm1(z); del z
     need(np.isfinite(x).all() and np.all(x>=0.),'spectral activation negative')
     pre=x[:,:13,:].mean(axis=1)
     attack=x[:,13:24,:].mean(axis=1)
