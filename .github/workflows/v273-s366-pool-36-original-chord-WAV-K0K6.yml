@@ -1,0 +1,60 @@
+name: S366 two frozen chord cohorts pooled K0-K6 positive and poly correction ledger
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s366_pooled_36_new_chord_WAV_S80_perK.py'
+      - '.github/workflows/v273-s366-pool-36-original-chord-WAV-K0K6.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s366-two-chord-cohorts-independent-paired-class-ledger
+  cancel-in-progress: true
+jobs:
+  conservative_S80_three_population_comparison:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download original source audits on 12 plus 24 prelabel-sealed new WAVs
+        run: |
+          gh run download 38328133819 \
+            -n s356-prospective-chord-S80-exact-WAV-cluster-McNemar-uncertainty-no-promotion \
+            -D model/S356 --repo ${{ github.repository }}
+          gh run download 38331705403 \
+            -n s364-S80-original-24-new-IDMT-chords-967-events-ExactK-perK-signflip-CI-NOpromotion \
+            -D model/S364 --repo ${{ github.repository }}
+      - name: Compare original trained candidate with official reference on all K0-6, K1+, K2+, individual K, 36 filename groups, no labels/model modifications
+        run: |
+          python -u -m scripts.s366_pooled_36_new_chord_WAV_S80_perK \
+            --first model/S356/report.json \
+            --second model/S364/report.json \
+            --out model/S366
+          python - <<'PY'
+          import json
+          x=json.load(open('model/S366/report.json'))
+          assert x['file_count']==36 and x['native_V88_event_count']==1444
+          assert x['all_native_if_XML_complete']['diff_correct']==27
+          assert x['all_native_if_XML_complete']['S80_correct']==1368
+          assert x['all_native_if_XML_complete']['official_correct']==1341
+          assert x['true_polyphonic_new_attacks_K2to6_if_XML_complete']['events']==64
+          assert x['true_polyphonic_new_attacks_K2to6_if_XML_complete']['diff_correct']==6
+          assert x['all_filename_group_signflip']['wav_count']==36
+          assert x['previous_IDMT_Dataset2_counterexample_original_S80_vs_freeze']['candidate_correct']==760
+          assert x['full_XML_K0_negative_exhaustiveness_not_certified']
+          assert not x['promoted_over_freeze_local_combo']
+          print('S366 PASS same frozen S80, 36 original WAVs, 1444 native event grouped K ledgers, no premature official promotion')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s366-combined-36-Dataset1-prospective-S80-conditional-K0-K6-ledger-no-promotion
+          path: model/S366/
+          retention-days: 90
