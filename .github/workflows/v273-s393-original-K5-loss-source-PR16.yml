@@ -1,0 +1,61 @@
+name: S393 trace K5 undercount ORIGINAL 36 PR16 candidates and harmonic flow
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s393_trace_original_K5_to_K4_PR16_and_harmonic_proxies.py'
+      - '.github/workflows/v273-s393-original-K5-loss-source-PR16.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s393-K5-stage-diagnosis-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  trace_real_K5_missed:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Restore original 59k full audio S258 and all 36 authentic PR16 policies
+        run: |
+          gh run download 38311525987 -n s258-full-guitarset-59309-real-original-native-527D-58D-46D-42x49-and-OOF-PR16 -D model/S258 --repo ${{ github.repository }}
+      - name: Restore original S80 59309 frozen outputs
+        run: |
+          gh run download 38314291222 -n s272-guitarset-59309-new-full-original-weight-S80-foldneutral-locked -D model/S272 --repo ${{ github.repository }}
+      - name: Restore original unchanged YourMT3+ same-event predictions
+        run: |
+          gh run download 37605163312 -n yourmt3-exactk-summary -D model/YourMT3 --repo ${{ github.repository }}
+      - name: Diagnose source candidate existence vs final selection, plus source spectral attack proxies
+        run: |
+          python -u -m scripts.s393_trace_original_K5_to_K4_PR16_and_harmonic_proxies \
+            --audio model/S258/S258_GuitarSet_59309_original_V88_S97_audio.npz \
+            --truth model/S258/S258_GuitarSet_59309_true_K_ONLY_FOR_FINAL_AUDIT.npz \
+            --pr model/S258/S258_GuitarSet_59309_true_OOF_PR16.npz \
+            --s80 model/S272/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz \
+            --your model/YourMT3/predictions.npz \
+            --out model/S393
+          python - <<'PY'
+          import json
+          d=json.load(open('model/S393/report.json'))
+          assert d['status']=='S393_ORIGINAL_K5_LOSS_STAGE_AND_PHYSICAL_PROXY_DIAGNOSTIC'
+          assert d['lost_stage_inventory']['lost_K5_pred_K4']==224
+          assert d['observed_groups']['true_K4_correct_as_K4']['n']==806
+          assert d['pure_causality_not_proven'] and not d['model_or_reference_changed']
+          print('S393 PASS: genuine PR16 36 policy and original K5 acoustic trajectory audit')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s393-genuine-K5-K4-loss-original-36-PR16-harmonic-trajectory-trace
+          path: model/S393/
+          retention-days: 90
