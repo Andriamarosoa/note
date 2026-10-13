@@ -1,19 +1,27 @@
 {
   "schema": 1,
   "date": "2026-10-13",
-  "reference": "freeze_local_combo",
+  "reference": "S80_S397_K5_GUARDED",
   "experimental_candidate": "S80",
   "official_promotion": false,
   "independent_S80_accuracy_measured": true,
   "latest_run": {
-    "component": "S388 first 32 prospectively reserved new IDMT Dataset2 WAVs: original source S18 plus predeclared GuitarSet-trained K3 expert; not full S80",
-    "id": 38337298274,
+    "component": "S397/S398 label-free S70 K5->K4 guard; full S71/S72/S79/S80 replay, scored after SHA-freeze on exposed GuitarSet (not independent)",
+    "id": 38352988801,
     "status": "success",
-    "native_events": 2089,
-    "wav_count": 32,
-    "original_S80_full_chain_evaluated": false,
+    "native_events": 59309,
+    "poly_events": 7385,
+    "K0_to_K6_correct": 53529,
+    "global_exactK": 0.9025443018766123,
+    "poly_K2_to_K6_correct": 6054,
+    "poly_exactK": 0.8197698036560596,
+    "true_K5_correct": 301,
+    "true_K5_total": 355,
+    "corrections_vs_S80_unmodified": 202,
+    "regressions_vs_S80_unmodified": 0,
+    "original_S80_full_chain_evaluated": true,
     "independent_S80_accuracy_measured": false,
-    "new_K3_expert_actions": 0,
+    "source_sha256": "f5a313366a161d9775ce8452df766e4178604dc8d6e002d781d24e70ee4b967f",
     "official_promotion": false
   },
   "validated_frozen_components": {
@@ -866,5 +874,39 @@
     ],
     "latest_audit_run": 38337298274,
     "promotion_gate_passed": false
+  },
+  "previous_status_reference": "freeze_local_combo",
+  "reference_scope": "USER_SELECTED_ACTIVE_DEVELOPMENT_REFERENCE__NOT_INDEPENDENTLY_VALIDATED",
+  "reference_manifest": "analysis/v273_active_development_reference.json",
+  "previous_latest_run": {
+    "component": "S388 first 32 prospectively reserved new IDMT Dataset2 WAVs: original source S18 plus predeclared GuitarSet-trained K3 expert; not full S80",
+    "id": 38337298274,
+    "status": "success",
+    "native_events": 2089,
+    "wav_count": 32,
+    "original_S80_full_chain_evaluated": false,
+    "independent_S80_accuracy_measured": false,
+    "new_K3_expert_actions": 0,
+    "official_promotion": false
+  },
+  "user_selected_reference_S398": {
+    "status": "ACTIVE_DEVELOPMENT_REFERENCE",
+    "source_run_id": 38352988801,
+    "source_report": "analysis/README_V273_S397_S398_FULL_S80_REPLAY_K5_GUARD_VERDICT.md",
+    "sha256": "f5a313366a161d9775ce8452df766e4178604dc8d6e002d781d24e70ee4b967f",
+    "global_percent": 90.25443018766123,
+    "poly_percent": 81.97698036560595,
+    "K0_to_K6_percent": [
+      96.92323211943912,
+      73.6880704041721,
+      87.05370101596517,
+      82.87461773700305,
+      66.7771333885667,
+      84.78873239436619,
+      57.30337078651685
+    ],
+    "historical_formal_reference_remains": "freeze_local_combo",
+    "independent_generalization_proved": false,
+    "externally_promoted": false
   }
 }
