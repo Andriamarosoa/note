@@ -177,7 +177,7 @@ def run(source_dir,weights,s357,out):
             original_native_event_count=len(row_id),
             original_candidate_records=len(records),
             predicted_K0to6_histogram=np.bincount(K,minlength=7).tolist(),
-            S276_prior_zip_name_manifest_SHA256=sha(s357.read_bytes()),
+            S357_prior_zip_name_manifest_SHA256=sha(s357.read_bytes()),
             pretrained_official_weights_SHA256=sha(weights.read_bytes()),
             native_V84_V86_floor=float(floor),
             native_V88_retention=float(retention),
