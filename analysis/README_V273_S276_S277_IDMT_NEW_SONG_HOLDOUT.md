@@ -640,3 +640,17 @@ the classifier using already opened IDMT XML. Original official
 - Preliminary source-only steps are not final evaluation; new S376 source ensemble means four original GuitarSet trained fold experts combined by their average probability. That **new deployment rule differs from original fold-held evaluation** and requires real independent testing.
 
 **Promotion explicitly NOT authorized.** A posthoc change to the S376 threshold after new S382 or S388 XML would contaminate the prospective benchmark.
+
+
+## S388 — Independent postfrozen Dataset2 32 new WAVs: early K3 specialist rejected (2026-10-13)
+
+**[S388 SUCCESS](https://github.com/Andriamarosoa/note/actions/runs/38337298274)**. Earlier S386 acoustic, S387 4 genuine historical S5 + 133 S18 heads all SUCCESS. [S387 source-only SHA freeze](https://github.com/Andriamarosoa/note/actions/runs/38337219335) happened BEFORE first new XML read. On 32 new Dataset2 WAVs: 2089 original native V88 events, only historical XML-conditional 101 positive attacks, of which **4 K2, 1 K3**, and NO K4–K6; 1988 K0 only under unverified exhaustive-transcription premise.
+
+- Original `freeze_local_combo`: **1719/2089 = 82.29% conditional full K0–K6**, **1/5 true K2+ = 20%**.
+- Original trained fold-neutral **S18: 1702/2089 = 81.47% conditional full**, **1/5 poly**.
+- GuitarSet-only S376 fixed **1147D, threshold 0.625** K3 specialist: **1702/2089 = 81.47%**; same **1/5 poly**.
+- Parent S18 vs specialist: **0 corrections, 0 regressions, net zero**. S387 had **12 eligible baseline-K3/S18-K2 rows**, but fixed `P(K3)>=0.625` yielded **ZERO actions prelabel**. No possible independent improvement; source GuitarSet DEV `+2` did not generalize.
+- Official comparator vs original S18: **22 corrections, 39 regressions**, net **−17** full conditional: K0 **−23** (1694→1671), K1 **+6** (24→30), K2 unchanged (1/4), K3 unchanged (0/1). Historical dataset2 32 new WAVs is NOT composition-verified disjoint and its annotation is likely sparse: 5 true poly events only.
+- Exact original S387 prelabel S18+expert SHA `84cc7a0d3c8b49682e791f0def19b1792c61dfd32858edd6f4ea30ec0bbf8a55`; source baseline S384 original SHA `91ed1d13e79182f07d3db519c03b716b1f5562686773da224dae8c9abb3501a0`; original S376 pretrained weights still SHA checked.
+- Do **NOT** lower the predeclared K3 .625 threshold based on these XMLs, as this would contaminate prospective validation. Do NOT cite >80% conditional K0-heavy score as independent polyphonic success. Full S80 downstream chain was **NOT rerun** on this cohort; evidence evaluates original source S18 versus a trained early specialist only.
+- **Decision: reject S376 as a promotion fix**; `freeze_local_combo` remains official. Future work should shift to genuinely poly-rich K2/K3/K4 source recordings and stable annotation coverage, rather than additional K0-heavy rank selections and posthoc tuning.
