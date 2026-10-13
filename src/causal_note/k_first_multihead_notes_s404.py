@@ -83,9 +83,11 @@ class KFirstMultiHeadNoteNet(nn.Module):
         onset=self.onset_head(q).squeeze(-1)
         harmonics=self.harmonic_head(q)
         harmonic_cents=35.0*torch.tanh(self.harmonic_cent_head(q))
-        # The pitch output learns both whether a note is present and whether
-        # it is newly attacked at this event (S399 lacks this distinction).
-        note_logits=frame+onset
+        # IMPORTANT: K counts NEW note attacks, not sustained pitches.
+        # Never sum sustained frame evidence into event onsets: a loud
+        # harmonic/ringing note with no fresh attack is not an extra NoteOn.
+        # The stateful S405 decoder consumes onset and frame separately.
+        note_logits=onset
         return dict(note_logits=note_logits,frame_logits=frame,
           onset_logits=onset,harmonic_amplitude_logits=harmonics,
           harmonic_offset_cents=harmonic_cents)
@@ -153,6 +155,8 @@ def self_test()->None:
         changed=net(audio,torch.tensor([3,1,3,6]))
     assert a["note_logits"].shape==(4,49)
     assert a["harmonic_amplitude_logits"].shape==(4,49,20)
+    assert torch.equal(a["note_logits"],a["onset_logits"]), (
+        "New-note predictions must use onset evidence, not sustain frame")
     assert (a["note_logits"][0]-changed["note_logits"][0]).abs().max().item()>1e-7,(
         "K must affect logits BEFORE top-K, not only cardinality")
     chosen=select_exact_k_notes(a["note_logits"],predicted_k)
@@ -174,8 +178,8 @@ def self_test()->None:
     trainloss.backward()
     assert net.k_embed.weight.grad is not None
     assert torch.isfinite(net.k_embed.weight.grad).all()
-    print("S404 PASS: K before encoder and note logits, K0/K1/K3/K6 slots,"
-          " onset/frame/harmonic heads, zero harmonic labels -> zero harmonic loss;"
-          " K embedding receives training gradients")
+    print("S404 PASS: K before encoder and onset logits, K0/K1/K3/K6 slots,"
+          " separate sustain/frame and harmonic heads, zero harmonic labels"
+          " -> zero harmonic loss; K embedding receives gradients")
 if __name__=="__main__":
     self_test()
