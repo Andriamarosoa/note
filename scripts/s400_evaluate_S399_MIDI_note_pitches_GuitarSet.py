@@ -25,10 +25,9 @@ def midi_value(v):
             if key in v:
                 v=v[key];break
     need(not isinstance(v,bool) and isinstance(v,(int,float))
-         and np.isfinite(float(v)) and 0<=float(v)<=127
-         and abs(float(v)-round(float(v)))<1e-3,
-         'JAMS MIDI pitch must be integer 0..127')
-    return int(round(float(v)))
+         and np.isfinite(float(v)) and 0<=float(v)<=127,
+         'JAMS MIDI pitch must be finite numeric 0..127 (fractional tuning is valid)')
+    # GuitarSet JAMS note_midi values MAY BE FRACTIONAL from tuning/bends.\n    # Use precommitted nearest MIDI semitone; never reject microtuned GT.\n    return int(np.floor(float(v)+0.5))
 def read_note_events(raw):
     obj=json.loads(raw.decode('utf-8'))
     annotations=obj.get('annotations')
