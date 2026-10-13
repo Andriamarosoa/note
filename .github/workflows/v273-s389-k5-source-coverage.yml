@@ -1,0 +1,57 @@
+name: S389 K5 S80 vs YourMT3 immutable source coverage audit
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s389_audit_original_S80_vs_YourMT3_K5.py'
+      - '.github/workflows/v273-s389-k5-source-coverage.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s389-K5-source-audit-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  read_only_K5_source_coverage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Restore immutable original S80 full-chain predictions
+        run: |
+          gh run download 38314291222 -n s272-guitarset-59309-new-full-original-weight-S80-foldneutral-locked -D model/S272
+      - name: Restore complete unchanged YourMT3+ prediction archive
+        run: |
+          gh run download 37605163312 -n yourmt3-exactk-summary -D model/YourMT3
+      - name: Restore original historical OOF S80 diagnostic-only output
+        run: |
+          gh run download 38187186049 -n v273-s80-traceable-repair -D model/OldS80
+      - name: Recheck same events and K5 coverage; no model training
+        run: |
+          python -u -m scripts.s389_audit_original_S80_vs_YourMT3_K5 \
+            --s80 model/S272/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz \
+            --your model/YourMT3/predictions.npz \
+            --old model/OldS80/predictions.npz \
+            --out model/S389
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S389/report.json'))
+          assert r['status']=='S389_K5_SOURCE_COVERAGE_READ_ONLY_NO_PROMOTION'
+          assert not r['trained_new_model'] and not r['promotion']
+          assert r['training_overlap_S80']
+          print('S389 historical K5 source coverage verified; no promotion')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s389-k5-S80-yourmt3-source-stage-coverage-DIAGNOSTIC-NOPROMOTION
+          path: model/S389/
+          retention-days: 90
