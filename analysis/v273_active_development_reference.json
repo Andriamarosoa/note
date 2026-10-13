@@ -199,5 +199,84 @@
       "promoted": false,
       "source_report": "analysis/README_V273_S405_K0_HARMONICS_SUSTAIN_ONSET_RULE.md"
     }
+  },
+  "onset_timing_development_experiments": {
+    "reference_count_system": "S80_S397_K5_GUARDED",
+    "diagnostics_original_guitarset": true,
+    "comparison_older_V7_not_direct_same_split": false,
+    "status": "MEASURED_EXPERIMENTAL_NO_INDEPENDENT_WHOLE_SYSTEM_PROMOTION",
+    "audit_S406": {
+      "status": "SUCCESS_REAL_GUITARSET_190_TRACKS",
+      "run_id": 38368600246,
+      "artifact_id": 11797996849,
+      "onset_count_raw_59309": 59309,
+      "onset_count_S80_K_predicted": 33475,
+      "true_onsets_JAMS": 34954,
+      "K0_predicted_native_events": 40532,
+      "K0_correctly_suppressed_true_K0": 38432,
+      "S80_K0_missed_true_positive_K_events": 2100,
+      "S80_predicted_nonK0_on_trueK0_groups": 1220,
+      "tolerance_50ms_start": {
+        "TP": 30493,
+        "FP": 2982,
+        "FN": 4461,
+        "precision": 0.9109185959671396,
+        "recall": 0.8723751215883733,
+        "F1": 0.8912303263236347
+      },
+      "tolerance_20ms_start": {
+        "TP": 23694,
+        "FP": 9781,
+        "FN": 11260,
+        "precision": 0.7078117998506348,
+        "recall": 0.677862333352406,
+        "F1": 0.6925134080579871
+      },
+      "tolerance_20ms_mid": {
+        "TP": 26108,
+        "FP": 7367,
+        "FN": 8846,
+        "precision": 0.7799253174010455,
+        "recall": 0.7469245293814728,
+        "F1": 0.7630682897601894
+      }
+    },
+    "timing_head_S407": {
+      "id": "S407_S80_K_FIRST_SONG_HELD_ACOUSTIC_ONSET_TIMESTAMP_REGRESSOR",
+      "run_id": 38369185178,
+      "artifact_id": 11798621000,
+      "status": "BEST_MEASURED_DEVELOPMENT_ONSET_TIME_REFINEMENT__NOT_PROMOTED",
+      "model_script": "scripts/s407_song_heldout_predict_onset_timestamp_from_S80_audio.py",
+      "K_predicted_from_S80_only": true,
+      "K_number_of_attacks_unchanged": true,
+      "train_test_compositions_disjoint_within_each_fold": true,
+      "song_fold_count": 4,
+      "original_tracks": 190,
+      "true_JAMS_onset_count": 34954,
+      "exactly_K_predicted_onset_count": 33475,
+      "tolerance_20ms": {
+        "TP": 29023,
+        "FP": 4452,
+        "FN": 5931,
+        "precision": 0.8670052277819268,
+        "recall": 0.8303198489443269,
+        "F1": 0.8482660860161627
+      },
+      "tolerance_50ms": {
+        "TP": 30523,
+        "FP": 2952,
+        "FN": 4431,
+        "precision": 0.911814787154593,
+        "recall": 0.8732333924586599,
+        "F1": 0.8921071475543995
+      },
+      "S80_S407_reference_training_overlap_with_GuitarSet": true,
+      "post_S406_GuitarSet_experiment_selection_bias": true,
+      "onset_to_pitch_per_note_timing_supported": false,
+      "offset_per_note_model_trained": false,
+      "whole_system_independent_validation": false
+    },
+    "recommended_next_step": "Use S80 K-first and S407 onset timing as experimental inputs to a pitch-conditioned active-note offset hazard and full-stream frame model; validate notes, offsets, unseen songs separately.",
+    "report": "analysis/README_V273_S406_S407_ONSET_OFFSET_IMPROVEMENT_STRATEGY.md"
   }
 }
