@@ -1,0 +1,71 @@
+name: S388 FIRST new32 IDMT Dataset2 XML READ only AFTER S387 original frozen trained K3 expert SHA
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s388_first_new32_dataset2_XML_postfreeze_K3_expert_test.py'
+      - '.github/workflows/v273-s388-first-new32-Dataset2-K3-after-prelabel-SHA.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s388-new32-original-V88-K3-only-first-XML-after-model-SHA
+  cancel-in-progress: true
+jobs:
+  prospective_new32_original_S18_vs_early_GuitarSet_K3:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2
+      - name: HARD gate no annotations before original V88 native+S5 fourfold+133 S18+new K3 source posteriors SHA locked
+        run: |
+          gh run watch 38337219335 --repo ${{ github.repository }} --exit-status --interval 15
+          gh run download 38337219335 \
+            -n s387-new32-original-4S5-133S18-and-GuitarSetK3-expert-SHA-PREXML \
+            -D model/S387 --repo ${{ github.repository }}
+      - name: Restore ONLY native reference and new original names after S387 has passed, preserve original source boundaries
+        run: |
+          gh run download 38336530561 \
+            -n s384-32-new-Dataset2-IDMT-original-V88-source-only-PREXML \
+            -D model/S384 --repo ${{ github.repository }}
+          gh run download 38336365196 \
+            -n s383-32-more-Dataset2-original-SHA-WAV-XML-NAMES-NEVER-READ \
+            -D model/S383 --repo ${{ github.repository }}
+      - name: FIRST READ genuine published Dataset2 paired XML on 2089 original V88 events, score TRUE K2 and K3 changes
+        run: |
+          python -u -m scripts.s388_first_new32_dataset2_XML_postfreeze_K3_expert_test \
+            --s383 model/S383/report.json \
+            --s384 model/S384/S384_official_V88_dataset2_new32_WAV_predictions.npz \
+            --s384report model/S384/report.json \
+            --s387 model/S387/S387/S387_32WAV_dataset2_original_S18_vs_early_K3_specialist_PRESCORE.npz \
+            --s387report model/S387/S387/report.json \
+            --out model/S388
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S388/report.json'))
+          assert r['status']=='S388_FIRST_UNSEEN_NEW32_IDMT_DATASET2_K3_SPECIALIST_POSTFROZEN_EVALUATION'
+          assert r['original_new_WAV_count']==32 and r['original_native_event_count']==2089
+          assert r['first_XML_read_after_expert_trained_and_predictions_frozen']
+          assert r['original_source_models_trained_only_on_GuitarSet']
+          assert sum(r['original_real_K_histogram_if_XML_complete'])==2089
+          assert not r['S80_promotion'] and r['original_S80_full_tail_not_replayed_on_last8']
+          with np.load('model/S388/S388_scored_new32_dataset2_original_native_events.npz',allow_pickle=False) as z:
+            assert len(z['row_id'])==2089
+            assert np.count_nonzero(z['prelabel_K3_action'])==r['original_source_gate_candidates_changed']
+          print('S388 PASS prelabel 32-unknown-song original trained K3 expert scores, K2 corrections/regressions, official reference untouched')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s388-32Dataset2-first-postfrozen-original-K3-specialist-perK-results-NOPROMOTION
+          path: model/S388/
+          retention-days: 90
