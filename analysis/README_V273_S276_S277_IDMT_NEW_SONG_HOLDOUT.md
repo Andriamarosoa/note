@@ -314,3 +314,25 @@ composition-disjoint polyphonic audio never opened.
 
 **Final official state after S329:** `freeze_local_combo` remains
 the reference; S80 and S274 cannot be promoted with these data.
+
+
+### Preliminary native timestamp source check after S329
+
+Source inspection of `scripts/train_v86_state_transition_proposals.py`:
+`_predict_score_tracks` iterates raw 44.1kHz PCM chunks with
+`start_sample=position`; `_candidate_groups` directly indexes
+`presence[sample]` and `_records` preserves that sample index. The
+original causal stream adapter `src/causal_note/v8_predictor.py`
+uses `_score_chunk(outputs, start_sample, count)`, returning the
+last `count` causal model outputs with exactly that contiguous input
+chunk offset. **No explicit +40ms timestamp addition was found at
+these adapter boundaries**.
+
+Therefore the measured ~39.4ms mismatch is not yet proven to be
+a simple indexing bug. Possible sources include causal onset
+response/learned latency, different annotation onset conventions
+or acoustic attack envelopes. These are competing explanations,
+not validated causes. A fixed offset selected using exposed S327
+XML labels is ineligible for independent S80 promotion. First
+derive/verify timestamps using training-only or separate untouched
+audio, then freeze and validate on NEW composition-disjoint corpus.
