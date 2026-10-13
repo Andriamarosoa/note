@@ -53,8 +53,7 @@ def rewrite(text,n):
     s=s.replace('ref_report["count_WAV"]==12','ref_report["count_WAV"]==24')
     s=s.replace('WAV_count=12','WAV_count=24')
     s=s.replace('["WAV_count"]==12','["WAV_count"]==24')
-    s=s.replace(' 477 ',' '+str(n)+' ').replace('_477','_'+str(n)).replace('==477','=='+str(n))
-    s=s.replace('(477,','('+str(n)+',').replace('== 477','== '+str(n))
+    s=s.replace('477',str(n))
     # Find other accidental changes: report source family count, checkpoint #12, etc.
     need(NEW_MODEL_SOURCE not in s or OLD_MODEL_SOURCE not in s,
          'new and old direct trained V88 source simultaneously imported')
