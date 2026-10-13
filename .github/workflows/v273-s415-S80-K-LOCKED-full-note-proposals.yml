@@ -1,0 +1,100 @@
+name: S415 STRICT S80 Exact K locked multi-note event hybrid vs original S414
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s415_s80_exactk_locked_yourmt_structured_event_hybrid.py'
+      - '.github/workflows/v273-s415-S80-K-LOCKED-full-note-proposals.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s415-s80-exactk-event-locked-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  real_59309_K_invariant_and_190_track_true_note_benchmark:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install only fixed metrics libraries
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Verify no S80 count regression even with YourMT3 K2 to K6 proposals
+        run: |
+          python -m py_compile scripts/s415_s80_exactk_locked_yourmt_structured_event_hybrid.py
+          python -u -m scripts.s415_s80_exactk_locked_yourmt_structured_event_hybrid --self-test
+      - name: Restore original native 59309 S80 acoustic candidate event group IDs and ground truth for later scoring
+        run: |
+          gh run download 38311525987 -n s258-full-guitarset-59309-real-original-native-527D-58D-46D-42x49-and-OOF-PR16 -D model/S258 --repo ${{ github.repository }}
+          test -f model/S258/S258_GuitarSet_59309_original_V88_S97_audio.npz
+          test -f model/S258/S258_GuitarSet_59309_true_K_ONLY_FOR_FINAL_AUDIT.npz
+      - name: Restore user protected S80 original K0..K6 53529/59309 EXACT predictions
+        run: |
+          gh run download 38352988801 -n s397-s398-S70-suppression-REAL-full-S80-replay-and-scoring-NOPROMOTION -D model/S397 --repo ${{ github.repository }}
+          test -f model/S397/S397/S397_S272_FULL_REPLAY/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz
+      - name: Restore frozen S412 note proposals for missing YourMT3 event proposals
+        run: |
+          gh run download 38375133317 -n s412-songheld-REAL-full-WAV-note-offset-vs-S408-user-baseline-NOPROMOTION -D model/S412 --repo ${{ github.repository }}
+          test -f model/S412/S412_continuous_MIC_note_offset_4fold_predictions.npz
+      - name: Restore ORIGINAL official YPTF.MoE+Multi noPS notes on exact same tracks
+        run: |
+          for fold in 0 1 2 4; do
+            mkdir -p "model/YourMT3Original/fold${fold}"
+            gh run download 37605163312 -n "yourmt3-exactk-fold-${fold}" -D "model/YourMT3Original/fold${fold}" --repo ${{ github.repository }}
+            test -f "model/YourMT3Original/fold${fold}/notes.jsonl"
+          done
+      - name: Download original JAMS for strict event-ID and note-level scoring AFTER predictions frozen
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 --retry-delay 3 -o data/GuitarSet/annotation.zip https://huggingface.co/datasets/EZMONYI/music-ai-human-test-audio/resolve/main/external_controls/guitarset_source_v1/annotation.zip
+          echo 'b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip' | md5sum -c -
+      - name: Decode STRICT S80 K events from structured YourMT3 notes plus S412 frozen fallback
+        run: |
+          python -u -m scripts.s415_s80_exactk_locked_yourmt_structured_event_hybrid \
+            --audio model/S258/S258_GuitarSet_59309_original_V88_S97_audio.npz \
+            --s80 model/S397/S397/S397_S272_FULL_REPLAY/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz \
+            --truth model/S258/S258_GuitarSet_59309_true_K_ONLY_FOR_FINAL_AUDIT.npz \
+            --s412 model/S412/S412_continuous_MIC_note_offset_4fold_predictions.npz \
+            --fold0 model/YourMT3Original/fold0 \
+            --fold1 model/YourMT3Original/fold1 \
+            --fold2 model/YourMT3Original/fold2 \
+            --fold4 model/YourMT3Original/fold4 \
+            --annotations data/GuitarSet/annotation.zip \
+            --out model/S415
+          python - <<'PY'
+          import json,numpy as np
+          d=json.load(open('model/S415/report.json'))
+          assert d['status']=='S415_FROZEN_S80_K_PER_ROW_STRUCTURED_MIDI_EVENT_AUDIT'
+          assert d['same_predicted_K_for_every_one_of_59309_rows']
+          assert d['exactK_regressions']==0 and d['exactK_corrections']==0
+          assert d['S80_true_K_correct_global']==53529
+          assert d['S80_true_K_correct_poly']==6054
+          assert d['S80_total_new_notes']==d['S415_total_new_notes']==33475
+          assert sum(x['n'] for x in d['by_true_K_K_invariance'].values())==59309
+          assert all(x['regression_count']==0 and x['original_S80_exact']==x['candidate_S415_exact'] for x in d['by_true_K_K_invariance'].values())
+          with np.load('model/S415/S415_exactK_invariance_all_59309.npz') as a:
+            assert len(a['row_id'])==59309
+            assert np.array_equal(a['original_S80_K'],a['S415_note_count_per_row'])
+          assert d['metrics']['S408_reference']['correct_offsets_conditional_on_matched_pitch_onset']==13050
+          assert d['metrics']['S412_challenger']['correct_offsets_conditional_on_matched_pitch_onset']==14313
+          assert d['reference_S80_S402_S407_S408_S412_UNCHANGED']
+          assert not d['official_reference_promotion']
+          print('S415 PASS: ZERO Exact-K regression across every one of 59309 K0-K6 events')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s415-S80-LOCKED-K0-to-K6-59309-YourMT3-note-events-plus-S412
+          path: model/S415/
+          retention-days: 90
