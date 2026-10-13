@@ -1,4 +1,4 @@
-"""S364 read-only forensic of prospective S363 12 IDMT chord S80 paired gain.
+"""S364 read-only forensic of prospective S363 24 IDMT chord S80 paired gain.
 
 Audit concentration by each of 12 preregistered audio files,
 paired corrections/regressions by true attack class, exact McNemar
@@ -138,7 +138,7 @@ def run(source,pred,out):
            total['S80_corrections'],total['S80_regressions']),
        physical_anchor_quality=anchor_stats,
        source_predictions_unmodified=True,
-       alternate_physical_alignment_did_not_yield_scored_events=True,
+       alternate_physical_alignment_did_not_yield_scored_events=(report['physically_anchored_model_independent_rows']==0),
        independent_XML_K0_exhaustiveness_proven=False,
        independent_song_composition_identity_proven=False,
        reference_promotion_authorized=False)
