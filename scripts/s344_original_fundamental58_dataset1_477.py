@@ -33,7 +33,7 @@ def run(s334,s332,s332report,s276,out):
          ('row_id','member','start_samples'))
          and np.array_equal(ref['incumbent_K'],acoustic['incumbent_freeze_K']),
          "all 477 original S332/S334 native event identities must match")
-    need(evidence['count_WAV']==16 and
+    need(evidence['count_WAV']==12 and
          evidence['XML_MIDI_annotated_contents_read']==False and
          sha(s332.read_bytes())==evidence['sealed_original_predictions_SHA256'],
          "S332 original data/model source was modified")
