@@ -44,7 +44,7 @@ def build_features(audio,k):
         q=v.sum(axis=2)
         flux=np.maximum(np.diff(v,axis=1),0.).sum(axis=2)
         pos=np.maximum(np.diff(v,axis=1),0.).mean(axis=2)
-        onset=flux[:,1:][:,WINDOW] if False else flux[:,np.flatnonzero(WINDOW)-1]
+        onset=flux[:,np.flatnonzero(WINDOW)-1]
         energy=q[:,WINDOW]
         energy=energy/(np.max(energy,axis=1,keepdims=True)+1e-5)
         onset=onset/(np.max(onset,axis=1,keepdims=True)+1e-5)
@@ -107,8 +107,8 @@ def run(audio,ref,truth,annotations,out):
             truth_by_track[m]=times;total+=len(times)
             ii=np.flatnonzero(member==m)
             local=ii[np.argsort(start[ii],kind='stable')]
-            _,index=assign_onsets(times,start[local],end[local])
-            for t0,j in zip(times,index):
+            _,assignments=assign_onsets(times,start[local],end[local])
+            for t0,j in zip(times,assignments):
                 if j>=0: by_row[int(local[j])].append(int(t0))
     req(total==GT_TOTAL_EXPECTED,'original 190-track JAMS ground truth changed')
     regtarget=np.full(N,np.nan,np.float32)
