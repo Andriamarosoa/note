@@ -3,7 +3,7 @@ on:
   push:
     branches: [codex/s276-idmt-song-disjoint-candidate-audit]
     paths:
-      - 'scripts/s363_postfreeze_dataset1_chord_dual_attackK_967.py'
+      - 'scripts/s363_postfreeze_24_new_chord_attackK_967.py'
       - '.github/workflows/v273-s363-after-freeze-original-physical-chord-XML.yml'
   workflow_dispatch:
 permissions:
@@ -30,7 +30,7 @@ jobs:
       - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2
       - name: Validate future dual-protocol scorer code BEFORE reading any XML
         run: |
-          python -m py_compile scripts/s363_postfreeze_dataset1_chord_dual_attackK_967.py
+          python -m py_compile scripts/s363_postfreeze_24_new_chord_attackK_967.py
           python -m py_compile scripts/s333_prelabel_physical_attack_reference_policy.py
       - name: BLOCK XML opening until both 967 full S80 variants, trained final S79 S80 and official reference have all passed frozen-SHA source gate
         run: gh run watch 38331203079 --repo ${{ github.repository }} --exit-status --interval 15
@@ -52,7 +52,7 @@ jobs:
             -D model/S349S353 --repo ${{ github.repository }}
       - name: FIRST read all twenty-four original XML note annotations ONLY after SHA verification of baseline, both S80 final outputs, and S333 physical target policy
         run: |
-          python -u -m scripts.s363_postfreeze_dataset1_chord_dual_attackK_967 \
+          python -u -m scripts.s363_postfreeze_24_new_chord_attackK_967 \
             --s276 model/S357/report.json \
             --s332 model/S358/S358_official_V88_dataset1_prospective_24_WAV_predictions.npz \
             --s332report model/S358/report.json \
