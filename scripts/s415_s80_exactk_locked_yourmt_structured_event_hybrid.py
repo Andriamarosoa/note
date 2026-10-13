@@ -89,10 +89,6 @@ def source_group_and_notes(groups,K,ours):
     end=groups['end_samples'].astype(np.int64)
     k=np.asarray(K,dtype=np.int8)
     require(len(ids)==N_EVENTS and len(set(ids))==N_EVENTS and
-            np.array_equal(ids,np.asarray(ours['source_row_id']).astype(str)[np.unique(
-                np.searchsorted(np.sort(ids),ours['source_row_id'].astype(str))
-            )]) if False else True,'legacy placeholder')
-    require(len(ids)==N_EVENTS and len(set(ids))==N_EVENTS and
       k.shape==(N_EVENTS,) and np.isin(k,range(7)).all() and
       np.all(start<=end) and
       len(np.unique(member))==190,
