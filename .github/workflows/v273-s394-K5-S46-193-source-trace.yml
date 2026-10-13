@@ -1,0 +1,58 @@
+name: S394 trace ALL 193 original S46 candidate policies into S80 true K5 losses
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s394_k5_original_S46_193_source_trace.py'
+      - '.github/workflows/v273-s394-K5-S46-193-source-trace.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s394-k5-193-source-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify_193_source_candidate_bank:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Restore 193 original S46 policy outputs 59309 native events
+        run: |
+          gh run download 38314164725 -n s268-GuitarSet-original-S46-193foldneutral-59309 -D model/S268 --repo ${{ github.repository }}
+      - name: Restore final complete S80 same native events
+        run: |
+          gh run download 38314291222 -n s272-guitarset-59309-new-full-original-weight-S80-foldneutral-locked -D model/S272 --repo ${{ github.repository }}
+      - name: Restore true original YourMT3 same-row benchmark
+        run: |
+          gh run download 37605163312 -n yourmt3-exactk-summary -D model/YourMT3 --repo ${{ github.repository }}
+      - name: Trace K5 candidate existence through all 193 original S46 versus S80 final
+        run: |
+          python -u -m scripts.s394_k5_original_S46_193_source_trace \
+            --s46 model/S268/S268_original_193_S46_foldneutral_59309_GUITARSET.npz \
+            --s80 model/S272/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz \
+            --your model/YourMT3/predictions.npz \
+            --out model/S394
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S394/report.json'))
+          assert r['status']=='S394_COMPLETE_193_S46_ORIGINAL_K5_SOURCE_COVERAGE_TRACE'
+          assert r['lost_K5_count']==224 and r['true_K5']==355
+          assert not r['promotion'] and not r['model_weights_changed']
+          print('S394 PASS: 193 S46 K5 source routing assessed without S80 changes')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s394-original-193-S46-K5-stage-coverage-after-S393
+          path: model/S394/
+          retention-days: 90
