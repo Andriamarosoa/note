@@ -27,10 +27,10 @@ jobs:
           python-version: '3.11'
       - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2
       - name: Require first labeled S363 full prescored frozen 24 WAV XML validity and SHA lock PASS
-        run: gh run watch 38331299712 --repo ${{ github.repository }} --exit-status --interval 15
+        run: gh run watch 38331684749 --repo ${{ github.repository }} --exit-status --interval 15
       - name: Restore first prospective S363 scoring immutable artifact, not original label source files
         run: |
-          gh run download 38331299712 \
+          gh run download 38331684749 \
             -n s363-PROSPECTIVE-IDMT-dataset1-24chords-967-postfrozen-historical-plus-acoustic-not-promotion \
             -D model/S363 --repo ${{ github.repository }}
       - name: Exhaustive exact grouped 24-WAV signflip, bootstrapped per-K fixes and regressions, zero S80 weight change
