@@ -42,3 +42,36 @@ Workflow : [S399–S400](https://github.com/Andriamarosoa/note/actions/workflows
 ## Règle de promotion
 
 Le module de notes n'est **pas** déclaré champion avant de disposer d'un score de hauteur fiable. Le système de comptage S80 reste la référence active ; ajouter des hauteurs candidates à sa sortie ne garantit pas une vraie transcription MIDI.
+
+## Résultat vérifié — run S399/S400
+
+[GitHub Actions #38354784594](https://github.com/Andriamarosoa/note/actions/runs/38354784594) : **success**. Artefact `11792925560` contient les 59 309 prédictions de notes MIDI, leur score et le rapport de validation.
+
+Les 190 JAMS de GuitarSet ont été retrouvés par identité exacte de piste. Les 59 309 groupes ont des comptes de notes annotées cohérents avec le vrai K original (**0 divergence de cardinalité**). 34 954 notes originales lues ; **1 788 attaques hors de la fenêtre de rattachement de 20 ms**, qui ne doivent pas être comptées par erreur comme de nouvelles notes présentes dans les événements. Le ZIP JAMS du miroir a été vérifié contre le MD5 officiel `b39b78e63d3446f2e54ddb7a54df9b10`, les résultats de calcul étant scellés avant l'ouverture des annotations.
+
+| Vrai K | Groupes | Exact-K S80 corrigé | Toutes hauteurs exactes S399 |
+|---|---:|---:|---:|
+| K0 | 39 652 | 96,92 % | 96,92 % |
+| K1 | 12 272 | 73,69 % | **62,04 %** (7 614) |
+| K2 | 3 445 | 87,05 % | **20,17 %** (695) |
+| K3 | 2 289 | 82,87 % | **21,06 %** (482) |
+| K4 | 1 207 | 66,78 % | **7,95 %** (96) |
+| K5 | 355 | 84,79 % | **4,51 %** (16) |
+| K6 | 89 | 57,30 % | **3,37 %** (3) |
+
+Mesures agrégées :
+- **Exact-K poly (K2..K6)** : 6 054/7 385 = **81,98 %** — inchangé.
+- **Exact accord MIDI complet poly** : 1 292/7 385 = **17,49 %**.
+- **F1 micro par hauteur poly** : **58,66 %** ; précision **59,85 %**, rappel **57,52 %**.
+- **Accord complet avec vrai K injecté seulement à l'évaluation (plafond de décodeur fixé)** : 1 526/7 385 = **20,66 %**.
+- **Exact hauteur mono K1** : 7 614/12 272 = **62,04 %**.
+- **Accord complet toutes classes K0..K6** : 47 338/59 309 = 79,82 %, **trompeur si cité sans préciser que K0 représente 39 652 événements**.
+- **Vrais accords avec doublon de même hauteur sur deux cordes** : 100, que la version unique-pitch S399 ne peut représenter.
+
+## Verdict technique
+
+**Un premier vrai décodage des hauteurs MIDI a été ajouté au système S80 et mesuré sur des annotations réelles**, mais il **ne constitue pas encore un modèle de transcription polyphonique performant**. L'augmentation théorique de 17,49 % à seulement 20,66 % lorsqu'on lui donne le K réel prouve que l'étape de **choix des hauteurs** est désormais le principal défaut de ce module ; corriger davantage Exact-K seul n'y suffira pas.
+
+Le S399 actuel est **non entraîné**, simple classement des 49 activations harmoniques issues des WAV. Les harmoniques confondues, notes proches/octaves et doublons de hauteur ne sont pas résolus. La prochaine architecture à tester devrait conserver la branche S80 de cardinalité figée, puis apprendre une tête **multi-label MIDI**, idéalement **conditionnée par corde/voix** et exploitant le temps réel du signal, en séparant les compositions d'entraînement et de test. Ne pas adapter les poids ou les seuils de S399 sur GuitarSet avant de présenter un nouveau lot indépendant.
+
+**Pas de modification ni promotion du modèle de cardinalité ; S399 ajouté en tant que première tête de notes expérimentale et mesurée.**
