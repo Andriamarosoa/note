@@ -26,7 +26,9 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install pinned CPU PyTorch for architecture tests
-        run: python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.5.1
+        run: |
+          python -m pip install numpy==1.26.4
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.5.1
       - name: Test S404 separates new onset from ringing frame
         run: |
           python -m py_compile src/causal_note/k_first_multihead_notes_s404.py src/causal_note/k0_sustain_harmonic_onset_decoder_s405.py
