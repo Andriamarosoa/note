@@ -63,7 +63,8 @@ def feature_bank(seq,k):
     # layer. The K-specific raw-activation interaction changes each pitch
     # feature at input; no top-K-only trick is possible.
     conditioned=np.log1p(on).astype(np.float32)*(1.0+k_real)
-    features=np.column_stack((base,k_hot,k_real,conditioned)).astype(np.float32)
+    # Additional nonlinear K coordinate makes cardinality a direct input twice.
+    features=np.column_stack((base,k_hot,k_real,k_real**2,conditioned)).astype(np.float32)
     need(features.shape==(len(z),352) and np.isfinite(features).all(),
          'S402 feature width or values drifted')
     return features
