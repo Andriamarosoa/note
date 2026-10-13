@@ -72,9 +72,9 @@ def run(s276,s357,out):
     chosen=heads[24:32]
     need(len(chosen)==8 and all(group(x['wav']) not in previous_families for x in chosen)
          and not {group(x['wav']) for x in chosen}.intersection({group(x['wav']) for x in already['next_twentfour']})
-         and len({x['composition_family_from_filename_only'] for x in chosen})==N
+         and len({x['composition_family_from_filename_only'] for x in chosen})==8
          and all(x['wav'] not in {p['wav'] for p in prev} for x in chosen),
-         "prospective source leaks existing 12 prior Dataset1 labelled chords")
+         "prospective source collides with 12+24 exposed core groups or is not eight")
     result=dict(status='S372_IDMT_DATASET1_FINAL_EIGHT_CHORD_FAMILIES_FILENAME_ONLY_PRELABEL',
       source_original_S276_manifest_SHA256=sha(s276.read_bytes()),
       central_directory_sha256=prior['zip_central_names_sha256'],
