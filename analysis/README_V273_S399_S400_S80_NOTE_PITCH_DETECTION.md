@@ -75,3 +75,18 @@ Mesures agrégées :
 Le S399 actuel est **non entraîné**, simple classement des 49 activations harmoniques issues des WAV. Les harmoniques confondues, notes proches/octaves et doublons de hauteur ne sont pas résolus. La prochaine architecture à tester devrait conserver la branche S80 de cardinalité figée, puis apprendre une tête **multi-label MIDI**, idéalement **conditionnée par corde/voix** et exploitant le temps réel du signal, en séparant les compositions d'entraînement et de test. Ne pas adapter les poids ou les seuils de S399 sur GuitarSet avant de présenter un nouveau lot indépendant.
 
 **Pas de modification ni promotion du modèle de cardinalité ; S399 ajouté en tant que première tête de notes expérimentale et mesurée.**
+
+## S401 — Interface d'inférence générique pour d'autres audio
+
+[Workflow S401](https://github.com/Andriamarosoa/note/actions/runs/38355190070) : **self-tests réussis**. `scripts/s401_midi_pitch_head_on_any_s80_audio.py` accepte deux fichiers NPZ alignés, même `row_id` : sortie acoustique originale S97 `sequence42x49` et sortie de comptage S80 `s80_K`. Il écrit `notes_midi_predictions.npz`, `notes.csv` et un rapport SHA, avec **exactement K noms de notes** pour chaque événement.
+
+Exemple :
+
+```bash
+python -m scripts.s401_midi_pitch_head_on_any_s80_audio \
+  --audio model/S97/original_s45_audio_only.npz \
+  --s80 model/S80/predictions.npz \
+  --out model/MIDI_notes
+```
+
+**Important** : S401 ne calcule pas lui-même la sortie `s80_K` ni ne porte automatiquement la protection S70/K5 de S397 vers de nouveaux WAV. La chaîne S80 complète doit produire la décision K correcte en amont.
