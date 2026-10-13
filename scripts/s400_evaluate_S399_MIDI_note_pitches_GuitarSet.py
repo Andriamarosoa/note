@@ -163,10 +163,10 @@ def run(audio,source,source_report,original_truth,annotations,out):
         oracle[i:j]=choose_pitches(z['note_candidate_scores'][i:j],yK[i:j])[0]
     pred=z['midi_pitch_slots']
     measurements={
-       'all_eligible_native_events':scoped(true_pitch,k,pred,oracle,valid,k),
-       'positive_K1_to_K6':scoped(true_pitch,k,pred,oracle,valid & (yK>=1),k),
-       'poly_K2_to_K6':scoped(true_pitch,k,pred,oracle,valid & (yK>=2),k),
-       'by_true_K':{f'K{x}':scoped(true_pitch,k,pred,oracle,valid&(yK==x),k)
+       'all_eligible_native_events':scoped(true_pitch,yK,pred,oracle,valid,k),
+       'positive_K1_to_K6':scoped(true_pitch,yK,pred,oracle,valid & (yK>=1),k),
+       'poly_K2_to_K6':scoped(true_pitch,yK,pred,oracle,valid & (yK>=2),k),
+       'by_true_K':{f'K{x}':scoped(true_pitch,yK,pred,oracle,valid&(yK==x),k)
                     for x in range(7)}
     }
     # Scoring samples expose labels ONLY here; no tuning allowed from the result
