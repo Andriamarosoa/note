@@ -1,0 +1,84 @@
+name: S422 native long-duration continuous pitch survival with original S80 K locked
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s422_train_full_WAV_pitch_survival_noteoffs_S80_Klocked.py'
+      - '.github/workflows/v273-s422-pitch-survival-long-offsets.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s422-original-K-locked-long-survival-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  train_and_audit_survival_4_folds_and_jsonl_exactK:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install stable native GuitarSet acoustic and survival ML dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Real survival interpolation and code syntax test
+        run: |
+          python -m py_compile scripts/s422_train_full_WAV_pitch_survival_noteoffs_S80_Klocked.py
+          python -u -m scripts.s422_train_full_WAV_pitch_survival_noteoffs_S80_Klocked --self-test
+      - name: Restore immutable S420 MIDI pitches timestamps and NoteOff with source row identifiers
+        run: |
+          gh run download 38384016298 -n s420-native-S419-S417-full-MIDI-onset-offset-59309-S80-K-locked -D model/S420 --repo ${{ github.repository }}
+          test -f model/S420/S420_original_K_NATIVE_full_notes_33475.npz
+      - name: Restore source original S80 K0-K6 for 59309 events without modifying the reference
+        run: |
+          gh run download 38352988801 -n s397-s398-S70-suppression-REAL-full-S80-replay-and-scoring-NOPROMOTION -D model/S397 --repo ${{ github.repository }}
+          test -f model/S397/S397/S397_S272_FULL_REPLAY/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz
+      - name: Download original full MIC WAV (190 songs) and GuitarSet JAMS
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 --retry-delay 4 -o data/GuitarSet/audio_mono-mic.zip https://huggingface.co/datasets/EZMONYI/music-ai-human-test-audio/resolve/main/external_controls/guitarset_source_v1/audio_mono-mic.zip
+          echo '275966d6610ac34999b58426beb119c3  data/GuitarSet/audio_mono-mic.zip' | md5sum -c -
+          curl -L --fail --retry 3 --retry-delay 3 -o data/GuitarSet/annotation.zip https://huggingface.co/datasets/EZMONYI/music-ai-human-test-audio/resolve/main/external_controls/guitarset_source_v1/annotation.zip
+          echo 'b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip' | md5sum -c -
+      - name: Train per-frame actual NOTE-SURVIVAL four song folds with nested train-composition threshold and K lock
+        run: |
+          python -u -m scripts.s422_train_full_WAV_pitch_survival_noteoffs_S80_Klocked \
+            --s420 model/S420/S420_original_K_NATIVE_full_notes_33475.npz \
+            --s80 model/S397/S397/S397_S272_FULL_REPLAY/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz \
+            --audio data/GuitarSet/audio_mono-mic.zip \
+            --annotations data/GuitarSet/annotation.zip \
+            --out model/S422
+          python - <<'PY'
+          import json,numpy as np
+          x=json.load(open('model/S422/report.json'))
+          assert x['status']=='S422_S420_NATIVE_FULL_WAV_PITCH_SURVIVAL_OFFSET_AUDIT'
+          assert x['S80_predicted_K_full_lock'] and x['independent_JSONL_replay_all_S80_K_pass']
+          assert x['original_exactK_correct_global']==x['new_exactK_correct_global']==53529
+          assert x['original_exactK_correct_poly']==x['new_exactK_correct_poly']==6054
+          assert x['exactK_regressions']==0 and x['note_count']==33475
+          assert x['no_YourMT3_weights_predictions_training_or_inference']
+          assert x['metrics']['S420']['correct_offsets_conditional_on_matched_pitch_onset']==16140
+          assert len(x['policy_fold_proofs'])==4
+          assert all(z['composition_overlap']==0 for z in x['policy_fold_proofs'])
+          with np.load('model/S422/S422_NATIVE_pitch_survival_full_MIDI_note_offsets.npz') as f:
+            assert len(f['original_S80_row_id'])==59309
+            assert len(f['MIDI'])==33475
+            assert np.all(f['S422_offset_samples']>f['onset_samples'])
+          print('S422 VERIFIED: original S80 K0 to K6 unchanged for all 59309 events')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s422-native-5s-WAV-pitch-survival-S80-ExactK-LOCKED-note-offsets
+          path: model/S422/
+          retention-days: 90
