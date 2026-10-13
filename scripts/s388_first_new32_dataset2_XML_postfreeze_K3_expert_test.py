@@ -73,7 +73,7 @@ def run(s383,s384,s384report,s387,s387report,out):
          'prelabel-original source candidate changed rows not matching SHA lock')
     groups=manifest['untouched_new_32']
     expected_sha={x['WAV_filename_SHA256']:x for x in official['original_audio_fingerprints']}
-    need(len(expected_sha)==32,'must contain only eight original published WAV source SHAs')
+    need(len(expected_sha)==32,'must contain only 32 original published Dataset2 WAV source SHAs')
     with urllib.request.urlopen(urllib.request.Request(
           API,headers={'Accept':'application/json','User-Agent':'S388-FIRST-XML-AFTER-IMMUTABLE-S387-SHA'}),
           timeout=60) as response:
@@ -110,7 +110,7 @@ def run(s383,s384,s384report,s387,s387report,out):
                 eligible_parent3to2=int(np.count_nonzero(p['eligible_source_parent_K3to2'][ix])),
                 prelabel_expert_actions=int(np.count_nonzero(p['expert_K3_action'][ix]))))
     need(np.isin(Y,range(7)).all(),
-         'S388 first eight XML labels not completely assigned to original 255 V88 groups')
+         'S388 first 32 XML labels not completely assigned to all original V88 groups')
     metrics=dict(
        old_source_S18_vs_GuitarSet_K3_expert=dict(
            full=comp(Y,s18,candidate,np.ones(len(n['row_id']),bool)),
@@ -118,7 +118,7 @@ def run(s383,s384,s384report,s387,s387report,out):
            poly=comp(Y,s18,candidate,Y>=2),
            by_true_K=perclass(Y,s18,candidate)),
        official_freeze_vs_early_K3_expert=dict(
-           full=comp(Y,reference,candidate,np.ones(255,bool)),
+           full=comp(Y,reference,candidate,np.ones(len(n['row_id']),bool)),
            positive=comp(Y,reference,candidate,Y>=1),
            poly=comp(Y,reference,candidate,Y>=2),
            by_true_K=perclass(Y,reference,candidate)))
