@@ -56,7 +56,7 @@ def precheck(s276,s332,s332report,s333,s353,old,new):
          and frozen['all_results_on_exact_same_original_V88_native_events'],
          'S363 original model source, XML-unread and policy precommit not SHA-verified')
     chosen=inventory['next_twentfour']
-    need(len(chosen)==24 and len(set(x['wav_filename_sha256'] for x in chosen))==12
+    need(len(chosen)==24 and len(set(x['wav_filename_sha256'] for x in chosen))==24
          and all(x['annotation_path_name_only'] for x in chosen),
          'prospective dataset1 chord cohort original WAV/XML identities changed')
     return inventory,baseline,geometry,frozen,chosen
