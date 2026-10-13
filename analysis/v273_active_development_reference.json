@@ -104,6 +104,17 @@
     "pitch_model_pretrained": false,
     "independent_composition_validation": false,
     "S80_count_baseline_changed": false,
-    "notes": "Do not present Exact-K poly 81.98% as full MIDI-note accuracy. S399 pitches require upstream model improvement and disjoint external validation."
+    "notes": "Do not present Exact-K poly 81.98% as full MIDI-note accuracy. S399 pitches require upstream model improvement and disjoint external validation.",
+    "generic_inference": {
+      "script": "scripts/s401_midi_pitch_head_on_any_s80_audio.py",
+      "status": "SELFTEST_PASS",
+      "github_run_id": 38355190070,
+      "github_run_url": "https://github.com/Andriamarosoa/note/actions/runs/38355190070",
+      "input": "aligned native S97 acoustic NPZ (row_id,sequence42x49) + S80 inference NPZ (row_id,s80_K)",
+      "output": "notes_midi_predictions.npz and notes.csv with MIDI pitches and C#/octave names",
+      "does_not_produce_S80_K_itself": true,
+      "does_not_protect_S70_itself": true,
+      "notes": "Counts must already come from S80 active reference deployment; S401 does not port guarded S70 models to new WAVs."
+    }
   }
 }
