@@ -86,8 +86,9 @@ def run(old_events,new_events,s80,annotations,out):
     req(all(countold[r]==int(k) and countnew[r]==int(k)
           for r,k in zip(ids,K)),
         'CRITICAL S421 EXPORT MIDI event count differs from original S80 K')
-    req(all(r in set(ids) for r in countold) and
-        all(r in set(ids) for r in countnew),
+    allowed_rows=set(ids)
+    req(all(r in allowed_rows for r in countold) and
+        all(r in allowed_rows for r in countnew),
         'S421 foreign note event row source')
     truth=load_gt(annotations,old)
     allpairs=[];bydur=collections.defaultdict(list)
