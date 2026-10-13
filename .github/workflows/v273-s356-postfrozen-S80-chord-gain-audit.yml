@@ -1,0 +1,59 @@
+name: S356 paired native chord S80 per-piece exact-K gain and regression audit
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s356_independent_chord_S80_gain_distribution_audit.py'
+      - '.github/workflows/v273-s356-postfrozen-S80-chord-gain-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s356-chord-477-frozen-paired-gain-audit
+  cancel-in-progress: true
+jobs:
+  independent_paired_gain_audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2
+      - name: Restore original S354 predictions SEALED before first Dataset1 chord XML
+        run: |
+          gh run download 38327717118 \
+            -n s354-PROSPECTIVE-IDMT-dataset1-12chords-477-postfrozen-historical-plus-acoustic-not-promotion \
+            -D model/S354 --repo ${{ github.repository }}
+      - name: Independent paired corrected/regressed by K, WAV and grouped uncertainty WITHOUT changing original labels/predictions
+        run: |
+          python -m scripts.s356_independent_chord_S80_gain_distribution_audit \
+            --source model/S354/report.json \
+            --pred model/S354/S354_postfrozen_477_two_distinct_protocols.npz \
+            --out model/S356
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S356/report.json'))
+          assert r['paired_all_native_if_XML_complete']['events']==477
+          assert r['paired_all_native_if_XML_complete']['S80_corrections']==17
+          assert r['paired_all_native_if_XML_complete']['S80_regressions']==4
+          assert r['paired_true_poly_attack_only']['events']==20
+          assert len(r['per_WAV'])==12
+          assert not r['independent_XML_K0_exhaustiveness_proven']
+          assert not r['independent_song_composition_identity_proven']
+          assert not r['reference_promotion_authorized']
+          print('S356 PASS original 477 paired correction/regression ledger, per WAV, McNemar and cluster bootstrap')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s356-postfrozen-12chords-original-S80-paired-WAV-K-confidence-audit
+          path: model/S356/
+          retention-days: 90
