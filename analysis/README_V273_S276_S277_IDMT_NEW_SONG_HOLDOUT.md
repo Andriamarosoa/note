@@ -432,3 +432,123 @@ global baseline. Promote only after independent, composition-disjoint
 polyphonic data with verified complete annotations and relevant
 metrics confirm the improvement. Do not rename `freeze_local_combo`
 or erase historical reference while such evidence is missing.
+
+
+## S357–S367 — NEW prospectively held-out 24 chord files and specific K3 failure located
+
+### Prospective 24 new RAW WAVs, unchanged true original source
+
+- [S357](https://github.com/Andriamarosoa/note/actions/runs/38330431853):
+  selected exactly 24 WAV + paired XML **NAMES ONLY** using SHA order
+  from 32 remaining distinct filename-family groups; excludes all
+  previously exposed first 12 canonical chord families.
+- [S358](https://github.com/Andriamarosoa/note/actions/runs/38330563316):
+  true frozen original V84→V88 `freeze_local_combo` predictions on
+  **967 authentic original native candidate event IDs** on 24 WAVs,
+  no XML read. Baseline histogram [882,27,39,17,2,0,0].
+  Original reference archived SHA
+  `2d4244b2c13ecb96d17e6ad0ba9a86a90caa4448b59738447f0ba2c0ccfa3559`.
+- [S359](https://github.com/Andriamarosoa/note/actions/runs/38330878525):
+  deterministic SHA-audited source-only rebase of 20 original-trained
+  S334→S353 source modules, changing only the number of native rows,
+  WAV inventory and source model input pointers. This is NOT original
+  historical held-piece-oracle identity. No network fit, no new audio
+  label used. All 20 stage modules compile.
+- [S360](https://github.com/Andriamarosoa/note/actions/runs/38330965820):
+  original 58D/527D / PR16 46D audio source views on same 967 rows.
+- [S361](https://github.com/Andriamarosoa/note/actions/runs/38331004943):
+  four genuine pretrained original S5 and all 133 original S8–S18
+  risk checkpoints applied to same original V88 rows.
+- [S362](https://github.com/Andriamarosoa/note/actions/runs/38331203079):
+  all six jobs executed to S80 on 967 native events; *the last run
+  status was failed solely due stale CI assertion expecting 12
+  WAVs even though source actually had 24 WAVs*, AFTER all predictions
+  and SHA-256 were uploaded as artifacts.
+- [S365](https://github.com/Andriamarosoa/note/actions/runs/38331662519):
+  read-only **SUCCESSFUL** independent recovery/validation of both
+  complete prelabel S80 output SHAs from S362, confirms correct 24
+  WAV count and 967 unchanged native event IDs. No new model fitting
+  or inferred score. S80 both variants bit-identical across all 967,
+  each changes **32** incumbent predictions.
+
+### S363 — first XML opening after actual original 967-native SHA seals
+
+[Run S363 SUCCESS](https://github.com/Andriamarosoa/note/actions/runs/38331684749).
+Historical GuitarSet K0–K6 target counts NEW note attacks assigned
+within 20ms to an unchanged original V88 candidate group. Results
+conditioned on complete XML attack inventory and its existing
+annotation onset convention:
+
+| 24 new WAV chord group metric | Original official freeze_local_combo | Reconstructed source-trained S80 |
+|---|---:|---:|
+| All native original 967 event groups K0–K6 | 899/967 = 92.97% | 913/967 = **94.42%** |
+| Real poly K2–K6 (44 groups) | 23/44 = 52.27% | 24/44 = 54.55% |
+
+Twenty-one corrections, seven regressions, net **+14 global**; on
+the 44 true poly groups, eight corrections and seven regressions,
+net **+1**. S274 strict fold S46 produces same final S80 on all
+967 rows. Original truth histogram: K0=895,K1=28,K2=28,K3=15,K4=1,
+K5=K6=0. Acoustic alternate S333 was fail-closed on all 24 WAVs
+(40/133 XML attacks physically anchored, 93 unanchored, ZERO
+whole-WAV certifiable), so NO alternative unbiased acoustic-K score
+was measured.
+
+### S364 and S366 — original independently pre-scored two-cohort paired results
+
+[S364 SUCCESS](https://github.com/Andriamarosoa/note/actions/runs/38331705403):
+24-WAV global paired 95% clustered-by-WAV bootstrap +0.32 to +2.49
+percentage points and exact WAV signflip p=0.027; poly gain interval
+−15.56 to +18.92 points including zero; poly signflip p=1.0.
+
+[S366 SUCCESS](https://github.com/Andriamarosoa/note/actions/runs/38332075660):
+two original independently SHA prelabel-frozen *cohorts*, 12+24 = 36
+distinct filename-hash WAVs and **1444** original native events:
+
+| True note-ATTACK K, XML completeness conditional | Reference correct | S80 correct | Net |
+|---|---:|---:|---:|
+| **K0** (1341) | 1307 | 1323 | **+16** |
+| **K1** (39) | 5 | 10 | +5 |
+| **K2** (40) | 20 | **33** | **+13** |
+| **K3** (18) | **8** | 2 | **−6** |
+| **K4** (5) | 1 | 0 | −1 |
+| K5 (1) | 0 | 0 | 0 |
+| K6 (0) | n/a | n/a | n/a |
+| **Full native events** 1444 | 1341/1444 = 92.87% | 1368/1444 = **94.74%** | **+27** |
+| Real attacks K1–K6, 103 | 34/103 | 45/103 | +11 |
+| Real poly attacks K2–K6, 64 | 29/64 = 45.31% | 35/64 = 54.69% | +6 |
+
+The global paired event McNemar p=0.000142 and conditional
+36-WAV exact signflip p=0.000811, but WAV filename-group independence
+and K0 XML-negative exhaustiveness are NOT verified. Poly event
+McNemar p=0.307 and conditional WAV signflip p=0.266:
+**poly gain cannot be claimed robust**. Across dataset2 previously
+S80 was −1 net; NOT universally superior.
+
+### S367 — Mechanistic K3 cause located before S80 final tail
+
+[S367 SUCCESS](https://github.com/Andriamarosoa/note/actions/runs/38332268955):
+- **ALL SIX** K3 regressions (reference K3 correct, final S80 K2
+  incorrect) are ALREADY K2 in real original saved **S72** source.
+- None were K3 at S72 nor at S79. **ZERO** K3→K2 transition
+  occurred in the final S79→S80 tail. Thus the final S147 tail
+  is not the cause.
+- The six K3 failures are present ONLY in the 24-WAV follow-up
+  (none in the previous 12); 15 real K2 fixes total across cohorts.
+- Source inspection reveals `scripts/s351_S71_S72_dataset1_477.py`
+  contains `veto71poly=veto71&~((parent==3)&(s70==2))`:
+  **it explicitly disables veto on K3→K2 transitions** in the
+  source poly guard. This is a testable design risk, not proof that
+  every true K3 regression triggers the source exception.
+- [S368](https://github.com/Andriamarosoa/note/actions/workflows/v273-s368-original-S71-K3-veto-exception-AUDIT.yml)
+  replays actual trained S69→S72 and audits six regressed rows to
+  test whether this K3→K2 veto exception is responsible.
+- No postlabel threshold or routing rule should be promoted based
+  on these already exposed WAVs; any fix needs a separately
+  preregistered, truly untouched polyphonic test set preserving K2
+  and eliminating K3 regressions.
+
+**Promotion verdict: reference freeze_local_combo remains official.**
+S80 has significant conditional gains on K0/K2 in these 36 chord WAVs
+but **K3 regresses sharply** (8/18→2/18), K4 unsupported and XML K0
+negative completeness is not fully established. Do not claim better
+polyphonic universal Exact-K or promote the official base.
