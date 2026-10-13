@@ -61,7 +61,9 @@ jobs:
       - name: ONLY AFTER S399 SHA seal download original GuitarSet JAMS note_midi annotations
         run: |
           mkdir -p data/GuitarSet
-          curl -L --fail --retry 3 --retry-delay 2 -o data/GuitarSet/annotation.zip https://zenodo.org/records/3371780/files/annotation.zip
+          # Official GuitarSet v1.1.0 mirror, verified by the exact official MD5.
+          # Zenodo primary was returning HTTP 503 on 2026-10-13.
+          curl -L --fail --retry 3 --retry-delay 2 -o data/GuitarSet/annotation.zip https://huggingface.co/datasets/EZMONYI/music-ai-human-test-audio/resolve/main/external_controls/guitarset_source_v1/annotation.zip
           echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
       - name: S400 genuine MIDI note-by-note scoring and label audit without retraining
         run: |
