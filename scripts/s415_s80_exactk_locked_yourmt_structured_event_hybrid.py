@@ -159,7 +159,10 @@ def decode(g,K,ours,teachers):
         assigned['teacher_overflow_discarded']+=max(0,pre_count-int(K[i]))
         assigned['filled_from_S412']+=int(K[i])-tcount
         for o in pred:
-            events[str(member[i])].append((o[0],o[1],o[2],True))
+            # Preserve source row ID in each emitted event so an independent
+            # post-run auditor can reconstruct K counts from the actual JSONL,
+            # not merely trust an array copied from S80.
+            events[str(member[i])].append((o[0],o[1],o[2],True,key,o[3]))
             origin[o[3]]+=1
     require(np.array_equal(n_byrow,K),
        'CRITICAL EXACT K REGRESSION: final event count differs from frozen S80')
@@ -210,7 +213,8 @@ def run(audio,s80,truth,s412,fold_paths,jams,out):
     with saved.open('w',encoding='utf8') as f:
         for track in sorted(events):
             f.write(json.dumps(dict(member=track,notes=[
-                dict(onset_sample=ev[0],offset_sample=ev[1],pitch=ev[2])
+                dict(onset_sample=ev[0],offset_sample=ev[1],
+                     pitch=ev[2],source_row_id=ev[4],origin=ev[5])
                 for ev in events[track]]))+'\n')
     np.savez_compressed(out/'S415_exactK_invariance_all_59309.npz',
        row_id=ids,original_S80_K=K,S415_note_count_per_row=n_byrow)
