@@ -1,0 +1,63 @@
+name: S395 first lost K5 location between original S18 S69 S70 S71 S72 S80
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s395_find_first_S18_S72_K5_loss_original_GuitarSet.py'
+      - '.github/workflows/v273-s395-K5-first-lost-stage.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s395-k5-first-loss-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  locate_224_K5_under_count_causes:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Restore genuine original S18 and 193 S46 outputs from S268
+        run: |
+          gh run download 38314164725 -n s268-GuitarSet-original-S46-193foldneutral-59309 -D model/S268 --repo ${{ github.repository }}
+      - name: Restore genuine original 8 trained S71 S72 heads output
+        run: |
+          gh run download 38314244883 -n s271-guitarset-59309-original-S71-S72-eight-risk-heads -D model/S271 --repo ${{ github.repository }}
+      - name: Restore complete original S80 source output
+        run: |
+          gh run download 38314291222 -n s272-guitarset-59309-new-full-original-weight-S80-foldneutral-locked -D model/S272 --repo ${{ github.repository }}
+      - name: Restore matched original YourMT3+ benchmark for true K only
+        run: |
+          gh run download 37605163312 -n yourmt3-exactk-summary -D model/YourMT3 --repo ${{ github.repository }}
+      - name: Localize every true K5 -> pred K4 at first offending stage and check parent clones
+        run: |
+          python -u -m scripts.s395_find_first_S18_S72_K5_loss_original_GuitarSet \
+            --s46 model/S268/S268_original_193_S46_foldneutral_59309_GUITARSET.npz \
+            --s271 model/S271/S271_original_S71_S72_native_GUITARSET.npz \
+            --s80 model/S272/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz \
+            --your model/YourMT3/predictions.npz \
+            --out model/S395
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S395/report.json'))
+          assert r['status']=='S395_TRUE_K5_ERROR_FIRST_LOSS_STAGE_REAL_CHAIN'
+          assert r['by_class']['K5_lost_as_K4']['n']==224
+          assert sum(r['by_class']['K5_lost_as_K4']['first_loss_location'].values())==224
+          assert r['S46_193_can_clone_S18_parent'] and r['S80_weights_unchanged']
+          print('S395 PASS: first-stage K5 count loss is now traced, no S80 changes')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s395-real-first-lost-S18-S69-S70-S71-S72-S80-K5-stage-audit
+          path: model/S395/
+          retention-days: 90
