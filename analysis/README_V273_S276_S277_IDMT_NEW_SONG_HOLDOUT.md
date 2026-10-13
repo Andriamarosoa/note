@@ -586,3 +586,34 @@ then used the authentic SHA-prelabel S336 saved **four S5** original trained mod
 **Next design experiment, NOT yet externally proven**:
 build an EARLY K2-vs-K3 specialist using novel independent acoustic/harmonic/attack morphology features and original training-only held-piece folds. Keep the existing S8 K2 improvements; use a separately trained/validated gate to issue K3 only where independent evidence supports a third new fundamental/attack. Demonstrate audit by true K and per-composition corrections/regressions before first opening a DIFFERENT polyphonic external cohort. Reuse NONE of the S354/S363 XMLs to train, select thresholds, or claim improvement.
 **No official promotion**. Frozen baseline `freeze_local_combo` remains until strict K2–K4 generalization and independent composition identity are confirmed.
+
+
+## S371 — explicit K3 fallback ablative guard REJECTED, labels not used for model fitting
+
+[S371 SUCCESS](https://github.com/Andriamarosoa/note/actions/runs/38333469120):
+posthoc **READ-ONLY counterfactual** on the 36 WAVs which had
+already been annotated, conditional on the same historical target.
+Simple label-free prediction-only proposed guard:
+`(freeze_K==3) & (S18_parent_K==2) & (final_S80_K==2)` -> replace S80 K2 by freeze K3.
+**This is NOT an independently tested/promotable rule**.
+
+- Guard triggers on **21/1444** original native event rows, true-K
+  histogram [K0=1,K1=0,K2=11,K3=6,K4=3,K5=0,K6=0].
+- On first 12 WAVs, it loses **5** correct predictions
+  (S80 455/477 -> guard 450/477, ZERO K3 fixes).
+- On new 24 WAVs, it recovers **6 true K3** but regresses
+  on **6 real K2/other cases**, net zero (S80 913/967 unchanged).
+- Overall 36-WAV current S80 **1368/1444**, hypothetical naive
+  guard **1363/1444 (net −5)**. This disproves any claim
+  that merely protecting all official K3 against S18 K2 will
+  improve the poly model: it also destroys at least eleven
+  genuine K2 decisions across cohorts.
+
+**Root cause therefore remains the S5/S8 discriminative
+representation/learning, not the S46/S69/S71/S72/S80 veto**.
+The proper next independent experiment needs an EARLY learned
+K2-vs-K3 expert with new acoustic/phonetic morphological evidence,
+trained ONLY on original GuitarSet training folds and evaluated
+on genuinely untouched, composition-disjoint WAVs. Do not tune
+the classifier using already opened IDMT XML. Original official
+`freeze_local_combo` remains unchanged.
