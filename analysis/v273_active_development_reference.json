@@ -508,5 +508,129 @@
     "independent_unseen_songs_validation_complete": false,
     "official_promotion": false,
     "next_step": "Train a native structured note event decoder (pitch-conditioned long-time NoteOn/NoteOff) without YourMT3 inference at test, while enforcing immutable S80 per-row K and comparing against S415 as teacher-assisted benchmark."
+  },
+  "native_note_development_series": {
+    "id": "S416_TO_S421_NATIVE_K_FIRST_MIDI_NOTES_AND_OFFSETS",
+    "status": "FULL_NATIVE_MIDI_NOTE_DEVELOPMENT_MEASURED_BEST_S420_NOT_OFFICIALLY_PROMOTED",
+    "date": "2026-10-13",
+    "invariant": {
+      "original_S80_ref": "S80_S397_K5_GUARDED",
+      "native_events": 59309,
+      "expected_generated_NoteOn": 33475,
+      "original_ExactK_global_correct": 53529,
+      "original_ExactK_poly_correct": 6054,
+      "final_ExactK_global_correct": 53529,
+      "final_ExactK_poly_correct": 6054,
+      "independent_actual_exported_JSONL_K0_K6_recount_success": true,
+      "actual_ExactK_regressions": 0,
+      "user_protection_fully_respected": true
+    },
+    "sources": {
+      "S416": "scripts/s416_native_Kfirst_temporal_MIDI_note_decoder.py",
+      "S417": "scripts/s417_native_S416_MIDI_pitch_plus_continuous_WAV_note_off.py",
+      "S418": "scripts/s418_native_Kfirst_MIDI_head_any_new_S80_audio.py",
+      "S419": "scripts/s419_S402_S416_songheld_Kconditional_native_head_gate.py",
+      "S420": "scripts/s420_native_S419_pitches_S417_noteoff_Klocked_combination.py",
+      "S421": "scripts/s421_audit_S420_vs_S417_pairwise_same_true_MIDI_notes_Klocked.py",
+      "report": "analysis/README_V273_S416_S421_NATIVE_MIDI_RESULTS_AND_ZERO_EXACT_K_REGRESSION.md"
+    },
+    "S416": {
+      "run_id": 38381449092,
+      "artifact_id": 11803643782,
+      "original_S402_poly_full_chords": 2715,
+      "S416_poly_full_chords": 2608,
+      "total_true_poly_chords": 7385,
+      "net_vs_S402": -107,
+      "note_pitch_reference_replaced": false,
+      "status": "TRAINED_NATIVE_TIME_PITCH_NET_LOSES_K2_K3__NOT_PROMOTED"
+    },
+    "S417": {
+      "run_id": 38382271141,
+      "artifact_id": 11804187427,
+      "status": "TRAINED_NATIVE_FULL_MIDI_ONSET_OFFSET_IMPROVES_NOTES_NOT_PROMOTED",
+      "note_onset_pitch_correct": 25125,
+      "matching_ground_truth_notes": 34954,
+      "note_predictions": 33475,
+      "correct_note_offsets_50ms": 16017,
+      "offset_correct_conditional_on_pitch_onset": 0.6374925373134328,
+      "full_note_F1_50ms": 0.4681348551052916,
+      "entire_native_training_without_YourMT3": true
+    },
+    "S418": {
+      "run_id": 38383180884,
+      "status": "NATIVE_INFERENCE_SELFTEST_SUCCESS_ON_SYNTHETIC_K0_K1_K3_K6",
+      "four_frozen_native_CNN_weights_supported": true,
+      "original_S80_K_external_input_required": true,
+      "not_raw_WAV_to_S80_standalone": true,
+      "YourMT_inference_dependency": false,
+      "not_song_held_GuitarSet_evaluation": true
+    },
+    "S419": {
+      "run_id": 38383639848,
+      "artifact_id": 11804523169,
+      "status": "COMPOSITION_GATE_GAIN_MEASURED_NO_OFFICIAL_PROMOTION",
+      "S419_poly_full_chords": 2775,
+      "S402_poly_full_chords": 2715,
+      "total_poly_events": 7385,
+      "net_gain": 60,
+      "corrections_vs_S402_poly": 195,
+      "regressions_vs_S402_poly": 135,
+      "decisions_use_predicted_K_not_GT": true,
+      "gate_train_compositions_exclude_held_songs": true,
+      "upstream_crossfit_features_not_fully_nested": true
+    },
+    "S420": {
+      "run_id": 38384016298,
+      "artifact_id": 11804871016,
+      "status": "BEST_MEASURED_FULLY_NATIVE_DEVELOPMENT_CHALLENGER_NOT_OFFICIAL_REFERENCE",
+      "no_YourMT3_in_training_or_inference": true,
+      "native_NoteOn_heads": "S419 gate of S402 and S416",
+      "native_NoteOff_models": "S417 full MIC time series 10ms",
+      "pitch_plus_onset_correct_50ms": 25395,
+      "offset_correct_50ms": 16140,
+      "offset_conditional_accuracy": 0.635558180744241,
+      "full_note_F1_50ms": 0.471729822151427,
+      "former_S417_full_note_F1_50ms": 0.4681348551052916,
+      "former_S412_full_note_F1_50ms": 0.4183314091978547,
+      "full_midi_note_F1_gain_vs_S412_points": 5.339841295357228,
+      "entire_S80_stack_independent_generalization_proved": false,
+      "trained_offset_models_on_S416_candidates_applied_to_S419_domain_shift": true,
+      "S80_count_unchanged": true,
+      "promotion": false
+    },
+    "S421": {
+      "run_id": 38384577930,
+      "artifact_id": 11805076211,
+      "status": "INDEPENDENT_FROZEN_EXPORTED_MIDI_NOTE_PAIRWISE_AUDIT_SUCCESS",
+      "corrections_vs_S417": 1248,
+      "regressions_vs_S417": 1125,
+      "net_vs_S417": 123,
+      "same_JAMS_notes": 34954,
+      "by_songfold_net": [
+        34,
+        74,
+        -1,
+        16
+      ],
+      "long_notes_ge_1000ms_correct_S420": 29,
+      "long_notes_ge_1000ms_truth": 900,
+      "exact_K_regressions": 0
+    },
+    "relationship_to_existing_references": {
+      "S80_exact_K_active_reference_unchanged": true,
+      "S402_note_pitch_active_reference_unchanged": true,
+      "S408_user_selected_offset_active_reference_unchanged": true,
+      "YourMT_teacher_assisted_S415_remains_separate_comparator": true,
+      "YourMT_teacher_assisted_full_note_F1_50ms": 0.6755907583042278,
+      "native_S420_full_note_F1_50ms": 0.471729822151427
+    },
+    "methodological_limitations": [
+      "Historical S80 models were trained or selected with GuitarSet overlap; four song-held NEW heads do not make the full chain independent.",
+      "S419 meta-gate training uses OOF upstream outputs not fully nested by outer composition.",
+      "S417 long-duration regressors trained on S416-selected notes were applied to partially different S419-selected pitches.",
+      "GuitarSet mono MIC future audio for Offsets differs from S80 pickup mixture; 3.5 s lookahead is offline only.",
+      "Full MIDI F1 is evaluated on same 190 GuitarSet tracks; YourMT3+ 75.29% is descriptive and teacher-assisted S415 still depends on external checkpoint."
+    ],
+    "official_public_benchmark_promotion": false
   }
 }
