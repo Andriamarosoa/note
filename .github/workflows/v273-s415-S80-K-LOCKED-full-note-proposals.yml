@@ -90,6 +90,27 @@ jobs:
           assert d['metrics']['S412_challenger']['correct_offsets_conditional_on_matched_pitch_onset']==14313
           assert d['reference_S80_S402_S407_S408_S412_UNCHANGED']
           assert not d['official_reference_promotion']
+          # INDEPENDENT JSONL EVENT REPLAY: count ACTUALLY OUTPUT NOTES,
+          # never trust a precomputed count array from the producer.
+          from collections import Counter
+          counts=Counter()
+          total=0
+          for line in open('model/S415/S415_exact_S80_locked_structured_note_events.jsonl'):
+            t=json.loads(line)
+            for note in t['notes']:
+              assert note['origin'] in ('yourmt','S412_fallback','S412_repeat_fill')
+              assert 40<=int(note['pitch'])<=88
+              assert int(note['offset_sample'])>int(note['onset_sample'])
+              counts[str(note['source_row_id'])]+=1
+              total+=1
+          with np.load('model/S415/S415_exactK_invariance_all_59309.npz') as a:
+            reference={str(row):int(k) for row,k in zip(a['row_id'],a['original_S80_K'])}
+          assert len(reference)==59309
+          assert total==33475
+          assert all(counts[row]==k for row,k in reference.items())
+          assert all(row in reference for row in counts)
+          assert sum(k==0 for k in reference.values())==40532
+          print('S415 INDEPENDENT REPLAY VERIFIED: actual 33475 output MIDI NoteOn events, 59309 exact row-wise preserved K')
           print('S415 PASS: ZERO Exact-K regression across every one of 59309 K0-K6 events')
           PY
       - uses: actions/upload-artifact@v4
