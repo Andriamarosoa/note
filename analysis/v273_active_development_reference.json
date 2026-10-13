@@ -178,6 +178,26 @@
     "S80_count_reference_unchanged": true,
     "S402_trained_pitch_reference_unchanged": true,
     "external_validation": false,
-    "promotion": false
+    "promotion": false,
+    "S405": {
+      "id": "S405_K0_SUSTAIN_HARMONIC_ONSET_STATE_DECODER",
+      "status": "ARCHITECTURE_AND_END_TO_END_SOURCE_WIRING_TESTED_NO_REAL_NOTE_SCORE",
+      "source": "src/causal_note/k0_sustain_harmonic_onset_decoder_s405.py",
+      "S404_integration": "KOnsetStateDecoder.step_from_s404",
+      "architecture_contract": "K=S80-predicted count of NEW note attacks. Frame describes active notes, harmonics explain spectral energy. K0 blocks only new NoteOn not existing sustain; NoteOff may occur.",
+      "run_id": 38366332557,
+      "run_url": "https://github.com/Andriamarosoa/note/actions/runs/38366332557",
+      "notes_no_frame_plus_onset_combination": true,
+      "strong_K0_harmonic_no_NoteOn_test": true,
+      "new_K1_during_old_sustain_test": true,
+      "same_pitch_retrigger_test": true,
+      "two_attacks_during_resonance_test": true,
+      "stream_state_reset_test": true,
+      "source_S80_reference_unchanged": true,
+      "trained_model_quality_evaluation": false,
+      "S404_not_trained": true,
+      "promoted": false,
+      "source_report": "analysis/README_V273_S405_K0_HARMONICS_SUSTAIN_ONSET_RULE.md"
+    }
   }
 }
