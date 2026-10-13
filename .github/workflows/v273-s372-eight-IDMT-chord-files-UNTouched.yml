@@ -1,0 +1,58 @@
+name: S372 LOCK remaining eight new IDMT Dataset1 chord WAV+XML names BEFORE GuitarSet training
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s372_preregister_last8_unseen_IDMT_dataset1_chord_groups.py'
+      - '.github/workflows/v273-s372-eight-IDMT-chord-files-UNTouched.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s372-last-8-chord-filename-only-unseen
+  cancel-in-progress: true
+jobs:
+  precommit_composition_candidates:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Restore original S276 ZIP central directory filename-only manifest and S357 previous twenty-four
+        run: |
+          gh run download 38318827219 \
+            -n s276-IDMT-central-directory-only-prospective-WAV-cohort \
+            -D model/S276 --repo ${{ github.repository }}
+          gh run download 38330431853 \
+            -n s357-original-IDMT-dataset1-24-new-chord-WAV-XML-NAMES-PREXML \
+            -D model/S357 --repo ${{ github.repository }}
+      - name: SEALED ZIP central filenames only, no audio nor annotations read
+        run: |
+          python -u -m scripts.s372_preregister_last8_unseen_IDMT_dataset1_chord_groups \
+            --s276 model/S276/S276_IDMT_filename_only_cohort_manifest.json \
+            --s357 model/S357/report.json \
+            --out model/S372
+          python - <<'PY'
+          import json
+          x=json.load(open('model/S372/report.json'))
+          assert x['status']=='S372_IDMT_DATASET1_FINAL_EIGHT_CHORD_FAMILIES_FILENAME_ONLY_PRELABEL'
+          assert len(x['final_eight'])==x['new_unseen_WAV_count']==8
+          assert x['original_S357_already_exposed_dataset1_WAV_count']==24
+          assert x['previous_12_filename_family_hard_excluded'] and x['previous_24_filename_family_hard_excluded']
+          assert not x['all_XML_annotation_contents_read'] and not x['all_WAV_contents_read']
+          assert not x['official_promotion']
+          print('S372 PASS future eight entirely untouched SHA-ordered WAV name pairs sealed; not independent composition identity')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s372-prospective-last8-original-IDMT-Dataset1-WAV-XML-NAMES-UNOPENED
+          path: model/S372/
+          retention-days: 90
