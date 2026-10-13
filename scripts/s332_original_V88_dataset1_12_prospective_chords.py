@@ -86,7 +86,7 @@ def run(source_dir,weights,s276,out):
          all(sha(name.encode())==identity for name,identity in zip(names,ids)),
          "S276 recorded WAV identities changed")
     need(weights.is_file(),"true unchanged freeze_local_combo checkpoint required")
-    need(all("/dataset1/audio/" in name for name in names),
+    need(all("dataset1" in name.lower() and name.lower().endswith(".wav") for name in names),
          "this second test requires only Dataset1 prospective reserve WAVs")
     with urllib.request.urlopen(urllib.request.Request(
          API,headers={"Accept":"application/json","User-Agent":"S332-original-V88-dataset1-reserve-no-annotations"}),
