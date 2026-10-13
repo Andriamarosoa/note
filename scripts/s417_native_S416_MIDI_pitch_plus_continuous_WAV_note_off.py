@@ -259,7 +259,7 @@ def run(audio,s80,s416,s407,source_mic,annotations,prior_s412,out):
       source_original_S80_exactK_correct_global=53529,
       source_original_S80_exactK_correct_poly=6054,
       ground_truth_notes=34954,
-      4fold_song_disjoint_training=True,
+      fourfold_song_disjoint_training=True,
       prior_S80_GuitarSet_exposure=True,
       prospective_external_independent_validation=False,
       no_official_promotion=True,
