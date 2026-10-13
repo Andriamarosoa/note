@@ -552,3 +552,37 @@ S80 has significant conditional gains on K0/K2 in these 36 chord WAVs
 but **K3 regresses sharply** (8/18→2/18), K4 unsupported and XML K0
 negative completeness is not fully established. Do not claim better
 polyphonic universal Exact-K or promote the official base.
+
+
+## S368–S370 — disproven S71 hypothesis; K3 collapse begins in ORIGINAL trained S5 and S8
+
+[S368 SUCCESS](https://github.com/Andriamarosoa/note/actions/runs/38332540172)
+replayed real original pretrained S69→S72 stage output **bit-identical** with the S352 PRE-label frozen complete S80 archive, before any already-exposed XML truth was joined. For ALL SIX true K3→K2 regressions:
+- S69 already **K2**; S70, S71, S72, S79, final S80 did not change it.
+- **ZERO** were `parent=K3 -> S70=K2` so `veto71poly=veto71 & ~((parent==3)&(s70==2))` did NOT cause one single regressed case. This S71 exception was a plausible but **FALSE** source hypothesis for the six errors. Do NOT patch it based on this audit.
+- S69 raw source statistics among 15 true K3 new24: **13 already K2, 2 K3**.
+
+[S369 SUCCESS](https://github.com/Andriamarosoa/note/actions/runs/38332912521)
+replayed and independently matched **original** S18 fourfold parent→all 193 S46 specialists→S69. **All six K3-to-K2 regression event rows first undercount at the S18 parent**, NOT S46/S69.
+On these six events, real original S18 heldfold K votes:
+- **five** samples: [K2,K2,K2,K2], unanimous wrong
+- **one** sample: [K2,K2,K1,K2], 3/4 majority wrong
+- **zero** votes predict K3. A S46/69 repair cannot emerge from the existing S18 parent without extra independent K3-discriminative information.
+
+[S370 SUCCESS](https://github.com/Andriamarosoa/note/actions/runs/38333086532)
+then used the authentic SHA-prelabel S336 saved **four S5** original trained models and S337 original **133** S8–S18 risk checkpoints:
+- **4/6** erroneous K3 cases already have >=3 votes K2 at **S5**;
+- the remaining **2/6** acquire >=3 votes K2 at **S8**;
+- NO subsequent S9/S13/S14/S15/S16/S17/S18 stage recovers the true K3 decision.
+- Across the **15 true K3** new24 events, only **2/15**
+  have >=3 fourfold K3 votes at original **S5** and only 2/15 at original S8, through S18.
+- Conversely, across the **28 true K2** new24 events, >=3
+  trained folds correctly vote K2 only **4/28** at original S5,
+  rapidly increasing to **14/28** immediately at S8.
+- This is a demonstrable K2-recovery vs K3-under-count **architecture tradeoff within original S5/S8 heads**, rather than failure of late S46/S80 gating.
+- Original S5 train protocol `analysis/README_V273_PROTOCOLE_CLASSES_RARES.md` used the same owned527 features and 4 heldfold independent HGB classifiers with sqrt inverse class-frequency weighting capped at 8. Earlier rare-class weighting does not guarantee calibrated K3-vs-K2 discrimination on new audio.
+- It is **not justified** to overwrite frozen S8 K2 policy by a hardcoded K3 rescue fitted to these exposed XML cohorts; this would exploit labels and invalidate the independent validation.
+
+**Next design experiment, NOT yet externally proven**:
+build an EARLY K2-vs-K3 specialist using novel independent acoustic/harmonic/attack morphology features and original training-only held-piece folds. Keep the existing S8 K2 improvements; use a separately trained/validated gate to issue K3 only where independent evidence supports a third new fundamental/attack. Demonstrate audit by true K and per-composition corrections/regressions before first opening a DIFFERENT polyphonic external cohort. Reuse NONE of the S354/S363 XMLs to train, select thresholds, or claim improvement.
+**No official promotion**. Frozen baseline `freeze_local_combo` remains until strict K2–K4 generalization and independent composition identity are confirmed.
