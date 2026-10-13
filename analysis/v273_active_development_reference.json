@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "updated_at": "2026-10-13",
+  "designation": "ACTIVE_DEVELOPMENT_REFERENCE",
+  "reference_id": "S80_S397_K5_GUARDED",
+  "reference_description": "S80 fourfold reconstructed inference with pre-S71 protection of S69 K5->S70 K4, full S71/S72/S79/S80 rerun",
+  "selected_by": "user",
+  "replaces_active_working_reference": "S80_S272_UNGUARDED",
+  "historical_external_formal_reference": "freeze_local_combo",
+  "branch": "codex/s276-idmt-song-disjoint-candidate-audit",
+  "source_run_id": 38352988801,
+  "source_run_url": "https://github.com/Andriamarosoa/note/actions/runs/38352988801",
+  "source_replay_script": "scripts/s397_replay_original_S70_K5_guard_full_S80_GuitarSet.py",
+  "source_scoring_script": "scripts/s398_score_S397_full_S80_K5_guard_guitarset_after_SHA.py",
+  "sha256_replayed_prediction_npz": "f5a313366a161d9775ce8452df766e4178604dc8d6e002d781d24e70ee4b967f",
+  "measured_on": "GuitarSet original native events (previously exposed, training overlap)",
+  "n_global": 59309,
+  "global_correct": 53529,
+  "exact_k_global": 0.9025443018766123,
+  "n_poly_K2_to_K6": 7385,
+  "poly_correct": 6054,
+  "exact_k_poly_K2_to_K6": 0.8197698036560596,
+  "per_true_k": {
+    "K0": {
+      "n": 39652,
+      "correct": 38432
+    },
+    "K1": {
+      "n": 12272,
+      "correct": 9043
+    },
+    "K2": {
+      "n": 3445,
+      "correct": 2999
+    },
+    "K3": {
+      "n": 2289,
+      "correct": 1897
+    },
+    "K4": {
+      "n": 1207,
+      "correct": 806
+    },
+    "K5": {
+      "n": 355,
+      "correct": 301
+    },
+    "K6": {
+      "n": 89,
+      "correct": 51
+    }
+  },
+  "delta_vs_unguarded_S80": {
+    "global_correct": 202,
+    "poly_correct": 202,
+    "K5_correct": 202,
+    "regressions": 0,
+    "changed_both_wrong": 1
+  },
+  "development_result_confirmed": true,
+  "model_weights_modified": false,
+  "full_chain_replayed": true,
+  "independent_external_validation": false,
+  "official_public_benchmark_promotion": false,
+  "provenance_notes": [
+    "This is the user-designated active development baseline, not a claim of independent external generalization.",
+    "The guard was selected after examining GuitarSet labels; GuitarSet has training overlap in S272 and is not prospective.",
+    "Keep legacy historical and independent trial results unchanged; comparator name must be explicit in future audit runs."
+  ]
+}
