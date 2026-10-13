@@ -50,10 +50,10 @@ jobs:
           python-version: '3.11'
       - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2
       - name: Require exact 133 trained original S18 fold outputs on unlabelled 967 native events
-        run: gh run watch 38327166967 --repo ${{ github.repository }} --exit-status --interval 15
+        run: gh run watch 38331004943 --repo ${{ github.repository }} --exit-status --interval 15
       - name: Restore immutable 967 original S18 and 527D feature bank and official reference
         run: |
-          gh run download 38327166967 \
+          gh run download 38331004943 \
             -n s336-s337-original-967-S5-S18-folds-IDMT-dataset1-PREXML \
             -D model/S336S337 --repo ${{ github.repository }}
           gh run download 38330965820 \
@@ -120,7 +120,7 @@ jobs:
           path: model/source
       - name: Restore 967 real original S18 trained fold predictions and historical S29/S20/S35 models
         run: |
-          gh run download 38327166967 \
+          gh run download 38331004943 \
             -n s336-s337-original-967-S5-S18-folds-IDMT-dataset1-PREXML \
             -D model/S336S337 --repo ${{ github.repository }}
           gh run download 37865173636 -n v273-series29-stepwise-scheduler -D model/S29 --repo ${{ github.repository }}
@@ -325,7 +325,7 @@ jobs:
           path: model/rarebank
       - name: Restore original S18 fourfold source and 304 S45 pretrained Ridge risks
         run: |
-          gh run download 38327166967 \
+          gh run download 38331004943 \
             -n s336-s337-original-967-S5-S18-folds-IDMT-dataset1-PREXML \
             -D model/S336S337 --repo ${{ github.repository }}
           gh run download 37891039201 \
