@@ -1,0 +1,64 @@
+name: S375 calibrate frozen early K3 source-trained expert on GuitarSet heldfold OOF ONLY
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s375_tune_K3_gate_on_GuitarSet_OOF_no_IDMT.py'
+      - '.github/workflows/v273-s375-training-OOF-K3-selection-NO-IDMT.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s375-guitarset-only-threshold-selection-before-new-IDMT-truth
+  cancel-in-progress: true
+jobs:
+  strictly_train_fold_selected_K3_candidate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Retrieve immutable original-only S373 trained OOF posteriors plus GuitarSet true-fold labels; absolutely NO IDMT download
+        run: |
+          gh run download 38334934114 \
+            -n s373-fourfold-GuitarSet-only-K3-104D-vs-1133D-experts-fixed80pct-NO-IDMT \
+            -D model/S373 --repo ${{ github.repository }}
+          gh run download 38311525987 \
+            -n s258-full-guitarset-59309-real-original-native-527D-58D-46D-42x49-and-OOF-PR16 \
+            -D model/S258 --repo ${{ github.repository }}
+      - name: Original train/dev-only prospective classifier view and threshold selection, forbidden to use new IDMT XML
+        run: |
+          python -u -m scripts.s375_tune_K3_gate_on_GuitarSet_OOF_no_IDMT \
+            --truth model/S258/S258_GuitarSet_59309_true_K_ONLY_FOR_FINAL_AUDIT.npz \
+            --base model/S373/base104_source_heldfold_OOF_59309_reference3_only.npz \
+            --expanded model/S373/expanded1133_source_heldfold_OOF_59309_reference3_only.npz \
+            --out model/S375
+          python - <<'PY'
+          import json
+          j=json.load(open('model/S375/report.json'))
+          assert j['status']=='S375_GUITARSET_ONLY_OOF_K3_EARLY_EXPERT_CANDIDATE_SELECTION'
+          assert j['external_IDMT_S372_unopened_audio_XML_NOT_USED']
+          assert j['trained_models_changed'] is False
+          assert j['original_GuitarSet_heldfold_dev_only']
+          assert j['dev_threshold_scan_requires_genuinely_separate_external_validation']
+          assert not j['no_implicit_S80_official_promotion'] is False
+          if j['selected_frozen_external_candidate']:
+            s=j['selected_frozen_external_candidate']
+            assert s['development_K3_fixes']>=3 and s['development_K3_fixes']>s['development_regressions'] and s['K2_regressions']<=10
+            print('S375 PASS train/dev-only positive candidate for LAST EIGHT unopened XMLs, holdout still unopened')
+          else:
+            print('S375 FAIL-CLOSED: no credible positive training candidate - do not promote')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s375-GuitarSet-only-fourfold-OOF-K3-variant-and-threshold-selection-NO-IDMT
+          path: model/S375/
+          retention-days: 90
