@@ -1,0 +1,100 @@
+name: S379 independent 24 WAV source S336 S337 four original S5 and 133 S8-S18 original risk heads on 255 chord V88 rows PREXML
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s336_four_S5_dataset1_255.py'
+      - 'scripts/s337_original_S18_133_dataset1_255.py'
+      - '.github/workflows/v273-s379-last8-S5-S18-133heads.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s379-original-255-S5-S18
+  cancel-in-progress: true
+jobs:
+  original_S5_S18_255_fourfold:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 70
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore SHA-verified S359 original-trained stage codes (derived for 255 new events only)
+        run: |
+          gh run download 38335633796 \
+            -n s377-20-genuine-original-S5-to-S80-modules-on-255-last8-WAVs-ABIs-PREXML \
+            -D model/S377 --repo ${{ github.repository }}
+          for file in model/S377/*.py; do cp "$file" "scripts/$(basename "$file" | sed 's/_477/_255/g')"; done
+          test -s scripts/s336_four_S5_dataset1_255.py
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Restore pristine source events and source-only features
+        run: |
+          gh run watch 38335758942 --repo ${{ github.repository }} --exit-status --interval 15
+          gh run download 38335758942 \
+            -n s334-s335-8-IDMT-dataset1-chords-255-original-S97-527D-PREXML \
+            -D model/S334S335 --repo ${{ github.repository }}
+          gh run download 38335062261 \
+            -n s374-last8-IDMT-source-only-true-original-V88-official-PREXML \
+            -D model/S374 --repo ${{ github.repository }}
+      - name: Install original verified trained S5 checkpoint ABI and four saved original S5 weights
+        run: |
+          python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+          set -euo pipefail
+          for f in 0 1 2 4; do
+            mkdir -p "model/S5original/fold$f"
+            curl -fLsS --retry 3 --connect-timeout 15 --max-time 120 \
+              "https://raw.githubusercontent.com/Andriamarosoa/note/7165e1ef54510aa9effc9f597b2783c832ca907a/analysis/evidence/v273-open-k0-k6/series5/models/fold$f/model.joblib" \
+              -o "model/S5original/fold$f/model.joblib"
+          done
+          python - <<'PY'
+          from pathlib import Path
+          from scripts.verify_v273_s5_owned527_recovery import FOLDS,MODEL_DIGEST,digest
+          for f in FOLDS:
+            assert digest(Path(f'model/S5original/fold{f}/model.joblib'))==MODEL_DIGEST[f]
+          print('S336 four true original historical trained S5 weights SHA verified')
+          PY
+      - name: Replay original four fold S5 predictors on exact 255 V88 native chord events
+        run: |
+          python -u -m scripts.s336_four_S5_dataset1_255 \
+            --s335 model/S334S335/S335/S335_IDMT_dataset1_true_original_S5_527D_input.npz \
+            --models model/S5original --out model/S336
+          python - <<'PY'
+          import numpy as np
+          with np.load('model/S336/S336_original_S5_fourfold_255_dataset1_native_unlabelled.npz',allow_pickle=False) as a:
+            assert a['original_S5_K_by_fold'].shape==(4,255)
+          print('S336 PASS four original trained S5 folds')
+          PY
+      - name: Install true S8-S18 historic archived risk model compatible ABI
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Replay 133 original saved trained S8–S18 risk heads with no annotation/truth access
+        run: |
+          python -u -m scripts.s337_original_S18_133_dataset1_255 \
+            --s336 model/S336/S336_original_S5_fourfold_255_dataset1_native_unlabelled.npz \
+            --s334 model/S334S335/S334/S334_IDMT_dataset1_original_S97_on_frozen_native_events.npz \
+            --s332 model/S374/S374_official_V88_dataset1_prospective_8_WAV_predictions.npz \
+            --cache model/S337_original-checkpoints \
+            --out model/S337
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S337/report.json'))
+          assert r['count']==255 and r['original_risk_checkpoint_count']==133
+          assert not r['XML_MIDI_annotation_content_read']
+          with np.load('model/S337/S337_original_S5_to_S18_true_V88_native_IDMT_255.npz',allow_pickle=False) as z:
+            assert z['S18_K'].shape==(4,255)
+          print('S337 PASS all 133 frozen trained risk model outputs on 255 new chord events')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s336-s337-original-255-S5-S18-folds-IDMT-dataset1-PREXML
+          path: |
+            model/S336/
+            model/S337/
+          retention-days: 90
