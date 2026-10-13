@@ -33,7 +33,7 @@ jobs:
           python -m py_compile scripts/s354_postfreeze_dataset1_chord_dual_attackK_477.py
           python -m py_compile scripts/s333_prelabel_physical_attack_reference_policy.py
       - name: BLOCK XML opening until both 477 full S80 variants, trained final S79 S80 and official reference have all passed frozen-SHA source gate
-        run: gh run watch 38327334843 --repo ${{ github.repository }} --exit-status --interval 15
+        run: gh run watch 38327686633 --repo ${{ github.repository }} --exit-status --interval 15
       - name: Restore original S276 filename-only chord selection, S332 original official freeze and S333 PRELABEL acoustic reference protocol
         run: |
           gh run download 38318827219 \
@@ -47,7 +47,7 @@ jobs:
             -D model/S333 --repo ${{ github.repository }}
       - name: Restore exactly the TWO complete frozen historical S80 candidates from SAME 477 real V88 source rows
         run: |
-          gh run download 38327334843 \
+          gh run download 38327686633 \
             -n chords-477-S349-S353-three-frozen-original-S80-PREXML \
             -D model/S349S353 --repo ${{ github.repository }}
       - name: FIRST read all twelve original XML note annotations ONLY after SHA verification of baseline, both S80 final outputs, and S333 physical target policy
