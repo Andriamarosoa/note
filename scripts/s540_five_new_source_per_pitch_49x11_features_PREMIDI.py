@@ -81,7 +81,7 @@ def run(args):
          "S538_MAESTRO_V3_REAL_AUDIO_ORIGINAL_PRETRAINED_V88_PLUS_S466_PREMIDI"
          and v["prelabel_predictions_frozen"]
          and v["output_sha256"] == filesha(args.v88)
-         and v["preregistered_S537_SHA"] == filesha(args.manifest),
+         and v["preregistered_S469_SHA"] == filesha(args.manifest),
          "S540 original prelabel real piano V88 WAV identity not valid")
     need(bp["status"] == "S539_PRETRAINED_BASIC_PITCH_NOTE_EVENTS_ON_THIRD_SOURCE_MAESTRO_PREMIDI"
          and bp["original_MAESTRO_MIDI_ANNOTATIONS_OPENED"] is False
