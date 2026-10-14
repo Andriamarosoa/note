@@ -52,5 +52,13 @@
     "On new attack of same MIDI pitch, send NoteOff before retrigger NoteOn",
     "Reject missing K/pitch inputs; fail closed instead of inventing predicted notes",
     "Live MIDI sidecar cannot claim S80/S422 offline scores until causal end-to-end benchmark"
-  ]
+  ],
+  "protected_git_blob_sha1": {
+    "scripts/detect_live.py": "72f0c0a14cbd1cc94957471967b29e44a2b414d2",
+    "scripts/detect_v8_live.py": "93e03a32732f52194fb461f9fc229b48fdf70b1a",
+    "src/causal_note/pipeline.py": "2990af8cd955717837a13c10f640ef7dc1d9149f",
+    "src/causal_note/v8_runtime.py": "2d99a207eab46fc2dc3c6da88412d3716a4d188f",
+    "analysis/v273_active_development_reference.json": "f1ac0dd229c582bd41e2c710523cbc104160d871",
+    "scripts/s422_train_full_WAV_pitch_survival_noteoffs_S80_Klocked.py": "b4489dae8fc6d170a4d7283d14b8a884efde74b4"
+  }
 }
