@@ -1,0 +1,79 @@
+name: S438 score genuine 12 guitar MIC WAV frozen musical notes by TRUE K
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s438_audit_frozen_12real_guitars_by_true_K_no_K0_inflation.py'
+      - '.github/workflows/v273-s438-score-12-guitar-note-identities-by-K.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s438-score-real-guitar-12-compositions-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  frozen_prediction_JAMS_scores_including_real_polyphonic_identity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Test strict K0 vs poly grouping of source musical notes
+        run: |
+          python -m py_compile scripts/s438_audit_frozen_12real_guitars_by_true_K_no_K0_inflation.py
+          python -m scripts.s438_audit_frozen_12real_guitars_by_true_K_no_K0_inflation --self-test
+      - name: Restore S437 frozen 12 real WAV musical note outputs BEFORE opening JAMS
+        run: |
+          gh run download 38523251921 -n s437-twelve-real-guitar-MIC-K-balanced-frozen-note-names-no-truth -D model/S437 --repo ${{ github.repository }}
+          test -f model/S437/report.json
+          test -f model/S437/S437_FROZEN_REAL_GUITAR_MIC_EVENT_NOTE_NAMES.jsonl
+      - name: Restore original S258 GuitarSet timing and original S397 S80 source K, plus original true K only for scoring
+        run: |
+          gh run download 38311525987 -n s258-full-guitarset-59309-real-original-native-527D-58D-46D-42x49-and-OOF-PR16 -D model/S258 --repo ${{ github.repository }}
+          gh run download 38352988801 -n s397-s398-S70-suppression-REAL-full-S80-replay-and-scoring-NOPROMOTION -D model/S397 --repo ${{ github.repository }}
+      - name: Open official GuitarSet JAMS only AFTER note output was frozen and verify its published MD5
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 --retry-delay 3 -o data/GuitarSet/annotation.zip https://huggingface.co/datasets/EZMONYI/music-ai-human-test-audio/resolve/main/external_controls/guitarset_source_v1/annotation.zip
+          echo 'b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip' | md5sum -c -
+      - name: Score exact musical chord names and per-note F1 on real K1 K2 K3 K4+, zero S80 K changes
+        run: |
+          python -u -m scripts.s438_audit_frozen_12real_guitars_by_true_K_no_K0_inflation \
+            --names model/S437/S437_FROZEN_REAL_GUITAR_MIC_EVENT_NOTE_NAMES.jsonl \
+            --s437-report model/S437/report.json \
+            --source model/S258/S258_GuitarSet_59309_original_V88_S97_audio.npz \
+            --s80 model/S397/S397/S397_S272_FULL_REPLAY/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz \
+            --truth model/S258/S258_GuitarSet_59309_true_K_ONLY_FOR_FINAL_AUDIT.npz \
+            --annotations data/GuitarSet/annotation.zip \
+            --out model/S438
+          python - <<'PY'
+          import json
+          d=json.load(open('model/S438/report.json'))
+          assert d['status']=='S438_FROZEN_REAL_GUITAR_MIC_12PIECE_BALANCED_NOTE_IDENTITY_AUDIT'
+          assert d['authentic_real_recorded_guitar_WAV_12_distinct_compositions']
+          assert d['original_all_59309_S80_source_K_unchanged'] and d['exactK_regressions']==0
+          assert d['original_GuitarSet_annotations_opened_only_AFTER_note_output_frozen']
+          assert d['complete_original_member_JAMS_true_K_verified']
+          assert d['by_true_K_stratum']['all']['events']==174
+          assert d['by_true_K_stratum']['notes_K1plus']['events']>=30
+          assert d['by_true_K_stratum']['poly_K2plus']['events']>0
+          assert d['no_training_or_calibration_on_test_labels']
+          assert d['not_independent_unseen_music'] and not d['official_promotion']
+          print('S438 TRUE polyphonic named-note diagnostic verified, not K0-inflated or independently validated')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s438-balanced-real-12-guitar-MIC-musical-note-accuracy-by-true-K-audit
+          path: model/S438/
+          retention-days: 90
