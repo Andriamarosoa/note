@@ -12,7 +12,9 @@ import argparse,collections,json,hashlib
 from pathlib import Path
 import numpy as np
 from scripts.s471_independent_MAESTRO_MIDI_postfrozen_real_V88_K_audit import match_times
-from scripts.s485_freeze_real_MAESTRO_basic_pitch_pretrained_note_names import name
+def name(midi):
+    names=("C","C#","D","D#","E","F","F#","G","G#","A","A#","B")
+    return names[int(midi)%12]+str(int(midi)//12-1)
 def need(c,msg):
     if not c:raise ValueError(msg)
 def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
