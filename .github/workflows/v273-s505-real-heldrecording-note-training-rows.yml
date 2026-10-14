@@ -1,0 +1,75 @@
+name: S505 prepare SHA-held eight real IDMT/MAESTRO recordings for note selection experiments
+on:
+  push:
+    branches: [codex/s505-neural-note-selector-songheld]
+    paths:
+      - scripts/s505_build_cross_recording_note_selector_training_rows.py
+      - .github/workflows/v273-s505-real-heldrecording-note-training-rows.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audio_frozen_source_eight_songheld_real_note_supervision:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install numpy and one-to-one matching
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1
+      - name: Selftest exact note identities distinguish polyphonic chord shape
+        run: |
+          python -m py_compile scripts/s505_build_cross_recording_note_selector_training_rows.py
+          python -m scripts.s505_build_cross_recording_note_selector_training_rows --self-test
+      - name: Restore source acoustic note head proposal freezes WITHOUT annotation truth
+        run: |
+          gh run download 38590187399 \
+            -n s498-true-S80-guitar-V88-piano-canonical-unique-musical-note-onset-groups-no-truth \
+            -D model/S498 --repo "${{ github.repository }}"
+          gh run download 38594382211 \
+            -n s502-original-S80-V88-thirteen-real-note-heads-class-conditional-selections-PREXML \
+            -D model/S502 --repo "${{ github.repository }}"
+          gh run download 38595050941 \
+            -n s504-classconditional-neural-selector-note-heads-compatible-no-OOF-fit \
+            -D model/S504 --repo "${{ github.repository }}"
+      - name: Restore original MIDI/XML true-note names exclusively for evaluation-side training labels
+        run: |
+          gh run download 38570219836 \
+            -n s488-original-IDMT-45-true-guitar-21-poly-BasicPitch-note-set-vs-S80-ExactK \
+            -D model/S488 --repo "${{ github.repository }}"
+          gh run download 38560885111 \
+            -n s476-MAESTRO-original-V88-K-new-onsets-vs-sounding-322-same-events-audit \
+            -D model/S476 --repo "${{ github.repository }}"
+      - name: Align eight real independent acoustic recordings, canonical note onsets, 13 head proposals and pitch-set truth
+        run: |
+          python -u -m scripts.s505_build_cross_recording_note_selector_training_rows \
+            --graph model/S498 --graph-report model/S498/report.json \
+            --heads model/S502 --head-report model/S502/report.json \
+            --nn model/S504 --nn-report model/S504/report.json \
+            --guitar model/S488/S488_45_TRUE_GUITAR_SOURCE_NOTESETS_PAIRED.jsonl \
+            --guitar-report model/S488/report.json \
+            --piano model/S476/S476_ORIGINAL_S470_PIANO_NEW_NOTE_VS_SOUNDING_322.jsonl \
+            --piano-report model/S476/report.json \
+            --out model/S505
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S505/report.json'))
+          assert r['status']=='S505_RETROSPECTIVE_REAL_EIGHT_RECORDINGS_HEAD_PITCH_SET_TRAIN_ROWS'
+          assert r['eight_original_recordings']==8
+          assert r['matched_positive_note_birth_only_NOT_continuous_event_precision']
+          assert r['historical_source_exposure_not_genuinely_blind'] and r['no_promotion']
+          with np.load('model/S505/S505_REAL_NOTE_HEADS_EIGHT_RECORDINGS_MATCHED_POSITIVES.npz') as a:
+            assert a['head_note_bits'].shape[1:]==(13,128)
+            assert a['head_k_mask'].shape[1:]==(13,7)
+            assert len(np.unique(a['recording_sha']))==8
+          print('S505 genuine original source audio proposals, true note identities and eight held-recording labels')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s505-real-8-recording-held-S80-guitar-V88-piano-neural-note-heads-train-table
+          path: model/S505/
+          retention-days: 90

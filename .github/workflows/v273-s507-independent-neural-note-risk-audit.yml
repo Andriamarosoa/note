@@ -1,0 +1,60 @@
+name: S507 independent replay of eight real neural note selector models with exact pitch regressions
+on:
+  push:
+    branches: [codex/s505-neural-note-selector-songheld]
+    paths:
+      - scripts/s507_independent_replay_neural_note_selector_true_pitches_and_K.py
+      - .github/workflows/v273-s507-independent-neural-note-risk-audit.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  independent_note_selection_replay_all_eight_recordings_after_training:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install only numeric audit runtime (no neural training)
+        run: python -m pip install numpy==1.26.4
+      - name: Prove incorrect pitch with correct K is still a regression
+        run: |
+          python -m py_compile scripts/s507_independent_replay_neural_note_selector_true_pitches_and_K.py
+          python -m scripts.s507_independent_replay_neural_note_selector_true_pitches_and_K --self-test
+      - name: Restore eight original SHA-frozen real pieces and their exact note label truth
+        run: |
+          gh run download 38596480284 -n s505-real-8-recording-held-S80-guitar-V88-piano-neural-note-heads-train-table -D model/S505 --repo "${{ github.repository }}"
+      - name: Restore eight trained model weights and genuine OUT-OF-RECORDING note predictions
+        run: |
+          gh run download 38597630105 -n s506-eight-trained-neural-note-selector-held-recording-crossfit-K-and-full-notes -D model/S506 --repo "${{ github.repository }}"
+      - name: Independently count every correct K, actual pitch set fix/regression and complete chord by source and true class
+        run: |
+          python -u -m scripts.s507_independent_replay_neural_note_selector_true_pitches_and_K \
+            --data model/S505/S505_REAL_NOTE_HEADS_EIGHT_RECORDINGS_MATCHED_POSITIVES.npz \
+            --data-report model/S505/report.json \
+            --selector-report model/S506/report.json \
+            --predictions model/S506/S506_RECORDING_HELD_NEURAL_NOTE_SELECTOR_PREDICTIONS.jsonl \
+            --model model/S506 --out model/S507
+          python - <<'PY'
+          import json
+          d=json.load(open('model/S507/report.json'))
+          assert d['status']=='S507_INDEPENDENT_REPLAY_OF_EIGHT_TRUE_TRAINED_NEURAL_SELECTOR_FOLDS'
+          assert d['original_true_neural_models_sha_checked']==8
+          assert d['no_training_or_model_tuning_in_independent_replay']
+          assert d['all_trueK_and_original_predictedK_audits']
+          assert d['previous_exposure_makes_test_not_blind']
+          assert d['no_production_promotion']
+          for src in ('guitar_S80','piano_V88'):
+            for policy in ('fixed_guarded','ungated_diagnostic'):
+              assert d['by_source'][src][policy]['unknown_unmatched_model_groups_are_not_negative_labels']
+          print('S507 independent auditable full-note identities and Exact-K rechecked against all eight model weights')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s507-independent-replayed-eight-true-neural-note-selector-checkpoints-by-K-source-note-accuracy
+          path: model/S507/
+          retention-days: 90
