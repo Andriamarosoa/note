@@ -106,7 +106,7 @@ def run(frozen,freeze_report,guitar,guitar_report,piano,piano_report,out):
            joint_active=policies["joint_Kactive_shadow"])),flush=True)
     out.mkdir(parents=True)
     rep=dict(status="S497_JOINT_GRAPH_EXACTK_BIRTH_ACTIVE_PAIRED_TWO_SOURCE_REVIEW",
-        independent_original_guitar=S80_NOTE_K_FAMILY if False else "full original S80",
+        independent_original_guitar="full original S80",
         independent_original_piano="original V88 only",
         K_label_definitions_different_guitar_active_vs_piano_new=True,
         no_model_training_no_label_threshold_selection=True,
