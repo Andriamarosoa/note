@@ -1,0 +1,62 @@
+name: S477 genuine V88 note K0 undercount versus overcount piano IDMT matched onsets
+on:
+  push:
+    branches: [codex/s476-maestro-newnotes-vs-activeK]
+    paths:
+      - scripts/s477_audit_V88_IDMT_piano_realK_direction_and_K0_collapse.py
+      - .github/workflows/v273-s477-V88-K0-collapse-vs-overcount-sources.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  compare_piano_and_IDMT_V88_source_direction_without_tuning:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test actual source K0 underversus over confusion
+        run: |
+          python -m py_compile scripts/s477_audit_V88_IDMT_piano_realK_direction_and_K0_collapse.py
+          python -m scripts.s477_audit_V88_IDMT_piano_realK_direction_and_K0_collapse --self-test
+      - name: Restore original third MAESTRO 322 exact note-on events with corrected K definition
+        run: |
+          gh run download 38560885111 \
+            -n s476-MAESTRO-original-V88-K-new-onsets-vs-sounding-322-same-events-audit \
+            -D model/S476 --repo ${{ github.repository }}
+      - name: Restore original S453 five IDMT 47 XML onset events and unchanged original V88 stage
+        run: |
+          gh run download 38533183193 \
+            -n s453-original-5stage-S80-IDMT-506-K0-K2-K3-error-provenance-no-promotion \
+            -D model/S453 --repo ${{ github.repository }}
+      - name: Compute direction of source ExactK failures while explicitly respecting different K definitions
+        run: |
+          python -u -m scripts.s477_audit_V88_IDMT_piano_realK_direction_and_K0_collapse \
+            --piano model/S476/S476_ORIGINAL_S470_PIANO_NEW_NOTE_VS_SOUNDING_322.jsonl \
+            --piano-report model/S476/report.json \
+            --idmt model/S453/S453_independent_original_IDMT_stage_audit.jsonl \
+            --idmt-report model/S453/report.json \
+            --out model/S477
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S477/report.json'))
+          assert r['status']=='S477_ORIGINAL_V88_DIRECTIONAL_SOURCE_ERRORS_PIANO_VS_IDMT'
+          assert r['MAESTRO_V88_third_piano']['true_poly']['n']==73
+          assert r['IDMT_original_V88_guitar']['true_poly']['n']==21
+          assert r['S80_official_NOT_TESTED_on_MAESTRO']
+          assert r['K_label_definitions_not_identical_and_cannot_merge_score']
+          assert r['no_promotion']
+          print('S477 source K0 confusion direction verified without mixing V88 and official S80')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s477-original-V88-K0-undercount-versus-overcount-IDMT-vs-MAESTRO-source-proof
+          path: model/S477/
+          retention-days: 90
