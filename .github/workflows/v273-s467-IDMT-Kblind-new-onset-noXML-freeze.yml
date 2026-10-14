@@ -1,0 +1,80 @@
+name: S467 freeze IDMT note-birth confidence trained only on GuitarSet without XML
+on:
+  push:
+    branches: [codex/s467-idmt-birth-transfer-validation]
+    paths:
+      - scripts/s467_freeze_source_GuitarSet_onset_birth_heads_IDMT.py
+      - .github/workflows/v273-s467-IDMT-Kblind-new-onset-noXML-freeze.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s467-IDMT-birth-noXML-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  freeze_four_GuitarSet_birth_heads_on_real_original_S80_IDMT_506:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      PYTHONUNBUFFERED: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Restore scikit learn inference ABI
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Validate all nonzero source K retained and two-level gate
+        run: |
+          python -m py_compile scripts/s467_freeze_source_GuitarSet_onset_birth_heads_IDMT.py
+          python -m scripts.s467_freeze_source_GuitarSet_onset_birth_heads_IDMT --self-test
+      - name: Verify four original GuitarSet-only source binary models finished successfully
+        run: |
+          gh run watch 38552253544 --exit-status --repo ${{ github.repository }}
+          gh run download 38552253544 \
+            -n s466-GuitarSet-59k-composition-held-birth-continuation-Kblind-4-models-no-promotion \
+            -D model/S466 --repo ${{ github.repository }}
+          test -f model/S466/S466_birth_vs_nonbirth_fold3.joblib
+      - name: Restore original pretrained IDMT real 42 by 49 audio and historic source S80 count
+        run: |
+          gh run download 38320164646 \
+            -n s282-s283-IDMT-dataset3-506-native-original-S18-quorum-S97-source \
+            -D model/S282S283 --repo ${{ github.repository }}
+          gh run download 38320939533 \
+            -n s294-s298-two-complete-frozen-S80-original-vs-S274-IDMT-dataset3-506-PREXML \
+            -D model/S294S298 --repo ${{ github.repository }}
+      - name: Freeze 506 trained-from-GuitarSet event-novelty scores before any XML evaluation
+        run: |
+          python -u -m scripts.s467_freeze_source_GuitarSet_onset_birth_heads_IDMT \
+            --audio model/S282S283/S283/S283_original_IDMT_dataset3_native_S97_audio.npz \
+            --audio-report model/S282S283/S283/report.json \
+            --s80 model/S294S298/S297_original/S297_full_original_S80_unseen_IDMT_506_frozen.npz \
+            --s80-report model/S294S298/S297_original/report.json \
+            --models model/S466 --models-report model/S466/report.json \
+            --out model/S467
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S467/report.json'))
+          assert r['status']=='S467_FROZEN_SOURCE_K_BLIND_BIRTH_GATE_IDMT_NO_XML'
+          assert r['source_native_events']==506
+          assert r['original_K_hist']==[456,26,11,7,6,0,0]
+          assert r['original_true_S80_K_changed']==0
+          assert r['IDMT_XML_never_read_for_inference_or_thresholds']
+          assert r['experimental_retention_ONLY_not_applied_to_note_decoder']
+          assert r['no_promotion']
+          with np.load('model/S467/S467_ORIGINAL_S80_IDMT_506_SEPARATE_BIRTH_PROB_FROZEN.npz') as z:
+            assert z['individual_fold_birth_probabilities'].shape==(4,506)
+            assert np.all(z['gated_retain_suggestion'][z['original_S80_K']>0])
+          print('S467 true original K maintained; S466 song-held birth scores frozen without external labels')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s467-IDMT-506-train-GuitarSet-only-birth-prob-4fold-FROZEN-NOXML
+          path: model/S467/
+          retention-days: 90
