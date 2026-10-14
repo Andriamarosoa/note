@@ -116,8 +116,8 @@ def run(heads,headsreport,truth_g,truth_g_report,truth_p,truth_p_report,canonica
                 by_sourceK[str(orig)].update({k:v for k,v in got.items() if
                     k not in ("target_K","source_K")})
             d=dict(c);d["n"]=expected
-            d["net_note_sets"]=d["fix"]-d["regression"]
-            d["net_ExactK"]=d["K_fix"]-d["K_regression"]
+            d["net_note_sets"]=d.get("fix",0)-d.get("regression",0)
+            d["net_ExactK"]=d.get("K_fix",0)-d.get("K_regression",0)
             head_stats[h.name]=dict(action=h.action,kind=h.kind,
                 source_context_only_not_OOF=True,
                 summary=d,
