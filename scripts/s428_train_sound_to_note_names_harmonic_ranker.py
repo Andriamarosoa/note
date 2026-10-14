@@ -131,7 +131,6 @@ def train_model(feats,prob,b_flag,truth,train_event_indices,seed):
             p=truth[x,j]
             ok=p>=40
             t[np.flatnonzero(ok),p[ok]-40]=True
-        idx=np.arange(49)[None,:]
         ptop=np.argsort(-q,axis=1,kind="stable")[:,:12]
         at=np.argsort(-acoustic,axis=1,kind="stable")[:,:8]
         choose=np.zeros((len(x),49),bool)
@@ -209,7 +208,7 @@ def run(audio,reference,original_s402,s416,prior_s419,annotations,truth,out):
            and not(set(comp[inner_train])&set(comp[inner_val])),
            "S428 song split leak")
         inner_model,innercounts=train_model(
-             features,prob[positive],features,targets,
+             features,prob[positive],features,targets[positive],
              row_to_pos[np.flatnonzero(inner_train)],SEED+f)
         val_ix=np.flatnonzero(inner_val)
         val_est=rank_predict(inner_model,features,K[positive],row_to_pos[val_ix])
@@ -218,8 +217,6 @@ def run(audio,reference,original_s402,s416,prior_s419,annotations,truth,out):
         for kk in range(1,7):
             v=val_ix[K[val_ix]==kk]
             if not len(v):gate[str(kk)]=dict(active=False,n=0,net=0);continue
-            g=accuracy_rows(targets,baseline,
-                dict_placeholder(val_ix,val_est,N),v) if False else None
             # Intentionally evaluate ONLY the inner validation subset.
             old_count=sum(exact(baseline[i],targets[i]) for i in v)
             new_count=sum(exact(val_est[np.searchsorted(val_ix,i)],targets[i]) for i in v)
@@ -229,7 +226,7 @@ def run(audio,reference,original_s402,s416,prior_s419,annotations,truth,out):
                 old_exact=int(old_count),new_exact=int(new_count),
                 net=int(net_gain),training_only=True)
         final_model,fullcounts=train_model(
-            features,prob[positive],features,targets,
+            features,prob[positive],features,targets[positive],
             row_to_pos[np.flatnonzero(train)],SEED+40+f)
         held_ix=np.flatnonzero(held)
         held_est=rank_predict(final_model,features,K[positive],row_to_pos[held_ix])
