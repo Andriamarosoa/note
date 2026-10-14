@@ -55,3 +55,24 @@ Le réseau séparé naissance/continuation S466, pourtant utile sur GuitarSet et
 [S472](https://github.com/Andriamarosoa/note/actions/runs/38559972349) a montré que la seule probabilité de naissance de S466 n'est pas assez informative pour faire K2↔K3 ou K3↔K4 (AUC proche de 0,5). [S473](https://github.com/Andriamarosoa/note/actions/runs/38560454389) a donc entraîné 12 experts directionnels de morphologie pour les classes **K2, K3, K4** de la référence V88, sans toucher S80 ; aucun seuil assez sûr n'a été sélectionné sur GuitarSet (0 événement corrigé et 0 régression). Le prochain audit de risque détaillé est S474.
 
 La prochaine validation exploitable nécessite une chaîne **S80 complète** appliquée à la même cohorte MAESTRO et/ou plusieurs sources inédites instrument-par-instrument, avec labels « nouvelles notes » fixés a priori et séparation des métriques attaque/Exact-K/noms des notes, avant toute promotion.
+
+## S477 — pourquoi la régression dépend très fortement de la source
+
+[**S477 SUCCESS #38561913315**](https://github.com/Andriamarosoa/note/actions/runs/38561913315) : audit **en lecture seule** de la matrice de confusion du **même V88 d'origine**, à partir des vérités S476 (piano nouvelles notes) et S453 (guitare IDMT notes actives). Les populations/annotations ne sont **pas identiques**, ne pas les fusionner comme un seul benchmark.
+
+| Erreur au niveau des vraies attaques | MAESTRO piano, nouvelles notes | IDMT guitare, notes actives |
+|---|---:|---:|
+| Attaques évaluables | 322 | 45 |
+| V88 Exact-K correct | 42 | 22 |
+| K **sous-estimé** | **261** | 10 |
+| K **surestimé** | 19 | **13** |
+| Attaques réelles classées K0 | **233** | 7 |
+| Vrais accords polyphoniques | 73 | 21 |
+| Poly Corrects | 7 | 4 |
+| Poly **sous-estimés** | **65** | 6 |
+| Poly **surestimés** | 1 | **11** |
+| Accords poly réels classés K0 | **37** | 3 |
+
+**Découverte importante : le sens de l'erreur change avec les données.** Sur le piano, le V88 original fait massivement un **effondrement vers K0 / sous-comptage** (261/322 sous-estimés), y compris 37 vrais accords poly classés K0. Sur IDMT guitare, les vrais accords poly sont plutôt **surcomptés** (11/21), conformément à S453. Un correcteur global « augmenter K » ou « diminuer K » améliorerait un domaine au détriment de l'autre. Il faut un **routage de fiabilité conditionné par des preuves acoustiques**, et idéalement un détecteur qui puisse s'abstenir lorsque la source diffère du domaine entraîné.
+
+Cette observation n'attribue pas tout à l'instrument : la convention K (nouveaux onsets piano vs notes actives XML guitare), la nature des accords et les petits effectifs IDMT diffèrent. Néanmoins, elle montre qu'**IDMT n'est pas la seule source où V88 échoue**, et que le mécanisme d'erreur n'est pas unique. Ces nombres sont de **V88**, toujours pas de la chaîne S80 complète.
