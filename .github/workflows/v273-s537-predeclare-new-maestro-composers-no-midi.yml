@@ -1,0 +1,51 @@
+name: S537 preregister five previously S469-unused original MAESTRO test composers without WAV or MIDI
+on:
+  push:
+    branches: [codex/s533-s535-note-fundamental-loops]
+    paths:
+      - scripts/s537_preregister_new_composer_piano_blind_holdout.py
+      - .github/workflows/v273-s537-predeclare-new-maestro-composers-no-midi.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+jobs:
+  preregister_new_musical_held_out_piano_source_metadata_only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Check deterministic exclusion of three historically exposed composers using fabricated filename metadata only
+        run: |
+          python -m py_compile scripts/s537_preregister_new_composer_piano_blind_holdout.py
+          python -m scripts.s537_preregister_new_composer_piano_blind_holdout --self-test
+      - name: Restore original preregistered third source historical filenames only, no audio or MIDI
+        run: |
+          gh run download 38558629021 -n s469-third-corpus-MAESTRO-v3-3-test-piano-filename-only-PREMIDI -D model/S469 --repo "${{ github.repository }}"
+      - name: Download ONLY official CSV metadata, exclude old filenames and composers, freeze five new prospective candidates
+        run: |
+          python -u -m scripts.s537_preregister_new_composer_piano_blind_holdout \
+            --s469 model/S469/report.json --out model/S537
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S537/report.json'))
+          assert r['status']=='S537_PREREGISTERED_DISTINCT_MAESTRO_V3_TEST_PIANO_COHORT_NO_WAV_NO_MIDI'
+          assert r['selected_recordings']==5
+          assert r['selected_different_composers_from_S469']
+          assert r['selected_different_audio_filenames_from_S469']
+          assert not r['WAV_contents_downloaded_or_inspected']
+          assert not r['MIDI_contents_downloaded_or_inspected']
+          assert not r['model_predictions_or_weights_used_to_choose']
+          assert r['prospective_exclusion_verified_ONLY_AGAINST_S469_not_all_repo_history']
+          assert r['original_S80_ExactK_and_Live_unchanged'] and r['no_promotion']
+          print('S537 prospective composer-and-song-disjoint five piano test sources SEALED BEFORE AUDIO/MIDI')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s537-predeclared-five-distinct-MAESTRO-composers-only-metadata-no-WAV-no-MIDI
+          path: model/S537/report.json
+          retention-days: 90
