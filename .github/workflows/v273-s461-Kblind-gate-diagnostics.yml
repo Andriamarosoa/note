@@ -41,7 +41,7 @@ jobs:
           import json
           a=json.load(open('model/S461/report.json'))
           assert a['status']=='S461_S458_INNER_K_GATE_ABSTENTION_TRAINING_ONLY_DIAGNOSTIC'
-          assert a['S458_trained_fold_count']==4 and a['all_120_threshold_checks_rejected']
+          assert a['S458_trained_fold_count']==4 and a['all_160_threshold_checks_rejected']
           assert a['original_reference_unchanged'] and a['no_promotion']
           assert not a['external_info_used_for_prediction_model_or_thresholds']
           print('S461 research gate-failure root causes verified; S80 remains original')
@@ -49,6 +49,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: s461-S458-120-inner-validation-K0K4-abstention-causes-NOPROMOTION
+          name: s461-S458-160-inner-validation-K0K4-abstention-causes-NOPROMOTION
           path: model/S461/
           retention-days: 90
