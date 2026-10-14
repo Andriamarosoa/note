@@ -42,8 +42,8 @@ def build(args):
     need(not args.out.exists(),"S505 developmental matching is immutable")
     graph,head,nn=validate_sources(args)
     collected=[];stats={}
-    for corpus,truthfile,truthsource,timekey,truth_key,original_K,truth_total,
-        truepoly,source_K_correct,rawcorrect,baseline_head in (
+    for (corpus,truthfile,truthsource,timekey,truth_key,original_K,truth_total,
+         truepoly,source_K_correct,rawcorrect,baseline_head) in (
        ("guitar_S80",args.guitar,"source_wav","original_XML_anchor",
         "true_active","original_S80_K",45,21,25,27,1),
        ("piano_V88",args.piano,None,"onset_at_excerpt_s",
