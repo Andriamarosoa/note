@@ -1,0 +1,59 @@
+name: S514 audit failure of independent physical piano note onset generator against original 322 MIDI events
+on:
+  push:
+    branches: [codex/s513-piano-and-guitar-raw-harmonic-crosssource]
+    paths:
+      - scripts/s514_MAESTRO_true_piano_attacks_raw_physical_onset_failure.py
+      - .github/workflows/v273-s514-audit-MAESTRO-physical-onset-recall.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+jobs:
+  compare_raw_physical_onset_to_three_authentic_piano_MIDI_excerpts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install strictly numeric original true piano onset evaluator
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1
+      - name: Test no real onset can be counted twice
+        run: |
+          python -m py_compile scripts/s514_MAESTRO_true_piano_attacks_raw_physical_onset_failure.py
+          python -m scripts.s514_MAESTRO_true_piano_attacks_raw_physical_onset_failure --self-test
+      - name: Restore S513 guitar and piano raw notes SHA-frozen before original MIDI
+        run: |
+          gh run download 38609550506 \
+            -n s513-original-five-IDMT-three-MAESTRO-new-independent-raw-note-generator-PREMIDI \
+            -D model/S513 --repo "${{ github.repository }}"
+      - name: Read original 322 piano note groups only after S513 frozen acoustic inference
+        run: |
+          gh run download 38560885111 \
+            -n s476-MAESTRO-original-V88-K-new-onsets-vs-sounding-322-same-events-audit \
+            -D model/S476 --repo "${{ github.repository }}"
+      - name: Count matched/missed true piano note attacks, physical onset source failure, and unknown candidate onsets
+        run: |
+          python -u -m scripts.s514_MAESTRO_true_piano_attacks_raw_physical_onset_failure \
+            --raw model/S513/S511_RAW_HARMONIC_FUNDAMENTAL_ONSET_TOP6_TOP12_PRETRUTH.jsonl \
+            --raw-report model/S513/report.json \
+            --piano model/S476/S476_ORIGINAL_S470_PIANO_NEW_NOTE_VS_SOUNDING_322.jsonl \
+            --piano-report model/S476/report.json --out model/S514
+          python - <<'PY'
+          import json
+          d=json.load(open('model/S514/report.json'))
+          assert d['status']=='S514_RAW_HARMONIC_ONSET_GENERATOR_PIANO_DOMAIN_FAILURE_AUDIT'
+          assert d['all_322_true_piano_positive_events_in_denominator']
+          assert d['physical_global_flux_gate_not_robust_across_instruments']
+          assert d['unpaired_model_onsets_NOT_false_negatives_or_false_positives_proven']
+          assert d['no_promotion']
+          print('S514 all true piano onsets retained, source-specific physical onset failure diagnosed')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s514-original-322-MAESTRO-MIDI-onsets-vs-frozen-physical-audio-failure-audit
+          path: model/S514/
+          retention-days: 90
