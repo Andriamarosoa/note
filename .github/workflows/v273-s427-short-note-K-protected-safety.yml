@@ -58,7 +58,7 @@ jobs:
           assert r['exactK_regressions']==0 and r['independently_verified_exported_midi_K_per_row']
           assert r['unchanged_MIDI_pitch_and_onset'] and r['Live_unchanged']
           assert all(x['composition_overlap']==0 for x in r['train_only_selection'])
-          assert not r['no_official_promotion']
+          assert r['no_official_promotion']
           print('S427 PASS: K unchanged and full note comparison checked')
           PY
       - uses: actions/upload-artifact@v4
