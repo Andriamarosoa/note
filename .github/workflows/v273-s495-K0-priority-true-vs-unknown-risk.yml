@@ -59,7 +59,7 @@ jobs:
           assert r['no_promotion'] and r['nondeployed_study_only']
           for k in ('guitar_S80','piano_V88'):
             for value in r['by_source'][k]['policies'].values():
-              assert value['original_source_K>=1_modified']==0
+              assert value['original_source_K_ge1_modified']==0
               assert value['score_true_annotated_positive_attacks']['regressed']==0
           print('S495 verified true positive note rescue and separate potential false K0 activations')
           PY
