@@ -32,8 +32,8 @@ jobs:
           python -m scripts.s460_score_IDMT_Kblind_S459_frozen_against_S453 --self-test
       - name: Wait for genuine S459 frozen source predictions before any truth join
         run: |
-          gh run watch 38535987213 --exit-status --repo ${{ github.repository }}
-          gh run download 38535987213 \
+          gh run watch 38536698802 --exit-status --repo ${{ github.repository }}
+          gh run download 38536698802 \
             -n s459-external-original-IDMT-S80-vs-S458-morphology-K0K6-PREXML-frozen \
             -D model/S459 --repo ${{ github.repository }}
           test -f model/S459/report.json
