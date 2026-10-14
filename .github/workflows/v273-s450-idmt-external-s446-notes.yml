@@ -1,0 +1,92 @@
+name: S450 original S80 external IDMT 506 sound to note names S446 K locked frozen
+on:
+  push:
+    branches: [codex/s450-idmt-external-s446-notes]
+    paths:
+      - 'scripts/s450_IDMT_S80_S430_S446_external_K_locked_names.py'
+      - '.github/workflows/v273-s450-idmt-external-s446-notes.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s450-idmt-original-s80-frozen-notes-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  external_real_idmt_native_unlabelled_S80_to_note_names:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned S430 S446 trained model dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.5.1
+      - name: Test K-locked external note changes require 2 distinct folds
+        run: |
+          python -m py_compile scripts/s450_IDMT_S80_S430_S446_external_K_locked_names.py
+          python -m scripts.s450_IDMT_S80_S430_S446_external_K_locked_names --self-test
+      - name: Restore genuine external IDMT 5 WAV native V88 onset and 42x49 audio, NO XML
+        run: |
+          gh run download 38320164646 \
+            -n s282-s283-IDMT-dataset3-506-native-original-S18-quorum-S97-source \
+            -D model/S282S283 --repo ${{ github.repository }}
+          test -f model/S282S283/S283/S283_original_IDMT_dataset3_native_S97_audio.npz
+          test -f model/S282S283/S283/report.json
+      - name: Restore ORIGINAL complete pretrained source S79 S80 K0 K6 frozen before original IDMT XML opened
+        run: |
+          gh run download 38320939533 \
+            -n s294-s298-two-complete-frozen-S80-original-vs-S274-IDMT-dataset3-506-PREXML \
+            -D model/S294S298 --repo ${{ github.repository }}
+          test -f model/S294S298/S297_original/S297_full_original_S80_unseen_IDMT_506_frozen.npz
+          test -f model/S294S298/S297_original/report.json
+      - name: Restore S402 S416 S428 and S446 original GuitarSet-trained weights, not IDMT-tuned
+        run: |
+          gh run download 38361853607 -n s402-K-fed-to-MIDI-neural-input-composition-disjoint-4fold-DEVELOPMENT-NOPROMOTION -D model/S402 --repo ${{ github.repository }}
+          gh run download 38381449092 -n s416-native-CNN-time-pitch-note-head-songheld-S80-ExactK-LOCKED-NO-YourMT -D model/S416 --repo ${{ github.repository }}
+          gh run download 38383639848 -n s419-native-K-gated-MIDI-head-songheld-S402-S416-no-ExactK-regression -D model/S419 --repo ${{ github.repository }}
+          gh run download 38517551029 -n s428-acoustic-harmonic-direct-note-names-S80-ExactK-LOCKED-S419-pair -D model/S428 --repo ${{ github.repository }}
+          gh run download 38528232276 -n s446-joint-chord-learned-songheld-Klocked-guitarset-dev-NOPROMOTION -D model/S446 --repo ${{ github.repository }}
+      - name: Freeze all 506 external authentic IDMT note names and ensure EXACT original S80 K, no labels
+        run: |
+          python -u -m scripts.s450_IDMT_S80_S430_S446_external_K_locked_names \
+            --source model/S282S283/S283/S283_original_IDMT_dataset3_native_S97_audio.npz \
+            --source-report model/S282S283/S283/report.json \
+            --s80 model/S294S298/S297_original/S297_full_original_S80_unseen_IDMT_506_frozen.npz \
+            --s80-report model/S294S298/S297_original/report.json \
+            --s402 model/S402 --s416 model/S416 --s428 model/S428 \
+            --s419-report model/S419/report.json \
+            --s428-report model/S428/report.json \
+            --s446 model/S446 --s446-report model/S446/report.json \
+            --out model/S450
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S450/report.json'))
+          assert r['status']=='S450_ORIGINAL_S80_EXTERNAL_IDMT_506_NOTE_NAMES_FROZEN'
+          assert r['original_events']==506 and r['recordings']==5
+          assert r['original_native_original_S80_K_used']
+          assert r['original_S80_predictions_unchanged'] and r['exactK_regressions']==0
+          assert r['no_XML_MIDI_truth_opened'] and r['no_retraining_no_external_threshold_selection']
+          assert not r['no_new_blind_cohort'] is False
+          assert r['experimental_not_promoted']
+          with np.load('model/S450/S450_IDMT_EXTERNAL_FROZEN_NOTE_NAMES.npz') as z:
+            assert np.array_equal((z['S450_pitch_slots']>=0).sum(1),z['s80_K'])
+            assert np.array_equal((z['S430_pitch_slots']>=0).sum(1),z['s80_K'])
+          print('S450 pass original external S80 K unchanged all 506 events, MIDI truth unopened')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s450-original-S80-IDMT-dataset3-506-S430-vs-S446-note-names-frozen-PREXML
+          path: model/S450/
+          retention-days: 90
