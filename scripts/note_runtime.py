@@ -21,14 +21,14 @@ def main(argv=None):
         choices=("live-boundaries","live-v8","live-midi","status"),
         help="existing Live modes are delegated without changes; offline best is pinned, not live"
     )
-    parser.add_argument("--profile",default=str(DEFAULT_PROFILE),
+    parser.add_argument("--status-profile",default=str(DEFAULT_PROFILE),
         help="versioned protection manifest for status (event sidecar has its own flag)")
     ns, forwarded=parser.parse_known_args(argv)
     if ns.mode=="status":
         if forwarded:
             parser.error("status does not accept stream or inference flags")
         from pathlib import Path
-        record=load_frozen_profile(Path(ns.profile))
+        record=load_frozen_profile(Path(ns.status_profile))
         print(json.dumps({
             "status":"ORIGINAL_LIVE_AND_BEST_OFFLINE_REFERENCES_PROTECTED",
             "legacy_live_untouched":record["legacy_live_untouched"],
