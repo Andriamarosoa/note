@@ -1,0 +1,55 @@
+name: S474 84 nested K2 K3 K4 acoustic specialist thresholds causal rejection audit
+on:
+  push:
+    branches: [codex/s473-v88-targeted-K2K3K4-specialists]
+    paths:
+      - scripts/s474_diagnose_S473_84_directional_K_safety_rejections.py
+      - .github/workflows/v273-s474-specialist-sourceK-84-safety-audit.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  quantify_training_only_proposed_fixes_vs_regressions_by_true_poly_K:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install minimal original numeric ABI
+        run: python -m pip install numpy==1.26.4
+      - name: Verify rejection reason classifier
+        run: |
+          python -m py_compile scripts/s474_diagnose_S473_84_directional_K_safety_rejections.py
+          python -m scripts.s474_diagnose_S473_84_directional_K_safety_rejections --self-test
+      - name: Restore frozen original 12-specialist all 84 inner validation gate evidence
+        run: |
+          gh run download 38560454389 \
+            -n s473-GuitarSet-59k-original-V88-songheld-K2K3K4-directional-experts-NOPROMOTION \
+            -D model/S473 --repo ${{ github.repository }}
+      - name: Audit 84 source K2 K3 K4 directional candidates with real correction and regression counts
+        run: |
+          python -u -m scripts.s474_diagnose_S473_84_directional_K_safety_rejections \
+            --s473 model/S473/report.json \
+            --out model/S474
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S474/report.json'))
+          assert r['status']=='S474_READONLY_S473_84_K2K3K4_INNER_THRESHOLD_REJECTION_AUDIT'
+          assert r['thresholds_tested']==84
+          assert r['all_gate_options_unsafe']
+          assert r['no_retraining_no_external_IDMT_or_MAESTRO_label_access']
+          assert r['no_promotion']
+          print('S474 84 original K-specialist source safety gates audited without promotion')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s474-84-inner-source-K2K3K4-directional-threshold-fix-regressions-NOPROMOTION
+          path: model/S474/
+          retention-days: 90
