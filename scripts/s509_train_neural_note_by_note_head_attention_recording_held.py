@@ -42,14 +42,19 @@ def features(d):
         need(len(acoustic)>0,"S509 observed canonical musical event has no acoustic note")
         for pitch in acoustic:
             vote=allowed[:,pitch].astype(np.float32)
-            H=np.concatenate([ctx[i],types[i],mask[i,:,None].astype(np.float32),
+            # S505 copies S504's globally observable 16D context [N,16].
+            # Repeat the SAME measured acoustic context across specialists;
+            # head type, eligibility and per-pitch votes distinguish them.
+            acoustic_context=np.repeat(ctx[i][None,:],13,axis=0)
+            H=np.concatenate([acoustic_context,types[i],
+                              mask[i,:,None].astype(np.float32),
                               vote[:,None]],axis=1)
             lo=acoustic[acoustic<pitch]
             is_harmonic=any(int(pitch)-int(lower) in (12,19,24) for lower in lo)
             # Recorded provenance of source (guitar/piano) is observable,
             # not the true note-set. The two datasets have distinct label
             # conventions for active vs newly born pitches.
-            gl=np.concatenate([ctx[i,0,:],
+            gl=np.concatenate([ctx[i],
               np.array([pitch/127.,float(pitch%12)/11.,
                 float(source[i]=="guitar_S80"),float(bp[pitch]),
                 len(acoustic)/12.,float(is_harmonic)],np.float32)])
