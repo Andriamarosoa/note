@@ -239,7 +239,7 @@ def selftest():
     pairs=match_times(a,b,.04)
     need(len(pairs)==2 and len({i for i,j,d in pairs})==2,
          "S471 original musical onset matching one-to-one needed")
-    on=onset_groups([(.1,.5,50),(.11,.5,55),(.4,.6,60)],.0,.9)
+    on=onset_groups([(.1,.3,50),(.11,.3,55),(.4,.6,60)],.0,.9)
     need(len(on)==2 and on[0]["trueK"]==2 and on[1]["trueK"]==1,
          "S471 original MIDI 20ms birth grouping or MIDI sounding cardinality failed")
     print("S471 SELFTEST PASS true note grouping and original native onset 80ms matching")
