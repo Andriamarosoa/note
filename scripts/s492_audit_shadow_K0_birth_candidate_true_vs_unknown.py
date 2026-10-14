@@ -87,7 +87,7 @@ def run(guitar,piano,source_report,s488,s488report,s476,s476report,out):
         annotated[labelindex]=True
         bypolicy={}
         for name,pred in proposals.items():
-            truthscore=score_sample(ref[labelindex],truth,pred[labelindex]) if False else score_sample(ref[labelindex],truth,pred[labelindex])
+            truthscore=score_sample(ref[labelindex],truth,pred[labelindex])
             # True positive onsets only: a source K0 was necessarily wrong.
             # Not every rescued native event has XML/MIDI ground truth!
             unknown=np.flatnonzero(~annotated&(ref==0)&(pred>0))
