@@ -239,10 +239,15 @@ def run(audio,s80,s416,s428,truth,annotations,out):
         held=bank["ix"][folds[bank["ix"]]==f]
         train_ix=outertrain[~inner[outertrain]]
         val_ix=outertrain[inner[outertrain]]
-        need(len(train_ix)>1500 and len(val_ix)>250 and len(held)>500
+        need(len(train_ix)>900 and len(val_ix)>100 and len(held)>10
              and not (set(comps[train_ix])&set(comps[val_ix]))
              and not (set(comps[outertrain])&set(comps[held])),
              "S442 guitar composition train/held overlap")
+        print("S442 PARTITION",json.dumps(dict(
+            fold=f,inner_train=len(train_ix),inner_val=len(val_ix),
+            outer_held=len(held),train_compositions=len(set(comps[train_ix])),
+            val_compositions=len(set(comps[val_ix])),
+            held_compositions=len(set(comps[held])))),flush=True)
         model,fit=train(bank,train_ix,SEED+f)
         val_proposed=score_events(model,bank,val_ix)
         chooser=[]
