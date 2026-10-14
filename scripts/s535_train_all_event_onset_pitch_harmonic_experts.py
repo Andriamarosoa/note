@@ -86,7 +86,7 @@ def truth_labels(a,manifest,proof,raw):
                             V88_candidates=len(ids))
     need(onsets.sum()==322 and (len(onsets)-onsets.sum())==253
          and sum(len(q) for q in truths.values())==330
-         and sum(np.sum(y))==408,
+         and int(y.sum())==408,
          "S535 full original MIDI 408 matched notes, 322 positives, 253 unmatched negatives drift")
     return record,y,onsets,truths,summary
 
