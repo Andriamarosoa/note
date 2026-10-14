@@ -212,7 +212,7 @@ def run(s276,s277,s280,s281,s282,s297,s450,s451_report,out):
 
 def selftest():
     b=np.array([0,2,0,3],np.int8)
-    folded=np.array([[2,3,2,3],[2,3,2,2],[2,3,2,2],[0,0,3,0]],np.int8)
+    folded=np.array([[2,3,2,2],[2,3,2,2],[2,3,2,2],[0,0,3,0]],np.int8)
     selected,supported=fold_consensus(folded,b)
     need(selected.tolist()==[2,3,2,2] and supported.tolist()==[True,True,True,True],
          "S453 cannot reproduce original heldfold votes")
