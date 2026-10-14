@@ -27,12 +27,13 @@ def sha(p):
     return sha_bytes(Path(p).read_bytes())
 def pcm_same_S277(raw):
     rate,x=wavfile.read(io.BytesIO(raw))
-    if x.ndim==2:x=x.mean(axis=1)
+    channels=x.shape[1] if x.ndim==2 else 1
     if x.dtype==np.int16:x=x.astype(np.float32)/32768.
     elif x.dtype==np.int32:x=x.astype(np.float64)/2147483648.
     elif x.dtype==np.uint8:x=(x.astype(np.float32)-128.)/128.
     elif np.issubdtype(x.dtype,np.floating):x=x.astype(np.float64)
     else:raise ValueError("S464 unsupported original PCM")
+    if channels>1:x=x.mean(axis=1)
     if rate!=SR:
         fac=gcd(int(rate),SR)
         x=resample_poly(x,SR//fac,int(rate)//fac)
