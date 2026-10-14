@@ -1,0 +1,60 @@
+name: S510 independent S509 trained note E3 per-pitch addition removal forensic audit
+on:
+  push:
+    branches: [codex/s505-neural-note-selector-songheld]
+    paths:
+      - scripts/s510_independent_neural_per_pitch_add_remove_regression_audit.py
+      - .github/workflows/v273-s510-independent-per-note-pitch-regression.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  independently_verify_all_eight_neural_weights_named_note_edits_and_polyphony_losses:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install numeric replay only, never train on audit truth
+        run: python -m pip install numpy==1.26.4
+      - name: Test one wrong true note at same K must veto production
+        run: |
+          python -m py_compile scripts/s510_independent_neural_per_pitch_add_remove_regression_audit.py
+          python -m scripts.s510_independent_neural_per_pitch_add_remove_regression_audit --self-test
+      - name: Restore real original S505 frozen musical observations and note labels
+        run: |
+          gh run download 38596480284 \
+            -n s505-real-8-recording-held-S80-guitar-V88-piano-neural-note-heads-train-table \
+            -D model/S505 --repo "${{ github.repository }}"
+      - name: Restore eight genuine TensorFlow trained held recording models, frozen pitch decisions and SHA
+        run: |
+          gh run download 38599016032 \
+            -n s509-true-neural-per-pitch-attention-8-songheld-recordings-full-chord-K-and-real-notes \
+            -D model/S509 --repo "${{ github.repository }}"
+      - name: Independently recompute exact note pitches every edit, true-K and source-K, plus full-chord regression veto
+        run: |
+          python -u -m scripts.s510_independent_neural_per_pitch_add_remove_regression_audit \
+            --data model/S505/S505_REAL_NOTE_HEADS_EIGHT_RECORDINGS_MATCHED_POSITIVES.npz \
+            --data-report model/S505/report.json \
+            --study-report model/S509/report.json \
+            --predictions model/S509/S509_HELD_RECORDING_NOTE_PITCH_PROBABILITIES.jsonl \
+            --models model/S509 --out model/S510
+          python - <<'PY'
+          import json
+          d=json.load(open('model/S510/report.json'))
+          assert d['status']=='S510_INDEPENDENT_SOURCE_PITCH_BY_PITCH_S509_REPLAY'
+          assert d['eight_neural_per_pitch_checkpoint_SHAs_verified']
+          assert d['each_edit_has_named_added_removed_and_audit_truth_notes']
+          assert d['any_observed_regression_vetoes_S80_promotion']
+          assert d['no_production_changes'] and d['no_promotion']
+          print('S510 replay confirmed every regression and every attempted new note; no official model promotion')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s510-eight-real-neural-note-pitch-S509-independent-regression-and-K-audit
+          path: model/S510/
+          retention-days: 90
