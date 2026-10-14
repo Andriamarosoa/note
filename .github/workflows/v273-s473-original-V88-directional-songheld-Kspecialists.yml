@@ -1,0 +1,69 @@
+name: S473 train selective original V88 predicted K2 K3 K4 morphology experts no promotion
+on:
+  push:
+    branches: [codex/s473-v88-targeted-K2K3K4-specialists]
+    paths:
+      - scripts/s473_train_original_V88_directional_K2K3K4_morphology_experts.py
+      - .github/workflows/v273-s473-original-V88-directional-songheld-Kspecialists.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s473-V88-K2K3K4-specialists-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  independent_composition_trained_source_V88_adjacent_K_correction:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install original scikit learn ExtraTrees 4fold acoustic specialist ABI
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Ensure never modify source K0 K1 K5 K6 and adjacent edits only
+        run: |
+          python -m py_compile scripts/s473_train_original_V88_directional_K2K3K4_morphology_experts.py
+          python -m scripts.s473_train_original_V88_directional_K2K3K4_morphology_experts --self-test
+      - name: Restore genuine original 59k guitar acoustic geometry and independent JAMS note K labels
+        run: |
+          gh run download 38311525987 \
+            -n s258-full-guitarset-59309-real-original-native-527D-58D-46D-42x49-and-OOF-PR16 \
+            -D model/S258 --repo ${{ github.repository }}
+      - name: Fit original-V88-source independent composition held K2 K3 K4 adjacent specialists
+        run: |
+          python -u -m scripts.s473_train_original_V88_directional_K2K3K4_morphology_experts \
+            --audio model/S258/S258_GuitarSet_59309_original_V88_S97_audio.npz \
+            --truth model/S258/S258_GuitarSet_59309_true_K_ONLY_FOR_FINAL_AUDIT.npz \
+            --out model/S473
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S473/report.json'))
+          assert r['status']=='S473_ACTUAL_V88_SONGHELD_DIRECTIONAL_K2_K3_K4_SPECIALISTS'
+          assert r['original_source_events']==59309
+          assert r['true_poly_events']==7385
+          assert r['source_non_poly_classes_K0K1_K5K6_untouched']
+          assert r['nested_composition_calibration_only']
+          assert r['no_external_truth_training_or_threshold_tuning']
+          assert r['no_promotion']
+          with np.load('model/S473/S473_SOURCE_V88_GUITARSET_OOF_RESIDUAL_COUNTS.npz') as z:
+            assert np.array_equal(
+              z['original_V88_K'][np.isin(z['original_V88_K'],[0,1,5,6])],
+              z['new_candidate_K'][np.isin(z['original_V88_K'],[0,1,5,6])])
+          print('S473 safe source V88 selective K2K3K4 paired score verified without S80 changes')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s473-GuitarSet-59k-original-V88-songheld-K2K3K4-directional-experts-NOPROMOTION
+          path: model/S473/
+          retention-days: 90
