@@ -34,8 +34,8 @@ jobs:
           python -m scripts.s443_independent_frozen_S442_musical_chord_audit --self-test
       - name: Confirm completed S442 song-held prediction generation before scoring
         run: |
-          gh run watch 38527063099 --exit-status --repo ${{ github.repository }}
-          gh run download 38527063099 -n s442-joint-chord-learned-songheld-Klocked-guitarset-dev-NOPROMOTION -D model/S442 --repo ${{ github.repository }}
+          gh run watch 38527241258 --exit-status --repo ${{ github.repository }}
+          gh run download 38527241258 -n s442-joint-chord-learned-songheld-Klocked-guitarset-dev-NOPROMOTION -D model/S442 --repo ${{ github.repository }}
           test -f model/S442/S442_FROZEN_NOTE_NAMES_KLOCKED_59309.npz
           test -f model/S442/report.json
       - name: Restore original untouched S80 S428 and all original musical event sources
