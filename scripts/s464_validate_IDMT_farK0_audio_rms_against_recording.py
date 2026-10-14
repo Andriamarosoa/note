@@ -8,7 +8,7 @@ Combines with immutable S462 XML-nearness only AFTER audio event features
 are computed. K0 on unmatched events is PREDICTED K0, never true K0.
 """
 from __future__ import annotations
-import argparse,hashlib,io,json,collections,urllib.request,zipfile
+import argparse,hashlib,io,json,collections,urllib.request,urllib.error,zipfile,time
 from pathlib import Path
 from math import gcd
 import numpy as np
@@ -16,6 +16,23 @@ from scipy.io import wavfile
 from scipy.signal import resample_poly
 from scripts.s177_preregister_external_polyphony_source import API,audit
 from scripts.s183_idmt_selective_http_range_s35 import HttpRangeZIP
+
+class ReliableReadOnlyRangeZIP(HttpRangeZIP):
+    """Retry the exact same immutable Zenodo 206-byte range on network truncation.
+    Byte-level checks and original S277 SHA guards still apply unchanged.
+    """
+    def _receive(self,start,end):
+        for attempt in range(6):
+            try:
+                return super()._receive(start,end)
+            except (ValueError,TimeoutError,OSError,urllib.error.URLError) as e:
+                if attempt==5:
+                    raise
+                print("S464 original range read failed; retrying same bytes",
+                      dict(attempt=attempt+1,start=start,end=end,
+                           reason=type(e).__name__),flush=True)
+                time.sleep(min(8.,1.25*(attempt+1)))
+        raise RuntimeError("unreachable original HTTPS source retry")
 
 SR=44100
 CLIP=10.
@@ -111,7 +128,7 @@ def run(s276,s277,s277_report,s462_ledger,s462_report,s297,out):
         "Accept":"application/json","User-Agent":"S464-IDMT-audio-rms-candidates-original-WAV"})
     with urllib.request.urlopen(req,timeout=60) as response:
         info=audit(json.load(response))
-    remote=HttpRangeZIP(info["source_url"],info["size_bytes"])
+    remote=ReliableReadOnlyRangeZIP(info["source_url"],info["size_bytes"])
     auditrows=[];bywav=[]
     with zipfile.ZipFile(remote) as z:
         need(sha_bytes("\n".join(sorted(z.namelist())).encode())==
