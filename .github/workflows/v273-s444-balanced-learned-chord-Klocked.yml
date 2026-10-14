@@ -1,7 +1,7 @@
 name: S444 count-balanced composition-held joint chord note learning, no K regression
 on:
   push:
-    branches: [codex/s444-learned-joint-note-swap-klocked]
+    branches: [codex/s444-balanced-joint-notes-klocked]
     paths:
       - 'scripts/s444_balanced_joint_note_swap_songheld_Klocked.py'
       - '.github/workflows/v273-s444-balanced-learned-chord-Klocked.yml'
@@ -34,7 +34,7 @@ jobs:
       - name: Test learned chord feature contract and original-K abstention
         run: |
           python -m py_compile scripts/s444_balanced_joint_note_swap_songheld_Klocked.py
-          python -u -m scripts.s444_learned_joint_note_swap_songheld_Klocked --self-test
+          python -u -m scripts.s444_balanced_joint_note_swap_songheld_Klocked --self-test
       - name: Restore historical genuine GuitarSet 59309 events and annotations only as training targets
         run: |
           gh run download 38311525987 -n s258-full-guitarset-59309-real-original-native-527D-58D-46D-42x49-and-OOF-PR16 -D model/S258 --repo ${{ github.repository }}
@@ -54,7 +54,7 @@ jobs:
           echo 'b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip' | md5sum -c -
       - name: Fit four song-held K2 K3 K4 joint pitch swap models and freeze all named notes before scoring
         run: |
-          python -u -m scripts.s444_learned_joint_note_swap_songheld_Klocked \
+          python -u -m scripts.s444_balanced_joint_note_swap_songheld_Klocked \
             --audio model/S258/S258_GuitarSet_59309_original_V88_S97_audio.npz \
             --s80 model/S397/S397/S397_S272_FULL_REPLAY/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz \
             --s416 model/S416/S416_NATIVE_Kfirst_MIDI_NOTE_59309_SONG_OOF.npz \
