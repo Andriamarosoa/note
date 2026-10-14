@@ -51,5 +51,53 @@
     "audit": "scripts/s429_audit_actual_E3_G3_B3_note_names_59309_S80_Klocked.py",
     "runtime": "scripts/s430_infer_note_names_from_new_S80_sound_events.py"
   },
-  "technical_report": "analysis/README_V273_S428_S430_SOUND_TO_NOTE_NAMES_KLOCKED.md"
+  "technical_report": "analysis/README_V273_S428_S430_SOUND_TO_NOTE_NAMES_KLOCKED.md",
+  "followup_S431_S432": {
+    "status": "S431_OCTAVE_GUARD_REJECTED_S432_ACTUAL_WAV_KFIRST_NOTE_NAMES_TESTED",
+    "date": "2026-10-14",
+    "S431": {
+      "run": 38518847905,
+      "artifact_id": 11872703323,
+      "S428_original_exact_poly_chords": 3025,
+      "candidate_exact_poly_chords": 3025,
+      "corrections": 10,
+      "regressions": 10,
+      "net": 0,
+      "by_true_K_net": {
+        "K2": -2,
+        "K3": 2
+      },
+      "active_as_new_best": false,
+      "K_regressions": 0,
+      "official_promotion": false
+    },
+    "S432": {
+      "corrected_run": 38519266231,
+      "corrected_artifact_id": 11873141340,
+      "status": "REAL_WAV_ACTUAL_SPECTRAL_FEATURE_EXTRACTION_AND_TRAINED_NOTE_NAMES_SUCCESS",
+      "actual_raw_mono_PCM16_44100Hz_WAV_parsed": true,
+      "original_harmonic_extractor_exact_4096FFT_256HOP_6PARTIAL_42x49": true,
+      "real_test_1_K1_input_note": "E3",
+      "real_test_1_recognized_note": "E3",
+      "real_test_2_true_fresh_attacks": [
+        "E3",
+        "G3"
+      ],
+      "real_test_2_predicted_note_names": [
+        "E3",
+        "G3"
+      ],
+      "real_test_3_K0_note_names": [],
+      "note_count_protected_per_event": true,
+      "S80_original_K_cannot_be_inferred_from_raw_WAV_by_S432": true,
+      "needs_externally_predicted_S80_event_boundaries_and_K": true,
+      "new_audio_accuracy_not_measured": true,
+      "benchmark_generalization_not_proved": true,
+      "original_S80_K_model_unchanged": true,
+      "live_unchanged": true,
+      "official_promotion": false
+    },
+    "next_blocker": "Connect native S45/S46/S79/S80 original inference to raw arbitrary WAV to supply event boundaries + K, then validate true fresh audio",
+    "technical_report": "analysis/README_V273_S431_S432_OCTAVE_AUDIT_AND_REAL_WAV_NOTE_NAMES.md"
+  }
 }
