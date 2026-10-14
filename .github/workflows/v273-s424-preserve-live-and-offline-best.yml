@@ -1,0 +1,87 @@
+name: Preserve S80 best offline scores and live causal K-locked MIDI bridge
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'src/causal_note/live_k_midi_bridge.py'
+      - 'scripts/stream_k_midi_live.py'
+      - 'test/test_live_k_midi_bridge.py'
+      - 'analysis/v273_live_and_offline_protected_modes.json'
+      - 'analysis/README_V273_LIVE_OFFLINE_KLOCKED_PRESERVATION.md'
+      - '.github/workflows/v273-s424-preserve-live-and-offline-best.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s424-dual-live-offline-protected-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  zero_regression_legacy_live_and_protected_offline:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONPATH: '.:src'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check original causal Live sources and all selected model baselines UNCHANGED by Git blob
+        run: |
+          python - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+          p=json.loads(Path('analysis/v273_live_and_offline_protected_modes.json').read_text())
+          for path,expected in p['protected_git_blob_sha1'].items():
+              actual=subprocess.check_output(['git','hash-object',path],text=True).strip()
+              assert actual==expected,(path,actual,expected)
+              print('UNCHANGED',path,actual)
+          j=json.loads(Path('analysis/v273_active_development_reference.json').read_text())
+          assert j['reference_id']=='S80_S397_K5_GUARDED'
+          assert j['active_note_detection_head']['id']=='S402_K_CONDITIONED_352D_MLP'
+          assert j['active_offset_detection_head']['id']=='S408_PITCH_CONDITIONED_SPARSE_FUTURE_AUDIO_NOTE_DURATION_REGRESSOR'
+          assert j['native_long_note_survival_development_challenger']['id']==p['best_offline_native_challenger']
+          assert j['n_global']==59309 and j['global_correct']==53529
+          assert j['n_poly_K2_to_K6']==7385 and j['poly_correct']==6054
+          assert j['native_long_note_survival_development_challenger']['correct_complete_notes_S422_50ms']==16340
+          assert p['original_S80_inference_causal_live_integration_verified'] is False
+          assert p['live_quality_certified'] is False
+          print('S424 PROTECTION VERIFIED: S80/S402/S408 & S422 unchanged; no live score claim')
+          PY
+      - name: Regression tests on ORIGINAL causal Live + new optional real-time note events
+        run: |
+          python -m compileall -q src/causal_note/live_k_midi_bridge.py scripts/stream_k_midi_live.py test/test_live_k_midi_bridge.py
+          python -m unittest -v test.test_live_k_midi_bridge test.test_pipeline test.test_detect_live
+      - name: Real JSONL stdin replay emits causal NOTE ON/OFF MIDI and respects K0 sustain
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          rows=[
+              {'type':'decision','sample':128,'s80_K':2,'midi_pitches':[48,60]},
+              {'type':'decision','sample':256,'s80_K':0,'midi_pitches':[]},
+              {'type':'decision','sample':512,'s80_K':0,'midi_pitches':[],
+               'note_off_ids':['note-000000001']},
+              {'type':'decision','sample':768,'s80_K':1,'midi_pitches':[60]},
+              {'type':'eof','end_sample':1024}]
+          Path('/tmp/s424-demo-input.jsonl').write_text('\n'.join(map(json.dumps,rows))+'\n')
+          PY
+          python -m scripts.stream_k_midi_live \
+            --events-jsonl /tmp/s424-demo-input.jsonl \
+            --midi-file /tmp/s424-demo.mid \
+            > /tmp/s424-demo-output.jsonl \
+            2> /tmp/s424-demo-report.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          output=[json.loads(x) for x in Path('/tmp/s424-demo-output.jsonl').read_text().splitlines()]
+          assert [x['type'] for x in output]==['note_on','note_on','note_off','note_off','note_on','note_off']
+          assert [x['sample'] for x in output]==[128,128,512,768,768,1024]
+          assert sum(x['type']=='note_on' for x in output)==3
+          summary=json.loads(Path('/tmp/s424-demo-report.json').read_text())
+          assert summary['note_on_events']==summary['input_S80_K_sum']==3
+          assert not summary['live_MIDI_accuracy_measured']
+          assert Path('/tmp/s424-demo.mid').read_bytes().startswith(b'MThd')
+          print('S424 PASS streamed MIDI, strict K0 no new notes, retrigger, valid SMF, 0 K changes')
+          PY
