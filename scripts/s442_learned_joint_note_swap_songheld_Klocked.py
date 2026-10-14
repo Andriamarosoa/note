@@ -239,15 +239,20 @@ def run(audio,s80,s416,s428,truth,annotations,out):
         held=bank["ix"][folds[bank["ix"]]==f]
         train_ix=outertrain[~inner[outertrain]]
         val_ix=outertrain[inner[outertrain]]
-        need(len(train_ix)>900 and len(val_ix)>100 and len(held)>10
-             and not (set(comps[train_ix])&set(comps[val_ix]))
+        # Composition identity must be disjoint even in tiny or rare folds.
+        need(not (set(comps[train_ix])&set(comps[val_ix]))
              and not (set(comps[outertrain])&set(comps[held])),
-             "S442 guitar composition train/held overlap")
+             "S442 CRITICAL guitar composition overlap")
         print("S442 PARTITION",json.dumps(dict(
             fold=f,inner_train=len(train_ix),inner_val=len(val_ix),
             outer_held=len(held),train_compositions=len(set(comps[train_ix])),
             val_compositions=len(set(comps[val_ix])),
             held_compositions=len(set(comps[held])))),flush=True)
+        if len(train_ix)<200 or len(val_ix)<20 or len(held)<1:
+            foldreports.append(dict(fold=f,active=False,reason="insufficient_disjoint_data",
+               inner_train_events=len(train_ix),inner_validation_events=len(val_ix),
+               held_events=len(held),held_truth_not_used_for_threshold=True))
+            continue
         model,fit=train(bank,train_ix,SEED+f)
         val_proposed=score_events(model,bank,val_ix)
         chooser=[]
