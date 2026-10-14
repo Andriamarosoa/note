@@ -317,7 +317,8 @@ def run(audio,s80,s416,s428,truth,annotations,out):
                     filename,compress=3)
         foldreports.append(dict(fold=f,fit=fit,
             inner_train_events=len(train_ix),inner_validation_events=len(val_ix),
-            held_events=len(held),inner_candidates=chooser,
+            held_events=len(held),composition_count_balance=partition,
+            inner_candidates=chooser,
             active=selected is not None,selected_validation=selected,
             model_sha256=sha(filename),held_truth_not_used_for_threshold=True))
         print("S444 FOLD",json.dumps(foldreports[-1]),flush=True)
@@ -385,7 +386,14 @@ def selftest():
          "S444 must enforce physical notes and lock K2")
     need(np.array_equal(apply(original,{0:(.5,(52,64))},.9),original),
          "S444 threshold must abstain")
-    print("S444 SELFTEST PASS K2 locked, son→E3, acoustic joint candidates")
+    comps=np.asarray(["a"]*30+["b"]*20+["c"]*15+["d"]*10+["e"]*12+["f"]*8)
+    train_ids,val_ids,diagnostic=balanced_inner_partition(
+        np.arange(len(comps)),comps)
+    need(len(set(comps[train_ids])&set(comps[val_ids]))==0
+         and len(train_ids)+len(val_ids)==len(comps)
+         and diagnostic["actual_validation_events"]==len(val_ids),
+         "S444 balanced label-free composition partition unit test failed")
+    print("S444 SELFTEST PASS K2 locked, label-blind balanced composition subset")
 
 if __name__=="__main__":
     ap=argparse.ArgumentParser()
