@@ -1,0 +1,43 @@
+name: S469 MAESTRO v3 third source independent official piano test filenames preregister
+on:
+  push:
+    branches: [codex/s469-maestro-third-source-blind-audit]
+    paths:
+      - scripts/s469_preregister_MAESTRO_v3_third_source_filename_only.py
+      - .github/workflows/v273-s469-maestro-third-source-metadata.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  official_maestro_third_corpus_audio_midi_paths_only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test selection deterministic and absolutely label-free
+        run: |
+          python -m py_compile scripts/s469_preregister_MAESTRO_v3_third_source_filename_only.py
+          python -m scripts.s469_preregister_MAESTRO_v3_third_source_filename_only --self-test
+      - name: Read only official MAESTRO v3 CSV metadata and predeclare 3 test tracks
+        run: |
+          python -u -m scripts.s469_preregister_MAESTRO_v3_third_source_filename_only --out model/S469
+          python - <<'PY'
+          import json
+          d=json.load(open('model/S469/report.json'))
+          assert d['status']=='S469_PREREGISTERED_MAESTRO_V3_THIRD_SOURCE_FILENAME_ONLY'
+          assert d['selected_piano_recordings']==3
+          assert d['verified_different_corpus_from_GuitarSet_and_IDMT']
+          assert not d['WAV_file_contents_read'] and not d['MIDI_note_contents_read']
+          assert d['no_promotion']
+          print('S469 PREREGISTER SUCCESS: third-source piano audio-only candidate set sealed')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s469-third-corpus-MAESTRO-v3-3-test-piano-filename-only-PREMIDI
+          path: model/S469/
+          retention-days: 90
