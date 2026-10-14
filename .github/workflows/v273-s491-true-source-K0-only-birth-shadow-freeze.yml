@@ -1,0 +1,81 @@
+name: S491 unlabelled 2-source shadow K0 rescue from matched independently trained note births
+on:
+  push:
+    branches: [codex/s491-K0-evidence-gated-shadow-fusion]
+    paths:
+      - scripts/s491_freeze_K0_only_BasicPitch_birth_gate_two_sources.py
+      - .github/workflows/v273-s491-true-source-K0-only-birth-shadow-freeze.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original_guitar_S80_and_original_piano_V88_K0_only_label_free_routing:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install minimal frozen source event matcher
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1
+      - name: Verify one-to-one matched acoustic birth never duplicates source note
+        run: |
+          python -m py_compile scripts/s491_freeze_K0_only_BasicPitch_birth_gate_two_sources.py
+          python -m scripts.s491_freeze_K0_only_BasicPitch_birth_gate_two_sources --self-test
+      - name: Restore original IDMT five real WAV native events and true complete original S80 source
+        run: |
+          gh run download 38319155819 \
+            -n s277-IDMT-dataset3-5WAV-true-original-V88-native-official-unlabelled \
+            -D model/S277 --repo ${{ github.repository }}
+          gh run download 38320939533 \
+            -n s294-s298-two-complete-frozen-S80-original-vs-S274-IDMT-dataset3-506-PREXML \
+            -D model/S294S298 --repo ${{ github.repository }}
+          gh run download 38569589535 \
+            -n s487-original-five-IDMT-real-guitar-pretrained-BasicPitch-note-names-PREXML \
+            -D model/S487 --repo ${{ github.repository }}
+      - name: Restore genuine MAESTRO piano original V88 and independent pretrained noMIDI note names
+        run: |
+          gh run download 38559067956 \
+            -n s470-third-true-MAESTRO-piano-original-V88-and-S466-birth-frozen-PREMIDI \
+            -D model/S470 --repo ${{ github.repository }}
+          gh run download 38568724837 \
+            -n s485-spotify-basicpitch-3-original-MAESTRO-piano-audio-to-notes-frozen-PREMIDI \
+            -D model/S485 --repo ${{ github.repository }}
+      - name: Freeze two separately predeclared sourceK0-only shadow policies WITHOUT ANY XML OR MIDI
+        run: |
+          python -u -m scripts.s491_freeze_K0_only_BasicPitch_birth_gate_two_sources \
+            --s277 model/S277/S277_original_official_V88_dataset3_native_5_WAV_predictions.npz \
+            --s297 model/S294S298/S297_original/S297_full_original_S80_unseen_IDMT_506_frozen.npz \
+            --s487 model/S487/S487_BASIC_PITCH_FIVE_TRUE_IDMT_GUITAR_PREXML_NOTES.jsonl \
+            --s487report model/S487/report.json \
+            --s470 model/S470/S470_MAESTRO_ORIGINAL_V88_K_BIRTH_FROZEN_PREMIDI.npz \
+            --s485 model/S485/S485_FIXED_BASIC_PITCH_PRETRAINED_PIANO_NOTES_PRELABEL.jsonl \
+            --s485report model/S485/report.json \
+            --out model/S491
+          python - <<'PY'
+          import json,numpy as np
+          d=json.load(open('model/S491/report.json'))
+          assert d['status']=='S491_TWO_SOURCE_K0_ONLY_ONE_TO_ONE_EXTERNAL_PITCH_BIRTH_FROZEN_NO_TRUTH'
+          assert d['original_IDMT_source_is_final_S80']
+          assert d['original_MAESTRO_source_is_V88_NOT_S80']
+          assert d['no_midi_or_xml_label_read_during_freeze']
+          assert d['only_original_source_K0_may_change'] and d['no_promotion']
+          for key in ('guitar_S80','piano_V88'):
+            with np.load('model/S491/S491_'+key+'_SOURCE_K0_ONLY_FROZEN.npz') as a:
+              ref=a['source_K']
+              assert np.array_equal(ref[ref>0],a['proposed_only_K0_birth'][ref>0])
+              assert np.array_equal(ref[ref>0],a['proposed_only_K0_active30'][ref>0])
+          print('S491 original source S80/V88 K>=1 locked; all K0 pitch evidence frozen WITHOUT labels')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s491-true-guitar-S80-and-piano-V88-K0only-BasicPitch-one-to-one-frozen-NOXML
+          path: model/S491/
+          retention-days: 90
