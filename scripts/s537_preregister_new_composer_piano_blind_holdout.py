@@ -14,9 +14,14 @@ from __future__ import annotations
 import argparse,csv,hashlib,io,json,urllib.request
 from pathlib import Path
 from scripts.s469_preregister_MAESTRO_v3_third_source_filename_only import (
-    URL,AUDIO_MIRROR,MIN_DURATION,MAX_DURATION,OFFSET,SECONDS)
+    URL,AUDIO_MIRROR,OFFSET,SECONDS)
 
 N=5
+# Broaden metadata-only duration bounds for 5 unseen composers after source
+# eligibility check; WAV/MIDI remained unopened. Full WAV download must
+# still be byte-size checked at the future source-inference stage.
+MIN_DURATION=40.0
+MAX_DURATION=240.0
 def need(x,msg):
     if not x:raise ValueError(msg)
 def digest(x):return hashlib.sha256(x).hexdigest()
