@@ -1,0 +1,66 @@
+name: S515 independent 49-pitch frame onset harmonic feature heads from 8 real guitar and piano recordings
+on:
+  push:
+    branches: [codex/s515-frame-onset-harmonic-note-experts]
+    paths:
+      - scripts/s515_freeze_real_WAV_49_pitch_frame_onset_harmonic_experts.py
+      - .github/workflows/v273-s515-eighth-real-multilabel-audio-note-heads.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+jobs:
+  original_guitar_S80_piano_V88_new_raw_sound_pitch_heads:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install lightweight numerical harmonic/onset features
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2
+      - name: Verify each real audio pitch event has exactly 49 candidate features not only BP notes
+        run: |
+          python -m py_compile scripts/s515_freeze_real_WAV_49_pitch_frame_onset_harmonic_experts.py
+          python -m scripts.s515_freeze_real_WAV_49_pitch_frame_onset_harmonic_experts --self-test
+      - name: Restore SOURCE original 5 guitar + 3 piano filenames and byte-verified SHA
+        run: |
+          gh run download 38318827219 -n s276-IDMT-central-directory-only-prospective-WAV-cohort -D model/S276 --repo "${{ github.repository }}"
+          gh run download 38319155819 -n s277-IDMT-dataset3-5WAV-true-original-V88-native-official-unlabelled -D model/S277 --repo "${{ github.repository }}"
+          gh run download 38558629021 -n s469-third-corpus-MAESTRO-v3-3-test-piano-filename-only-PREMIDI -D model/S469 --repo "${{ github.repository }}"
+          gh run download 38559067956 -n s470-third-true-MAESTRO-piano-original-V88-and-S466-birth-frozen-PREMIDI -D model/S470 --repo "${{ github.repository }}"
+      - name: Restore independent PREXML pretrained guitar and piano named notes, source canonical event graph
+        run: |
+          gh run download 38569589535 -n s487-original-five-IDMT-real-guitar-pretrained-BasicPitch-note-names-PREXML -D model/S487 --repo "${{ github.repository }}"
+          gh run download 38568724837 -n s485-spotify-basicpitch-3-original-MAESTRO-piano-audio-to-notes-frozen-PREMIDI -D model/S485 --repo "${{ github.repository }}"
+          gh run download 38590187399 -n s498-true-S80-guitar-V88-piano-canonical-unique-musical-note-onset-groups-no-truth -D model/S498 --repo "${{ github.repository }}"
+      - name: Freeze 49 notes x 11 independent actual audio spectral and physical attack features per canonical note birth WITHOUT annotations
+        run: |
+          python -u -m scripts.s515_freeze_real_WAV_49_pitch_frame_onset_harmonic_experts \
+            --s276 model/S276/S276_IDMT_filename_only_cohort_manifest.json \
+            --s277 model/S277/S277_original_official_V88_dataset3_native_5_WAV_predictions.npz \
+            --s277-report model/S277/report.json \
+            --s469 model/S469/report.json --s470 model/S470/report.json \
+            --canonical model/S498 --canonical-report model/S498/report.json \
+            --guitar-notes model/S487/S487_BASIC_PITCH_FIVE_TRUE_IDMT_GUITAR_PREXML_NOTES.jsonl \
+            --guitar-notes-report model/S487/report.json \
+            --piano-notes model/S485/S485_FIXED_BASIC_PITCH_PRETRAINED_PIANO_NOTES_PRELABEL.jsonl \
+            --piano-notes-report model/S485/report.json --out model/S515
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S515/report.json'))
+          assert r['status']=='S515_TRUE_EIGHT_SOURCE_WAV_INDEPENDENT_MULTILABEL_NOTE_FEATURES_PRETRUTH'
+          assert r['source_number']==8
+          assert r['all_predicted_pitches_40to88_not_just_BP_candidates']
+          assert r['no_original_MIDI_XML_labels_read_to_generate_features']
+          assert r['no_trained_pitch_note_classifier_yet'] and r['no_promotion']
+          print('S515 true raw source 49 fundamental/frame/onset note features SHA-frozen')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s515-8-source-raw-waveform-49-note-multilabel-onset-harmonic-feature-heads-PREMIDI
+          path: model/S515/
+          retention-days: 90
