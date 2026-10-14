@@ -35,8 +35,8 @@ jobs:
           python -m scripts.s459_external_IDMT_Kblind_source_candidate_freeze --self-test
       - name: Verify completion of S458 train-only GuitarSet model production
         run: |
-          gh run watch 38535700073 --exit-status --repo ${{ github.repository }}
-          gh run download 38535700073 \
+          gh run watch 38536654031 --exit-status --repo ${{ github.repository }}
+          gh run download 38536654031 \
             -n s458-Kblind-1090D-K-head-GuitarSet-songheld-train-only-NOPROMOTION \
             -D model/S458 --repo ${{ github.repository }}
           test -f model/S458/report.json
