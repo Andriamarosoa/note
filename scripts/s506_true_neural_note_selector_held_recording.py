@@ -149,6 +149,7 @@ def run(args):
     outidx=np.full((N,2),-1,np.int16)
     observations=[]
     folds=[]
+    args.out.mkdir(parents=True)
     for fold,held_recording in enumerate(sorted(set(groups))):
         te=np.flatnonzero(groups==held_recording)
         tr=np.flatnonzero(groups!=held_recording)
@@ -182,6 +183,8 @@ def run(args):
             optimizer.apply_gradients(zip(grads,model.trainable_variables))
             losses.append(float(loss.numpy()))
             need(np.isfinite(losses[-1]),"S506 network diverged")
+        checkpoint=args.out/f"S506_fold{fold}_TRAINED_NEURAL_SELECTOR.weights.h5"
+        model.save_weights(checkpoint)
         out={key:value.numpy() for key,value in model(Xte,training=False).items()}
         outidx[te,0]=select(out,headsets[te],baseid[te],eligible[te],k_mask[te],False)
         outidx[te,1]=select(out,headsets[te],baseid[te],eligible[te],k_mask[te],True)
@@ -194,6 +197,7 @@ def run(args):
             held_recording_absent_from_training=True,
             fixed_epochs=20,last_loss=losses[-1],
             training_action_not_KEEP=int(np.sum(train_actions[tr]!=7)),
+            trained_checkpoint_sha256=sha(checkpoint),
             exploratory_only=True))
         observations.extend(dict(canonical_event_id=str(d["event_id"][i]),
             source_recording_sha=held_recording,corpus=str(source[i]),
