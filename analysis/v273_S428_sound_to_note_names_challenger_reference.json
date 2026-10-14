@@ -99,5 +99,106 @@
     },
     "next_blocker": "Connect native S45/S46/S79/S80 original inference to raw arbitrary WAV to supply event boundaries + K, then validate true fresh audio",
     "technical_report": "analysis/README_V273_S431_S432_OCTAVE_AUDIT_AND_REAL_WAV_NOTE_NAMES.md"
+  },
+  "followup_S433_S438": {
+    "status": "SUCCESS_REAL_WAV_ID_JOIN_AND_AUTHENTIC_MIC_MULTI_SONG_PITCH_DIAGNOSTIC_NO_PROMOTION",
+    "updated_at": "2026-10-14",
+    "frozen_S80_original_K_retained": true,
+    "S433": {
+      "automatic_native_row_ID_join_success": true,
+      "run_id": 38521744655,
+      "manual_K_JSONL_required": false,
+      "original_s80_npz_predicted_K_required": true,
+      "original_v88_native_event_npz_required": true,
+      "actual_WAV_42x49_extracted": true,
+      "no_YourMT_teacher": true,
+      "standalone_raw_wav_alone_complete": false
+    },
+    "S434": {
+      "real_guitar_MIC_WAV_run_success": 38522246789,
+      "artifact_id": 11874084244,
+      "selected_original_track": "00_BN2-166-Ab_comp.jams",
+      "selected_native_sound_events": 30,
+      "output_note_names_count_preserves_K": true,
+      "original_audio_modality_pickup_vs_mic_mismatch": true
+    },
+    "S435": {
+      "real_JAMS_audit_run_id": 38522497380,
+      "audit_artifact_id": 11874441410,
+      "number_real_events": 30,
+      "S80_K_correct": 25,
+      "musical_note_sets_completely_correct": 22,
+      "note_instances_F1": 0.6382978723404256,
+      "overall_rate_K0_inflated": true
+    },
+    "S436": {
+      "no_K0_inflation_run": 38522928961,
+      "true_K0": {
+        "correct": 20,
+        "n": 20
+      },
+      "true_K1": {
+        "correct": 1,
+        "n": 4
+      },
+      "true_poly_K2toK6": {
+        "correct": 1,
+        "n": 6
+      },
+      "user_note_that_small_sample_not_generalizable": true
+    },
+    "S437": {
+      "multi_song_source_run": 38523251921,
+      "artifact_id": 11875236011,
+      "number_distinct_compositions": 12,
+      "real_audio_K_balanced_event_count": 174,
+      "predicted_K_hist": [
+        24,
+        45,
+        45,
+        40,
+        15,
+        5,
+        0
+      ],
+      "new_note_names_count": 340,
+      "song_selection_label_blind_hash": true,
+      "no_JAMS_during_prediction": true
+    },
+    "S438": {
+      "measured_audit_run": 38523463170,
+      "audit_artifact_id": 11874866530,
+      "true_poly_K2toK6_events": 90,
+      "true_poly_K_correct": 74,
+      "true_poly_all_note_names_correct": 27,
+      "true_poly_exact_chord_rate": 0.3,
+      "given_correct_K_all_note_names_correct": 0.36486486486486486,
+      "true_poly_note_instance_TP": 181,
+      "true_poly_reference_notes": 257,
+      "true_poly_predicted_notes": 258,
+      "true_poly_note_F1": 0.7029126213592233,
+      "true_K1_events": 54,
+      "true_K1_all_note_names_correct": 30,
+      "true_K2_events": 38,
+      "true_K2_all_note_names_correct": 12,
+      "true_K3_events": 31,
+      "true_K3_all_note_names_correct": 12,
+      "true_K4plus_events": 21,
+      "true_K4plus_all_note_names_correct": 3,
+      "all_events_exact_K_correct": 135,
+      "all_events_total": 174,
+      "original_S80_model_predictions_unchanged": true,
+      "original_S428_dev_baseline_not_replaced": true,
+      "selected_biased_K_stratification_not_population_score": true,
+      "no_official_promotion": true
+    },
+    "primary_recommendation": "Fix chord/voice pitch identity jointly at K-correct on MIC with independently trained domain-compatible model, then fully integrate original V88/S45/S46/S79/S80 arbitrary WAV stack; never substitute S80 by harmonic peak counting",
+    "technical_reports": [
+      "analysis/README_V273_S433_S435_REAL_WAV_TO_NOTE_NAMES_AND_JAMS_AUDIT.md",
+      "analysis/README_V273_S437_S438_REAL_AUDIO_K_BALANCED_NOTE_IDENTITY_AUDIT.md"
+    ],
+    "original_live_and_offset_modules_unchanged": true,
+    "no_heldout_outside_GuitarSet_validation": true,
+    "official_promotion": false
   }
 }
