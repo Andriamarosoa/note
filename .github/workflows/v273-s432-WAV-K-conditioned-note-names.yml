@@ -55,6 +55,9 @@ jobs:
           # K values explicitly supplied by simulated upstream detector.
           envelope=np.where(t<.45,0.,np.exp(-np.maximum(t-.45,0.)*1.1))
           signal=.18*envelope*np.sin(2*np.pi*164.8138*t)
+          # E3 is genuinely REATTACKED alongside the new G3:
+          # both are *new* K2 notes, not a sustained old E3 plus new G3.
+          signal+=.16*(t>=1.5)*np.exp(-np.maximum(t-1.5,0.)*1.7)*np.sin(2*np.pi*164.8138*t)
           signal+=.11*(t>=1.5)*np.exp(-np.maximum(t-1.5,0.)*1.7)*np.sin(2*np.pi*196*t)
           wavfile.write('test_sound/new_guitar_like.wav',sr,np.rint(signal*32767).astype(np.int16))
           decisions=[
