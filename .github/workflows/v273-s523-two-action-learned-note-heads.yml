@@ -1,0 +1,70 @@
+name: S523 train separately ADD_NEW and KEEP_OR_REMOVE note heads on real nested S516 acoustic evidence
+on:
+  push:
+    branches: [codex/s521-balanced-14head-audio-note-attention]
+    paths:
+      - scripts/s523_train_independent_ADD_and_REMOVE_music_note_heads.py
+      - .github/workflows/v273-s523-two-action-learned-note-heads.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: s523-two-learned-actions-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  audit_new_absent_note_pitches_with_separate_train_only_ADD_and_REMOVE_models:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 85
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install only real acoustic random forest heads and independent linear add/remove action models
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2
+      - name: Test new G3 absent from original BasicPitch can be ADDED and original E3 retained
+        run: |
+          python -m py_compile scripts/s523_train_independent_ADD_and_REMOVE_music_note_heads.py
+          python -m scripts.s523_train_independent_ADD_and_REMOVE_music_note_heads --self-test
+      - name: Restore real pre-MIDI raw WAV acoustic 49 pitch new evidence from original eight recordings
+        run: |
+          gh run download 38610350820 \
+            -n s515-8-source-raw-waveform-49-note-multilabel-onset-harmonic-feature-heads-PREMIDI \
+            -D model/S515 --repo "${{ github.repository }}"
+      - name: Restore original MIDI/XML note-set supervision on real original 45 guitar and 220 piano positive canonical births
+        run: |
+          gh run download 38596480284 \
+            -n s505-real-8-recording-held-S80-guitar-V88-piano-neural-note-heads-train-table \
+            -D model/S505 --repo "${{ github.repository }}"
+      - name: Train eight deeply nested raw 49 pitch producers plus independent ADD and DELETE head selectors, audit true new notes and all regressions
+        run: |
+          python -u -m scripts.s523_train_independent_ADD_and_REMOVE_music_note_heads \
+            --acoustic model/S515/S515_TWO_INSTRUMENT_49_PITCH_REAL_AUDIO_FEATURES_PREMIDI.jsonl \
+            --acoustic-report model/S515/report.json \
+            --heads model/S505/S505_REAL_NOTE_HEADS_EIGHT_RECORDINGS_MATCHED_POSITIVES.npz \
+            --head-report model/S505/report.json --out model/S523
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.load(open('model/S523/report.json'))
+          assert r['status']=='S523_2_SEPARATE_LEARNED_ADD_REMOVE_PITCH_HEADS_NESTED_EIGHT_RECORDINGS'
+          assert r['genuinely_learned_ADD_NEW_NOTE_and_KEEP_OR_REMOVE_NOTE_heads']
+          assert r['held_source_excluded_from_all_nested_inner_model_and_outer_model_training']
+          assert r['train_song_group_count']==7
+          assert r['inner_acoustic_training_songs']==6
+          assert r['real_acoustic_pitches_40to88_not_limited_to_existing_BP_notes']
+          assert r['missing_102_original_true_piano_attacks_not_recovered']
+          assert r['no_promotion'] and r['no_official_S80_V88_Live_modification']
+          assert len(r['folds'])==8
+          assert len(list(Path('model/S523').glob('*.joblib')))==24
+          print('S523 true new missing MIDI note additions and trained removal head corrections audited; no reference promotion')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s523-separated-genuinely-trained-add-new-and-remove-wrong-note-heads-8-nested-held-WAV
+          path: model/S523/
+          retention-days: 90
