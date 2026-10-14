@@ -78,7 +78,12 @@ def run(a):
         by_cap["no_cap" if cap==0 else "max_"+str(cap)]=dict(overall=result,per_recording=rec)
         print("S532 FIXED PITCH-CARDINALITY POSTFILTER MIDI VERDICT",
               json.dumps(dict(policy=cap,metrics=result)),flush=True)
-    b=orig_report["scoring"]["raw_only:0.7"]["total"]
+    # load_sources returns the original S471 report in tuple position 1,
+    # so fetch the independent S530 report explicitly for this replay.
+    baseline=json.loads(a.full_report.read_text())
+    need(baseline["status"]=="S530_FULL_36SECOND_MAESTRO_NOTEON_PITCH_AND_ATTACK_RETROSPECTIVE",
+         "S532 needs original successful independent complete MIDI S530 source")
+    b=baseline["scoring"]["raw_only:0.7"]["total"]
     a0=by_cap["no_cap"]["overall"]
     for k,g in (("note_tp","note_tp"),("note_fp","note_fp"),
                 ("note_fn","note_fn"),("full_chords","full_chords")):
