@@ -1,0 +1,82 @@
+name: S431 octave disambiguation sound to E3 under locked S80 K2K3
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s431_octave_K23_pitch_identity_guard.py'
+      - '.github/workflows/v273-s431-octave-Klocked-note-names.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s431-native-octave-pitch-only-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  held_composition_octave_errors:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Check musical E3/E4 octave candidate and unchanged cardinality
+        run: |
+          python -m py_compile scripts/s431_octave_K23_pitch_identity_guard.py
+          python -u -m scripts.s431_octave_K23_pitch_identity_guard --self-test
+      - name: Restore original 59309 sound events and S80 frozen prediction K
+        run: |
+          gh run download 38311525987 -n s258-full-guitarset-59309-real-original-native-527D-58D-46D-42x49-and-OOF-PR16 -D model/S258 --repo ${{ github.repository }}
+          gh run download 38352988801 -n s397-s398-S70-suppression-REAL-full-S80-replay-and-scoring-NOPROMOTION -D model/S397 --repo ${{ github.repository }}
+      - name: Restore immutable S402 S416 S419 S428 outputs, no refits upstream
+        run: |
+          gh run download 38361853607 -n s402-K-fed-to-MIDI-neural-input-composition-disjoint-4fold-DEVELOPMENT-NOPROMOTION -D model/S402 --repo ${{ github.repository }}
+          gh run download 38381449092 -n s416-native-CNN-time-pitch-note-head-songheld-S80-ExactK-LOCKED-NO-YourMT -D model/S416 --repo ${{ github.repository }}
+          gh run download 38383639848 -n s419-native-K-gated-MIDI-head-songheld-S402-S416-no-ExactK-regression -D model/S419 --repo ${{ github.repository }}
+          gh run download 38517551029 -n s428-acoustic-harmonic-direct-note-names-S80-ExactK-LOCKED-S419-pair -D model/S428 --repo ${{ github.repository }}
+          test -f model/S428/S428_NOTE_NAMES_S80_K_LOCKED_59309.npz
+      - name: Download official annotations for OTHER-SONG model training and independent summary
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 --retry-delay 3 -o data/GuitarSet/annotation.zip https://huggingface.co/datasets/EZMONYI/music-ai-human-test-audio/resolve/main/external_controls/guitarset_source_v1/annotation.zip
+          echo 'b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip' | md5sum -c -
+      - name: Train 4 held-composition octave rankers and replay actual E3 note exports by S80 K
+        run: |
+          python -u -m scripts.s431_octave_K23_pitch_identity_guard \
+            --audio model/S258/S258_GuitarSet_59309_original_V88_S97_audio.npz \
+            --s80 model/S397/S397/S397_S272_FULL_REPLAY/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz \
+            --s402 model/S402/S402_K_FIRST_S80_MIDI_NOTE_59309_SONG_OOF.npz \
+            --s416 model/S416/S416_NATIVE_Kfirst_MIDI_NOTE_59309_SONG_OOF.npz \
+            --s419 model/S419/S419_NATIVE_K_PROTECTED_HEAD_GATE_59309.npz \
+            --s428 model/S428/S428_NOTE_NAMES_S80_K_LOCKED_59309.npz \
+            --annotations data/GuitarSet/annotation.zip \
+            --truth model/S258/S258_GuitarSet_59309_true_K_ONLY_FOR_FINAL_AUDIT.npz \
+            --out model/S431
+          python - <<'PY'
+          import json,numpy as np
+          x=json.load(open('model/S431/report.json'))
+          assert x['status']=='S431_OCTAVE_DISAMBIGUATION_NOTE_NAMES_K_LOCKED'
+          assert x['original_baseline_poly_chords']==3025
+          assert x['no_K_regressions'] and x['exported_note_names_replayed']==59309
+          assert x['original_S80_total_K_correct']==x['new_S80_total_K_correct']==53529
+          assert x['original_S80_poly_K_correct']==x['new_S80_poly_K_correct']==6054
+          assert len(x['fold_train_only_policies'])==4
+          assert x['no_note_duration_or_Live_changed'] and x['not_officially_promoted']
+          with np.load('model/S431/S431_NOTE_NAMES_K_LOCKED_59309.npz') as d:
+            assert np.array_equal((d['midi_pitch_slots']>=0).sum(1),d['s80_K'])
+          print('S431 Verified: zero Exact-K regression, octave hypothesis net gain or loss measured')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s431-songheld-native-octave-note-names-59309-S80-Klocked-vs-S428
+          path: model/S431/
+          retention-days: 90
