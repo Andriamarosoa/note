@@ -1,0 +1,69 @@
+name: S497 score genuine joint graph against original IDMT and MAESTRO note annotations
+on:
+  push:
+    branches: [codex/s496-joint-onset-K-pitch-graph]
+    paths:
+      - scripts/s497_audit_joint_K_graph_true_onsets_and_unknown.py
+      - .github/workflows/v273-s497-joint-graph-true-vs-unknown-audit.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  paired_graph_K_attacks_and_UNKNOWN_native_events:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install minimal numeric true note audit runtime
+        run: python -m pip install numpy==1.26.4
+      - name: Confirm paired fix/regression arithmetic before loading any truth
+        run: |
+          python -m py_compile scripts/s497_audit_joint_K_graph_true_onsets_and_unknown.py
+          python -m scripts.s497_audit_joint_K_graph_true_onsets_and_unknown --self-test
+      - name: Restore graph decisions frozen before true labels opened
+        run: |
+          gh run download 38589165797 \
+            -n s496-joint-temporal-unique-note-owner-original-S80-guitar-V88-piano-no-annotations \
+            -D model/S496 --repo "${{ github.repository }}"
+      - name: Restore actual original 45 IDMT guitar XML verified attacks 21 poly
+        run: |
+          gh run download 38570219836 \
+            -n s488-original-IDMT-45-true-guitar-21-poly-BasicPitch-note-set-vs-S80-ExactK \
+            -D model/S488 --repo "${{ github.repository }}"
+      - name: Restore 322 original piano MIDI attacks 73 new-note poly and true note sets
+        run: |
+          gh run download 38560885111 \
+            -n s476-MAESTRO-original-V88-K-new-onsets-vs-sounding-322-same-events-audit \
+            -D model/S476 --repo "${{ github.repository }}"
+      - name: Compare THREE predeclared graph policies on positive events, separately audit all unlabelled changes
+        run: |
+          python -u -m scripts.s497_audit_joint_K_graph_true_onsets_and_unknown \
+            --frozen model/S496 --freeze-report model/S496/report.json \
+            --guitar model/S488/S488_45_TRUE_GUITAR_SOURCE_NOTESETS_PAIRED.jsonl \
+            --guitar-report model/S488/report.json \
+            --piano model/S476/S476_ORIGINAL_S470_PIANO_NEW_NOTE_VS_SOUNDING_322.jsonl \
+            --piano-report model/S476/report.json \
+            --out model/S497
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S497/report.json'))
+          assert r['status']=='S497_JOINT_GRAPH_EXACTK_BIRTH_ACTIVE_PAIRED_TWO_SOURCE_REVIEW'
+          assert r['no_model_training_no_label_threshold_selection']
+          assert r['protected_original_source_Kpositive_guarded']
+          assert r['unknown_native_events_never_asserted_false_births']
+          assert r['original_S80_and_Live_untouched'] and r['no_promotion']
+          for k in ('guitar_S80','piano_V88'):
+            b=r['comparisons'][k]['policies']['guarded_sourceK']
+            assert b['true_annotated_attack_paired_K']['source_Kpositive_regressed']==0
+          print('S497 strict note birth uniqueness and paired K safety audited without promotion')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s497-IDMT-guitar-S80-MAESTRO-piano-V88-three-joint-graph-paired-loss-and-unknown
+          path: model/S497/
+          retention-days: 90
