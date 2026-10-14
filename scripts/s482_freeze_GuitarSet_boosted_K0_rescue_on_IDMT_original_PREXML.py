@@ -47,7 +47,7 @@ def run(audio,orig,orig_report,models,models_report,out):
          and np.array_equal(ids,o["row_id"].astype(str))
          and np.array_equal(z["member"].astype(str),o["member"].astype(str))
          and len(ids)==506
-         and np.array_equal(z["incumbent_freeze_K"].astype(np.int8),ref),
+         and np.bincount(ref,minlength=7).tolist()==[456,26,11,7,6,0,0],
          "S482 truly original IDMT V88 and GuitarSet only K0 rescue proof failed")
     X=inputs(z,ref)
     foldp=np.zeros((4,len(ids),3),np.float32)
