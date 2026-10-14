@@ -136,7 +136,7 @@ def run(wav_zip,source_events,source_s80,s402,s416,s428,rep419,rep428,out):
     print("S434 REAL GUITAR",json.dumps(dict(
         member=member,source_events=len(outputs),
         poly_events=result["real_predicted_poly_event_count"],
-        notes=result["example_musical_note_names"]),flush=True)
+        notes=result["example_musical_note_names"])),flush=True)
     print("S434 PASS genuine recorded guitar -> original note names with original S80 K",flush=True)
 
 if __name__=="__main__":
