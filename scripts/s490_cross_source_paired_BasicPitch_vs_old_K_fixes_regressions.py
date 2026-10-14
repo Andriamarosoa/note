@@ -47,7 +47,7 @@ def pair(rows):
     def unroll(z):
         out=dict(z)
         out["net"]=out["corrected"]-out["regressed"]
-        out["poly_net"]=out["poly_corrected"]-out["poly_regressed"]
+        out["poly_net"]=out.get("poly_corrected",0)-out.get("poly_regressed",0)
         return out
     return dict(all=unroll(stats),
         per_original_predicted_K={k:unroll(v) for k,v in per_original_K.items()},
