@@ -1,0 +1,90 @@
+name: S428 sound to E3 G3 B3 direct musical note ranker K0-K6 protected
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s428_train_sound_to_note_names_harmonic_ranker.py'
+      - '.github/workflows/v273-s428-sound-to-note-names-S80-Klocked.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s428-original-sound-to-note-names-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  real_59309_sound_to_musical_note_names_composition_held:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Pinned native numpy sklearn acoustic dependencies
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Verify acoustic features, musical names and strict K0/K3 cardinality
+        run: |
+          python -m py_compile scripts/s428_train_sound_to_note_names_harmonic_ranker.py
+          python -u -m scripts.s428_train_sound_to_note_names_harmonic_ranker --self-test
+      - name: Restore original all-player GuitarSet 59,309 native acoustic events
+        run: |
+          gh run download 38311525987 -n s258-full-guitarset-59309-real-original-native-527D-58D-46D-42x49-and-OOF-PR16 -D model/S258 --repo ${{ github.repository }}
+          test -f model/S258/S258_GuitarSet_59309_original_V88_S97_audio.npz
+          test -f model/S258/S258_GuitarSet_59309_true_K_ONLY_FOR_FINAL_AUDIT.npz
+      - name: Restore user-protected original 59,309 S80 Exact-K decisions
+        run: |
+          gh run download 38352988801 -n s397-s398-S70-suppression-REAL-full-S80-replay-and-scoring-NOPROMOTION -D model/S397 --repo ${{ github.repository }}
+      - name: Restore previous acoustic MIDI note models and best pitched-chord head S419
+        run: |
+          gh run download 38361853607 -n s402-K-fed-to-MIDI-neural-input-composition-disjoint-4fold-DEVELOPMENT-NOPROMOTION -D model/S402 --repo ${{ github.repository }}
+          gh run download 38381449092 -n s416-native-CNN-time-pitch-note-head-songheld-S80-ExactK-LOCKED-NO-YourMT -D model/S416 --repo ${{ github.repository }}
+          gh run download 38383639848 -n s419-native-K-gated-MIDI-head-songheld-S402-S416-no-ExactK-regression -D model/S419 --repo ${{ github.repository }}
+          test -f model/S416/S416_NATIVE_Kfirst_MIDI_NOTE_59309_SONG_OOF.npz
+          test -f model/S419/S419_NATIVE_K_PROTECTED_HEAD_GATE_59309.npz
+      - name: Download MD5-verified original musical pitch annotations
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 --retry-delay 3 -o data/GuitarSet/annotation.zip https://huggingface.co/datasets/EZMONYI/music-ai-human-test-audio/resolve/main/external_controls/guitarset_source_v1/annotation.zip
+          echo 'b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip' | md5sum -c -
+      - name: Learn acoustic pitch/harmonic 4fold song-held re-ranking and output actual E3 G3 B3 names
+        run: |
+          python -u -m scripts.s428_train_sound_to_note_names_harmonic_ranker \
+            --audio model/S258/S258_GuitarSet_59309_original_V88_S97_audio.npz \
+            --s80 model/S397/S397/S397_S272_FULL_REPLAY/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz \
+            --s402 model/S402/S402_K_FIRST_S80_MIDI_NOTE_59309_SONG_OOF.npz \
+            --s416 model/S416/S416_NATIVE_Kfirst_MIDI_NOTE_59309_SONG_OOF.npz \
+            --s419 model/S419/S419_NATIVE_K_PROTECTED_HEAD_GATE_59309.npz \
+            --truth model/S258/S258_GuitarSet_59309_true_K_ONLY_FOR_FINAL_AUDIT.npz \
+            --annotations data/GuitarSet/annotation.zip \
+            --out model/S428
+          python - <<'PY'
+          import json,numpy as np
+          p=json.load(open('model/S428/report.json'))
+          assert p['status']=='S428_ACOUSTIC_HARMONIC_NOTE_NAMES_SONGHELD_K_LOCKED'
+          assert p['original_s419_chord_correct']==2775
+          assert p['exactK_regressions']==0
+          assert p['original_S80_correct_global']==p['candidate_S80_correct_global']==53529
+          assert p['original_S80_correct_poly']==p['candidate_S80_correct_poly']==6054
+          assert p['full_S80_59309_exactK_predictions_unmodified']
+          assert p['output_is_musical_NOTE_NAMES_not_a_MIDI_file']
+          assert p['no_YourMT3_at_training_or_inference']
+          assert all(f['train_test_song_overlap']==0 and f['inner_song_overlap']==0 for f in p['training_folds'])
+          with np.load('model/S428/S428_NOTE_NAMES_S80_K_LOCKED_59309.npz') as f:
+            assert len(f['row_id'])==59309
+            assert np.array_equal((f['midi_pitch_slots']>=0).sum(1),f['s80_K'])
+          print('S428 SUCCESS: direct musical note names, 59309/59309 exactly S80 K, actual chord accuracy measured')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s428-acoustic-harmonic-direct-note-names-S80-ExactK-LOCKED-S419-pair
+          path: model/S428/
+          retention-days: 90
