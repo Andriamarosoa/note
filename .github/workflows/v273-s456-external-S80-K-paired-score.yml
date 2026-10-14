@@ -32,8 +32,8 @@ jobs:
           python -m scripts.s456_score_frozen_S455_K_with_original_S453_XML --self-test
       - name: Wait for genuine S455 frozen source predictions before any truth join
         run: |
-          gh run watch 38534499260 --exit-status --repo ${{ github.repository }}
-          gh run download 38534499260 \
+          gh run watch 38534706188 --exit-status --repo ${{ github.repository }}
+          gh run download 38534706188 \
             -n s455-external-original-IDMT-S80-vs-S454-morphology-K0K6-PREXML-frozen \
             -D model/S455 --repo ${{ github.repository }}
           test -f model/S455/report.json
