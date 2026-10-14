@@ -1,0 +1,74 @@
+name: S464 verify IDMT excess acoustic K0 candidate WAV RMS silence resonance and attacks
+on:
+  push:
+    branches: [codex/s462-idmt-event-alignment-causal-audit]
+    paths:
+      - scripts/s464_validate_IDMT_farK0_audio_rms_against_recording.py
+      - .github/workflows/v273-s464-audio-RMS-on-excess-IDMT-K0-events.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s464-IDMT-physical-onset-RMS-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify_original_audio_amplitude_at_417_distant_K0:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 70
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Restore numeric original mono 44k decoder ABI
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2
+      - name: Test waveform post/pre 45ms energy and descriptive thresholds
+        run: |
+          python -m py_compile scripts/s464_validate_IDMT_farK0_audio_rms_against_recording.py
+          python -m scripts.s464_validate_IDMT_farK0_audio_rms_against_recording --self-test
+      - name: Restore exact original S277 WAV hashes and 506 genuine pretrained source event IDs
+        run: |
+          gh run download 38318827219 -n s276-IDMT-central-directory-only-prospective-WAV-cohort -D model/S276 --repo ${{ github.repository }}
+          gh run download 38319155819 -n s277-IDMT-dataset3-5WAV-true-original-V88-native-official-unlabelled -D model/S277 --repo ${{ github.repository }}
+          gh run download 38320939533 -n s294-s298-two-complete-frozen-S80-original-vs-S274-IDMT-dataset3-506-PREXML -D model/S294S298 --repo ${{ github.repository }}
+      - name: Restore SHA-verified complete 506 original XML-nearest onset forensic source
+        run: |
+          gh run download 38546964936 \
+            -n s462-original-IDMT-fiveWAV-506-vs-XML-onset-alignment-error-audit-no-promotion \
+            -D model/S462 --repo ${{ github.repository }}
+      - name: Extract exact original WAVs, reproduce downmix/resampling, compare K0 event energies
+        run: |
+          python -u -m scripts.s464_validate_IDMT_farK0_audio_rms_against_recording \
+            --s276 model/S276/S276_IDMT_filename_only_cohort_manifest.json \
+            --s277 model/S277/S277_original_official_V88_dataset3_native_5_WAV_predictions.npz \
+            --s277-report model/S277/report.json \
+            --s462-ledger model/S462/S462_original_onset_candidate_nearest_XML_506.jsonl \
+            --s462-report model/S462/report.json \
+            --s297 model/S294S298/S297_original/S297_full_original_S80_unseen_IDMT_506_frozen.npz \
+            --out model/S464
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S464/report.json'))
+          assert r['status']=='S464_ORIGINAL_IDMT_V88_EXCESS_K0_EVENT_WAVEFORM_RMS_FORENSIC'
+          assert r['original_native_events']==506 and r['distant_80ms_from_any_XML_onset']==418
+          assert r['distant_original_S80_K0']==417
+          assert r['original_matched_XML_onsets']==47
+          assert r['original_WAV_hashes_verified_against_S277']
+          assert r['no_new_training_no_retuning_or_event_filtering']
+          assert r['K0_only_predictions_NOT_true_silence_labels']
+          assert r['no_promotion']
+          print('S464 physical evidence of 417 distant predicted K0 events measured without any model/policy changes')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s464-real-IDMT-original-5WAV-excess-417-far-K0-waveform-RMS-evidence
+          path: model/S464/
+          retention-days: 90
