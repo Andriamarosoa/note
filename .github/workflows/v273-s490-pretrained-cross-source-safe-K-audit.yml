@@ -1,0 +1,64 @@
+name: S490 audited guitar S80 and piano V88 paired corrections regressions vs independent pretrained pitch notes
+on:
+  push:
+    branches: [codex/s490-paired-crossdomain-safe-routing]
+    paths:
+      - scripts/s490_cross_source_paired_BasicPitch_vs_old_K_fixes_regressions.py
+      - .github/workflows/v273-s490-pretrained-cross-source-safe-K-audit.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  independent_readonly_individual_K_fix_regression_source_evaluation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test paired correction regression confusion
+        run: |
+          python -m py_compile scripts/s490_cross_source_paired_BasicPitch_vs_old_K_fixes_regressions.py
+          python -m scripts.s490_cross_source_paired_BasicPitch_vs_old_K_fixes_regressions --self-test
+      - name: Restore original 45 true IDMT guitar note event pairs and independent pretrained poly note names
+        run: |
+          gh run download 38570219836 \
+            -n s488-original-IDMT-45-true-guitar-21-poly-BasicPitch-note-set-vs-S80-ExactK \
+            -D model/S488 --repo ${{ github.repository }}
+      - name: Restore original MAESTRO real piano 322 pretrained note name pairs and source real MIDI original V88
+        run: |
+          gh run download 38569142478 \
+            -n s486-original-MAESTRO-322-MIDI-onsets-BasicPitch-pretrained-note-name-poly-exactK-score \
+            -D model/S486 --repo ${{ github.repository }}
+          gh run download 38560885111 \
+            -n s476-MAESTRO-original-V88-K-new-onsets-vs-sounding-322-same-events-audit \
+            -D model/S476 --repo ${{ github.repository }}
+      - name: Audit exact all source and true poly fixes regressions, do NOT train router from external truth
+        run: |
+          python -u -m scripts.s490_cross_source_paired_BasicPitch_vs_old_K_fixes_regressions \
+            --idmt model/S488/S488_45_TRUE_GUITAR_SOURCE_NOTESETS_PAIRED.jsonl \
+            --idmtreport model/S488/report.json \
+            --piano model/S486/S486_THIRD_PIANO_TRUE_VS_BASIC_PITCH_NOTE_NAME_PAIRS_80ms.jsonl \
+            --pianoreport model/S486/report.json \
+            --piano-truth model/S476/S476_ORIGINAL_S470_PIANO_NEW_NOTE_VS_SOUNDING_322.jsonl \
+            --piano-truth-report model/S476/report.json \
+            --out model/S490
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S490/report.json'))
+          assert r['status']=='S490_PAIRED_REAL_GUITAR_AND_PIANO_BASIC_PITCH_CORRECTION_REGRESSION'
+          assert r['real_original_source_pieces_guitar']==5
+          assert r['real_original_source_pieces_piano']==3
+          assert r['no_safety_router_deployed']
+          assert r['no_ExactK_or_Live_or_original_named_notes_changed']
+          assert r['no_promotion']
+          print('S490 individual corrections and regressions independently enumerated on both datasets')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s490-independent-IDMT-S80-piano-V88-BasicPitch-paired-individual-K-fix-regression
+          path: model/S490/
+          retention-days: 90
