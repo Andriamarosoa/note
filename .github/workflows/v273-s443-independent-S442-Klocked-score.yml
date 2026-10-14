@@ -1,0 +1,74 @@
+name: S443 independent frozen Klocked S442 named chord rescore
+on:
+  push:
+    branches: [codex/s442-learned-joint-note-swap-klocked]
+    paths:
+      - 'scripts/s443_independent_frozen_S442_musical_chord_audit.py'
+      - '.github/workflows/v273-s443-independent-S442-Klocked-score.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s443-frozen-note-chord-independent-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  independently_rescore_frozen_59309_actual_chord_names:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 110
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Independent note-scoring tests
+        run: |
+          python -m py_compile scripts/s443_independent_frozen_S442_musical_chord_audit.py
+          python -m scripts.s443_independent_frozen_S442_musical_chord_audit --self-test
+      - name: Confirm completed S442 song-held prediction generation before scoring
+        run: |
+          gh run watch 38527241258 --exit-status --repo ${{ github.repository }}
+          gh run download 38527241258 -n s442-joint-chord-learned-songheld-Klocked-guitarset-dev-NOPROMOTION -D model/S442 --repo ${{ github.repository }}
+          test -f model/S442/S442_FROZEN_NOTE_NAMES_KLOCKED_59309.npz
+          test -f model/S442/report.json
+      - name: Restore original untouched S80 S428 and all original musical event sources
+        run: |
+          gh run download 38311525987 -n s258-full-guitarset-59309-real-original-native-527D-58D-46D-42x49-and-OOF-PR16 -D model/S258 --repo ${{ github.repository }}
+          gh run download 38352988801 -n s397-s398-S70-suppression-REAL-full-S80-replay-and-scoring-NOPROMOTION -D model/S397 --repo ${{ github.repository }}
+          gh run download 38517551029 -n s428-acoustic-harmonic-direct-note-names-S80-ExactK-LOCKED-S419-pair -D model/S428 --repo ${{ github.repository }}
+      - name: Independently score from official original GuitarSet JAMS after frozen predictions
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 --retry-delay 3 -o data/GuitarSet/annotation.zip https://huggingface.co/datasets/EZMONYI/music-ai-human-test-audio/resolve/main/external_controls/guitarset_source_v1/annotation.zip
+          echo 'b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip' | md5sum -c -
+          python -u -m scripts.s443_independent_frozen_S442_musical_chord_audit \
+            --s442dir model/S442 \
+            --s428 model/S428/S428_NOTE_NAMES_S80_K_LOCKED_59309.npz \
+            --source model/S258/S258_GuitarSet_59309_original_V88_S97_audio.npz \
+            --s80 model/S397/S397/S397_S272_FULL_REPLAY/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz \
+            --truth model/S258/S258_GuitarSet_59309_true_K_ONLY_FOR_FINAL_AUDIT.npz \
+            --annotations data/GuitarSet/annotation.zip \
+            --out model/S443
+          python - <<'PY'
+          import json
+          d=json.load(open('model/S443/report.json'))
+          assert d['status']=='S443_INDEPENDENT_FROZEN_S442_S428_PAIRED_NOTE_REPLAY'
+          assert d['original_S80_K_unchanged']
+          assert d['S428_poly_chords']==3025 and d['poly_K2plus']['events']==7385
+          assert d['S442_metrics_independently_reproduced']
+          assert d['no_promotion'] and not d['independent_outside_GuitarSet_validation']
+          print('S443 verified paired note identities; original Exact-K unchanged; not promoted')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s443-independent-chord-S442-Klocked-paired-check-NOPROMOTION
+          path: model/S443/
+          retention-days: 90
