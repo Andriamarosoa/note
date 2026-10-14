@@ -1,0 +1,68 @@
+name: S529 independently audit protected new note pitch addition without BP note regressions
+on:
+  push:
+    branches: [codex/s525-physical-onset-rescue-audit]
+    paths:
+      - scripts/s529_protected_new_piano_note_births_without_BP_regressions.py
+      - .github/workflows/v273-s529-protected-note-addition-audit.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+jobs:
+  independent_protected_fusion_no_new_weights_no_reference_change:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Pure numeric no re-train independent source held-model replay
+        run: python -m pip install numpy==1.26.4
+      - name: Test exact chords guarded while genuinely missing note is generated
+        run: |
+          python -m py_compile scripts/s529_protected_new_piano_note_births_without_BP_regressions.py
+          python -m scripts.s529_protected_new_piano_note_births_without_BP_regressions --self-test
+      - name: Restore original raw piano features frozen before reading any MIDI labels
+        run: |
+          gh run download 38647316407 -n s527-prelabel-575-original-MAESTRO-V88-K0-onsets-with-49-real-raw-audio-note-features -D model/S527 --repo "${{ github.repository }}"
+      - name: Restore six genuine S528 trained held-rec source model inference probabilities
+        run: |
+          gh run download 38647706630 -n s528-three-songheld-six-trained-raw-note-experts-all-V88-K0-pitch-identity-audit -D model/S528 --repo "${{ github.repository }}"
+      - name: Restore original postfreeze verified MIDI truth and observed canonical BP gaps for audit only
+        run: |
+          gh run download 38560885111 -n s476-MAESTRO-original-V88-K-new-onsets-vs-sounding-322-same-events-audit -D model/S476 --repo "${{ github.repository }}"
+          gh run download 38646978013 -n s526-frozen-V88-true-piano-onsets-lost-through-BP-canonical-K0-filter -D model/S526 --repo "${{ github.repository }}"
+      - name: Verify all fixed add-only actions and all 253 remaining unknown original V88 event onsets
+        run: |
+          python -u -m scripts.s529_protected_new_piano_note_births_without_BP_regressions \
+            --audio model/S527/S527_ALL_V88_K0_K6_ORIGINAL_WAV_49_PITCH_FEATURES_PREMIDI.jsonl \
+            --audio-report model/S527/report.json \
+            --trained model/S528/S528_ALL_V88_K0_AUDIO_GENERATED_NOTE_PROBABILITIES_49.jsonl \
+            --trained-report model/S528/report.json \
+            --truth model/S476/S476_ORIGINAL_S470_PIANO_NEW_NOTE_VS_SOUNDING_322.jsonl \
+            --truth-report model/S476/report.json \
+            --missing model/S526/S526_LOST_NOTE_ONSET_PRESENT_IN_V88_PRELABEL.jsonl \
+            --missing-report model/S526/report.json --out model/S529
+          python - <<'PY'
+          import json
+          s=json.load(open('model/S529/report.json'))
+          assert s["status"]=="S529_ORIGINAL_V88_ONSET_K0_PROTECTED_NOTE_PITCH_RESCUE_NO_RETRAIN"
+          assert s["NO_PROMOTION"] and s["source_S80_ExactK_and_Live_unchanged"]
+          for name,m in s["policies"].items():
+            t=m["overall_known_true_attacks"]
+            assert t["complete_chord_regressions"]==0
+            assert t["true_pitches_removed"]==0
+            assert t["n"]==322
+            assert m["UNLABELED_candidates_count"]==253
+            assert m["original_102_canonical_BP_missing_true_attacks"]["n"]==102
+            assert m["original_220_canonical_BP_matched_true_attacks"]["n"]==220
+          print("S529 PASS no original true exact chord regressions, no unknown event mistaken negative")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s529-frozen-sourceheld-new-MIDI-pitch-protected-addition-and-unknown-onset-audit
+          path: model/S529/
+          retention-days: 90

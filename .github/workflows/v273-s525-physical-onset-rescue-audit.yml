@@ -1,0 +1,66 @@
+name: S525 independent frozen physical-onset rescue of BP-missed true guitar and piano notes
+on:
+  push:
+    branches: [codex/s525-physical-onset-rescue-audit]
+    paths:
+      - scripts/s525_audit_independent_physical_note_onsets_vs_BP.py
+      - .github/workflows/v273-s525-physical-onset-rescue-audit.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+jobs:
+  audit_new_physical_onset_candidates_without_editing_models:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Restore independent numeric one-to-one matching
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1
+      - name: Verify no event-count vs note-identity confusion in frozen-onset rescue
+        run: |
+          python -m py_compile scripts/s525_audit_independent_physical_note_onsets_vs_BP.py
+          python -m scripts.s525_audit_independent_physical_note_onsets_vs_BP --self-test
+      - name: Download original frozen acoustic candidates BEFORE opening MIDI/XML labels
+        run: |
+          gh run download 38609550506 -n s513-original-five-IDMT-three-MAESTRO-new-independent-raw-note-generator-PREMIDI -D model/S513 --repo "${{ github.repository }}"
+          gh run download 38590187399 -n s498-true-S80-guitar-V88-piano-canonical-unique-musical-note-onset-groups-no-truth -D model/S498 --repo "${{ github.repository }}"
+      - name: Restore original 45 IDMT and 322 MAESTRO reference true note attacks for audit ONLY
+        run: |
+          gh run download 38570219836 -n s488-original-IDMT-45-true-guitar-21-poly-BasicPitch-note-set-vs-S80-ExactK -D model/S488 --repo "${{ github.repository }}"
+          gh run download 38560885111 -n s476-MAESTRO-original-V88-K-new-onsets-vs-sounding-322-same-events-audit -D model/S476 --repo "${{ github.repository }}"
+      - name: One-to-one audit of actually recovered BP-missing onsets and all real new pitch identities
+        run: |
+          python -u -m scripts.s525_audit_independent_physical_note_onsets_vs_BP \
+            --graph model/S498 --graph-report model/S498/report.json \
+            --generator model/S513/S511_RAW_HARMONIC_FUNDAMENTAL_ONSET_TOP6_TOP12_PRETRUTH.jsonl \
+            --generator-report model/S513/report.json \
+            --guitar model/S488/S488_45_TRUE_GUITAR_SOURCE_NOTESETS_PAIRED.jsonl \
+            --guitar-report model/S488/report.json \
+            --piano model/S476/S476_ORIGINAL_S470_PIANO_NEW_NOTE_VS_SOUNDING_322.jsonl \
+            --piano-report model/S476/report.json \
+            --out model/S525
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S525/report.json'))
+          assert r["status"] == "S525_INDEPENDENT_PHYSICAL_ONSET_RESCUE_AUDIT_PRELABEL_S513_VS_BP_S498"
+          g=r["by_source"]["guitar_S80"]["overall"]
+          p=r["by_source"]["piano_V88"]["overall"]
+          assert g["true_attacks"]==45 and g["canonical_matched"]==45
+          assert p["true_attacks"]==322 and p["canonical_matched"]==220
+          assert p["raw_rescues_BP_missing_onset"] <= 102
+          assert p["raw_rescues_BP_missing_onset"] + p["neither_matched"] == 102
+          assert r["unmatched_physical_onsets_not_verified_false_positives"]
+          assert r["top6_top12_true_note_coverage_oracle_not_model_accuracy"]
+          assert r["original_S80_ExactK_and_Live_unchanged"] and r["no_promotion"]
+          print("S525 PASS independent acoustic attack rescue among 102 piano events formerly absent from BP; NO promotion")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s525-physical-attack-rescue-for-missing-piano-BP-onsets-and-true-pitch-oracle
+          path: model/S525/
+          retention-days: 90

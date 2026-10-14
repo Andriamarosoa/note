@@ -1,0 +1,60 @@
+name: S527 actual raw 49-pitch spectrogram features for all frozen V88 piano event times including K0
+on:
+  push:
+    branches: [codex/s525-physical-onset-rescue-audit]
+    paths:
+      - scripts/s527_extract_49_raw_pitch_features_for_all_V88_K0_note_onsets.py
+      - .github/workflows/v273-s527-original-raw-WAV-K0-note-features.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+jobs:
+  all_V88_K0_K6_original_MAESTRO_piano_pitch_features_before_MIDI:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original stereo wav and STFT harmonic evidence ABI dependencies
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2
+      - name: Test brand-new note pitch evidence without any BP predicted notes or V88 positive K
+        run: |
+          python -m py_compile scripts/s527_extract_49_raw_pitch_features_for_all_V88_K0_note_onsets.py
+          python -m scripts.s527_extract_49_raw_pitch_features_for_all_V88_K0_note_onsets --self-test
+      - name: Restore original filename preregistration and V88 575 frozen candidate time centers BEFORE MIDI
+        run: |
+          gh run download 38558629021 -n s469-third-corpus-MAESTRO-v3-3-test-piano-filename-only-PREMIDI -D model/S469 --repo "${{ github.repository }}"
+          gh run download 38559067956 -n s470-third-true-MAESTRO-piano-original-V88-and-S466-birth-frozen-PREMIDI -D model/S470 --repo "${{ github.repository }}"
+      - name: Restore original pretrained Basic Pitch notes already frozen BEFORE true piano MIDI annotations
+        run: |
+          gh run download 38568724837 -n s485-spotify-basicpitch-3-original-MAESTRO-piano-audio-to-notes-frozen-PREMIDI -D model/S485 --repo "${{ github.repository }}"
+      - name: Independently re-download SHA-verified original WAV and compute all 49 pitch features on every K0, K1, K2, K3 raw V88 onset
+        run: |
+          python -u -m scripts.s527_extract_49_raw_pitch_features_for_all_V88_K0_note_onsets \
+            --manifest model/S469/report.json \
+            --v88 model/S470/S470_MAESTRO_ORIGINAL_V88_K_BIRTH_FROZEN_PREMIDI.npz \
+            --v88-report model/S470/report.json \
+            --bp model/S485/S485_FIXED_BASIC_PITCH_PRETRAINED_PIANO_NOTES_PRELABEL.jsonl \
+            --bp-report model/S485/report.json --out model/S527
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S527/report.json'))
+          assert r['status']=='S527_PRELABEL_ALL_575_V88_PIANO_ONSET_CANDIDATES_49_RAW_PITCH_FEATURES'
+          assert r['original_V88_onset_candidates']==575
+          assert r['original_V88_K0_candidates_included']==473
+          assert r['all_49_pitch_features_at_every_piano_V88_event']
+          assert r['no_original_true_MIDI_annotation_read']
+          assert r['original_S80_Live_and_BP_event_decoder_unchanged'] and r['no_promotion']
+          print('S527 REAL 49 pitch features on ALL frozen 575 V88 events including 473 original K0 candidates, NO true MIDI labels')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s527-prelabel-575-original-MAESTRO-V88-K0-onsets-with-49-real-raw-audio-note-features
+          path: model/S527/
+          retention-days: 90

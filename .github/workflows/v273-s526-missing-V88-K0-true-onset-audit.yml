@@ -1,0 +1,61 @@
+name: S526 audit lost genuine piano note onsets after V88 to Basic Pitch canonical filter
+on:
+  push:
+    branches: [codex/s525-physical-onset-rescue-audit]
+    paths:
+      - scripts/s526_audit_lost_V88_piano_onsets_in_BP_canonical_filter.py
+      - .github/workflows/v273-s526-missing-V88-K0-true-onset-audit.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+jobs:
+  original_V88_noteon_prelabel_candidate_vs_BP_canonical_bottleneck:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original independent numeric Hungarian matcher
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1
+      - name: Unit test K0 does not imply absence of detected true onset
+        run: |
+          python -m py_compile scripts/s526_audit_lost_V88_piano_onsets_in_BP_canonical_filter.py
+          python -m scripts.s526_audit_lost_V88_piano_onsets_in_BP_canonical_filter --self-test
+      - name: Restore source V88 piano event candidates originally frozen before opening any MIDI
+        run: |
+          gh run download 38559067956 -n s470-third-true-MAESTRO-piano-original-V88-and-S466-birth-frozen-PREMIDI -D model/S470 --repo "${{ github.repository }}"
+      - name: Restore source Basic Pitch canonical music graph originally frozen before true MIDI
+        run: |
+          gh run download 38590187399 -n s498-true-S80-guitar-V88-piano-canonical-unique-musical-note-onset-groups-no-truth -D model/S498 --repo "${{ github.repository }}"
+      - name: Restore already original postfreeze 322 piano note-on label identities only for audit
+        run: |
+          gh run download 38560885111 -n s476-MAESTRO-original-V88-K-new-onsets-vs-sounding-322-same-events-audit -D model/S476 --repo "${{ github.repository }}"
+      - name: Measure why true MIDI note-on candidates are lost when collapsing original V88 to BP note events
+        run: |
+          python -u -m scripts.s526_audit_lost_V88_piano_onsets_in_BP_canonical_filter \
+            --v88 model/S470/S470_MAESTRO_ORIGINAL_V88_K_BIRTH_FROZEN_PREMIDI.npz \
+            --v88-report model/S470/report.json \
+            --graph model/S498 --graph-report model/S498/report.json \
+            --piano model/S476/S476_ORIGINAL_S470_PIANO_NEW_NOTE_VS_SOUNDING_322.jsonl \
+            --piano-report model/S476/report.json --out model/S526
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S526/report.json'))
+          assert r['status']=='S526_BP_CANONICAL_LOST_TRUE_V88_K0_AND_KPOS_PIANO_ATTACKS'
+          assert r['true_attacks_absent_from_BP_canonical_but_in_original_V88']==102
+          assert r['totals']['canonical_true_attack_match']==220
+          assert r['totals']['V88_paired_TRUE_attack_count']==322
+          assert r['totals']['missing_but_V88_predicts_K0']+r['totals']['missing_but_V88_predicts_K_gt0']==102
+          assert r['V88_presence_on_S476_truth_is_selection_condition_not_model_recall']
+          assert r['full_stream_note_on_F1_NOT_MEASURED'] and r['no_promotion']
+          print('S526 PASS: source onset candidates separated from V88 K0 and Basic Pitch canonical filtering')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s526-frozen-V88-true-piano-onsets-lost-through-BP-canonical-K0-filter
+          path: model/S526/
+          retention-days: 90
