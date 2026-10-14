@@ -31,6 +31,21 @@ Répartition exacte (événements natifs / attaques XML / événements prédits 
 
 **Ce que S462 ne prouve pas :** les 418 événements éloignés ne sont pas forcément des faux événements *acoustiques* (résonances, bruit, sustain, sons non annotés), ni des vrais K0. Un examen d'énergie waveform est nécessaire pour les qualifier.
 
+## Inspection du code original : comment V88 produit ces candidats
+
+Le flux réel dans `scripts/evaluate_v273_fresh_player05.py` utilise `runtime_records`, qui invoque `_candidate_groups` de `scripts/train_v86_state_transition_proposals.py`. Ce générateur :
+
+- conserve **chaque maximum local** du flux de probabilité d'attaque V8.4 si son score dépasse un `floor` historiquement choisi sur GuitarSet ;
+- ajoute aussi les **fronts montants du score dépassant 0,40** ;
+- ne fusionne dans cette phase que les pics séparés d'au plus **4 échantillons audio** (≈0,091 ms à 44,1 kHz), ce qui ne constitue pas une détection de l'absence de retrigger pendant tout le sustain ;
+- le constructeur de V90 (cf. `scripts/train_v90_structured_cluster_cardinality.py`) regroupe ensuite ces propositions selon une fenêtre de **40 ms ancrée au premier candidat**, sans critère explicite exigeant une nouvelle augmentation d'énergie physique au lieu d'un son maintenu.
+
+Ces propriétés sont directement vérifiables dans les sources, pas inférées d'un résultat de score. Elles offrent un **mécanisme précis à tester** : un même son soutenu comportant des oscillations locales du score d'attaque peut créer une succession de groupes V88, dont S80 estime ensuite K0. Un tel événement reste présent dans les fichiers natifs même si aucune note n'est finalement émise.
+
+La source IDMT n'exigeait **aucun rééchantillonnage** des cinq fichiers WAV originaux : tous sont 44,1 kHz PCM16, quatre mono et un stéréo converti en mono. Un écart de fréquence d'échantillonnage ne saurait donc expliquer les résultats. L'effet d'une éventuelle stéréophonie n'explique pas non plus la forte surproduction sur plusieurs WAV déjà mono.
+
+**Ne pas remplacer ce constat par un filtre K0 naïf** : 7/45 vrais événements annotés en plage MIDI sont précisément mal classés K0 par S80, dont 3/21 accords polyphoniques. Les éliminer détruirait de vrais onsets.
+
 ## S463 — décalage acoustique conditionnel au vrai K et lié aux erreurs
 
 [GitHub Actions S463 : succès](https://github.com/Andriamarosoa/note/actions/runs/38547288114).
