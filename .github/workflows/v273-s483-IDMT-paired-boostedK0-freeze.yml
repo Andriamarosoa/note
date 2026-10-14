@@ -1,0 +1,71 @@
+name: S483 independent IDMT 45 true onsets paired original V88 and frozen S482 boosted K0 rescue
+on:
+  push:
+    branches: [codex/s482-IDMT-boosted-K0-external-freeze]
+    paths:
+      - scripts/s483_score_S482_frozen_IDMT_K0_rescue_against_original_S453_XML.py
+      - .github/workflows/v273-s483-IDMT-paired-boostedK0-freeze.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  paired_original_five_WAV_IDMT_V88_genuine_notes_unchanged_source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install minimal numeric binary source ledger reader
+        run: python -m pip install numpy==1.26.4
+      - name: Verify actual note K0 regression counting
+        run: |
+          python -m py_compile scripts/s483_score_S482_frozen_IDMT_K0_rescue_against_original_S453_XML.py
+          python -m scripts.s483_score_S482_frozen_IDMT_K0_rescue_against_original_S453_XML --self-test
+      - name: Only after S482 genuine IDMT prediction freeze succeeds can annotations be opened
+        run: |
+          gh run watch 38567535217 --exit-status --repo ${{ github.repository }}
+          gh run download 38567535217 \
+            -n s482-IDMT-506-source-V88-boosted-GuitarSet-trained-K0-frozen-noXML \
+            -D model/S482 --repo ${{ github.repository }}
+          test -f model/S482/S482_FROZEN_IDMT_506_K0_RESIDUAL_3AND4VOTES_PREXML.npz
+      - name: Restore original postfreeze S453 known genuine guitar notes and original XML near-onset ledger
+        run: |
+          gh run download 38533183193 \
+            -n s453-original-5stage-S80-IDMT-506-K0-K2-K3-error-provenance-no-promotion \
+            -D model/S453 --repo ${{ github.repository }}
+          gh run download 38546964936 \
+            -n s462-original-IDMT-fiveWAV-506-vs-XML-onset-alignment-error-audit-no-promotion \
+            -D model/S462 --repo ${{ github.repository }}
+      - name: Compare genuine original source V88 22of45 paired to both predeclared K0 ensemble gates
+        run: |
+          python -u -m scripts.s483_score_S482_frozen_IDMT_K0_rescue_against_original_S453_XML \
+            --freeze model/S482/S482_FROZEN_IDMT_506_K0_RESIDUAL_3AND4VOTES_PREXML.npz \
+            --report model/S482/report.json \
+            --s453 model/S453/S453_independent_original_IDMT_stage_audit.jsonl \
+            --s453-report model/S453/report.json \
+            --unknown model/S462/S462_original_onset_candidate_nearest_XML_506.jsonl \
+            --unknown-report model/S462/report.json \
+            --out model/S483
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S483/report.json'))
+          assert r['status']=='S483_REAL_IDMT_PAIRED_45_TRUE_NOTES_AFTER_GUITARSET_K0_RESCUE_FREEZE'
+          assert r['original_valid_true_attacks']==45
+          assert r['original_true_poly_events']==21
+          assert r['IDMT_truth_checked_only_after_source_frozen']
+          assert r['unmatched_459_events_not_groundtruth_K0']
+          assert r['original_V88_source_K_not_altered'] and r['no_promotion']
+          print('S483 true corrections regressions audited on original IDMT without training on external MIDI')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s483-original-IDMT-true45-poly21-V88-K0-boosted-postfreeze-paired-audit
+          path: model/S483/
+          retention-days: 90
