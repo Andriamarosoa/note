@@ -57,6 +57,8 @@ def apply(ids,member,samples,source,notes,name):
     need(len(ids)==len(source)==len(member)==len(samples),
          "S491 source event count must exactly match frozen prediction IDs")
     bymember=group_birth(notes)
+    raw_by_source=collections.defaultdict(list)
+    for ev in notes:raw_by_source[str(ev["WAV_filename_SHA256"])].append(ev)
     original=source.astype(np.int8)
     birth=original.copy();active=original.copy()
     matched=np.zeros(len(original),bool)
@@ -80,8 +82,6 @@ def apply(ids,member,samples,source,notes,name):
             pitches=set(g["pitches"])
             born=len(pitches)
             absolute_time=float(local_times[i])+.030
-            sounding={int(ev["pitch_MIDI"])
-                      for ev in bymember_events[key]} if False else None
             # Source active-note inference always anchored at the NATIVE
             # event time; never at the annotation time (which is unavailable).
             alive={int(ev["pitch_MIDI"]) for ev in raw_by_source[key]
@@ -109,11 +109,6 @@ def apply(ids,member,samples,source,notes,name):
          "S491 protected source original S80/V88 K nonzero mutated")
     return birth,active,matched,recent,details,groupsmatched
 
-def inference(ids,member,samples,source,notes,name):
-    global raw_by_source
-    raw_by_source=collections.defaultdict(list)
-    for ev in notes:raw_by_source[str(ev["WAV_filename_SHA256"])].append(ev)
-    return apply(ids,member,samples,source,notes,name)
 
 def run(s277,s297,s487,s487report,s470,s485,s485report,out):
     need(not out.exists(),"S491 immutable pretruth shadow routing already produced")
@@ -151,7 +146,7 @@ def run(s277,s297,s487,s487report,s470,s485,s485report,out):
         ("guitar_S80",ids_g,members_g,times_g,source_g,s487),
         ("piano_V88",ids_p,members_p,times_p,source_p,s485)]:
         notes=[json.loads(line) for line in path.read_text().splitlines()]
-        proposedbirth,proposedactive,matched,recent,info,npairs=inference(
+        proposedbirth,proposedactive,matched,recent,info,npairs=apply(
             ids,members,starts,ref,notes,key)
         array[key]=dict(row_id=ids,member=members,start_samples=starts,
              source_K=ref,proposed_only_K0_birth=proposedbirth,
