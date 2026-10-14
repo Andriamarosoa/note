@@ -1,0 +1,91 @@
+name: S387 original four S5 and 133 S18 on new32 Dataset2 plus unchanged GuitarSet K3 head PREXML
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths: ['scripts/s387_SHA_freeze_GuitarSet_only_K3_expert_new32_dataset2.py','.github/workflows/v273-s387-new32-authentic-S5-S18-GuitarSetK3-prelabel.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s387-new32-original-S18-guitarset-K3-frozen
+  cancel-in-progress: true
+jobs:
+  prelabel_complete_frozen_early_model:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Restore frozen real 32 WAV native features and SHA original trained stage sources
+        run: |
+          gh run watch 38336944220 --repo ${{ github.repository }} --exit-status --interval 15
+          gh run download 38336944220 -n s386-new32-original-IDMT-dataset2-S97-527D-source-authentic-preXML -D model/S306S307 --repo ${{ github.repository }}
+          gh run download 38336530561 -n s384-32-new-Dataset2-IDMT-original-V88-source-only-PREXML -D model/S384 --repo ${{ github.repository }}
+          gh run download 38336828058 -n s385-new32-original-S5-S8-S18-five-original-trained-modules-PREXML -D model/S385 --repo ${{ github.repository }}
+          N=$(python -c "import json;print(json.load(open('model/S385/report.json'))['N'])")
+          for file in model/S385/*.py; do cp "$file" "scripts/$(basename "$file" | sed "s/_964/_${N}/g")"; done
+          echo "N=$N" >> "$GITHUB_ENV"
+      - name: Immutable genuine original four S5 HGB sklearn1.8 checkpoint interface
+        run: |
+          python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+          for f in 0 1 2 4; do
+            mkdir -p "model/S5original/fold${f}"
+            curl -fLsS --retry 3 --connect-timeout 15 --max-time 120 \
+              "https://raw.githubusercontent.com/Andriamarosoa/note/7165e1ef54510aa9effc9f597b2783c832ca907a/analysis/evidence/v273-open-k0-k6/series5/models/fold${f}/model.joblib" \
+              -o "model/S5original/fold${f}/model.joblib"
+          done
+          python -u -m "scripts.s308_original_4S5_trained_fold_${N}_dataset2" \
+            --s307 model/S306S307/S307/S307_IDMT_dataset2_true_original_S5_527D_input.npz \
+            --models model/S5original --out model/S308
+      - name: Original archived 133 risk heads S8 S18 sklearn1.4 original model ABI
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -u -m "scripts.s309_original_S8_S18_133_heads_dataset2_${N}" \
+            --s308 "model/S308/S308_original_S5_fourfold_${N}_dataset2_native_unlabelled.npz" \
+            --s306 model/S306S307/S306/S306_IDMT_dataset2_original_S97_on_frozen_native_events.npz \
+            --s384 model/S384/S384_official_V88_dataset2_new32_WAV_predictions.npz \
+            --cache model/S309-original-cache --out model/S309
+          python -u -m "scripts.s310_S217_fold_consensus_dataset2_${N}" \
+            --s309 "model/S309/S309_original_S5_to_S18_true_V88_native_IDMT_${N}.npz" \
+            --out model/S310
+      - name: SHA compare unchanged GuitarSet 1147D K3-trained expert and fixed .625 threshold to new original S18 3of4 on 32 WAVs before XML
+        run: |
+          gh run download 38335694458 \
+            -n s376-original-GuitarSet-heldfold-S5-raw-posterior-and-acoustic-K3-specialist-trained-NO-IDMT \
+            -D model/S376 --repo ${{ github.repository }}
+          python -u -m scripts.s387_SHA_freeze_GuitarSet_only_K3_expert_new32_dataset2 \
+            --audio model/S306S307/S306/S306_IDMT_dataset2_original_S97_on_frozen_native_events.npz \
+            --owned model/S306S307/S307/S307_IDMT_dataset2_true_original_S5_527D_input.npz \
+            --s5 "model/S308/S308_original_S5_fourfold_${N}_dataset2_native_unlabelled.npz" \
+            --s18 "model/S310/S310_original_S18_foldneutral_${N}_IDMT.npz" \
+            --report model/S376/report.json --models model/S376 --out model/S387
+          python - <<'PY'
+          import json,numpy as np,os
+          n=int(os.environ['N'])
+          r=json.load(open('model/S387/report.json'))
+          assert r['status']=='S387_NEW32_DATASET2_GUITARSET_TRAINED_EARLY_K3_S18_PRESCORE_SHA'
+          assert r['native_events']==n and r['WAV_count']==32 and r['NO_IDMT_XML_MIDI_READ']
+          assert not r['original_fold_models_trained_on_IDMT'] and not r['official_promotion']
+          assert r['original_GuitarSet_selected_candidate']['view']=='source1147'
+          assert r['original_GuitarSet_selected_candidate']['threshold']==0.625
+          with np.load('model/S387/S387_32WAV_dataset2_original_S18_vs_early_K3_specialist_PRESCORE.npz',allow_pickle=False) as a:
+            assert a['expert_K3_probability_fourfold'].shape==(4,n)
+            assert a['expert_K3_action'].sum()<=a['eligible_source_parent_K3to2'].sum()
+          print('S387 PASS real 32 WAV original 4S5 and 133 risk trained checkpoint prelabel K3 outputs SHA LOCKED')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s387-new32-original-4S5-133S18-and-GuitarSetK3-expert-SHA-PREXML
+          path: |
+            model/S308/report.json
+            model/S309/report.json
+            model/S310/
+            model/S387/
+          retention-days: 90

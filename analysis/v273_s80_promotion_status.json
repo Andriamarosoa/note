@@ -1,15 +1,27 @@
 {
   "schema": 1,
-  "date": "2026-10-12",
-  "reference": "freeze_local_combo",
+  "date": "2026-10-13",
+  "reference": "S80_S397_K5_GUARDED",
   "experimental_candidate": "S80",
   "official_promotion": false,
   "independent_S80_accuracy_measured": true,
   "latest_run": {
-    "component": "S273 new full S80 fourfold GuitarSet 59309 measured, historical training-overlap diagnostic only",
-    "id": 38314932866,
+    "component": "S397/S398 label-free S70 K5->K4 guard; full S71/S72/S79/S80 replay, scored after SHA-freeze on exposed GuitarSet (not independent)",
+    "id": 38352988801,
     "status": "success",
-    "independent_S80_accuracy_measured": true,
+    "native_events": 59309,
+    "poly_events": 7385,
+    "K0_to_K6_correct": 53529,
+    "global_exactK": 0.9025443018766123,
+    "poly_K2_to_K6_correct": 6054,
+    "poly_exactK": 0.8197698036560596,
+    "true_K5_correct": 301,
+    "true_K5_total": 355,
+    "corrections_vs_S80_unmodified": 202,
+    "regressions_vs_S80_unmodified": 0,
+    "original_S80_full_chain_evaluated": true,
+    "independent_S80_accuracy_measured": false,
+    "source_sha256": "f5a313366a161d9775ce8452df766e4178604dc8d6e002d781d24e70ee4b967f",
     "official_promotion": false
   },
   "validated_frozen_components": {
@@ -800,5 +812,101 @@
   },
   "original_S5_527D_reconstruction_scope": "Numerical runtime verified on all 59309 original S5 event probabilities and all 527 training-bin signatures in each of four folds. Original source text and original designs_sha256 serialization remain unavailable.",
   "historical_sections_note": "Sections named for earlier S-series retain their observations at the time. Current S5 feature recovery status is recorded in original_S5_527D_reconstructed and validated_frozen_components.s5_owned527_numerical_recovery; prior negative source searches remain valid only for original source text.",
-  "original_S5_forward_new_audio_scope": "57 already-exposed GOAT events, four original frozen S5 models, historically exact recovered constructor and selected global/poly decoders. No independent accuracy measured."
+  "original_S5_forward_new_audio_scope": "57 already-exposed GOAT events, four original frozen S5 models, historically exact recovered constructor and selected global/poly decoders. No independent accuracy measured.",
+  "latest_external_prospective_gates": {
+    "S366": {
+      "run_id": 38332075660,
+      "wave_files": 36,
+      "native_events": 1444,
+      "score_protocol": "20ms XML onset-derived K0-K6, conditional on unverified negative K0 completeness and composition independence",
+      "freeze_global_correct": 1341,
+      "S80_global_correct": 1368,
+      "freeze_global_exactK_conditional": 0.9286703601108033,
+      "S80_global_exactK_conditional": 0.9473684210526315,
+      "freeze_poly_correct": 29,
+      "S80_poly_correct": 35,
+      "poly_events": 64,
+      "freeze_poly_exactK_conditional": 0.453125,
+      "S80_poly_exactK_conditional": 0.546875,
+      "poly_WAV_group_signflip_p": 0.265655517578125,
+      "original_S80_source_unmodified": true,
+      "poly_advantage_confirmed": false,
+      "composition_disjointness_proven": false,
+      "K0_negative_exhaustiveness_proven": false,
+      "promotion": false
+    },
+    "S371": {
+      "run_id": 38333469120,
+      "scope": "36 exposed Dataset1 WAV",
+      "candidate": "restore freeze K3 whenever freeze K3 / original S18 K2 / original S80 K2",
+      "reverted_events": 21,
+      "real_K3_corrected": 6,
+      "real_K2_correct_lost": 11,
+      "net_S80_delta": -5,
+      "outcome": "REJECTED; post-exposure counterfactual cannot itself authorize promotion"
+    },
+    "S388": {
+      "run_id": 38337298274,
+      "wav_count": 32,
+      "native_events": 2089,
+      "true_poly_events_if_annotations_exhaustive": 5,
+      "official_freeze_correct": 1719,
+      "predeclared_S18_expert_candidate_correct": 1702,
+      "S18_expert_candidate_corrections_vs_freeze": 22,
+      "S18_expert_candidate_regressions_vs_freeze": 39,
+      "gated_expert_actions": 0,
+      "full_original_S80_not_scored": true,
+      "K0_exhaustiveness_proven": false,
+      "composition_disjointness_proven": false,
+      "promotion": false
+    }
+  },
+  "promotion_readiness": {
+    "official_candidate": "S80",
+    "official_reference": "freeze_local_combo",
+    "promoted": false,
+    "blocked_on": [
+      "Demonstrate gain of the complete unchanged S80 source chain on newly sealed untouched music, not just S18 early-model probes",
+      "Obtain a composition-disjoint cohort; independent WAV filename hashes do not establish song/composition independence",
+      "Certify onset alignment and annotation coverage for K0 and a materially sized K2-K6 polyphonic holdout",
+      "Show robust paired Exact-K polyphonic improvement without losing K2 while rescuing K3; S366 n=64 poly signflip p=0.2657",
+      "No retraining or threshold tuning using annotations from S354/S363/S388 already opened; preregister future tests"
+    ],
+    "latest_audit_run": 38337298274,
+    "promotion_gate_passed": false
+  },
+  "previous_status_reference": "freeze_local_combo",
+  "reference_scope": "USER_SELECTED_ACTIVE_DEVELOPMENT_REFERENCE__NOT_INDEPENDENTLY_VALIDATED",
+  "reference_manifest": "analysis/v273_active_development_reference.json",
+  "previous_latest_run": {
+    "component": "S388 first 32 prospectively reserved new IDMT Dataset2 WAVs: original source S18 plus predeclared GuitarSet-trained K3 expert; not full S80",
+    "id": 38337298274,
+    "status": "success",
+    "native_events": 2089,
+    "wav_count": 32,
+    "original_S80_full_chain_evaluated": false,
+    "independent_S80_accuracy_measured": false,
+    "new_K3_expert_actions": 0,
+    "official_promotion": false
+  },
+  "user_selected_reference_S398": {
+    "status": "ACTIVE_DEVELOPMENT_REFERENCE",
+    "source_run_id": 38352988801,
+    "source_report": "analysis/README_V273_S397_S398_FULL_S80_REPLAY_K5_GUARD_VERDICT.md",
+    "sha256": "f5a313366a161d9775ce8452df766e4178604dc8d6e002d781d24e70ee4b967f",
+    "global_percent": 90.25443018766123,
+    "poly_percent": 81.97698036560595,
+    "K0_to_K6_percent": [
+      96.92323211943912,
+      73.6880704041721,
+      87.05370101596517,
+      82.87461773700305,
+      66.7771333885667,
+      84.78873239436619,
+      57.30337078651685
+    ],
+    "historical_formal_reference_remains": "freeze_local_combo",
+    "independent_generalization_proved": false,
+    "externally_promoted": false
+  }
 }

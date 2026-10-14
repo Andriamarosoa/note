@@ -1,0 +1,137 @@
+name: S322 S326 complete original and S274 S80 on 964 prospective IDMT V88 events SEALED BEFORE XML
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s322_original_S69_fourfold_dataset2_964.py'
+      - 'scripts/s323_original_S70_fourfold_dataset2_964.py'
+      - 'scripts/s324_original_S71_S72_dataset2_964.py'
+      - 'scripts/s325_complete_original_S79_S80_dataset2_964.py'
+      - 'scripts/s326_prelabel_full_S80_paired_compare_dataset2_964.py'
+      - '.github/workflows/v273-s322-s326-full-S80-dataset2-964-PREXML.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s322-s326-full-S80-prospective-964-PREXML
+  cancel-in-progress: true
+jobs:
+  all_historically_trained_source_S69_to_S80_two_gate_banks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 95
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+      - name: Require complete original real 16-family S45 S46 and original 12 PR16 trained model predictions
+        run: |
+          gh run watch 38324317050 --repo ${{ github.repository }} --exit-status --interval 15
+          gh run watch 38324277092 --repo ${{ github.repository }} --exit-status --interval 15
+      - name: Restore all 193 original S46 and strict quorum 2 fold source-only variants
+        run: |
+          gh run download 38324317050 \
+            -n s318-s320-dataset2-964-full-original16-S45-193S46-twofold-PREXML \
+            -D model/S318S320 --repo ${{ github.repository }}
+      - name: Restore original pretrained twelve PR16 MLP and 36 actual policy decisions
+        run: |
+          gh run download 38324277092 \
+            -n s321-original-12trained-PR16-36policy-IDMT-dataset2-964-PREXML \
+            -D model/S321 --repo ${{ github.repository }}
+      - name: Restore original native acoustic S97 and true official freeze V88 reference for all 964 events
+        run: |
+          gh run download 38323902060 \
+            -n s310-s311-original-S18-quorum-S97-native-dataset2-964-PREXML \
+            -D model/S310S311 --repo ${{ github.repository }}
+          gh run download 38322507433 \
+            -n s302-IDMT-dataset2-16WAV-true-original-V88-native-official-unlabelled \
+            -D model/S302 --repo ${{ github.repository }}
+      - name: Original trained S69 S70 S71 S72 and S79 model weights/thresholds, no refit
+        run: |
+          gh run download 38177948016 -n v273-s69-s46-risk-replay -D model/S69rules --repo ${{ github.repository }}
+          gh run download 38296428889 -n s222-recovered-original-S70-four-fold-checkpoints-exact-history -D model/S222 --repo ${{ github.repository }}
+          gh run download 38296880555 -n s224-original-four-S71-acoustic-risk-checkpoints-historic-exact -D model/S224 --repo ${{ github.repository }}
+          gh run download 38297080728 -n s225-recovered-original-S72-four-temporal-risk-checkpoints -D model/S225 --repo ${{ github.repository }}
+          gh run download 38187186049 -n v273-s80-traceable-repair -D model/S80historic --repo ${{ github.repository }}
+      - name: Verify S69 trained veto and original S80 exact frozen K0/K2 tail before external WAV inference
+        run: |
+          python -m scripts.s322_original_S69_fourfold_dataset2_964 --self-test
+          python -m scripts.s147_s80_tail_runtime --self-test
+      - name: Replay every saved original S69 through S80 trained head for BOTH prespecified S46 configurations
+        run: |
+          set -euo pipefail
+          for scenario in original twofold; do
+            if [ "$scenario" = "original" ]; then
+              s46="model/S318S320/S319/S319_original_193_S46_foldneutral_964_IDMT.npz"
+            else
+              s46="model/S318S320/S320/S320_original_source_counterfactual_S274_gate_964.npz"
+            fi
+            python -u -m scripts.s322_original_S69_fourfold_dataset2_964 \
+              --s247 "$s46" \
+              --pr16 model/S321/pr16_external_36_policies.npz \
+              --rules model/S69rules/report.json \
+              --out "model/S322_$scenario"
+            python -u -m scripts.s323_original_S70_fourfold_dataset2_964 \
+              --s221 "model/S322_$scenario/S322_original_S69_fourfold_rule_consensus_IDMT.npz" \
+              --s85 model/S321/pr16_external_36_policies.npz \
+              --s222 model/S222 \
+              --out "model/S323_$scenario"
+            python -u -m scripts.s324_original_S71_S72_dataset2_964 \
+              --s69 "model/S322_$scenario/S322_original_S69_fourfold_rule_consensus_IDMT.npz" \
+              --s70 "model/S323_$scenario/S323_original_S70_4fold_no_oracle_IDMT.npz" \
+              --s97 model/S310S311/S311/S311_original_IDMT_dataset2_native_S97_audio.npz \
+              --s71 model/S224 --s72 model/S225 \
+              --out "model/S324_$scenario"
+            python -u -m scripts.s325_complete_original_S79_S80_dataset2_964 \
+              --s226 "model/S324_$scenario/S324_original_S71_S72_native_IDMT.npz" \
+              --s219 "$s46" \
+              --s85 model/S321/pr16_external_36_policies.npz \
+              --s97 model/S310S311/S311/S311_original_IDMT_dataset2_native_S97_audio.npz \
+              --s80 model/S80historic \
+              --out "model/S325_$scenario"
+          done
+      - name: SHA-freeze both complete S80 candidates and official baseline on EXACT same original 964 native event IDs before XML
+        run: |
+          python -u -m scripts.s326_prelabel_full_S80_paired_compare_dataset2_964 \
+            --s302 model/S302/S302_official_V88_dataset2_rank49plus_16_WAV_predictions.npz \
+            --old model/S325_original/S325_full_original_S80_unseen_IDMT_964_frozen.npz \
+            --new model/S325_twofold/S325_full_original_S80_unseen_IDMT_964_frozen.npz \
+            --out model/S326
+          python - <<'PY'
+          import json,numpy as np
+          j=json.load(open('model/S326/prelabel_comparison.json'))
+          assert j['native_events']==964 and j['WAV_count']==16
+          assert j['all_results_on_exact_same_original_V88_native_events']
+          assert not j['truth_XML_or_MIDI_read'] and not j['official_S80_promotion']
+          for name in ('original','twofold'):
+            z=json.load(open(f'model/S325_{name}/report.json'))
+            assert z['original_native_WAV_events']==964
+            assert z['S79_original_trained_K1_models']==4
+            assert z['S80_K0_K2_original_final_formula_exact']
+            assert not z['truth_MIDI_read']
+            with np.load(f'model/S325_{name}/S325_full_original_S80_unseen_IDMT_964_frozen.npz',allow_pickle=False) as a:
+              assert a['s80_K'].shape==(964,)
+          print('S326 PASS original S80, S274 S80 and freeze output SEALED, labels unopened')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s322-s326-full-paired-original-and-S274-S80-964-IDMT-dataset2-PREXML
+          path: |
+            model/S322_original/report.json
+            model/S322_twofold/report.json
+            model/S323_original/report.json
+            model/S323_twofold/report.json
+            model/S324_original/report.json
+            model/S324_twofold/report.json
+            model/S325_original/
+            model/S325_twofold/
+            model/S326/
+          retention-days: 90

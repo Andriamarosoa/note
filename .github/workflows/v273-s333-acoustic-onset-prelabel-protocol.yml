@@ -1,0 +1,46 @@
+name: S333 preregister model-neutral audio-physical XML onset reference before unexposed chord labels
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s333_prelabel_physical_attack_reference_policy.py'
+      - '.github/workflows/v273-s333-acoustic-onset-prelabel-protocol.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s333-acoustic-onset-protocol-before-dataset1-labels
+  cancel-in-progress: true
+jobs:
+  original_20ms_and_physical_audio_anchor_precommit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2
+      - name: Verify synthetic known physical plucks and no-transient negative label abstention
+        run: |
+          python -u -m scripts.s333_prelabel_physical_attack_reference_policy --out model/S333
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S333/report.json'))
+          assert r['status']=='S333_PREXML_PHYSICAL_ATTACK_K_LABEL_POLICY_VERSION1'
+          assert r['source_model_predictions_never_used_to_select_audio_anchors']
+          assert r['unanchored_XML_notes_must_not_be_K0']
+          assert r['if_no_physical_audio_peak']=='ABSTAIN_UNKNOWN_NOT_K0'
+          assert r['test_data_XML_already_opened'] is False
+          assert not r['no_S80_official_promotion'] is False
+          print('S333 PASS explicit frozen acoustic anchor training-free negative-safety scoring contract')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s333-original-synthetic-validated-physical-attack-XML-reference-PRECHORD-XML
+          path: model/S333/
+          retention-days: 90

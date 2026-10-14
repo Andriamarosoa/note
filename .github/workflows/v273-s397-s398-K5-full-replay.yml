@@ -1,0 +1,102 @@
+name: S397 S398 REAL full S70 to S80 K5 protection replay and AFTER-SHA score
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s397_replay_original_S70_K5_guard_full_S80_GuitarSet.py'
+      - 'scripts/s398_score_S397_full_S80_K5_guard_guitarset_after_SHA.py'
+      - '.github/workflows/v273-s397-s398-K5-full-replay.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s397-s398-S70-real-K5-protection-full-replay-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  full_original_S70_S80_replay_no_label:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+      - name: Recover original S69 and S70 source-only signed decisions
+        run: |
+          gh run download 38314191759 -n s269-GuitarSet-59309-original-S69-fourfold -D model/S269 --repo ${{ github.repository }}
+          gh run download 38314219940 -n s270-guitarset-59309-original-S70-four-checkpoints -D model/S270 --repo ${{ github.repository }}
+      - name: Recover original native acoustic features and original trained S71/S72 saved checkpoints
+        run: |
+          gh run download 38312084676 -n s262-guitarset-59309-native-real-S97-source -D model/S262source --repo ${{ github.repository }}
+          gh run download 38296880555 -n s224-original-four-S71-acoustic-risk-checkpoints-historic-exact -D model/S224 --repo ${{ github.repository }}
+          gh run download 38297080728 -n s225-recovered-original-S72-four-temporal-risk-checkpoints -D model/S225 --repo ${{ github.repository }}
+      - name: Recover full S46/PR16/S79 checkpoints and original full S80 frozen reference
+        run: |
+          gh run download 38314164725 -n s268-GuitarSet-original-S46-193foldneutral-59309 -D model/S268 --repo ${{ github.repository }}
+          gh run download 38311525987 -n s258-full-guitarset-59309-real-original-native-527D-58D-46D-42x49-and-OOF-PR16 -D model/S258 --repo ${{ github.repository }}
+          gh run download 38187186049 -n v273-s80-traceable-repair -D model/S80historic --repo ${{ github.repository }}
+          gh run download 38314291222 -n s272-guitarset-59309-new-full-original-weight-S80-foldneutral-locked -D model/S272_original --repo ${{ github.repository }}
+      - name: PRE-SCORE freeze REAL S70-K5 guarded S71 S72 S79 S80 FULL inference rerun (NO labels)
+        run: |
+          python -u -m scripts.s397_replay_original_S70_K5_guard_full_S80_GuitarSet \
+            --source-s70 model/S270/S270_original_S70_4fold_no_oracle_GUITARSET.npz \
+            --s69 model/S269/S269_original_S69_fourfold_rule_consensus_GUITARSET.npz \
+            --s97 model/S262source/original_GuitarSet_59309_S97.npz \
+            --s71models model/S224 --s72models model/S225 \
+            --s46 model/S268/S268_original_193_S46_foldneutral_59309_GUITARSET.npz \
+            --pr16 model/S258/S258_GuitarSet_59309_true_OOF_PR16.npz \
+            --s80models model/S80historic \
+            --existing-s80 model/S272_original/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz \
+            --out model/S397
+          python - <<'PY'
+          import json
+          x=json.load(open('model/S397/report.json'))
+          assert x['status']=='S397_SOURCE_S70_K5_DOWNCAST_GUARD_FULL_S80_REPLAY_LABEL_FREE'
+          assert x['precommitted_guard_actions']>100
+          assert all(x[k] for k in ('S71_original_4_checkpoints_reexecuted','S72_original_4_checkpoints_reexecuted','S79_original_4_checkpoints_reexecuted','S80_original_K0_K2_tail_reexecuted'))
+          assert x['labels_used'] is False and x['final_prediction_posthoc_modified'] is False
+          assert not x['reference_promotion']
+          print('S397 completed ALL post-guard model inference. Immutable predictions frozen; labels untouched.')
+          PY
+      - name: POST-FREEZE retrieve original immutable benchmark annotations ONLY now
+        run: |
+          gh run download 37605163312 -n yourmt3-exactk-summary -D model/YourMT3 --repo ${{ github.repository }}
+      - name: S398 read-only post-SHA paired scorer for reference S80, replay S80, YourMT3 plus
+        run: |
+          python -u -m scripts.s398_score_S397_full_S80_K5_guard_guitarset_after_SHA \
+            --truth model/S258/S258_GuitarSet_59309_true_K_ONLY_FOR_FINAL_AUDIT.npz \
+            --original model/S272_original/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz \
+            --replay model/S397/S397_S272_FULL_REPLAY/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz \
+            --s397report model/S397/report.json \
+            --your model/YourMT3/predictions.npz --out model/S398
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S398/report.json'))
+          assert r['status']=='S398_S397_FULL_REPLAY_DEV_SCORE_K5_GUITARSET_NOT_INDEPENDENT'
+          assert r['labels_read_only_after_S397_SHA_seal']
+          assert not r['external_dataset_evaluation'] and not r['deployed_or_promoted']
+          assert r['full_S70_S71_S72_S79_S80_reexecuted']
+          print('S398 measured DEV gain=',r['score_global']['gain'],
+                'K5 gain=',r['by_true_K']['K5']['gain'],
+                'K4 gain=',r['by_true_K']['K4']['gain'],'NO PROMOTION')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s397-s398-S70-suppression-REAL-full-S80-replay-and-scoring-NOPROMOTION
+          path: |
+            model/S397/report.json
+            model/S397/S397_s70_guarded_fourfold_truthfree.npz
+            model/S397/S397_S271_FULL_REPLAY/report.json
+            model/S397/S397_S272_FULL_REPLAY/report.json
+            model/S397/S397_S272_FULL_REPLAY/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz
+            model/S398/report.json
+          retention-days: 90

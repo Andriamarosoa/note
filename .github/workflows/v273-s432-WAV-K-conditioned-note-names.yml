@@ -1,0 +1,107 @@
+name: S432 WAV plus frozen original S80 K to direct musical E3 note names
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s432_WAV_original_harmonic_input_to_note_names_with_S80_K.py'
+      - '.github/workflows/v273-s432-WAV-K-conditioned-note-names.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s432-actual-WAV-acoustic-notenames-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  decode_actual_WAV_then_infer_native_musical_pitches:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned six-harmonic acoustic and native neural dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.5.1
+      - name: Genuine WAV source feature extraction E3 + K0/K1 selftest
+        run: |
+          python -m py_compile scripts/s432_WAV_original_harmonic_input_to_note_names_with_S80_K.py
+          python -u -m scripts.s432_WAV_original_harmonic_input_to_note_names_with_S80_K --self-test
+      - name: Restore official native trained 4-fold S402, S416, S428 pitch networks
+        run: |
+          gh run download 38361853607 -n s402-K-fed-to-MIDI-neural-input-composition-disjoint-4fold-DEVELOPMENT-NOPROMOTION -D model/S402 --repo ${{ github.repository }}
+          gh run download 38381449092 -n s416-native-CNN-time-pitch-note-head-songheld-S80-ExactK-LOCKED-NO-YourMT -D model/S416 --repo ${{ github.repository }}
+          gh run download 38383639848 -n s419-native-K-gated-MIDI-head-songheld-S402-S416-no-ExactK-regression -D model/S419 --repo ${{ github.repository }}
+          gh run download 38517551029 -n s428-acoustic-harmonic-direct-note-names-S80-ExactK-LOCKED-S419-pair -D model/S428 --repo ${{ github.repository }}
+      - name: Produce genuinely new synthetic audio with E3 and two acoustic source events
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,numpy as np
+          from scipy.io import wavfile
+          Path('test_sound').mkdir()
+          sr=44100
+          t=np.arange(sr*3)/sr
+          # physical WAV contains one E3 and a second attack made of E3 + G3;
+          # K values explicitly supplied by simulated upstream detector.
+          envelope=np.where(t<.45,0.,np.exp(-np.maximum(t-.45,0.)*1.1))
+          signal=.18*envelope*np.sin(2*np.pi*164.8138*t)
+          # E3 is genuinely REATTACKED alongside the new G3:
+          # both are *new* K2 notes, not a sustained old E3 plus new G3.
+          signal+=.16*(t>=1.5)*np.exp(-np.maximum(t-1.5,0.)*1.7)*np.sin(2*np.pi*164.8138*t)
+          signal+=.11*(t>=1.5)*np.exp(-np.maximum(t-1.5,0.)*1.7)*np.sin(2*np.pi*196*t)
+          wavfile.write('test_sound/new_guitar_like.wav',sr,np.rint(signal*32767).astype(np.int16))
+          decisions=[
+            {'row_id':'new-WAV-onset-1','start_sample':round(.45*sr),
+             'end_sample':round(.45*sr)+256,'s80_K':1},
+            {'row_id':'new-WAV-onset-2','start_sample':round(1.5*sr),
+             'end_sample':round(1.5*sr)+256,'s80_K':2},
+            {'row_id':'new-WAV-K0','start_sample':round(2.2*sr),
+             'end_sample':round(2.2*sr)+256,'s80_K':0}]
+          Path('test_sound/provided_predicted_S80_K.jsonl').write_text(
+            '\n'.join(map(json.dumps,decisions))+'\n')
+          print('Prepared physical new WAV and explicit K1, K2, K0 decisions')
+          PY
+      - name: Run real original harmonic acoustic WAV extraction and prefit note naming
+        run: |
+          python -u -m scripts.s432_WAV_original_harmonic_input_to_note_names_with_S80_K \
+            --wav test_sound/new_guitar_like.wav \
+            --decisions test_sound/provided_predicted_S80_K.jsonl \
+            --s402-models model/S402 \
+            --s416-models model/S416 \
+            --s428-models model/S428 \
+            --s419-report model/S419/report.json \
+            --s428-report model/S428/report.json \
+            --out model/S432
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=json.load(open('model/S432/report.json'))
+          assert p['status']=='S432_WAV_PLUS_S80_K_TO_MUSICAL_NOTE_NAMES'
+          assert p['note_name_events']==3 and p['note_count']==3
+          assert p['no_S80_cardinality_regressions_for_provided_K']
+          assert p['predicted_S80_K_must_be_provided_from_original_source']
+          assert not p['complete_raw_WAV_to_K_to_notes']
+          assert p['no_benchmark_claim_for_unseen_WAV']
+          notes=[json.loads(s) for s in Path('model/S432/recognized_note_names_from_WAV.jsonl').read_text().splitlines()]
+          assert [n['K'] for n in notes]==[1,2,0]
+          assert [len(n['notes']) for n in notes]==[1,2,0]
+          assert notes[2]['notes']==[]
+          print('S432 PASS: real raw WAV through original harmonic extractor, NN musical names with externally supplied S80 K')
+          print('S432 actual named notes',notes)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s432-actual-WAV-to-musical-note-names-original-harmonic-bank-Klocked
+          path: model/S432/
+          retention-days: 90

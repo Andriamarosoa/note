@@ -1,0 +1,92 @@
+name: S420 native S419+S417 full MIDI notes preserving 59309 S80 exact K
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s420_native_S419_pitches_S417_noteoff_Klocked_combination.py'
+      - '.github/workflows/v273-s420-native-notes-and-offsets-Klocked.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s420-native-note-Klocked-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  fourfold_native_MIDI_pitches_and_WAV_noteoff_fixed_S80_K:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 95
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Test ACTUAL emitted MIDI note event row recount K1 K2 K3
+        run: |
+          python -m py_compile scripts/s420_native_S419_pitches_S417_noteoff_Klocked_combination.py
+          python -u -m scripts.s420_native_S419_pitches_S417_noteoff_Klocked_combination --self-test
+      - name: Restore original native source and S80 guarded K with immutable 59309 row IDs
+        run: |
+          gh run download 38311525987 -n s258-full-guitarset-59309-real-original-native-527D-58D-46D-42x49-and-OOF-PR16 -D model/S258 --repo ${{ github.repository }}
+          gh run download 38352988801 -n s397-s398-S70-suppression-REAL-full-S80-replay-and-scoring-NOPROMOTION -D model/S397 --repo ${{ github.repository }}
+      - name: Restore song-held per-K S419 NATIVE note head and original S407 timing
+        run: |
+          gh run download 38383639848 -n s419-native-K-gated-MIDI-head-songheld-S402-S416-no-ExactK-regression -D model/S419 --repo ${{ github.repository }}
+          test -f model/S419/S419_NATIVE_K_PROTECTED_HEAD_GATE_59309.npz
+          gh run download 38369185178 -n s407-S80-frozen-K-onset-timing-SONG-HELD-4fold-original-GuitarSet -D model/S407 --repo ${{ github.repository }}
+      - name: Restore four genuine TRAINED held-composition native S417 WAV Offset models
+        run: |
+          gh run download 38382271141 -n s417-NATIVE-complete-MIDI-notes-K0-K6-LOCKED-no-YourMT3-SONGHELD -D model/S417 --repo ${{ github.repository }}
+          test -f model/S417/S417_native_long_audio_absolute_error_held_song_fold0.joblib
+          test -f model/S417/S417_native_long_audio_absolute_error_held_song_fold3.joblib
+          test -f model/S417/S417_native_model_MIDI_notes_and_offsets.npz
+      - name: Restore S412 original user comparator notes without using them as new prediction inputs
+        run: |
+          gh run download 38375133317 -n s412-songheld-REAL-full-WAV-note-offset-vs-S408-user-baseline-NOPROMOTION -D model/S412 --repo ${{ github.repository }}
+      - name: Download MD5 verified full GuitarSet 190 continuous MIC WAVs and note GT
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 --retry-delay 3 -o data/GuitarSet/audio_mono-mic.zip https://huggingface.co/datasets/EZMONYI/music-ai-human-test-audio/resolve/main/external_controls/guitarset_source_v1/audio_mono-mic.zip
+          echo '275966d6610ac34999b58426beb119c3  data/GuitarSet/audio_mono-mic.zip' | md5sum -c -
+          curl -L --fail --retry 3 --retry-delay 3 -o data/GuitarSet/annotation.zip https://huggingface.co/datasets/EZMONYI/music-ai-human-test-audio/resolve/main/external_controls/guitarset_source_v1/annotation.zip
+          echo 'b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip' | md5sum -c -
+      - name: Infer FULL native MIDI notes with pitch S419 and pretrained native WAV Offset S417, K never changes
+        run: |
+          python -u -m scripts.s420_native_S419_pitches_S417_noteoff_Klocked_combination \
+            --audio model/S258/S258_GuitarSet_59309_original_V88_S97_audio.npz \
+            --s80 model/S397/S397/S397_S272_FULL_REPLAY/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz \
+            --s419 model/S419/S419_NATIVE_K_PROTECTED_HEAD_GATE_59309.npz \
+            --s407 model/S407/S407_frozen_S80_K_and_songheld_timing.npz \
+            --source-mic data/GuitarSet/audio_mono-mic.zip \
+            --model-dir model/S417 \
+            --prior-s417 model/S417/S417_native_model_MIDI_notes_and_offsets.npz \
+            --prior-s412 model/S412/S412_continuous_MIC_note_offset_4fold_predictions.npz \
+            --annotations data/GuitarSet/annotation.zip \
+            --out model/S420
+          python - <<'PY'
+          import json
+          x=json.load(open('model/S420/report.json'))
+          assert x['status']=='S420_S419_NATIVE_NOTE_HEAD_WITH_S417_NATIVE_CONTINUOUS_NOTE_OFF'
+          assert x['S80_REFERENCE_K0_K6_UNTOUCHED'] and x['independently_replayed_JSONL_row_ExactK']
+          assert x['exactK_regressions']==0 and x['same_original_events']==59309
+          assert x['original_ExactK_correct_global']==x['new_ExactK_correct_global']==53529
+          assert x['original_ExactK_correct_poly']==x['new_ExactK_correct_poly']==6054
+          assert x['no_YourMT3_in_training_or_inference']
+          assert x['metrics']['S417_native']['correct_offsets_conditional_on_matched_pitch_onset']==16017
+          assert x['metrics']['S412']['correct_offsets_conditional_on_matched_pitch_onset']==14313
+          print('S420 PASS complete MIDI note gain or loss measured; independent 59309-row K recount')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s420-native-S419-S417-full-MIDI-onset-offset-59309-S80-K-locked
+          path: model/S420/
+          retention-days: 90

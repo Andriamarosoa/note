@@ -1,0 +1,125 @@
+name: S318-S320 full 16 ORIGINAL S45 and 304 Ridge / 193 S46 on 964 IDMT new native, S274 twofold PREXML
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s318_full_16_S45_193_S46_dataset2_964.py'
+      - 'scripts/s319_S46_foldneutral_dataset2_964.py'
+      - 'scripts/s320_apply_S274_twofold_S46_dataset2_964.py'
+      - '.github/workflows/v273-s318-s320-full-original-S45-S46-dataset2-964.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s318-s320-all-original-S45-S46-964
+  cancel-in-progress: true
+jobs:
+  all_genuine_S45_16_families_S46_193_policies_and_S274_quorum:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Require all 16 true original source families completely replayed on exactly 964 V88 IDs
+        run: |
+          gh run watch 38324201233 --repo ${{ github.repository }} --exit-status --interval 15
+          gh run watch 38324157734 --repo ${{ github.repository }} --exit-status --interval 15
+      - name: Restore five historical rare original source families and other ten plus S35
+        run: |
+          gh run download 38324157734 \
+            -n s317-original-five-rare-S45-IDMT-dataset2-964-PREXML \
+            -D model/S317 --repo ${{ github.repository }}
+          gh run download 38324201233 \
+            -n s312-s315-964-original-S29-S35-ten-S45-families-IDMT-dataset2-PREXML \
+            -D model/S312S315 --repo ${{ github.repository }}
+      - name: Restore original fourfold S18 and stable audio-S97 source rows, S310 quorum parent
+        run: |
+          gh run download 38323677107 \
+            -n s309-original-133S18-fourfold-on-964-IDMT-dataset2-native-PREXML \
+            -D model/S309 --repo ${{ github.repository }}
+          gh run download 38323902060 \
+            -n s310-s311-original-S18-quorum-S97-native-dataset2-964-PREXML \
+            -D model/S310S311 --repo ${{ github.repository }}
+      - name: Restore complete 304 pre-trained S45 Ridge expert checkpoints and 16-family catalogue
+        run: |
+          gh run download 37891039201 -n v273-series45-specialized-risk-heads -D model/S45 --repo ${{ github.repository }}
+          test -s analysis/v273_s45_original_champion_catalog.json
+      - name: Execute all historic 19 source branches, 16 real S45 champion models, 304 immutable Ridge and all 193 S46
+        run: |
+          python -u -m scripts.s318_full_16_S45_193_S46_dataset2_964 \
+            --five model/S317/external_five_families.npz \
+            --s35 model/S312S315/S313/S313_original_s29_to_s35_dataset2.npz \
+            --s242 model/S312S315/S314/five_rebased_S11_S12_S38_S40_S41.npz \
+            --s243 model/S312S315/S315/five_rebased_recurrent_S19_S20_S24_S25_S27.npz \
+            --s18 model/S309/S309_original_S5_to_S18_true_V88_native_IDMT_964.npz \
+            --s97 model/S310S311/S311/S311_original_IDMT_dataset2_native_S97_audio.npz \
+            --models model/S45/models \
+            --catalog analysis/v273_s45_original_champion_catalog.json \
+            --out model/S318
+          python - <<'PY'
+          import json,numpy as np
+          from pathlib import Path
+          r=json.load(open('model/S318/report.json'))
+          assert r['original_native_reference_event_count']==964
+          assert r['original_s45_ridge_checkpoint_count']==304
+          assert r['original_s46_policy_count']==193
+          assert r['original_fold_held_piece_branches']==19
+          assert len(r['original_16_source_champion_family_names'])==16
+          assert not r['IDMT_XML_MIDI_content_read'] and not r['S80_promoted']
+          files=list(Path('model/S318').glob('branch*_fold*/s46/predictions.npz'))
+          assert len(files)==19
+          with np.load(files[0],allow_pickle=False) as z:
+            assert z['predictions'].shape==(964,193)
+          print('S318 PASS genuine 304 trained risk + 193 policies over 19 original source branches')
+          PY
+      - name: Original fourfold S219 piece-neutral S46 branch aggregation on same 964 original native groups
+        run: |
+          python -u -m scripts.s319_S46_foldneutral_dataset2_964 \
+            --s246 model/S318 \
+            --s310 model/S310S311/S310/S310_original_S18_foldneutral_964_IDMT.npz \
+            --out model/S319
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S319/report.json'))
+          assert r['original_native_reference_event_count']==964
+          with np.load('model/S319/S319_original_193_S46_foldneutral_964_IDMT.npz',allow_pickle=False) as z:
+            assert z['S46_193_policy_K'].shape==(964,193)
+          print('S319 PASS real 193-policy S46 original fold-neutral bank')
+          PY
+      - name: Apply frozen S274 strict 2-fold gate without new truth and freeze both candidate banks
+        run: |
+          python -u -m scripts.s320_apply_S274_twofold_S46_dataset2_964 \
+            --s319 model/S319/S319_original_193_S46_foldneutral_964_IDMT.npz \
+            --s310 model/S310S311/S310/S310_original_S18_foldneutral_964_IDMT.npz \
+            --out model/S320
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S320/report.json'))
+          assert r['native_events']==964 and r['policies']==193
+          assert r['original_intervention_cells']==r['onefold_interventions_suppressed']+r['two_or_more_fold_interventions_retained']
+          assert not r['true_K_or_XML_MIDI_read'] and not r['S80_promoted']
+          with np.load('model/S320/S320_original_source_counterfactual_S274_gate_964.npz',allow_pickle=False) as z:
+            assert z['S46_193_policy_K'].shape==(964,193)
+          print('S320 PASS source-only full S46 original + S274 twofold alternative sealed')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s318-s320-dataset2-964-full-original16-S45-193S46-twofold-PREXML
+          path: |
+            model/S318/report.json
+            model/S319/
+            model/S320/
+          retention-days: 90

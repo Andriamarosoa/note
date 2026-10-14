@@ -1,0 +1,97 @@
+name: S430 real new sound event to E3 G3 B3 native musical note names runtime
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s430_infer_note_names_from_new_S80_sound_events.py'
+      - '.github/workflows/v273-s430-new-acoustic-note-names-runtime.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s430-new-acoustic-note-names-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  inference_test_actual_prefit_S402_S416_S428_note_models:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install PyTorch CPU and pinned note model scoring libs
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.5.1
+      - name: S430 runtime genuine 4 model synthetic inference K0 K1 K2 K3
+        run: |
+          python -m py_compile scripts/s430_infer_note_names_from_new_S80_sound_events.py
+          python -u -m scripts.s430_infer_note_names_from_new_S80_sound_events --self-test
+      - name: Restore actual trained S402/416/428 checkpoint weights and S419/S428 selection policies
+        run: |
+          gh run download 38361853607 -n s402-K-fed-to-MIDI-neural-input-composition-disjoint-4fold-DEVELOPMENT-NOPROMOTION -D model/S402 --repo ${{ github.repository }}
+          gh run download 38381449092 -n s416-native-CNN-time-pitch-note-head-songheld-S80-ExactK-LOCKED-NO-YourMT -D model/S416 --repo ${{ github.repository }}
+          gh run download 38383639848 -n s419-native-K-gated-MIDI-head-songheld-S402-S416-no-ExactK-regression -D model/S419 --repo ${{ github.repository }}
+          gh run download 38517551029 -n s428-acoustic-harmonic-direct-note-names-S80-ExactK-LOCKED-S419-pair -D model/S428 --repo ${{ github.repository }}
+          test -f model/S402/S402_pitch_head_held_song_fold0.joblib
+          test -f model/S416/S416_native_Kfirst_temporal_note_fold0.pt
+          test -f model/S428/S428_acoustic_harmonic_pitch_ranker_fold0.joblib
+          test -f model/S419/report.json
+          test -f model/S428/report.json
+      - name: Infer notes from new synthetic sound-event spectra through ORIGINAL trained networks
+        run: |
+          mkdir -p test_inputs
+          python - <<'PY'
+          import numpy as np
+          from pathlib import Path
+          x=np.zeros((4,42,49),np.float32)
+          x[1,14:24,12]=np.log1p(6)
+          x[2,14:24,12]=np.log1p(6);x[2,14:24,19]=np.log1p(5)
+          x[3,14:24,12]=np.log1p(6);x[3,14:24,15]=np.log1p(5);x[3,14:24,19]=np.log1p(4)
+          rows=np.array(['new-a','new-b','new-c','new-d'])
+          k=np.array([0,1,2,3],np.int8)
+          np.savez_compressed('test_inputs/new_acoustic_42x49.npz',row_id=rows,sequence42x49=x)
+          np.savez_compressed('test_inputs/new_S80_K_source.npz',row_id=rows,s80_K=k)
+          PY
+          python -u -m scripts.s430_infer_note_names_from_new_S80_sound_events \
+            --audio test_inputs/new_acoustic_42x49.npz \
+            --s80 test_inputs/new_S80_K_source.npz \
+            --s402-models model/S402 \
+            --s416-models model/S416 \
+            --s428-models model/S428 \
+            --s419-report model/S419/report.json \
+            --s428-report model/S428/report.json \
+            --out model/S430
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          rows=[json.loads(x) for x in Path('model/S430/notes_from_new_sound.jsonl').read_text().splitlines()]
+          assert len(rows)==4
+          assert [r['K'] for r in rows]==[0,1,2,3]
+          assert [len(r['notes']) for r in rows]==[0,1,2,3]
+          assert rows[0]['notes']==[]
+          assert all(isinstance(name,str) and name for r in rows for name in r['notes'])
+          report=json.load(open('model/S430/report.json'))
+          assert report['status']=='S430_NATIVE_SOUND_EVENT_TO_MUSICAL_NOTE_NAMES'
+          assert report['exactK_regressions']==0
+          assert report['no_YourMT3_at_inference']
+          assert report['no_JAMS_or_true_K_loaded']
+          assert report['new_audio_note_accuracy_not_yet_measured']
+          assert report['raw_WAV_to_42x49_and_S80_still_required_upstream']
+          print('S430 SUCCESS: prefit real neural models load and output musical names for NEW events')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s430-native-prefit-musical-note-name-inference-new-S80-acoustic-Klocked
+          path: model/S430/
+          retention-days: 90

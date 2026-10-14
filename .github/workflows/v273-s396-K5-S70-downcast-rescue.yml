@@ -1,0 +1,62 @@
+name: S396 K5 false-downcast guard counterfactual S69 S70 S80 NO PROMOTION
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s396_K5_5to4_S70_downward_structural_guard_counterfactual.py'
+      - '.github/workflows/v273-s396-K5-S70-downcast-rescue.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s396-5to4-structural-test-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  inspect_labelblind_fixed_guard_score:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Restore S18 original and S46 original 193
+        run: |
+          gh run download 38314164725 -n s268-GuitarSet-original-S46-193foldneutral-59309 -D model/S268 --repo ${{ github.repository }}
+      - name: Restore S69 S70 S71 S72 real model predictions
+        run: |
+          gh run download 38314244883 -n s271-guitarset-59309-original-S71-S72-eight-risk-heads -D model/S271 --repo ${{ github.repository }}
+      - name: Restore S80 actual reconstructed predictions
+        run: |
+          gh run download 38314291222 -n s272-guitarset-59309-new-full-original-weight-S80-foldneutral-locked -D model/S272 --repo ${{ github.repository }}
+      - name: Restore 59k exact truth from original YourMT3 same-event archive
+        run: |
+          gh run download 37605163312 -n yourmt3-exactk-summary -D model/YourMT3 --repo ${{ github.repository }}
+      - name: Counterfactual S70 K5 downward protection, measure by K/fold
+        run: |
+          python -u -m scripts.s396_K5_5to4_S70_downward_structural_guard_counterfactual \
+            --s46 model/S268/S268_original_193_S46_foldneutral_59309_GUITARSET.npz \
+            --s271 model/S271/S271_original_S71_S72_native_GUITARSET.npz \
+            --s80 model/S272/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz \
+            --your model/YourMT3/predictions.npz \
+            --out model/S396
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S396/report.json'))
+          assert r['status']=='S396_S70_S69_K5_TO_K4_DIRECT_GUARD_DEV_COUNTERFACTUAL'
+          assert not r['independent_holdout_measurement']
+          assert not r['promotion'] and not r['original_S80_weights_changed']
+          assert set(r['hypotheses'])=={'rescue_S70_5to4','rescue_S69_5to4','rescue_either'}
+          print('S396 PASS; descriptive case gain and regression measured; S80 UNCHANGED')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s396-S70-K5-downcast-fixed-structural-guard-audit-DEVELOPMENT-ONLY
+          path: model/S396/
+          retention-days: 90

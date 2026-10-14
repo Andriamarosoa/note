@@ -1,0 +1,107 @@
+name: S368 original S71 K3 to K2 veto exception real trained checkpoint root cause
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s368_actual_original_S71_K3_veto_exception_audit.py'
+      - '.github/workflows/v273-s368-original-S71-K3-veto-exception-AUDIT.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s368-read-only-real-S71-K3-veto-provenance
+  cancel-in-progress: true
+jobs:
+  replay_S69_S70_S71_S72_original_trained_and_trace_actual_6_K3_losses:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore deterministic original source-only trained scripts identical to prelabel native S362
+        run: |
+          gh run download 38330878525 \
+            -n s359-IDMT-original-20trained-S80-source-stages-rebased-to-24-WAV-PREXML \
+            -D model/S359 --repo ${{ github.repository }}
+          for file in model/S359/*.py; do cp "$file" "scripts/$(basename "$file" | sed 's/_477/_967/g')"; done
+          test -s scripts/s351_S71_S72_dataset1_967.py
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+      - name: Restore original prelabel genuine S46 and PR16 model outputs and acoustic S97 at the same 967 native V88 group IDs
+        run: |
+          gh run download 38331203079 \
+            -n chords-967-S345-S347-S46 \
+            -D model/fusion --repo ${{ github.repository }}
+          gh run download 38331203079 \
+            -n chords-967-S348-PR16 \
+            -D model/pr16 --repo ${{ github.repository }}
+          gh run download 38331203079 \
+            -n chords-967-S338-S339-source \
+            -D model/source --repo ${{ github.repository }}
+      - name: Restore original trained genuine S69/S70/S71/S72 checkpoint weights and previously sealed prelabel S352
+        run: |
+          gh run download 38177948016 -n v273-s69-s46-risk-replay -D model/S69rules --repo ${{ github.repository }}
+          gh run download 38296428889 -n s222-recovered-original-S70-four-fold-checkpoints-exact-history -D model/S222 --repo ${{ github.repository }}
+          gh run download 38296880555 -n s224-original-four-S71-acoustic-risk-checkpoints-historic-exact -D model/S224 --repo ${{ github.repository }}
+          gh run download 38297080728 -n s225-recovered-original-S72-four-temporal-risk-checkpoints -D model/S225 --repo ${{ github.repository }}
+          gh run download 38331662519 \
+            -n s365-verified-existing-967-native-24chord-original-S80-SHA-PREXML \
+            -D model/original_preXML --repo ${{ github.repository }}
+      - name: SOURCE-ONLY replay original trained S69 S70 S71 S72 logits and K on 967 same prelabel V88 rows, with NO XML
+        run: |
+          python -u -m scripts.s349_S69_fourfold_dataset1_967 \
+            --s247 model/fusion/S346/S346_original_193_S46_foldneutral_967_IDMT.npz \
+            --pr16 model/pr16/pr16_external_36_policies.npz \
+            --rules model/S69rules/report.json --out model/S349replay
+          python -u -m scripts.s350_S70_fourfold_dataset1_967 \
+            --s221 model/S349replay/S349_original_S69_fourfold_rule_consensus_IDMT.npz \
+            --s85 model/pr16/pr16_external_36_policies.npz \
+            --s222 model/S222 --out model/S350replay
+          python -u -m scripts.s351_S71_S72_dataset1_967 \
+            --s69 model/S349replay/S349_original_S69_fourfold_rule_consensus_IDMT.npz \
+            --s70 model/S350replay/S350_original_S70_4fold_no_oracle_IDMT.npz \
+            --s97 model/source/S339/S339_original_IDMT_dataset1_native_S97_audio.npz \
+            --s71 model/S224 --s72 model/S225 --out model/S351replay
+          python - <<'PY'
+          import numpy as np
+          a='model/S351replay/S351_original_S71_S72_native_IDMT.npz'
+          b='model/original_preXML/S352_original/S352_full_original_S80_unseen_IDMT_967_frozen.npz'
+          with np.load(a,allow_pickle=False) as s,np.load(b,allow_pickle=False) as f:
+            assert np.array_equal(s['row_id'],f['row_id'])
+            assert np.array_equal(s['s72_poly_poly_guard_K'],f['s72_K'])
+          print('S368 PASS exact bit-for-bit original pre-XML S72 source prediction replay before opening any scored truth')
+          PY
+      - name: ONLY NOW compare actual six K3 regressions to S71 poly veto source code exception; no retraining
+        run: |
+          gh run download 38331684749 \
+            -n s363-PROSPECTIVE-IDMT-dataset1-24chords-967-postfrozen-historical-plus-acoustic-not-promotion \
+            -D model/scored --repo ${{ github.repository }}
+          python -u -m scripts.s368_actual_original_S71_K3_veto_exception_audit \
+            --s351 model/S351replay/S351_original_S71_S72_native_IDMT.npz \
+            --truth model/scored/S363_postfrozen_967_two_distinct_protocols.npz \
+            --original model/original_preXML/S352_original/S352_full_original_S80_unseen_IDMT_967_frozen.npz \
+            --out model/S368
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S368/report.json'))
+          x=r['true_K3_regression_source_summary']
+          assert x['K3_regressions_total']==6
+          assert r['original_S72_stage_matches_prelabel_original_S80_archive']
+          assert not r['source_code_modified'] and not r['original_frozen_candidate_modified']
+          assert r['true_labels_are_EXPOSED_NOT_INDEPENDENT_for_design_selection']
+          assert r['official_promotion_not_authorized']
+          print('S368 PASS actual TRUE K3 to K2 S69/S70/S71/S72 source stage traced with original trained checkpoints')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s368-original-realtrained-S71-3to2-veto-exception-6K3-regressions-audit
+          path: model/S368/
+          retention-days: 90

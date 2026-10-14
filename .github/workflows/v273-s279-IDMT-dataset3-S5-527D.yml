@@ -1,0 +1,60 @@
+name: S279 recover real original 527D S5 input and 46D PR16 geometry on 506 IDMT dataset3 native
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s279_original_S5_527D_IDMT_dataset3.py'
+      - '.github/workflows/v273-s279-IDMT-dataset3-S5-527D.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s279-true-native-dataset3-s5
+  cancel-in-progress: true
+jobs:
+  original_S4_owned527_on_original_506_native_events:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2
+      - name: Restore 506 original trained V88 native events and official freeze K
+        run: |
+          gh run download 38319155819 \
+            -n s277-IDMT-dataset3-5WAV-true-original-V88-native-official-unlabelled \
+            -D model/S277 --repo ${{ github.repository }}
+      - name: Restore genuine original S97 audio features on those exact 506 events
+        run: |
+          gh run download 38319390256 \
+            -n s278-IDMT-dataset3-506-native-real-S97-no-XML \
+            -D model/S278 --repo ${{ github.repository }}
+      - name: Rebuild original S4-owned S5 527-dimensional inputs with original temporal geometry
+        run: |
+          python -u -m scripts.s279_original_S5_527D_IDMT_dataset3 \
+            --s278 model/S278/S278_IDMT_dataset3_original_S97_on_frozen_native_events.npz \
+            --s277 model/S277/S277_original_official_V88_dataset3_native_5_WAV_predictions.npz \
+            --out model/S279
+          python - <<'PY'
+          import json,numpy as np
+          j=json.load(open('model/S279/report.json'))
+          assert j['native_events']==506 and j['original_feature_width']==527
+          assert j['no_XML_or_MIDI_contents_read'] and not j['S80_promoted']
+          with np.load('model/S279/S279_IDMT_dataset3_true_original_S5_527D_input.npz',allow_pickle=False) as z:
+            assert z['original_S5_input_owned527'].shape==(506,527)
+            assert z['original_PR16_geometry46'].shape==(506,46)
+          print('S279 PASS original S5 genuine 527D input from new V88 native audio, labels unopened')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s279-IDMT-dataset3-506-original-527D-S5-input-no-labels
+          path: model/S279/
+          retention-days: 90

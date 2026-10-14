@@ -1,0 +1,102 @@
+name: S384 real untouched last eight IDMT chords original official V88 freeze audio only AFTER training
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s384_original_V88_source_32_new_IDMT_dataset2_unseen_WAV.py'
+      - '.github/workflows/v273-s384-32-new-dataset2-original-V88-PREXML.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s384-new32-first-audio-after-fixed-GuitarSet-trained
+  cancel-in-progress: true
+jobs:
+  original_V88_source_only_eight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 95
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      TF_CPP_MIN_LOG_LEVEL: '2'
+      TF_NUM_INTRAOP_THREADS: '2'
+      TF_NUM_INTEROP_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - name: REQUIRE eight WAV source file names SHA reserved and original GuitarSet expert entirely TRAINED without IDMT before opening any WAV
+        run: |
+          gh run watch 38336365196 --repo ${{ github.repository }} --exit-status --interval 15
+          gh run watch 38335694458 --repo ${{ github.repository }} --exit-status --interval 15
+          gh run download 38336365196 \
+            -n s383-32-more-Dataset2-original-SHA-WAV-XML-NAMES-NEVER-READ \
+            -D model/S383 --repo ${{ github.repository }}
+          gh run download 38335694458 \
+            -n s376-original-GuitarSet-heldfold-S5-raw-posterior-and-acoustic-K3-specialist-trained-NO-IDMT \
+            -D model/S376 --repo ${{ github.repository }}
+          python - <<'PY'
+          import json
+          a=json.load(open('model/S383/report.json'))
+          b=json.load(open('model/S376/report.json'))
+          assert len(a['untouched_new_32'])==32 and not a['new_XML_contents_read'] and not a['new_WAV_audio_read']
+          assert b['trained_on_original_GuitarSet_only'] and b['selected_for_truly_unseen_external_S372_8WAV'] is not None
+          assert not b['any_IDMT_WAV_XML_read']
+          print('S374 PASS original GuitarSet K3 specialist fully trained and SHA-frozen first, eight new WAVs never read')
+          PY
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r requirements-train.txt numpy==1.26.4 scikit-learn==1.4.2
+      - name: Restore immutable original V84 V86 V87 V88 pretrained acoustic sources
+        run: |
+          mkdir -p model/source-download
+          gh release download v273-source-recovery-35086829802 \
+            --repo ${{ github.repository }} \
+            --pattern v273-rebuilt-proposal-sources.zip \
+            --dir model/source-download
+          python - <<'PY'
+          from pathlib import Path
+          from scripts.restore_v273_original_backup import extract_verified
+          from scripts.rebuild_v273_sources import validate_sources
+          extract_verified(Path('model/source-download/v273-rebuilt-proposal-sources.zip'),
+            Path('model/original-sources'),
+            'fb6bb1049b87c0517936f4f40e5bc1442722fc20b9eba5045a62bb0a12cf2994',
+            validate=validate_sources)
+          PY
+      - name: Original unchanged official freeze_local_combo trained weights
+        run: |
+          mkdir -p model/freeze-original model/freeze-download
+          gh release download v273-uniform-anchored-freeze-37233793945 \
+            --repo ${{ github.repository }} \
+            --pattern v273-uniform-anchored-freeze-result.tgz \
+            --dir model/freeze-download
+          tar -xzf model/freeze-download/v273-uniform-anchored-freeze-result.tgz -C model/freeze-original
+          test -s model/freeze-original/freeze_local_combo.weights.h5
+      - name: Execute true official V88 baseline native event extraction only, no XML or score or selected expert variant
+        run: |
+          python -u -m scripts.s384_original_V88_source_32_new_IDMT_dataset2_unseen_WAV \
+            --sources model/original-sources \
+            --weights model/freeze-original/freeze_local_combo.weights.h5 \
+            --s383 model/S383/report.json \
+            --out model/S384
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S384/report.json'))
+          assert r['status']=='S384_TRUE_OFFICIAL_FREEZE_ON_UNEXPOSED_DATASET2_32_WAV_UNLABELLED'
+          assert r['count_WAV']==32 and r['original_native_event_count']>0
+          assert r['selected_dataset2_prospective_rank49plus']
+          assert not r['XML_MIDI_annotated_contents_read'] and not r['promotion_eligible']
+          with np.load('model/S384/S384_official_V88_dataset2_new32_WAV_predictions.npz',allow_pickle=False) as z:
+            assert len(set(map(str,z['member'])))==32
+            assert z['incumbent_probabilities'].shape==(len(z['row_id']),7)
+          print('S374 PASS original unchanged 8 WAV baseline, new expert already trained, zero original XML read')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s384-32-new-Dataset2-IDMT-original-V88-source-only-PREXML
+          path: |
+            model/S384/report.json
+            model/S384/S384_official_V88_dataset2_new32_WAV_predictions.npz
+          retention-days: 90

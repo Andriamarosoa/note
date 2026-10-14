@@ -1,0 +1,74 @@
+name: S423 frozen S422 survival vs S420 MIDI NoteOff paired audit K protection
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s423_independent_S422_survival_vs_S420_offset_same_notes_Klocked.py'
+      - '.github/workflows/v273-s423-independent-long-survival-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s423-independent-S422-long-note-survival-audit-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  audit_frozen_native_note_export_against_source_k_and_GuitarSet:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Verify same-annotation-note paired regression logic
+        run: |
+          python -m py_compile scripts/s423_independent_S422_survival_vs_S420_offset_same_notes_Klocked.py
+          python -u -m scripts.s423_independent_S422_survival_vs_S420_offset_same_notes_Klocked --self-test
+      - name: Restore frozen original native S420 export
+        run: |
+          gh run download 38384016298 -n s420-native-S419-S417-full-MIDI-onset-offset-59309-S80-K-locked -D model/S420 --repo ${{ github.repository }}
+          test -f model/S420/S420_native_full_MIDI_note_events.jsonl
+      - name: Require complete S422 note-survival models and frozen MIDI events
+        run: |
+          gh run watch 38394264593 --exit-status --repo ${{ github.repository }}
+          gh run download 38394264593 -n s422-native-5s-WAV-pitch-survival-S80-ExactK-LOCKED-note-offsets -D model/S422 --repo ${{ github.repository }}
+          test -f model/S422/S422_NATIVE_K_PROTECTED_full_MIDI_events.jsonl
+      - name: Restore ORIGINAL user K and authentic original GuitarSet MIDI annotation ZIP
+        run: |
+          gh run download 38352988801 -n s397-s398-S70-suppression-REAL-full-S80-replay-and-scoring-NOPROMOTION -D model/S397 --repo ${{ github.repository }}
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 --retry-delay 3 -o data/GuitarSet/annotation.zip https://huggingface.co/datasets/EZMONYI/music-ai-human-test-audio/resolve/main/external_controls/guitarset_source_v1/annotation.zip
+          echo 'b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip' | md5sum -c -
+      - name: Independently replay ACTUAL 33,475 note events and compare all 34,954 SAME GT notes
+        run: |
+          python -u -m scripts.s423_independent_S422_survival_vs_S420_offset_same_notes_Klocked \
+            --s80 model/S397/S397/S397_S272_FULL_REPLAY/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz \
+            --s420 model/S420/S420_native_full_MIDI_note_events.jsonl \
+            --s422 model/S422/S422_NATIVE_K_PROTECTED_full_MIDI_events.jsonl \
+            --annotations data/GuitarSet/annotation.zip \
+            --out model/S423
+          python - <<'PY'
+          import json
+          a=json.load(open('model/S423/report.json'))
+          assert a['status']=='S423_INDEPENDENT_REAL_JSONL_SURVIVAL_OFFSET_PAIRWISE_AUDIT'
+          assert a['same_source_59309_S80_K_per_row']
+          assert a['same_33475_predicted_MIDI_instances']
+          assert a['exact_K_regressions']==0
+          assert a['score']['S420_correct']==16140
+          assert a['score']['n']==34954
+          assert a['unchanged_MIDI_pitch_and_NoteOn'] and a['trained_models_not_refit']
+          print('S423 independent guitar note survival candidate verified, report honest gain or loss')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s423-independent-frozen-S422-S420-same-MIDI-notes-and-S80-K-audit
+          path: model/S423/
+          retention-days: 90

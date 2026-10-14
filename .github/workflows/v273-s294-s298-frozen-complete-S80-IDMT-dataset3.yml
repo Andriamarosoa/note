@@ -1,0 +1,140 @@
+name: S294 S298 frozen full original S80 vs S274-twofold S80 on 506 IDMT dataset3 V88
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s294_original_S69_fourfold_dataset3_506.py'
+      - 'scripts/s295_original_S70_fourfold_dataset3_506.py'
+      - 'scripts/s296_original_S71_S72_dataset3_506.py'
+      - 'scripts/s297_complete_original_S79_S80_dataset3_506.py'
+      - 'scripts/s298_prelabel_full_S80_paired_compare_dataset3_506.py'
+      - '.github/workflows/v273-s294-s298-frozen-complete-S80-IDMT-dataset3.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s294-298-prelabel-two-full-S80-dataset3
+  cancel-in-progress: true
+jobs:
+  original_S69_S80_two_paired_policy_banks_no_XML:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 85
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install original historical S70 to S80 binary/numerical ABI
+        run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3
+      - name: Confirm original S290-292 all 16 source models and S293 real PR16 successfully completed
+        run: |
+          gh run watch 38320668981 --repo ${{ github.repository }} --exit-status --interval 15
+          gh run watch 38320764638 --repo ${{ github.repository }} --exit-status --interval 15
+      - name: Retrieve original S291 and S274 twofold S292 193 policy banks
+        run: |
+          gh run download 38320668981 \
+            -n s290-s292-full-original16-S45-304risk-S46twfold-IDMT-dataset3-506-prelabel \
+            -D model/S290S292 --repo ${{ github.repository }}
+      - name: Retrieve 12 real original PR16 trained networks and 36 frozen policy outputs
+        run: |
+          gh run download 38320764638 \
+            -n s293-real-original-12PR16-36policies-IDMT-dataset3-506 \
+            -D model/S293 --repo ${{ github.repository }}
+      - name: Retrieve the original native acoustic input and unchanged true V88 freeze_local_combo reference
+        run: |
+          gh run download 38320164646 \
+            -n s282-s283-IDMT-dataset3-506-native-original-S18-quorum-S97-source \
+            -D model/S282S283 --repo ${{ github.repository }}
+          gh run download 38319155819 \
+            -n s277-IDMT-dataset3-5WAV-true-original-V88-native-official-unlabelled \
+            -D model/S277 --repo ${{ github.repository }}
+      - name: Restore all four original trained S70/S71/S72/S79 fold-specific checkpoints and S69 rules
+        run: |
+          gh run download 38177948016 -n v273-s69-s46-risk-replay -D model/S69rules --repo ${{ github.repository }}
+          gh run download 38296428889 -n s222-recovered-original-S70-four-fold-checkpoints-exact-history -D model/S222 --repo ${{ github.repository }}
+          gh run download 38296880555 -n s224-original-four-S71-acoustic-risk-checkpoints-historic-exact -D model/S224 --repo ${{ github.repository }}
+          gh run download 38297080728 -n s225-recovered-original-S72-four-temporal-risk-checkpoints -D model/S225 --repo ${{ github.repository }}
+          gh run download 38187186049 -n v273-s80-traceable-repair -D model/S80historic --repo ${{ github.repository }}
+      - name: Verify original S69 folded rule/veto and exact S80 K0/K2 formula with synthetic tests
+        run: |
+          python -m scripts.s294_original_S69_fourfold_dataset3_506 --self-test
+          python -m scripts.s147_s80_tail_runtime --self-test
+      - name: Replay original S291 and stricter S292 through ALL genuine original S69 S70 S71 S72 S79 S80 saved checkpoints
+        run: |
+          set -euo pipefail
+          for scenario in original twofold; do
+            if [ "$scenario" = "original" ]; then
+              s46="model/S290S292/S291/S291_original_193_S46_foldneutral_506_IDMT.npz"
+            else
+              s46="model/S290S292/S292/S292_original_source_counterfactual_S274_gate_506.npz"
+            fi
+            python -u -m scripts.s294_original_S69_fourfold_dataset3_506 \
+              --s247 "$s46" \
+              --pr16 model/S293/pr16_external_36_policies.npz \
+              --rules model/S69rules/report.json \
+              --out "model/S294_$scenario"
+            python -u -m scripts.s295_original_S70_fourfold_dataset3_506 \
+              --s221 "model/S294_$scenario/S294_original_S69_fourfold_rule_consensus_IDMT.npz" \
+              --s85 model/S293/pr16_external_36_policies.npz \
+              --s222 model/S222 \
+              --out "model/S295_$scenario"
+            python -u -m scripts.s296_original_S71_S72_dataset3_506 \
+              --s69 "model/S294_$scenario/S294_original_S69_fourfold_rule_consensus_IDMT.npz" \
+              --s70 "model/S295_$scenario/S295_original_S70_4fold_no_oracle_IDMT.npz" \
+              --s97 model/S282S283/S283/S283_original_IDMT_dataset3_native_S97_audio.npz \
+              --s71 model/S224 --s72 model/S225 \
+              --out "model/S296_$scenario"
+            python -u -m scripts.s297_complete_original_S79_S80_dataset3_506 \
+              --s226 "model/S296_$scenario/S296_original_S71_S72_native_IDMT.npz" \
+              --s219 "$s46" \
+              --s85 model/S293/pr16_external_36_policies.npz \
+              --s97 model/S282S283/S283/S283_original_IDMT_dataset3_native_S97_audio.npz \
+              --s80 model/S80historic \
+              --out "model/S297_$scenario"
+          done
+      - name: Freeze paired exact same 506 events source predictions before opening ANY XML note annotation
+        run: |
+          python -u -m scripts.s298_prelabel_full_S80_paired_compare_dataset3_506 \
+            --s277 model/S277/S277_original_official_V88_dataset3_native_5_WAV_predictions.npz \
+            --old model/S297_original/S297_full_original_S80_unseen_IDMT_506_frozen.npz \
+            --new model/S297_twofold/S297_full_original_S80_unseen_IDMT_506_frozen.npz \
+            --out model/S298
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S298/prelabel_comparison.json'))
+          assert r['native_events']==506 and r['WAV_count']==5
+          assert r['all_results_on_exact_same_original_V88_native_events']
+          assert r['performance_ExactK_not_scored'] and not r['truth_XML_or_MIDI_read']
+          assert not r['official_S80_promotion']
+          for typ in ('original','twofold'):
+            rr=json.load(open(f'model/S297_{typ}/report.json'))
+            assert rr['original_native_WAV_events']==506
+            assert rr['S79_original_trained_K1_models']==4
+            assert rr['S80_K0_K2_original_final_formula_exact']
+            assert not rr['song_disjoint_independent_accuracy_measured']
+            with np.load(f'model/S297_{typ}/S297_full_original_S80_unseen_IDMT_506_frozen.npz',allow_pickle=False) as z:
+              assert z['s80_K'].shape==(506,)
+              assert np.isin(z['s80_K'],range(7)).all()
+          print('S298 PASS full native, original vs S274 twofold S80 paired prelabel freeze: no independent metric claimed')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s294-s298-two-complete-frozen-S80-original-vs-S274-IDMT-dataset3-506-PREXML
+          path: |
+            model/S294_original/report.json
+            model/S294_twofold/report.json
+            model/S295_original/report.json
+            model/S295_twofold/report.json
+            model/S296_original/report.json
+            model/S296_twofold/report.json
+            model/S297_original/
+            model/S297_twofold/
+            model/S298/
+          retention-days: 90

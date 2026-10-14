@@ -1,0 +1,65 @@
+name: "S328 original 20ms XML attack misses and 10s clip coverage audit"
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s328_postfrozen_IDMT_XML_onsets_10s_source_coverage.py'
+      - '.github/workflows/v273-s328-after-postfrozen-XML-attack-coverage.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s328-exposed-XML-real-onset-recall-diagnostic
+  cancel-in-progress: true
+jobs:
+  native_candidate_20ms_recall_vs_10s_clip:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2
+      - name: Read ONLY already exposed S327 XML with its original immutable per-track hashes and previously sealed official V88 events
+        run: |
+          gh run download 38324513980 \
+            -n s327-PROSPECTIVE-IDMT-dataset2-964-postfrozen-original-attack-ExactK0to6-NOTpromotion \
+            -D model/S327 --repo ${{ github.repository }}
+          gh run download 38322507433 \
+            -n s302-IDMT-dataset2-16WAV-true-original-V88-native-official-unlabelled \
+            -D model/S302 --repo ${{ github.repository }}
+          gh run download 38323261561 \
+            -n s305-Dataset2-16reserveWAV-964events-original-K0K6-attack-protocol-PREXML \
+            -D model/S305 --repo ${{ github.repository }}
+      - name: Diagnose outside-first-ten-seconds annotation onsets versus within-window V88 candidate recall
+        run: |
+          python -u -m scripts.s328_postfrozen_IDMT_XML_onsets_10s_source_coverage \
+            --s305 model/S305/report.json \
+            --s302 model/S302/S302_official_V88_dataset2_rank49plus_16_WAV_predictions.npz \
+            --s302report model/S302/report.json \
+            --s327 model/S327/report.json \
+            --s327data model/S327/S327_original_964_attackK0to6_XML_annotations_postfrozen.npz \
+            --out model/S328
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S328/report.json'))
+          assert r['original_native_V88_events']==964
+          assert r['S327_historical_onset_matched_labels_bit_exact_verified']
+          x=r['first_10s_audio_vs_full_XML_coverage']
+          assert x['xml_onsets_total']==300
+          assert x['XML_within_first_10s_assigned_original_20ms']+x['XML_within_first_10s_missed_original_20ms']==x['xml_onsets_within_first_10s']
+          assert not r['alternative_match_radius_tuning_performed']
+          assert not r['official_S80_promotion']
+          print('S328 PASS genuine original native V88 onset detection coverage and temporal clip accounting')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s328-IDMT-exposed-XML-964-original20ms-coverage-vs-10s-clip-no-training
+          path: model/S328/
+          retention-days: 90

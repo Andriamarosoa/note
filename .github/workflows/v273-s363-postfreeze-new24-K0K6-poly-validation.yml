@@ -1,0 +1,86 @@
+name: S363 first 24 NEW WAV postfrozen original and audio-anchored attack Exact-K on 967 heldout IDMT chords
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s363_postfreeze_24_new_chord_attackK_967.py'
+      - '.github/workflows/v273-s363-postfreeze-new24-K0K6-poly-validation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s363-original-967-new24-chord-XML-FIRST-READ
+  cancel-in-progress: true
+jobs:
+  historical_vs_audio_anchored_postfrozen_chord_exactK:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 80
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2
+      - name: Validate future dual-protocol scorer code BEFORE reading any XML
+        run: |
+          python -m py_compile scripts/s363_postfreeze_24_new_chord_attackK_967.py
+          python -m py_compile scripts/s333_prelabel_physical_attack_reference_policy.py
+      - name: BLOCK XML opening until both 967 full S80 variants, trained final S79 S80 and official reference have all passed frozen-SHA source gate
+        run: gh run watch 38331662519 --repo ${{ github.repository }} --exit-status --interval 15
+      - name: Restore original S276 filename-only chord selection, S332 original official freeze and S333 PRELABEL acoustic reference protocol
+        run: |
+          gh run download 38330431853 \
+            -n s357-original-IDMT-dataset1-24-new-chord-WAV-XML-NAMES-PREXML \
+            -D model/S357 --repo ${{ github.repository }}
+          gh run download 38330563316 \
+            -n s358-24-new-IDMT-dataset1-chords-original-V88-official-PREXML \
+            -D model/S358 --repo ${{ github.repository }}
+          gh run download 38326698570 \
+            -n s333-original-synthetic-validated-physical-attack-XML-reference-PRECHORD-XML \
+            -D model/S333 --repo ${{ github.repository }}
+      - name: Restore exactly the TWO complete frozen historical S80 candidates from SAME 967 real V88 source rows
+        run: |
+          gh run download 38331662519 \
+            -n s365-verified-existing-967-native-24chord-original-S80-SHA-PREXML \
+            -D model/S349S353 --repo ${{ github.repository }}
+      - name: FIRST read all twenty-four original XML note annotations ONLY after SHA verification of baseline, both S80 final outputs, and S333 physical target policy
+        run: |
+          python -u -m scripts.s363_postfreeze_24_new_chord_attackK_967 \
+            --s276 model/S357/report.json \
+            --s332 model/S358/S358_official_V88_dataset1_prospective_24_WAV_predictions.npz \
+            --s332report model/S358/report.json \
+            --s333 model/S333/report.json \
+            --s353 model/S349S353/S353/prelabel_comparison.json \
+            --old model/S349S353/S352_original/S352_full_original_S80_unseen_IDMT_967_frozen.npz \
+            --new model/S349S353/S352_twofold/S352_full_original_S80_unseen_IDMT_967_frozen.npz \
+            --out model/S363
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S363/report.json'))
+          assert r['status']=='S363_FIRST_POSTFROZEN_PROSPECTIVE_DATASET1_CHORDS_ATTACK_EXACTK_DUAL_PROTOCOL'
+          assert r['native_V88_events']==967 and r['prospective_WAVs']==24
+          assert sum(r['historical_if_XML_complete_truth_histogram'])==967
+          assert r['source_predictions_all_frozen_before_XML'] and r['source_models_unchanged']
+          assert r['acoustic_anchor_is_NOT_original_historical_K_definition']
+          assert not r['XML_note_transcription_exhaustiveness_verified']
+          assert not r['negative_K0_truth_independently_certified']
+          assert not r['composition_song_disjointness_from_original_training_proven']
+          assert not r['official_S80_promotion']
+          with np.load('model/S363/S363_postfrozen_967_two_distinct_protocols.npz',allow_pickle=False) as z:
+            assert z['row_id'].shape==(967,)
+            assert len(z['historical_attack_K_if_XML_complete'])==967
+          print('S363 PASS first prospective original training 20ms and acoustic transient peak comparisons; official promotion still not certified.')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s363-PROSPECTIVE-IDMT-dataset1-24chords-967-postfrozen-historical-plus-acoustic-not-promotion
+          path: model/S363/
+          retention-days: 90

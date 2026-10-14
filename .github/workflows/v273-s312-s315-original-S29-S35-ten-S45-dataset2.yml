@@ -1,0 +1,134 @@
+name: S312-S315 19 original S29 S35 source branches and ten trained S45 families on 964 IDMT dataset2 native PREXML
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s312_S29_original_19branches_dataset2_964.py'
+      - 'scripts/s313_S35_original_19branches_dataset2_964.py'
+      - 'scripts/s314_original_five_S45_dataset2_964.py'
+      - 'scripts/s315_original_recurrent_S45_dataset2_964.py'
+      - '.github/workflows/v273-s312-s315-original-S29-S35-ten-S45-dataset2.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s312-s315-original-trained-S29-S35-10families-964
+  cancel-in-progress: true
+jobs:
+  all_19_pretrained_S29_S35_and_ten_S45_origins:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install original torch and sklearn models
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Require 964 exact original S18 and S97 fold-neutral components
+        run: gh run watch 38323902060 --repo ${{ github.repository }} --exit-status --interval 15
+      - name: Restore 133 original S8-S18 trained checkpoint decisions and exact S97 audio
+        run: |
+          gh run download 38323677107 \
+            -n s309-original-133S18-fourfold-on-964-IDMT-dataset2-native-PREXML \
+            -D model/S309 --repo ${{ github.repository }}
+          gh run download 38323902060 \
+            -n s310-s311-original-S18-quorum-S97-native-dataset2-964-PREXML \
+            -D model/S310S311 --repo ${{ github.repository }}
+      - name: Restore original 38 S29 Q and 19 S20 expert model weights
+        run: |
+          gh run download 37865173636 -n v273-series29-stepwise-scheduler -D model/S29 --repo ${{ github.repository }}
+          gh run download 37858383973 -n v273-series20-residual -D model/S20 --repo ${{ github.repository }}
+      - name: Run original 19 S29 Q/RNN branches on exactly 964 native events
+        run: |
+          python -u -m scripts.s312_S29_original_19branches_dataset2_964 \
+            --s29 model/S29 --s20 model/S20 \
+            --s18 model/S309/S309_original_S5_to_S18_true_V88_native_IDMT_964.npz \
+            --s97 model/S310S311/S311/S311_original_IDMT_dataset2_native_S97_audio.npz \
+            --out model/S312
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S312/report.json'))
+          assert r['events']==964 and r['branches']==19
+          assert r['original_S29_Q_models']==38 and r['original_S20_networks']==19
+          assert not r['labels_read'] and not r['promotion']
+          with np.load('model/S312/S312_original_s29_all_19_dataset2.npz',allow_pickle=False) as z:
+            assert z['predicted_K'].shape==(19,964)
+          print('S312 PASS 19 original trained S29 branches')
+          PY
+      - name: Restore authentic 36 original S35 experts and 72 original quality gate weights
+        run: gh run download 37868356632 -n v273-series35-extended-head-router -D model/S35 --repo ${{ github.repository }}
+      - name: Run genuine original trained S35 recursive router for all 19 original S29 branches
+        run: |
+          python -u -m scripts.s313_S35_original_19branches_dataset2_964 \
+            --s209 model/S312/S312_original_s29_all_19_dataset2.npz \
+            --s18 model/S309/S309_original_S5_to_S18_true_V88_native_IDMT_964.npz \
+            --s97 model/S310S311/S311/S311_original_IDMT_dataset2_native_S97_audio.npz \
+            --s35 model/S35 --out model/S313
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S313/report.json'))
+          assert r['events']==964 and r['branches']==19 and r['original_S35_expert_checkpoints']==36
+          assert not r['labels_read'] and not r['S80_promoted']
+          with np.load('model/S313/S313_original_s29_to_s35_dataset2.npz',allow_pickle=False) as z:
+            assert z['S35_K'].shape==(19,964)
+          print('S313 PASS original 36 trained S35 experts over all new 964 native events')
+          PY
+      - name: Restore all five original S11 S12 S38 S40 S41 saved neural/risk families
+        run: |
+          gh run download 37853663514 -n v273-series11-native-risk -D model/S11 --repo ${{ github.repository }}
+          gh run download 37853979683 -n v273-series12-full-audio -D model/S12 --repo ${{ github.repository }}
+          gh run download 37880386031 -n v273-series38-poly-harmonic-expert -D model/S38 --repo ${{ github.repository }}
+          gh run download 37880762289 -n v273-series40-temporal-cnn -D model/S40 --repo ${{ github.repository }}
+          gh run download 37881191015 -n v273-series41-six-head-neural-fusion -D model/S41 --repo ${{ github.repository }}
+      - name: Apply genuine S11 S12 S38 S40 S41 trained sources (five families, 19 branches)
+        run: |
+          python -u -m scripts.s314_original_five_S45_dataset2_964 \
+            --s18 model/S309/S309_original_S5_to_S18_true_V88_native_IDMT_964.npz \
+            --s97 model/S310S311/S311/S311_original_IDMT_dataset2_native_S97_audio.npz \
+            --s11 model/S11 --s12 model/S12 --s38 model/S38 --s40 model/S40 --s41 model/S41 \
+            --out model/S314
+      - name: Restore recurrent original pretrained S19 S20 S25 family weights
+        run: |
+          gh run download 37858017067 -n v273-series19-recurrent -D model/S19 --repo ${{ github.repository }}
+          gh run download 37862417522 -n v273-series25-trained-Bfirst -D model/S25 --repo ${{ github.repository }}
+      - name: Apply five genuine pretrained S19 S20 S24 S25 S27 recurrent sources with no truth labels
+        run: |
+          python -m scripts.s168_original_S24_S25_Bfirst_GOAT --self-test
+          python -m scripts.s166_external_original_S19_S20_S27 --self-test
+          python -u -m scripts.s315_original_recurrent_S45_dataset2_964 \
+            --s18 model/S309/S309_original_S5_to_S18_true_V88_native_IDMT_964.npz \
+            --s97 model/S310S311/S311/S311_original_IDMT_dataset2_native_S97_audio.npz \
+            --s19 model/S19 --s20 model/S20 --s25 model/S25 --out model/S315
+          python - <<'PY'
+          import json,numpy as np
+          a=json.load(open('model/S314/report.json'))
+          b=json.load(open('model/S315/report.json'))
+          assert a['events']==b['events']==964
+          assert a['branches']==b['branches']==19
+          assert len(a['family_ids'])==len(b['source_variants'])==5
+          assert not a['labels_read'] and not b['truth_labels_read']
+          with np.load('model/S314/five_rebased_S11_S12_S38_S40_S41.npz',allow_pickle=False) as z:
+            assert z['proposals_K'].shape==(19,964,5)
+          with np.load('model/S315/five_rebased_recurrent_S19_S20_S24_S25_S27.npz',allow_pickle=False) as z:
+            assert z['proposals_K'].shape==(19,964,5)
+          print('S314/S315 PASS all ten original saved S45 family proposals; new XML unopened')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s312-s315-964-original-S29-S35-ten-S45-families-IDMT-dataset2-PREXML
+          path: |
+            model/S312/
+            model/S313/
+            model/S314/
+            model/S315/
+          retention-days: 90

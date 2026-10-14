@@ -1,0 +1,84 @@
+name: S327 first postfreeze HISTORICAL ATTACK Exact-K0to6 on 16 prospective IDMT dataset2 964 native events
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s327_postfreeze_historical_attackK_IDMT_dataset2_964.py'
+      - '.github/workflows/v273-s327-postfreeze-historical-attackK0to6-dataset2-964.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s327-FIRST-XML-open-after-S326-three-original-sha-seals
+  cancel-in-progress: true
+jobs:
+  first_XML_read_after_both_full_S80_models_and_reference_SHA_SEALED:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2
+      - name: PRELABEL self-test uses historical original 20ms assignment and paired correction ledger ONLY
+        run: python -u -m scripts.s327_postfreeze_historical_attackK_IDMT_dataset2_964 --self-test
+      - name: BLOCK annotation reading until both complete native S80 original and strict S274 source bank finishes and hashes
+        run: gh run watch 38324398581 --repo ${{ github.repository }} --exit-status --interval 15
+      - name: Restore already preregistered original 16 reserve XML member NAMES only, original official freeze V88 and immutable historical K0-K6 scoring policy
+        run: |
+          gh run download 38318827219 \
+            -n s276-IDMT-central-directory-only-prospective-WAV-cohort \
+            -D model/S276 --repo ${{ github.repository }}
+          gh run download 38322507433 \
+            -n s302-IDMT-dataset2-16WAV-true-original-V88-native-official-unlabelled \
+            -D model/S302 --repo ${{ github.repository }}
+          gh run download 38323261561 \
+            -n s305-Dataset2-16reserveWAV-964events-original-K0K6-attack-protocol-PREXML \
+            -D model/S305 --repo ${{ github.repository }}
+      - name: Restore TWO complete frozen historical S80 counterfactual predictions and independent prelabel SHA comparison
+        run: |
+          gh run download 38324398581 \
+            -n s322-s326-full-paired-original-and-S274-S80-964-IDMT-dataset2-PREXML \
+            -D model/S322S326 --repo ${{ github.repository }}
+      - name: VERIFY SHA-256 and source immutable cohort FIRST; THEN open exactly sixteen XMLs for trained attack-K cardinality
+        run: |
+          python -u -m scripts.s327_postfreeze_historical_attackK_IDMT_dataset2_964 \
+            --selection model/S276/S276_IDMT_filename_only_cohort_manifest.json \
+            --protocol model/S305/report.json \
+            --freeze model/S302/S302_official_V88_dataset2_rank49plus_16_WAV_predictions.npz \
+            --freeze_report model/S302/report.json \
+            --pair model/S322S326/S326/prelabel_comparison.json \
+            --old model/S322S326/S325_original/S325_full_original_S80_unseen_IDMT_964_frozen.npz \
+            --new model/S322S326/S325_twofold/S325_full_original_S80_unseen_IDMT_964_frozen.npz \
+            --out model/S327
+          python - <<'PY'
+          import json,numpy as np
+          j=json.load(open('model/S327/report.json'))
+          assert j['selected_WAV']==16 and j['original_V88_native_events']==964
+          assert len(j['true_attack_K0to6_if_XML_complete'])==7
+          assert sum(j['true_attack_K0to6_if_XML_complete'])==964
+          assert j['first_XML_read_after_source_checks']
+          assert j['historical_train_target_20ms_attack_cardinality_not_sustained']
+          assert j['XML_transcription_exhaustive_independently_certified'] is False
+          assert j['filename_grouped_licks_are_composition_disjoint_from_train_proven'] is False
+          assert not j['official_global_ExactK_certified'] and not j['official_S80_promotion']
+          with np.load('model/S327/S327_original_964_attackK0to6_XML_annotations_postfrozen.npz',allow_pickle=False) as z:
+            assert len(z['true_attack_K_if_XML_complete'])==964
+            assert z['row_id'].shape==(964,)
+          for k,v in j['paired_comparisons'].items():
+            assert v['native_all_K0to6_if_XML_complete']['n']==964
+            assert v['true_new_attack_poly_K2to6_if_XML_complete']['n']==j['true_attack_poly_K2to6_if_XML_complete']
+          print('S327 PASS PRECOMMITTED historical original K0-K6 attack truth and SAME exact 964 native event scores. Official promotion withheld pending song-disjoint + exhaustive truth certification.')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s327-PROSPECTIVE-IDMT-dataset2-964-postfrozen-original-attack-ExactK0to6-NOTpromotion
+          path: model/S327/
+          retention-days: 90

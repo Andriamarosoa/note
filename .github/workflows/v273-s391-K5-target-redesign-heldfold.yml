@@ -1,0 +1,61 @@
+name: S391 heldfold TRUE K4 K5 source acoustic producer original S80 preserved
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s391_k5_trueK4_5_acoustic_source_heldfold.py'
+      - '.github/workflows/v273-s391-K5-target-redesign-heldfold.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s391-k5-target-redesign-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  true_acoustic_pre_S72_K5_head:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Restore original frozen S258 audio and original truth
+        run: |
+          gh run download 38311525987 -n s258-full-guitarset-59309-real-original-native-527D-58D-46D-42x49-and-OOF-PR16 -D model/S258 --repo ${{ github.repository }}
+      - name: Restore original held-piece S80 and current complete reconstructed S80 reference predictions
+        run: |
+          gh run download 38187186049 -n v273-s80-traceable-repair -D model/OldS80 --repo ${{ github.repository }}
+          gh run download 38314291222 -n s272-guitarset-59309-new-full-original-weight-S80-foldneutral-locked -D model/S272 --repo ${{ github.repository }}
+      - name: Train 8 new upstream acoustic K5 source heads; cross-fold OOF, no model reference change
+        run: |
+          python -u -m scripts.s391_k5_trueK4_5_acoustic_source_heldfold \
+            --audio model/S258/S258_GuitarSet_59309_original_V88_S97_audio.npz \
+            --truth model/S258/S258_GuitarSet_59309_true_K_ONLY_FOR_FINAL_AUDIT.npz \
+            --historical model/OldS80/predictions.npz \
+            --s272 model/S272/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz \
+            --out model/S391
+          python - <<'PY'
+          import json,pathlib
+          a=json.loads(pathlib.Path('model/S391/report.json').read_text())
+          assert a['status']=='S391_ACOUSTIC_K5_PRODUCER_CROSS_FOLD_TARGET_REDESIGN'
+          assert a['true_group_fold_leakage']==0 and a['newly_trained_heads']==8
+          assert a['S80_reference_changed'] is False and a['candidate_policy_promoted'] is False
+          assert set(a['results'])=={'K4_K5_training','K3_K4_K5_training'}
+          assert all(all(q['member_overlap']==0 for q in v['fold_proofs']) for v in a['results'].values())
+          print('S391 PASS: true foldheld independent NEW K5 heads, unchanged official S80')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s391-trueK4K5-trueK3K4K5-heldfold-audio1133-source-HEADS-no-reference-change
+          path: model/S391/
+          retention-days: 90

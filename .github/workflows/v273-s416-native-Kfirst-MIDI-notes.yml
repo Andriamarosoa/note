@@ -1,0 +1,87 @@
+name: S416 native K-first MIDI head songheld training no YourMT and strict S80 count
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s416_native_Kfirst_temporal_MIDI_note_decoder.py'
+      - '.github/workflows/v273-s416-native-Kfirst-MIDI-notes.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s416-native-Kfirst-midi-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  original_guitarset_native_Kfirst_no_teacher:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '3'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install torch CPU and pinned acoustic dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.5.1
+      - name: Prove from-scratch native K-conditioned pitch head passes K0..K6
+        run: |
+          python -m py_compile scripts/s416_native_Kfirst_temporal_MIDI_note_decoder.py
+          python -u -m scripts.s416_native_Kfirst_temporal_MIDI_note_decoder --self-test
+      - name: Restore ORIGINAL GuitarSet acoustic bank 59309, true K used only for scoring
+        run: |
+          gh run download 38311525987 -n s258-full-guitarset-59309-real-original-native-527D-58D-46D-42x49-and-OOF-PR16 -D model/S258 --repo ${{ github.repository }}
+          test -f model/S258/S258_GuitarSet_59309_original_V88_S97_audio.npz
+          test -f model/S258/S258_GuitarSet_59309_true_K_ONLY_FOR_FINAL_AUDIT.npz
+      - name: Restore user selected S80 locked 59309 K0-K6 original predictions
+        run: |
+          gh run download 38352988801 -n s397-s398-S70-suppression-REAL-full-S80-replay-and-scoring-NOPROMOTION -D model/S397 --repo ${{ github.repository }}
+      - name: Restore previous S402 note identification baseline
+        run: |
+          gh run download 38361853607 -n s402-K-fed-to-MIDI-neural-input-composition-disjoint-4fold-DEVELOPMENT-NOPROMOTION -D model/S402 --repo ${{ github.repository }}
+          test -f model/S402/S402_K_FIRST_S80_MIDI_NOTE_59309_SONG_OOF.npz
+      - name: Download authentic GuitarSet MIDI note labels, verified MD5
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 --retry-delay 3 -o data/GuitarSet/annotation.zip https://huggingface.co/datasets/EZMONYI/music-ai-human-test-audio/resolve/main/external_controls/guitarset_source_v1/annotation.zip
+          echo 'b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip' | md5sum -c -
+      - name: Train four original native CNN time/pitch note models and evaluate held songs
+        run: |
+          python -u -m scripts.s416_native_Kfirst_temporal_MIDI_note_decoder \
+            --audio model/S258/S258_GuitarSet_59309_original_V88_S97_audio.npz \
+            --s80 model/S397/S397/S397_S272_FULL_REPLAY/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz \
+            --s402 model/S402/S402_K_FIRST_S80_MIDI_NOTE_59309_SONG_OOF.npz \
+            --annotations data/GuitarSet/annotation.zip \
+            --truth model/S258/S258_GuitarSet_59309_true_K_ONLY_FOR_FINAL_AUDIT.npz \
+            --epochs 14 \
+            --out model/S416
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S416/report.json'))
+          assert r['status']=='S416_NATIVE_KFIRST_TEMPORAL_NOTE_DECODER_SONGHELD'
+          assert r['exactK_regressions']==0
+          assert r['original_S80_K_correct_global']==r['new_S416_K_correct_global']==53529
+          assert r['original_S80_K_correct_poly']==r['new_S416_K_correct_poly']==6054
+          assert r['no_external_YourMT_weights_or_predictions_at_train_or_test']
+          assert len(r['song_fold_proofs'])==4
+          assert all(x['composition_overlap']==0 for x in r['song_fold_proofs'])
+          with np.load('model/S416/S416_NATIVE_Kfirst_MIDI_NOTE_59309_SONG_OOF.npz') as z:
+            k=z['s80_K'];pred=z['midi_pitch_slots']
+            assert len(k)==59309
+            assert np.array_equal((pred>=0).sum(1),k)
+          print('S416 LIVE TEST PASS: 59309 EXACT K unchanged, native trained model without YourMT')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s416-native-CNN-time-pitch-note-head-songheld-S80-ExactK-LOCKED-NO-YourMT
+          path: model/S416/
+          retention-days: 90

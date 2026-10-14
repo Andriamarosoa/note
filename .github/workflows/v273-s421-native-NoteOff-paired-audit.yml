@@ -1,0 +1,71 @@
+name: S421 paired native full note corrections regressions with S80 K JSONL proof
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s421_audit_S420_vs_S417_pairwise_same_true_MIDI_notes_Klocked.py'
+      - '.github/workflows/v273-s421-native-NoteOff-paired-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s421-native-actual-JSONL-K-protected-pair-audit-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  independently_score_real_source_MIDI_notes_for_S417_and_S420:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Test genuine same-reference-note corrections and regressions
+        run: |
+          python -m py_compile scripts/s421_audit_S420_vs_S417_pairwise_same_true_MIDI_notes_Klocked.py
+          python -u -m scripts.s421_audit_S420_vs_S417_pairwise_same_true_MIDI_notes_Klocked --self-test
+      - name: Restore actual S417 and S420 independently exportable MIDI full-note JSONL
+        run: |
+          gh run download 38382271141 -n s417-NATIVE-complete-MIDI-notes-K0-K6-LOCKED-no-YourMT3-SONGHELD -D model/S417 --repo ${{ github.repository }}
+          gh run download 38384016298 -n s420-native-S419-S417-full-MIDI-onset-offset-59309-S80-K-locked -D model/S420 --repo ${{ github.repository }}
+          test -f model/S417/S417_native_full_MIDI_events_absolute_error.jsonl
+          test -f model/S420/S420_native_full_MIDI_note_events.jsonl
+      - name: Restore original S80 protected K NPZ and original GuitarSet JAMS
+        run: |
+          gh run download 38352988801 -n s397-s398-S70-suppression-REAL-full-S80-replay-and-scoring-NOPROMOTION -D model/S397 --repo ${{ github.repository }}
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 --retry-delay 3 -o data/GuitarSet/annotation.zip https://huggingface.co/datasets/EZMONYI/music-ai-human-test-audio/resolve/main/external_controls/guitarset_source_v1/annotation.zip
+          echo 'b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip' | md5sum -c -
+      - name: Audit Exact-K by exported actual NoteOn and note corrections/regr against same GT note IDs
+        run: |
+          python -u -m scripts.s421_audit_S420_vs_S417_pairwise_same_true_MIDI_notes_Klocked \
+            --s417 model/S417/S417_native_full_MIDI_events_absolute_error.jsonl \
+            --s420 model/S420/S420_native_full_MIDI_note_events.jsonl \
+            --s80 model/S397/S397/S397_S272_FULL_REPLAY/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz \
+            --annotations data/GuitarSet/annotation.zip \
+            --out model/S421
+          python - <<'PY'
+          import json
+          d=json.load(open('model/S421/report.json'))
+          assert d['status']=='S421_FROZEN_NATIVE_COMPLETE_NOTE_PAIRED_REGRESSION_AUDIT'
+          assert d['exactK_regressions']==0 and d['all_row_K0_to_K6_preserved_in_BOTH_exported_JSONL']
+          assert d['original_event_groups']==59309 and d['original_S80_total_new_notes']==33475
+          assert d['comparison_on_exact_same_GuitarSet_reference_note_IDs']['S417_correct']==16017
+          assert d['comparison_on_exact_same_GuitarSet_reference_note_IDs']['S420_correct']==16140
+          assert d['no_model_fit_or_change'] and not d['official_promotion']
+          print('S421 independent full JSONL scan: zero S80 K regressions, paired true note wins/losses')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s421-frozen-S417-S420-native-complete-note-corrections-regressions-K-LOCKED
+          path: model/S421/
+          retention-days: 90

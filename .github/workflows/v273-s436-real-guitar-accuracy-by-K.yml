@@ -1,0 +1,46 @@
+name: S436 real guitar musical note accuracy by K, no K0 inflation
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s436_audit_true_K_real_guitar_note_name_accuracy_no_K0_inflation.py'
+      - '.github/workflows/v273-s436-real-guitar-accuracy-by-K.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  independent_posthoc_real_guitar_true_K_strata:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Restore already-frozen genuine guitar note error audit, no audio or JAMS read again
+        run: |
+          gh run download 38522497380 -n s435-real-GuitarSet-guitar-MIC-note-names-frozen-pitch-onset-JAMS-diagnostic -D model/S435 --repo ${{ github.repository }}
+          test -f model/S435/report.json
+      - name: Separate K0 from K1 and true polyphonic chord accuracy
+        run: |
+          python -m py_compile scripts/s436_audit_true_K_real_guitar_note_name_accuracy_no_K0_inflation.py
+          python -u -m scripts.s436_audit_true_K_real_guitar_note_name_accuracy_no_K0_inflation --s435-report model/S435/report.json --out model/S436
+          python - <<'PY'
+          import json
+          x=json.load(open('model/S436/report.json'))
+          assert x['status']=='S436_REAL_GUITAR_POSTHOC_PER_TRUE_K_STRATUM_AUDIT'
+          assert x['total_events']==30 and x['complete_note_sets_correct']==22
+          assert sum(v['n'] for k,v in x['true_K_subgroups'].items() if k in ('K0','K1','poly_K2_to_K6'))==30
+          assert x['S80_original_K_unchanged'] and x['no_model_fit_or_parameter_selection']
+          assert x['guitarset_historically_exposed_to_upstream_S80'] and not x['benchmark_promoted']
+          print('S436 PASS: true polyphonic accuracy, not 22/30 K0-inflated, faithfully documented')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s436-real-guitar-K0-vs-K1-vs-poly-chord-accuracy-stratified
+          path: model/S436/
+          retention-days: 90

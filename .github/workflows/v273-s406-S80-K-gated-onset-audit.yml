@@ -1,0 +1,72 @@
+name: S406 test frozen S80 as ONSET gate versus every native candidate (real JAMS)
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s406_score_S80_gate_native_onsets_real_GuitarSet.py'
+      - '.github/workflows/v273-s406-S80-K-gated-onset-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s406-frozen-S80-onset-gate-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  real_annotation_scoring_after_frozen_count_predictions:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Test S80 K0 suppression + one-to-one onset matching
+        run: |
+          python -m py_compile scripts/s406_score_S80_gate_native_onsets_real_GuitarSet.py
+          python -u -m scripts.s406_score_S80_gate_native_onsets_real_GuitarSet --self-test
+      - name: Restore original 59309 time-and-acoustic event groups + locked truth
+        run: |
+          gh run download 38311525987 -n s258-full-guitarset-59309-real-original-native-527D-58D-46D-42x49-and-OOF-PR16 -D model/S258 --repo ${{ github.repository }}
+      - name: Restore frozen new reference S80 K0..K6 original 59k predictions
+        run: |
+          gh run download 38352988801 -n s397-s398-S70-suppression-REAL-full-S80-replay-and-scoring-NOPROMOTION -D model/S397 --repo ${{ github.repository }}
+      - name: Retrieve exact original GuitarSet JAMS (verify official MD5)
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 --retry-delay 2 -o data/GuitarSet/annotation.zip https://huggingface.co/datasets/EZMONYI/music-ai-human-test-audio/resolve/main/external_controls/guitarset_source_v1/annotation.zip
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+      - name: Evaluate precision/recall of S80 K-gated onsets vs raw candidate on EXACT same audio+notes
+        run: |
+          python -u -m scripts.s406_score_S80_gate_native_onsets_real_GuitarSet \
+            --audio model/S258/S258_GuitarSet_59309_original_V88_S97_audio.npz \
+            --s80 model/S397/S397/S397_S272_FULL_REPLAY/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz \
+            --truth model/S258/S258_GuitarSet_59309_true_K_ONLY_FOR_FINAL_AUDIT.npz \
+            --annotations data/GuitarSet/annotation.zip \
+            --out model/S406
+          python - <<'PY'
+          import json
+          a=json.load(open('model/S406/report.json'))
+          assert a['status']=='S406_FROZEN_S80_COUNT_GATE_ON_REAL_ONSET_CANDIDATES'
+          assert a['original_GuitarSet_native_groups']==59309
+          assert a['unique_tracks']==190
+          assert a['S80_exactK_reference_modified'] is False
+          assert a['predicted_before_annotation_opened'] is True
+          for tag,z in a['metrics'].items():
+              assert z['S80']['pred']==a['group_counts']['sum_S80_predicted_K_attacks']
+              assert z['raw']['pred']==59309
+              assert z['S80']['ref']==34954
+          print('S406 all start/mid/end 20ms/50ms event-level time scores verified')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s406-REAL-GuitarSet-S80-K-gated-onsets-vs-raw-native-events-development
+          path: model/S406/
+          retention-days: 90

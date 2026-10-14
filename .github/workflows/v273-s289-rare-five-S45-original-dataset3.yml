@@ -1,0 +1,75 @@
+name: S289 original rare five S1 S2 S3 S4 coherent S45 source families on 506 IDMT dataset3 native
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - '.github/workflows/v273-s289-rare-five-S45-original-dataset3.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s289-five-historic-rare-S45-dataset3
+  cancel-in-progress: true
+jobs:
+  original_five_rarity_specialist_family_replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.3.5 scipy==1.17.0 scikit-learn==1.8.0 joblib==1.5.3 h5py==3.16.0
+      - name: Require S288 immutable real audio fundamentals run succeeded
+        run: gh run watch 38320445824 --repo ${{ github.repository }} --exit-status --interval 15
+      - name: Reuse S288 SHA frozen original 58D primary/fundamental source-only features
+        run: |
+          gh run download 38320445824 \
+            -n s288-dataset3-506-native-original-fundamental58-prelabel \
+            -D model/S288 --repo ${{ github.repository }}
+      - name: Restore original verified five rare S45 model snapshots and complete historical replay proof
+        run: |
+          gh run download 38234363815 \
+            -n recovered-five-original-family-runtime-historical-and-GOAT-proof \
+            -D model/S289runtime --repo ${{ github.repository }}
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('model/S289runtime/historical/report.json').read_text())
+          assert r['status']=='HISTORICAL_PASS' and r['complete_historical_cohort']
+          assert r['raw_policy_decisions_checked']==1101471
+          assert r['five_champion_decisions_checked']==37465
+          assert not r['predictive_models_fitted']
+          assert Path('model/S289runtime/runtime/specialists.joblib').is_file()
+          print('S289 original five-family historical source chain verified')
+          PY
+      - name: Execute original rare S1 S2 S3 S4/coherent held-piece specialists and risk policies
+        run: |
+          python -u -m scripts.recover_v273_missing_s45 \
+            --runtime model/S289runtime/runtime \
+            --historical-proof model/S289runtime/historical/report.json \
+            --external model/S288/S288_fundamental58_dataset3_original_506.npz \
+            --s5 model/S288/S288_original_S5_label_free_reference.npz \
+            --out model/S289
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S289/report.json'))
+          assert r['external_events']==506 and r['branches']==19
+          assert len(r['family_ids'])==5
+          assert not r['new_audio_labels_read'] and not r['S80_promoted']
+          with np.load('model/S289/external_five_families.npz',allow_pickle=False) as z:
+            assert z['predictions'].shape==(19,506,5)
+            assert len(z['row_id'])==506
+          print('S289 PASS all five original nonproxy rare S45 families on real Dataset3 events')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s289-original-five-rare-S45-source-models-506-IDMT-dataset3-no-label
+          path: model/S289/
+          retention-days: 90

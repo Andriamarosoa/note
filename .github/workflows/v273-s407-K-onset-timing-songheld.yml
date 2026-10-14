@@ -1,0 +1,70 @@
+name: S407 held-song acoustic onset TIMING refinement on frozen S80
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s407_song_heldout_predict_onset_timestamp_from_S80_audio.py'
+      - '.github/workflows/v273-s407-K-onset-timing-songheld.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s407-held-song-K-onset-timing-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  four_fold_songheld_onset_regression:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Unit-test original audio + K input for onset timing
+        run: |
+          python -m py_compile scripts/s407_song_heldout_predict_onset_timestamp_from_S80_audio.py
+          python -u -m scripts.s407_song_heldout_predict_onset_timestamp_from_S80_audio --self-test
+      - name: Restore native GuitarSet 59309 original acoustic observations
+        run: |
+          gh run download 38311525987 -n s258-full-guitarset-59309-real-original-native-527D-58D-46D-42x49-and-OOF-PR16 -D model/S258 --repo ${{ github.repository }}
+      - name: Restore user's active S80 K reference exact frozen labels-free predictions
+        run: |
+          gh run download 38352988801 -n s397-s398-S70-suppression-REAL-full-S80-replay-and-scoring-NOPROMOTION -D model/S397 --repo ${{ github.repository }}
+      - name: Retrieve original JAMS annotations after verifying source model artifacts
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 --retry-delay 2 -o data/GuitarSet/annotation.zip https://huggingface.co/datasets/EZMONYI/music-ai-human-test-audio/resolve/main/external_controls/guitarset_source_v1/annotation.zip
+          echo "b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip" | md5sum -c -
+      - name: Train ONE acoustic timestamp regressor per disjoint composition fold and score ±20/50ms
+        run: |
+          python -u -m scripts.s407_song_heldout_predict_onset_timestamp_from_S80_audio \
+            --audio model/S258/S258_GuitarSet_59309_original_V88_S97_audio.npz \
+            --s80 model/S397/S397/S397_S272_FULL_REPLAY/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz \
+            --truth model/S258/S258_GuitarSet_59309_true_K_ONLY_FOR_FINAL_AUDIT.npz \
+            --annotations data/GuitarSet/annotation.zip \
+            --out model/S407
+          python - <<'PY'
+          import json
+          d=json.load(open('model/S407/report.json'))
+          assert d['status']=='S407_REAL_GUITARSET_SONGHELD_ACOUSTIC_ONSET_TIMING'
+          assert d['tracks']==190 and d['n_events']==59309
+          assert d['S80_onset_count_unchanged'] and d['GT_for_training_excludes_all_held_compositions']
+          assert len(d['songheld_proof'])==4
+          assert all(x['composition_overlap']==0 for x in d['songheld_proof'])
+          assert all(d['metrics'][t][x]['pred']==33475 for t in ('20ms','50ms') for x in ('S80_start','S80_mid','S407_S80_songheld_refined'))
+          print('S407 FULL REAL SONG-CROSSFIT TIMING SCORED')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s407-S80-frozen-K-onset-timing-SONG-HELD-4fold-original-GuitarSet
+          path: model/S407/
+          retention-days: 90

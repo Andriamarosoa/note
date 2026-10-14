@@ -1,0 +1,83 @@
+name: S376 original GuitarSet heldfold S5 posterior and acoustic EARLY K3 rescue discrimination
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s376_train_guitarset_S5_OOF_posterior_K3_discriminator.py'
+      - '.github/workflows/v273-s376-GuitarSet-heldfold-S5-K3-specialist.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s376-GuitarSet-only-K3-targeted-OOF
+  cancel-in-progress: true
+jobs:
+  original_train_fold_source_S5_and_acoustic_K3_supervisor:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      PYTHONPATH: '.:src'
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Use ORIGINAL GuitarSet source only (never restore any IDMT WAV or XML)
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38311525987
+          name: s258-full-guitarset-59309-real-original-native-527D-58D-46D-42x49-and-OOF-PR16
+          path: model/S258
+      - name: Restore all original S5 posterior fourfold outputs on native GuitarSet same events
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38311582199
+          name: s259-guitarset-59309-full-original-4fold-S5-train-mixed-predictions
+          path: model/S259
+      - name: Restore ORIGINAL 133 trained S8-S18 K decisions true heldfold, never other-fold in-sample as training feature
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 38311814895
+          name: s260-guitarset-59309-true-original-S5-S18-fourfold-133-checkpoints
+          path: model/S260
+      - name: Fit two K3 specialists 118D and 1147D from original GuitarSet true heldfold S18 errors; select threshold from original GuitarSet ONLY
+        run: |
+          python -u -m scripts.s376_train_guitarset_S5_OOF_posterior_K3_discriminator \
+            --audio model/S258/S258_GuitarSet_59309_original_V88_S97_audio.npz \
+            --s5 model/S259/S259_original_S5_fourfold_59309_original_native_unlabelled.npz \
+            --s18 model/S260/S260_original_S5_to_S18_true_V88_native_GUITARSET_59309.npz \
+            --truth model/S258/S258_GuitarSet_59309_true_K_ONLY_FOR_FINAL_AUDIT.npz \
+            --out model/S376
+          python - <<'PY'
+          import json,pathlib
+          r=json.load(open('model/S376/report.json'))
+          assert r['status']=='S376_FOLDHELD_GUITARSET_SOURCE_S5_POSTERIOR_K3_AUDIO_EXPERT'
+          assert r['trained_on_original_GuitarSet_only'] and not r['any_IDMT_WAV_XML_read']
+          assert r['only_one_OOF_S5_heldfold_probability_used_per_original_training_row']
+          assert r['original_outofpiece_group_disjoint_train_validation']
+          assert set(r['sealed_variants'])=={'source118','source1147'}
+          for name in r['sealed_variants']:
+            a=r['sealed_variants'][name]
+            assert len(a['source_heldfold_models'])==4
+            assert all(x['source_member_overlap_remaining']==0 for x in a['source_heldfold_models'])
+            assert len(list(pathlib.Path('model/S376').glob(name+'_true_original_fold*_K3_expert.joblib')))==4
+          assert not r['official_promotion']
+          print('S376 PASS original heldfold expert feasibility, if no positive candidate remain NO PROMOTION')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s376-original-GuitarSet-heldfold-S5-raw-posterior-and-acoustic-K3-specialist-trained-NO-IDMT
+          path: model/S376/
+          retention-days: 90

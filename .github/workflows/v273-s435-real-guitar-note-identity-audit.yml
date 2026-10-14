@@ -1,0 +1,79 @@
+name: S435 real GuitarSet guitar WAV frozen note names diagnostic vs JAMS
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s435_audit_real_guitar_MIC_note_names_vs_JAMS_no_training.py'
+      - '.github/workflows/v273-s435-real-guitar-note-identity-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s435-frozen-real-guitar-audio-note-names-vs-JAMS-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  sealed_actual_guitar_pitch_inference_vs_original_JAMS_note_labels:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Verify sound-note name comparison without fitting
+        run: |
+          python -m py_compile scripts/s435_audit_real_guitar_MIC_note_names_vs_JAMS_no_training.py
+          python -m scripts.s435_audit_real_guitar_MIC_note_names_vs_JAMS_no_training --self-test
+      - name: Restore actual notes produced on real guitar MIC at S434, no inference here
+        run: |
+          gh run download 38522246789 -n s434-authentic-guitar-MIC-WAV-musical-note-names-native-S80-frozen -D model/S434 --repo ${{ github.repository }}
+          test -f model/S434/source/report.json
+          test -f model/S434/recognized/note_names/recognized_note_names_from_WAV.jsonl
+      - name: Restore original S258 complete source group timings, truth K for independent scoring only, and S397 S80
+        run: |
+          gh run download 38311525987 -n s258-full-guitarset-59309-real-original-native-527D-58D-46D-42x49-and-OOF-PR16 -D model/S258 --repo ${{ github.repository }}
+          gh run download 38352988801 -n s397-s398-S70-suppression-REAL-full-S80-replay-and-scoring-NOPROMOTION -D model/S397 --repo ${{ github.repository }}
+      - name: Download and MD5-verify actual original GuitarSet JAMS only after frozen note predictions
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 --retry-delay 3 -o data/GuitarSet/annotation.zip https://huggingface.co/datasets/EZMONYI/music-ai-human-test-audio/resolve/main/external_controls/guitarset_source_v1/annotation.zip
+          echo 'b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip' | md5sum -c -
+      - name: Diagnose true note names, predicted K, octave confusions on sampled REAL guitar WAV without re-training
+        run: |
+          python -u -m scripts.s435_audit_real_guitar_MIC_note_names_vs_JAMS_no_training \
+            --notes model/S434/recognized/note_names/recognized_note_names_from_WAV.jsonl \
+            --s434-source-report model/S434/source/report.json \
+            --original-audio model/S258/S258_GuitarSet_59309_original_V88_S97_audio.npz \
+            --original-s80 model/S397/S397/S397_S272_FULL_REPLAY/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz \
+            --original-true-k model/S258/S258_GuitarSet_59309_true_K_ONLY_FOR_FINAL_AUDIT.npz \
+            --annotations data/GuitarSet/annotation.zip \
+            --out model/S435
+          python - <<'PY'
+          import json
+          x=json.load(open('model/S435/report.json'))
+          assert x['status']=='S435_FROZEN_REAL_GUITARSET_MIC_WAV_NOTE_IDENTITY_DIAGNOSTIC'
+          assert x['sample_source_events']==30
+          assert x['original_GuitarSet_native_full_piece_true_K_reconstructed']
+          assert x['original_S80_row_K_untouched'] and x['exact_K_regressions']==0
+          assert x['sample_correct_chords']<=30 and x['sample_correct_K']<=30
+          assert x['sample_note_TP']<=x['sample_true_note_instances']
+          assert x['true_annotations_opened_only_after_predictions_sealed']
+          assert x['accuracy_is_on_historically_exposed_GuitarSet_not_blind']
+          assert x['original_MIC_source_differs_from_S258_pickup_mix']
+          assert not x['official_promotion'] and x['no_training_threshold_selection_or_model_changes']
+          print('S435 TRUE guitar pitch error diagnostic measured; never claim independent generalization')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s435-real-GuitarSet-guitar-MIC-note-names-frozen-pitch-onset-JAMS-diagnostic
+          path: model/S435/
+          retention-days: 90

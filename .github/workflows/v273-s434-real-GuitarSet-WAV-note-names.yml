@@ -1,0 +1,94 @@
+name: S434 genuine guitar mic WAV to note names using untouched original S80
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s434_test_real_GuitarSet_MIC_WAV_to_musical_note_names_S80_source.py'
+      - '.github/workflows/v273-s434-real-GuitarSet-WAV-note-names.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s434-original-guitar-mic-S80-frozen-note-names-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  real_recorded_guitar_mic_note_name_inference:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      PYTHONUNBUFFERED: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install real audio and native note inference runtimes
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.5.1
+      - name: No additional S80 training or inference substitution
+        run: |
+          python -m py_compile scripts/s434_test_real_GuitarSet_MIC_WAV_to_musical_note_names_S80_source.py
+          python -m scripts.s433_join_original_S80_native_events_to_WAV_note_names --self-test
+      - name: Restore real original source onset ID, note feature checkpoint and 59309 S80 decisions
+        run: |
+          gh run download 38311525987 -n s258-full-guitarset-59309-real-original-native-527D-58D-46D-42x49-and-OOF-PR16 -D model/S258 --repo ${{ github.repository }}
+          gh run download 38352988801 -n s397-s398-S70-suppression-REAL-full-S80-replay-and-scoring-NOPROMOTION -D model/S397 --repo ${{ github.repository }}
+          test -f model/S258/S258_GuitarSet_59309_original_V88_S97_audio.npz
+          test -f model/S397/S397/S397_S272_FULL_REPLAY/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz
+      - name: Restore genuinely pretrained note name models S402 S416 S428 and selection policies
+        run: |
+          gh run download 38361853607 -n s402-K-fed-to-MIDI-neural-input-composition-disjoint-4fold-DEVELOPMENT-NOPROMOTION -D model/S402 --repo ${{ github.repository }}
+          gh run download 38381449092 -n s416-native-CNN-time-pitch-note-head-songheld-S80-ExactK-LOCKED-NO-YourMT -D model/S416 --repo ${{ github.repository }}
+          gh run download 38383639848 -n s419-native-K-gated-MIDI-head-songheld-S402-S416-no-ExactK-regression -D model/S419 --repo ${{ github.repository }}
+          gh run download 38517551029 -n s428-acoustic-harmonic-direct-note-names-S80-ExactK-LOCKED-S419-pair -D model/S428 --repo ${{ github.repository }}
+      - name: Download official full MIC GuitarSet WAV collection and verify its published MD5
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 --retry-delay 4 -o data/GuitarSet/audio_mono-mic.zip https://huggingface.co/datasets/EZMONYI/music-ai-human-test-audio/resolve/main/external_controls/guitarset_source_v1/audio_mono-mic.zip
+          echo '275966d6610ac34999b58426beb119c3  data/GuitarSet/audio_mono-mic.zip' | md5sum -c -
+      - name: Predict real names from genuine recorded guitar not test oscillator, retaining frozen K values and event IDs
+        run: |
+          python -u -m scripts.s434_test_real_GuitarSet_MIC_WAV_to_musical_note_names_S80_source \
+            --audio-zip data/GuitarSet/audio_mono-mic.zip \
+            --source-events model/S258/S258_GuitarSet_59309_original_V88_S97_audio.npz \
+            --s80-npz model/S397/S397/S397_S272_FULL_REPLAY/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz \
+            --s402-models model/S402 --s416-models model/S416 \
+            --s428-models model/S428 --s419-report model/S419/report.json \
+            --s428-report model/S428/report.json --out model/S434
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.load(open('model/S434/report.json'))
+          assert d['status']=='S434_REAL_GUITARSET_WAV_THROUGH_S80_SOURCE_AND_SOUND_NOTE_NAMES'
+          assert d['real_original_MIC_WAV'] and d['original_S80_predicted_K_genuinely_frozen']
+          assert d['source_original_S80_K_verbatim_join']
+          assert d['real_audio_acoustic_features_computed']
+          assert d['real_predicted_poly_event_count']>0
+          assert d['original_exactK_models_and_predictions_unchanged']
+          assert d['original_MIC_and_pickup_mix_audio_mismatch']
+          assert d['true_RAW_WAV_alone_to_S80_inference_not_integrated']
+          assert not d['independently_measured_pitch_accuracy'] and d['no_promotion']
+          p=Path('model/S434/recognized/note_names/recognized_note_names_from_WAV.jsonl')
+          notes=[json.loads(x) for x in p.read_text().splitlines()]
+          assert len(notes)==d['real_notes_output_count']
+          assert all(len(n['notes'])==n['K'] for n in notes)
+          print('S434 PASS: real guitar WAV with source-only original 59309 S80 K produces musical NOTE NAMES')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s434-authentic-guitar-MIC-WAV-musical-note-names-native-S80-frozen
+          path: |
+            model/S434/report.json
+            model/S434/source/report.json
+            model/S434/recognized/report.json
+            model/S434/recognized/note_names/report.json
+            model/S434/recognized/note_names/recognized_note_names_from_WAV.jsonl
+          retention-days: 90
