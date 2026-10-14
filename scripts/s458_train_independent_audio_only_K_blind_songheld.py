@@ -193,8 +193,6 @@ def run(audio,s80,truth,out):
         no_YourMT_teacher=True,
         source_K_not_a_network_feature=True,
         source_K_used_only_for_post_network_gate=True,
-        source_K_not_a_network_feature=True,
-        source_K_used_only_for_post_network_gate=True,
         held_original_S80_K_from_S397=True,
         result_description="GuitarSet retrospective development; originals immutable",
         dimensions=DIM,real_source_N=N,
