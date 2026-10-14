@@ -29,8 +29,8 @@ jobs:
           python -m scripts.s483_score_S482_frozen_IDMT_K0_rescue_against_original_S453_XML --self-test
       - name: Only after S482 genuine IDMT prediction freeze succeeds can annotations be opened
         run: |
-          gh run watch 38567535217 --exit-status --repo ${{ github.repository }}
-          gh run download 38567535217 \
+          gh run watch 38567795897 --exit-status --repo ${{ github.repository }}
+          gh run download 38567795897 \
             -n s482-IDMT-506-source-V88-boosted-GuitarSet-trained-K0-frozen-noXML \
             -D model/S482 --repo ${{ github.repository }}
           test -f model/S482/S482_FROZEN_IDMT_506_K0_RESIDUAL_3AND4VOTES_PREXML.npz
