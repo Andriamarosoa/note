@@ -136,9 +136,9 @@ def per_pitch_harmonic_scores(wave):
     return np.asarray(t),pitch,relative,rise,positive
 def infer(wave,ident,source):
     t,raw,rel,rise,physical=per_pitch_harmonic_scores(wave)
-    candidate_peaks,_=find_peaks(physical,distance=7,prominence=.7,height=1.6)
+    candidate_peaks,_=find_peaks(physical,distance=7,prominence=.6,height=.80)
     # A constant or silent waveform yields no phantom physical attacks.
-    physical_peaks=candidate_peaks[physical[candidate_peaks]>=1.6]
+    physical_peaks=candidate_peaks[physical[candidate_peaks]>=.80]
     if len(physical_peaks)>CONFIG["max_physical_onsets_per_12s"]:
         top=sorted(physical_peaks,key=lambda i:(-float(physical[i]),int(i)))
         physical_peaks=np.asarray(sorted(top[:CONFIG["max_physical_onsets_per_12s"]]),int)
