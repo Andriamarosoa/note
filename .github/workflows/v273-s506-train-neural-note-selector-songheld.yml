@@ -1,0 +1,71 @@
+name: S506 train true 13-head neural note selector over 8 held recordings; independently audit K and named notes
+on:
+  push:
+    branches: [codex/s505-neural-note-selector-songheld]
+    paths:
+      - scripts/s506_true_neural_note_selector_held_recording.py
+      - .github/workflows/v273-s506-train-neural-note-selector-songheld.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s506-true-neural-notes-training-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  train_original_neural_attention_selector_on_real_audio_source_without_held_label_leakage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      TF_CPP_MIN_LOG_LEVEL: '2'
+      TF_NUM_INTRAOP_THREADS: '2'
+      TF_NUM_INTEROP_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install same genuine neural Exact-K selector TF/Keras ABI and numeric training runtime
+        run: python -m pip install numpy==1.26.4 tensorflow==2.14.1 scipy==1.14.1
+      - name: Test original source actual note-set correction/risk supervision before fitting
+        run: |
+          python -m py_compile scripts/s506_true_neural_note_selector_held_recording.py
+          python -m scripts.s506_true_neural_note_selector_held_recording --self-test
+      - name: Restore original source 8 recordings, true note names, pre-XML 13-head audio predictions and source SHAs
+        run: |
+          gh run download 38596480284 \
+            -n s505-real-8-recording-held-S80-guitar-V88-piano-neural-note-heads-train-table \
+            -D model/S505 --repo "${{ github.repository }}"
+      - name: Fit original learned K-conditional attention separately eight times, audit head-specific K risk using OTHER recording sources
+        run: |
+          python -u -m scripts.s506_true_neural_note_selector_held_recording \
+            --data model/S505/S505_REAL_NOTE_HEADS_EIGHT_RECORDINGS_MATCHED_POSITIVES.npz \
+            --report model/S505/report.json --out model/S506
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          z=json.load(open('model/S506/report.json'))
+          assert z['status']=='S506_TRUE_NEURAL_13_HEADS_RECORDING_HELD_EXPLORATORY_NO_PROMOTION'
+          assert z['eight_recordings_held_out_in_outer_selector_training']
+          assert z['training_audits_crossfit_excluding_corresponding_training_recording']
+          assert z['held_audits_derived_only_from_training_recordings']
+          assert z['held_true_notes_never_used_in_training_or_thresholds']
+          assert z['historical_IDMT_MAESTRO_examples_previously_explored_NOT_independent_blind']
+          assert z['no_promotion'] and z['original_S80_V88_live_offsets_unchanged']
+          assert len(z['songheld_folds'])==8
+          assert len(list(Path('model/S506').glob('*.weights.h5')))==8
+          for src in ('guitar_S80','piano_V88'):
+            assert 'fixed_guarded' in z['by_source'][src]
+            assert 'ungated_diagnostic' in z['by_source'][src]
+          print('S506 trained actual K-conditional neural selector; all 8 held original recordings checked, no S80/Live promotion')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s506-eight-trained-neural-note-selector-held-recording-crossfit-K-and-full-notes
+          path: model/S506/
+          retention-days: 90
