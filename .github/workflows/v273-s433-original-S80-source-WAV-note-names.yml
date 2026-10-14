@@ -1,0 +1,98 @@
+name: S433 original S80 K source NPZ plus WAV auto-join to musical names
+on:
+  push:
+    branches: [codex/s276-idmt-song-disjoint-candidate-audit]
+    paths:
+      - 'scripts/s433_join_original_S80_native_events_to_WAV_note_names.py'
+      - '.github/workflows/v273-s433-original-S80-source-WAV-note-names.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s433-WAV-native-S80-source-join-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  replay_real_trained_note_models_with_joined_S80_source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install historical source and note model dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.5.1
+      - name: Verify S80 row joins on shuffled original events including K0 and strict rejection of oracle data
+        run: |
+          python -m py_compile scripts/s433_join_original_S80_native_events_to_WAV_note_names.py
+          python -m scripts.s433_join_original_S80_native_events_to_WAV_note_names --self-test
+      - name: Download authentic trained S402 S416 S428 recognition checkpoints
+        run: |
+          gh run download 38361853607 -n s402-K-fed-to-MIDI-neural-input-composition-disjoint-4fold-DEVELOPMENT-NOPROMOTION -D model/S402 --repo ${{ github.repository }}
+          gh run download 38381449092 -n s416-native-CNN-time-pitch-note-head-songheld-S80-ExactK-LOCKED-NO-YourMT -D model/S416 --repo ${{ github.repository }}
+          gh run download 38383639848 -n s419-native-K-gated-MIDI-head-songheld-S402-S416-no-ExactK-regression -D model/S419 --repo ${{ github.repository }}
+          gh run download 38517551029 -n s428-acoustic-harmonic-direct-note-names-S80-ExactK-LOCKED-S419-pair -D model/S428 --repo ${{ github.repository }}
+      - name: Prepare label-free test WAV and shuffled K/native source row IDs WITHOUT manual decisions JSONL
+        run: |
+          python - <<'PY'
+          import numpy as np
+          from pathlib import Path
+          from scipy.io import wavfile
+          root=Path('test_source');root.mkdir()
+          sr=44100;t=np.arange(3*sr)/sr
+          signal=.18*(t>=.45)*np.exp(-np.maximum(t-.45,0.)*1.1)*np.sin(2*np.pi*164.8138*t)
+          signal+=.16*(t>=1.5)*np.exp(-np.maximum(t-1.5,0.)*1.7)*np.sin(2*np.pi*164.8138*t)
+          signal+=.11*(t>=1.5)*np.exp(-np.maximum(t-1.5,0.)*1.7)*np.sin(2*np.pi*196*t)
+          wavfile.write(root/'new_guitar.wav',sr,np.rint(signal*32767).astype(np.int16))
+          np.savez_compressed(root/'s80_original_K_from_previous_stages.npz',
+              row_id=np.array(['foreign_K6','a','c','b']),
+              s80_K=np.array([6,1,0,2],np.int8))
+          np.savez_compressed(root/'native_V88_source_events.npz',
+              row_id=np.array(['c','foreign_K6','b','a']),
+              member=np.array(['guitar_track','other_track','guitar_track','guitar_track']),
+              start_samples=np.array([97020,12000,66150,19845],np.int64),
+              end_samples=np.array([97276,12256,66406,20101],np.int64))
+          print('S433 source-only WAV, S80 K and native event archives (row orders intentionally shuffled)')
+          PY
+      - name: Infer musical pitches through original S80 row joins, true WAV acoustic bank and native trained note models
+        run: |
+          python -u -m scripts.s433_join_original_S80_native_events_to_WAV_note_names \
+            --wav test_source/new_guitar.wav \
+            --member guitar_track \
+            --s80-npz test_source/s80_original_K_from_previous_stages.npz \
+            --native-events test_source/native_V88_source_events.npz \
+            --s402-models model/S402 --s416-models model/S416 \
+            --s428-models model/S428 \
+            --s419-report model/S419/report.json \
+            --s428-report model/S428/report.json \
+            --out model/S433
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=json.load(open('model/S433/report.json'))
+          assert p['status']=='S433_ACTUAL_WAV_TO_E3_NOTE_NAMES_USING_AUTOMATIC_ORIGINAL_S80_NPZ_JOIN'
+          assert p['original_S80_count_unchanged_for_each_event'] and p['K0_no_new_notes_confirmed']
+          assert p['number_audio_events']==3 and p['number_new_notes']==3
+          assert p['input_includes_separately_computed_real_S80_K']
+          assert p['model_itself_does_not_infer_S80_K_from_raw_WAV']
+          r=[json.loads(line) for line in Path(p['output_sound_note_name_file']).read_text().splitlines()]
+          assert [v['source_row_id'] for v in r]==['a','b','c']
+          assert [v['K'] for v in r]==[1,2,0]
+          assert [v['notes'] for v in r]==[['E3'],['E3','G3'],[]],r
+          print('S433 VERIFIED native row-shuffled K join plus actual musical E3 E3+G3 notes, zero K changes')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s433-WAV-auto-original-S80-source-row-join-and-real-trained-note-names
+          path: model/S433/
+          retention-days: 90
