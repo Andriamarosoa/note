@@ -1,10 +1,10 @@
 name: S481 iterative source V88 original K0 to K1 K2 specialist composition held
 on:
   push:
-    branches: [codex/s481-k0-birth-recovery-iterative]
+    branches: [codex/s481-lightgbm-physical-K0-rescue]
     paths:
       - scripts/s481_fit_original_V88_K0_rescue_boosted_morphology.py
-      - .github/workflows/v273-s481-original-V88-sourceK0-rescue.yml
+      - .github/workflows/v273-s481-original-V88-K0-boosted-rescue.yml
   workflow_dispatch:
 permissions:
   contents: read
@@ -33,7 +33,7 @@ jobs:
       - name: Prove possible K0 true onset rescue can abstain and count regressions
         run: |
           python -m py_compile scripts/s481_fit_original_V88_K0_rescue_boosted_morphology.py
-          python -m scripts.s481_fit_original_V88_K0_rescue_3class_songheld --self-test
+          python -m scripts.s481_fit_original_V88_K0_rescue_boosted_morphology --self-test
       - name: Restore frozen ORIGINAL GuitarSet V88 source predictions and MIDI JAMS truth
         run: |
           gh run download 38311525987 \
@@ -41,7 +41,7 @@ jobs:
             -D model/S258 --repo ${{ github.repository }}
       - name: Train 4 nested composition safe independent K0 rescue experts and score GuitarSet held composition
         run: |
-          python -u -m scripts.s481_fit_original_V88_K0_rescue_3class_songheld \
+          python -u -m scripts.s481_fit_original_V88_K0_rescue_boosted_morphology \
             --audio model/S258/S258_GuitarSet_59309_original_V88_S97_audio.npz \
             --truth model/S258/S258_GuitarSet_59309_true_K_ONLY_FOR_FINAL_AUDIT.npz \
             --out model/S481
