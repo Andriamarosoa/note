@@ -1,0 +1,42 @@
+name: S441 audit lost note true-positives from rejected S439 chord variants
+on:
+  push:
+    branches: [codex/s439-joint-pitch-competition-klocked]
+    paths:
+      - 'scripts/s441_diagnose_failed_joint_note_edits.py'
+      - '.github/workflows/v273-s441-joint-pitch-failure-diagnostics.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  diagnose_rejected_note_edits:
+    runs-on: ubuntu-24.04
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Selftest note-instance counter
+        run: |
+          python -m py_compile scripts/s441_diagnose_failed_joint_note_edits.py
+          python -m scripts.s441_diagnose_failed_joint_note_edits --self-test
+      - name: Download S440 full truth-scored interventions without changing frozen predictions
+        run: |
+          gh run download 38525508531 -n s440-real-MIC-joint-note-challengers-paired-audit-NOPROMOTION -D model/S440 --repo ${{ github.repository }}
+          test -f model/S440/report.json
+          test -f model/S440/paired_changes.jsonl
+      - name: Explain by true K where note-identity true positives were lost
+        run: |
+          python -m scripts.s441_diagnose_failed_joint_note_edits \
+            --source model/S440/report.json \
+            --changes model/S440/paired_changes.jsonl \
+            --out model/S441
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s441-note-TP-losses-by-K-diagnostic-no-promotion
+          path: model/S441/

@@ -1,0 +1,74 @@
+name: S440 paired independent JAMS scoring of frozen joint chord note candidates
+on:
+  push:
+    branches: [codex/s439-joint-pitch-competition-klocked]
+    paths:
+      - 'scripts/s440_pairwise_chord_corrections_S439_vs_S437_real_MIC.py'
+      - '.github/workflows/v273-s440-paired-frozen-joint-note-accuracy.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s440-paired-mic-notes-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  audit_frozen_S439_vs_unmodified_S437_by_true_K:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 110
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Verify pairwise corrected and regressed chords are both counted
+        run: |
+          python -m py_compile scripts/s440_pairwise_chord_corrections_S439_vs_S437_real_MIC.py
+          python -m scripts.s440_pairwise_chord_corrections_S439_vs_S437_real_MIC --self-test
+      - name: Verify completed S439 prediction freeze BEFORE touching official JAMS
+        run: |
+          gh run watch 38525306836 --exit-status --repo ${{ github.repository }}
+          gh run download 38525306836 -n s439-real-MIC-joint-note-set-candidates-FROZEN-BEFORE-TRUE-JAMS -D model/S439 --repo ${{ github.repository }}
+          test -f model/S439/report.json
+      - name: Restore source frozen real predictions and historic native K0..K6 source
+        run: |
+          gh run download 38523251921 -n s437-twelve-real-guitar-MIC-K-balanced-frozen-note-names-no-truth -D model/S437 --repo ${{ github.repository }}
+          gh run download 38311525987 -n s258-full-guitarset-59309-real-original-native-527D-58D-46D-42x49-and-OOF-PR16 -D model/S258 --repo ${{ github.repository }}
+          gh run download 38352988801 -n s397-s398-S70-suppression-REAL-full-S80-replay-and-scoring-NOPROMOTION -D model/S397 --repo ${{ github.repository }}
+      - name: Only now open official JAMS notes and score paired corrections/regressions
+        run: |
+          mkdir -p data/GuitarSet
+          curl -L --fail --retry 3 --retry-delay 3 -o data/GuitarSet/annotation.zip https://huggingface.co/datasets/EZMONYI/music-ai-human-test-audio/resolve/main/external_controls/guitarset_source_v1/annotation.zip
+          echo 'b39b78e63d3446f2e54ddb7a54df9b10  data/GuitarSet/annotation.zip' | md5sum -c -
+          python -u -m scripts.s440_pairwise_chord_corrections_S439_vs_S437_real_MIC \
+            --names model/S437/S437_FROZEN_REAL_GUITAR_MIC_EVENT_NOTE_NAMES.jsonl \
+            --s437 model/S437/report.json \
+            --s439-dir model/S439 \
+            --source model/S258/S258_GuitarSet_59309_original_V88_S97_audio.npz \
+            --s80 model/S397/S397/S397_S272_FULL_REPLAY/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz \
+            --truth model/S258/S258_GuitarSet_59309_true_K_ONLY_FOR_FINAL_AUDIT.npz \
+            --annotations data/GuitarSet/annotation.zip \
+            --out model/S440
+          python - <<'PY'
+          import json
+          x=json.load(open('model/S440/report.json'))
+          assert x['status']=='S440_PAIRED_REAL_MIC_12_GUITAR_JOINT_PITCH_UNPROMOTED_AUDIT'
+          assert x['original_exactK_regressions']==0 and x['original_S80_unchanged_every_event']
+          assert x['score']['original_S437']['poly_K2plus_whole_chords_correct']==27
+          assert x['score']['original_S437']['whole_chords_correct']==78
+          assert not x['no_promotion'] is False
+          print('S440 true K independent paired S439 vs S437 audit complete; no promotion')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s440-real-MIC-joint-note-challengers-paired-audit-NOPROMOTION
+          path: model/S440/
+          retention-days: 90
