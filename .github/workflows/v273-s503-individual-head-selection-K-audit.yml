@@ -1,0 +1,72 @@
+name: S503 classwise correction and regression audit for every real note event head
+on:
+  push:
+    branches: [codex/s502-note-heads-selections]
+    paths:
+      - scripts/s503_individual_note_head_regression_by_K_audit.py
+      - .github/workflows/v273-s503-individual-head-selection-K-audit.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit_each_of_13_existing_note_heads_individually_by_K_and_note_identity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install original one-to-one true note alignment dependencies
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1
+      - name: Verify correcting chord pitches without changing K still counts
+        run: |
+          python -m py_compile scripts/s503_individual_note_head_regression_by_K_audit.py
+          python -m scripts.s503_individual_note_head_regression_by_K_audit --self-test
+      - name: Restore completely frozen real S502 note heads before any true labels
+        run: |
+          gh run download 38594382211 \
+            -n s502-original-S80-V88-thirteen-real-note-heads-class-conditional-selections-PREXML \
+            -D model/S502 --repo "${{ github.repository }}"
+      - name: Restore corresponding canonical musical event time/source identity ledger
+        run: |
+          gh run download 38590187399 \
+            -n s498-true-S80-guitar-V88-piano-canonical-unique-musical-note-onset-groups-no-truth \
+            -D model/S498 --repo "${{ github.repository }}"
+      - name: Restore pre-existing guitar IDMT/piano MAESTRO true attacks only after the source frozen
+        run: |
+          gh run download 38570219836 \
+            -n s488-original-IDMT-45-true-guitar-21-poly-BasicPitch-note-set-vs-S80-ExactK \
+            -D model/S488 --repo "${{ github.repository }}"
+          gh run download 38560885111 \
+            -n s476-MAESTRO-original-V88-K-new-onsets-vs-sounding-322-same-events-audit \
+            -D model/S476 --repo "${{ github.repository }}"
+      - name: Audit every head and conditional K selection for exact full notes as well as Exact-K
+        run: |
+          python -u -m scripts.s503_individual_note_head_regression_by_K_audit \
+            --heads model/S502 --headsreport model/S502/report.json \
+            --truth-g model/S488/S488_45_TRUE_GUITAR_SOURCE_NOTESETS_PAIRED.jsonl \
+            --truth-g-report model/S488/report.json \
+            --truth-p model/S476/S476_ORIGINAL_S470_PIANO_NEW_NOTE_VS_SOUNDING_322.jsonl \
+            --truth-p-report model/S476/report.json \
+            --canonical model/S498 --canonical-report model/S498/report.json \
+            --out model/S503
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S503/report.json'))
+          assert r['status']=='S503_HISTORICAL_NOTE_HEAD_INDIVIDUAL_K_CLASS_ACTION_AUDIT'
+          assert r['includes_13_head_fixes_and_regressions_by_trueK0toK6']
+          assert r['gate_input_never_uses_true_K_to_choose_head']
+          assert r['source_external_reused_for_diagnostic_only_NOT_OOF']
+          assert r['actual_model_promotions']==0 and r['no_promotion']
+          assert len(r['by_source']['guitar_S80']['by_head'])==13
+          assert len(r['by_source']['piano_V88']['by_head'])==13
+          print('S503 13 candidate note selections independently audited by each true K, excluding inference truth leakage')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s503-13-note-heads-individual-by-trueK-and-sourceK-corrections-regressions-forensic
+          path: model/S503/
+          retention-days: 90
