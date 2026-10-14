@@ -1,0 +1,66 @@
+name: S518 fuse frozen S509 neural note heads with S516 new acoustic generator, actual 14th head
+on:
+  push:
+    branches: [codex/s518-s516-generator-s509-neural-selector-fusion]
+    paths:
+      - scripts/s518_fuse_actual_S509_note_attention_S516_generator.py
+      - .github/workflows/v273-s518-fuse-S509-S516-named-notes.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+jobs:
+  independently_score_new_fourteenth_note_head_plus_thirteen_old_real_neural_evidence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install numeric-only original note evidence reconciliation
+        run: python -m pip install numpy==1.26.4
+      - name: Test S516 new generator can produce G3 entirely absent from original 13 heads
+        run: |
+          python -m py_compile scripts/s518_fuse_actual_S509_note_attention_S516_generator.py
+          python -m scripts.s518_fuse_actual_S509_note_attention_S516_generator --self-test
+      - name: Restore original SOURCE note identities and 13 original S509 head predictions, each SHA frozen on held recording
+        run: |
+          gh run download 38596480284 \
+            -n s505-real-8-recording-held-S80-guitar-V88-piano-neural-note-heads-train-table \
+            -D model/S505 --repo "${{ github.repository }}"
+          gh run download 38599016032 \
+            -n s509-true-neural-per-pitch-attention-8-songheld-recordings-full-chord-K-and-real-notes \
+            -D model/S509 --repo "${{ github.repository }}"
+      - name: Restore truly separately trained raw sound 49 note generator with verified 8 held-recording models
+        run: |
+          gh run download 38610795544 \
+            -n s516-real-trained-49-pitch-independent-WAV-note-generator-eight-recording-held-F1-and-regressions \
+            -D model/S516 --repo "${{ github.repository }}"
+      - name: Compute frozen 14-head joint note selection with no test-derived weights and exact per-K regression audit
+        run: |
+          python -u -m scripts.s518_fuse_actual_S509_note_attention_S516_generator \
+            --s505 model/S505/S505_REAL_NOTE_HEADS_EIGHT_RECORDINGS_MATCHED_POSITIVES.npz \
+            --s505-report model/S505/report.json \
+            --s509 model/S509/S509_HELD_RECORDING_NOTE_PITCH_PROBABILITIES.jsonl \
+            --s509-report model/S509/report.json \
+            --s516 model/S516/S516_REAL_HELD_RECORDING_EVERY_PITCH_PROBABILITY.jsonl \
+            --s516-report model/S516/report.json --out model/S518
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S518/report.json'))
+          assert r['status']=='S518_S509_NEURAL_HEADS_PLUS_S516_NEW_PITCH_GENERATOR_JOINT_SHADOW'
+          assert r['original_S509_evidence_13_heads_plus_S516_14th_generator']
+          assert r['raw_generator_new_pitches_allowed_outside_S509_support']
+          assert r['fixed_untrained_combination_policies_not_a_new_learned_selector']
+          assert r['separate_upstream_crossfit_not_fully_nested_end_to_end']
+          assert r['missing_original_true_piano_onsets_102_not_removed']
+          assert r['no_model_or_live_reference_promotion'] and r['no_promotion']
+          print('S518 actual 14th head innovation SHA-audited, real note corrections/regressions, no promotion')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s518-S509-thirteen-head-neural-plus-S516-new-raw-note-generator-fourteen-heads-OOF-shadow
+          path: model/S518/
+          retention-days: 90
