@@ -98,7 +98,7 @@ def run(args):
         notes[x["WAV_filename_SHA256"]].append(x)
     proof = {x["WAV_filename_SHA256"]: x for x in
              v["exact_original_audio_source_fingerprints"]}
-    chosen = {x["filename_SHA256"]: x for x in m["selected_sources"]}
+    chosen = {x["WAV_filename_sha256"]: x for x in m["selected_sources"]}
     need(len(groups)==5 and set(groups) == set(notes) == set(proof) == set(chosen),
          "S540 original three piano source audio/identities do not match")
     output = []
@@ -147,7 +147,7 @@ def run(args):
     file = args.out / "S540_ALL_V88_K0_K6_ORIGINAL_WAV_49_PITCH_FEATURES_PREMIDI.jsonl"
     file.write_text("".join(json.dumps(x) + "\n" for x in output))
     report = dict(
-        status="S540_PRELABEL_ALL_575_V88_PIANO_ONSET_CANDIDATES_49_RAW_PITCH_FEATURES",
+        status="S540_PRELABEL_FIVE_NEW_PIANO_ALL_V88_RAW_49_PITCH_FEATURES",
         genuine_training_input_features_not_model_predictions=True,
         real_audio_piano_five_source_WAV_SHAs_verified=True,
         original_V88_onset_candidates=len(output),
