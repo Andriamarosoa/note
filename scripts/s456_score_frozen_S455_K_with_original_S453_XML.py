@@ -10,7 +10,8 @@ import argparse,collections,json
 from pathlib import Path
 import numpy as np
 from scripts.s399_s80_exactK_constrained_midi_pitch_decoder import sha
-from scripts.s402_k_input_first_supervised_midi_pitch_network import need
+def need(x,message):
+    if not x:raise ValueError(message)
 
 def compare(truth,old,new,mask):
     ix=np.flatnonzero(mask)
