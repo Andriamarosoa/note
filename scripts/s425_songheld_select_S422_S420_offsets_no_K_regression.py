@@ -332,9 +332,9 @@ def selftest():
         np.array([450,900,1300,2000],np.int64),
         np.array([2,2,1,1],np.int8))
     need(X.shape==(4,17),"S425 temporal event features broken")
-    truth=np.array([400,900,1100,1600],np.int64)
-    base=np.array([400,500,1000,1600],np.int64)
-    cand=np.array([450,900,1300,2000],np.int64)
+    truth=np.array([5000,9000,10000,16000],np.int64)
+    base=np.array([5000,5000,10000,16000],np.int64)
+    cand=np.array([5000,9000,13000,21000],np.int64)
     mask=np.ones(4,bool)
     z=gain_for_policy(np.array([.4,.9,.2,.1]),base,cand,truth,mask,.5)
     need(z==1,"S425 composition-only gate scoring miscounts exact notes")
