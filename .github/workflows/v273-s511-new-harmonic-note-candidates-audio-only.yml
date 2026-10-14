@@ -1,0 +1,60 @@
+name: S511 raw-audio independent harmonic and physical onset generator IDMT with no XML
+on:
+  push:
+    branches: [codex/s511-raw-harmonic-note-generator]
+    paths:
+      - scripts/s511_new_raw_harmonic_pitch_onset_generators.py
+      - .github/workflows/v273-s511-new-harmonic-note-candidates-audio-only.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s511-new-raw-harmonic-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  original_five_genuine_guitar_IDMT_acoustic_waveforms_without_truth:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install deterministic lightweight genuine WAV harmonic/onset DSP
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1
+      - name: Selftest synthetic note sound, not a benchmark score
+        run: |
+          python -m py_compile scripts/s511_new_raw_harmonic_pitch_onset_generators.py
+          python -m scripts.s511_new_raw_harmonic_pitch_onset_generators --self-test
+      - name: Restore true original preregistered IDMT WAV selections and their genuine audio SHA ledger only
+        run: |
+          gh run download 38318827219 -n s276-IDMT-central-directory-only-prospective-WAV-cohort -D model/S276 --repo "${{ github.repository }}"
+          gh run download 38319155819 -n s277-IDMT-dataset3-5WAV-true-original-V88-native-official-unlabelled -D model/S277 --repo "${{ github.repository }}"
+      - name: Download original 5 IDMT WAV only by byte ranges SHA-checked, freeze new harmonic notes/physical onset candidates BEFORE any XML
+        run: |
+          python -u -m scripts.s511_new_raw_harmonic_pitch_onset_generators \
+            --s276 model/S276/S276_IDMT_filename_only_cohort_manifest.json \
+            --s277 model/S277/S277_original_official_V88_dataset3_native_5_WAV_predictions.npz \
+            --s277-report model/S277/report.json --out model/S511
+          python - <<'PY'
+          import json
+          z=json.load(open('model/S511/report.json'))
+          assert z['status']=='S511_NEW_INDEPENDENT_RAW_HARMONIC_PITCH_ONSET_CANDIDATES_PREMIDI'
+          assert z['original_WAVs']==5
+          assert z['WAV_byte_SHA_source_verified']
+          assert z['no_XML_or_MIDI_ground_truth_read_in_training_or_inference']
+          assert z['fixed_two_top6_top12_policies_before_ground_truth']
+          assert z['independent_acoustic_pitch_generator_not_a_trained_classifier']
+          assert z['no_promotion']
+          print('S511 real NEW independently generated fundamental-note candidates, no labels, source S80 intact')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s511-5-real-IDMT-guitar-raw-harmonic-physical-onset-top6-top12-NOXML
+          path: model/S511/
+          retention-days: 90
