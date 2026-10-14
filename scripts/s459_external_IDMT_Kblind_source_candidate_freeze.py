@@ -11,7 +11,7 @@ from __future__ import annotations
 import argparse,collections,json
 from pathlib import Path
 import joblib,numpy as np
-from scripts.s458_train_K_source_multiclass_morphology_songheld import (
+from scripts.s458_train_independent_audio_only_K_blind_songheld import (
     inputs,proba_model,candidate)
 from scripts.s402_k_input_first_supervised_midi_pitch_network import need,load
 from scripts.s399_s80_exactK_constrained_midi_pitch_decoder import sha
