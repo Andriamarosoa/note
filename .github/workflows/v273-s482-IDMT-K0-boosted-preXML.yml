@@ -1,0 +1,77 @@
+name: S482 source GuitarSet-only boosted K0 recovery on original IDMT 506 freeze preXML
+on:
+  push:
+    branches: [codex/s482-IDMT-boosted-K0-external-freeze]
+    paths:
+      - scripts/s482_freeze_GuitarSet_boosted_K0_rescue_on_IDMT_original_PREXML.py
+      - .github/workflows/v273-s482-IDMT-K0-boosted-preXML.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s482-original-IDMT-boosted-K0-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  actual_506_original_IDMT_source_K0_rescue_two_ensemble_gates_unlabelled:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install saved original trained boosted model numeric ABI
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 lightgbm==4.5.0
+      - name: Prove source K1+ protected with both 3vote and 4vote frozen thresholds
+        run: |
+          python -m py_compile scripts/s482_freeze_GuitarSet_boosted_K0_rescue_on_IDMT_original_PREXML.py
+          python -m scripts.s482_freeze_GuitarSet_boosted_K0_rescue_on_IDMT_original_PREXML --self-test
+      - name: Restore original GuitarSet-only S481 trained K0 models with nested calibration
+        run: |
+          gh run watch 38566831932 --exit-status --repo ${{ github.repository }}
+          gh run download 38566831932 \
+            -n s481-original-V88-GuitarSet-59309-K0-to-K1K2-rescue-4fold-OOF-no-promotion \
+            -D model/S481 --repo ${{ github.repository }}
+          test -s model/S481/S481_source_V88_K0_rescue_fold3.joblib
+      - name: Restore IDMT real original V88 source and 1090D acoustic features without annotations
+        run: |
+          gh run download 38319155819 \
+            -n s277-IDMT-dataset3-5WAV-true-original-V88-native-official-unlabelled \
+            -D model/S277 --repo ${{ github.repository }}
+          gh run download 38320164646 \
+            -n s282-s283-IDMT-dataset3-506-native-original-S18-quorum-S97-source \
+            -D model/S282S283 --repo ${{ github.repository }}
+      - name: Freeze IDMT 506 boosted 3vote and 4vote proposals before XML reading
+        run: |
+          python -u -m scripts.s482_freeze_GuitarSet_boosted_K0_rescue_on_IDMT_original_PREXML \
+            --audio model/S282S283/S283/S283_original_IDMT_dataset3_native_S97_audio.npz \
+            --orig model/S277/S277_original_official_V88_dataset3_native_5_WAV_predictions.npz \
+            --orig-report model/S277/report.json \
+            --models model/S481 \
+            --models-report model/S481/report.json \
+            --out model/S482
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S482/report.json'))
+          assert r['status']=='S482_IDMT_ORIGINAL_V88_K0_RESCUE_AFTER_GUITARSET_TRAIN_NOXML'
+          assert r['original_external_events']==506
+          assert r['original_V88_K1toK6_untouched']
+          assert r['IDMT_XML_or_labels_NEVER_OPENED']
+          assert r['no_new_training_or_external_threshold_selection'] and r['no_promotion']
+          with np.load('model/S482/S482_FROZEN_IDMT_506_K0_RESIDUAL_3AND4VOTES_PREXML.npz') as z:
+            assert np.array_equal(z['proposed_V88_K_consensus3'][z['original_V88_K']>0],
+                                  z['original_V88_K'][z['original_V88_K']>0])
+          print('S482 original IDMT source SHA-frozen improved K0 proposals, no labels')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s482-IDMT-506-source-V88-boosted-GuitarSet-trained-K0-frozen-noXML
+          path: model/S482/
+          retention-days: 90

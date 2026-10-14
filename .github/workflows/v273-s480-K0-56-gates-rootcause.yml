@@ -1,0 +1,45 @@
+name: S480 audit 56 original GuitarSet K0 rescue gate failures
+on:
+  push:
+    branches: [codex/s478-k0-birth-recovery-iterative]
+    paths:
+      - scripts/s480_audit_56_K0_rescue_threshold_rejections.py
+      - .github/workflows/v273-s480-K0-56-gates-rootcause.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  explain_why_all_GuitarSet_only_K0_specialist_gates_abstain:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore original S478 completed four genuine trained fold reports
+        run: |
+          gh run download 38565786548 \
+            -n s478-original-V88-GuitarSet-59309-K0-to-K1K2-rescue-4fold-OOF-no-promotion \
+            -D model/S478 --repo ${{ github.repository }}
+      - name: Audit 56 nested threshold risks without rerunning any model
+        run: |
+          python -m py_compile scripts/s480_audit_56_K0_rescue_threshold_rejections.py
+          python -u -m scripts.s480_audit_56_K0_rescue_threshold_rejections \
+            --s478 model/S478/report.json --out model/S480
+          python - <<'PY'
+          import json
+          d=json.load(open('model/S480/report.json'))
+          assert d['status']=='S480_S478_ORIGINAL_V88_K0_RESCUE_INNER_THRESHOLD_FAILURE_DIAGNOSIS'
+          assert d['examined_fold_thresholds']==56
+          assert d['all_thresholds_rejected'] and d['no_promotion']
+          assert d['no_MAESTRO_or_IDMT_labels_consulted']
+          print('S480 genuine original K0 false positive rejection reasons validated')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s480-guitarset-original-V88-sourceK0-56-trueK-regression-diagnostics
+          path: model/S480/
+          retention-days: 90

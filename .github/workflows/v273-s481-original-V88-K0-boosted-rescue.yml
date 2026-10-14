@@ -1,0 +1,67 @@
+name: S481 iterative source V88 original K0 to K1 K2 specialist composition held
+on:
+  push:
+    branches: [codex/s481-lightgbm-physical-K0-rescue]
+    paths:
+      - scripts/s481_fit_original_V88_K0_rescue_boosted_morphology.py
+      - .github/workflows/v273-s481-original-V88-K0-boosted-rescue.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s481-v88-K0-rescue-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source_K0_rescue_train_4fold_GuitarSet_nested_calibration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Restore exact numeric original GuitarSet model ABI
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0 lightgbm==4.5.0
+      - name: Prove possible K0 true onset rescue can abstain and count regressions
+        run: |
+          python -m py_compile scripts/s481_fit_original_V88_K0_rescue_boosted_morphology.py
+          python -m scripts.s481_fit_original_V88_K0_rescue_boosted_morphology --self-test
+      - name: Restore frozen ORIGINAL GuitarSet V88 source predictions and MIDI JAMS truth
+        run: |
+          gh run download 38311525987 \
+            -n s258-full-guitarset-59309-real-original-native-527D-58D-46D-42x49-and-OOF-PR16 \
+            -D model/S258 --repo ${{ github.repository }}
+      - name: Train 4 nested composition safe independent K0 rescue experts and score GuitarSet held composition
+        run: |
+          python -u -m scripts.s481_fit_original_V88_K0_rescue_boosted_morphology \
+            --audio model/S258/S258_GuitarSet_59309_original_V88_S97_audio.npz \
+            --truth model/S258/S258_GuitarSet_59309_true_K_ONLY_FOR_FINAL_AUDIT.npz \
+            --out model/S481
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S481/report.json'))
+          assert r['status']=='S481_GUITARSET_ONLY_V88_K0_SOURCE_RESIDUAL_4FOLD'
+          assert r['original_GuitarSet_native_events']==59309
+          assert r['original_K_ge1_never_edited']
+          assert r['no_external_IDMT_or_MAESTRO_truth_used']
+          assert r['original_S80_and_notes_never_edited'] and r['no_promotion']
+          assert len(r['four_GuitarSet_train_only_outerfolds'])==4
+          with np.load('model/S481/S481_original_V88_GuitarSet_K0_rescue_OOF_candidate.npz') as z:
+            assert np.array_equal(z['original_V88_K'][z['original_V88_K']>0],
+                                  z['proposed_rescue_V88_K'][z['original_V88_K']>0])
+          print('S481 original GuitarSet V88 K0 rescue OOF complete with all source K1+ protected')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s481-original-V88-GuitarSet-59309-K0-to-K1K2-rescue-4fold-OOF-no-promotion
+          path: model/S481/
+          retention-days: 90
