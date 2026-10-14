@@ -55,10 +55,10 @@ def evaluate(base, proposals, truth):
             for row,b in zip(rows,base):
                 rid=row["original_row_id"]
                 k=len(truth[rid])
-                changed=row["notes"]!=b["notes"]
+                changed=collections.Counter(row["notes"])!=collections.Counter(b["notes"])
                 group=changes[str(k)]
                 group["changes"]+=int(changed)
-                group["corrections"]+=int(hit if False else exact[rid] and not baseline_exact[rid])
+                group["corrections"]+=int(exact[rid] and not baseline_exact[rid])
                 group["regressions"]+=int(baseline_exact[rid] and not exact[rid])
                 if changed:
                     details.append(dict(variant=label,row_id=rid,
