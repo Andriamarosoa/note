@@ -135,7 +135,7 @@ def run(s258,s258_truth,s283,s297,s453,s453_report,out):
         actual_known_IDMT_true_poly_rows=21,
         original_S80_exactK_correct_on_matched=25,
         original_S80_exactK_wrong_on_matched=20,
-        original_GuitarSet_S80_histogram=np.bincount(
+        original_GuitarSet_original_V88_incumbent_histogram=np.bincount(
             a["incumbent_freeze_K"],minlength=7).tolist(),
         original_IDMT_S80_histogram=np.bincount(original,minlength=7).tolist(),
         original_GuitarSet_trueK_K1to4_histogram=np.bincount(ytrain,minlength=7).tolist(),
