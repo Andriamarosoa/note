@@ -1,0 +1,66 @@
+name: S472 probe true K2 K3 K4 error direction against original GuitarSet held birth scores
+on:
+  push:
+    branches: [codex/s472-birth-signal-exactK-transition-audit]
+    paths:
+      - scripts/s472_check_S466_birth_score_signal_for_directional_K2K3K4.py
+      - .github/workflows/v273-s472-birth-score-K-transition-OOF-audit.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit_whether_new_birth_scores_contain_cardinality_change_evidence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Numeric classifiers required only for evaluation of original 59k train held results
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2
+      - name: Verify directional AUC control
+        run: |
+          python -m py_compile scripts/s472_check_S466_birth_score_signal_for_directional_K2K3K4.py
+          python -m scripts.s472_check_S466_birth_score_signal_for_directional_K2K3K4 --self-test
+      - name: Restore source genuine GuitarSet OOF onset scores, intact original S80 and original JAMS truth
+        run: |
+          gh run download 38552253544 \
+            -n s466-GuitarSet-59k-composition-held-birth-continuation-Kblind-4-models-no-promotion \
+            -D model/S466 --repo ${{ github.repository }}
+          gh run download 38352988801 \
+            -n s397-s398-S70-suppression-REAL-full-S80-replay-and-scoring-NOPROMOTION \
+            -D model/S397 --repo ${{ github.repository }}
+          gh run download 38311525987 \
+            -n s258-full-guitarset-59309-real-original-native-527D-58D-46D-42x49-and-OOF-PR16 \
+            -D model/S258 --repo ${{ github.repository }}
+      - name: Audit all original K2 K3 K4 undercounts and overcounts vs OOF birth probabilities
+        run: |
+          python -u -m scripts.s472_check_S466_birth_score_signal_for_directional_K2K3K4 \
+            --birth model/S466/S466_GUITARSET_S80_UNCHANGED_BINARY_BIRTH_OOF.npz \
+            --birthreport model/S466/report.json \
+            --s80 model/S397/S397/S397_S272_FULL_REPLAY/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz \
+            --truth model/S258/S258_GuitarSet_59309_true_K_ONLY_FOR_FINAL_AUDIT.npz \
+            --out model/S472
+          python - <<'PY'
+          import json
+          d=json.load(open('model/S472/report.json'))
+          assert d['status']=='S472_BIRTH_CONFIDENCE_OOF_VS_SOURCE_EXACTK_ERROR_SIGNAL_AUDIT'
+          assert d['genuine_source_events']==59309
+          assert d['original_trueK_correct']==53529
+          assert d['original_true_poly_correct']==6054
+          assert d['no_training_no_threshold_tuning_no_reference_change']
+          assert d['no_promotion']
+          print('S472 original K2-K3-K4 birth-score signal validated without new K changes')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s472-guitarset-59k-OOF-birth-prob-vs-K2K3K4-directional-error-auc-diagnostic
+          path: model/S472/
+          retention-days: 90
