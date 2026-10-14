@@ -43,7 +43,7 @@ jobs:
         run: |
           gh run download 38352988801 -n s397-s398-S70-suppression-REAL-full-S80-replay-and-scoring-NOPROMOTION -D model/S397 --repo ${{ github.repository }}
           test -f model/S397/S397/S397_S272_FULL_REPLAY/S272_full_original_S80_unseen_GUITARSET_59309_frozen.npz
-      - name: Train only GuitarSet: four song-held multiclass K heads and inner label-blind composition groups
+      - name: 'Train only GuitarSet: four song-held multiclass K heads and inner label-blind composition groups'
         run: |
           python -u -m scripts.s454_train_K_source_multiclass_morphology_songheld \
             --audio model/S258/S258_GuitarSet_59309_original_V88_S97_audio.npz \
