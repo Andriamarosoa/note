@@ -46,7 +46,7 @@ def pair(rows):
                 bag["real_K0_recovered"]+=int(new==k)
     def unroll(z):
         out=dict(z)
-        out["net"]=out["corrected"]-out["regressed"]
+        out["net"]=out.get("corrected",0)-out.get("regressed",0)
         out["poly_net"]=out.get("poly_corrected",0)-out.get("poly_regressed",0)
         return out
     return dict(all=unroll(stats),
@@ -79,13 +79,13 @@ def run(idmt,idmtreport,piano,pianoreport,piano_truth,piano_truth_report,out):
     guitar=[dict(true=len(x["true_active"]),source=int(x["original_S80_K"]),
        bp=len(x["basicpitch_active_30ms"]),source_wav=x["source_wav"])
             for x in g]
-    piano=[dict(true=len(q["truth_MIDI"]),
+    piano_rows=[dict(true=len(q["truth_MIDI"]),
       source=int(byid[q["row_id"]]["original_V88_K"]),
       bp=len(q["proposed_MIDI"]),
       source_wav=q["source_sha"])
        for q in p]
     results=dict(IDMT_true_guitar_45_S80_historical=pair(guitar),
-         MAESTRO_true_piano_322_V88_historical=pair(piano))
+         MAESTRO_true_piano_322_V88_historical=pair(piano_rows))
     need(results["IDMT_true_guitar_45_S80_historical"]["all"]["n"]==45
          and results["IDMT_true_guitar_45_S80_historical"]["all"]["correct_original"]==25
          and results["IDMT_true_guitar_45_S80_historical"]["all"]["correct_basicpitch"]==30
