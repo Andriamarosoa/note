@@ -1,0 +1,67 @@
+name: S509 eight leave-recording-out neural note-by-note selectors over 13 exact-K style heads
+on:
+  push:
+    branches: [codex/s505-neural-note-selector-songheld]
+    paths:
+      - scripts/s509_train_neural_note_by_note_head_attention_recording_held.py
+      - .github/workflows/v273-s509-neural-pitch-head-attention-songheld.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s509-per-pitch-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  train_per_observed_note_and_audit_held_original_recordings:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      TF_CPP_MIN_LOG_LEVEL: '2'
+      TF_NUM_INTRAOP_THREADS: '2'
+      TF_NUM_INTEROP_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install genuine TensorFlow multi-head note selection and source numeric ABI
+        run: python -m pip install numpy==1.26.4 tensorflow==2.14.1 scipy==1.14.1
+      - name: Test two specialist notes E3 and G3 can compose one chord without hallucination
+        run: |
+          python -m py_compile scripts/s509_train_neural_note_by_note_head_attention_recording_held.py
+          python -m scripts.s509_train_neural_note_by_note_head_attention_recording_held --self-test
+      - name: Restore authentic S505 8 recording original head pitches and supervised note truths
+        run: |
+          gh run download 38596480284 \
+            -n s505-real-8-recording-held-S80-guitar-V88-piano-neural-note-heads-train-table \
+            -D model/S505 --repo "${{ github.repository }}"
+      - name: Train 8 actual independent held-recording neural head-attention models on observed pitches, never labels from evaluated recording
+        run: |
+          python -u -m scripts.s509_train_neural_note_by_note_head_attention_recording_held \
+            --data model/S505/S505_REAL_NOTE_HEADS_EIGHT_RECORDINGS_MATCHED_POSITIVES.npz \
+            --report model/S505/report.json --out model/S509
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.load(open('model/S509/report.json'))
+          assert r['status']=='S509_REAL_13_HEAD_ATTENTION_NOTE_BY_NOTE_EIGHT_RECORDING_OOF'
+          assert r['truly_trained_per_pitch_neural_attention']
+          assert r['no_true_note_K_or_correctness_in_held_model_inputs']
+          assert r['eight_holdout_recording_models_fitted']
+          assert r['no_pitch_outside_existing_acoustic_head_union']
+          assert r['fixed_policies_thresholds_not_calibrated_on_held_truth']
+          assert r['no_promotion'] and r['original_S80_V88_live_offset_onset_untouched']
+          assert len(list(Path('model/S509').glob('*.weights.h5')))==8
+          print('S509 genuine note-by-note attention and 8 held recordings verified, no source promotion')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s509-true-neural-per-pitch-attention-8-songheld-recordings-full-chord-K-and-real-notes
+          path: model/S509/
+          retention-days: 90
