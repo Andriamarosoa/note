@@ -1,0 +1,73 @@
+name: S451 actual IDMT XML note identity comparison of frozen original S80 S430 vs S446
+on:
+  push:
+    branches: [codex/s450-idmt-external-s446-notes]
+    paths:
+      - 'scripts/s451_score_frozen_S450_IDMT_XML_true_notes.py'
+      - '.github/workflows/v273-s451-external-idmt-true-note-names.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s451-external-note-ids-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  score_only_S450_frozen_external_note_names:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 70
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Independent matching and note-set score selftest
+        run: |
+          python -m py_compile scripts/s451_score_frozen_S450_IDMT_XML_true_notes.py
+          python -m scripts.s451_score_frozen_S450_IDMT_XML_true_notes --self-test
+      - name: Validate upstream S450 complete freeze before XML reads
+        run: |
+          gh run download 38530705707 \
+            -n s450-original-S80-IDMT-dataset3-506-S430-vs-S446-note-names-frozen-PREXML \
+            -D model/S450 --repo ${{ github.repository }}
+          test -f model/S450/S450_IDMT_EXTERNAL_FROZEN_NOTE_NAMES.npz
+          test -f model/S450/report.json
+      - name: Retrieve original five-WAV central ZIP only preregistered source manifest
+        run: |
+          gh run download 38318827219 \
+            -n s276-IDMT-central-directory-only-prospective-WAV-cohort \
+            -D model/S276 --repo ${{ github.repository }}
+          test -f model/S276/S276_IDMT_filename_only_cohort_manifest.json
+      - name: Evaluate paired pitch sets only on original matched XML annotations, NEVER infer true K0
+        run: |
+          python -u -m scripts.s451_score_frozen_S450_IDMT_XML_true_notes \
+            --s450 model/S450/S450_IDMT_EXTERNAL_FROZEN_NOTE_NAMES.npz \
+            --s450-report model/S450/report.json \
+            --s276 model/S276/S276_IDMT_filename_only_cohort_manifest.json \
+            --out model/S451
+          python - <<'PY'
+          import json
+          d=json.load(open('model/S451/report.json'))
+          assert d['status']=='S451_ORIGINAL_S80_EXTERNAL_IDMT_TRUE_NOTE_IDENTITY_PAIRED'
+          assert d['n_external_native_V88_events']==506
+          assert d['original_S80_K_predictions_unchanged'] and d['exactK_regressions']==0
+          assert d['matched_annotation_onsets']>0 and d['pitches_in_supported_MIDI40to88']>0
+          assert d['complete_negative_K0_labels_not_available']
+          assert d['original_IDMT_S299_XML_labels_previously_exposed']
+          assert d['no_refit_no_threshold_tuning_on_IDMT']
+          assert d['experimental_no_promotion']
+          print('S451 external note sets paired under original S80 without false K0 labels')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s451-original-S80-external-IDMT-true-musical-notes-paired-no-promotion
+          path: model/S451/
+          retention-days: 90
