@@ -48,8 +48,8 @@ def inputs(data,K):
 
 def model(seed):
     return ExtraTreesClassifier(
-        n_estimators=85,min_samples_leaf=9,max_depth=15,
-        max_features=.5,class_weight="balanced_subsample",
+        n_estimators=48,min_samples_leaf=16,max_depth=12,
+        max_features=.12,class_weight="balanced_subsample",
         n_jobs=2,random_state=seed)
 
 def proba_model(est,x):
