@@ -7,7 +7,7 @@ It is not the original S80 reference and is NOT promoted into Live.
 The legacy V88/S80/offsets code is not imported or modified.
 """
 from __future__ import annotations
-import argparse,json,math
+import argparse,json,math,sys,contextlib
 from pathlib import Path
 MIN_MIDI=40;MAX_MIDI=88
 WINDOW_SECONDS=.020
@@ -52,11 +52,13 @@ def transcribe(audio:Path,low=MIN_MIDI,high=MAX_MIDI):
         raise FileNotFoundError("Audio source file not found: "+str(audio))
     from basic_pitch import ICASSP_2022_MODEL_PATH
     from basic_pitch.inference import Model,predict
-    model=Model(ICASSP_2022_MODEL_PATH)
-    # These remain BasicPitch's factory defaults, no source tuning.
-    _,_,notes=predict(str(audio),model,
-         onset_threshold=.5,frame_threshold=.3,
-         minimum_note_length=127.7)
+    # Model progress messages must not corrupt machine-readable JSON stdout.
+    with contextlib.redirect_stdout(sys.stderr):
+        model=Model(ICASSP_2022_MODEL_PATH)
+        # These remain BasicPitch's factory defaults, no source tuning.
+        _,_,notes=predict(str(audio),model,
+             onset_threshold=.5,frame_threshold=.3,
+             minimum_note_length=127.7)
     groups=new_note_groups(notes,low,high)
     return dict(status="S489_EXPERIMENTAL_PRETRAINED_NOTE_NAME_DETECTOR",
         source_filename=audio.name,source_bytes=audio.stat().st_size,
