@@ -185,7 +185,7 @@ def test():
     new=np.array([15000,12000,8000],np.int64)
     chosen=np.array([16000,10000,9000],np.int64)
     on=np.array([0,0,0],np.int64)
-    selected,n=offset_policy(old,new,chosen,on,"S422_if_425_short",250)
+    selected,n=offset_policy(old,new,chosen,on,"S422_if_425_short",500)
     need(n==3 and np.array_equal(selected,new),
          "S427 preregistered short-note guard incorrect")
     print("S427 SELFTEST PASS: short-note guard exact selection")
