@@ -78,7 +78,7 @@ def run(s494,s494_report,idmt,idmt_report,piano,piano_report,out):
                new_positive_source_K0_activations=int(np.sum(
                    used&(src==0)&(allpred>0))),
                extra_UNKNOWN_source_K0_activations=int(len(unknown_idx)),
-               original_source_K>=1_modified=int(np.sum(
+               original_source_K_ge1_modified=int(np.sum(
                    allpred[src>0]!=src[src>0])),
                unknown_extra_K_hist={str(j):int(np.sum(allpred[unknown_idx]==j))
                    for j in (1,2,3,4,5,6)},
