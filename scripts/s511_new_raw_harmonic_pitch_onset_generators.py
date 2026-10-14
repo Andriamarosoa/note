@@ -21,8 +21,51 @@ import numpy as np
 from scipy.signal import stft,find_peaks
 from scripts.s177_preregister_external_polyphony_source import API,audit
 from scripts.s464_validate_IDMT_farK0_audio_rms_against_recording import ReliableReadOnlyRangeZIP
-from scripts.s277_original_freeze_dataset3_native_prelabel import decode_external_wav
-from scripts.s470_MAESTRO_real_piano_native_original_V88_and_birth_PREMIDI import fetch_track
+from scipy.io import wavfile
+from scipy.signal import resample_poly
+import io,time,urllib.parse
+from math import gcd
+def decode_external_wav(raw):
+    """Independent conversion matching original S277 documented audio ABI."""
+    frequency,signal=wavfile.read(io.BytesIO(raw))
+    channels=signal.shape[1] if signal.ndim==2 else 1
+    need(channels in (1,2) and 20000<=int(frequency)<=96000,
+         "S511 source 44.1k WAV compatibility invalid")
+    source_dtype=str(signal.dtype)
+    if signal.dtype==np.int16:signal=signal.astype(np.float32)/32768.
+    elif signal.dtype==np.int32:signal=signal.astype(np.float64)/2147483648.
+    elif signal.dtype==np.uint8:signal=(signal.astype(np.float32)-128.)/128.
+    elif np.issubdtype(signal.dtype,np.floating):signal=signal.astype(np.float64)
+    else:raise ValueError("S511 unsupported original WAV sample")
+    if channels>1:signal=signal.mean(axis=1)
+    if frequency!=SR:
+        div=gcd(int(frequency),SR)
+        signal=resample_poly(signal,SR//div,int(frequency)//div)
+    signal=np.clip(np.asarray(signal,np.float32),-1.,1.)
+    need(len(signal)>2*SR and np.isfinite(signal).all(),
+         "S511 source WAV not finite or too short")
+    return signal,dict(original_sample_rate_hz=int(frequency),
+                       original_channels=int(channels),
+                       original_dtype=source_dtype)
+def fetch_track(base,name):
+    """Use exact independent MAESTRO WAV mirror as in original S470."""
+    url=base+urllib.parse.quote(name,safe="/")+"?download=true"
+    req=urllib.request.Request(url,headers={
+         "Accept-Encoding":"identity","User-Agent":"S511-raw-piano-only-noMIDI"})
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(req,timeout=240) as response:
+                need(response.status==200 and
+                     "text/html" not in response.headers.get("Content-Type",""),
+                     "S511 mirror returned HTML")
+                blob=response.read(140_000_001)
+                need(100_000<len(blob)<=140_000_000 and blob[:4]==b"RIFF",
+                     "S511 unsafe size or incorrect WAV bytes")
+                return blob,url
+        except Exception:
+            if attempt==2:raise
+            time.sleep(2*(attempt+1))
+
 
 SR=44100
 FFT=8192
