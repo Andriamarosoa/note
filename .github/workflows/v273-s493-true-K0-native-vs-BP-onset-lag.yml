@@ -1,0 +1,68 @@
+name: S493 explain 7 genuine IDMT source S80 K0 missed by independent pitch birth gate
+on:
+  push:
+    branches: [codex/s493-IDMT-missed-K0-timing-causal-audit]
+    paths:
+      - scripts/s493_forensic_IDMT_seven_missed_true_K0_BP_attack_lag.py
+      - .github/workflows/v273-s493-true-K0-native-vs-BP-onset-lag.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original_IDMT_K0_note_birth_delta_and_sustain_vs_fresh_onset_forensics:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install numeric original models event timeline reader
+        run: python -m pip install numpy==1.26.4
+      - name: Verify sustained notes are not mistaken for newly struck notes
+        run: |
+          python -m py_compile scripts/s493_forensic_IDMT_seven_missed_true_K0_BP_attack_lag.py
+          python -m scripts.s493_forensic_IDMT_seven_missed_true_K0_BP_attack_lag --self-test
+      - name: Restore original IDMT 506 authentic V88 events and genuine final S80 decisions
+        run: |
+          gh run download 38319155819 -n s277-IDMT-dataset3-5WAV-true-original-V88-native-official-unlabelled -D model/S277 --repo ${{ github.repository }}
+          gh run download 38320939533 -n s294-s298-two-complete-frozen-S80-original-vs-S274-IDMT-dataset3-506-PREXML -D model/S294S298 --repo ${{ github.repository }}
+      - name: Restore independently frozen real pretrained Basic Pitch guitar note onset candidates
+        run: |
+          gh run download 38569589535 -n s487-original-five-IDMT-real-guitar-pretrained-BasicPitch-note-names-PREXML -D model/S487 --repo ${{ github.repository }}
+          gh run download 38576329909 -n s491-true-guitar-S80-and-piano-V88-K0only-BasicPitch-one-to-one-frozen-NOXML -D model/S491 --repo ${{ github.repository }}
+      - name: Restore original 45 XML-verified true notes only after pretrained/source gate freezes
+        run: |
+          gh run download 38570219836 -n s488-original-IDMT-45-true-guitar-21-poly-BasicPitch-note-set-vs-S80-ExactK -D model/S488 --repo ${{ github.repository }}
+      - name: Diagnose source V88 actual onset lag vs pretrained pitch beginning/sustaining and competing events
+        run: |
+          python -u -m scripts.s493_forensic_IDMT_seven_missed_true_K0_BP_attack_lag \
+            --s277 model/S277/S277_original_official_V88_dataset3_native_5_WAV_predictions.npz \
+            --s297 model/S294S298/S297_original/S297_full_original_S80_unseen_IDMT_506_frozen.npz \
+            --s487 model/S487/S487_BASIC_PITCH_FIVE_TRUE_IDMT_GUITAR_PREXML_NOTES.jsonl \
+            --s487-report model/S487/report.json \
+            --s491 model/S491/S491_guitar_S80_SOURCE_K0_ONLY_FROZEN.npz \
+            --s491-report model/S491/report.json \
+            --s488 model/S488/S488_45_TRUE_GUITAR_SOURCE_NOTESETS_PAIRED.jsonl \
+            --s488-report model/S488/report.json \
+            --out model/S493
+          python - <<'PY'
+          import json
+          d=json.load(open('model/S493/report.json'))
+          assert d['status']=='S493_POSTFREEZE_ORIGINAL_IDMT_TRUE_K0_ONSET_TEMPORAL_MISMATCH_FORENSIC'
+          assert d['source_original_S80_K0_real_XML_attacks']==7
+          assert d['cause_observation_counters']['not_matched_independent_BP_birth']==7
+          assert d['original_IDMT_unmatched_459_NOT_true_negative']
+          assert not d['full_original_S80_reference_modified'] and d['no_promotion']
+          print('S493 source true note K0 missing seven explained with actual original onset times')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s493-IDMT-seven-true-S80-K0-pitch-birth-physical-native-onset-lag-forensics
+          path: model/S493/
+          retention-days: 90
