@@ -1,0 +1,71 @@
+name: S495 after-freeze score original S80 guitar and V88 piano K0-first evidence rescue and unknown risks
+on:
+  push:
+    branches: [codex/s495-K0-first-score-and-abstention]
+    paths:
+      - scripts/s495_score_original_K0_priority_shadow_true_onsets_vs_unknown.py
+      - .github/workflows/v273-s495-K0-priority-true-vs-unknown-risk.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  verify_source_safe_K0_priority_against_real_note_onsets_and_unannotated_native_events:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install original native event score numeric ABI
+        run: |
+          python -m pip install numpy==1.26.4
+          python -m py_compile scripts/s495_score_original_K0_priority_shadow_true_onsets_vs_unknown.py
+          python -m scripts.s495_score_original_K0_priority_shadow_true_onsets_vs_unknown --self-test
+      - name: Restore SHA-frozen K0-first model evidence made WITHOUT real MIDI/XML truth
+        run: |
+          gh run download 38578164091 \
+            -n s494-source-K0-first-two-real-audio-corpora-pretruth-duplicate-risk-shadow \
+            -D model/S494 --repo ${{ github.repository }}
+      - name: Restore actual true guitar note sets and piano note onsets previously read only in scoring
+        run: |
+          gh run download 38570219836 \
+            -n s488-original-IDMT-45-true-guitar-21-poly-BasicPitch-note-set-vs-S80-ExactK \
+            -D model/S488 --repo ${{ github.repository }}
+          gh run download 38560885111 \
+            -n s476-MAESTRO-original-V88-K-new-onsets-vs-sounding-322-same-events-audit \
+            -D model/S476 --repo ${{ github.repository }}
+      - name: Measure all supported corrections vs regressions and unannotated K0 modifications separately
+        run: |
+          python -u -m scripts.s495_score_original_K0_priority_shadow_true_onsets_vs_unknown \
+            --s494 model/S494 \
+            --s494-report model/S494/report.json \
+            --idmt model/S488/S488_45_TRUE_GUITAR_SOURCE_NOTESETS_PAIRED.jsonl \
+            --idmt-report model/S488/report.json \
+            --piano model/S476/S476_ORIGINAL_S470_PIANO_NEW_NOTE_VS_SOUNDING_322.jsonl \
+            --piano-report model/S476/report.json \
+            --out model/S495
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S495/report.json'))
+          assert r['status']=='S495_TWO_SOURCES_SOURCE_K0_PRIORITY_POSTFREEZE_PAIRED_RISK_AUDIT'
+          assert r['no_unknown_459_guitar_events_declared_true_K0']
+          assert r['all_old_nonzero_K_predictions_are_protected']
+          assert r['cannot_guarantee_no_false_notes_on_unannotated_candidates']
+          assert r['no_promotion'] and r['nondeployed_study_only']
+          for k in ('guitar_S80','piano_V88'):
+            for value in r['by_source'][k]['policies'].values():
+              assert value['original_source_K>=1_modified']==0
+              assert value['score_true_annotated_positive_attacks']['regressed']==0
+          print('S495 verified true positive note rescue and separate potential false K0 activations')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s495-original-guitar-S80-piano-V88-K0-first-real-positive-vs-unknown-postfreeze
+          path: model/S495/
+          retention-days: 90
