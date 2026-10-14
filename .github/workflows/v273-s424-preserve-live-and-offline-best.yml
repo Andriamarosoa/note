@@ -5,7 +5,9 @@ on:
     paths:
       - 'src/causal_note/live_k_midi_bridge.py'
       - 'scripts/stream_k_midi_live.py'
+      - 'scripts/note_runtime.py'
       - 'test/test_live_k_midi_bridge.py'
+      - 'test/test_note_runtime_modes.py'
       - 'analysis/v273_live_and_offline_protected_modes.json'
       - 'analysis/README_V273_LIVE_OFFLINE_KLOCKED_PRESERVATION.md'
       - '.github/workflows/v273-s424-preserve-live-and-offline-best.yml'
@@ -51,8 +53,20 @@ jobs:
           PY
       - name: Regression tests on ORIGINAL causal Live + new optional real-time note events
         run: |
-          python -m compileall -q src/causal_note/live_k_midi_bridge.py scripts/stream_k_midi_live.py test/test_live_k_midi_bridge.py
-          python -m unittest -v test.test_live_k_midi_bridge test.test_pipeline test.test_detect_live
+          python -m compileall -q src/causal_note/live_k_midi_bridge.py scripts/stream_k_midi_live.py scripts/note_runtime.py test/test_live_k_midi_bridge.py test/test_note_runtime_modes.py
+          python -m unittest -v test.test_live_k_midi_bridge test.test_note_runtime_modes test.test_pipeline test.test_detect_live
+      - name: Verify explicit unified protected runtime status and never misrepresent Live accuracy
+        run: |
+          python -m scripts.note_runtime --mode status > /tmp/s424-runtime-status.json
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/s424-runtime-status.json'))
+          assert d['legacy_live_untouched']
+          assert d['live_accuracy_certified'] is False
+          assert d['S80_causal_live_frontend_currently_integrated'] is False
+          assert d['best_offline_native']=='S422_S80_K_LOCKED_5S_CONTINUOUS_MIC_PITCH_SURVIVAL_OFFSET'
+          print('S424 runtime status honest: legacy live unchanged, S422 offline-only pinned')
+          PY
       - name: Real JSONL stdin replay emits causal NOTE ON/OFF MIDI and respects K0 sustain
         run: |
           python - <<'PY'
