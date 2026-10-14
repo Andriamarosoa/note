@@ -126,6 +126,11 @@ def run(args):
     eligible=d["head_mask"].astype(bool)
     k_mask=d["head_k_mask"].astype(bool)
     sourceK=d["source_K"].astype(int)
+    # S504 defaults to BP new K for both instruments; guitar scoring is
+    # ACTIVE note K. Adapt observable baseline to the source-specific
+    # existing audio head (never true MIDI notes).
+    audio_baseK=headsets[np.arange(len(y)),baseid].sum(axis=1)
+    d["baseline"]=np.eye(7,dtype=np.float32)[np.clip(audio_baseK,0,6)]
     truthK=y.sum(axis=1).astype(int)
     N=len(y)
     need(N==report["rows"] and len(set(groups))==8 and
