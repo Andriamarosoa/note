@@ -1,0 +1,72 @@
+name: S468 independent paired original IDMT source new-note recall of frozen S467 onset gate
+on:
+  push:
+    branches: [codex/s467-idmt-birth-transfer-validation]
+    paths:
+      - scripts/s468_audit_frozen_S467_true_new_notes_against_source_XML.py
+      - .github/workflows/v273-s468-IDMT-frozen-birth-XML-audit.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit_postfreeze_real_XML_attacks_vs_distant_untested_candidates:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Dependencies for read-only frozen train-only binary-probability audit
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2
+      - name: Selftest genuine recall and frozen-probability utility
+        run: |
+          python -m py_compile scripts/s468_audit_frozen_S467_true_new_notes_against_source_XML.py
+          python -m scripts.s468_audit_frozen_S467_true_new_notes_against_source_XML --self-test
+      - name: Restore S467 source-IDMT pretrained freeze BEFORE reading retrospective annotations
+        run: |
+          gh run download 38552460959 \
+            -n s467-IDMT-506-train-GuitarSet-only-birth-prob-4fold-FROZEN-NOXML \
+            -D model/S467 --repo ${{ github.repository }}
+      - name: Restore two independent SHA-original XML onsets and native event ledgers
+        run: |
+          gh run download 38533183193 \
+            -n s453-original-5stage-S80-IDMT-506-K0-K2-K3-error-provenance-no-promotion \
+            -D model/S453 --repo ${{ github.repository }}
+          gh run download 38546964936 \
+            -n s462-original-IDMT-fiveWAV-506-vs-XML-onset-alignment-error-audit-no-promotion \
+            -D model/S462 --repo ${{ github.repository }}
+      - name: Measure 47 original XML attack recalls, 21 poly, 418 unpaired far candidates separately
+        run: |
+          python -u -m scripts.s468_audit_frozen_S467_true_new_notes_against_source_XML \
+            --frozen model/S467/S467_ORIGINAL_S80_IDMT_506_SEPARATE_BIRTH_PROB_FROZEN.npz \
+            --report model/S467/report.json \
+            --matched model/S453/S453_independent_original_IDMT_stage_audit.jsonl \
+            --matched-report model/S453/report.json \
+            --near model/S462/S462_original_onset_candidate_nearest_XML_506.jsonl \
+            --near-report model/S462/report.json \
+            --out model/S468
+          python - <<'PY'
+          import json
+          d=json.load(open('model/S468/report.json'))
+          assert d['status']=='S468_EXTERNAL_SOURCE_K_PRESERVING_BIRTH_GATE_XML_PAIRED_DIAGNOSTIC'
+          assert d['original_source_events']==506
+          assert d['original_matched_XML_attack_events']==47
+          assert d['original_matched_XML_pitch_supported']==45
+          assert d['original_true_poly_XML_events']==21
+          assert d['original_S80_K_and_note_decoder_unchanged']
+          assert d['no_models_retrained_or_external_thresholds_adjusted']
+          assert d['unknown_unmatched_K0_truth_not_assumed']
+          assert d['no_promotion']
+          print('S468 original K preserved and independent external note attack danger quantified')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s468-S467-IDMT-47-true-onsets-21-poly-418-unlabelled-extras-independent-audit
+          path: model/S468/
+          retention-days: 90
