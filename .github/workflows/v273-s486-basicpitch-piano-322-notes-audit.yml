@@ -1,0 +1,65 @@
+name: S486 independent Spotify Basic Pitch note names compared to frozen MAESTRO MIDI and original V88 K
+on:
+  push:
+    branches: [codex/s486-independent-pretrained-note-score]
+    paths:
+      - scripts/s486_score_fixed_BasicPitch_note_names_on_322_MAESTRO_onsets.py
+      - .github/workflows/v273-s486-basicpitch-piano-322-notes-audit.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  independent_pretrained_MAESTRO_note_name_exactK_and_poly_comparison:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install minimal postfreeze numeric and MIDI reader runtime
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 mido==1.3.3
+      - name: Verify exact E3 pitch names and distinct simultaneous note grouping
+        run: |
+          python -m py_compile scripts/s486_score_fixed_BasicPitch_note_names_on_322_MAESTRO_onsets.py
+          python -m scripts.s486_score_fixed_BasicPitch_note_names_on_322_MAESTRO_onsets --self-test
+      - name: Restore genuine Basic Pitch pretrained 3 piano original note events frozen BEFORE any MIDI truth
+        run: |
+          gh run download 38568724837 \
+            -n s485-spotify-basicpitch-3-original-MAESTRO-piano-audio-to-notes-frozen-PREMIDI \
+            -D model/S485 --repo ${{ github.repository }}
+      - name: Restore exact previous S476 genuine MIDI note events matched to original V88, read only
+        run: |
+          gh run download 38560885111 \
+            -n s476-MAESTRO-original-V88-K-new-onsets-vs-sounding-322-same-events-audit \
+            -D model/S476 --repo ${{ github.repository }}
+      - name: Score fixed pretrained instrument-general note sets under predeclared 80ms and 150ms onset tolerances
+        run: |
+          python -u -m scripts.s486_score_fixed_BasicPitch_note_names_on_322_MAESTRO_onsets \
+            --notes model/S485/S485_FIXED_BASIC_PITCH_PRETRAINED_PIANO_NOTES_PRELABEL.jsonl \
+            --notes-report model/S485/report.json \
+            --truth model/S476/S476_ORIGINAL_S470_PIANO_NEW_NOTE_VS_SOUNDING_322.jsonl \
+            --truth-report model/S476/report.json \
+            --out model/S486
+          python - <<'PY'
+          import json
+          z=json.load(open('model/S486/report.json'))
+          assert z['status']=='S486_PAIRED_PRETRAINED_BASIC_PITCH_PIANO_322_MIDI_NEW_ONSETS'
+          assert z['original_MAESTRO_three_piano_true_attack_rows']==322
+          assert z['original_V88_same322_ExactK_correct']==42
+          assert z['original_V88_same73_true_poly_ExactK_correct']==7
+          assert z['BasicPitch_no_training_on_this_trial']
+          assert z['no_inference_threshold_optimized_on_MAESTRO'] and z['no_promotion']
+          assert z['original_S80_Live_and_notes_untouched']
+          print('S486 independent pretrained exact-note sets, notes E3 and K1..K6 on real frozen piano source')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s486-original-MAESTRO-322-MIDI-onsets-BasicPitch-pretrained-note-name-poly-exactK-score
+          path: model/S486/
+          retention-days: 90
