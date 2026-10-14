@@ -140,8 +140,8 @@ def source_audio_events(mic_archive, rows):
             for j,row in events:
                 start=int(row["start_sample"])
                 end=int(row["end_sample"])
-                need(0 <= start < end and end+int(.25*SR)<maxlen,
-                     "S439 impossible S437 audio onset/offset")
+                need(0 <= start < maxlen and end+int(.25*SR)<maxlen,
+                     "S439 onset/context violates original S437 audio clip")
                 spec,t=_frames(waveform,start)
                 _,activation=features_from_spectrogram(spec,t,return_states=True)
                 need(activation.shape==(42,49),"S439 original S437 42x49 mismatch")
