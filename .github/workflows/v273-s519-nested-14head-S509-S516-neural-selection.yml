@@ -1,0 +1,82 @@
+name: S519 truly train S509 attention with S516 as fourteenth raw-note generating head and NESTED held-song folds
+on:
+  push:
+    branches: [codex/s518-s516-generator-s509-neural-selector-fusion]
+    paths:
+      - scripts/s519_train_nested_S509_attention_with_S516_raw_generator_14head.py
+      - .github/workflows/v273-s519-nested-14head-S509-S516-neural-selection.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: s519-real-nested-fourteen-head-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  nested_eight_real_original_recording_folds_new_note_generator_attentional_selector:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 115
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      TF_CPP_MIN_LOG_LEVEL: '2'
+      TF_NUM_INTRAOP_THREADS: '2'
+      TF_NUM_INTEROP_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original genuine neural head attention and source acoustic pitch classifier ABI
+        run: |
+          python -m pip install numpy==1.26.4 tensorflow==2.14.1 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2
+      - name: Self-test same original S509 network receives 14th independent S516 head with note E3 and previously absent G3
+        run: |
+          python -m py_compile scripts/s519_train_nested_S509_attention_with_S516_raw_generator_14head.py
+          python -m scripts.s519_train_nested_S509_attention_with_S516_raw_generator_14head --self-test
+      - name: Restore complete 49-pitch raw audio feature head source, frozen BEFORE XML/MIDI opening
+        run: |
+          gh run download 38610350820 \
+            -n s515-8-source-raw-waveform-49-note-multilabel-onset-harmonic-feature-heads-PREMIDI \
+            -D model/S515 --repo "${{ github.repository }}"
+      - name: Restore original 13 head note truths for supervision only after source spectral audio frozen
+        run: |
+          gh run download 38596480284 \
+            -n s505-real-8-recording-held-S80-guitar-V88-piano-neural-note-heads-train-table \
+            -D model/S505 --repo "${{ github.repository }}"
+      - name: Fit full eight-fold NESTED S516 49 fundamental-pitch models, and eight true S509 neural 14-head note-selectors; verify every chord regression
+        run: |
+          python -u -m scripts.s519_train_nested_S509_attention_with_S516_raw_generator_14head \
+            --acoustic model/S515/S515_TWO_INSTRUMENT_49_PITCH_REAL_AUDIO_FEATURES_PREMIDI.jsonl \
+            --acoustic-report model/S515/report.json \
+            --heads model/S505/S505_REAL_NOTE_HEADS_EIGHT_RECORDINGS_MATCHED_POSITIVES.npz \
+            --head-report model/S505/report.json \
+            --out model/S519
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          s=json.load(open('model/S519/report.json'))
+          assert s['status']=='S519_NESTED_S516_RAW_GENERATOR_INSIDE_S509_14HEAD_NEURAL_SELECTOR'
+          assert s['real_new_generator_14th_head_in_S509_attention']
+          assert s['inner_training_generator_OOF_crossfit_excludes_outer_held_recording']
+          assert s['eight_separate_22epoch_S509_14head_attention_models_trained']
+          assert s['true_note_labels_never_used_in_outer_held_inference']
+          assert s['no_true_negative_onsets_unpaired_canonical_events_unknown']
+          assert s['no_recovered_102_piano_onsets_without_BP_canonical_group']
+          assert s['full_audio_stream_note_onset_F1_not_measured']
+          assert s['no_official_S80_V88_Live_note_onset_offset_changed'] and s['no_promotion']
+          assert len(s['folds'])==8
+          assert len(list(Path('model/S519').glob('*.weights.h5')))==8
+          assert len(list(Path('model/S519').glob('*.joblib')))==8
+          for f in s['folds']:
+            assert f['training_recording_count']==7
+            assert f['inner_train_recording_count_per_generator']==6
+            assert f['nested_train_OOF_generator_models']==7
+            assert f['outer_held_source_excluded_from_BOTH_models']
+          print('S519 genuinely nested 14 head neural selector / new acoustic generator trained and independently audited per source')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s519-14head-true-S509-S516-nested-eight-recordingheld-trained-neural-MIDI-pitch-fusion
+          path: model/S519/
+          retention-days: 90
