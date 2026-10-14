@@ -35,8 +35,8 @@ jobs:
           python -m scripts.s455_external_IDMT_acoustic_K_candidate_freeze --self-test
       - name: Verify completion of S454 train-only GuitarSet model production
         run: |
-          gh run watch 38533977951 --exit-status --repo ${{ github.repository }}
-          gh run download 38533977951 \
+          gh run watch 38534666034 --exit-status --repo ${{ github.repository }}
+          gh run download 38534666034 \
             -n s454-new-acoustic-1098D-K-head-GuitarSet-songheld-train-only-S80-NOPROMOTION \
             -D model/S454 --repo ${{ github.repository }}
           test -f model/S454/report.json
