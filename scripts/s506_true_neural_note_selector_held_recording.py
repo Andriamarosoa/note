@@ -225,7 +225,6 @@ def run(args):
             policy["unknown_unpaired_predicted_births_not_counted_as_false"]=True
         scores[corpus]=summary
         print("S506 REAL OOF SCORES",json.dumps(dict(corpus=corpus,policies=summary)),flush=True)
-    args.out.mkdir(parents=True)
     predictions=args.out/"S506_RECORDING_HELD_NEURAL_NOTE_SELECTOR_PREDICTIONS.jsonl"
     predictions.write_text("".join(json.dumps(o)+"\n" for o in observations))
     result=dict(status="S506_TRUE_NEURAL_13_HEADS_RECORDING_HELD_EXPLORATORY_NO_PROMOTION",
