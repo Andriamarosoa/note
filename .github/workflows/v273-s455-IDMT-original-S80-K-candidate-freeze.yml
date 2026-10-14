@@ -1,0 +1,82 @@
+name: S455 frozen external IDMT original S80 vs train-only morphology K candidate
+on:
+  push:
+    branches: [codex/s455-external-IDMT-K-candidate-frozen]
+    paths:
+      - 'scripts/s455_external_IDMT_acoustic_K_candidate_freeze.py'
+      - '.github/workflows/v273-s455-IDMT-original-S80-K-candidate-freeze.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s455-IDMT-external-acoustic-head-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  freeze_trainonly_acoustic_K0_K6_on_506_IDMT_without_XML:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Exact numerical ABI for GuitarSet trained sklearn K heads
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 threadpoolctl==3.5.0
+      - name: Verify source K0 K2 K3 quorum and no-MIDI eligibility
+        run: |
+          python -m py_compile scripts/s455_external_IDMT_acoustic_K_candidate_freeze.py
+          python -m scripts.s455_external_IDMT_acoustic_K_candidate_freeze --self-test
+      - name: Verify completion of S454 train-only GuitarSet model production
+        run: |
+          gh run watch 38534666034 --exit-status --repo ${{ github.repository }}
+          gh run download 38534666034 \
+            -n s454-new-acoustic-1098D-K-head-GuitarSet-songheld-train-only-S80-NOPROMOTION \
+            -D model/S454 --repo ${{ github.repository }}
+          test -f model/S454/report.json
+          test -f model/S454/S454_acoustic_K_head_fold0.joblib
+      - name: Restore ORIGINAL prior label-blind IDMT V88 S97 audio and S80 untouched K
+        run: |
+          gh run download 38320164646 \
+            -n s282-s283-IDMT-dataset3-506-native-original-S18-quorum-S97-source \
+            -D model/S282S283 --repo ${{ github.repository }}
+          gh run download 38320939533 \
+            -n s294-s298-two-complete-frozen-S80-original-vs-S274-IDMT-dataset3-506-PREXML \
+            -D model/S294S298 --repo ${{ github.repository }}
+      - name: Freeze all four non-IDMT-trained heads with independent 3fold consensus into new nonofficial K series
+        run: |
+          python -u -m scripts.s455_external_IDMT_acoustic_K_candidate_freeze \
+            --source model/S282S283/S283/S283_original_IDMT_dataset3_native_S97_audio.npz \
+            --source-report model/S282S283/S283/report.json \
+            --s80 model/S294S298/S297_original/S297_full_original_S80_unseen_IDMT_506_frozen.npz \
+            --s80-report model/S294S298/S297_original/report.json \
+            --heads model/S454 --trained-report model/S454/report.json \
+            --out model/S455
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('model/S455/report.json'))
+          assert r['status']=='S455_REAL_EXTERNAL_IDMT_MORPHOLOGY_K_CANDIDATE_FROZEN_NO_XML'
+          assert r['source_native_events']==506 and r['recordings']==5
+          assert r['annotations_XML_MIDI_never_read'] and r['no_new_music_labels_used_for_training_or_thresholds']
+          assert r['consensus_min_distinct_trained_models']==3
+          assert r['original_S80_K_predictions_preserved_separately']
+          assert r['no_promotion'] and r['candidate_not_official_ExactK']
+          with np.load('model/S455/S455_external_IDMT_sourceK_frozen_candidate.npz') as z:
+            assert len(z['row_id'])==506
+            assert z['four_fold_candidate_K'].shape==(4,506)
+            assert np.array_equal(z['original_S80_K'][z['consensus_votes']<3],
+                                  z['S454_candidate_K'][z['consensus_votes']<3])
+          print('S455 real external IDMT immutable new source candidate; original S80 K unchanged')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s455-external-original-IDMT-S80-vs-S454-morphology-K0K6-PREXML-frozen
+          path: model/S455/
+          retention-days: 90

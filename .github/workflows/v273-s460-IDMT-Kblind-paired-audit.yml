@@ -1,0 +1,72 @@
+name: S460 paired IDMT trueK validation of source-K-blind 1090D frozen candidate
+on:
+  push:
+    branches: [codex/s459-Kblind-external-IDMT-test]
+    paths:
+      - 'scripts/s460_score_IDMT_Kblind_S459_frozen_against_S453.py'
+      - '.github/workflows/v273-s460-IDMT-Kblind-paired-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s460-external-originalK-audit-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify_actual_new_K_corrections_vs_original_S80_only_matched_45:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Independent K0 unknown exclusions and paired corrections test
+        run: |
+          python -m py_compile scripts/s460_score_IDMT_Kblind_S459_frozen_against_S453.py
+          python -m scripts.s460_score_IDMT_Kblind_S459_frozen_against_S453 --self-test
+      - name: Wait for genuine S459 frozen source predictions before any truth join
+        run: |
+          gh run watch 38536698802 --exit-status --repo ${{ github.repository }}
+          gh run download 38536698802 \
+            -n s459-external-original-IDMT-S80-vs-S458-morphology-K0K6-PREXML-frozen \
+            -D model/S459 --repo ${{ github.repository }}
+          test -f model/S459/report.json
+          test -f model/S459/S459_external_IDMT_sourceK_frozen_candidate.npz
+      - name: Restore previously archived original IDMT 47 note-matched ground-truth row ledger
+        run: |
+          gh run download 38533183193 \
+            -n s453-original-5stage-S80-IDMT-506-K0-K2-K3-error-provenance-no-promotion \
+            -D model/S453 --repo ${{ github.repository }}
+          test -f model/S453/report.json
+          test -f model/S453/S453_independent_original_IDMT_stage_audit.jsonl
+      - name: Independently pair candidate to exact original K benchmark 25 of 45 and 7 of 21
+        run: |
+          python -u -m scripts.s460_score_IDMT_Kblind_S459_frozen_against_S453 \
+            --frozen model/S459/S459_external_IDMT_sourceK_frozen_candidate.npz \
+            --frozen-report model/S459/report.json \
+            --source model/S453/S453_independent_original_IDMT_stage_audit.jsonl \
+            --source-report model/S453/report.json \
+            --out model/S460
+          python - <<'PY'
+          import json
+          d=json.load(open('model/S460/report.json'))
+          assert d['status']=='S460_INDEPENDENT_RETROSPECTIVE_EXTERNAL_IDMT_K_CANDIDATE_PAIRED_AUDIT'
+          assert d['population']==506 and d['valid_evaluable']==45
+          assert d['original_true_poly_evaluable']==21
+          assert d['original_S80_metrics_25_of_45_and_7_of_21_reproduced']
+          assert d['unknown_unmatched_not_relabelled_as_K0']
+          assert d['threshold_not_tuned_to_external_IDMT'] and d['no_promotion']
+          print('S460 score valid; no false K0 labels or current-source model promotion')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s460-external-IDMT-original-S80-vs-S458-K-candidate-SHA-frozen-paired-audit
+          path: model/S460/
+          retention-days: 90

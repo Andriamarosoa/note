@@ -1,0 +1,72 @@
+name: S456 paired independent external IDMT K scoring on SHA-frozen noXML S455
+on:
+  push:
+    branches: [codex/s455-external-IDMT-K-candidate-frozen]
+    paths:
+      - 'scripts/s456_score_frozen_S455_K_with_original_S453_XML.py'
+      - '.github/workflows/v273-s456-external-S80-K-paired-score.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s456-external-originalK-audit-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify_actual_new_K_corrections_vs_original_S80_only_matched_45:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==1.26.4
+      - name: Independent K0 unknown exclusions and paired corrections test
+        run: |
+          python -m py_compile scripts/s456_score_frozen_S455_K_with_original_S453_XML.py
+          python -m scripts.s456_score_frozen_S455_K_with_original_S453_XML --self-test
+      - name: Wait for genuine S455 frozen source predictions before any truth join
+        run: |
+          gh run watch 38534706188 --exit-status --repo ${{ github.repository }}
+          gh run download 38534706188 \
+            -n s455-external-original-IDMT-S80-vs-S454-morphology-K0K6-PREXML-frozen \
+            -D model/S455 --repo ${{ github.repository }}
+          test -f model/S455/report.json
+          test -f model/S455/S455_external_IDMT_sourceK_frozen_candidate.npz
+      - name: Restore previously archived original IDMT 47 note-matched ground-truth row ledger
+        run: |
+          gh run download 38533183193 \
+            -n s453-original-5stage-S80-IDMT-506-K0-K2-K3-error-provenance-no-promotion \
+            -D model/S453 --repo ${{ github.repository }}
+          test -f model/S453/report.json
+          test -f model/S453/S453_independent_original_IDMT_stage_audit.jsonl
+      - name: Independently pair candidate to exact original K benchmark 25 of 45 and 7 of 21
+        run: |
+          python -u -m scripts.s456_score_frozen_S455_K_with_original_S453_XML \
+            --frozen model/S455/S455_external_IDMT_sourceK_frozen_candidate.npz \
+            --frozen-report model/S455/report.json \
+            --source model/S453/S453_independent_original_IDMT_stage_audit.jsonl \
+            --source-report model/S453/report.json \
+            --out model/S456
+          python - <<'PY'
+          import json
+          d=json.load(open('model/S456/report.json'))
+          assert d['status']=='S456_INDEPENDENT_RETROSPECTIVE_EXTERNAL_IDMT_K_CANDIDATE_PAIRED_AUDIT'
+          assert d['population']==506 and d['valid_evaluable']==45
+          assert d['original_true_poly_evaluable']==21
+          assert d['original_S80_metrics_25_of_45_and_7_of_21_reproduced']
+          assert d['unknown_unmatched_not_relabelled_as_K0']
+          assert d['threshold_not_tuned_to_external_IDMT'] and d['no_promotion']
+          print('S456 score valid; no false K0 labels or current-source model promotion')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s456-external-IDMT-original-S80-vs-S454-K-candidate-SHA-frozen-paired-audit
+          path: model/S456/
+          retention-days: 90
