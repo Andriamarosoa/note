@@ -72,3 +72,12 @@ Le maximum **55,50 %** gagne +4,48 points vs S530, mais perd une note vraie et a
 - **Référence officielle S80 / V27.3 / Exact-K / Live : inchangée.**
 
 La suite scientifiquement utile nécessite une **cohorte MAESTRO / GuitarSet / guitare à morceaux et interprètes réellement inédits**, choix gelé avant la lecture des annotations, et une validation complète des doublons, vraies réattaques rapides, accords polyphoniques, notes NOTE_ON et latence Live. Nouvel entraînement d'une tête temporelle de réattaque réellement discriminante requis. **80 % F1 NOTE_ON non atteint.**
+
+
+## S537 — nouvelle cohorte indépendante de développement préenregistrée sans étiquettes
+
+[CI S537 SUCCESS #38654030814](https://github.com/Andriamarosoa/note/actions/runs/38654030814). Après les boucles rétrospectives, cinq morceaux du split MAESTRO officiel test ont été sélectionnés par **ordre SHA fixe des noms de fichiers**, avec cinq compositeurs différents et sans chevauchement des trois compositeurs ou fichiers S469. **Seul le CSV public de métadonnées** a été consulté. Aucun WAV, MIDI, note réelle, prédiction, poids de modèle ou score n'a été ouvert pour sélectionner ces cinq morceaux.
+
+Le premier essai S537 avec la fenêtre de durée historique 55–145 secondes a échoué : pas assez de compositeurs distincts admissibles. Sans examiner l'audio ni les annotations, le filtre de durée **40–240 s** a été défini pour rendre la sélection possible. Le nouveau run a réussi avec **36 fichiers candidats admissibles** après exclusion, dont cinq sélectionnés sous SHA de métadonnées officielles **cb88a64a12971a995dd41852aa3a33879501cf70d01b9a6feb637f4ad8d8ddff**.
+
+La preuve de non-chevauchement porte sur S469 seulement ; elle **ne constitue pas une preuve que ces cinq fichiers n'ont jamais été utilisés ailleurs dans tout le dépôt**. Il faut auditer cette provenance avant de qualifier S537 de jeu vraiment aveugle. S537 ne contient pas d'évaluation de note ni de score et ne change aucune référence. **Les annotations MIDI de ces nouveaux morceaux doivent rester scellées jusqu'au gel complet des décisions WAV/NOTE_ON de la prochaine chaîne.**
