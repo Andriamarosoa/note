@@ -63,8 +63,11 @@ def score_source(truth, canonical, acoustic, domain):
              set(map(int, b["candidate_MIDI"]))),
              "S525 top6 should be nested in top12")
         phys[rec].append(a | {"top12_MIDI": b["candidate_MIDI"]})
-    need(set(selected) == set(old) == set(phys),
-         "S525 eight original raw audio identities must match truth and BP graph")
+    # A source with ZERO physical peaks is a detector miss, not an invalid
+    # recording: retain it as zero onset recall. The BP graph and annotations
+    # must still cover every original recording identity.
+    need(set(selected) == set(old) and set(phys).issubset(set(selected)),
+         "S525 frozen raw event identities must not introduce unrelated sources")
     audit = collections.Counter()
     per_rec = {}
     per_k = collections.defaultdict(collections.Counter)
