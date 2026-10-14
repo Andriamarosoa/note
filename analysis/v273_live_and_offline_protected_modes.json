@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "mode": "dual_live_and_offline_pinned",
+  "date": "2026-10-14",
+  "purpose": "Preserve original causal onset/offset live runtime alongside best verified offline S80 MIDI scoring. Never imply offline accuracy or noncausal 5-second lookahead is achieved in Live.",
+  "legacy_live_untouched": true,
+  "legacy_live_modules": [
+    "scripts/detect_live.py",
+    "scripts/detect_v8_live.py",
+    "src/causal_note/pipeline.py",
+    "src/causal_note/v8_runtime.py"
+  ],
+  "new_optional_live_midi_sidecar": "scripts/stream_k_midi_live.py",
+  "live_sidecar_consumes": "Externally predicted monotonically timestamped K0..K6 decisions + exactly K MIDI pitches + independent NoteOff IDs",
+  "original_S80_ExactK_reference": "S80_S397_K5_GUARDED",
+  "original_active_MIDI_pitch_reference": "S402_K_CONDITIONED_352D_MLP",
+  "original_active_Offset_reference": "S408_PITCH_CONDITIONED_SPARSE_FUTURE_AUDIO_NOTE_DURATION_REGRESSOR",
+  "best_offline_native_challenger": "S422_S80_K_LOCKED_5S_CONTINUOUS_MIC_PITCH_SURVIVAL_OFFSET",
+  "original_reference_run_id": 38352988801,
+  "original_reference_sha256_frozen_GuitarSet_predictions": "f5a313366a161d9775ce8452df766e4178604dc8d6e002d781d24e70ee4b967f",
+  "offline_development_exact_K_global": {
+    "numerator": 53529,
+    "denominator": 59309,
+    "accuracy": 0.9025443018766123
+  },
+  "offline_development_exact_K_poly": {
+    "numerator": 6054,
+    "denominator": 7385,
+    "accuracy": 0.8197698036560596
+  },
+  "offline_native_full_note": {
+    "model": "S422",
+    "run_id": 38394264593,
+    "full_note_true_positives": 16340,
+    "total_predicted_notes": 33475,
+    "total_gt_notes": 34954,
+    "full_note_F1": 0.4775752970231919,
+    "tolerance_ms": 50
+  },
+  "original_S80_inference_causal_live_integration_verified": false,
+  "S422_requires_future_audio_up_to_ms": 5000,
+  "S422_is_low_latency_causal": false,
+  "live_quality_certified": false,
+  "live_latency_certified": false,
+  "live_realtime_S80_source_available_in_this_sidecar": false,
+  "official_benchmark_promoted": false,
+  "protection_rules": [
+    "No modification to S80 predictions or selected model weights",
+    "Never compute K from number of MIDI peaks",
+    "For each prediction source event: exactly K MIDI NoteOn (K0 emits zero)",
+    "Allow sustain and NoteOff during K0",
+    "On new attack of same MIDI pitch, send NoteOff before retrigger NoteOn",
+    "Reject missing K/pitch inputs; fail closed instead of inventing predicted notes",
+    "Live MIDI sidecar cannot claim S80/S422 offline scores until causal end-to-end benchmark"
+  ]
+}
