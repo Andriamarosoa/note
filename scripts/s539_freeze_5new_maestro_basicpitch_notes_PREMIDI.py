@@ -11,7 +11,7 @@ from __future__ import annotations
 import argparse,json,hashlib,io,wave
 from pathlib import Path
 import numpy as np
-from scripts.s538_MAESTRO_real_piano_native_original_V88_and_birth_PREMIDI import fetch_track
+from scripts.s538_prelabel_five_new_maestro_original_v88_PREMIDI import fetch_track
 from scripts.s277_original_freeze_dataset3_native_prelabel import decode_external_wav,pcm
 SR=44100
 def need(v,m):
@@ -106,7 +106,7 @@ def run(manifest,s538,out):
         no_promotion=True)
     (out/"report.json").write_text(json.dumps(report,indent=2)+"\n")
     print("S539 FIXED MODEL PROSPECTIVE",json.dumps(dict(
-        true_audio_files=3,notes=len(ledger),MIDI_read=False,
+        true_audio_files=5,notes=len(ledger),MIDI_read=False,
         source_midi_K_predictor_modified=False)),flush=True)
 def selftest():
     need(name(52)=="E3" and name(55)=="G3" and name(59)=="B3",
