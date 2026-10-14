@@ -126,10 +126,10 @@ def run(s437_names,s437_report,s448_names,s448_report,
     print("S449 PASS independently re-parsed original GuitarSet MIC notes; zero S80 K changes",flush=True)
 
 def selftest():
-    base=[dict(original_row_id="a",notes=["E3","G3"]),
-          dict(original_row_id="b",notes=["E3","B3"])]
-    future=[dict(original_row_id="a",notes=["E3","B3"]),
-            dict(original_row_id="b",notes=["E3","B3"])]
+    base=[dict(original_row_id="a",original_S80_K=2,notes=["E3","G3"]),
+          dict(original_row_id="b",original_S80_K=2,notes=["E3","B3"])]
+    future=[dict(original_row_id="a",original_S80_K=2,notes=["E3","B3"]),
+            dict(original_row_id="b",original_S80_K=2,notes=["E3","B3"])]
     truth={"a":[52,59],"b":[52,55]}
     result,_=evaluate(base,{"S448":future},truth)
     v=result["S448"]["paired_vs_frozen_S437"]
