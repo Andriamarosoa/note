@@ -102,11 +102,13 @@ def make_head_arrays(c,n):
         if not pitch and j!=0:eligible=False
         mask[j]=eligible
         types[j,TYPES.index(head.kind)]=1.
-        cards[j]=min(6,len(pitch))
+        proposed_k=(int(c["joint_count_newK"]) if j==2 else
+                    int(c["joint_count_activeK"]) if j==3 else len(pitch))
+        cards[j]=min(6,max(0,proposed_k))
         if j==0:
             Kmask[j]=True
-        elif eligible and 1<=len(pitch)<=6:
-            Kmask[j,len(pitch)]=True
+        elif eligible and 1<=proposed_k<=6:
+            Kmask[j,proposed_k]=True
         # Edit-veto and event-ownership heads can condition ANY possible K.
         if eligible and head.action in ("KEEP","ABSTAIN","MERGE_DUPLICATE","REATTACK"):
             Kmask[j]=True
@@ -124,7 +126,7 @@ def make_head_arrays(c,n):
         ],np.float32)
         provenance.append(dict(head=head.name,kind=head.kind,action=head.action,
            role=head.role,target=head.target,note_pitches=list(pitch),
-           note_count=len(pitch),possible_K=np.flatnonzero(Kmask[j]).tolist(),
+           note_count=len(pitch),proposed_K=int(proposed_k),possible_K=np.flatnonzero(Kmask[j]).tolist(),
            structural_available=eligible,requires_OOF_training=head.requires_oof,
            live_causality_proven=head.causal,latency_budget_ms=head.latency_ms))
     need(mask[0] and Kmask[0].all() and np.all(~Kmask[~mask]),
@@ -200,7 +202,8 @@ def selftest():
        source_original_native_candidates_within80ms=3,
        source_original_native_positive_candidates_within80ms=1,
        reattack_during_existing_same_pitch_sustain=False,
-       lowest_independent_note_score=.91,original_source_nearest_positive_K_prior=3)
+       lowest_independent_note_score=.91,original_source_nearest_positive_K_prior=3,
+       joint_count_newK=2,joint_count_activeK=3)
     n=dict(joint_new_confidence_pitch_MIDI=[52,55],
       joint_new_harmonic_discount_pitch_MIDI=[52,55],
       joint_active_confidence_pitch_MIDI=[52,55,59],
