@@ -37,7 +37,7 @@ def read(a):
          and not m["MIDI_contents_downloaded_or_inspected"]
          and src["status"]=="S538_MAESTRO_V3_REAL_AUDIO_ORIGINAL_PRETRAINED_V88_PLUS_S466_PREMIDI"
          and src["prelabel_predictions_frozen"]
-         and src["preregistered_S537_SHA"]==sha(a.manifest)
+         and src["preregistered_S469_SHA"]==sha(a.manifest)
          and not src["paired_MIDI_annotation_files_OPENED"]
          and bp["status"]=="S539_PRETRAINED_BASIC_PITCH_NOTE_EVENTS_ON_THIRD_SOURCE_MAESTRO_PREMIDI"
          and bp["original_MAESTRO_MIDI_ANNOTATIONS_OPENED"] is False
