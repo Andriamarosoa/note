@@ -34,8 +34,8 @@ jobs:
           python -m scripts.s440_pairwise_chord_corrections_S439_vs_S437_real_MIC --self-test
       - name: Verify completed S439 prediction freeze BEFORE touching official JAMS
         run: |
-          gh run watch 38524989144 --exit-status --repo ${{ github.repository }}
-          gh run download 38524989144 -n s439-real-MIC-joint-note-set-candidates-FROZEN-BEFORE-TRUE-JAMS -D model/S439 --repo ${{ github.repository }}
+          gh run watch 38525306836 --exit-status --repo ${{ github.repository }}
+          gh run download 38525306836 -n s439-real-MIC-joint-note-set-candidates-FROZEN-BEFORE-TRUE-JAMS -D model/S439 --repo ${{ github.repository }}
           test -f model/S439/report.json
       - name: Restore source frozen real predictions and historic native K0..K6 source
         run: |
