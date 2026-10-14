@@ -1,4 +1,4 @@
-name: S458 learn physical acoustic 1098D source K0 K6 on GuitarSet song-held NO S80 promotion
+name: S458 learn physical acoustic 1090D source K0 K6 on GuitarSet song-held NO S80 promotion
 on:
   push:
     branches: [codex/s458-K-blind-acoustic-ablation]
@@ -53,7 +53,7 @@ jobs:
           python - <<'PY'
           import json,numpy as np
           r=json.load(open('model/S458/report.json'))
-          assert r['status']=='S458_REAL_ACOUSTIC_1098D_COMP_DISJOINT_K0_K6_CANDIDATE'
+          assert r['status']=='S458_K_BLIND_1090D_ACOUSTIC_ABLATION_COMP_DISJOINT_CANDIDATE'
           assert r['original_K_reference_guitarset_global']==53529
           assert r['original_K_reference_guitarset_poly']==6054
           assert r['real_source_N']==59309
@@ -72,6 +72,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: s458-new-acoustic-1098D-K-head-GuitarSet-songheld-train-only-S80-NOPROMOTION
+          name: s458-Kblind-1090D-K-head-GuitarSet-songheld-train-only-NOPROMOTION
           path: model/S458/
           retention-days: 90
