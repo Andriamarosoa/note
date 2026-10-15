@@ -1,0 +1,41 @@
+name: S616 package portable original Basic Pitch ONNX
+on:
+  push:
+    branches: [codex/s533-s535-note-fundamental-loops]
+    paths:
+      - .github/workflows/v273-s616-package-portable-onnx.yml
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  pack:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Obtain unmodified original Basic Pitch 0.4.0 package
+        run: |
+          mkdir -p /tmp/s616_portable/wheels /tmp/s616_portable/bpdeps
+          python -m pip install --no-deps --target /tmp/s616_portable/bpdeps basic-pitch==0.4.0
+          find /tmp/s616_portable/bpdeps -name nmp.onnx -exec sha256sum {} \;
+          test -s /tmp/s616_portable/bpdeps/basic_pitch/saved_models/icassp_2022/nmp.onnx
+      - name: Fetch Python 3.13 compatible ONNX Runtime wheel for offline audio inference
+        run: |
+          python -m pip download --only-binary=:all: --no-deps --python-version 313 --implementation cp --abi cp313 --platform manylinux_2_28_x86_64 --dest /tmp/s616_portable/wheels onnxruntime
+          test -n "$(ls -A /tmp/s616_portable/wheels)"
+      - name: Package the unchanged native S601 head and repository feature extractor
+        run: |
+          cp -r scripts /tmp/s616_portable/
+          cp -r src /tmp/s616_portable/
+          mkdir -p /tmp/s616_portable/model/experimental /tmp/s616_portable/analysis
+          cp model/experimental/S601_URMP_candidate_gate_xz.joblib /tmp/s616_portable/model/experimental/
+          cp analysis/v273_s602_selected_candidate_freeze.json /tmp/s616_portable/analysis/
+          find /tmp/s616_portable -type f -name '*.pyc' -delete
+          sha256sum /tmp/s616_portable/model/experimental/S601_URMP_candidate_gate_xz.joblib /tmp/s616_portable/bpdeps/basic_pitch/saved_models/icassp_2022/nmp.onnx > /tmp/s616_portable/checkpoint_hashes.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: portable-S601-real-BasicPitch-ONNX
+          path: /tmp/s616_portable/
+          retention-days: 30
