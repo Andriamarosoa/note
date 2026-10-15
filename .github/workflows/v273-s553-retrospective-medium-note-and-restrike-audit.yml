@@ -42,7 +42,7 @@ jobs:
           import json
           r=json.load(open('model/S553/report.json'))
           assert r['status']=='S553_POST_HOC_MIDDLE_PITCH_REGISTER_AND_REAL_RESTRIKE_EXPERT_ROUTING'
-          assert len(r['scoring'])==6 and len(r['per_composer'])==5
+          assert len(r['scoring'])==7 and len(r['per_composer'])==5
           assert r['retrospectively_seen_development_SET_NOT_NEW_TEST']
           assert r['source_MIDI_previously_OPENED_in_S551']
           assert r['no_promotion'] and r['original_K_S80_live_and_freeze_local_combo_unchanged']
