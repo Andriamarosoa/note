@@ -4,7 +4,7 @@ on:
     branches: [codex/s533-s535-note-fundamental-loops]
     paths:
       - scripts/s546_train_8_source_folds_excluding_SHARED_COMPOSER_COMPONENTS.py
-      - .github/workflows/v273-s546-eight-composer-trained-note-heads.yml
+      - .github/workflows/v273-s546-shared-composer-exclusion-noteon-trained-models.yml
   workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
