@@ -58,7 +58,7 @@ jobs:
           import json
           r=json.load(open('model/S567/report.json'))
           assert r['status']=='S567_EXTERNAL_POSTFROZEN_FIVE_NEW_COMPOSER_FULL_MIDI_NOTEON_F1'
-          assert r['S566_all_six_named_note_policies_SHA_VERIFIED_before_true_MIDI'] if 'S566_all_six_named_note_policies_SHA_VERIFIED_before_true_MIDI' in r else True
+          assert r["S566_all_seven_named_note_policies_SHA_VERIFIED_before_true_MIDI"]
           assert len(r['policies'])==7 and len(r['true_MIDI_provenance'])==5
           assert r['matching_pitch_exact_and_time_tolerance_ms']==[30,50,80]
           assert r['no_model_training_or_threshold_selection_using_S561_MIDI']
