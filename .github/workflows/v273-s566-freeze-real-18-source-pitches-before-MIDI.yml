@@ -31,7 +31,7 @@ jobs:
           gh run download 38666895837 -n s561-next-5-component-disjoint-music-after-18-exposed-METADATA-ONLY -D model/S561 --repo "${{ github.repository }}"
           gh run download 38667195568 -n s563-five-new-composers-preMIDI-V88-source-frozen-audio-original-S80-era-model -D model/S563 --repo "${{ github.repository }}"
           gh run download 38667294210 -n s564-next-five-S561-BasicPitch-original-pitch-names-PREMIDI -D model/S564 --repo "${{ github.repository }}"
-          gh run download 38667298304 -n s565-next-five-S561-composers-V88-raw49-pitch-PREMIDI -D model/S565 --repo "${{ github.repository }}"
+          gh run download 38667773991 -n s565-next-five-S561-composers-V88-raw49-pitch-PREMIDI -D model/S565 --repo "${{ github.repository }}"
       - name: Restore original only 18-source real trained S562 fitted acoustic lower harmonics and 8-source S546 true weights
         run: |
           gh run download 38658337209 -n s546-sixteen-real-8-composer-held-pitch-models-acoustic-plus-harmonic-true-noteon -D model/S546 --repo "${{ github.repository }}"
