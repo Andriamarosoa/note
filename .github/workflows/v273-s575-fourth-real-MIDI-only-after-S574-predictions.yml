@@ -41,7 +41,7 @@ jobs:
           assert hashlib.sha256(p.read_bytes()).hexdigest()==r['full_named_note_on_predictions_sha']
           assert r['status']=='S574_FOURTH_SOURCE_FIVE_COMPOSER_REAL_NOTEON_SEVEN_POLICY_MIDI_BLIND_FROZEN'
           assert r['original_S570_MIDI_NOT_read_for_inference']
-          assert len(r['all_seven_policies_preregistered_before_MIDI'])==7
+          assert len(r['all_seven_policies_preregistered_before_true_MIDI'])==7
           print('S575 confirmed all seven MIDI-blind forecasts immutably sealed, NOW ONLY MIDI may open')
           PY
       - name: ONLY AFTER SHA verification open all 5 paired MIDI files to score full exact NOTE_ON named pitch F1 for every policy
