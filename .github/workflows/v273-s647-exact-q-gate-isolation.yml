@@ -1,0 +1,49 @@
+name: S647 isolate exact high-q attack physical and active-state blockers
+on:
+  push:
+    branches: [codex/s644-audit-rescue-gates]
+    paths:
+      - scripts/s647_exact_gate_fault_isolation.py
+      - test/test_s647_exact_gate_fault_isolation.py
+      - .github/workflows/v273-s647-exact-q-gate-isolation.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: s647-original-frozen-gate-isolation
+  cancel-in-progress: false
+jobs:
+  original_train_and_development:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 42
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original NOTE acoustic runtime
+        run: python -m pip install -r requirements-live-strict.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: S642-real-trained-dual-candidate-delay-original-DEV
+          run-id: 38815758881
+          github-token: ${{ github.token }}
+          path: /tmp/S642
+      - name: Verify causal stage partition and model import
+        run: |
+          python -m unittest -v test.test_s647_exact_gate_fault_isolation
+          python -m compileall -q scripts/s647_exact_gate_fault_isolation.py
+      - name: Recompute genuine original NOTE q / state / physical gate subsets
+        run: |
+          python -u -m scripts.s647_exact_gate_fault_isolation \
+            --candidate /tmp/S642/S642_weak_attack_train_only.joblib \
+            --out /tmp/S647
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S647-exact-high-q-stage-and-label-failure-taxonomy
+          path: /tmp/S647/
+          if-no-files-found: warn
+          retention-days: 60
