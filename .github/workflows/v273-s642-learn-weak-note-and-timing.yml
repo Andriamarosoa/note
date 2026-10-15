@@ -1,0 +1,43 @@
+name: S642 genuine weak attack and 0-3 hop learned delay train DEV
+on:
+  push:
+    branches: [codex/s642-trained-weak-onset-delay]
+    paths:
+      - src/causal_note/s642_dual_learned.py
+      - scripts/s642_train_weak_and_delay.py
+      - test/test_s642_dual_learned.py
+      - .github/workflows/v273-s642-learn-weak-note-and-timing.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s642-weak-onset-train
+  cancel-in-progress: false
+jobs:
+  original_acoustic_train_only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install ORIGINAL S614/S642-native CPU requirements
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Verify causal 0..3 hop MIDI note lifecycle and source compatibility
+        run: |
+          python -m compileall -q src/causal_note/s642_dual_learned.py scripts/s642_train_weak_and_delay.py
+          python -m unittest -v test.test_s642_dual_learned test.test_strict_live test.test_s635_shared_midi_metric
+      - name: Train both heads on genuine TRAIN audio then evaluate separate DEV
+        run: python -m scripts.s642_train_weak_and_delay --out /tmp/S642
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S642-real-trained-dual-candidate-delay-original-DEV
+          path: /tmp/S642/
+          if-no-files-found: warn
+          retention-days: 60
