@@ -27,7 +27,26 @@ from scripts.s476_compare_MAESTRO_newnote_K_vs_sounding_K_same_V88 import new_no
 from scripts.s530_full_maestro_stream_noteon_pitch_event_F1_audit import (
     need,sha,score_event_notes,score_event_birth,proposed_notes)
 from scripts.s533_harmonic_competition_temporal_duplicate_loops import emit as dedup
-from scripts.s535_train_all_event_onset_pitch_harmonic_experts import features as harmonic_features
+def harmonic_features(raw,mode):
+    """Same original S535 -12/-19/-24 spectral competition; variable 8-source cohort."""
+    need(mode=="harmonic","S544 harmonic feature bank requires active physical architecture")
+    x=np.asarray([r["per_midi_features_49x11"] for r in raw],np.float32)
+    need(x.ndim==3 and x.shape[1:]==(49,11) and np.isfinite(x).all(),
+         "S544 trained MIDI pitch models require exact source 49x11 physical features")
+    extra=[]
+    for semi in (12,19,24):
+        lower=np.zeros_like(x)
+        lower[:,semi:,:]=x[:,:49-semi,:]
+        cols=(2,3,5,8)
+        selected=lower[:,:,cols]
+        extra.extend([selected,x[:,:,cols]-selected])
+    for j in (2,3,5):
+        z=x[:,:,j:j+1]
+        extra.append(z/np.maximum(np.max(z,axis=1,keepdims=True),.001))
+    result=np.concatenate([x]+extra,axis=2)
+    need(result.shape==(len(raw),49,38) and np.isfinite(result).all(),
+         "S544 8 held composers must preserve 38 physical harmonic features")
+    return result
 
 def readrows(p):return [json.loads(x) for x in p.read_text().splitlines() if x.strip()]
 
