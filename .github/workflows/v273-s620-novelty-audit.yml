@@ -1,0 +1,39 @@
+name: S620 frozen S618 confidence-transition causal recovery audit
+on:
+  push:
+    branches: [codex/s533-s535-note-fundamental-loops]
+    paths:
+      - scripts/s620_frozen_novelty_audit.py
+      - .github/workflows/v273-s620-novelty-audit.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+jobs:
+  urmp_dev:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Original NOTE native dependencies
+        run: python -m pip install -r requirements-live-strict.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: S618-native-learned-attack-head-URMP-train-dev
+          run-id: 38784914444
+          github-token: ${{ github.token }}
+          path: /tmp/frozen_S618
+      - name: Measure past-only novelty rejections on unchanged S614
+        run: |
+          python -m scripts.s620_frozen_novelty_audit --model /tmp/frozen_S618/S618_URMP_train_only_attack_head.joblib --out /tmp/S620
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S620-causal-novelty-URMP-dev-only
+          path: /tmp/S620/
+          if-no-files-found: warn
+          retention-days: 60
