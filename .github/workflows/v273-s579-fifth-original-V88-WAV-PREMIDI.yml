@@ -31,7 +31,7 @@ jobs:
           python -m scripts.s579_fifth_held_original_V88_real_WAV_no_MIDI --self-test
       - name: Restore five new composers whose filenames were SHA preregistered without WAV/MIDI
         run: |
-          gh run download 38674975248 -n s577-fifth-novel-five-original-maestro-train-composers-after28-exposed-ONLY-METADATA -D model/S577 --repo "${{ github.repository }}"
+          gh run download 38675435536 -n s577-fifth-novel-five-original-maestro-train-composers-after28-exposed-ONLY-METADATA -D model/S577 --repo "${{ github.repository }}"
           test -f model/S577/report.json
       - name: Restore exact original S80-era V84-V88 independent acoustic source pipeline and source code SHA
         run: |
