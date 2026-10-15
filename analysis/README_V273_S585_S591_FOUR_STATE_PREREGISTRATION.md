@@ -48,4 +48,4 @@ Ce test concerne du piano, cinq extraits de 12 s, et ne certifie pas l'absence d
 
 Seuls de nouveaux scripts, ce document et le workflow sont ajoutés. Le système Exact-K complet S80, ses poids, les fichiers Live et le pont MIDI ne sont pas modifiés. Le test NoteOn ne constitue **pas** un rejeu complet Exact-K/GuitarSet ni une validation multi-instruments ou de latence Live. Aucune promotion automatique, quel que soit le résultat.
 
-Le verdict sera ajouté uniquement après la fin effective du workflow.
+Le workflow de continuation est terminé avec succès. Voir le [verdict complet S585–S591](README_V273_S585_S591_FOUR_STATE_RESULTS.md), les pertes individuelles et les limites du test à deux sources.

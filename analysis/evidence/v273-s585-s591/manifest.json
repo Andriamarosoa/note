@@ -1,0 +1,54 @@
+{
+  "artifacts": [
+    {
+      "id": 11947648138,
+      "name": "original_training",
+      "sha256": "655035db5ee1323b8146df3fc1f3853f82509f39d187e12743a14c0c00edaea5"
+    },
+    {
+      "id": 11947743650,
+      "name": "audio",
+      "sha256": "c66112258320edaa373815915a85b39cb8e2023007d4432f54511594a06c5771"
+    },
+    {
+      "id": 11946818289,
+      "name": "frozen_predictions",
+      "sha256": "f70e877dac70b097e6dbdebe55610ddc48710d11e6ae8fc4aac55e2bd806a2f2"
+    },
+    {
+      "id": 11947469110,
+      "name": "scoring",
+      "sha256": "55cad0874b1568a9c32a14c0268ab812af0318546ee6133c3f7f84802a24af7f"
+    }
+  ],
+  "files": {
+    "audio_report.json": "4071c61ab49401474cb6c7f4d90cbfbf1e3f9b0fc1e016e9b94bfb4635a6c400",
+    "basicpitch_report.json": "dbb984db4ef1de968cb36d1965fc59404ebe1a631133fe65b372567fe9bcb6f5",
+    "cohort_metadata.json": "9d6b5982d7d15d9ad09195fcd626d41a572775b78836452a1d8c7374ee43bac6",
+    "feature_report.json": "fe42c8b3782fde3f822d6dd83cfefac073aebf4421ef40f1e3708ac81cc8371a",
+    "frozen_note_predictions.json": "dfd064d5fb3464ff75beb9d00a7f8b6963b834a7efc31a54c4aa879a0a52dd0e",
+    "independent_score_report.json": "f64e693977ecc2d2799e5dcb6f63a0e8e8b478cb6cb6beb71e08a21eb1b381d1",
+    "individual_note_audit.json": "7665778072f7ec2dc92d881f8d6622914cd1ca5086c2911f28a7ce972466eefe",
+    "postlabel_probability_diagnosis.json": "ffb9c5904145afef9a287a990402d2a131d02fd49828aa9211b8517a6e541c09",
+    "prediction_freeze_report.json": "9d55d9e160c1c1593d9f8ecf88cf9bf44c7997cda96fbe827a0037906bb011a8",
+    "training_report.json": "e338c1dcbf9bcec9e93b0c36973ce078e60933f093289876e20cf1e3abf44dce",
+    "training_source_proof.json": "bf1cd0f516eba6626ef30feade371fc17eb6651fd1a559e8cbb9987b74704de5",
+    "truth_after_freeze.json": "e12b0f111cd09c50caf8252fe6b3432e0ddcf0b7100407dd0af47b370a6212c4"
+  },
+  "jobs": {
+    "audio": 116240791958,
+    "freeze": 116241556804,
+    "reuse_training": 116240791696,
+    "score": 116241724556
+  },
+  "prediction_freeze_SHA256": "dfd064d5fb3464ff75beb9d00a7f8b6963b834a7efc31a54c4aa879a0a52dd0e",
+  "training_commit": "d3bef8fed518dace1738af0e5129930b187bfd5b",
+  "training_job": 116238729855,
+  "training_job_conclusion": "success",
+  "training_model_SHA256": "555cb092accb6ea0b42394280f646c90ccac0b48746040811ac57da382837d36",
+  "training_run": 38678912773,
+  "training_run_overall_conclusion": "failure_due_to_original_five_composer_metadata_eligibility",
+  "validation_commit": "dbab3d75ee37470a9f740998bfbe223f62435c87",
+  "validation_conclusion": "success",
+  "validation_run": 38679314946
+}

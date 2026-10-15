@@ -1,5 +1,8 @@
 # NOTE — Détection des notes polyphoniques, Exact-K et Live
-## README d'état du projet : des premières recherches à S584
+## README d'état du projet : historique S0–S584 et mise à jour S585–S591
+
+> **Mise à jour S585–S591 — 15 octobre 2026 :** une tête apprise à quatre états (attaque, réattaque, maintien, absence/résonance), entraînée sur les **mêmes 28 sources que S578**, atteint **75,31 % de F1 NoteOn ±80 ms contre 72,46 % pour S578 sur les mêmes deux nouveaux morceaux** (Enescu et Moussorgski, 227 vraies notes). Audit : **8 notes récupérées, 4 perdues ; 14 faux positifs retirés, 5 ajoutés**. Les deux morceaux progressent à ±80 ms, mais le registre grave régresse. C'est une sonde de **deux extraits de 12 s**, pas une hausse de 59,34 à 75,31 sur un jeu constant. La variante autorisant les réattaques rapides n'est pas retenue ; aucune vraie réattaque <100 ms n'est présente dans ces deux extraits. **Pas de promotion S80 ni d'intégration Live ; rejeu complet Exact-K non effectué.** [Résultats, causes des pertes et preuves S585–S591](analysis/README_V273_S585_S591_FOUR_STATE_RESULTS.md) · [CI terminée avec succès](https://github.com/Andriamarosoa/note/actions/runs/38679314946).
+
 
 **Date du bilan : 15 octobre 2026**  
 **Dépôt de recherche :** https://github.com/Andriamarosoa/note  
@@ -7,7 +10,7 @@
 **Branche expérimentale du présent README :** codex/s533-s535-note-fundamental-loops  
 **PR de recherche :** https://github.com/Andriamarosoa/note/pull/41 (**DRAFT, non fusionnée**)  
 
-> **Situation actuelle :** la transcription de notes est réellement évaluée sur des morceaux MAESTRO nouveaux pour les modèles entraînés. Le meilleur modèle de la dernière cohorte S577 est **S578 Global28 : 59,34 % de F1 NoteOn** (272 vraies notes, TP=162, FP=112, FN=110, ±80 ms), contre 58,65 % pour S569 sur **les mêmes morceaux**. Le mélange avec une tête dédiée au médium atteint 59,16 % et n'est **pas retenu**. Les différents meilleurs scores des cohortes (52,62 %, 60,02 %, 56,38 %, 59,90 %, 59,34 %) **ne constituent pas une courbe de progression à jeu constant**. Aucun modèle S533–S584 n'a remplacé la référence officielle **freeze_local_combo**, ni déployé le nouveau système dans le Live.
+> **Bilan précédent S584 :** la transcription de notes est réellement évaluée sur des morceaux MAESTRO nouveaux pour les modèles entraînés. Le meilleur modèle de la dernière cohorte S577 est **S578 Global28 : 59,34 % de F1 NoteOn** (272 vraies notes, TP=162, FP=112, FN=110, ±80 ms), contre 58,65 % pour S569 sur **les mêmes morceaux**. Le mélange avec une tête dédiée au médium atteint 59,16 % et n'est **pas retenu**. Les différents meilleurs scores des cohortes (52,62 %, 60,02 %, 56,38 %, 59,90 %, 59,34 %) **ne constituent pas une courbe de progression à jeu constant**. Aucun modèle S533–S584 n'a remplacé la référence officielle **freeze_local_combo**, ni déployé le nouveau système dans le Live.
 
 ---
 
@@ -417,6 +420,7 @@ Un nouveau **référent officiel** ne doit être adopté que si :
 | MAESTRO WAV → nouveaux événements de notes MIDI40..88 | **Entraîné et mesuré** jusqu'à S584 sur plusieurs nouvelles cohortes |
 | Meilleur modèle récent en NoteOn sur cohorte S577 | **S578 Global28, F1 59,34 %**, non officiel |
 | S569 temporal52 sur nouvelle cohorte S570 | **F1 59,90 %**, non officiel, autre jeu |
+| S585 quatre états + dédup100, sonde S591 à deux nouveaux compositeurs | **75,31 % F1 vs S578 72,46 % sur les mêmes morceaux**, candidat non promu ; grave en régression |
 | Tête 12 notes médiums S578 | **Rejetée** après validation S583 et audit S584 |
 | Note Live historique 44,1k / 512 | **Préservé, fonctionnel avec ses propres modèles**, non S80 complet |
 | Pont note Live MIDI K-locked | **Fonctionnel sur entrée K+notes déjà prédites**, pas détection audio complète |
