@@ -1,0 +1,70 @@
+name: S550 freeze old-S528 vs corrected-S546 11 trained pitch heads on 5 new S545 WAVs NO MIDI
+on:
+  push:
+    branches: [codex/s533-s535-note-fundamental-loops]
+    paths:
+      - scripts/s550_five_MAESTRO_train_sources_composerheld_pitches_noMIDI.py
+      - .github/workflows/v273-s550-FREEZE-new-S545-NoteOn-before-MIDI.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+jobs:
+  freeze_real_audio_noteon_5_new_sources_6_policies_before_MIDI:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Restore pinned original ExtraTrees and NoteOn Python dependencies
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 mido==1.3.3
+      - name: Test six source-predeclared policies and protected old BP notes
+        run: |
+          python -m py_compile scripts/s550_five_MAESTRO_train_sources_composerheld_pitches_noMIDI.py
+          python -m scripts.s550_five_MAESTRO_train_sources_composerheld_pitches_noMIDI --self-test
+      - name: Restore only prelabel new composer WAV-derived predictions and physical acoustic features
+        run: |
+          gh run download 38658066587 -n s545-next-five-composer-disjoint-MAESTRO-original-train-split-METADATA-ONLY -D model/S545 --repo "${{ github.repository }}"
+          gh run download 38659307689 -n s547-five-new-composers-preMIDI-V88-source-frozen-audio-original-S80-era-model -D model/S547 --repo "${{ github.repository }}"
+          gh run download 38659342120 -n s548-next-five-S545-BasicPitch-original-pitch-names-PREMIDI -D model/S548 --repo "${{ github.repository }}"
+          gh run download 38659376006 -n s549-next-five-S545-composers-V88-raw49-pitch-PREMIDI -D model/S549 --repo "${{ github.repository }}"
+      - name: Restore fitted three old S528 and eight S546 actual checkpoint models, all training MIDIs from DIFFERENT composer sources
+        run: |
+          gh run download 38647706630 -n s528-three-songheld-six-trained-raw-note-experts-all-V88-K0-pitch-identity-audit -D model/S528 --repo "${{ github.repository }}"
+          gh run download 38658337209 -n s546-sixteen-real-8-composer-held-pitch-models-acoustic-plus-harmonic-true-noteon -D model/S546 --repo "${{ github.repository }}"
+          test -s model/S528/S528_raw_only_held0_ACTUAL_PIANO_AUDIO_NOTE_HEAD.joblib
+          test -s model/S546/S546_positive7_held0_ACTUAL_NEURAL_STYLE_NOTE_DECISION_FOREST.joblib
+      - name: Create exact SHA-sealed 6 MIDI-blind policies from authentic new WAV before any true S545 MIDI is opened
+        run: |
+          python -u -m scripts.s550_five_MAESTRO_train_sources_composerheld_pitches_noMIDI \
+            --manifest model/S545/report.json \
+            --v88-report model/S547/report.json \
+            --bp-report model/S548/report.json \
+            --features model/S549/S549_ALL_V88_K0_K6_ORIGINAL_WAV_49_PITCH_FEATURES_PREMIDI.jsonl \
+            --feature-report model/S549/report.json \
+            --old-model-report model/S528/report.json --new-model-report model/S546/report.json \
+            --old-models model/S528 --new-models model/S546 --out model/S550
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S550/report.json'))
+          assert r['status']=='S550_FIVE_COMPOSER_S545_PITCH_ONSET_SOURCE_FROZEN_BEFORE_ANY_MIDI'
+          assert r['original_MIDI_NOT_opened_for_predictions']
+          assert len(r['SHAs_of_three_original_S528_weight_checkpoints'])==3
+          assert len(r['SHAs_of_eight_S546_co_composer_disjoint_weight_checkpoints'])==8
+          assert r['all_six_policies_declared_before_labels']==[
+            'BP_birth','S528_raw','S528_dedup80','S546_raw',
+            'S546_dedup80','S546_dedup100_harm080']
+          assert r['original_BP_born_notes_always_protected']
+          assert r['original_S80_ExactK_Live_unchanged'] and r['no_promotion']
+          print('S550 six true named note inference policies frozen and SHA-sealed before unseen MIDI')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s550-S545-new-five-MAESTRO-S528-vs-S546-six-preMIDI-frozen-full-NoteOn-predictions
+          path: model/S550/
+          retention-days: 90
