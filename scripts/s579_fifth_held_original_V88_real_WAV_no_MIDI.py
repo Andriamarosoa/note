@@ -216,7 +216,7 @@ def run(manifest,source_dir,weights,birthmodels,birthreport,out):
             original_4_S466_train_only_thresholds=traincuts,
             exact_original_audio_source_fingerprints=proof,
             prelabel_predictions_frozen=True,
-            source_s577_composer_components_disjoint_from_previous_twentythree=True,
+            source_s577_composer_components_disjoint_from_previous_twentyeight=True,
             actual_new_composer_count=5,
             WAV_contents_read_only_audio=True,
             paired_MIDI_annotation_files_OPENED=False,
