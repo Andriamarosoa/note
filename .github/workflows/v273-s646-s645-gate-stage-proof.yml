@@ -1,0 +1,55 @@
+name: S646 frozen S645 score-rise versus physical intersection proof
+on:
+  push:
+    branches: [codex/s644-audit-rescue-gates]
+    paths:
+      - .github/workflows/v273-s646-s645-gate-stage-proof.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+jobs:
+  count_frozen_proposals_without_rerun:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: S645-genuine-trained-acoustic-score-rise-gating-sweep
+          run-id: 38818392769
+          github-token: ${{ github.token }}
+          path: /tmp/S645
+      - name: Show which stage prevents each frozen S645 new-note prediction
+        run: |
+          mkdir -p /tmp/S646
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          x=json.loads(Path('/tmp/S645/report.json').read_text())
+          summary={}
+          for stage,part in x['stages'].items():
+              summary[stage]={}
+              for name in ('rise098_010','rise099_010','rise099_020','rise0995_010','rise099_spectral'):
+                  summary[stage][name]={}
+                  for corpus in ('GuitarSet','URMP'):
+                      rows=[r['policies'][name] for r in part['by_source'] if r['corpus']==corpus]
+                      summary[stage][name][corpus]={key:sum(int(v[key]) for v in rows)
+                             for key in ('signal_rises','passes_acoustic',
+                                         'attempted_frames','actual_rescued_onsets')}
+          assert x['selected_on_TRAIN_before_DEV']=='S614_original'
+          assert all(x['actual_rescued_onsets']==0
+                  for stage in summary.values() for variant in stage.values()
+                  for x in variant.values())
+          report=dict(status='S646_FROZEN_NO_NEW_ONSET_STAGE_DIAGNOSIS',
+                      score_rise_vs_physical_stage_counts=summary,
+                      no_training=True,no_new_audio_replay=True,
+                      no_original_modification=True,no_promotion=True)
+          Path('/tmp/S646/report.json').write_text(json.dumps(report,indent=2)+'\n')
+          print('S646 STAGE ANALYSIS',json.dumps(summary,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S646-frozen-rise-gate-blocker-evidence
+          path: /tmp/S646
+          if-no-files-found: warn
+          retention-days: 60
