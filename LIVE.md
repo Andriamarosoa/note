@@ -1,4 +1,20 @@
-# NOTE Live — portage de notre architecture, S611
+# NOTE Live — têtes et sélections natives, S612
+
+**Le chemin récent S511/S515 → S569 → S578/S585 est maintenant porté par blocs**, avec les sélections de NOTE et leurs poids d'origine. S80/S397, ses familles de têtes et ses sélections restent conservés. `recent-notes` s'ajoute au chemin Exact-K strict `native-notes` de S611 et au Live historique.
+
+```text
+python -m scripts.note_runtime --mode recent-notes --status
+python -m scripts.s612_restore_artifacts --out data/S612 --models-only
+python -m scripts.live_recent_notes --wav source.wav --events original_V88_source.jsonl --bp original_BP_notes.jsonl --models data/S612 --normalization rolling3s --out logs/recent_notes
+```
+
+La restauration nécessite `gh` ; les dépendances Python sont celles ci-dessous. Ce rejeu attend encore les **événements V88 et les observations BP originaux en entrée**. Ce n'est pas une capture microphone autonome. Le mode `reference` reproduit la normalisation sur le morceau entier ; `rolling3s` utilise uniquement l'historique disponible et reste expérimental. Les fins de notes ne sont pas inférées par cet adaptateur.
+
+Vérification : **1 698 événements, sept enregistrements, aucune décision de note changée** dans les politiques figées ; audio réel URMP de cinq ensembles, 120 s, blocs 256/997 ; **36 tests réussis**. Avec les producteurs précalculés, S585 strict régresse de **64,78 % à 64,25 %** lorsque la normalisation utilise uniquement trois secondes passées. Aucun score Live à 80 % n'est annoncé.
+
+Le contexte audio demande environ **108–123 ms** en régime établi, puis s'ajoutent les coûts des producteurs et du calcul. [Rapport S612, architectures, commandes de validation et mesures détaillées](analysis/README_V273_S612_RECENT_NATIVE_STREAM.md).
+
+## Chemin Exact-K natif conservé — S611
 
 **Le moteur de reconnaissance importé de `midi` dans S610 est retiré.** La direction demandée est d'améliorer les têtes et les sélections de NOTE. S611 porte des composants natifs vers le flux continu ; il ne livre pas encore un microphone → S80 → notes complet.
 
@@ -12,7 +28,7 @@
 | Sélections S419 puis S428 | Votes et règles par K identiques à S430, empreintes vérifiées | K doit encore être calculé par S80/S397 en amont |
 | Noms de notes | Exactement K nouvelles hauteurs MIDI 40–88 ; K0 reste vide | Pas d'inférence des fins de notes dans cet adaptateur |
 
-Les producteurs V84→V88, les familles de têtes S5/S18/S35/S45/S46, les sélections S69→S80 et la protection S397 sont conservés. Leur ordonnanceur complet doit encore être extrait des scripts de recherche et raccordé au microphone. Les têtes S569/S578 et S601 restent des références/challengers à adapter et comparer ; elles ne sont pas remplacées ou promues par S611.
+Les producteurs V84→V88, les familles de têtes S5/S18/S35/S45/S46, les sélections S69→S80 et la protection S397 sont conservés. Leur ordonnanceur complet doit encore être extrait des scripts de recherche et raccordé au microphone. S612 porte désormais les têtes S569/S578/S585 dans l'adaptateur récent décrit ci-dessus ; S601 reste une référence hors ligne à adapter séparément.
 
 Le Live historique et `LockedKLiveMidi` restent accessibles via `scripts.note_runtime`. K0 ne ferme pas les notes déjà actives. Les vrais NoteOff demandent le raccordement et la validation des têtes de fin de note.
 

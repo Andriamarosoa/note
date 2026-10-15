@@ -1,5 +1,7 @@
 # NOTE — Détection des notes polyphoniques, Exact-K et Live
-## README d'état du projet : historique S0–S584 et mises à jour S585–S611
+## README d'état du projet : historique S0–S584 et mises à jour S585–S612
+
+> **S612 — portage des têtes et sélections récentes de NOTE.** Le flux exécute maintenant les caractéristiques S511/S515/S569 et les checkpoints S578/S585, avec les sélections d'origine. **1 698 événements sur deux morceaux MAESTRO et cinq ensembles URMP : mêmes notes que les archives figées.** Le véritable audio URMP (120 s) conserve aussi ces décisions en mode de référence. Une variante de normalisation sur trois secondes passées est mesurée séparément : S585 strict **64,25 % contre 64,78 %**, avec producteurs V88/BP précalculés ; elle reste expérimentale. **S80/S397 et 44 fichiers d'origine sont conservés. Le microphone → S80 autonome et les NoteOff restent à raccorder.** [Portage, mesures et limites S612](analysis/README_V273_S612_RECENT_NATIVE_STREAM.md) · [Commandes Live](LIVE.md).
 
 > **Correction S611 — améliorer les têtes et sélections de NOTE.** Le moteur de reconnaissance importé de `midi` dans S610 est retiré. Le portage natif conserve S402/S416/S428 et leurs sélections S419/S428, produit les caractéristiques S97/PR16 en flux et garde le K original de S80/S397. Les décisions S80 restent fournies en amont : **le microphone → S80 autonome et les NoteOff natifs ne sont pas encore raccordés**. Parité vérifiée sur le véritable extrait GuitarSet de S434 ; aucun nouveau score Live revendiqué. [État et commandes](LIVE.md) · [Preuves S611](analysis/README_V273_S611_NATIVE_STREAM.md).
 
