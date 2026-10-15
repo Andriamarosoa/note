@@ -75,7 +75,7 @@ def run(args):
     v = json.loads(args.v88_report.read_text())
     bp = json.loads(args.bp_report.read_text())
     need(m["status"] == "S545_PREREGISTERED_FIVE_MORE_TRAIN_SPLIT_COMPOSERS_AFTER_S544_NO_WAV_MIDI"
-         and m["selected_recordings"] == 5 and m["source_MIDI_files_not_read"]
+         and m["five_next_distinct_composers"] == 5 and m["source_MIDI_files_not_read"]
          and len(m["chosen_metadata_only"]) == 5 and m["source_MIDI_files_not_read"]
          and v["status"] ==
          "S547_MAESTRO_V3_REAL_AUDIO_ORIGINAL_PRETRAINED_V88_PLUS_S466_PREMIDI"
