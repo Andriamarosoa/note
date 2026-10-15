@@ -1,4 +1,46 @@
-# NOTE Live — têtes et sélections natives, S612
+# NOTE Live — chaîne autonome native S613–S614
+
+Le mode `strict-live` relie le PCM continu aux têtes natives de NOTE, à leur sélection et aux événements NoteOn/NoteOff. Il accepte un microphone, du PCM sur stdin ou un WAV. **Aucun fichier d’événements V88, aucune observation Basic Pitch et aucun K précalculé ne sont demandés.** Les variantes sont entraînées pour ce chemin causal ; ce ne sont pas les anciens poids S578 privés de leur contexte.
+
+**S80/S397 reste intact.** Sa chaîne complète et ses scores Exact-K ne sont pas ceux de cette branche. La nouvelle tête K estime les hauteurs actuellement actives dans MIDI40–88 ; le K historique de S80 compte les nouvelles notes d’un événement. Ces deux quantités ne doivent pas être confondues. Les méthodes natives conservées ici sont les représentations harmoniques, la compétition entre fondamentales, les différences temporelles, les têtes conditionnées par le comptage et les sélections. Aucun moteur ni poids de `midi` n’est importé.
+
+## Utilisation autonome
+
+Python 3.11/3.12, depuis la racine du dépôt :
+
+```bash
+python -m pip install -r requirements-live-strict.txt -r requirements-live-devices.txt
+export PYTHONPATH=.:src
+python -m scripts.note_runtime --mode strict-live --status
+python -m scripts.live_strict_notes --list-devices
+python -m scripts.live_strict_notes --list-midi-ports
+python -m scripts.live_strict_notes --mic --midi-port "Nom exact du port" --out live_events.jsonl
+```
+
+Sous PowerShell, remplacer la ligne `export` par `$env:PYTHONPATH = ".;src"`. `--device` sélectionne le microphone par nom ou index. Sans `--midi-port`, les événements sortent en JSONL. PortAudio et le backend MIDI doivent être disponibles sur la machine. Les modèles sont inclus dans `model/live/strict_note` ; l’inférence ne nécessite ni PyTorch ni TensorFlow.
+
+```bash
+python -m scripts.live_strict_notes --wav guitare.wav --out notes.jsonl
+python -m scripts.live_strict_notes --stdin --out notes.jsonl
+```
+
+Le WAV doit être mono PCM16 à 44,1 kHz ; stdin reçoit du PCM16 signé little endian sans en-tête. Le fichier de sortie doit être nouveau. Les messages indiquent le pitch MIDI, le type, la cause et les instants de décision et de disponibilité de l’audio. **Ces instants ne sont jamais antidatés à une attaque reconstruite.** Ils ne comprennent pas la latence physique du pilote ou du synthétiseur.
+
+## Contrat causal et temps réel
+
+- Pas de 256 échantillons, soit 5,805 ms ; fenêtres FFT de 2048, 4096 et 8192 échantillons terminant à l’instant disponible. Le complément au démarrage est uniquement à gauche.
+- Aucun centrage qui lise le futur, aucune normalisation sur le morceau entier, aucune attente fixe de 110 ms après une attaque. L’information acoustique doit néanmoins devenir assez fiable pour reconnaître la note : **zéro lookahead ne signifie pas zéro latence de reconnaissance**.
+- Trois états appris par hauteur : attaque, maintien et relâchement. La sélection suit les notes actives, traite les réattaques et ferme les notes à l’arrêt. Les NoteOff de fermeture ne sont pas comptés comme des fins acoustiques correctes.
+- L’inférence est hors du callback. La file microphone contient au maximum deux blocs ; un débordement ou une décision trop tardive arrête le flux et libère les notes, au lieu d’accumuler du retard. Ce programme Python ne garantit pas les délais d’un système d’exploitation temps réel.
+- Mémoire temporelle bornée : 8192 échantillons audio, 32 trames de caractéristiques et 49 états de hauteur, avec au plus six notes actives.
+
+La validation utilise le vrai PCM alimenté bloc par bloc, les mutations du futur, plusieurs tailles de blocs et la conservation des sources historiques. Le raccordement matériel microphone/MIDI n’a pas pu être essayé dans l’environnement de calcul : PortAudio et le séquenceur ALSA n’y sont pas disponibles. Les résultats de calcul ne sont donc pas une mesure de latence acoustique bout en bout.
+
+[Rapport, boucles et test réservé S613–S614](analysis/README_V273_S613_S614_STRICT_LIVE.md).
+
+---
+
+# Historique : adaptateurs natifs S612
 
 **Le chemin récent S511/S515 → S569 → S578/S585 est maintenant porté par blocs**, avec les sélections de NOTE et leurs poids d'origine. S80/S397, ses familles de têtes et ses sélections restent conservés. `recent-notes` s'ajoute au chemin Exact-K strict `native-notes` de S611 et au Live historique.
 
