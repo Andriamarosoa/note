@@ -23,7 +23,8 @@ from causal_note.s642_dual_learned import candidate_scores
 from scripts.s626_train_sharp_native_onset import get_source
 from scripts.s623_mixed_source_event_head import pick_original_guitar_training
 from scripts.s616_live_dev_ablation import ROOT,MODEL
-from scripts.s613_prepare_strict_live import download,digest,event_score
+from scripts.s613_prepare_strict_live import download,digest
+from scripts.s613_train_strict_live import event_score
 
 CANDIDATE_SHA="2f7364865803bb0cab8c564911e25574203b129169f6abf5f4ecdf14acc7f256"
 S614_SHA="7ccf046e3a1870eaca3a108e6f9565298aeeadf43732a2f83559542c03f5f17f"
