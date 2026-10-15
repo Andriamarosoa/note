@@ -107,7 +107,7 @@ class JointNPZ:
         f=np.concatenate((x[:,PICK],p,p-self.prev_p),axis=-1).astype(np.float32)
         self.prev_p=p.copy()
         a=self.arrays
-        z=(f-a["mean"])/a["scale"]
+        z=np.clip((f-a["mean"])/a["scale"],-16,16)
         h=self._relu(z@a["encoder_w0"]+a["encoder_b0"])
         h=self._relu(h@a["encoder_w1"]+a["encoder_b1"])
         pool=np.concatenate((h.mean(0),h.max(0)))
