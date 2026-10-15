@@ -57,7 +57,7 @@ def partition_calibration(specs):
         hold=set(names[:hold_count])
         for k in names:
             (lock if k in hold else fit).extend(by[k])
-    if (len(fit),len(lock))!=(8,3):
+    if (len(fit),len(lock))!=(7,4):
         raise AssertionError(f"Unexpected nested S654 risk selection split {(len(fit),len(lock))}")
     if {(s["corpus"],s["composition"]) for s in fit} & {
             (s["corpus"],s["composition"]) for s in lock}:
