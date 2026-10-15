@@ -32,7 +32,7 @@ def choose(rows,previous_names,previous_composers):
         wav=r.get("audio_filename","")
         midi=r.get("midi_filename","")
         artist=r.get("canonical_composer","")
-        if (r.get("split")=="train" and 28<=seconds<=3600
+        if (r.get("split")=="train" and 28<=seconds<=1000
             and wav.endswith(".wav") and midi.endswith(".midi")
             and wav.rsplit(".",1)[0]==midi.rsplit(".",1)[0]
             and ".." not in wav and ".." not in midi
