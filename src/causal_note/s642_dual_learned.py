@@ -139,16 +139,36 @@ def apply_learned_delay(events,row,model,policy:S642Policy):
     delays=np.asarray(model.predict(np.stack(emb)),np.int64)
     if not np.all((delays>=0)&(delays<=MAX_DELAY_HOPS)):
         raise ValueError("Trained latency policy outside fixed 0..3 hops")
-    shifts={}
+    shifts={event_index:int(shift)*HOP
+            for event_index,shift in zip(on_positions,delays)}
     active={}
-    for event_index,shift in zip(on_positions,delays):
-        shifts[event_index]=int(shift)*HOP
+    paired=[]
     for index,e in enumerate(events):
         pitch=int(e["pitch"])
         if e["type"]=="note_on":
-            active[pitch]=shifts[index]
+            if pitch in active:raise ValueError("Duplicate original NoteOn")
+            active[pitch]=index
         elif e["type"]=="note_off":
-            shifts[index]=active.pop(pitch,0)
+            prior=active.pop(pitch,None)
+            if prior is not None:
+                paired.append((prior,index,pitch))
+    # Prevent overlap when a first note is delayed three hops and the next
+    # restrike on the same pitch was originally scheduled right after NoteOff.
+    prev_by_pitch={}
+    for first,last,pitch in paired:
+        shift=shifts[first]
+        if pitch in prev_by_pitch:
+            previous_off,previous_shift=prev_by_pitch[pitch]
+            previous_end=int(events[previous_off]["available_sample"])+previous_shift
+            new_start=int(events[first]["available_sample"])+shift
+            if previous_end>new_start:
+                extra=int(np.ceil((previous_end-new_start)/HOP))
+                shift=min(MAX_DELAY_HOPS*HOP,shift+extra*HOP)
+                if int(events[first]["available_sample"])+shift<previous_end:
+                    raise ValueError("Cannot preserve nonoverlap within causal delay budget")
+        shifts[first]=shift
+        shifts[last]=shift
+        prev_by_pitch[pitch]=(last,shift)
     output=[]
     for i,e in enumerate(events):
         item=dict(e)
@@ -160,8 +180,9 @@ def apply_learned_delay(events,row,model,policy:S642Policy):
     # coincident re-attacks; index order otherwise stable.
     output.sort(key=lambda e:(e["available_sample"],
                   0 if e["type"]=="note_off" else 1))
-    return output,dict(held_noteons=int((delays>0).sum()),
-                       delays=delays.tolist())
+    final_delays=[int(shifts[i]//HOP) for i in on_positions]
+    return output,dict(held_noteons=sum(v>0 for v in final_delays),
+                       delays=final_delays)
 
 
 def evaluated_policy(row,candidate_head,delay_head,policy:S642Policy):
