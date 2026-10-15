@@ -35,7 +35,7 @@ def source_events(s587, count):
         times = npz["start_samples"].astype(np.int64) / SR
         kval = npz["original_V88_K"].astype(int)
     need(count>0 and len(ids) == count and len(set(ids)) == count
-         and len(set(rec)) == 5 and np.all((times >= 0) & (times < 12))
+         and len(set(rec)) == 2 and np.all((times >= 0) & (times < 12))
          and all(0 <= k <= 6 for k in kval),
          "S589 original V88 SHA-frozen K0-K6 event times and IDs changed")
     return ids, rec, times, kval
@@ -66,9 +66,9 @@ def run(args):
     m = json.loads(args.manifest.read_text())
     v = json.loads(args.v88_report.read_text())
     bp = json.loads(args.bp_report.read_text())
-    need(m["status"] == "S586_PREREGISTERED_FIVE_MORE_TRAIN_SPLIT_COMPOSERS_AFTER_S544_NO_WAV_MIDI"
-         and m["five_next_distinct_composers"] == 5 and m["source_MIDI_files_not_read"]
-         and len(m["chosen_metadata_only"]) == 5 and m["source_MIDI_files_not_read"]
+    need(m["status"] == "S586_TWO_REMAINING_COMPOSERS_METADATA_ONLY_AMENDED_BEFORE_AUDIO"
+         and m["new_distinct_composers"] == 2 and m["source_MIDI_files_not_read"]
+         and len(m["chosen_metadata_only"]) == 2 and m["source_MIDI_files_not_read"]
          and v["status"] ==
          "S587_MAESTRO_V3_REAL_AUDIO_ORIGINAL_PRETRAINED_V88_PLUS_S466_PREMIDI"
          and v["prelabel_predictions_frozen"]
@@ -91,7 +91,7 @@ def run(args):
     proof = {x["WAV_filename_SHA256"]: x for x in
              v["exact_original_audio_source_fingerprints"]}
     chosen = {x["filename_SHA256"]: x for x in m["chosen_metadata_only"]}
-    need(len(groups)==5 and set(groups) == set(notes) == set(proof) == set(chosen),
+    need(len(groups)==2 and set(groups) == set(notes) == set(proof) == set(chosen),
          "S589 original three piano source audio/identities do not match")
     output = []
     per = []
@@ -139,9 +139,9 @@ def run(args):
     file = args.out / "S589_ALL_V88_K0_K6_ORIGINAL_WAV_49_PITCH_FEATURES_PREMIDI.jsonl"
     file.write_text("".join(json.dumps(x) + "\n" for x in output))
     report = dict(
-        status="S589_PRELABEL_FIVE_NEW_PIANO_ALL_V88_RAW_49_PITCH_FEATURES",
+        status="S589_PRELABEL_TWO_NEW_PIANO_ALL_V88_RAW_49_PITCH_FEATURES",
         genuine_training_input_features_not_model_predictions=True,
-        real_audio_piano_five_source_WAV_SHAs_verified=True,
+        real_audio_piano_two_source_WAV_SHAs_verified=True,
         original_V88_onset_candidates=len(output),
         original_V88_K0_candidates_included=int(sum(K == 0)),
         all_49_pitch_features_at_every_piano_V88_event=True,

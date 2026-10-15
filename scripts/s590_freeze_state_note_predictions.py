@@ -16,7 +16,7 @@ def run(root,out):
     new=json.loads((root/'S585/report.json').read_text())
     path=root/'S589/S589_ALL_V88_K0_K6_ORIGINAL_WAV_49_PITCH_FEATURES_PREMIDI.jsonl'
     need(manifest['previous_source_count']==33 and manifest['source_MIDI_files_not_read']
-        and manifest['source_WAV_files_not_read'] and manifest['five_next_distinct_composers']==5
+        and manifest['source_WAV_files_not_read'] and manifest['new_distinct_composers']==2
         and wav['preregistered_S586_SHA']==sha(root/'S586/report.json')
         and wav['prelabel_predictions_frozen'] and not wav['paired_MIDI_annotation_files_OPENED']
         and not bp['original_MAESTRO_MIDI_ANNOTATIONS_OPENED']
@@ -46,7 +46,7 @@ def run(root,out):
     save(out/'predictions.json',pred)
     np.savez_compressed(out/'probabilities.npz',global28=gp,state4=sp,source=rec)
     report=dict(status='S590_THREE_POLICIES_SEALED_BEFORE_SIXTH_MIDI',policies=list(POLICIES),
-        MIDI_NOT_OPENED=True,source_count=5,notes_sha256=sha(out/'predictions.json'),
+        MIDI_NOT_OPENED=True,source_count=2,notes_sha256=sha(out/'predictions.json'),
         probabilities_sha256=sha(out/'probabilities.npz'),old_model_sha256=sha(op),new_model_sha256=sha(npth),
         input_hashes={f'S{s}':sha(root/f'S{s}/report.json') for s in (585,586,587,588,589)},
         feature_sha256=sha(path),counts=counts,

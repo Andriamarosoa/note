@@ -1,4 +1,4 @@
-"""S586: choose five new composers from CSV only, excluding 33 prior sources."""
+"""S586: choose the two remaining new composers from CSV only, excluding 33 prior sources."""
 import argparse,csv,hashlib,io,json,urllib.request
 from pathlib import Path
 from scripts.s469_preregister_MAESTRO_v3_third_source_filename_only import URL,AUDIO_MIRROR
@@ -11,7 +11,7 @@ def choose(rows,names,artists):
         w=r.get('audio_filename','');m=r.get('midi_filename','');c=r.get('canonical_composer','')
         try:d=float(r['duration'])
         except (KeyError,ValueError):continue
-        if (r.get('split')=='train' and 28<=d<=1000 and c and w.endswith('.wav')
+        if (r.get('split')=='train' and 28<=d<=2300 and c and w.endswith('.wav')
             and m.endswith('.midi') and w[:-4]==m[:-5] and '..' not in w+m
             and not w.startswith('/') and not m.startswith('/')
             and w not in names and not (components(c)&excluded)):
@@ -26,8 +26,8 @@ def choose(rows,names,artists):
             audio_filename=w,MIDI_filename_path_ONLY_not_opened=r['midi_filename'],
             filename_SHA256=hashlib.sha256(w.encode()).hexdigest(),source_duration_seconds=float(r['duration']),
             audio_excerpt_start_seconds=15.,audio_excerpt_duration_seconds=12.))
-        if len(selected)==5:break
-    need(len(selected)==5,'S586 fewer than 5 eligible unused composer components; do not relax exclusions')
+        if len(selected)==2:break
+    need(len(selected)==2,'S586 exactly two remaining eligible unused composer components required')
     return selected,len(eligible)
 
 def run(root,out):
@@ -45,14 +45,18 @@ def run(root,out):
     need(digest=='cb88a64a12971a995dd41852aa3a33879501cf70d01b9a6feb637f4ad8d8ddff','S586 official metadata changed')
     chosen,eligible=choose(list(csv.DictReader(io.StringIO(data.decode('utf-8-sig')))),names,artists)
     out.mkdir(parents=True)
-    save(out/'report.json',dict(status='S586_PREREGISTERED_FIVE_MORE_TRAIN_SPLIT_COMPOSERS_AFTER_S544_NO_WAV_MIDI',
+    save(out/'report.json',dict(status='S586_TWO_REMAINING_COMPOSERS_METADATA_ONLY_AMENDED_BEFORE_AUDIO',
         chosen_metadata_only=chosen,official_metadata_URL=URL,official_metadata_sha256=digest,
         source_audio_mirror=AUDIO_MIRROR,source_WAV_files_not_read=True,source_MIDI_files_not_read=True,
-        five_next_distinct_composers=5,MAESTRO_original_split_used='train',NOT_official_MAESTRO_test_split=True,
+        new_distinct_composers=2,MAESTRO_original_split_used='train',NOT_official_MAESTRO_test_split=True,
         previous_source_count=33,previous_names=sorted(names),previous_composers=sorted(artists),previous_manifests_SHA=proof,
         original_previous_S469_3_S537_5_S545_5_S554_5_S561_5_S570_5_S577_5_components_excluded=True,
         co_composer_COMPONENTS_fully_excluded_and_pairwise_disjoint=True,
         filenames_frozen_before_audio_model_inference=True,eligible_tracks=eligible,
+        initial_five_composer_protocol_failed_before_any_target_WAV_or_MIDI=True,
+        amendment_reason="Only Enescu and Mussorgsky remain; metadata duration 1364-2009s exceeds original cap",
+        original_failed_run=38678912773,source_count_amendment_based_on_metadata_only=True,
+        limited_two_composer_probe_not_five_composer_confirmation=True,
         NOT_guaranteed_never_used_elsewhere_in_repo=True,no_promotion=True))
     print('S586 METADATA ONLY',json.dumps(chosen),flush=True)
 
@@ -61,7 +65,7 @@ def selftest():
         midi_filename=f'2000/{c}.midi',canonical_composer=c,canonical_title='x') for c in 'ABCDEFG']
     one,_=choose(rows,{'2000/A.wav'},{'A','B'})
     two,_=choose(rows[::-1],{'2000/A.wav'},{'A','B'})
-    need(one==two and {x['composer'] for x in one}==set('CDEFG'),'Metadata selection/exclusion determinism')
+    need(one==two and len(one)==2 and {x['composer'] for x in one}.issubset(set('CDEFG')),'Metadata selection/exclusion determinism')
     print('S586 SELFTEST PASS metadata-only exclusions')
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--root',type=Path);p.add_argument('--out',type=Path)

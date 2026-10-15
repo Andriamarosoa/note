@@ -19,13 +19,13 @@ def run(manifest,s587,out):
     need(not out.exists(),"S588 source-independent pretrained baseline freeze cannot overwrite")
     m=json.loads(manifest.read_text())
     r=json.loads(s587.read_text())
-    need(m["status"]=="S586_PREREGISTERED_FIVE_MORE_TRAIN_SPLIT_COMPOSERS_AFTER_S544_NO_WAV_MIDI"
-         and m["five_next_distinct_composers"]==5
+    need(m["status"]=="S586_TWO_REMAINING_COMPOSERS_METADATA_ONLY_AMENDED_BEFORE_AUDIO"
+         and m["new_distinct_composers"]==2
          and r["status"]=="S587_MAESTRO_V3_REAL_AUDIO_ORIGINAL_PRETRAINED_V88_PLUS_S466_PREMIDI"
          and r["preregistered_S586_SHA"]==sha_file(manifest)
          and r["original_complete_S80_NOT_REPLAYED"]
-         and len(r["exact_original_audio_source_fingerprints"])==5
-         and r["five_original_piano_recordings"]==5
+         and len(r["exact_original_audio_source_fingerprints"])==2
+         and r["original_piano_recordings"]==2
          and r["prelabel_predictions_frozen"]
          and not r["paired_MIDI_annotation_files_OPENED"],
          "S588 original independent third source WAV metadata/S587 provenance altered")
@@ -81,7 +81,7 @@ def run(manifest,s587,out):
     events=out/"S588_FIXED_BASIC_PITCH_PRETRAINED_PIANO_NOTES_PRELABEL.jsonl"
     events.write_text("".join(json.dumps(v)+"\n" for v in ledger))
     report=dict(status="S588_PRETRAINED_BASIC_PITCH_NOTE_EVENTS_ON_THIRD_SOURCE_MAESTRO_PREMIDI",
-        source="MAESTRO_v3_train_5_piano_WAV_12s",
+        source="MAESTRO_v3_train_2_piano_WAV_12s",
         original_source_S586_manifest_SHA256=sha_file(manifest),
         original_S587_WAV_proof_SHA256=sha_file(s587),
         original_WAV_content_SHA_verified=True,
@@ -91,7 +91,7 @@ def run(manifest,s587,out):
         original_MAESTRO_MIDI_ANNOTATIONS_OPENED=False,
         S586_new_composers_before_WAV_MIDI=True,
         output_note_names_not_MIDI_files=True,
-        prediction_windows_piano=5,
+        prediction_windows_piano=2,
         total_notes_in_MIDI40to88=len(ledger),
         source_per_piece=per,
         frozen_notes_SHA256=sha_file(events),
@@ -100,7 +100,7 @@ def run(manifest,s587,out):
         no_promotion=True)
     (out/"report.json").write_text(json.dumps(report,indent=2)+"\n")
     print("S588 FIXED MODEL PROSPECTIVE",json.dumps(dict(
-        true_audio_files=5,notes=len(ledger),MIDI_read=False,
+        true_audio_files=2,notes=len(ledger),MIDI_read=False,
         source_midi_K_predictor_modified=False)),flush=True)
 def selftest():
     need(name(52)=="E3" and name(55)=="G3" and name(59)=="B3",

@@ -39,7 +39,7 @@ def run(root,out):
          'S591 MIDI embargo: previous immutable predictions and all source proofs required')
     pred=json.loads((root/'S590/predictions.json').read_text())
     chosen={x['filename_SHA256']:x for x in m['chosen_metadata_only']}
-    need(set(pred)==set(POLICIES) and len(chosen)==5 and all(set(x)==set(chosen) for x in pred.values()),
+    need(set(pred)==set(POLICIES) and len(chosen)==2 and all(set(x)==set(chosen) for x in pred.values()),
          'S591 every policy must score all predeclared sources, including empty predictions')
     for p in POLICIES:
         for src,g in pred[p].items():
@@ -86,13 +86,13 @@ def run(root,out):
             ix=rng.integers(0,len(srcs),len(srcs));deltas.append(100*(f1(bb[ix].sum(0))-f1(aa[ix].sum(0))))
         comparison[name]=dict(delta_F1_points=100*(now['F1']-base['F1']),delta_TP=now['TP']-base['TP'],
             delta_FP=now['FP']-base['FP'],**dict(changes[name]),
-            five_source_bootstrap_interval95_points=np.percentile(deltas,[2.5,97.5]).tolist(),
+            two_source_bootstrap_interval95_points=np.percentile(deltas,[2.5,97.5]).tolist(),
             interval_is_descriptive_small_sample_not_universal_significance=True,
             songs_improved=sum(result[name]['per_song'][s]['scores']['80']['F1']>result[POLICIES[0]]['per_song'][s]['scores']['80']['F1'] for s in srcs),
             songs_regressed=sum(result[name]['per_song'][s]['scores']['80']['F1']<result[POLICIES[0]]['per_song'][s]['scores']['80']['F1'] for s in srcs))
     out.mkdir(parents=True);save(out/'truth_after_freeze.json',truth);save(out/'individual_note_audit.json',ledger)
     report=dict(status='S591_SIXTH_SOURCE_PROSPECTIVE_FOUR_STATE_NOTEON_VERDICT',
-        source_count=5,official_split='MAESTRO_train_NOT_official_test',
+        source_count=2,limited_two_composer_probe=True,official_split='MAESTRO_train_NOT_official_test',
         true_note_count=sum(sum(len(g['notes']) for g in x) for x in truth.values()),
         original_MIDI_read_only_after_separate_SHA_frozen_prediction_job=True,
         freeze_SHA=sha(root/'S590/report.json'),MIDI_provenance=provenance,

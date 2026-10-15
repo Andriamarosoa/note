@@ -39,13 +39,13 @@ def fetch_track(base,name):
                      "text/html" not in response.headers.get("Content-Type",""),
                      "S587 individual WAV mirror returned error/HTML")
                 size=response.headers.get("Content-Length")
-                if size:need(int(size)<=250_000_000,"S587 mirror WAV unexpectedly large")
+                if size:need(int(size)<=500_000_000,"S587 mirror WAV unexpectedly large")
                 chunks=[];n=0
                 while True:
                     b=response.read(1<<20)
                     if not b:break
                     chunks.append(b);n+=len(b)
-                    need(n<=250_000_000,"S587 audio download exceeded 140MB cap")
+                    need(n<=500_000_000,"S587 audio download exceeded 500MB cap")
                 need(n>100_000 and b"RIFF"==chunks[0][:4],
                      "S587 original mirror file is not RIFF WAV")
                 return b"".join(chunks),address
@@ -65,8 +65,8 @@ def run(manifest,source_dir,weights,birthmodels,birthreport,out):
     need(not out.exists(),"S587 original preMIDI piano predictions are immutable")
     m=json.loads(manifest.read_text())
     b=json.loads(birthreport.read_text())
-    need(m["status"]=="S586_PREREGISTERED_FIVE_MORE_TRAIN_SPLIT_COMPOSERS_AFTER_S544_NO_WAV_MIDI"
-         and m["five_next_distinct_composers"]==5
+    need(m["status"]=="S586_TWO_REMAINING_COMPOSERS_METADATA_ONLY_AMENDED_BEFORE_AUDIO"
+         and m["new_distinct_composers"]==2
          and m["source_MIDI_files_not_read"]
          and m["source_WAV_files_not_read"]
          and m["no_promotion"] and m["co_composer_COMPONENTS_fully_excluded_and_pairwise_disjoint"]
@@ -78,8 +78,8 @@ def run(manifest,source_dir,weights,birthmodels,birthreport,out):
          and weights.is_file(),
          "S587 preregistered third-corpus track and historical models required")
     selected=m["chosen_metadata_only"]
-    need(len(selected)==5 and len({s["composer"] for s in selected})==5
-         and len({s["filename_SHA256"] for s in selected})==5,
+    need(len(selected)==2 and len({s["composer"] for s in selected})==2
+         and len({s["filename_SHA256"] for s in selected})==2,
          "S587 MAESTRO selection not distinct composers")
     # Source registered before annotation. Only exact three WAV mirror files read.
     clips={};files=[];proof=[]
@@ -197,7 +197,7 @@ def run(manifest,source_dir,weights,birthmodels,birthreport,out):
         report=dict(status="S587_MAESTRO_V3_REAL_AUDIO_ORIGINAL_PRETRAINED_V88_PLUS_S466_PREMIDI",
             actual_external_instrument="acoustic_piano",
             source_not_GuitarSet_or_IDMT=True,
-            five_original_piano_recordings=5,
+            original_piano_recordings=2,
             source_excerpt_seconds_per_recording=12,
             source_excerpt_offset_seconds=15,
             original_V88_event_count=n,
@@ -211,7 +211,7 @@ def run(manifest,source_dir,weights,birthmodels,birthreport,out):
             exact_original_audio_source_fingerprints=proof,
             prelabel_predictions_frozen=True,
             source_s586_composer_components_disjoint_from_previous_thirtythree=True,
-            actual_new_composer_count=5,
+            actual_new_composer_count=2,
             WAV_contents_read_only_audio=True,
             paired_MIDI_annotation_files_OPENED=False,
             original_complete_S80_NOT_REPLAYED=True,
@@ -220,7 +220,7 @@ def run(manifest,source_dir,weights,birthmodels,birthreport,out):
             no_promotion=True)
         (out/"report.json").write_text(json.dumps(report,indent=2)+"\n")
         print("S587 PREMIDI THIRD SOURCE",json.dumps(dict(
-            recordings=5,events=n,
+            recordings=2,events=n,
             V88_hist=report["original_V88_K_hist"],
             suppress=int(suppress.sum()),midi_read=False)),flush=True)
     finally:

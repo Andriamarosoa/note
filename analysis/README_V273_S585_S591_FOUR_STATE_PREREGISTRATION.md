@@ -2,6 +2,19 @@
 
 Cette expérience poursuit S584. S578 Global28 demeure le témoin (59,34 % sur la **cinquième** cohorte S577, pas le score attendu sur la sixième).
 
+## Amendement sur les seules métadonnées — avant tout nouveau WAV/MIDI
+
+Le premier workflow [38678912773](https://github.com/Andriamarosoa/note/actions/runs/38678912773) a arrêté S586 : les 33 sources exposées couvrent 37 composantes de compositeurs. **Seuls Enescu et Moussorgski restent dans l’intégralité de MAESTRO**, tous les splits confondus ; leurs sept enregistrements sont longs (1 364–2 009 s) et tous dans train. Aucune source ne satisfait donc la limite initiale de 1 000 s.
+
+L’amendement conserve toutes les exclusions et le même ordre SHA. Le test porte sur **deux morceaux**, un par compositeur restant, durée maximale 2 300 s et plafond technique WAV 500 Mo. Les extraits restent +15 s / 12 s. Cette décision est fondée exclusivement sur les métadonnées, avant le moindre audio, MIDI ou score de ces morceaux. Le manifeste est [v273_s586_two_remaining_composers_metadata.json](v273_s586_two_remaining_composers_metadata.json).
+
+- Moussorgski : *Pictures at an Exhibition*, enregistrement 2004.
+- Enescu : *Suite Op. 10*, enregistrement 2006.
+
+Les poids S585 sont récupérés dans le premier job d’entraînement, **sans relancer l’entraînement**. Les trois politiques, seuils et cibles ne changent pas. Deux extraits, soit 24 secondes, constituent seulement une **sonde indépendante limitée**, pas la confirmation à cinq compositeurs initialement prévue. Les intervalles à deux sources ne permettent pas de conclusion générale. Aucun remplacement de référence ne peut en découler.
+
+Les paragraphes suivants conservent la trace du protocole initial ; le nombre de sources et les limites opérationnelles sont remplacés par cet amendement.
+
 ## Hypothèse et contrôle
 
 La suppression systématique d'une même hauteur pendant 100 ms peut perdre de vraies réattaques. Une tête distingue quatre cibles : hauteur inactive/résonance, touche ou pédale maintenue, nouvelle attaque, réattaque. Les états MIDI sont uniquement des **cibles d'entraînement**. Ils ne sont jamais fournis aux modèles en inférence. La pédale donne une approximation du maintien acoustique, pas un NoteOff mesuré.
