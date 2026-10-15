@@ -1,5 +1,7 @@
 # NOTE — Détection des notes polyphoniques, Exact-K et Live
-## README d'état du projet : historique S0–S584 et mises à jour S585–S597
+## README d'état du projet : historique S0–S584 et mises à jour S585–S605
+
+> **Mise à jour S598–S605 — objectif franchi sur le test réservé : 84,91 % de F1 NoteOn ±80 ms**, contre 73,51 % pour Basic Pitch par défaut sur les mêmes **cinq œuvres URMP, 120 s et 626 notes MIDI40–88**. Candidat S601 appris sur 37 autres enregistrements, avec exclusion des titres test et gel avant leurs WAV/annotations. **TP 484, FP 30, FN 142 ; précision 94,16 %, rappel 77,32 %.** Audit : 38 notes récupérées, 55 perdues, 206 FP de moins. Les cinq morceaux progressent en F1, mais Miserere reste à 75 %. **Résultat hors ligne, sans promotion S80/Exact-K ni intégration Live.** [Rapport et toutes les boucles](analysis/README_V273_S598_S605_RESERVED_80_RESULTS.md) · [Première CI réservée réussie](https://github.com/Andriamarosoa/note/actions/runs/38685400020).
 
 > **Mise à jour S592–S597 — transfert URMP :** sur **cinq ensembles, 120 s et 1 119 vraies notes MIDI40–88**, S585 strict atteint **64,78 % de F1 NoteOn ±80 ms**, contre **62,23 % pour S578** sur les mêmes extraits. Gain : 35 notes récupérées, 15 perdues, 31 FP de moins. **Basic Pitch direct fait mieux : 73,54 %.** L’audit trouve 180 notes correctes de BP absentes de S585, dont 176 sans raccordement protégé à V88 ; S585 récupère 40 autres notes. Le gain de la tête ne suffit donc pas à valider la chaîne complète. Audio préparé 16 kHz, modèles figés avant annotations, aucune promotion ni modification du Live. **Objectif 80 % non atteint.** [Résultats et diagnostic S592–S597](analysis/README_V273_S592_S597_URMP_RESULTS.md) · [CI réussie](https://github.com/Andriamarosoa/note/actions/runs/38681794058).
 
@@ -191,7 +193,7 @@ Les tests comportent tous de petites cohortes (cinq nouveaux morceaux). Pour les
 - **S578 (28 sources)** : l'apprentissage spécialisé médium a un petit gain **interne rétrospectif** avec mélange 50/50 (62,78 % F1 contre 62,37 % global), **non confirmé** sur S577 : le mélange 59,16 % régresse face au global 59,34 %. Le remplacement pur donne 58,96 %.
 - **S584, audit individuel** : le mélange au médium supprime **15 FP** au prix de **7 TP véritables** sur S577 : MIDI60/Do4 −1, 63/Mi♭4 −1, 65/Fa4 −2, 67/Sol4 −1, 70/Si♭4 −1, 71/Si4 −1. L'audit réouvre les anciens vrais MIDI et reproduit exactement le score : **diagnostic après étiquettes, pas nouvelle validation indépendante**.
 
-**Décision :** ne pas remplacer la référence avec S578 spécialiste médium. Garder S569 temporal52 et S578 Global28 comme candidats expérimentaux aux rôles distincts ; améliorer un classifieur explicite **véritable réattaque / sustain / harmonique** sans sacrifier les notes réelles. Le score **80 % NoteOn F1** n'est pas atteint.
+**Décision du bilan S584 :** ne pas remplacer la référence avec S578 spécialiste médium. Garder S569 temporal52 et S578 Global28 comme candidats expérimentaux aux rôles distincts ; améliorer un classifieur explicite **véritable réattaque / sustain / harmonique** sans sacrifier les notes réelles. À ce stade S584, le score **80 % NoteOn F1** n'était pas atteint. **S605 le franchit ensuite sur cinq œuvres URMP réservées, à 84,91 % ; ce nouveau corpus ne constitue pas un rejeu des cohortes piano précédentes.**
 
 Pour les sources et chiffres détaillés : [S533–S536](analysis/README_V273_S533_S536_NOTEON_REAL_DUPLICATE_RESTRIKES_HARMONIC_LOOPS.md), [S553–S560](analysis/README_V273_S553_S560_TWO_SOURCE_HELD_NOTEON_TESTS_MEDIUM_FAILURE.md), [S561–S568](analysis/README_V273_S561_S568_EIGHTEEN_SOURCE_PHYSICAL_NOTEON_AND_THIRD_PROSPECTIVE_TEST.md), [S569–S576](analysis/README_V273_S569_S576_TEMPORAL_RESTRIKE_23_SOURCES_FOURTH_BLIND_NOTEON_TEST.md), [S577–S584](analysis/README_V273_S577_S584_MIDDLE12_SPECIALIST_FAILS_FIFTH_HELD_F1.md).
 
@@ -423,13 +425,15 @@ Un nouveau **référent officiel** ne doit être adopté que si :
 | Meilleur modèle récent en NoteOn sur cohorte S577 | **S578 Global28, F1 59,34 %**, non officiel |
 | S569 temporal52 sur nouvelle cohorte S570 | **F1 59,90 %**, non officiel, autre jeu |
 | S585 quatre états + dédup100, sonde S591 à deux nouveaux compositeurs | **75,31 % F1 vs S578 72,46 % sur les mêmes morceaux**, candidat non promu ; grave en régression |
+| S601, filtre appris sur candidats BP natifs, test S605 | **84,91 % vs BP 73,51 %**, 38 notes récupérées/55 perdues ; non promu |
 | Tête 12 notes médiums S578 | **Rejetée** après validation S583 et audit S584 |
 | Note Live historique 44,1k / 512 | **Préservé, fonctionnel avec ses propres modèles**, non S80 complet |
 | Pont note Live MIDI K-locked | **Fonctionnel sur entrée K+notes déjà prédites**, pas détection audio complète |
 | Micro → S80 → hauteurs → NoteOff en vrai Live | **Non réalisé / non validé** |
 | Latence bout-en-bout note de ce nouveau pipeline | **Inconnue** |
 | Pipeline microphone → poly MIDI causal dans midi | **Implémenté** ; qualité et latence dépendantes du profil/matériel |
-| 80 % de F1 NoteOn inédit et généralisation multi-instruments | **Non atteint** |
+| 80 % de F1 NoteOn sur cinq œuvres URMP réservées | **Atteint : S601/S605, 84,91 %**, 626 notes, 120 s ; Miserere 75 %, hors ligne |
+| Généralisation tous instruments, pièces et microphones | **Non certifiée** ; validation réservée de portée limitée |
 | Fusion dans la référence officielle | **Non. PR #41 DRAFT.** |
 
 ---
@@ -449,6 +453,7 @@ Un nouveau **référent officiel** ne doit être adopté que si :
 
 | Série | Exécution GitHub | Rapport |
 |---|---|---|
+| S601/S605, premier test réservé | [38685400020](https://github.com/Andriamarosoa/note/actions/runs/38685400020) | [S598–S605](analysis/README_V273_S598_S605_RESERVED_80_RESULTS.md) |
 | S397/S398 K5 | [38352988801](https://github.com/Andriamarosoa/note/actions/runs/38352988801) | [S397/S398](analysis/README_V273_S397_S398_FULL_S80_REPLAY_K5_GUARD_VERDICT.md) |
 | S425 NoteOff | [38513725784](https://github.com/Andriamarosoa/note/actions/runs/38513725784) | [S425/S427](analysis/README_V273_S425_S427_NATIVE_COMPLETE_MIDI_KLOCKED_RESULTS.md) |
 | S428 notes | [38517551029](https://github.com/Andriamarosoa/note/actions/runs/38517551029) | [S428/S430](analysis/README_V273_S428_S430_SOUND_TO_NOTE_NAMES_KLOCKED.md) |
@@ -473,6 +478,8 @@ Un nouveau **référent officiel** ne doit être adopté que si :
 ---
 
 ## 10. Conclusion
+
+**Dernier résultat S605 : 84,91 % de F1 NoteOn sur cinq œuvres URMP réservées, après apprentissage sur 37 autres enregistrements et validation groupée par titre.** L’objectif de 80 % est franchi sur cette cohorte hors ligne ; le rappel reste à 77,32 %, et le test ne valide ni NoteOff, ni les réattaques rapides, ni le Live. Les pertes et les 30 faux positifs sont publiés.
 
 **Ce qui a avancé :** reconstruction des têtes et sélections Exact-K, réalisation des véritables sorties **son → hauteurs musicales**, audit NoteOn et NoteOff, expérience de physique spectrale 34D, puis temporelle 52D, apprentissage sur **28 musiques** et plusieurs tests sur de nouvelles compositions avec gel SHA avant les MIDI. La détection des notes ne se réduit plus à deviner K. Chaque correction est conservée avec ses régressions.
 
