@@ -1,0 +1,66 @@
+name: S643 audit frozen S642 weak note and adaptive delay effect sizes
+on:
+  push:
+    branches: [codex/s642-trained-weak-onset-delay]
+    paths:
+      - .github/workflows/v273-s643-frozen-s642-action-audit.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  actual_train_dev_action_audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: S642-real-trained-dual-candidate-delay-original-DEV
+          run-id: 38815758881
+          github-token: ${{ github.token }}
+          path: /tmp/S642
+      - name: Audit candidate proposals and actual delayed NoteOn with unchanged original controls
+        run: |
+          mkdir -p /tmp/S643
+          python - <<'PY'
+          import json
+          from collections import Counter
+          from pathlib import Path
+          a=json.loads(Path('/tmp/S642/report.json').read_text())
+          x={}
+          for name in ('S614_original','S642_candidate_only','S642_delay_only','S642_joint'):
+              groups={}
+              for corpus in ('GuitarSet','URMP'):
+                  values=[r['policies'][name] for r in a['dev_per_source'] if r['corpus']==corpus]
+                  totals={k:sum(v[k] for v in values) for k in ('TP','FP','FN','candidate_proposals','delayed_noteons')}
+                  delay=Counter()
+                  for v in values:
+                      delay.update({str(k):int(n) for k,n in v['held_0_1_2_3'].items()})
+                  totals['predicted_delay_hops']=dict(delay)
+                  totals['original_F1']=a['metrics']['S614_original'][corpus]['F1']
+                  totals['actual_F1']=a['metrics'][name][corpus]['F1']
+                  totals['causal_F1']=a['metrics'][name][corpus]['causal']['common_midi_range']['F1']
+                  totals['improved_sources']=a['metrics'][name][corpus]['improved_recordings']
+                  totals['regressed_sources']=a['metrics'][name][corpus]['regressed_recordings']
+                  groups[corpus]=totals
+              x[name]=groups
+          label=Counter()
+          for r in a['train_sources']:
+              label.update({str(k):int(v) for k,v in r['trained_delay_classes'].items()})
+          result=dict(status='S643_FROZEN_S642_ACTION_INDIVIDUAL_AUDIT',
+              train_delay_label_distribution=dict(label),
+              action_counts=x,
+              causal_noteon_metric_different_from_original_symmetric=True,
+              no_new_training=True,no_promotion=True,
+              independent_test_not_read=True)
+          Path('/tmp/S643/report.json').write_text(json.dumps(result,indent=2)+'\n')
+          print('S643 FROZEN ACTION EFFECTS',json.dumps(result,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S643-original-S642-real-candidate-and-delay-effect-audit
+          path: /tmp/S643
+          if-no-files-found: warn
+          retention-days: 60
