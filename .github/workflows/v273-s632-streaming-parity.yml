@@ -1,0 +1,29 @@
+name: S632 actual PCM LIVE cost decision parity and future invariance
+on:
+  push:
+    branches: [codex/s533-s535-note-fundamental-loops]
+    paths:
+      - src/causal_note/s632_streaming_runtime.py
+      - test/test_s632_streaming_runtime.py
+      - .github/workflows/v273-s632-streaming-parity.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  strict_causal_parity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Original native NOTE inference dependencies
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Validate per-hop streaming versus batch, original S614, weights and causal future invariance
+        run: |
+          python -m unittest -v test.test_s632_streaming_runtime test.test_s632_risk_policy test.test_strict_live
