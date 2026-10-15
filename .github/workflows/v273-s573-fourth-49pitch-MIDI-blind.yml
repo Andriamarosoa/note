@@ -29,7 +29,7 @@ jobs:
         run: |
           gh run download 38670092733 -n s570-fourth-five-new-source-names-exclude23-previous-composer-components-NO-AUDIO-MIDI -D model/S570 --repo "${{ github.repository }}"
           gh run download 38670185242 -n s571-five-new-composers-preMIDI-V88-source-frozen-audio-original-S80-era-model -D model/S571 --repo "${{ github.repository }}"
-          gh run download 38670250000 -n s572-next-five-S570-BasicPitch-original-pitch-names-PREMIDI -D model/S572 --repo "${{ github.repository }}"
+          gh run download 38670258232 -n s572-next-five-S570-BasicPitch-original-pitch-names-PREMIDI -D model/S572 --repo "${{ github.repository }}"
       - name: Verify source whole WAV SHA from S571 and extract original all V88 K0 note physics without opening MIDI
         run: |
           python -u -m scripts.s573_fourth_cohort_source49_11_features_no_midi \
