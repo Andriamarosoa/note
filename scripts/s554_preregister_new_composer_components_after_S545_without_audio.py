@@ -82,7 +82,7 @@ def run(a):
              "cb88a64a12971a995dd41852aa3a33879501cf70d01b9a6feb637f4ad8d8ddff",
          "S554 source original 3+5 full SHA cohort invalid")
     history_names={s["audio_filename"] for s in old["selected_sources"]+new["selected_sources"]+prior["chosen_metadata_only"]}
-    history_artist={s["composer"] for s in old["selected_sources"]+new["selected_sources"]}
+    history_artist={s["composer"] for s in old["selected_sources"]+new["selected_sources"]+prior["chosen_metadata_only"]}
     need(len(history_names)==13 and len(history_artist)>=9,
          "S554 all 13 prior source filenames and their composer components must be excluded")
     req=urllib.request.Request(URL,headers={
