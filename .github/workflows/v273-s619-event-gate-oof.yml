@@ -1,0 +1,38 @@
+name: S619 event-level false-note gate leave-one-composition-out
+on:
+  push:
+    branches: [codex/s533-s535-note-fundamental-loops]
+    paths:
+      - src/causal_note/s619_event_gate.py
+      - scripts/s619_event_gate_oof.py
+      - test/test_s619_event_gate.py
+      - .github/workflows/v273-s619-event-gate-oof.yml
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  oof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original NOTE runtime unchanged
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install scipy==1.14.1
+      - name: Unit tests and original S614 contracts
+        run: python -m unittest -v test.test_s619_event_gate test.test_strict_live
+      - name: Train 5 group-disjoint event classifiers, freeze held-group predictions
+        run: python -m scripts.s619_event_gate_oof --out /tmp/S619
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S619-event-gate-five-fold-URMP-dev
+          path: /tmp/S619
+          if-no-files-found: warn
+          retention-days: 60

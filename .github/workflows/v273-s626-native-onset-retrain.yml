@@ -1,0 +1,39 @@
+name: S626 sharp native NOTE onset-head mixed training
+on:
+  push:
+    branches: [codex/s533-s535-note-fundamental-loops]
+    paths:
+      - scripts/s626_train_sharp_native_onset.py
+      - .github/workflows/v273-s626-native-onset-retrain.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s626-native-sharp-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  mixed_audio_train_dev:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Unchanged original NOTE native runtime
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Verify strict causal original NOTE, input schemas and Python syntax
+        run: |
+          python -m compileall -q scripts/s626_train_sharp_native_onset.py
+          python -m unittest -v test.test_strict_live test.test_s618_attack_head test.test_s618_streaming_runtime
+      - name: Fit 40ms onset head on 35 original train recordings, audit 17 DEV
+        run: python -m scripts.s626_train_sharp_native_onset --out /tmp/S626
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S626-native-sharp-onset-MIXED-train-dev
+          path: /tmp/S626/
+          if-no-files-found: warn
+          retention-days: 60

@@ -1,0 +1,56 @@
+{
+  "best": {
+    "by_corpus": {
+      "GuitarSet": {
+        "F1": 0.6100260416666666,
+        "FN": 643,
+        "FP": 555,
+        "TP": 937,
+        "matched_emission_delay_ms": {
+          "median": 26.397278911566957,
+          "p10": 3.044535147438588,
+          "p95": 56.24671201823243
+        }
+      },
+      "URMP": {
+        "F1": 0.5129411764705882,
+        "FN": 281,
+        "FP": 133,
+        "TP": 218,
+        "matched_emission_delay_ms": {
+          "median": 35.163265306120906,
+          "p10": 11.660317460317593,
+          "p95": 67.26825396825474
+        }
+      }
+    },
+    "checkpoint": "heads_epoch28.npz",
+    "overall": {
+      "F1": 0.588985211626721,
+      "FN": 924,
+      "FP": 688,
+      "TP": 1155,
+      "matched_emission_delay_ms": {
+        "median": 28.332879818766088,
+        "p10": 4.099410430936601,
+        "p95": 58.539002267573444
+      }
+    },
+    "selection": {
+      "active_off": 0.25,
+      "active_on": 0.7,
+      "confirmation_frames": 1,
+      "count_confidence": 1.1,
+      "max_notes": 6,
+      "onset": 0.7,
+      "onset_reset": 0.2,
+      "refractory_frames": 10,
+      "release_frames": 5,
+      "restrike_onset": 0.0
+    }
+  },
+  "model_sha256": "410e69daa546da4386b8aa2f7238ab7f1496e15fc99741f05f637e567a11ad6e",
+  "protocol_sha256": "63d3460d4caa768b2efc627b909f330c613d20b89e1b3ef2624c0bc75a91a4f4",
+  "test_labels_read": false,
+  "total_development_loops": 48
+}

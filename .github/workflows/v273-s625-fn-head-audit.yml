@@ -1,0 +1,32 @@
+name: S625 audit native S614 attack sustain missing-note categories
+on:
+  push:
+    branches: [codex/s533-s535-note-fundamental-loops]
+    paths:
+      - scripts/s625_original_live_FN_gate_audit.py
+      - .github/workflows/v273-s625-fn-head-audit.yml
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  original_dev:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Original S614 inference dependencies
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Characterize unmatched true attacks without changing thresholds
+        run: python -m scripts.s625_original_live_FN_gate_audit --out /tmp/S625
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S625-native-S614-original-missed-note-head-audit
+          path: /tmp/S625/
+          if-no-files-found: warn
+          retention-days: 60

@@ -1,0 +1,56 @@
+name: S560 independently replay S559 actual five-composer NOTE_ON by register after frozen predictions
+on:
+  push:
+    branches: [codex/s533-s535-note-fundamental-loops]
+    paths:
+      - scripts/s560_register_audit_fresh_maestro_5_sources_after_S559.py
+      - .github/workflows/v273-s560-new-five-register-true-MIDI-audit.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+jobs:
+  restore_original_post_MIDI_sha_and_replay_all_note_counts_by_low_mid_high:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original source note and one-to-one MIDI matching
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 mido==1.3.3
+      - name: Test strict MIDI 40-88 note register and real repeated note ownership
+        run: |
+          python -m py_compile scripts/s560_register_audit_fresh_maestro_5_sources_after_S559.py
+          python -m scripts.s560_register_audit_fresh_maestro_5_sources_after_S559 --self-test
+      - name: Restore exact initial new 5 composer metadata and six SHA-frozen pre-MIDI policies, do not retrain
+        run: |
+          gh run download 38663678664 -n s554-next-five-metadata-only-composer-component-disjoint-before-new-model-noteon-validation -D model/S554 --repo "${{ github.repository }}"
+          gh run download 38663923507 -n s558-S554-new-five-MAESTRO-S528-vs-S546-six-preMIDI-frozen-full-NoteOn-predictions -D model/S558 --repo "${{ github.repository }}"
+          gh run download 38663995955 -n s559-five-NEW-S554-composers-MIDI-SHA-verified-NoteOn-F1-S528-vs-S546 -D model/S559 --repo "${{ github.repository }}"
+      - name: Independently reproduce all old source NoteOn scores by LOW/MID/HIGH register with real MIDI SHA proof
+        run: |
+          python -u -m scripts.s560_register_audit_fresh_maestro_5_sources_after_S559 \
+            --manifest model/S554/report.json --freeze-report model/S558/report.json \
+            --score-report model/S559/report.json \
+            --frozen-predictions model/S558/S558_NEXT_FIVE_REAL_WAV_NOTEON_PREDICTIONS_PREMIDI.jsonl \
+            --out model/S560
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S560/report.json'))
+          assert r['status']=='S560_TRUE_INDEPENDENT_REGISTER_PITCH_NOTEON_CAUSES_POST_S559'
+          assert r['all_register_counts_S559_independently_replayed_for_every_policy_tolerance']
+          assert len(r['full_register_scores'])==6
+          assert len(r['register_progress_and_remaining_errors'])==3
+          assert r['measurements_are_POSTHOC_NOT_new_prospective_validation']
+          assert r['no_promotion'] and r['cannot_promote_original_S80_or_ExactK_or_Live']
+          print('S560 PASS independently verified all S559 real note-on F1 MIDI totals separately by register')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s560-five-NEW-S554-composers-causal-register-40-59-60-71-72-88-MIDI-pitch-audit
+          path: model/S560/
+          retention-days: 90

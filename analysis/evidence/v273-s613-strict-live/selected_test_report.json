@@ -1,0 +1,290 @@
+{
+  "compute_and_device_latency_not_added_to_note_timestamps": true,
+  "exact_same_time_pitch_unisons_collapsed": true,
+  "hardware_microphone_latency_measured": false,
+  "held_out_from_new_training_and_tuning": true,
+  "input_sidecars": false,
+  "lookahead_samples": 0,
+  "model_sha256": "7ccf046e3a1870eaca3a108e6f9565298aeeadf43732a2f83559542c03f5f17f",
+  "offsets_conditional_on_matched_80ms_noteon": {
+    "acoustic_error_ms_p10_median_p95": [
+      -202.39564625851472,
+      16.63129251697537,
+      177.12072562360814
+    ],
+    "forced_or_missing_offsets": 5,
+    "matched_noteons_with_observed_reference_offset": 1622,
+    "offsets_within_max_50ms_or_20pct_duration": 944
+  },
+  "original_S80_promotion": false,
+  "pitch_scope": [
+    40,
+    88
+  ],
+  "predictions_sha256": "0e55d01c89d569adf930d8260dbadf0e72b85edb12272728931024c28dc9a9b8",
+  "results": {
+    "50ms": {
+      "by_corpus": {
+        "GuitarSet": {
+          "F1": 0.7000976880494952,
+          "FN": 437,
+          "FP": 484,
+          "TP": 1075,
+          "matched_emission_delay_ms": {
+            "median": 20.123356009079885,
+            "p10": -5.714285714292089,
+            "p95": 43.70666666667739
+          }
+        },
+        "IDMT": {
+          "F1": 0.43781094527363185,
+          "FN": 44,
+          "FP": 69,
+          "TP": 44,
+          "matched_emission_delay_ms": {
+            "median": 32.05442176870754,
+            "p10": 20.603174603175134,
+            "p95": 48.42403628117904
+          }
+        },
+        "URMP": {
+          "F1": 0.44,
+          "FN": 445,
+          "FP": 395,
+          "TP": 330,
+          "matched_emission_delay_ms": {
+            "median": 34.91496598639365,
+            "p10": 5.362358276643864,
+            "p95": 46.67698412698389
+          }
+        }
+      },
+      "overall": {
+        "F1": 0.607292539815591,
+        "FN": 926,
+        "FP": 948,
+        "TP": 1449,
+        "matched_emission_delay_ms": {
+          "median": 23.16553287981904,
+          "p10": -4.235827664398072,
+          "p95": 46.2698412698411
+        }
+      }
+    },
+    "80ms": {
+      "by_corpus": {
+        "GuitarSet": {
+          "F1": 0.7372191468577011,
+          "FN": 380,
+          "FP": 427,
+          "TP": 1132,
+          "matched_emission_delay_ms": {
+            "median": 21.022675736958263,
+            "p10": -5.12018140589845,
+            "p95": 49.7728344671058
+          }
+        },
+        "IDMT": {
+          "F1": 0.6069651741293532,
+          "FN": 27,
+          "FP": 52,
+          "TP": 61,
+          "matched_emission_delay_ms": {
+            "median": 41.79138321995435,
+            "p10": 24.71655328798228,
+            "p95": 59.047619047619015
+          }
+        },
+        "URMP": {
+          "F1": 0.6053333333333333,
+          "FN": 321,
+          "FP": 271,
+          "TP": 454,
+          "matched_emission_delay_ms": {
+            "median": 40.51020408163275,
+            "p10": 11.693424036281463,
+            "p95": 69.80827664398994
+          }
+        }
+      },
+      "overall": {
+        "F1": 0.6902766135792121,
+        "FN": 728,
+        "FP": 750,
+        "TP": 1647,
+        "matched_emission_delay_ms": {
+          "median": 25.396825396821754,
+          "p10": -2.716553287985409,
+          "p95": 60.57151927439752
+        }
+      }
+    }
+  },
+  "score_uses_audio_availability_time_without_backdating": true,
+  "seconds": 478.62018140589566,
+  "source_count": 22,
+  "source_scope": [
+    {
+      "corpus": "GuitarSet",
+      "original_noteons": 170,
+      "out_of_MIDI_40_88": 0,
+      "scored_unique_noteons": 170,
+      "source": "05_Funk1-114-Ab_comp"
+    },
+    {
+      "corpus": "GuitarSet",
+      "original_noteons": 60,
+      "out_of_MIDI_40_88": 0,
+      "scored_unique_noteons": 60,
+      "source": "05_Funk1-114-Ab_solo"
+    },
+    {
+      "corpus": "GuitarSet",
+      "original_noteons": 145,
+      "out_of_MIDI_40_88": 0,
+      "scored_unique_noteons": 145,
+      "source": "05_Funk1-97-C_comp"
+    },
+    {
+      "corpus": "GuitarSet",
+      "original_noteons": 44,
+      "out_of_MIDI_40_88": 0,
+      "scored_unique_noteons": 44,
+      "source": "05_Funk1-97-C_solo"
+    },
+    {
+      "corpus": "GuitarSet",
+      "original_noteons": 432,
+      "out_of_MIDI_40_88": 0,
+      "scored_unique_noteons": 432,
+      "source": "05_Rock2-142-D_comp"
+    },
+    {
+      "corpus": "GuitarSet",
+      "original_noteons": 72,
+      "out_of_MIDI_40_88": 0,
+      "scored_unique_noteons": 72,
+      "source": "05_Rock2-142-D_solo"
+    },
+    {
+      "corpus": "GuitarSet",
+      "original_noteons": 157,
+      "out_of_MIDI_40_88": 0,
+      "scored_unique_noteons": 157,
+      "source": "05_Rock2-85-F_comp"
+    },
+    {
+      "corpus": "GuitarSet",
+      "original_noteons": 63,
+      "out_of_MIDI_40_88": 0,
+      "scored_unique_noteons": 63,
+      "source": "05_Rock2-85-F_solo"
+    },
+    {
+      "corpus": "GuitarSet",
+      "original_noteons": 153,
+      "out_of_MIDI_40_88": 0,
+      "scored_unique_noteons": 153,
+      "source": "05_SS2-107-Ab_comp"
+    },
+    {
+      "corpus": "GuitarSet",
+      "original_noteons": 56,
+      "out_of_MIDI_40_88": 0,
+      "scored_unique_noteons": 56,
+      "source": "05_SS2-107-Ab_solo"
+    },
+    {
+      "corpus": "GuitarSet",
+      "original_noteons": 109,
+      "out_of_MIDI_40_88": 0,
+      "scored_unique_noteons": 109,
+      "source": "05_SS2-88-F_comp"
+    },
+    {
+      "corpus": "GuitarSet",
+      "original_noteons": 51,
+      "out_of_MIDI_40_88": 0,
+      "scored_unique_noteons": 51,
+      "source": "05_SS2-88-F_solo"
+    },
+    {
+      "corpus": "URMP",
+      "original_noteons": 192,
+      "out_of_MIDI_40_88": 27,
+      "scored_unique_noteons": 165,
+      "source": "43_Chorale_tpt_tpt_hn_tbn_tba"
+    },
+    {
+      "corpus": "URMP",
+      "original_noteons": 249,
+      "out_of_MIDI_40_88": 0,
+      "scored_unique_noteons": 245,
+      "source": "26_King_vn_vn_va_vc"
+    },
+    {
+      "corpus": "URMP",
+      "original_noteons": 90,
+      "out_of_MIDI_40_88": 0,
+      "scored_unique_noteons": 90,
+      "source": "03_Dance_fl_cl"
+    },
+    {
+      "corpus": "URMP",
+      "original_noteons": 48,
+      "out_of_MIDI_40_88": 0,
+      "scored_unique_noteons": 48,
+      "source": "01_Jupiter_vn_vc"
+    },
+    {
+      "corpus": "URMP",
+      "original_noteons": 230,
+      "out_of_MIDI_40_88": 0,
+      "scored_unique_noteons": 227,
+      "source": "25_Pirates_vn_vn_va_sax"
+    },
+    {
+      "corpus": "IDMT",
+      "original_noteons": 9,
+      "out_of_MIDI_40_88": 0,
+      "scored_unique_noteons": 9,
+      "source": "pathetique_mono"
+    },
+    {
+      "corpus": "IDMT",
+      "original_noteons": 13,
+      "out_of_MIDI_40_88": 0,
+      "scored_unique_noteons": 13,
+      "source": "promenade_mono"
+    },
+    {
+      "corpus": "IDMT",
+      "original_noteons": 20,
+      "out_of_MIDI_40_88": 0,
+      "scored_unique_noteons": 20,
+      "source": "nocturneNr2"
+    },
+    {
+      "corpus": "IDMT",
+      "original_noteons": 29,
+      "out_of_MIDI_40_88": 0,
+      "scored_unique_noteons": 29,
+      "source": "quintfall"
+    },
+    {
+      "corpus": "IDMT",
+      "original_noteons": 19,
+      "out_of_MIDI_40_88": 1,
+      "scored_unique_noteons": 17,
+      "source": "pathetique_poly"
+    }
+  ],
+  "sources_previously_used_in_historical_experiments": true,
+  "status": "S613_STRICT_CAUSAL_NATIVE_AUDIO_TO_NOTES_HELDOUT",
+  "timing_ms": {
+    "max": 136.9088190003822,
+    "median": 1.1730619989975821,
+    "p95": 1.800645000002987,
+    "p99": 2.212009620234313
+  }
+}

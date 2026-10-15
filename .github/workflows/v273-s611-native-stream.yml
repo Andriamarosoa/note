@@ -1,0 +1,58 @@
+name: S611 NOTE native heads and selections streaming parity
+on:
+  push:
+    branches: [codex/s533-s535-note-fundamental-loops]
+    paths:
+      - 'src/causal_note/native_stream.py'
+      - 'scripts/live_native_notes.py'
+      - 'scripts/note_runtime.py'
+      - 'scripts/s611*'
+      - 'model/live/native_note/**'
+      - 'test/test_native_stream.py'
+      - 'test/test_note_runtime_modes.py'
+      - 'requirements-live.txt'
+      - '.github/workflows/v273-s611-native-stream.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s611-native-stream-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  original_NOTE_heads_and_gates:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Native trained model runtime
+        run: |
+          python -m pip install -r requirements-live.txt
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.5.1
+      - name: Original features, all K gates, bounded context and legacy MIDI contracts
+        run: |
+          python -m unittest -v test.test_native_stream test.test_live_k_midi_bridge test.test_note_runtime_modes test.test_v273_harmonic_trajectory
+          python -m scripts.live_native_notes --status
+      - name: Restore identical real GuitarSet S434 excerpt, no annotations
+        run: python -m scripts.s611_fetch_native_fixture --out data/S611/original_excerpt.wav
+      - name: Original S430 versus streaming, original event IDs and S80 K
+        run: |
+          python -m scripts.s611_validate_native_stream \
+            --wav data/S611/original_excerpt.wav \
+            --decisions analysis/evidence/v273-s611-native-stream/original_S434_S80_decisions.jsonl \
+            --legacy-notes analysis/evidence/v273-s611-native-stream/original_S434_notes.jsonl \
+            --native-events analysis/evidence/v273-s611-native-stream/native_events_full_recording.jsonl \
+            --out data/S611/validation
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s611-native-NOTE-stream-parity-not-live-accuracy
+          path: data/S611/validation/
+          retention-days: 90

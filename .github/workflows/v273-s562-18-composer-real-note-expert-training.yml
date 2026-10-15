@@ -1,0 +1,78 @@
+name: S562 REAL 18-composer two note-pitch heads 34D fundamental sound features and 18-composer-held audit
+on:
+  push:
+    branches: [codex/s533-s535-note-fundamental-loops]
+    paths:
+      - scripts/s562_train_18_composer_true_pitch_spectral_fundamental_heads.py
+      - .github/workflows/v273-s562-18-composer-real-note-expert-training.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+jobs:
+  fit_18_source_composer_held_49_true_note_pitches_and_two_full_training_models:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Pin physical source-note and MIDI matching dependencies
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 mido==1.3.3
+      - name: Tests 7D original, 34D harmonic/strike contrast physical pitch features without MIDI
+        run: |
+          python -m py_compile scripts/s562_train_18_composer_true_pitch_spectral_fundamental_heads.py
+          python -m scripts.s562_train_18_composer_true_pitch_spectral_fundamental_heads --self-test
+      - name: Restore oldest original S469 three and S537 five already exposed piano audio/MIDI feature proofs
+        run: |
+          gh run download 38558629021 -n s469-third-corpus-MAESTRO-v3-3-test-piano-filename-only-PREMIDI -D model/S469 --repo "${{ github.repository }}"
+          gh run download 38559667980 -n s471-real-third-source-MAESTRO-piano-V88-birth-vs-MIDI-onset-postfreeze -D model/S471 --repo "${{ github.repository }}"
+          gh run download 38647316407 -n s527-prelabel-575-original-MAESTRO-V88-K0-onsets-with-49-real-raw-audio-note-features -D model/S527 --repo "${{ github.repository }}"
+          gh run download 38654030814 -n s537-predeclared-five-distinct-MAESTRO-composers-only-metadata-no-WAV-no-MIDI -D model/S537 --repo "${{ github.repository }}"
+          gh run download 38656791368 -n s540-five-composers-original-V88-all-event-49x11-WAV-physical-pitch-features-preMIDI -D model/S540 --repo "${{ github.repository }}"
+          gh run download 38657068577 -n s542-VALIDATED-5-new-composer-noteon-F1-genuine-postfrozen-piano-MIDI-and-restrikes -D model/S542 --repo "${{ github.repository }}"
+      - name: Restore originally prospective S545 and S554 five-source MIDI outcomes, NOW annotated development, source SHA only
+        run: |
+          gh run download 38658066587 -n s545-next-five-composer-disjoint-MAESTRO-original-train-split-METADATA-ONLY -D model/S545 --repo "${{ github.repository }}"
+          gh run download 38659675965 -n s549-next-five-S545-composers-V88-raw49-pitch-PREMIDI -D model/S549 --repo "${{ github.repository }}"
+          gh run download 38659753045 -n s551-five-NEW-S545-composers-MIDI-SHA-verified-NoteOn-F1-S528-vs-S546 -D model/S551 --repo "${{ github.repository }}"
+          gh run download 38663678664 -n s554-next-five-metadata-only-composer-component-disjoint-before-new-model-noteon-validation -D model/S554 --repo "${{ github.repository }}"
+          gh run download 38663870685 -n s557-next-five-S554-composers-V88-raw49-pitch-PREMIDI -D model/S557 --repo "${{ github.repository }}"
+          gh run download 38663995955 -n s559-five-NEW-S554-composers-MIDI-SHA-verified-NoteOn-F1-S528-vs-S546 -D model/S559 --repo "${{ github.repository }}"
+      - name: Train from real SHA-verified source MIDI, excluding held composer and any co-composer from each fold
+        run: |
+          python -u -m scripts.s562_train_18_composer_true_pitch_spectral_fundamental_heads \
+            --old-manifest model/S469/report.json --old-midi-report model/S471/report.json \
+            --old-features model/S527/S527_ALL_V88_K0_K6_ORIGINAL_WAV_49_PITCH_FEATURES_PREMIDI.jsonl \
+            --old-feature-report model/S527/report.json \
+            --new-manifest model/S537/report.json --new-midi-report model/S542/report.json \
+            --new-features model/S540/S540_ALL_V88_K0_K6_ORIGINAL_WAV_49_PITCH_FEATURES_PREMIDI.jsonl \
+            --new-feature-report model/S540/report.json \
+            --s545-manifest model/S545/report.json --s545-midi-report model/S551/report.json \
+            --s545-features model/S549/S549_ALL_V88_K0_K6_ORIGINAL_WAV_49_PITCH_FEATURES_PREMIDI.jsonl \
+            --s545-feature-report model/S549/report.json \
+            --s554-manifest model/S554/report.json --s554-midi-report model/S559/report.json \
+            --s554-features model/S557/S557_ALL_V88_K0_K6_ORIGINAL_WAV_49_PITCH_FEATURES_PREMIDI.jsonl \
+            --s554-feature-report model/S557/report.json --out model/S562
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S562/report.json'))
+          assert r['status']=='S562_REAL_EIGHTEEN_EXPOSED_COMPOSER_SOURCE_AUDIO_TRAINED_NOTE_PITCH_TWO_HEADS'
+          assert r['original_historical_source_recordings']==18
+          assert r['fully_trained_two_models_before_ANY_S561_MIDI']
+          assert r['composer_and_co_composer_disjoint_folds']
+          assert len(r['all_fitted_checkpoints_SHA256'])==2
+          assert set(r['two_modes_predeclared'])=={'raw7','competing_fundamental34'}
+          assert r['no_S561_audio_or_MIDI_opened_for_fitting']
+          assert r['no_promotion'] and r['original_S80_GuitarSet_Exact_K_Live_stays_unchanged']
+          print('S562 PASS two new genuine source-trained 18-composer note identity models; new S561 MIDI sealed')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s562-real-18-composer-trained-original7-vs-physical-fundamental34-NoteOn-heads
+          path: model/S562/
+          retention-days: 90

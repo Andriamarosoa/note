@@ -13,12 +13,12 @@ from scripts.stream_k_midi_live import DEFAULT_PROFILE
 
 
 def main(argv=None):
-    parser=argparse.ArgumentParser(
+    parser=argparse.ArgumentParser(allow_abbrev=False,
         description="note protected runtimes: legacy causal live or optional K-first MIDI event stream"
     )
     parser.add_argument(
         "--mode",required=True,
-        choices=("live-boundaries","live-v8","live-midi","status"),
+        choices=("live-boundaries","live-v8","live-midi","native-notes","recent-notes","strict-live","status"),
         help="existing Live modes are delegated without changes; offline best is pinned, not live"
     )
     parser.add_argument("--status-profile",default=str(DEFAULT_PROFILE),
@@ -42,6 +42,9 @@ def main(argv=None):
             "offline_full_note_F1":record["offline_native_full_note"]["full_note_F1"],
             "live_accuracy_certified":False,
             "S80_causal_live_frontend_currently_integrated":False,
+            "native_pitch_stream":"scripts.live_native_notes (requires upstream S80 events/K)",
+            "recent_native_stream":"scripts.live_recent_notes (S569/S578/S585, external V88/BP required)",
+            "autonomous_native_stream":"scripts.live_strict_notes (experimental S613 causal heads, no sidecars)",
             "S422_noncausal_lookahead_ms":5000,
         },indent=2,sort_keys=True))
         return
@@ -55,6 +58,15 @@ def main(argv=None):
     if ns.mode=="live-midi":
         from scripts import stream_k_midi_live
         return stream_k_midi_live.main(forwarded)
+    if ns.mode=="native-notes":
+        from scripts import live_native_notes
+        return live_native_notes.main(forwarded)
+    if ns.mode=="recent-notes":
+        from scripts import live_recent_notes
+        return live_recent_notes.main(forwarded)
+    if ns.mode=="strict-live":
+        from scripts import live_strict_notes
+        return live_strict_notes.main(forwarded)
     raise AssertionError("unsupported mode")
 
 

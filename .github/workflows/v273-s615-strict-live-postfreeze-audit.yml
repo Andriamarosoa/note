@@ -1,0 +1,27 @@
+name: S615 frozen NOTE Live error taxonomy
+on:
+  push:
+    branches: [codex/s533-s535-note-fundamental-loops]
+    paths:
+      - scripts/s615_postfreeze_live_diagnostics.py
+      - test/test_s615_live_diagnostics.py
+      - .github/workflows/v273-s615-strict-live-postfreeze-audit.yml
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  frozen_taxonomy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check classification semantics
+        run: PYTHONPATH=.:src python -m unittest -v test.test_s615_live_diagnostics
+      - name: Hash verify original S614 ledgers and audit causes without retraining
+        run: PYTHONPATH=.:src python -m scripts.s615_postfreeze_live_diagnostics --out /tmp/s615_postfreeze_taxonomy.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s615-postfreeze-taxonomy
+          path: /tmp/s615_postfreeze_taxonomy.json

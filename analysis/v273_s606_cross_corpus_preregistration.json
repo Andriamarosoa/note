@@ -1,0 +1,1723 @@
+{
+  "archives": {
+    "GuitarSet_annotations": {
+      "access": "full_annotation_archive_after_all_freezes",
+      "cache_name": "GuitarSet_annotations.zip",
+      "md5": "b39b78e63d3446f2e54ddb7a54df9b10",
+      "sha256": "8daa02e6417ccca1685feb44b135e95928ad7037e5032ecb326b5791856fda99",
+      "size": 39132574,
+      "url": "https://huggingface.co/datasets/EZMONYI/music-ai-human-test-audio/resolve/4b649de5ebc78328b3b1e1df5ea1196c2646e143/external_controls/guitarset_source_v1/annotation.zip"
+    },
+    "GuitarSet_audio": {
+      "access": "full_audio_only_archive",
+      "cache_name": "GuitarSet_audio.zip",
+      "md5": "275966d6610ac34999b58426beb119c3",
+      "sha256": "237cdc58353d25c3c9683f4565a0f1cf2db30a9051abca545a919f8f1296dc28",
+      "size": 656927981,
+      "url": "https://huggingface.co/datasets/EZMONYI/music-ai-human-test-audio/resolve/4b649de5ebc78328b3b1e1df5ea1196c2646e143/external_controls/guitarset_source_v1/audio_mono-mic.zip"
+    },
+    "IDMT_annotations": {
+      "access": "range",
+      "published_md5_NOT_recalculated": "06796e08731bccffaed6ae59361486e4",
+      "size": 1329918978,
+      "url": "https://zenodo.org/api/records/7544110/files/IDMT-SMT-GUITAR_V2.zip/content"
+    },
+    "IDMT_audio": {
+      "access": "range",
+      "published_md5_NOT_recalculated": "06796e08731bccffaed6ae59361486e4",
+      "size": 1329918978,
+      "url": "https://zenodo.org/api/records/7544110/files/IDMT-SMT-GUITAR_V2.zip/content"
+    }
+  },
+  "contract_sha256": "de0b09fc725aeccaba3702e72ff76197a70c676bf1d5db166ec30e1e1393b6fa",
+  "exact_unison_rule": "Only duplicate (exact float onset, MIDI pitch) removed; no grouping or 100ms truth deduplication",
+  "excluded_prior_MAESTRO_sources": [
+    "2004/MIDI-Unprocessed_SMF_07_R1_2004_01_ORIG_MID--AUDIO_07_R1_2004_02_Track02_wav.wav",
+    "2004/MIDI-Unprocessed_SMF_17_R1_2004_03-06_ORIG_MID--AUDIO_20_R2_2004_12_Track12_wav--1.wav",
+    "2004/MIDI-Unprocessed_XP_21_R1_2004_03_ORIG_MID--AUDIO_21_R1_2004_04_Track04_wav.wav",
+    "2006/MIDI-Unprocessed_06_R1_2006_01-04_ORIG_MID--AUDIO_06_R1_2006_04_Track04_wav.wav",
+    "2006/MIDI-Unprocessed_11_R1_2006_01-06_ORIG_MID--AUDIO_11_R1_2006_01_Track01_wav.wav",
+    "2008/MIDI-Unprocessed_02_R2_2008_01-05_ORIG_MID--AUDIO_02_R2_2008_wav--4.wav",
+    "2008/MIDI-Unprocessed_02_R3_2008_01-03_ORIG_MID--AUDIO_02_R3_2008_wav--3.wav",
+    "2008/MIDI-Unprocessed_06_R1_2008_01-04_ORIG_MID--AUDIO_06_R1_2008_wav--4.wav",
+    "2008/MIDI-Unprocessed_06_R2_2008_01-05_ORIG_MID--AUDIO_06_R2_2008_wav--1.wav",
+    "2008/MIDI-Unprocessed_12_R3_2008_01-04_ORIG_MID--AUDIO_12_R3_2008_wav--3.wav",
+    "2009/MIDI-Unprocessed_02_R1_2009_03-06_ORIG_MID--AUDIO_02_R1_2009_02_R1_2009_04_WAV.wav",
+    "2009/MIDI-Unprocessed_03_R1_2009_03-08_ORIG_MID--AUDIO_03_R1_2009_03_R1_2009_05_WAV.wav",
+    "2009/MIDI-Unprocessed_09_R1_2009_01-04_ORIG_MID--AUDIO_09_R1_2009_09_R1_2009_01_WAV.wav",
+    "2009/MIDI-Unprocessed_14_R1_2009_01-05_ORIG_MID--AUDIO_14_R1_2009_14_R1_2009_02_WAV.wav",
+    "2011/MIDI-Unprocessed_03_R1_2011_MID--AUDIO_R1-D1_16_Track16_wav.wav",
+    "2011/MIDI-Unprocessed_04_R3_2011_MID--AUDIO_R3-D2_04_Track04_wav.wav",
+    "2011/MIDI-Unprocessed_07_R1_2011_MID--AUDIO_R1-D3_02_Track02_wav.wav",
+    "2011/MIDI-Unprocessed_08_R1_2011_MID--AUDIO_R1-D3_09_Track09_wav.wav",
+    "2013/ORIG-MIDI_01_7_6_13_Group__MID--AUDIO_04_R1_2013_wav--2.wav",
+    "2013/ORIG-MIDI_02_7_6_13_Group__MID--AUDIO_07_R1_2013_wav--2.wav",
+    "2014/MIDI-UNPROCESSED_01-03_R1_2014_MID--AUDIO_01_R1_2014_wav--1.wav",
+    "2014/MIDI-UNPROCESSED_21-22_R1_2014_MID--AUDIO_21_R1_2014_wav--3.wav",
+    "2014/MIDI-UNPROCESSED_21-22_R1_2014_MID--AUDIO_21_R1_2014_wav--7.wav",
+    "2015/MIDI-Unprocessed_R1_D2-13-20_mid--AUDIO-from_mp3_19_R1_2015_wav--4.wav",
+    "2015/MIDI-Unprocessed_R1_D2-21-22_mid--AUDIO-from_mp3_21_R1_2015_wav--5.wav",
+    "2015/MIDI-Unprocessed_R1_D2-21-22_mid--AUDIO-from_mp3_22_R1_2015_wav--3.wav",
+    "2017/MIDI-Unprocessed_051_PIANO051_MID--AUDIO-split_07-06-17_Piano-e_3-02_wav--5.wav",
+    "2017/MIDI-Unprocessed_053_PIANO053_MID--AUDIO-split_07-06-17_Piano-e_3-04_wav--3.wav",
+    "2017/MIDI-Unprocessed_066_PIANO066_MID--AUDIO-split_07-07-17_Piano-e_3-02_wav--3.wav",
+    "2018/MIDI-Unprocessed_Recital1-3_MID--AUDIO_01_R1_2018_wav--1.wav",
+    "2018/MIDI-Unprocessed_Recital1-3_MID--AUDIO_01_R1_2018_wav--2.wav",
+    "2018/MIDI-Unprocessed_Recital1-3_MID--AUDIO_02_R1_2018_wav--3.wav",
+    "2018/MIDI-Unprocessed_Recital13-15_MID--AUDIO_15_R1_2018_wav--2.wav",
+    "2018/MIDI-Unprocessed_Recital17-19_MID--AUDIO_19_R1_2018_wav--3.wav",
+    "2018/MIDI-Unprocessed_Recital9-11_MID--AUDIO_09_R1_2018_wav--2.wav"
+  ],
+  "independence_limits": [
+    "Frozen S601 head trained on URMP only; no target labels used in training or this selection",
+    "GuitarSet and MAESTRO are among Basic Pitch pretraining datasets; no claim of globally unseen pretraining",
+    "IDMT Dataset3 and some GuitarSet material were evaluated by earlier project models; this is transfer of a frozen new head, not a new untouched corpus",
+    "MAESTRO filenames excluded against listed prior manifests only, not exhaustive project history",
+    "Microphone GuitarSet only; pickup-only, other microphones, room acoustics and user instruments remain unvalidated",
+    "Offline NoteOn only; no NoteOff, complete Exact-K, causal or Live claim"
+  ],
+  "maestro_base": "https://huggingface.co/datasets/ddPn08/maestro-v3.0.0/resolve/67e586b1dcf5925c94a6729fcd5eb7f23d504fac/",
+  "maximum_seconds_per_source": 24,
+  "model_sha256": "f925fa0487abe299b7ef1978d2163bfcfbea8fade8e43a105e22bbf7636d6cfb",
+  "no_promotion": true,
+  "no_tuning": true,
+  "offset_seconds": {
+    "GuitarSet": 5,
+    "IDMT": 0,
+    "MAESTRO": 5
+  },
+  "original_metadata_provenance": {
+    "GuitarSet_record": 3371780,
+    "IDMT_record": 7544110,
+    "maestro_official_csv_sha256": "cb88a64a12971a995dd41852aa3a33879501cf70d01b9a6feb637f4ad8d8ddff"
+  },
+  "previous_manifest_sha256": {
+    "model/S469/report.json": "98e4b2cbf6a8f585fdc446ba26e217ec63aac712f023dac7ac7d3b2295bb3410",
+    "model/S537/report.json": "659f0b13939e7979c171a618189055820bcc0a4c8cb2ecd3cfd536fda5e3f0ee",
+    "model/S545/report.json": "a0ef20e6a6b23d10530f38de2b836257af958da1af4541b90ca9bcd5077008fc",
+    "model/S554/report.json": "cf563f9f0f828947f4cc83c601a7003a658c24cba92bf38b4899e4de2acabb8a",
+    "model/S561/report.json": "6c40e196e1525ec5840db2c209abae36c3b7fc82c8e50dd2af4c7ea26ac4325c",
+    "model/S570/report.json": "e88e06108e225d84cf04d603327cf897dd2ec19083b51cedbd18d4ef6edcb5f2",
+    "model/S577/report.json": "ee7994d286e00c553037bc7b284af7bed651b43074825a197a06fb3f16c57701",
+    "model/S586/report.json": "9d6b5982d7d15d9ad09195fcd626d41a572775b78836452a1d8c7374ee43bac6"
+  },
+  "primary_measure": "micro NoteOn F1, exact MIDI40..88, one-to-one matching +/-80ms",
+  "primary_policy": "S601_learned_candidate_gate",
+  "secondary_tolerances_ms": [
+    30,
+    50
+  ],
+  "selection_rules": {
+    "GuitarSet": "60 of 360 microphone recordings: 6 players x 5 filename styles x 2 roles, smallest SHA256(full filename) among 6 in each cell",
+    "IDMT": "All five original Dataset3 WAV recordings; pathetique mono/poly are two arrangements of one work, not independent compositions",
+    "MAESTRO": "One smallest-SHA256(audio_filename) per single canonical composer credit among official test rows duration 29..300 seconds; exclude the 35 explicitly listed earlier project sources; 12 composers"
+  },
+  "short_source_rule": "Score [offset,min(offset+24,source EOF)), all three outputs on exactly that interval; fail without replacement if less than 2 seconds",
+  "sources": {
+    "GuitarSet": [
+      {
+        "annotation": {
+          "compressed": 108731,
+          "crc32": 4252139551,
+          "path": "00_BN1-147-Gb_comp.jams",
+          "size": 1507873
+        },
+        "audio": {
+          "compressed": 907437,
+          "crc32": 277563649,
+          "path": "00_BN1-147-Gb_comp_mic.wav",
+          "size": 1727494
+        },
+        "label": "00_BN1-147-Gb_comp_mic.wav",
+        "source_id": "7dc5b421da7aeebca394b60064039b8256bcb2d956f2699b0413439c7670ba16",
+        "strata": {
+          "player": "00",
+          "role": "comp",
+          "style": "BN"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 66295,
+          "crc32": 2997786958,
+          "path": "00_BN1-129-Eb_solo.jams",
+          "size": 950809
+        },
+        "audio": {
+          "compressed": 1126174,
+          "crc32": 3537617973,
+          "path": "00_BN1-129-Eb_solo_mic.wav",
+          "size": 1969056
+        },
+        "label": "00_BN1-129-Eb_solo_mic.wav",
+        "source_id": "25c532d258fd6e22342b0986bb2cceca7c226477c8a7353937bf0a32f3fd6299",
+        "strata": {
+          "player": "00",
+          "role": "solo",
+          "style": "BN"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 192562,
+          "crc32": 466312214,
+          "path": "00_Funk1-97-C_comp.jams",
+          "size": 2656393
+        },
+        "audio": {
+          "compressed": 1802629,
+          "crc32": 671763251,
+          "path": "00_Funk1-97-C_comp_mic.wav",
+          "size": 2618560
+        },
+        "label": "00_Funk1-97-C_comp_mic.wav",
+        "source_id": "37782c24fe773750bd5267e471a4ce594749a6e9c00b3e29b75322ab26e22691",
+        "strata": {
+          "player": "00",
+          "role": "comp",
+          "style": "Funk"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 72869,
+          "crc32": 185687222,
+          "path": "00_Funk2-108-Eb_solo.jams",
+          "size": 1026455
+        },
+        "audio": {
+          "compressed": 1828164,
+          "crc32": 2305419663,
+          "path": "00_Funk2-108-Eb_solo_mic.wav",
+          "size": 3135412
+        },
+        "label": "00_Funk2-108-Eb_solo_mic.wav",
+        "source_id": "04372b2dc84db188a9ebfb8b1f8b0ac7d92c31690e00dae1f009cc95c67e0fe1",
+        "strata": {
+          "player": "00",
+          "role": "solo",
+          "style": "Funk"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 114664,
+          "crc32": 2748873227,
+          "path": "00_Jazz2-187-F#_comp.jams",
+          "size": 1505666
+        },
+        "audio": {
+          "compressed": 1157987,
+          "crc32": 3377330944,
+          "path": "00_Jazz2-187-F#_comp_mic.wav",
+          "size": 1810966
+        },
+        "label": "00_Jazz2-187-F#_comp_mic.wav",
+        "source_id": "1ef7601478a9635291f265fc355d7d6e6550343b5b94d5068c6730037bd178d5",
+        "strata": {
+          "player": "00",
+          "role": "comp",
+          "style": "Jazz"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 106862,
+          "crc32": 3459044516,
+          "path": "00_Jazz3-150-C_solo.jams",
+          "size": 1616040
+        },
+        "audio": {
+          "compressed": 1261914,
+          "crc32": 2828604678,
+          "path": "00_Jazz3-150-C_solo_mic.wav",
+          "size": 2257964
+        },
+        "label": "00_Jazz3-150-C_solo_mic.wav",
+        "source_id": "085e76fab0250f46eaa97f1f8c14ad39ba8d673157a2fc04a370fbd2104ff2b0",
+        "strata": {
+          "player": "00",
+          "role": "solo",
+          "style": "Jazz"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 396439,
+          "crc32": 117580929,
+          "path": "00_Rock2-85-F_comp.jams",
+          "size": 6139892
+        },
+        "audio": {
+          "compressed": 3238958,
+          "crc32": 4163038934,
+          "path": "00_Rock2-85-F_comp_mic.wav",
+          "size": 3984320
+        },
+        "label": "00_Rock2-85-F_comp_mic.wav",
+        "source_id": "03f9d842eeaeb4e8c3d815ce4b43d99f81cc23645fc8c0d628efa138a13432a0",
+        "strata": {
+          "player": "00",
+          "role": "comp",
+          "style": "Rock"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 108714,
+          "crc32": 44832594,
+          "path": "00_Rock3-117-Bb_solo.jams",
+          "size": 1651022
+        },
+        "audio": {
+          "compressed": 1876244,
+          "crc32": 1508057305,
+          "path": "00_Rock3-117-Bb_solo_mic.wav",
+          "size": 2894450
+        },
+        "label": "00_Rock3-117-Bb_solo_mic.wav",
+        "source_id": "0724facfb2c106f210c03dcebd87783e89e920e5c2106b176ec19429374e9317",
+        "strata": {
+          "player": "00",
+          "role": "solo",
+          "style": "Rock"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 274689,
+          "crc32": 1393570706,
+          "path": "00_SS3-98-C_comp.jams",
+          "size": 4470690
+        },
+        "audio": {
+          "compressed": 2186166,
+          "crc32": 3510789405,
+          "path": "00_SS3-98-C_comp_mic.wav",
+          "size": 3455614
+        },
+        "label": "00_SS3-98-C_comp_mic.wav",
+        "source_id": "20fc5a334ec1c54752f4497350803d19b57226b21bf46338b25d5337090b0880",
+        "strata": {
+          "player": "00",
+          "role": "comp",
+          "style": "SS"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 95195,
+          "crc32": 3486640867,
+          "path": "00_SS2-88-F_solo.jams",
+          "size": 1367883
+        },
+        "audio": {
+          "compressed": 2358202,
+          "crc32": 2777290680,
+          "path": "00_SS2-88-F_solo_mic.wav",
+          "size": 3848140
+        },
+        "label": "00_SS2-88-F_solo_mic.wav",
+        "source_id": "045d3a883f3288569623ef7971a85f0e7a9e7ebdba74c9d787b7243828c45cfc",
+        "strata": {
+          "player": "00",
+          "role": "solo",
+          "style": "SS"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 111629,
+          "crc32": 1244969585,
+          "path": "01_BN1-147-Gb_comp.jams",
+          "size": 1598413
+        },
+        "audio": {
+          "compressed": 1055339,
+          "crc32": 1813433605,
+          "path": "01_BN1-147-Gb_comp_mic.wav",
+          "size": 1727494
+        },
+        "label": "01_BN1-147-Gb_comp_mic.wav",
+        "source_id": "09304d5821788684686371c838f9c6779bb16b2de120508dee251d51e6e772a8",
+        "strata": {
+          "player": "01",
+          "role": "comp",
+          "style": "BN"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 61505,
+          "crc32": 3896361471,
+          "path": "01_BN3-154-E_solo.jams",
+          "size": 829404
+        },
+        "audio": {
+          "compressed": 1465461,
+          "crc32": 1654775269,
+          "path": "01_BN3-154-E_solo_mic.wav",
+          "size": 2199046
+        },
+        "label": "01_BN3-154-E_solo_mic.wav",
+        "source_id": "41d7d456463cacac86a302ee4798c343064d4e953b616d10b0651dff8ca058c1",
+        "strata": {
+          "player": "01",
+          "role": "solo",
+          "style": "BN"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 70670,
+          "crc32": 2743297224,
+          "path": "01_Funk1-114-Ab_comp.jams",
+          "size": 891285
+        },
+        "audio": {
+          "compressed": 1530853,
+          "crc32": 3636947861,
+          "path": "01_Funk1-114-Ab_comp_mic.wav",
+          "size": 2227834
+        },
+        "label": "01_Funk1-114-Ab_comp_mic.wav",
+        "source_id": "09829f775bc01ac554415c9685fef492ed057dbfd93bd16f1a5611459bb98889",
+        "strata": {
+          "player": "01",
+          "role": "comp",
+          "style": "Funk"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 64659,
+          "crc32": 2006964071,
+          "path": "01_Funk3-112-C#_solo.jams",
+          "size": 830322
+        },
+        "audio": {
+          "compressed": 1953029,
+          "crc32": 2532221747,
+          "path": "01_Funk3-112-C#_solo_mic.wav",
+          "size": 3023928
+        },
+        "label": "01_Funk3-112-C#_solo_mic.wav",
+        "source_id": "03338c683e047966732219047621dbbac306ee7b776d5dcffe3facfa0793d857",
+        "strata": {
+          "player": "01",
+          "role": "solo",
+          "style": "Funk"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 72042,
+          "crc32": 2419598704,
+          "path": "01_Jazz1-200-B_comp.jams",
+          "size": 958792
+        },
+        "audio": {
+          "compressed": 696344,
+          "crc32": 753972627,
+          "path": "01_Jazz1-200-B_comp_mic.wav",
+          "size": 1270124
+        },
+        "label": "01_Jazz1-200-B_comp_mic.wav",
+        "source_id": "4151eb025cdb2fcf36f2bd3f1bbdd8449ca3d49845355198509bdebc471772d5",
+        "strata": {
+          "player": "01",
+          "role": "comp",
+          "style": "Jazz"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 52445,
+          "crc32": 3535793714,
+          "path": "01_Jazz2-187-F#_solo.jams",
+          "size": 664477
+        },
+        "audio": {
+          "compressed": 1207837,
+          "crc32": 1609384393,
+          "path": "01_Jazz2-187-F#_solo_mic.wav",
+          "size": 1810966
+        },
+        "label": "01_Jazz2-187-F#_solo_mic.wav",
+        "source_id": "0bae54cb056df93bddfd482737a08a3c7c5fdf7e525dc28dc27a4e2ba760bdda",
+        "strata": {
+          "player": "01",
+          "role": "solo",
+          "style": "Jazz"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 78837,
+          "crc32": 3632994965,
+          "path": "01_Rock3-148-C_comp.jams",
+          "size": 1085335
+        },
+        "audio": {
+          "compressed": 1758354,
+          "crc32": 2147635312,
+          "path": "01_Rock3-148-C_comp_mic.wav",
+          "size": 2288022
+        },
+        "label": "01_Rock3-148-C_comp_mic.wav",
+        "source_id": "468b9a0149159a6460e835ae0b65aa347a821bea3ceff1cb9228b0d1e02f91be",
+        "strata": {
+          "player": "01",
+          "role": "comp",
+          "style": "Rock"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 61214,
+          "crc32": 4026333525,
+          "path": "01_Rock1-90-C#_solo.jams",
+          "size": 879060
+        },
+        "audio": {
+          "compressed": 1782150,
+          "crc32": 3492618140,
+          "path": "01_Rock1-90-C#_solo_mic.wav",
+          "size": 2822444
+        },
+        "label": "01_Rock1-90-C#_solo_mic.wav",
+        "source_id": "2038a78ed5f20b2843ef40bd376d56571b8873a1a2a993069695ce154d3bcdd8",
+        "strata": {
+          "player": "01",
+          "role": "solo",
+          "style": "Rock"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 334075,
+          "crc32": 3872527125,
+          "path": "01_SS1-68-E_comp.jams",
+          "size": 5447348
+        },
+        "audio": {
+          "compressed": 2633048,
+          "crc32": 4140101299,
+          "path": "01_SS1-68-E_comp_mic.wav",
+          "size": 3734996
+        },
+        "label": "01_SS1-68-E_comp_mic.wav",
+        "source_id": "3184a49fbed3a69831545e2c6fcd6107c32febe1f7279bc1df2105f6c354c980",
+        "strata": {
+          "player": "01",
+          "role": "comp",
+          "style": "SS"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 80428,
+          "crc32": 3416368750,
+          "path": "01_SS3-98-C_solo.jams",
+          "size": 1122191
+        },
+        "audio": {
+          "compressed": 2412209,
+          "crc32": 2290724553,
+          "path": "01_SS3-98-C_solo_mic.wav",
+          "size": 3455614
+        },
+        "label": "01_SS3-98-C_solo_mic.wav",
+        "source_id": "6cf04b89d128461a7dda3092706e62d3980177224c4713f8496a54cd24651320",
+        "strata": {
+          "player": "01",
+          "role": "solo",
+          "style": "SS"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 204245,
+          "crc32": 4161039832,
+          "path": "02_BN3-119-G_comp.jams",
+          "size": 3030987
+        },
+        "audio": {
+          "compressed": 2389927,
+          "crc32": 3501097277,
+          "path": "02_BN3-119-G_comp_mic.wav",
+          "size": 2845658
+        },
+        "label": "02_BN3-119-G_comp_mic.wav",
+        "source_id": "23ac01a7f954c768db7853b979d472ff09cfbd9d24bc78ad2e2eecc694bc0ea0",
+        "strata": {
+          "player": "02",
+          "role": "comp",
+          "style": "BN"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 39817,
+          "crc32": 288907119,
+          "path": "02_BN1-129-Eb_solo.jams",
+          "size": 559549
+        },
+        "audio": {
+          "compressed": 1319393,
+          "crc32": 3265449587,
+          "path": "02_BN1-129-Eb_solo_mic.wav",
+          "size": 1969056
+        },
+        "label": "02_BN1-129-Eb_solo_mic.wav",
+        "source_id": "04ce2ae30e5cd24a11b74d1412e2f756a8054183c3004c25ba57a24f9cd095d0",
+        "strata": {
+          "player": "02",
+          "role": "solo",
+          "style": "BN"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 106859,
+          "crc32": 3670576425,
+          "path": "02_Funk1-114-Ab_comp.jams",
+          "size": 1454329
+        },
+        "audio": {
+          "compressed": 1798575,
+          "crc32": 2308872081,
+          "path": "02_Funk1-114-Ab_comp_mic.wav",
+          "size": 2227834
+        },
+        "label": "02_Funk1-114-Ab_comp_mic.wav",
+        "source_id": "250c14215f3bf1a7c0f5496d1d0448733452450efea4fbdaed2b106d0f9f300c",
+        "strata": {
+          "player": "02",
+          "role": "comp",
+          "style": "Funk"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 53986,
+          "crc32": 4193851197,
+          "path": "02_Funk2-119-G_solo.jams",
+          "size": 727522
+        },
+        "audio": {
+          "compressed": 1831080,
+          "crc32": 1910166900,
+          "path": "02_Funk2-119-G_solo_mic.wav",
+          "size": 2845658
+        },
+        "label": "02_Funk2-119-G_solo_mic.wav",
+        "source_id": "5620edfebeea152b87baeab7c8ec5fcd5f1bc4a71332fd7e19cc8b847f914c3c",
+        "strata": {
+          "player": "02",
+          "role": "solo",
+          "style": "Funk"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 132199,
+          "crc32": 3806087897,
+          "path": "02_Jazz3-137-Eb_comp.jams",
+          "size": 1924657
+        },
+        "audio": {
+          "compressed": 1942548,
+          "crc32": 4294482940,
+          "path": "02_Jazz3-137-Eb_comp_mic.wav",
+          "size": 2471690
+        },
+        "label": "02_Jazz3-137-Eb_comp_mic.wav",
+        "source_id": "02b61e557433cfb943997eff92dba214a04799add237bc5844a5d1bcd3b70000",
+        "strata": {
+          "player": "02",
+          "role": "comp",
+          "style": "Jazz"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 51431,
+          "crc32": 3468909942,
+          "path": "02_Jazz3-137-Eb_solo.jams",
+          "size": 700937
+        },
+        "audio": {
+          "compressed": 1781700,
+          "crc32": 1670578022,
+          "path": "02_Jazz3-137-Eb_solo_mic.wav",
+          "size": 2471690
+        },
+        "label": "02_Jazz3-137-Eb_solo_mic.wav",
+        "source_id": "18f894f1290ee5abe2db48d2a0c7d9c31c6ceb94dbba37c1b4f7b92110ef9d9b",
+        "strata": {
+          "player": "02",
+          "role": "solo",
+          "style": "Jazz"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 150434,
+          "crc32": 3117612565,
+          "path": "02_Rock3-117-Bb_comp.jams",
+          "size": 2291037
+        },
+        "audio": {
+          "compressed": 2546434,
+          "crc32": 2967666662,
+          "path": "02_Rock3-117-Bb_comp_mic.wav",
+          "size": 2894450
+        },
+        "label": "02_Rock3-117-Bb_comp_mic.wav",
+        "source_id": "4c74d0e37c7fc9e062da7ed7dbb48146d1473cf655807aac6b5f40fb118c4883",
+        "strata": {
+          "player": "02",
+          "role": "comp",
+          "style": "Rock"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 58186,
+          "crc32": 1215916201,
+          "path": "02_Rock3-117-Bb_solo.jams",
+          "size": 858487
+        },
+        "audio": {
+          "compressed": 2110469,
+          "crc32": 1080130376,
+          "path": "02_Rock3-117-Bb_solo_mic.wav",
+          "size": 2894450
+        },
+        "label": "02_Rock3-117-Bb_solo_mic.wav",
+        "source_id": "0e22d43848af453689ab7c9c96106b69d0ddf6b0f16b505a7bffb421838ab5c9",
+        "strata": {
+          "player": "02",
+          "role": "solo",
+          "style": "Rock"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 202281,
+          "crc32": 1218828336,
+          "path": "02_SS1-68-E_comp.jams",
+          "size": 3242195
+        },
+        "audio": {
+          "compressed": 2837011,
+          "crc32": 1129051880,
+          "path": "02_SS1-68-E_comp_mic.wav",
+          "size": 3734996
+        },
+        "label": "02_SS1-68-E_comp_mic.wav",
+        "source_id": "3a65999e00363ac3b4e5f19b13e44478f5f709f63172d98a8bf751393a73a2b6",
+        "strata": {
+          "player": "02",
+          "role": "comp",
+          "style": "SS"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 56175,
+          "crc32": 2550012524,
+          "path": "02_SS1-100-C#_solo.jams",
+          "size": 805634
+        },
+        "audio": {
+          "compressed": 1924871,
+          "crc32": 2537242968,
+          "path": "02_SS1-100-C#_solo_mic.wav",
+          "size": 2540204
+        },
+        "label": "02_SS1-100-C#_solo_mic.wav",
+        "source_id": "1aad90954e31a9bff59231234d8c0e12880d6c3cca211b65a65a84659b922286",
+        "strata": {
+          "player": "02",
+          "role": "solo",
+          "style": "SS"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 126673,
+          "crc32": 1211001987,
+          "path": "03_BN3-119-G_comp.jams",
+          "size": 1812284
+        },
+        "audio": {
+          "compressed": 1630340,
+          "crc32": 1221617525,
+          "path": "03_BN3-119-G_comp_mic.wav",
+          "size": 2845658
+        },
+        "label": "03_BN3-119-G_comp_mic.wav",
+        "source_id": "10229783be84eb01bbc927e957e72e9ea2bf1333fbb1835a18da7597254f4f5b",
+        "strata": {
+          "player": "03",
+          "role": "comp",
+          "style": "BN"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 39402,
+          "crc32": 3825647130,
+          "path": "03_BN1-129-Eb_solo.jams",
+          "size": 524685
+        },
+        "audio": {
+          "compressed": 1396760,
+          "crc32": 2468171691,
+          "path": "03_BN1-129-Eb_solo_mic.wav",
+          "size": 1969056
+        },
+        "label": "03_BN1-129-Eb_solo_mic.wav",
+        "source_id": "0e4006892b851bf9992583e5dfbcf0f6a6dc252ce35d58c92cbe03f9861a8328",
+        "strata": {
+          "player": "03",
+          "role": "solo",
+          "style": "BN"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 178682,
+          "crc32": 819998216,
+          "path": "03_Funk3-98-A_comp.jams",
+          "size": 2503256
+        },
+        "audio": {
+          "compressed": 2359138,
+          "crc32": 4294189656,
+          "path": "03_Funk3-98-A_comp_mic.wav",
+          "size": 3455614
+        },
+        "label": "03_Funk3-98-A_comp_mic.wav",
+        "source_id": "155d02e16c45a2c860a0bce9a8cc9e71417ff1ba313280a9dd7dae76100aec9a",
+        "strata": {
+          "player": "03",
+          "role": "comp",
+          "style": "Funk"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 57691,
+          "crc32": 2468445725,
+          "path": "03_Funk3-112-C#_solo.jams",
+          "size": 743414
+        },
+        "audio": {
+          "compressed": 2094111,
+          "crc32": 4011058090,
+          "path": "03_Funk3-112-C#_solo_mic.wav",
+          "size": 3023928
+        },
+        "label": "03_Funk3-112-C#_solo_mic.wav",
+        "source_id": "32f1cf97870fc62549df498388e823b1df89b791d9f53c05112588f3e93841bd",
+        "strata": {
+          "player": "03",
+          "role": "solo",
+          "style": "Funk"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 75179,
+          "crc32": 2375973917,
+          "path": "03_Jazz3-150-C_comp.jams",
+          "size": 1069266
+        },
+        "audio": {
+          "compressed": 1312875,
+          "crc32": 1265503235,
+          "path": "03_Jazz3-150-C_comp_mic.wav",
+          "size": 2257964
+        },
+        "label": "03_Jazz3-150-C_comp_mic.wav",
+        "source_id": "05df75f25244520590022d9e75929382dd2088849fd2ba9e3b56ecf12c1fbf7c",
+        "strata": {
+          "player": "03",
+          "role": "comp",
+          "style": "Jazz"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 40272,
+          "crc32": 4064784363,
+          "path": "03_Jazz3-150-C_solo.jams",
+          "size": 516495
+        },
+        "audio": {
+          "compressed": 1562193,
+          "crc32": 3419339530,
+          "path": "03_Jazz3-150-C_solo_mic.wav",
+          "size": 2257964
+        },
+        "label": "03_Jazz3-150-C_solo_mic.wav",
+        "source_id": "0d053e4c487aefeee7e8007d650f8db5714a2533ab647d7b284ac63b51435169",
+        "strata": {
+          "player": "03",
+          "role": "solo",
+          "style": "Jazz"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 109500,
+          "crc32": 1367903332,
+          "path": "03_Rock1-130-A_comp.jams",
+          "size": 1694925
+        },
+        "audio": {
+          "compressed": 1516379,
+          "crc32": 878253991,
+          "path": "03_Rock1-130-A_comp_mic.wav",
+          "size": 1953428
+        },
+        "label": "03_Rock1-130-A_comp_mic.wav",
+        "source_id": "205c7dc99c8819a3f11d469045e67485774f3a3394c40bf7361c1a5d789960d0",
+        "strata": {
+          "player": "03",
+          "role": "comp",
+          "style": "Rock"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 60422,
+          "crc32": 910551236,
+          "path": "03_Rock2-85-F_solo.jams",
+          "size": 872641
+        },
+        "audio": {
+          "compressed": 2675649,
+          "crc32": 3051219482,
+          "path": "03_Rock2-85-F_solo_mic.wav",
+          "size": 3984320
+        },
+        "label": "03_Rock2-85-F_solo_mic.wav",
+        "source_id": "0148e9d2dd1eaa964c28ea36c33f297166b38b0100b1d1620353df49973f05b8",
+        "strata": {
+          "player": "03",
+          "role": "solo",
+          "style": "Rock"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 313054,
+          "crc32": 1429972156,
+          "path": "03_SS2-88-F_comp.jams",
+          "size": 4847792
+        },
+        "audio": {
+          "compressed": 2747064,
+          "crc32": 3745374888,
+          "path": "03_SS2-88-F_comp_mic.wav",
+          "size": 3848140
+        },
+        "label": "03_SS2-88-F_comp_mic.wav",
+        "source_id": "11d043693cc13c4b6aafc866f19578b4cffd451c2cbaeca6e635f65c29ddc6aa",
+        "strata": {
+          "player": "03",
+          "role": "comp",
+          "style": "SS"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 64919,
+          "crc32": 2087457811,
+          "path": "03_SS3-98-C_solo.jams",
+          "size": 898249
+        },
+        "audio": {
+          "compressed": 2526359,
+          "crc32": 3978286909,
+          "path": "03_SS3-98-C_solo_mic.wav",
+          "size": 3455614
+        },
+        "label": "03_SS3-98-C_solo_mic.wav",
+        "source_id": "0f377ec4cded44c316852dc60d1db514e68b58b5fa1e77389e33ad641245db90",
+        "strata": {
+          "player": "03",
+          "role": "solo",
+          "style": "SS"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 106451,
+          "crc32": 4053239949,
+          "path": "04_BN2-166-Ab_comp.jams",
+          "size": 1456520
+        },
+        "audio": {
+          "compressed": 1165380,
+          "crc32": 3389805869,
+          "path": "04_BN2-166-Ab_comp_mic.wav",
+          "size": 2040110
+        },
+        "label": "04_BN2-166-Ab_comp_mic.wav",
+        "source_id": "04feb1d6681d95fbedb9516f989b0e194c035b842ef6ef97b1b7b7da37e262c3",
+        "strata": {
+          "player": "04",
+          "role": "comp",
+          "style": "BN"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 41693,
+          "crc32": 4254048067,
+          "path": "04_BN1-147-Gb_solo.jams",
+          "size": 562980
+        },
+        "audio": {
+          "compressed": 1142319,
+          "crc32": 3302545540,
+          "path": "04_BN1-147-Gb_solo_mic.wav",
+          "size": 1727494
+        },
+        "label": "04_BN1-147-Gb_solo_mic.wav",
+        "source_id": "29c985a4bb2a3d3fda8fcb6e720339988ba6316ee5917d225e265d796a0c6db6",
+        "strata": {
+          "player": "04",
+          "role": "solo",
+          "style": "BN"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 167562,
+          "crc32": 815403214,
+          "path": "04_Funk3-98-A_comp.jams",
+          "size": 2276426
+        },
+        "audio": {
+          "compressed": 2516652,
+          "crc32": 427628260,
+          "path": "04_Funk3-98-A_comp_mic.wav",
+          "size": 3455614
+        },
+        "label": "04_Funk3-98-A_comp_mic.wav",
+        "source_id": "505f0156c1dd0035e43994dfddc771658b6ec625adc596aaf041aefc95d3a8b0",
+        "strata": {
+          "player": "04",
+          "role": "comp",
+          "style": "Funk"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 41246,
+          "crc32": 3723047098,
+          "path": "04_Funk1-114-Ab_solo.jams",
+          "size": 515037
+        },
+        "audio": {
+          "compressed": 1599633,
+          "crc32": 958332148,
+          "path": "04_Funk1-114-Ab_solo_mic.wav",
+          "size": 2227834
+        },
+        "label": "04_Funk1-114-Ab_solo_mic.wav",
+        "source_id": "1edc149fc31d722584463d98c9a3b46c2c2eef703ac90e3020434ee3c930e6da",
+        "strata": {
+          "player": "04",
+          "role": "solo",
+          "style": "Funk"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 117572,
+          "crc32": 1461433706,
+          "path": "04_Jazz1-130-D_comp.jams",
+          "size": 1665576
+        },
+        "audio": {
+          "compressed": 1202262,
+          "crc32": 2598067624,
+          "path": "04_Jazz1-130-D_comp_mic.wav",
+          "size": 1953428
+        },
+        "label": "04_Jazz1-130-D_comp_mic.wav",
+        "source_id": "0341f3bfb2ae8d08ce85f138729bdba17a9d6ffd90a205e04007be3f5be139a0",
+        "strata": {
+          "player": "04",
+          "role": "comp",
+          "style": "Jazz"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 35307,
+          "crc32": 317325062,
+          "path": "04_Jazz2-187-F#_solo.jams",
+          "size": 460760
+        },
+        "audio": {
+          "compressed": 1205198,
+          "crc32": 4280250236,
+          "path": "04_Jazz2-187-F#_solo_mic.wav",
+          "size": 1810966
+        },
+        "label": "04_Jazz2-187-F#_solo_mic.wav",
+        "source_id": "6130a2f65c35a4cba67b691766cb7e321bd336a14bbd4a9ceba66ded96725ed8",
+        "strata": {
+          "player": "04",
+          "role": "solo",
+          "style": "Jazz"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 143690,
+          "crc32": 3033157485,
+          "path": "04_Rock3-148-C_comp.jams",
+          "size": 1999403
+        },
+        "audio": {
+          "compressed": 1683418,
+          "crc32": 4132705138,
+          "path": "04_Rock3-148-C_comp_mic.wav",
+          "size": 2288022
+        },
+        "label": "04_Rock3-148-C_comp_mic.wav",
+        "source_id": "2d8be1804a30af2591bdd17e41e0f0bfb67b4ec23395aebd17628a62ad54b41c",
+        "strata": {
+          "player": "04",
+          "role": "comp",
+          "style": "Rock"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 63916,
+          "crc32": 3470220364,
+          "path": "04_Rock3-117-Bb_solo.jams",
+          "size": 909806
+        },
+        "audio": {
+          "compressed": 2234429,
+          "crc32": 685870326,
+          "path": "04_Rock3-117-Bb_solo_mic.wav",
+          "size": 2894450
+        },
+        "label": "04_Rock3-117-Bb_solo_mic.wav",
+        "source_id": "695ae132293fbd3d8c31c7103231f03746a06959228b1e65508f6497696bded4",
+        "strata": {
+          "player": "04",
+          "role": "solo",
+          "style": "Rock"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 254261,
+          "crc32": 3820628753,
+          "path": "04_SS3-98-C_comp.jams",
+          "size": 3959343
+        },
+        "audio": {
+          "compressed": 2233681,
+          "crc32": 981150875,
+          "path": "04_SS3-98-C_comp_mic.wav",
+          "size": 3455614
+        },
+        "label": "04_SS3-98-C_comp_mic.wav",
+        "source_id": "09ddc764ab497f858bc62fd52da600718660660a025be57da9117c5978e05c66",
+        "strata": {
+          "player": "04",
+          "role": "comp",
+          "style": "SS"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 55509,
+          "crc32": 2092421070,
+          "path": "04_SS2-107-Ab_solo.jams",
+          "size": 834226
+        },
+        "audio": {
+          "compressed": 1819416,
+          "crc32": 2855210222,
+          "path": "04_SS2-107-Ab_solo_mic.wav",
+          "size": 3165224
+        },
+        "label": "04_SS2-107-Ab_solo_mic.wav",
+        "source_id": "403b430939728895394df10563808c7fb56168d68b945d10784b4985be9589ee",
+        "strata": {
+          "player": "04",
+          "role": "solo",
+          "style": "SS"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 104557,
+          "crc32": 3765009008,
+          "path": "05_BN1-129-Eb_comp.jams",
+          "size": 1511631
+        },
+        "audio": {
+          "compressed": 1256298,
+          "crc32": 3207202930,
+          "path": "05_BN1-129-Eb_comp_mic.wav",
+          "size": 1969056
+        },
+        "label": "05_BN1-129-Eb_comp_mic.wav",
+        "source_id": "2ee11df2fead031ad9fb13bab46693d68504628b492f50980d87ac2d498f4949",
+        "strata": {
+          "player": "05",
+          "role": "comp",
+          "style": "BN"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 48259,
+          "crc32": 907817334,
+          "path": "05_BN3-119-G_solo.jams",
+          "size": 672770
+        },
+        "audio": {
+          "compressed": 1953582,
+          "crc32": 2430399302,
+          "path": "05_BN3-119-G_solo_mic.wav",
+          "size": 2845658
+        },
+        "label": "05_BN3-119-G_solo_mic.wav",
+        "source_id": "101e95144eca53f835f5cba0d08f76229e11575b0ced74e353ada69d5d75c20e",
+        "strata": {
+          "player": "05",
+          "role": "solo",
+          "style": "BN"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 82258,
+          "crc32": 2816599424,
+          "path": "05_Funk2-119-G_comp.jams",
+          "size": 1055609
+        },
+        "audio": {
+          "compressed": 1481655,
+          "crc32": 2543872548,
+          "path": "05_Funk2-119-G_comp_mic.wav",
+          "size": 2845658
+        },
+        "label": "05_Funk2-119-G_comp_mic.wav",
+        "source_id": "07658b1d6f64f1ed172e1ffbc3f7dc0e06eead52f4f52effe78062c76b39a52c",
+        "strata": {
+          "player": "05",
+          "role": "comp",
+          "style": "Funk"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 55222,
+          "crc32": 2020746157,
+          "path": "05_Funk2-119-G_solo.jams",
+          "size": 703334
+        },
+        "audio": {
+          "compressed": 2029564,
+          "crc32": 3138519784,
+          "path": "05_Funk2-119-G_solo_mic.wav",
+          "size": 2845658
+        },
+        "label": "05_Funk2-119-G_solo_mic.wav",
+        "source_id": "27ce6d7ea08f0540e1f698e6b4efdc89e27a14e5b16918d8670ab82a1f61072a",
+        "strata": {
+          "player": "05",
+          "role": "solo",
+          "style": "Funk"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 109594,
+          "crc32": 3384935692,
+          "path": "05_Jazz3-150-C_comp.jams",
+          "size": 1492262
+        },
+        "audio": {
+          "compressed": 1510779,
+          "crc32": 3363681165,
+          "path": "05_Jazz3-150-C_comp_mic.wav",
+          "size": 2257964
+        },
+        "label": "05_Jazz3-150-C_comp_mic.wav",
+        "source_id": "0952e1d6f9acb2c87f985401cb9af474eaeafae4e4653506592ce4b9efec7f70",
+        "strata": {
+          "player": "05",
+          "role": "comp",
+          "style": "Jazz"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 48423,
+          "crc32": 331703784,
+          "path": "05_Jazz3-137-Eb_solo.jams",
+          "size": 633868
+        },
+        "audio": {
+          "compressed": 1795790,
+          "crc32": 3850339395,
+          "path": "05_Jazz3-137-Eb_solo_mic.wav",
+          "size": 2471690
+        },
+        "label": "05_Jazz3-137-Eb_solo_mic.wav",
+        "source_id": "1277637d75bfe3b017b32b5e6d61f1c3c80ce4073bdac24ecf7b008fda6fb482",
+        "strata": {
+          "player": "05",
+          "role": "solo",
+          "style": "Jazz"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 139166,
+          "crc32": 3532975469,
+          "path": "05_Rock1-130-A_comp.jams",
+          "size": 2190742
+        },
+        "audio": {
+          "compressed": 1772440,
+          "crc32": 381265976,
+          "path": "05_Rock1-130-A_comp_mic.wav",
+          "size": 1953428
+        },
+        "label": "05_Rock1-130-A_comp_mic.wav",
+        "source_id": "506f470bdfe62b1b401c96a7237dad871303af5587aefc47c45b162a0d7d13f2",
+        "strata": {
+          "player": "05",
+          "role": "comp",
+          "style": "Rock"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 54026,
+          "crc32": 3363400697,
+          "path": "05_Rock3-117-Bb_solo.jams",
+          "size": 771842
+        },
+        "audio": {
+          "compressed": 2109970,
+          "crc32": 2948546060,
+          "path": "05_Rock3-117-Bb_solo_mic.wav",
+          "size": 2894450
+        },
+        "label": "05_Rock3-117-Bb_solo_mic.wav",
+        "source_id": "1fcd4c19045dbf4b4e43d58b68afc717e79d120a71ca703e6a7c0ea2eec6c6d6",
+        "strata": {
+          "player": "05",
+          "role": "solo",
+          "style": "Rock"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 185058,
+          "crc32": 952423693,
+          "path": "05_SS1-68-E_comp.jams",
+          "size": 2970933
+        },
+        "audio": {
+          "compressed": 2690732,
+          "crc32": 1483392894,
+          "path": "05_SS1-68-E_comp_mic.wav",
+          "size": 3734996
+        },
+        "label": "05_SS1-68-E_comp_mic.wav",
+        "source_id": "1f096df0f03cbc886c910afc3cfef6cc51b4a29220c13a0bc7eeaacd90f1d84d",
+        "strata": {
+          "player": "05",
+          "role": "comp",
+          "style": "SS"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 73166,
+          "crc32": 2687295100,
+          "path": "05_SS3-84-Bb_solo.jams",
+          "size": 1023219
+        },
+        "audio": {
+          "compressed": 2534640,
+          "crc32": 313731656,
+          "path": "05_SS3-84-Bb_solo_mic.wav",
+          "size": 4031454
+        },
+        "label": "05_SS3-84-Bb_solo_mic.wav",
+        "source_id": "2d7f361c342d9a94fa74a63a59afaf69bb65c25347839ac9896350f1acf0a036",
+        "strata": {
+          "player": "05",
+          "role": "solo",
+          "style": "SS"
+        }
+      }
+    ],
+    "IDMT": [
+      {
+        "annotation": {
+          "compressed": 548,
+          "crc32": 1185294010,
+          "path": "IDMT-SMT-GUITAR_V2/dataset3/annotation/pathetique_mono.xml",
+          "size": 3017
+        },
+        "audio": {
+          "compressed": 852099,
+          "crc32": 2499716210,
+          "path": "IDMT-SMT-GUITAR_V2/dataset3/audio/pathetique_mono.wav",
+          "size": 1360844
+        },
+        "label": "pathetique_mono",
+        "source_id": "6596761687187678e47232141c3507d2b458012a7cc1b377ee9c29e3193ba7dd",
+        "strata": {
+          "arrangement": "mono_named"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 600,
+          "crc32": 3188996,
+          "path": "IDMT-SMT-GUITAR_V2/dataset3/annotation/promenade_mono.xml",
+          "size": 4112
+        },
+        "audio": {
+          "compressed": 767277,
+          "crc32": 4140679948,
+          "path": "IDMT-SMT-GUITAR_V2/dataset3/audio/promenade_mono.wav",
+          "size": 1210122
+        },
+        "label": "promenade_mono",
+        "source_id": "80bc100af6937db9c3495825cf7a00ee1013e5c858a4720abb3749e51521b8e8",
+        "strata": {
+          "arrangement": "mono_named"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 647,
+          "crc32": 3937189190,
+          "path": "IDMT-SMT-GUITAR_V2/dataset3/annotation/nocturneNr2.xml",
+          "size": 5993
+        },
+        "audio": {
+          "compressed": 392298,
+          "crc32": 362911814,
+          "path": "IDMT-SMT-GUITAR_V2/dataset3/audio/nocturneNr2.wav",
+          "size": 662236
+        },
+        "label": "nocturneNr2",
+        "source_id": "b68e701185978e9468e95399f726e5edef26338c3d31861f24ef471e9cb4315f",
+        "strata": {
+          "arrangement": "other_named"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 735,
+          "crc32": 1280984467,
+          "path": "IDMT-SMT-GUITAR_V2/dataset3/annotation/quintfall.xml",
+          "size": 8408
+        },
+        "audio": {
+          "compressed": 955362,
+          "crc32": 207735168,
+          "path": "IDMT-SMT-GUITAR_V2/dataset3/audio/quintfall.wav",
+          "size": 1654486
+        },
+        "label": "quintfall",
+        "source_id": "d5d837fca3d9932d19c141daf1e5389e8cfc1a9449f2329dc28aee0da8a0d85b",
+        "strata": {
+          "arrangement": "other_named"
+        }
+      },
+      {
+        "annotation": {
+          "compressed": 650,
+          "crc32": 4222439471,
+          "path": "IDMT-SMT-GUITAR_V2/dataset3/annotation/pathetique_poly.xml",
+          "size": 5739
+        },
+        "audio": {
+          "compressed": 1190664,
+          "crc32": 773063475,
+          "path": "IDMT-SMT-GUITAR_V2/dataset3/audio/pathetique_poly.wav",
+          "size": 2687264
+        },
+        "label": "pathetique_poly",
+        "source_id": "e411b7424081938ca86fb1ed85bb744710f0686b05cabf801f2546c315e5d3c2",
+        "strata": {
+          "arrangement": "other_named"
+        }
+      }
+    ],
+    "MAESTRO": [
+      {
+        "annotation": {
+          "git_oid": "69e3309f0d3d4e99af3dc6e7e9a0a1b56843f838",
+          "path": "2009/MIDI-Unprocessed_11_R1_2009_06-09_ORIG_MID--AUDIO_11_R1_2009_11_R1_2009_07_WAV.midi",
+          "size": 12417
+        },
+        "audio": {
+          "git_oid": "7272f752199d6d7891c10046cbd09c6f16eb9ecf",
+          "path": "2009/MIDI-Unprocessed_11_R1_2009_06-09_ORIG_MID--AUDIO_11_R1_2009_11_R1_2009_07_WAV.wav",
+          "sha256": "70390e33235b390d34a492414b98ad883c43d0c6daeb5b7f847b4c58357e0a84",
+          "size": 29061164
+        },
+        "label": "Alexander Scriabin \u2014 Entragete, Op.63",
+        "metadata_duration": 163.745829844,
+        "official_split": "test",
+        "source_id": "ef15ab928b1e5183fdd8a6eca1601ff4e4a18584ceb22a6355fbef8beda7bb5b",
+        "strata": {
+          "composer": "Alexander Scriabin"
+        }
+      },
+      {
+        "annotation": {
+          "git_oid": "840866030c191a476575f03eb0cc8e8107dbfb46",
+          "path": "2018/MIDI-Unprocessed_Recital16_MID--AUDIO_16_R1_2018_wav--3.midi",
+          "size": 23294
+        },
+        "audio": {
+          "git_oid": "baf53fdea5909bc61d54ffe1706af41e3dac25b0",
+          "path": "2018/MIDI-Unprocessed_Recital16_MID--AUDIO_16_R1_2018_wav--3.wav",
+          "sha256": "f11bbc579d0110fbd38c9dd8a5c2889f226ffe502fe81866f30cefd6e8380651",
+          "size": 48322460
+        },
+        "label": "Claude Debussy \u2014 Prelude No. 6, Book I, \"Des pas sur la neige\"",
+        "metadata_duration": 247.761504375,
+        "official_split": "test",
+        "source_id": "2f18cd56f7ea252d0b08259c5e24af619221993ee440a968d8fa56da05aa1937",
+        "strata": {
+          "composer": "Claude Debussy"
+        }
+      },
+      {
+        "annotation": {
+          "git_oid": "0894ee20e91db309c70c20fb63afa172c75d8af6",
+          "path": "2018/MIDI-Unprocessed_Recital17-19_MID--AUDIO_18_R1_2018_wav--3.midi",
+          "size": 15517
+        },
+        "audio": {
+          "git_oid": "3c049c2ece4d45f5c72d7f0634a28ab1e6231a68",
+          "path": "2018/MIDI-Unprocessed_Recital17-19_MID--AUDIO_18_R1_2018_wav--3.wav",
+          "sha256": "77d6a7e740474fa1d05fe78c1892ba21fe5578f6e9ffc6600eae9dbfdc04bd2b",
+          "size": 27256068
+        },
+        "label": "Domenico Scarlatti \u2014 Sonata in D Major, K96",
+        "metadata_duration": 140.121387656,
+        "official_split": "test",
+        "source_id": "029744e78d8652838562e5107c09ce7a373519adfc0dbe1458743fc4cf25e824",
+        "strata": {
+          "composer": "Domenico Scarlatti"
+        }
+      },
+      {
+        "annotation": {
+          "git_oid": "48248d10f30e85a8480d09405b62f738c9043ba6",
+          "path": "2013/ORIG-MIDI_02_7_6_13_Group__MID--AUDIO_08_R1_2013_wav--4.midi",
+          "size": 27031
+        },
+        "audio": {
+          "git_oid": "b8275a6a234208868381875afc9c2e4d1cacf8ca",
+          "path": "2013/ORIG-MIDI_02_7_6_13_Group__MID--AUDIO_08_R1_2013_wav--4.wav",
+          "sha256": "254cad50b70e5a7870519c7bfea903439c41d0825f07d561d0921534dd4aee65",
+          "size": 39076468
+        },
+        "label": "Franz Liszt \u2014 Au bord d'une source",
+        "metadata_duration": 219.655229063,
+        "official_split": "test",
+        "source_id": "1be99013303173d87e7484b12fb113b6f4221d4252f6d4fb617a52f775b4f67a",
+        "strata": {
+          "composer": "Franz Liszt"
+        }
+      },
+      {
+        "annotation": {
+          "git_oid": "dbf6e1731ea1d5de8e52190fc1d5c4e0e2bd7891",
+          "path": "2009/MIDI-Unprocessed_08_R1_2009_01-04_ORIG_MID--AUDIO_08_R1_2009_08_R1_2009_04_WAV.midi",
+          "size": 49827
+        },
+        "audio": {
+          "git_oid": "796dec51d8f8522ef640d1c8f9a0b9041023cadf",
+          "path": "2009/MIDI-Unprocessed_08_R1_2009_01-04_ORIG_MID--AUDIO_08_R1_2009_08_R1_2009_04_WAV.wav",
+          "sha256": "ba578c5519fa7d7c563e3b48430ad26c6b16385750000dccb6cc0cec70d4757f",
+          "size": 48687764
+        },
+        "label": "Franz Schubert \u2014 \"Erlkoenig\"",
+        "metadata_duration": 274.736637656,
+        "official_split": "test",
+        "source_id": "3dcf6d22a32f760a0e467be3e581fe8f7d6f3207c61a5e1af448931f2d41953b",
+        "strata": {
+          "composer": "Franz Schubert"
+        }
+      },
+      {
+        "annotation": {
+          "git_oid": "0cf44df488a9dac47795303444dc10db93606bbb",
+          "path": "2015/MIDI-Unprocessed_R1_D1-9-12_mid--AUDIO-from_mp3_12_R1_2015_wav--3.midi",
+          "size": 22795
+        },
+        "audio": {
+          "git_oid": "fea6d01d6c638e500c37f5643f203d412772f26a",
+          "path": "2015/MIDI-Unprocessed_R1_D1-9-12_mid--AUDIO-from_mp3_12_R1_2015_wav--3.wav",
+          "sha256": "b1a0e4318991999726807d323ed9361f96bc14356e50405d70c9ad208cc95f3c",
+          "size": 42781088
+        },
+        "label": "Fr\u00e9d\u00e9ric Chopin \u2014 Nocturne Op. 15 No. 1 in F Major",
+        "metadata_duration": 240.451041667,
+        "official_split": "test",
+        "source_id": "05c35e334817ae2be2003156bdeee57d67c3c6a55880bafcada6e1fbc0b66702",
+        "strata": {
+          "composer": "Fr\u00e9d\u00e9ric Chopin"
+        }
+      },
+      {
+        "annotation": {
+          "git_oid": "68db041c5f4f57f02e48027e674c3274e52dd5db",
+          "path": "2011/MIDI-Unprocessed_11_R1_2011_MID--AUDIO_R1-D4_07_Track07_wav.midi",
+          "size": 19487
+        },
+        "audio": {
+          "git_oid": "bcda2630128cc05b7e8f1c3df0484ab3a3f99469",
+          "path": "2011/MIDI-Unprocessed_11_R1_2011_MID--AUDIO_R1-D4_07_Track07_wav.wav",
+          "sha256": "b679293e6c01f6bbe298ef651d6ea0fef8e4235db1a5e5b31bb6c9c24179f1b7",
+          "size": 52694920
+        },
+        "label": "Johann Sebastian Bach \u2014 Prelude and Fuge in G-sharp Minor, WTC I, BWV 863",
+        "metadata_duration": 297.515728125,
+        "official_split": "test",
+        "source_id": "0b186414f066fbf6b5ab44d31fd1bbefabc400b6badd3bc6da6155f1f7be1be4",
+        "strata": {
+          "composer": "Johann Sebastian Bach"
+        }
+      },
+      {
+        "annotation": {
+          "git_oid": "9152508ff1696c683c08b991bce56d99fba21572",
+          "path": "2011/MIDI-Unprocessed_05_R1_2011_MID--AUDIO_R1-D2_10_Track10_wav.midi",
+          "size": 21114
+        },
+        "audio": {
+          "git_oid": "14bd7329ae0cdbe6e66e15fbfa35526d5784a392",
+          "path": "2011/MIDI-Unprocessed_05_R1_2011_MID--AUDIO_R1-D2_10_Track10_wav.wav",
+          "sha256": "3f8539b5283b8dc3f4d1b304276d6398007223bc47ff425b4328f1ca88e5d508",
+          "size": 33147004
+        },
+        "label": "Joseph Haydn \u2014 Sonata in G Major, Hob. XVI:6, First Movement",
+        "metadata_duration": 186.908199844,
+        "official_split": "test",
+        "source_id": "00b8d4f5e19d8da74cc3913c29667df2a0161a65a2fd77c35a11d810d80ad112",
+        "strata": {
+          "composer": "Joseph Haydn"
+        }
+      },
+      {
+        "annotation": {
+          "git_oid": "fcd10cb489b95037eecf9b6fccf7c3b25968ad57",
+          "path": "2008/MIDI-Unprocessed_17_R1_2008_01-04_ORIG_MID--AUDIO_17_R1_2008_wav--2.midi",
+          "size": 24833
+        },
+        "audio": {
+          "git_oid": "ad293ed1b4db07b812434a65ec41e5e4377331d6",
+          "path": "2008/MIDI-Unprocessed_17_R1_2008_01-04_ORIG_MID--AUDIO_17_R1_2008_wav--2.wav",
+          "sha256": "46dbc0c7ecffd83aa6cad3a58fad5aa211c1d0cf58d635d6659267728e5da3e9",
+          "size": 49141248
+        },
+        "label": "Ludwig van Beethoven \u2014 Sonata No. 16 in G Major, Op. 31 No. 1, First movement",
+        "metadata_duration": 277.578515156,
+        "official_split": "test",
+        "source_id": "6727d267830fef94f6070e0a3a2858c4f9cc5b98af1c86faa6820910d96db932",
+        "strata": {
+          "composer": "Ludwig van Beethoven"
+        }
+      },
+      {
+        "annotation": {
+          "git_oid": "7bb44675f1fe40c9b27993bdedb459c78a3d32cb",
+          "path": "2014/MIDI-UNPROCESSED_19-20_R1_2014_MID--AUDIO_19_R1_2014_wav--8.midi",
+          "size": 60076
+        },
+        "audio": {
+          "git_oid": "0b18694b08275585efae9316796b41364782927f",
+          "path": "2014/MIDI-UNPROCESSED_19-20_R1_2014_MID--AUDIO_19_R1_2014_wav--8.wav",
+          "sha256": "a7104607a8e80b5c3642130fedca36d97a679cb18599ef030434c1f3f75d954c",
+          "size": 51891088
+        },
+        "label": "Robert Schumann \u2014 Toccata in C Major, Op. 7",
+        "metadata_duration": 292.591854844,
+        "official_split": "test",
+        "source_id": "e19a0cca99fb9f6a59eb8aafbfa172981c7d0f9c0cc662aff0daf7988f583721",
+        "strata": {
+          "composer": "Robert Schumann"
+        }
+      },
+      {
+        "annotation": {
+          "git_oid": "58c3222e4f37844c99b3aa6f6c88a2a3b668e9fe",
+          "path": "2015/MIDI-Unprocessed_R1_D2-13-20_mid--AUDIO-from_mp3_17_R1_2015_wav--3.midi",
+          "size": 28784
+        },
+        "audio": {
+          "git_oid": "1a02de20d67252c55b1d074156289682ebd61bde",
+          "path": "2015/MIDI-Unprocessed_R1_D2-13-20_mid--AUDIO-from_mp3_17_R1_2015_wav--3.wav",
+          "sha256": "2c02d505200cf4a22dea34d0bdfd20766decad86a7fd5c2c1ef9b058a42e570a",
+          "size": 50595972
+        },
+        "label": "Sergei Rachmaninoff \u2014 Etude-Tableau in E-flat Minor, op. 39 No. 5",
+        "metadata_duration": 280.047916667,
+        "official_split": "test",
+        "source_id": "0b89301c246ad024177b2a7627527383433bbbee5829444bcd1c7a93de33d899",
+        "strata": {
+          "composer": "Sergei Rachmaninoff"
+        }
+      },
+      {
+        "annotation": {
+          "git_oid": "f0dda35a59a17cf738c74a611a8434e5660fb236",
+          "path": "2004/MIDI-Unprocessed_XP_14_R1_2004_04_ORIG_MID--AUDIO_14_R1_2004_04_Track04_wav.midi",
+          "size": 30334
+        },
+        "audio": {
+          "git_oid": "b5cb1d7501c3d1dcc07447858815bc253c551a41",
+          "path": "2004/MIDI-Unprocessed_XP_14_R1_2004_04_ORIG_MID--AUDIO_14_R1_2004_04_Track04_wav.wav",
+          "sha256": "72e2ebcaad126530ef7b1f537c423a1194d8afde8db8ed581911d6637439e3a0",
+          "size": 43505216
+        },
+        "label": "Wolfgang Amadeus Mozart \u2014 Sonata in F Major, K280",
+        "metadata_duration": 245.315515633,
+        "official_split": "test",
+        "source_id": "57f7c83a419cecba75b7cd2af68dd421bee65447b68735ee6ed15ddd1f7a378b",
+        "strata": {
+          "composer": "Wolfgang Amadeus Mozart"
+        }
+      }
+    ]
+  },
+  "status": "S606_FILENAME_ONLY_PREREGISTRATION_BEFORE_TRANSFER_AUDIO_AND_LABELS",
+  "threshold_or_source_selection_from_predictions": false,
+  "transfer_annotations_opened": false,
+  "transfer_audio_opened": false
+}

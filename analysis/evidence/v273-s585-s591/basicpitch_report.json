@@ -1,0 +1,35 @@
+{
+  "status": "S588_PRETRAINED_BASIC_PITCH_NOTE_EVENTS_ON_THIRD_SOURCE_MAESTRO_PREMIDI",
+  "source": "MAESTRO_v3_train_2_piano_WAV_12s",
+  "original_source_S586_manifest_SHA256": "9d6b5982d7d15d9ad09195fcd626d41a572775b78836452a1d8c7374ee43bac6",
+  "original_S587_WAV_proof_SHA256": "4071c61ab49401474cb6c7f4d90cbfbf1e3f9b0fc1e016e9b94bfb4635a6c400",
+  "original_WAV_content_SHA_verified": true,
+  "pretrained_library_version": "spotify/basic-pitch==0.4.0",
+  "default_postprocessing_preserved": true,
+  "model_fitted_or_labels_tuned": false,
+  "original_MAESTRO_MIDI_ANNOTATIONS_OPENED": false,
+  "S586_new_composers_before_WAV_MIDI": true,
+  "output_note_names_not_MIDI_files": true,
+  "prediction_windows_piano": 2,
+  "total_notes_in_MIDI40to88": 224,
+  "source_per_piece": [
+    {
+      "WAV_filename_SHA256": "6d4cba79b19ba4a3b340b67f5d1408c1ebcd5d90b691f55d91ce1d4c1c67870f",
+      "composer": "Modest Mussorgsky",
+      "total_basic_pitch_notes": 48,
+      "MIDI40to88_notes_in_12s": 48,
+      "onset_assessment_NOT_YET_PERFORMED": true
+    },
+    {
+      "WAV_filename_SHA256": "e034f4aee383eca7e6d3e30c152c468ec5a190f15d3fac57e1a41a45af8a0b96",
+      "composer": "George Enescu",
+      "total_basic_pitch_notes": 180,
+      "MIDI40to88_notes_in_12s": 176,
+      "onset_assessment_NOT_YET_PERFORMED": true
+    }
+  ],
+  "frozen_notes_SHA256": "bb92c6a87bdfda29325e1b452e9c1d6a940a49ead195d4ff7206af857ba261e7",
+  "historical_S80_complete_pipeline_NOT_RUN": true,
+  "S80_and_live_and_offset_unchanged": true,
+  "no_promotion": true
+}

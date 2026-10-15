@@ -1,0 +1,74 @@
+name: S559 independent post-SHA-frozen true 5 NEW MAESTRO source NOTE_ON MIDI F1 audit
+on:
+  push:
+    branches: [codex/s533-s535-note-fundamental-loops]
+    paths:
+      - scripts/s559_postfrozen_new_source_S554_exact_named_pitch_noteon_validation.py
+      - .github/workflows/v273-s559-second-five-true-midi-post-S558-freeze.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+jobs:
+  independent_true_new_composer_noteon_MIDI_only_AFTER_verified_source_note_SHA:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install fixed exact pitch/time note-on and original MIDI parser
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 mido==1.3.3
+      - name: No-data synthetic 6-predeclared policy and exact pitch onset evaluation test
+        run: |
+          python -m py_compile scripts/s559_postfrozen_new_source_S554_exact_named_pitch_noteon_validation.py
+          python -m scripts.s559_postfrozen_new_source_S554_exact_named_pitch_noteon_validation --self-test
+      - name: Restore only SHA-frozen S554 public CSV source names and S555/S557 actual original WAV evidence
+        run: |
+          gh run download 38663678664 -n s554-next-five-metadata-only-composer-component-disjoint-before-new-model-noteon-validation -D model/S554 --repo "${{ github.repository }}"
+          gh run download 38663781717 -n s555-five-new-composers-preMIDI-V88-source-frozen-audio-original-S80-era-model -D model/S555 --repo "${{ github.repository }}"
+          gh run download 38663870685 -n s557-next-five-S554-composers-V88-raw49-pitch-PREMIDI -D model/S557 --repo "${{ github.repository }}"
+      - name: Restore exact S558 frozen 6 note-event policy forecasts BEFORE allowing paired MAESTRO MIDI downloads
+        run: |
+          gh run download 38663923507 -n s558-S554-new-five-MAESTRO-S528-vs-S546-six-preMIDI-frozen-full-NoteOn-predictions -D model/S558 --repo "${{ github.repository }}"
+          test -s model/S558/S558_NEXT_FIVE_REAL_WAV_NOTEON_PREDICTIONS_PREMIDI.jsonl
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json
+          r=json.load(open("model/S558/report.json"))
+          f=Path("model/S558/S558_NEXT_FIVE_REAL_WAV_NOTEON_PREDICTIONS_PREMIDI.jsonl")
+          assert hashlib.sha256(f.read_bytes()).hexdigest()==r['frozen_named_note_prediction_sha']
+          assert r['status']=='S558_FIVE_COMPOSER_S554_PITCH_ONSET_SOURCE_FROZEN_BEFORE_ANY_MIDI'
+          assert r['original_MIDI_NOT_opened_for_predictions']
+          assert len(r['SHAs_of_eight_S546_co_composer_disjoint_weight_checkpoints'])==8
+          print('S559 all 6 S558 MIDI-blind WAV note predictions truly sealed; target MIDI still not opened')
+          PY
+      - name: Only NOW open five distinct original MAESTRO TRAIN-split MIDI files and score independent full note pitch attack F1
+        run: |
+          python -u -m scripts.s559_postfrozen_new_source_S554_exact_named_pitch_noteon_validation \
+             --manifest model/S554/report.json --audio-report model/S555/report.json \
+             --feature-report model/S557/report.json \
+             --features model/S557/S557_ALL_V88_K0_K6_ORIGINAL_WAV_49_PITCH_FEATURES_PREMIDI.jsonl \
+             --frozen-report model/S558/report.json \
+             --predictions model/S558/S558_NEXT_FIVE_REAL_WAV_NOTEON_PREDICTIONS_PREMIDI.jsonl \
+             --out model/S559
+          python - <<'PY'
+          import json
+          r=json.load(open("model/S559/report.json"))
+          assert r['status']=='S559_EXTERNAL_POSTFROZEN_FIVE_NEW_COMPOSER_FULL_MIDI_NOTEON_F1'
+          assert r['S558_all_six_named_note_policies_SHA_VERIFIED_before_true_MIDI']
+          assert len(r['policies'])==6 and len(r['true_MIDI_provenance'])==5
+          assert r['matching_pitch_exact_and_time_tolerance_ms']==[30,50,80]
+          assert r['no_model_training_or_threshold_selection_using_S554_MIDI']
+          assert r['MAESTRO_original_split']=='train' and r['NOT_official_MAESTRO_test']
+          assert r['no_promotion'] and r['no_reference_S80_ExactK_freeze_local_combo_live_changes']
+          print('S559 PASS authentic five new composer 6-policy NoteOn F1, no original S80 promotion')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s559-five-NEW-S554-composers-MIDI-SHA-verified-NoteOn-F1-S528-vs-S546
+          path: model/S559/
+          retention-days: 90

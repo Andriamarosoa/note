@@ -9,6 +9,17 @@ from scripts.note_runtime import main
 
 
 class RuntimeModesTests(unittest.TestCase):
+    def test_native_notes_delegates_to_NOTE_heads_with_explicit_upstream_K(self):
+        args=["--wav","source.wav","--decisions","original_S80.jsonl","--out","replay"]
+        with patch("scripts.live_native_notes.main") as native:
+            main(["--mode","native-notes",*args])
+            native.assert_called_once_with(args)
+
+    def test_native_status_is_not_consumed_as_status_profile_abbreviation(self):
+        with patch("scripts.live_native_notes.main") as native:
+            main(["--mode","native-notes","--status"])
+            native.assert_called_once_with(["--status"])
+
     def test_legacy_live_model_and_thresholds_forwarded_byte_for_byte(self):
         forwarded=["--model","original.keras","--stdin-pcm16",
                    "--chunk-size","512","--onset-threshold","0.55"]

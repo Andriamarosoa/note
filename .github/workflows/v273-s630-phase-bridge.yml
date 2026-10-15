@@ -1,0 +1,37 @@
+name: S630 past-onset plus current-sustain causal selection audit
+on:
+  push:
+    branches: [codex/s533-s535-note-fundamental-loops]
+    paths:
+      - src/causal_note/s630_phase_bridge.py
+      - scripts/s630_phase_bridge_dev.py
+      - test/test_s630_phase_bridge.py
+      - .github/workflows/v273-s630-phase-bridge.yml
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  known_development:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Original native NOTE dependencies
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Confirm causal memory & unchanged S614
+        run: python -m unittest -v test.test_s630_phase_bridge test.test_strict_live
+      - name: Evaluate on 17 original development sources
+        run: python -m scripts.s630_phase_bridge_dev --out /tmp/S630
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S630-short-causal-phase-bridge-known-dev
+          path: /tmp/S630/
+          if-no-files-found: warn
+          retention-days: 60
