@@ -136,8 +136,8 @@ class SafeLiveTransport:
         for event in self.engine.finish():
             self._deliver(event, self.epoch_start,
                           force_at=at_absolute,
-                          reason=("transport_"+reason if event["type"]=="note_off"
-                                  else None))
+                          reason=("transport_"+reason if reason != "shutdown"
+                                  and event["type"] == "note_off" else None))
         self.engine = None
         self.epoch_start = None
         self.next_absolute = None
