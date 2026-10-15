@@ -50,6 +50,9 @@ def acoustic(X,architecture):
         lo[:,1:,:]=note[:,:-1,:]
         hi[:,:-1,:]=note[:,1:,:]
         extras.append(note-np.maximum(lo,hi))
+    # Spectral dynamics separating fresh strike from an already sustained harmonic.
+    extras.extend([X[:,:,4:5],X[:,:,3:4]-X[:,:,4:5],
+                   X[:,:,5:6]-X[:,:,4:5]])
     result=np.concatenate([basic]+extras,axis=2).astype(np.float32)
     need(result.shape==(len(X),49,34) and np.isfinite(result).all(),
          "S562 waveform pitch lower-harmonic acoustic head shape is 34 not 38")
