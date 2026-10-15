@@ -1,4 +1,4 @@
-name: S638 real same-PCM GuitarSet F1 NOTE vs MIDI v2.2.1
+name: S638 full 12-source same-PCM GuitarSet F1 NOTE vs MIDI v2.2.1
 on:
   push:
     branches: [codex/s634-midi-live-transport]
@@ -11,7 +11,7 @@ concurrency:
   group: s638-shared-guitarset-replay-${{ github.ref }}
   cancel-in-progress: false
 jobs:
-  three_distinct_known_development_compositions:
+  complete_12_original_guitarset_dev_recordings:
     runs-on: ubuntu-24.04
     timeout-minutes: 55
     env:
@@ -37,11 +37,11 @@ jobs:
       - name: Check both genuine models, strict same-source annotation and decoder replay
         run: |
           python -m compileall -q scripts/s638_note_midi_same_guitarset.py
-          python -m scripts.s638_note_midi_same_guitarset --midi-root midi_reference --out /tmp/S638
+          python -m scripts.s638_note_midi_same_guitarset --midi-root midi_reference --all-dev --out /tmp/S638
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: S638-three-GuitarSet-compositions-real-matched-F1
+          name: S638-twelve-GuitarSet-recordings-real-matched-F1
           path: /tmp/S638/
           if-no-files-found: warn
           retention-days: 60
