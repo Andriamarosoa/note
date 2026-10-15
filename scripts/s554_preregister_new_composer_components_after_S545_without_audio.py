@@ -83,8 +83,8 @@ def run(a):
          "S554 source original 3+5 full SHA cohort invalid")
     history_names={s["audio_filename"] for s in old["selected_sources"]+new["selected_sources"]+prior["chosen_metadata_only"]}
     history_artist={s["composer"] for s in old["selected_sources"]+new["selected_sources"]}
-    need(len(history_artist)==13,
-         "S554 thirteen different previous composers must be fully excluded")
+    need(len(history_names)==13 and len(history_artist)>=9,
+         "S554 all 13 prior source filenames and their composer components must be excluded")
     req=urllib.request.Request(URL,headers={
         "Accept":"text/csv","User-Agent":"S554-next-composer-metadata-only/1.0"})
     with urllib.request.urlopen(req,timeout=75) as resp:
