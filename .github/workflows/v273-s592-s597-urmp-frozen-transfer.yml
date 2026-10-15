@@ -1,0 +1,130 @@
+name: S592-S597 frozen S578 vs S585 on five new URMP ensembles
+'on':
+  push:
+    branches:
+      - codex/s533-s535-note-fundamental-loops
+    paths:
+      - scripts/s592_s597_urmp_prospective.py
+      - analysis/v273_s592_urmp_metadata_only.json
+      - .github/workflows/v273-s592-s597-urmp-frozen-transfer.yml
+  workflow_dispatch: null
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s592-s597-urmp-${{ github.ref }}
+  cancel-in-progress: false
+env:
+  GH_TOKEN: ${{ github.token }}
+  PYTHONPATH: .:src
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '2'
+  TF_CPP_MIN_LOG_LEVEL: '2'
+  TF_NUM_INTRAOP_THREADS: '2'
+  TF_NUM_INTEROP_THREADS: '2'
+jobs:
+  audio:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Original numerical ABI and meaningful scoring checks
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 mido==1.3.3
+          python -m scripts.s592_s597_urmp_prospective selftest
+          python -m scripts.s592_s597_urmp_prospective prepare
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s592-urmp-five-ensembles-METADATA-ONLY
+          path: model/S592/
+          retention-days: 90
+      - name: Restore unchanged original acoustic sources and count weights
+        run: |
+          python -m pip install -r requirements-train.txt numpy==1.26.4 scikit-learn==1.4.2
+          mkdir -p model/source-download model/freeze-download model/freeze-original
+          gh release download v273-source-recovery-35086829802 --repo "${{ github.repository }}" --pattern v273-rebuilt-proposal-sources.zip --dir model/source-download
+          python - <<'PY'
+          from pathlib import Path
+          from scripts.restore_v273_original_backup import extract_verified
+          from scripts.rebuild_v273_sources import validate_sources
+          extract_verified(Path('model/source-download/v273-rebuilt-proposal-sources.zip'),
+              Path('model/original-sources'),
+              'fb6bb1049b87c0517936f4f40e5bc1442722fc20b9eba5045a62bb0a12cf2994',
+              validate=validate_sources)
+          PY
+          gh release download v273-uniform-anchored-freeze-37233793945 --repo "${{ github.repository }}" --pattern v273-uniform-anchored-freeze-result.tgz --dir model/freeze-download
+          tar -xzf model/freeze-download/v273-uniform-anchored-freeze-result.tgz -C model/freeze-original
+      - name: Original V88 candidate times on pinned URMP mixture WAVs only
+        run: python -u -m scripts.s592_s597_urmp_prospective v88 --source-dir model/original-sources --weights model/freeze-original/freeze_local_combo.weights.h5
+      - name: Original Basic Pitch ABI and unchanged note thresholds
+        run: |
+          python -m pip install numpy==1.26.4 tensorflow==2.14.1 basic-pitch==0.4.0 scipy==1.14.1 scikit-learn==1.4.2
+          python -u -m scripts.s592_s597_urmp_prospective bp
+      - name: Unchanged 49x11 pitch features at all original V88 sites
+        run: python -u -m scripts.s592_s597_urmp_prospective features
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s592-s595-urmp-AUDIO-ONLY-NO-NOTES
+          path: |
+            model/S592/
+            model/S593/
+            model/S594/
+            model/S595/
+          retention-days: 90
+  freeze:
+    needs: audio
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Frozen classifier ABI
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 mido==1.3.3
+      - uses: actions/download-artifact@v4
+        with:
+          name: s592-s595-urmp-AUDIO-ONLY-NO-NOTES
+          path: model
+      - name: Reuse both completed 28-source models; no new training
+        run: |
+          gh run download 38675146653 -n s578-28-real-composer-midi-trained-global52-and-mid12-52D-before-S577-WAV -D model/S578 --repo "${{ github.repository }}"
+          gh run download 38678912773 -n s585-28-source-four-state-training -D model/S585 --repo "${{ github.repository }}"
+      - name: Freeze all note predictions and class probabilities before annotations
+        run: python -u -m scripts.s592_s597_urmp_prospective freeze
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s596-urmp-predictions-BEFORE-ANNOTATIONS
+          path: model/S596/
+          retention-days: 90
+  score:
+    needs: freeze
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Scoring ABI
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 mido==1.3.3
+      - uses: actions/download-artifact@v4
+        with:
+          name: s592-s595-urmp-AUDIO-ONLY-NO-NOTES
+          path: model
+      - uses: actions/download-artifact@v4
+        with:
+          name: s596-urmp-predictions-BEFORE-ANNOTATIONS
+          path: model/S596
+      - name: First Notes_ annotation access; all sources, all FP/FN, individual audit
+        run: python -u -m scripts.s592_s597_urmp_prospective score
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s597-urmp-independent-noteon-verdict
+          path: model/S597/
+          retention-days: 90
