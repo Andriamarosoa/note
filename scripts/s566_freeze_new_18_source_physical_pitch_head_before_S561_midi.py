@@ -92,24 +92,31 @@ def run(a):
     feat=json.loads(a.feature_report.read_text())
     s546=json.loads(a.s546_report.read_text())
     s562=json.loads(a.s562_report.read_text())
-    need(m["status"]=="S561_PREREGISTERED_FIVE_MORE_TRAIN_SPLIT_COMPOSERS_AFTER_S544_NO_WAV_NO_MIDI"
-         and m["original_previous_S469_3_S537_5_S545_5_S554_5_component_excluded"]
-         and m["five_next_distinct_composers"]==5
-         and m["co_composer_COMPONENTS_fully_excluded_and_pairwise_disjoint"]
-         and m["source_MIDI_files_not_read"]
-         and m["source_WAV_files_not_read"]
-         and v["status"]=="S563_MAESTRO_V3_REAL_AUDIO_ORIGINAL_PRETRAINED_V88_PLUS_S466_PREMIDI"
-         and v["preregistered_S561_SHA"]==sha(a.manifest)
-         and not v["paired_MIDI_annotation_files_OPENED"] and v["prelabel_predictions_frozen"]
-         and bp["status"]=="S564_PRETRAINED_BASIC_PITCH_NOTE_EVENTS_ON_THIRD_SOURCE_MAESTRO_PREMIDI"
-         and not bp["original_MAESTRO_MIDI_ANNOTATIONS_OPENED"]
-         and feat["status"]=="S565_PRELABEL_FIVE_NEW_PIANO_ALL_V88_RAW_49_PITCH_FEATURES"
-         and feat["frozen_feature_ledger_SHA256"]==sha(a.features)
-         and feat["no_original_true_MIDI_annotation_read"]
-         and s546["status"]=="S546_8_COMPOSER_REAL_NOTE_IDENTITY_EXPERT_TRAINING_AND_RETRO_LOO"
-         and s562["status"]=="S562_REAL_EIGHTEEN_EXPOSED_COMPOSER_SOURCE_AUDIO_TRAINED_NOTE_PITCH_TWO_HEADS"
-         and s562["fully_trained_two_models_before_ANY_S561_MIDI"]
-         and s562["no_S561_audio_or_MIDI_opened_for_fitting"],
+    guard_checks={
+      "S561_original_status":m["status"]=="S561_PREREGISTERED_FIVE_MORE_TRAIN_SPLIT_COMPOSERS_AFTER_S544_NO_WAV_NO_MIDI",
+      "S561_excludes_18":m["original_previous_S469_3_S537_5_S545_5_S554_5_component_excluded"],
+      "S561_five":m["five_next_distinct_composers"]==5,
+      "S561_no_co_composer_overlap":m["co_composer_COMPONENTS_fully_excluded_and_pairwise_disjoint"],
+      "S561_MIDI_unopened":m["source_MIDI_files_not_read"],
+      "S561_WAV_unopened_at_registration":m["source_WAV_files_not_read"],
+      "S563_original_audio_status":v["status"]=="S563_MAESTRO_V3_REAL_AUDIO_ORIGINAL_PRETRAINED_V88_PLUS_S466_PREMIDI",
+      "S563_registered_metadata_SHA":v["preregistered_S561_SHA"]==sha(a.manifest),
+      "S563_MIDI_unopened":not v["paired_MIDI_annotation_files_OPENED"],
+      "S563_source_prob_frozen":v["prelabel_predictions_frozen"],
+      "S564_basicpitch_status":bp["status"]=="S564_PRETRAINED_BASIC_PITCH_NOTE_EVENTS_ON_THIRD_SOURCE_MAESTRO_PREMIDI",
+      "S564_MIDI_unopened":not bp["original_MAESTRO_MIDI_ANNOTATIONS_OPENED"],
+      "S565_original_49x11_status":feat["status"]=="S565_PRELABEL_FIVE_NEW_PIANO_ALL_V88_RAW_49_PITCH_FEATURES",
+      "S565_prelabel_feature_SHA":feat["frozen_feature_ledger_SHA256"]==sha(a.features),
+      "S565_MIDI_unopened":feat["no_original_true_MIDI_annotation_read"],
+      "S546_source_trained_status":s546["status"]=="S546_8_COMPOSER_REAL_NOTE_IDENTITY_EXPERT_TRAINING_AND_RETRO_LOO",
+      "S562_source_trained_status":s562["status"]=="S562_REAL_EIGHTEEN_EXPOSED_COMPOSER_SOURCE_AUDIO_TRAINED_NOTE_PITCH_TWO_HEADS",
+      "S562_two_full_models_frozen":s562["fully_trained_two_models_before_ANY_S561_MIDI"],
+      "S562_held_MIDI_unopened":s562["no_S561_audio_or_MIDI_opened_for_fitting"],
+    }
+    if not all(guard_checks.values()):
+        print("S566 PROSPECTIVE NO-MIDI SOURCE PROVENANCE FAILED CHECKS",
+              json.dumps({k:v for k,v in guard_checks.items() if not v}),flush=True)
+    need(all(guard_checks.values()),
          "S566 SHA-verified source, original weights, audio WAV test all prelabel required")
     rows=readrows(a.features)
     sources={x["filename_SHA256"] for x in m["chosen_metadata_only"]}
