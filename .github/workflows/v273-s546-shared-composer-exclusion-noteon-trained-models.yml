@@ -38,7 +38,7 @@ jobs:
           gh run download 38657068577 -n s542-VALIDATED-5-new-composer-noteon-F1-genuine-postfrozen-piano-MIDI-and-restrikes -D model/S542 --repo "${{ github.repository }}"
       - name: Train 8 raw pitch and 8 harmonic-selected note heads on actual new MIDI plus old labels with composer-held inference
         run: |
-          python -u -m scripts.s546_train_8_composer_49pitch_noteon_selected_plus_harmonic_experts \
+          python -u -m scripts.s546_train_8_source_folds_excluding_SHARED_COMPOSER_COMPONENTS \
             --old-manifest model/S469/report.json --new-manifest model/S537/report.json \
             --old-midi-report model/S471/report.json --new-midi-report model/S542/report.json \
             --old-features model/S527/S527_ALL_V88_K0_K6_ORIGINAL_WAV_49_PITCH_FEATURES_PREMIDI.jsonl \
