@@ -1,0 +1,49 @@
+name: S644 frozen learned-onset gates loop train lock dev
+on:
+  push:
+    branches: [codex/s644-audit-rescue-gates]
+    paths:
+      - scripts/s644_gate_rescue_loop.py
+      - test/test_s644_gate_rescue_loop.py
+      - .github/workflows/v273-s644-gate-anatomy-rescue.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: s644-gate-anatomy-original
+  cancel-in-progress: false
+jobs:
+  complete_original_train_then_development:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Original NOTE requirements
+        run: python -m pip install -r requirements-live-strict.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: S642-real-trained-dual-candidate-delay-original-DEV
+          run-id: 38815758881
+          github-token: ${{ github.token }}
+          path: /tmp/S642
+      - name: Validate gates causal selection and original S614 control
+        run: |
+          python -m compileall -q scripts/s644_gate_rescue_loop.py
+          python -m unittest -v test.test_s644_gate_rescue_loop test.test_s642_dual_learned test.test_strict_live
+      - name: Inspect every original trained gate, lock on TRAIN, independently replay DEV
+        run: |
+          python -u -m scripts.s644_gate_rescue_loop \
+            --candidate /tmp/S642/S642_weak_attack_train_only.joblib \
+            --out /tmp/S644
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S644-frozen-candidate-train-locked-gate-sweep
+          path: /tmp/S644/
+          if-no-files-found: warn
+          retention-days: 60
