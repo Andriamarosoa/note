@@ -1,0 +1,45 @@
+name: S616 original frozen S601 inference on user-supplied YouTube music
+on:
+  push:
+    branches: [codex/s533-s535-note-fundamental-loops]
+    paths:
+      - scripts/s616_infer_frozen_s601.py
+      - .github/workflows/v273-s616-original-s601-youtube.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s616-original-s601-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  original_s601:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+      TF_CPP_MIN_LOG_LEVEL: '3'
+      TF_NUM_INTRAOP_THREADS: '2'
+      TF_NUM_INTEROP_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install exact original inference requirements
+        run: |
+          python -m pip install setuptools==80.10.2 numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 mido==1.3.3 tensorflow==2.14.1 basic-pitch==0.4.0 librosa==0.11.0 yt-dlp
+      - name: Fetch the exact source URL supplied by the user
+        run: |
+          mkdir -p /tmp/s616_input
+          yt-dlp --no-playlist --extract-audio --audio-format wav -o '/tmp/s616_input/source.%(ext)s' 'https://www.youtube.com/watch?v=GJd7Q-KMllg'
+          test -s /tmp/s616_input/source.wav
+      - name: Inference original frozen checkpoint on the actual audio, not guessed spectrogram
+        run: |
+          python -m scripts.s616_infer_frozen_s601 --audio /tmp/s616_input/source.wav --out /tmp/s616_result
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s616-original-S601-audio-midi-result
+          path: /tmp/s616_result/
+          if-no-files-found: warn
+          retention-days: 30
