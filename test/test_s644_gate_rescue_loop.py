@@ -21,8 +21,8 @@ class GateTests(unittest.TestCase):
         base,counts,profile,weak=measure(row,q,Selection(onset=.6),None)
         self.assertEqual(base["TP"],0)
         self.assertGreater(counts["above_sustain_026"],0)
-        self.assertEqual(counts["q965_pass"],0)
-        self.assertEqual(counts["attempted_frames"],0)
+        self.assertEqual(counts.get("q965_pass",0),0)
+        self.assertEqual(counts.get("attempted_frames",0),0)
         q[:12,7]=.8
         new,a,profile,weak=measure(row,q,Selection(onset=.6),.7)
         self.assertGreater(a["attempted_frames"],0)
