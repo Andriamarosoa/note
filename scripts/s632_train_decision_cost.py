@@ -109,22 +109,24 @@ def run(out):
     old=load_heads(MODEL,expected_sha256=original_sha)
     cfg=Selection(**old.metadata["selection"])
     began=time.perf_counter()
-    training=[];development=[]
+    development=[]
     with tempfile.TemporaryDirectory() as td:
         root=Path(td);(root/"data").mkdir()
-        for spec in train_u:
-            training.append(get_source(spec,root,old))
-            print("S632 TRAIN AUDIO URMP",spec["name"],flush=True)
         aud=protocol["guitar_archives"]["GuitarSet_audio"]
         ann=protocol["guitar_archives"]["GuitarSet_annotations"]
         download(aud["url"],root/"data/GuitarSet_audio.zip",aud["size"],aud["sha256"])
         download(ann["url"],root/"data/GuitarSet_annotations.zip",ann["size"],ann["sha256"])
         with zipfile.ZipFile(root/"data/GuitarSet_audio.zip") as archive:
-            for spec in train_g:
-                training.append(get_source(spec,root,old,archive))
-                print("S632 TRAIN AUDIO GUITAR",spec["name"],flush=True)
-            models,proofs,checkpoints,traininfo=aggregate_train(training,out)
-            del training
+            def iter_train():
+                for spec in train_u:
+                    print("S632 TRAIN AUDIO URMP",spec["name"],flush=True)
+                    yield get_source(spec,root,old)
+                for spec in train_g:
+                    print("S632 TRAIN AUDIO GUITAR",spec["name"],flush=True)
+                    yield get_source(spec,root,old,archive)
+            # Generator releases each entire waveform/feature array after its
+            # extracted candidates have been added; fixed memory per source.
+            models,proofs,checkpoints,traininfo=aggregate_train(iter_train(),out)
             for spec in dev_u:
                 row=get_source(spec,root,old)
                 measured=evaluate(row,models,cfg)
