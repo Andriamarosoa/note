@@ -1,0 +1,65 @@
+name: S651 audit every historical selection in loop against its actual F1 regressions
+on:
+  push:
+    branches: [codex/s651-audit-inside-loops]
+    paths:
+      - src/causal_note/s651_loop_guard.py
+      - scripts/s651_replay_audit_all_loops.py
+      - test/test_s651_audit_inside_loops.py
+      - .github/workflows/v273-s651-audit-embedded-into-loops.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: s651-replay-train-selected-loops
+  cancel-in-progress: false
+jobs:
+  replay_previous_corrections_regressions:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: .:src
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: S642-real-trained-dual-candidate-delay-original-DEV
+          run-id: 38815758881
+          github-token: ${{ github.token }}
+          path: /tmp/S642
+      - uses: actions/download-artifact@v4
+        with:
+          name: S644-frozen-candidate-train-locked-gate-sweep
+          run-id: 38817435779
+          github-token: ${{ github.token }}
+          path: /tmp/S644
+      - uses: actions/download-artifact@v4
+        with:
+          name: S645-genuine-trained-acoustic-score-rise-gating-sweep
+          run-id: 38818392769
+          github-token: ${{ github.token }}
+          path: /tmp/S645
+      - uses: actions/download-artifact@v4
+        with:
+          name: S648-trained-event-birth-FIT-CALIB-DEV-model-report
+          run-id: 38821104076
+          github-token: ${{ github.token }}
+          path: /tmp/S648
+      - name: Assert every correction is audited with all individual regressions
+        run: |
+          python -m compileall -q src/causal_note/s651_loop_guard.py scripts/s651_replay_audit_all_loops.py
+          python -m unittest -v test.test_s651_audit_inside_loops
+      - name: Replay S642 S644 S645 S648 selection loops, lock before DEV and archive all failed proposals
+        run: |
+          python -m scripts.s651_replay_audit_all_loops \
+            --s642 /tmp/S642/report.json \
+            --s644 /tmp/S644/report.json \
+            --s645 /tmp/S645/report.json \
+            --s648 /tmp/S648/report.json \
+            --out /tmp/S651/report.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S651-all-loops-candidate-FP-TP-regression-ledger
+          path: /tmp/S651
+          if-no-files-found: warn
+          retention-days: 60
