@@ -121,3 +121,100 @@ assistées par morceau, corpus et politique, avec
 vérification des agrégats de la CI initiale.
 
 Aucun paramètre ne peut être réoptimisé par S650.
+
+
+## S648 TRAIN/CALIBRATION/DEV — vrai résultat vérifié
+
+[Exécution S648 réussie et reproductible](https://github.com/Andriamarosoa/note/actions/runs/38821104076)
+[Checkpoint S648 + rapports JSON](https://github.com/Andriamarosoa/note/actions/runs/38821104076/artifacts/12013881637).
+
+La tête S648 a été **réellement entraînée** sur 186 196
+exemples acoustiques (dont **6 196 trames positives**)
+provenant des **24 sources FIT**.
+SHA256 du checkpoint appris :
+`7613dca4aa9bc5992c96a75ab55f714d8720c55b6880ee9e223e39ea880eb4e9`.
+
+Le verrouillage CALIBRATION utilise les 11 autres TRAIN
+de compositions distinctes (aucun échantillon DEV au
+moment de choisir). Les cinq variantes prédéfinies
+échouent à améliorer simultanément les deux corpus
+sans trop de faux positifs : **S614 original a été
+verrouillé** avant ouverture de DEV.
+
+### 11 CALIBRATION (métrique d'origine NoteOn ±80ms)
+
+| Politique | GuitarSet TP/FP/FN | GuitarSet F1 | URMP TP/FP/FN | URMP F1 |
+|---|---|---:|---|---:|
+| S614 original | 844/360/350 | **70,39 %** | 401/149/146 | **73,11 %** |
+| q≥0,70 / hausse 0,10 | 867/791/327 | 60,80 % | 410/398/137 | 60,52 % |
+| q≥0,80 / hausse 0,10 | 850/475/344 | 67,49 % | 402/170/145 | 71,85 % |
+| q≥0,85 / hausse 0,15 | 845/397/349 | 69,38 % | 401/149/146 | 73,11 % |
+| q≥0,90 / hausse 0,15 | 844/366/350 | 70,22 % | 401/149/146 | 73,11 % |
+| q≥0,95 / hausse 0,15 | 844/360/350 | 70,39 % | 401/149/146 | 73,11 % |
+
+### 17 DEV, mesurés après le verrouillage
+
+| Politique exploratoire | GuitarSet TP/FP/FN | GuitarSet F1 | URMP TP/FP/FN | URMP F1 |
+|---|---|---:|---|---:|
+| **S614 verrouillé** | 998/585/582 | **63,10 %** | 243/149/256 | **54,55 %** |
+| q≥0,70 / hausse 0,10 | 1070/1627/510 | 50,04 % | 262/302/237 | 49,29 % |
+| q≥0,80 / hausse 0,10 | 1018/895/562 | 58,29 % | 248/160/251 | 54,69 % |
+| q≥0,85 / hausse 0,15 | 1006/699/574 | 61,25 % | 243/149/256 | 54,55 % |
+| q≥0,90 / hausse 0,15 | 1000/600/580 | 62,89 % | 243/149/256 | 54,55 % |
+| q≥0,95 / hausse 0,15 | 998/585/582 | 63,10 % | 243/149/256 | 54,55 % |
+
+Cette fois la tête d'événement émet des nouveaux NoteOn
+(non comme S642 où les portes les bloquaient totalement),
+mais **la sélectivité est mauvaise**. Exemple q≥0,85 :
+260 NoteOn ont été assistés sur GuitarSet DEV,
+mais la comparaison à S614 donne seulement **+8 TP nets**
+contre **+114 FP nets**, avec **11 régressions / 12
+enregistrements** ; sur URMP DEV aucun changement.
+Le risque est plus grave à q≥0,70 : +72 TP mais
++1 042 FP nets GuitarSet DEV.
+
+## S650 — Audit indépendant du rapport figé S648
+
+[GitHub Actions S650 : audit réussi](https://github.com/Andriamarosoa/note/actions/runs/38822366278),
+[rapport S650 par source et politique](https://github.com/Andriamarosoa/note/actions/runs/38822366278/artifacts/12013557740).
+
+L'audit est recalculé **sans toucher aux poids, à l'audio
+ni aux seuils** ; il vérifie les invariants TP/FN et que
+les agrégats source→corpus correspondent exactement
+au rapport S648.
+
+Sur GuitarSet DEV :
+- q≥0,70 : 0/12 sources améliorées, 12/12 régressées ;
+- q≥0,80 : 1/12 améliorée, 11/12 régressées ;
+- q≥0,85 : 1/12 améliorée, 11/12 régressées ;
+- q≥0,90 : 2/12 améliorées, 5/12 régressées,
+  5 inchangées.
+
+La référence verrouillée S614 conserve **100 % de
+ses sorties originales** : 998 TP/585 FP/582 FN GuitarSet,
+243 TP/149 FP/256 FN URMP.
+
+## Décision technique
+
+**S648 refusée comme référence, tout en conservant ses
+enseignements et son code.** S649 vérifie la causalité
+logicielle de l'architecture mais pas encore le F1
+ni le p95 matériel du checkpoint réel en microphone LIVE.
+Le score officiel de S614 reste **69,03 % F1 sur son
+historique TEST symétrique** : les chiffres ci-dessus
+sont des métriques de CALIBRATION/DEV, pas un nouveau TEST.
+
+Défaut résiduel : les vrais candidats faibles sont
+dominés par des faux événements sonores et des confusions
+de hauteurs. Baisser q seul dégrade plus la précision
+que cela ne récupère de notes.
+
+Prochaine itération méthodologiquement justifiée :
+**audit événementiel des candidats assistés**
+avec distinction TP nouvellement récupérés /
+TP historiques déplacés / nouveaux FP / réattaques
+harmoniques et temps depuis la dernière attaque.
+Puis développer une nouvelle sélection à coût
+FP explicitement appris, sur des erreurs
+*hors entraînement* par composition, avant
+tout réentraînement majeur ou promotion.
