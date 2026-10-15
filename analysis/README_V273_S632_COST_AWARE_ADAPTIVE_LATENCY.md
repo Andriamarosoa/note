@@ -112,3 +112,45 @@ python -m scripts.s632_train_decision_cost --out /tmp/S632
 Le code, les trois modèles originaux et le rapport JSON complet sont
 archivés dans l'artifact de l'exécution S632. La référence officielle
 reste **S614 à 69,03 % F1 sur ses 22 enregistrements TEST historiques**.
+
+
+## S633 — Rejeu figé indépendant du code d'entraînement (sur le même DEV)
+
+[GitHub Actions S633 réussi](https://github.com/Andriamarosoa/note/actions/runs/38804918894).
+Rejeu séparé de S632 avec les **mêmes trois SHA256** et la
+**politique figée** `S632_assist_wait_p010`, sur les 17 sources
+DEV existantes, sans entraînement ni changement de seuil.
+
+Comparaison note par note, en gardant l'appariement maximal
+NoteOn hauteur exacte ±80 ms. Reproduction complète du même contrôle :
+
+- **GuitarSet** : 998 TP / 585 FP / 582 FN → **1001 TP /
+  585 FP / 579 FN**. Trois nouvelles annotations correctement
+  appariées, aucune annotation auparavant appariée perdue.
+  **44** événements NoteOn nouveaux au même échantillon/hauteur,
+  **41** événements antérieurs retirés ou déplacés.
+  Deux enregistrements progressent, un régresse.
+- **URMP** : 243 TP / 149 FP / 256 FN → **244 TP /
+  149 FP / 255 FN**. Une annotation nouvellement appariée,
+  aucune perdue. Dix NoteOn ajoutés/modifiés et neuf
+  événements antérieurs retirés ou déplacés.
+  Une composition progresse (Nocturne), aucune ne régresse.
+
+Les trois gains GuitarSet viennent de
+`04_BN3-154-E_solo` (2) et
+`04_Rock1-130-A_comp` (1).
+Le gain URMP vient de `18_Nocturne_vn_fl_tpt`.
+
+**Nuance :** les 370 décisions `emits` indiquées par l'audit
+de coût ne sont pas 370 nouvelles notes correctement reconnues.
+Le système modifie surtout le moment ou l'ordre de décisions
+proches déjà émises ; seuls **quatre événements de vérité terrain
+supplémentaires** sont appariés au final, et le total des faux
+positifs reste inchangé.
+
+Ce second audit **ne constitue PAS un test indépendant
+statistiquement** : il répète les mêmes enregistrements DEV,
+mais sur un autre workflow figé pour vérifier les totaux et
+identifier les corrections/régressions.
+La référence S614 LIVE historique reste inchangée ; aucune
+promotion de S632 n'a lieu.
