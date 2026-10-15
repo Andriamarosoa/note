@@ -154,8 +154,8 @@ def selftest():
     truth=[dict(time=.1,notes=[52,55]),dict(time=.2,notes=[52])]
     guess=[dict(time=.1,notes=[52,55]),dict(time=.2,notes=[52])]
     need(note_metrics(guess,truth,.03)["TP"]==3 and
-         len(POLICIES)==6,"S567 full note and time one-to-one real retransmission scoring")
-    print("S567 SELFTEST PASS pitch + time ±30ms and six immutable policies")
+         len(POLICIES)==7,"S567 full note and time one-to-one real retransmission scoring")
+    print("S567 SELFTEST PASS pitch + time ±30ms and seven immutable policies")
 if __name__=="__main__":
     p=argparse.ArgumentParser();p.add_argument("--self-test",action="store_true")
     for z in ("manifest","audio-report","feature-report","features","frozen-report","predictions","out"):
