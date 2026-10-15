@@ -122,3 +122,77 @@ régressions des accords polyphoniques. Conserver la
 référence officielle **S614 69,03 % F1 TEST historique**
 tant qu'un nouveau score TEST indépendant n'est pas
 reproduit.
+
+
+## S647 — Isolation de la porte exacte (confirmée par les données)
+
+[Exécution S647 réussie](https://github.com/Andriamarosoa/note/actions/runs/38819248595)
+et [rapport complet avec détails par source](https://github.com/Andriamarosoa/note/actions/runs/38819248595/artifacts/12012292801).
+
+Audit sans changement de modèle : la sortie S614 a été
+rejouée pour calculer l'état actif de chaque hauteur avant
+chaque trame. Le modèle S642 a prédit q sur les mêmes
+caractéristiques natives. La montée vérifiée est
+q≥0,99 avec q − min(q des six précédentes) ≥0,10.
+
+| Mesure | GuitarSet TRAIN | URMP TRAIN | GuitarSet DEV | URMP DEV |
+|---|---:|---:|---:|---:|
+| Montées fortes q | 17 684 | 35 483 | 17 204 | 7 390 |
+| Montées q dans les fenêtres de vraie attaque (40ms) | **30** | **31** | **24** | **1** |
+| Montées q sur hauteur déjà active | 0 | 0 | 0 | 0 |
+| Montées avec onset S614 ≥0,02 | 24 | 0 | 20 | 0 |
+| Montées avec sustain S614 ≥0,05 | 21 | 0 | 19 | 0 |
+| Montées satisfaisant onset et sustain minimums | 21 | 0 | 19 | 0 |
+
+Sur DEV GuitarSet, seules 24/17 204 (0,14 %)
+des montées q se situent dans une fenêtre annotée de
+vraie attaque. Sur DEV URMP, seulement 1/7 390
+(0,014 %). Les occurrences sont des observations
+trame-hauteur, **pas des événements MIDI uniques**,
+et ces chiffres ne sont pas une précision de
+classification à seuil optimisé.
+
+Conclusions plus fines :
+1. La porte `~active` **n'est pas le problème** :
+   100 % des fortes montées de q sont sur des hauteurs
+   qui ne sont pas actives dans le sélecteur natif.
+2. La tête prédit une forte montée q essentiellement
+   lorsque les sorties du réseau S614 pour attaque
+   et maintien sont **toutes deux proches de zéro**.
+3. Même la nouvelle garde physique très douce
+   onset≥0,02 / sustain≥0,05 n'aurait que 19
+   observations admissibles sur GuitarSet DEV et
+   aucune sur URMP DEV.
+4. Plus important, presque toutes les montées q ont
+   lieu en dehors des attaques annotées : retirer
+   entièrement les portes fabriquerait beaucoup
+   de faux candidats. Une montée q forte **n'est
+   pas actuellement un détecteur fiable de naissance
+   de note**.
+
+### Défaut de conception et suite
+
+Le problème ne peut pas être corrigé durablement
+par un seuil q fixe ou une simple attente après
+l'attaque. La supervision de S642 a entraîné la
+tête à distinguer des trames positives étiquetées,
+mais la politique l'utilise comme un nouveau
+déclencheur événementiel sans calibration
+sur les véritables naissances et réattaques du
+sélecteur original. La correspondance sémantique
+entre `q` et la décision NoteOn est insuffisante.
+
+Prochaine architecture à développer : entraîner une
+nouvelle tête **événementielle** plutôt que
+réutiliser ce q : cible de nouvelle attaque et
+durée d'état passée, hard négatifs des notes
+soutenues/résonances et accords, entrée de
+l'état actif du S614 ; calibrer sur TRAIN
+par composition ; proposer plusieurs classes
+de candidats mesurées avec vraie précision
+NoteOn et délai causal. Aucun q de l'actuelle
+S642 n'est à promouvoir.
+
+Les scores et checkpoints officiels restent :
+S614 historique 69,03 % F1 sur test ±80ms ;
+S632 et S642 expérimentaux, S80 inchangé.
