@@ -83,7 +83,7 @@ def run(args):
          and v["output_sha256"] == filesha(args.v88)
          and v["preregistered_S545_SHA"] == filesha(args.manifest),
          "S549 original prelabel real piano V88 WAV identity not valid")
-    need(bp["status"] == "S539_PRETRAINED_BASIC_PITCH_NOTE_EVENTS_ON_THIRD_SOURCE_MAESTRO_PREMIDI"
+    need(bp["status"] == "S548_PRETRAINED_BASIC_PITCH_NOTE_EVENTS_ON_THIRD_SOURCE_MAESTRO_PREMIDI"
          and bp["original_MAESTRO_MIDI_ANNOTATIONS_OPENED"] is False
          and bp["frozen_notes_SHA256"] == filesha(args.bp),
          "S549 original frozen independent Basic Pitch MIDI40..88 notes changed")
