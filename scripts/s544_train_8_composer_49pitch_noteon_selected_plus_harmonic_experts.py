@@ -242,7 +242,6 @@ def selftest():
     old=dict(original_V88_candidate_start_s=.2,
              old_basicpitch_birth_pitches=[52,64],
              per_midi_features_49x11=x.tolist())
-    import numpy as np
     pred=np.zeros((1,49),np.float32)
     assert to_pred([old],np.array([0]),pred,"no_dedup")==[dict(time=.2,notes=[52,64])]
     print("S544 SELFTEST PASS BP true chord protected, no new composer MIDI leakage into held source")
