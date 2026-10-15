@@ -141,3 +141,115 @@ combinaison 0,25 :
 mesurer la robustesse inter-domaines sur DEV. Sa promotion est
 interdite tant que le transfert et un test nouveau ne sont pas
 satisfaisants.
+
+
+---
+
+## Boucles additionnelles S623–S626 — verdicts confirmés
+
+### S623 : entraînement sur les données TRAIN de GuitarSet et URMP
+
+[CI + poids + rapport des 18 politiques](https://github.com/Andriamarosoa/note/actions/runs/38787299474).
+35 enregistrements de TRAIN (18 GuitarSet, 17 URMP),
+17 de DEV (12 GuitarSet, 5 URMP), compositions distinctes.
+
+Trois variantes de tête événementielle : URMP seul, guitare seule,
+mixte, chacune avec deux poids négatifs et trois seuils.
+L'amélioration robuste **n'a pas eu lieu** : seuil bas garde presque
+toutes les notes (F1 original GuitarSet **63,1046 %**, URMP
+**54,5455 %**), et augmenter le rejet finit par supprimer des notes
+correctes. L'entraînement du filtre sur les propositions S614 de
+ses propres exemples TRAIN manque probablement de négatifs difficiles
+représentatifs des compositions DEV (hypothèse, non preuve causale).
+
+### S624 : huit plis groupés inter-instruments, contrôle sur DEV
+
+[CI groupée](https://github.com/Andriamarosoa/note/actions/runs/38788262813).
+Trois familles GuitarSet DEV, cinq compositions URMP DEV ;
+chaque pli est exclu de l'apprentissage de sa tête événementielle.
+Le plus grand gain sans régression des deux corpus est négligeable :
+avec poids négatif 1 / seuil 0,15,
+GuitarSet **63,1278 %** (+0,0231 point), URMP **54,5455 %**
+(inchangé). Tous les filtres plus agressifs sont régressifs sur
+au moins un corpus. **Le filtrage événementiel n'est pas une solution
+globale aux défauts d'attaques.**
+
+### S625 : audit direct des vraies notes manquées
+
+[CI + audit individuel des 838 FN de DEV](https://github.com/Andriamarosoa/note/actions/runs/38788514596).
+Vérification des probabilités d'attaque `p_onset >= .6` et de maintien
+`p_sustain >= .5` sur ±80 ms autour de chaque vraie attaque absente :
+
+| Classe d'échec observée | GuitarSet | URMP | Total |
+|---|---:|---:|---:|
+| Aucun des deux signaux ne franchit son seuil | 313 | 123 | **436** |
+| Maintien franchit seul, attaque insuffisante | 169 | 97 | **266** |
+| Attaque franchit seule, maintien insuffisant | 38 | 19 | **57** |
+| Les deux franchissent séparément, jamais simultanément | 38 | 8 | **46** |
+| Les deux franchissent simultanément, pas de NoteOn apparié | 24 | 9 | **33** |
+| **Total** | **582** | **256** | **838** |
+
+**702/838 (83,77 %) n'ont pas de signal d'attaque au seuil dans
+la fenêtre considérée.** C'est une observation fondamentale :
+changer un seuil, un ordre de sélection ou seulement un NoteOff ne
+permettra pas de reconstituer les attaques non proposées par la tête.
+La classe de 33 événements avec les deux signaux ne prouve pas à
+elle seule une erreur de sélection : états actifs, armement, blocages
+temporels et appariement sont encore à auditer individuellement.
+
+### S626 : nouveau réentraînement d'attaque aiguë/rapide et négatifs harmoniques
+
+[CI entraînement / métriques / nouveau checkpoint](https://github.com/Andriamarosoa/note/actions/runs/38789074963).
+
+Entraînement d'une tête supplémentaire HistGradientBoosting sur
+**328 275** exemples acoustiques PCM originaux NOTE, dont **30 775**
+cibles d'attaque dans les 40 ms après la référence et des négatifs
+difficiles autour des attaques d'autres hauteurs. Sources :
+17 URMP TRAIN et 18 GuitarSet TRAIN, toutes composition-disjointes
+des 5 URMP +12 GuitarSet DEV. Aucun poids S614 ou S80 modifié.
+SHA256 tête expérimentale :
+`960ede7d58d0a7414655272a29ce80de28a082ab6bed1b340e3c4da5cf141cf1`.
+
+Les huit sélections d'attaque apprises **régressent toutes** par
+rapport au contrôle :
+- Référence : GuitarSet **63,1046 %**, URMP **54,5455 %** ;
+- Variante la moins mauvaise : GuitarSet **61,4495 %**,
+  URMP **54,4233 %** (seuil 0,95, montée 0,25, preuve physique 0,08) ;
+- Configurations plus permissives : jusqu'à **50,05 %** sur GuitarSet
+  et **50,43 %** sur URMP, avec de nombreuses attaques fausses.
+
+**Rejet S626**, même si ses tests et son exécution ont réussi.
+Le changement des cibles d'attaque, l'entraînement mixte et les négatifs
+difficiles ne compensent pas les faux positifs engendrés lors de l'ajout
+de propositions. Aucun score de l'ancien TEST S614 n'a été rouvert
+pour sélectionner ces variantes.
+
+## Décision collective fin de S626
+
+- **Référence de fonctionnement inchangée : S614 strict causal,
+  69,0277 % F1 NoteOn sur les 22 sources de son test historique.**
+- **S80 Exact-K historique conservé inchangé** : il ne faut toujours
+  pas confondre son nombre de nouvelles attaques avec le nombre de
+  notes actives prédit par la tête `count` autonome de S614.
+- Toutes les variantes apprises et sélecteurs ci-dessus restent
+  expérimentaux : aucune promotion de S618, S619, S620, S622, S623,
+  S624 ou S626.
+- Principal défaut prouvé **en développement** : défaut du signal
+  d'attaque sur environ 84 % des FN, et non un simple mauvais choix
+  d'ordre des sélections. Les boucles montrent aussi une instabilité
+  entre URMP et GuitarSet.
+
+### Conception à réviser pour aller plus loin
+
+Plutôt qu'ajouter un nouveau veto ou une sortie binaire entraînée
+isolément, il faut désormais expérimenter une **tête multi-tâche
+attaques + événement de cardinalité de nouvelles notes + identité
+de hauteurs**, entraînée *de bout en bout* avec une fonction de perte
+calibrée sur le coût des faux événements harmoniques et l'absence de
+vraies attaques. Le contrôleur doit gérer les états NOTE sans futures
+trames, et les réattaques simultanées séparément des maintiens.
+
+Toute affirmation de gain devra repartir de compositions inédites,
+être gelée avant annotation, mesurer note par note TP/FP/FN, les
+offsets et la latence physique, et vérifier que les cas S80 Exact-K
+n'ont pas régressé. **Objectif 80 % LIVE : non atteint.**
