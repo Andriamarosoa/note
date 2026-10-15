@@ -1,0 +1,34 @@
+name: S650 immutable S648 actual per-source correction regression audit
+on:
+  push:
+    branches: [codex/s648-causal-event-birth-head]
+    paths:
+      - scripts/s650_audit_event_birth_deltas.py
+      - .github/workflows/v273-s650-frozen-event-deltas.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+jobs:
+  check_frozen_source_deltas:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    env:
+      PYTHONPATH: .:src
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: S648-trained-event-birth-FIT-CALIB-DEV-model-report
+          run-id: 38821104076
+          github-token: ${{ github.token }}
+          path: /tmp/S648
+      - name: Audit exact real per-composition true-note recovery and phantom costs
+        run: |
+          python -m compileall -q scripts/s650_audit_event_birth_deltas.py
+          python -m scripts.s650_audit_event_birth_deltas --input /tmp/S648/report.json --out /tmp/S650/report.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S650-frozen-S648-per-source-gain-regression-inventory
+          path: /tmp/S650
+          if-no-files-found: warn
+          retention-days: 60
