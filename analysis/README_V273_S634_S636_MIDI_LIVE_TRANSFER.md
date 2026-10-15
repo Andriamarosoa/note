@@ -153,7 +153,8 @@ microphone ou de port MIDI physique présent dans cette CI.**
 | NOTE vs MIDI appariement | Exactes paires et mêmes deadlines | CI croisée réussie |
 | MIDI port Windows matériel | Commande implémentée | **Non encore testée sur matériel** |
 | Inférence réelle du S632 sur Windows | Chargeur SHA + point d'entrée | **Non encore testée sur matériel** |
-| F1 même source sur MIDI et NOTE | Protocole prêt | **Mesure non exécutée** |
+| F1 même source sur MIDI et NOTE | Protocole prêt, aucun audio annoté commun | **Mesure non exécutée** |
+| Rejeu WAV identique MIDI V2.2.1 / NOTE S614 | 59,79 s, 121 / 65 NoteOn | **Exécuté sans vérité terrain** |
 | Latence micro→MIDI totale p95 | Métriques I/O/CPU séparées | **Pas de loopback** |
 | Régression Exact-K S80 | S80 non modifié | Évaluation fonctionnelle non réexécutée |
 
@@ -174,3 +175,46 @@ le nombre de pertes et les bascules de surcharge.
 Après seulement, essayer un vrai hybride NOTE + politiques d'attaque
 de MIDI sur le développement, avec une comparaison contre S614
 et une preuve d'absence de régression des cas Exact-K pertinents.
+
+
+## S637 — Premier rejeu des deux moteurs sur le même WAV réel
+
+[Workflow S637 exécuté et réussi](https://github.com/Andriamarosoa/note/actions/runs/38810059806).
+[Rapport JSON original de l'expérience](https://github.com/Andriamarosoa/note/actions/runs/38810059806/artifacts/12007388810).
+
+Fichier source authentique :
+`Andriamarosoa/midi/runs/polyphonic/live_poly_v2.wav`
+(44,1 kHz mono, **2 636 800** échantillons, **59,791 s**).
+Le test GitHub a vérifié son SHA256 :
+`dff1b9d1fc6389de65c5f024089221196ebf71090a6bf92f8aed525f0f321d0d`.
+Revision MIDI figée :
+`536536f54290fdc4f63db28aa063d2e324121642`.
+
+La sortie **déjà produite auparavant** par `midi` V2.2.1 avec
+le décodeur prudent `fallback90` est dans
+`runs/polyphonic/live_poly_v2_v221_fallback90.mid`.
+Son rapport indique **121 NoteOn**.
+
+Le **même WAV** a été envoyé au système original `note`
+S614 (SHA256 gelé) via `SafeLiveTransport` S634.
+Résultat sur ce fichier : **65 NoteOn**, tous dans la plage
+commune MIDI 40–76. Aucun abandon de bloc ni recovery de file ;
+le nombre de NoteOff égale le nombre de NoteOn. Sur le runner
+GitHub, le calcul et le traitement de la capture simulée ont
+pris **14,50 secondes**, contre 59,79 secondes de signal, soit
+un rejeu plus rapide que le temps réel sur cette machine CI.
+
+**Interprétation cruciale :** ces 121 et 65 événements ne sont
+ni des vraies notes vérifiées ni une métrique F1. Cette capture
+n'a pas d'annotations musicales vérifiées et ne démontre donc
+ni que MIDI surdétecte ni que NOTE manque des notes. Des
+protocoles de silence, de calibration et de sélection différents
+peuvent également modifier les émissions. Il faut comparer
+leur F1 sur des références humaines/multitracks annotées,
+échantillons identiques et tolérances temporelles identiques.
+
+Ce test prouve uniquement qu'un vrai WAV de la pile `midi`
+peut désormais traverser le moteur S614 protégé et le nouveau
+transport S634, avec une trace structurée et sans perte de bloc.
+**Ne pas promouvoir** S634/S636 ou modifier le chiffre de
+F1 officiel S614 sur cette base.
