@@ -34,7 +34,7 @@ def acoustic(X,architecture):
          "S562 physical feature input must be 49 MIDI pitches times 11 acoustic indices")
     basic=X[:,:,[0,1,2,3,4,5,10]]
     if architecture=="raw7":return basic
-    need(architecture=="competing_fundamental31","S562 only 2 preregistered heads")
+    need(architecture=="competing_fundamental34","S562 only 2 preregistered heads")
     extras=[]
     idx=[2,3,5] # strength, birth burst and genuine novelty
     for semis in (12,19,24):
