@@ -48,7 +48,8 @@ def convert_same_wav(spec,source_zip,temp):
     else:
         data=np.clip(np.rint(pcm.astype(np.float64)/65536.),-32768,32767).astype(np.int16)
     data=data[:int(spec["seconds"]*SR)].copy()
-    if len(data)!=int(spec["seconds"]*SR):raise AssertionError("Input audio too short")
+    if not SR<=len(data)<=int(spec["seconds"]*SR):
+        raise AssertionError("Invalid real input duration")
     dst=temp/(spec["name"]+".wav")
     wavfile.write(dst,SR,data)
     encoded=dst.read_bytes()
