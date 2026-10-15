@@ -51,8 +51,11 @@ def merged(ledger,ident,policy):
         out|={(t,p) for t,p in new80 if MID_LOW<=p<=MID_HIGH}
     elif policy in ("consensus_restrike_S546raw_S528raw",
                   "mid_S52880_with_consensus_restrike"):
-        out=base.copy() if policy.startswith("consensus") else merged(
-             ledger,ident,"S528_mid80_S546_rest100")
+        if policy.startswith("consensus"):
+            out=base.copy()
+        else:
+            current=merged(ledger,ident,"S528_mid80_S546_rest100")
+            out={(round(float(z["time"]),6),int(p)) for z in current for p in z["notes"]}
         newraw=eventset(ledger,ident,"S546_raw")
         oldraw=eventset(ledger,ident,"S528_raw")
         before=len(out)
