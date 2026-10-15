@@ -86,3 +86,38 @@ ne suffit pas à promouvoir S648.
 **Résultats mesurés à ajouter uniquement après la fin réussie
 de l'entraînement et des évaluations.** Toute promotion exclue
 sans test indépendant et contrôle hardware LIVE.
+
+
+## S649 — Parité STRICT LIVE validée
+
+[GitHub Actions S649 : tests réussis](https://github.com/Andriamarosoa/note/actions/runs/38821458185).
+
+`src/causal_note/s649_birth_live_runtime.py` contient deux
+sélecteurs temporels strictement causaux (ombre S614 et variante
+S648) : chacun reçoit uniquement l'audio déjà arrivé.
+Chaque bloc PCM de 256 échantillons, 44,1kHz,
+fournit les sorties natives et le vecteur événementiel
+de l'instant. Les événements ne sont jamais antidatés ;
+la fermeture produit NoteOff pour toutes les notes
+actives.
+
+`test/test_s649_birth_live_runtime.py` vérifie que le
+vrai checkpoint S614 produit les mêmes événements
+que le mode batch causal pour les politiques original,
+0,70/0,10 et 0,85/0,15 sur PCM identique, et que
+modifier l'audio futur ne peut changer les événements
+des premiers blocs. Ces tests utilisent une tête de
+score synthétique pour la preuve logicielle : ils
+**ne valident pas encore les poids entraînés S648**
+ni la vitesse matérielle Windows.
+
+## S650 — Preuve future des effets sur les sources gelées
+
+`scripts/s650_audit_event_birth_deltas.py` reprend uniquement
+le rapport S648 (une fois terminé) et prouve que TP/FN
+évoluent par symétrie sur les vérités figées, puis
+extrait les changements TP/FP/FN et nombres de notes
+assistées par morceau, corpus et politique, avec
+vérification des agrégats de la CI initiale.
+
+Aucun paramètre ne peut être réoptimisé par S650.
