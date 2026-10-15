@@ -93,7 +93,7 @@ def run(a):
     s546=json.loads(a.s546_report.read_text())
     s562=json.loads(a.s562_report.read_text())
     guard_checks={
-      "S561_original_status":m["status"]=="S561_PREREGISTERED_FIVE_MORE_TRAIN_SPLIT_COMPOSERS_AFTER_S544_NO_WAV_NO_MIDI",
+      "S561_original_status":m["status"]=="S561_PREREGISTERED_FIVE_MORE_TRAIN_SPLIT_COMPOSERS_AFTER_S544_NO_WAV_MIDI",
       "S561_excludes_18":m["original_previous_S469_3_S537_5_S545_5_S554_5_component_excluded"],
       "S561_five":m["five_next_distinct_composers"]==5,
       "S561_no_co_composer_overlap":m["co_composer_COMPONENTS_fully_excluded_and_pairwise_disjoint"],
