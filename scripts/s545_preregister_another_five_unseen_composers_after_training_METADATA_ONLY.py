@@ -20,7 +20,11 @@ def need(x,msg):
     if not x:raise ValueError(msg)
 N=5
 
+def components(artist):
+    return {x.strip() for x in str(artist).split(" / ") if x.strip()}
+
 def choose(rows,previous_names,previous_composers):
+    excluded_components=set().union(*(components(a) for a in previous_composers))
     found=[]
     for r in rows:
         try:seconds=float(r["duration"])
@@ -34,16 +38,18 @@ def choose(rows,previous_names,previous_composers):
             and ".." not in wav and ".." not in midi
             and not wav.startswith("/") and not midi.startswith("/")
             and wav not in previous_names and artist not in previous_composers
+            and not (components(artist)&excluded_components)
             and artist):
             found.append(r)
     found.sort(key=lambda z:digest(
        ("S545-after-eight-composer-trained-head-unseen-final-v1/"+
         z["audio_filename"]).encode()))
-    composers=set();selected=[]
+    composers=set();included_components=set();selected=[]
     for r in found:
         artist=r["canonical_composer"]
-        if artist in composers:continue
+        if artist in composers or components(artist)&included_components:continue
         composers.add(artist)
+        included_components.update(components(artist))
         wav=r["audio_filename"]
         selected.append(dict(composer=artist,composition=r["canonical_title"],
            official_MAESTRO_split="train",
@@ -56,6 +62,7 @@ def choose(rows,previous_names,previous_composers):
         if len(selected)==N:break
     need(len(selected)==N and len(composers)==N
          and all(q["composer"] not in previous_composers
+                 and not (components(q["composer"])&excluded_components)
                  and q["audio_filename"] not in previous_names for q in selected),
          "S545 all five next validation composers must be new to eight prior development recordings")
     return selected,len(found)
@@ -87,6 +94,7 @@ def run(a):
     report=dict(status="S545_PREREGISTERED_FIVE_MORE_TRAIN_SPLIT_COMPOSERS_AFTER_S544_NO_WAV_MIDI",
          official_metadata_URL=URL,official_metadata_sha256=digest(b),
          original_S469_3_composers_PLUS_S537_5_composers_excluded=True,
+         co_composer_COMPONENTS_fully_excluded_and_pairwise_disjoint=True,
          original_previous_eight_composer_names=sorted(history_artist),
          five_next_distinct_composers=N,
          eligible_train_split_tracks_from_metadata_after_exclusions=eligible,
@@ -115,7 +123,11 @@ def selftest():
          and results==choose(list(reversed(rows)),
                  {f"2018/{k}.wav" for k in old},old)[0],
          "S545 test composer exclusion must be fixed before MIDI")
-    print("S545 SELFTEST PASS whole new composer source split and no WAV or MIDI")
+    extra=components("Franz Schubert / Franz Liszt")
+    need("Franz Liszt" in extra and "Franz Schubert" in extra and
+         not (components("Johann Sebastian Bach") & extra),
+         "S545 compound composer components must be fully blocked")
+    print("S545 SELFTEST PASS actual composers and co-composers disjoint, no WAV/MIDI")
 
 if __name__=="__main__":
     p=argparse.ArgumentParser();p.add_argument("--self-test",action="store_true")
