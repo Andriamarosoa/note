@@ -1,0 +1,49 @@
+name: S641 frozen NOTE output fixed-delay sensitivity vs earlier and late note tradeoffs
+on:
+  push:
+    branches: [codex/s640-common-miss-audit]
+    paths:
+      - scripts/s641_frozen_output_delay_counterfactual.py
+      - test/test_s641_frozen_output_delay.py
+      - .github/workflows/v273-s641-frozen-timing-sensitivity.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  immutable_counterfactual_without_audio_or_training:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      PYTHONPATH: .:src
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: S638-twelve-GuitarSet-recordings-real-matched-F1
+          run-id: 38811643000
+          github-token: ${{ github.token }}
+          path: /tmp/S638
+      - uses: actions/download-artifact@v4
+        with:
+          name: S640-causal-acoustic-613-shared-misses-original-note
+          run-id: 38813870389
+          github-token: ${{ github.token }}
+          path: /tmp/S640
+      - name: Test causal temporality and frozen baseline counts
+        run: |
+          python -m unittest -v test.test_s641_frozen_output_delay test.test_s635_shared_midi_metric
+      - name: Check real fixed-delay tradeoff without retuning or changing models
+        run: |
+          python -m scripts.s641_frozen_output_delay_counterfactual \
+            --s638 /tmp/S638/frozen_inputs_and_emissions.json \
+            --s638-metric /tmp/S638/common_metric.json \
+            --s640 /tmp/S640/report.json \
+            --out /tmp/S641/report.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S641-real-frozen-note-output-causal-delay-sensitivity
+          path: /tmp/S641
+          if-no-files-found: warn
+          retention-days: 60
