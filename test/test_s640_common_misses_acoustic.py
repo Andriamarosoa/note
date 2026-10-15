@@ -26,7 +26,7 @@ def frame(at,onset=.1,sustain=.1,co=False,armed=True,
 class S640DiagnoseTests(unittest.TestCase):
     def setUp(self):
         self.note=dict(pitch=52,start_s=.1)
-        self.cfg=Selection()
+        self.cfg=Selection(onset=.6,active_on=.5)
 
     def reason(self,rows,outputs=()):
         return preliminary_miss_classification(self.note,rows,outputs,self.cfg)
