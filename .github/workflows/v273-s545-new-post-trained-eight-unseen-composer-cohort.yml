@@ -36,6 +36,7 @@ jobs:
           assert r['status']=='S545_PREREGISTERED_FIVE_MORE_TRAIN_SPLIT_COMPOSERS_AFTER_S544_NO_WAV_MIDI'
           assert r['five_next_distinct_composers']==5
           assert r['original_S469_3_composers_PLUS_S537_5_composers_excluded']
+          assert r['co_composer_COMPONENTS_fully_excluded_and_pairwise_disjoint']
           assert r['MAESTRO_original_split_used']=='train'
           assert not r['source_MIDI_files_not_read'] is False
           assert r['source_WAV_files_not_read']
