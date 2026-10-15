@@ -1,6 +1,8 @@
-# S610 — intégration causale Live dans NOTE
+# S610 — archive de l’intégration retirée en S611
 
-La priorité devient le Live. Une nouvelle application autonome, `scripts/live_notes.py`, relie capture microphone, modèle causal, notes nommées et sortie MIDI facultative. [Instructions de démarrage](../LIVE.md).
+**Statut : intégration retirée à la demande de l’utilisateur.** Elle réutilisait directement la reconnaissance de `midi`, alors que la demande était d’améliorer l’architecture de NOTE. Le code, les poids importés et le lanceur ont été retirés par S611 ; les mesures ci-dessous décrivent uniquement le commit historique `e850198`. Voir [le portage natif S611](README_V273_S611_NATIVE_STREAM.md).
+
+Description historique : la priorité devenait le Live. Une nouvelle application autonome, `scripts/live_notes.py`, relie capture microphone, modèle causal, notes nommées et sortie MIDI facultative. [Instructions de démarrage](../LIVE.md).
 
 ## Ce qui est effectivement intégré
 

@@ -1,7 +1,7 @@
 # NOTE — Détection des notes polyphoniques, Exact-K et Live
-## README d'état du projet : historique S0–S584 et mises à jour S585–S610
+## README d'état du projet : historique S0–S584 et mises à jour S585–S611
 
-> **Priorité Live — S610 : une première voie microphone → notes nommées → MIDI est maintenant disponible dans `scripts/live_notes.py`.** Elle utilise explicitement le modèle causal figé de `midi` v2.2.1 : E2–E5, six notes maximum, blocs de 256 échantillons à 44,1 kHz. Capture, calibration, réattaques, NoteOff, sortie MIDI et récupération après surcharge sont raccordés. Les scores S601 ci-dessous restent hors ligne. Le Live historique et S80 ne sont pas remplacés. **La latence physique sur microphone et la précision musicale de cette intégration restent à valider.** [Démarrer le Live](LIVE.md) · [Essais et limites S610](analysis/README_V273_S610_LIVE.md).
+> **Correction S611 — améliorer les têtes et sélections de NOTE.** Le moteur de reconnaissance importé de `midi` dans S610 est retiré. Le portage natif conserve S402/S416/S428 et leurs sélections S419/S428, produit les caractéristiques S97/PR16 en flux et garde le K original de S80/S397. Les décisions S80 restent fournies en amont : **le microphone → S80 autonome et les NoteOff natifs ne sont pas encore raccordés**. Parité vérifiée sur le véritable extrait GuitarSet de S434 ; aucun nouveau score Live revendiqué. [État et commandes](LIVE.md) · [Preuves S611](analysis/README_V273_S611_NATIVE_STREAM.md).
 
 > **Mise à jour S606–S609 — le transfert de S601 est maintenant mesuré : GuitarSet microphone 80,06 %, IDMT Dataset3 82,11 %, MAESTRO 76,26 % de F1 NoteOn ±80 ms**, contre respectivement 76,11 %, 72,15 % et 70,70 % pour Basic Pitch par défaut. **77 enregistrements, 10 887 vraies notes MIDI40–88, même modèle et mêmes seuils figés avant les annotations. Les 80 % ne sont pas validés de façon générale : accompagnement GuitarSet 76,08 %, Rock 74,26 % et piano 76,26 %.** Le Rock et deux extraits piano régressent face à BP. IDMT Dataset3 ne couvre qu'un seul instrument, pas les sept guitares de la collection. Audit : 693 vérifications d'appariement concordantes et toutes les 784 vraies notes perdues face à BP conservées. **Aucune promotion S80/Exact-K ni intégration Live.** [Résultats, limites et audit complet](analysis/README_V273_S606_S609_TRANSFER_RESULTS.md) · [CI de transfert réussie](https://github.com/Andriamarosoa/note/actions/runs/38688389092).
 
@@ -274,7 +274,7 @@ Le dépôt **midi** dispose d'une chaîne **guitare → MIDI réellement exécut
 
 ### Comparaison vérifiée au bilan S584
 
-**Depuis S610**, `note` ajoute une voie autonome de référence avec capture microphone, réseau causal v2.2.1, noms de notes, MIDI et gestion des surcharges : voir [LIVE.md](LIVE.md). Le tableau ci-dessous conserve la comparaison des moteurs historiques et des têtes S80/S569/S578 ; ces têtes ne deviennent pas causales par cette intégration.
+**S611 retire la voie de reconnaissance importée dans S610.** Le travail Live porte désormais sur les composants de NOTE, avec conservation explicite des têtes, sélections et poids. [LIVE.md](LIVE.md) distingue les composants exécutables en flux du frontal S80 et des fins de notes qui restent à raccorder.
 
 | Point | **note** | **midi** |
 |---|---|---|
@@ -331,42 +331,22 @@ La présence du Live complet dans **midi** ne veut pas dire que son modèle de h
 
 ---
 
-## 7. Comment intégrer le meilleur des deux, sans perdre Exact-K ni Live
+## 7. Améliorer notre architecture pour le Live
 
-La bonne solution n'est pas de remplacer aveuglément le Live de **note** par le réseau de **midi** : la tâche est différente. Il faut **réutiliser l'architecture de flux causal de midi** et **conserver les têtes/routages, preuves et règles musicales de note**.
+La cible est le système de têtes et de sélections de **NOTE**. La comparaison avec `midi` sert à comprendre les contraintes de flux ; son moteur de reconnaissance ne constitue pas l'implémentation de NOTE.
 
-### Architecture cible avec Exact-K (PAS encore livrée)
+### Architecture native conservée et état S611
 
-S610 livre déjà la capture, le moteur causal de référence `midi`, le suivi des notes et la sortie. Les têtes propres à NOTE et le couplage Exact-K de l'architecture ci-dessous restent à adapter et à valider.
+| Étape | Architecture à conserver | État du portage |
+|---|---|---|
+| Événements | Producteurs natifs V84→V88, identités et groupes originaux | Ordonnanceur microphone à raccorder |
+| Caractéristiques | S97, trajectoires 42×49, flow, morphologie, physique, géométrie PR16 | Flux à mémoire bornée ; contexte acoustique +160 ms, géométrie +240 ms |
+| Comptage et choix | Familles S5/S18/S35/S45/S46, sélections S69→S80, protection S397 | Poids et règles conservés ; exécution complète en flux à intégrer |
+| Hauteurs conditionnées par K | S402, S416, S428 | Douze modèles originaux persistants dans S611 |
+| Sélection des hauteurs | S419 puis S428, budget exact de K nouvelles notes | Portée en flux sans changer les votes de S430 |
+| Vie des notes | Têtes natives d'attaque/réattaque/fin, pont MIDI K-first existant | NoteOff appris et capture à raccorder et valider |
 
-~~~text
-MIC 44.1 kHz
-  │
-  ├─ capture/queue/backpressure : architecture causale inspirée de midi
-  │
-  └─ ring buffer 4096, hop 256 (nouveau chemin expérimental, sans remplacer
-      le live historique 512)
-        │
-        ├─ tête d'attaque physique : RMS + flux spectral + preuve temporelle
-        │
-        ├─ tête d'activité par pitch : notes déjà actives, sustain, harmoniques
-        │
-        ├─ tête de nouvelle attaque / réattaque par pitch : séparée du sustain
-        │
-        └─ têtes Exact-K causal : K0..K6, S80 de comparaison PROTÉGÉ
-                     │
-           politiques entraînées et auditées
-                     │
-     sélection des K nouvelles notes MIDI40..88
-                     │
-       invariant : EXACTEMENT K nouveaux NoteOn
-                     │
-      machine d'état NoteOn / NoteOff / retrigger
-                     │
-          MIDI / noms de notes / synthé audio
-                     │
-     télémétrie timing, F1, erreurs et régressions
-~~~
+Les références plus récentes S569/S578/S601 restent conservées pour leur adaptation et leur comparaison. S611 est un portage vérifié du chemin natif S430, **pas une nouvelle promotion de modèle** ni un score de précision Live.
 
 La tête de hauteur peut utiliser la physique **34D/52D S562/S569/S578** ; elle devra être **adaptée et mesurée en contexte strictement causal**. Elle ne doit pas dépendre d'une fenêtre future de cinq secondes comme S422. Le système devra différencier :
 1. **fondamentale déjà présente sans attaque** ;
@@ -385,11 +365,11 @@ Les règles de sécurité et de scoring Exact-K restent des **garde-fous sépar�
 - imposer audit individuel à chaque tête et à chaque nouvelle sélection, avec liste complète des corrections/régressions.
 
 **B. Construire un vrai frontal causal sur une branche expérimentale :**
-- isoler capture audio et inférence comme dans midi (**le callback ne fait pas le calcul lourd**), ring, file bornée et timestamps en échantillons ;
+- isoler capture audio et inférence (**le callback ne fait pas le calcul lourd**), ring, file bornée et timestamps en échantillons ;
 - utiliser le hop **256** en nouvelle expérimentation et garder **512** comme contrôle historique ; ne pas imposer la taille 256 tant que ses effets sur la précision ne sont pas mesurés ;
 - produire les caractéristiques de chaque note en causal sans voir les trames futures ;
 - ajouter deux sorties conditionnelles distinctes **frame-active** et **new-onset/restrike**, avec indices de concurrence harmonique et de transitoire ;
-- conserver le futur K-first si sa version réellement causale est validée.
+- conserver les têtes et sélections K-first ; valider chaque adaptation temporelle contre leur référence gelée.
 
 **C. Conserver le meilleur des têtes S569/S578, mais corriger leur échec réel :**
 - former une tête *nouveau NoteOn* explicitement annotée (positive = vraie attaque, même en présence de la même hauteur ; négative = sustain/résonance) au lieu d'un simple filtre d'identité ;
