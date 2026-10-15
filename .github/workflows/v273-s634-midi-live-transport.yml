@@ -1,0 +1,32 @@
+name: S634 safe LIVE transport parity and loss-recovery audit
+on:
+  push:
+    branches: [codex/s634-midi-live-transport]
+    paths:
+      - src/causal_note/s634_safe_live_transport.py
+      - test/test_s634_safe_live_transport.py
+      - .github/workflows/v273-s634-midi-live-transport.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s634-transport-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  transport_regression:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install original NOTE LIVE runtime
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Verify lossless parity, gap reset, queue overload and NoteOff
+        run: |
+          python -m compileall -q src/causal_note/s634_safe_live_transport.py
+          python -m unittest -v test.test_s634_safe_live_transport test.test_strict_live test.test_s632_streaming_runtime
