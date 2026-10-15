@@ -1,0 +1,73 @@
+name: S575 independent original MIDI NOTE_ON validation new 18-source physical34 vs raw7 old S546 after SHA freeze
+on:
+  push:
+    branches: [codex/s533-s535-note-fundamental-loops]
+    paths:
+      - scripts/s575_fourth_composer_independent_restrike_MIDI_NOTEON_F1.py
+      - .github/workflows/v273-s575-fourth-real-MIDI-only-after-S574-predictions.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+jobs:
+  seven_policy_real_true_MIDI_NoteOn_only_after_S574_prelabel_SHA_verified:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Pin exact original true MIDI note-on matching dependencies
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 mido==1.3.3
+      - name: Check synthetic named note full ±80ms one-to-one matching BEFORE any S570 labels
+        run: |
+          python -m py_compile scripts/s575_fourth_composer_independent_restrike_MIDI_NOTEON_F1.py
+          python -m scripts.s575_fourth_composer_independent_restrike_MIDI_NOTEON_F1 --self-test
+      - name: Restore FIVE S570 names and ORIGINAL prelabel S571 and S573 WAV SHA hashes
+        run: |
+          gh run download 38670092733 -n s570-fourth-five-new-source-names-exclude23-previous-composer-components-NO-AUDIO-MIDI -D model/S570 --repo "${{ github.repository }}"
+          gh run download 38670185242 -n s571-five-new-composers-preMIDI-V88-source-frozen-audio-original-S80-era-model -D model/S571 --repo "${{ github.repository }}"
+          gh run download 38670454679 -n s573-next-five-S570-composers-V88-raw49-pitch-PREMIDI -D model/S573 --repo "${{ github.repository }}"
+      - name: Restore new genuine S574 seven-policy MIDI-blind SHA-locked source NoteOn predictions
+        run: |
+          gh run download 38670600000 -n s574-fourth-source-7-old-vs-restrike-52D-fitted-note-policies-SHA-frozen-BEFORE-MIDI -D model/S574 --repo "${{ github.repository }}"
+          python - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          r=json.load(open('model/S574/report.json'))
+          p=Path('model/S574/S574_FIVE_FULL_REAL_AUDIO_NAMED_NOTEON_7_POLICIES_PREMIDI.jsonl')
+          assert hashlib.sha256(p.read_bytes()).hexdigest()==r['full_named_note_on_predictions_sha']
+          assert r['status']=='S574_FOURTH_SOURCE_FIVE_COMPOSER_REAL_NOTEON_SEVEN_POLICY_MIDI_BLIND_FROZEN'
+          assert r['original_S570_MIDI_NOT_read_for_inference']
+          assert len(r['all_seven_policies_preregistered_before_MIDI'])==7
+          print('S575 confirmed all seven MIDI-blind forecasts immutably sealed, NOW ONLY MIDI may open')
+          PY
+      - name: ONLY AFTER SHA verification open all 5 paired MIDI files to score full exact NOTE_ON named pitch F1 for every policy
+        run: |
+          python -u -m scripts.s575_fourth_composer_independent_restrike_MIDI_NOTEON_F1 \
+            --manifest model/S570/report.json \
+            --audio-report model/S571/report.json \
+            --features model/S573/S573_ALL_V88_K0_K6_ORIGINAL_WAV_49_PITCH_FEATURES_PREMIDI.jsonl \
+            --feature-report model/S573/report.json \
+            --frozen-report model/S574/report.json \
+            --predictions model/S574/S574_FIVE_FULL_REAL_AUDIO_NAMED_NOTEON_7_POLICIES_PREMIDI.jsonl \
+            --out model/S575
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S575/report.json'))
+          assert r['status']=='S575_EXTERNAL_POSTFROZEN_FIVE_NEW_COMPOSER_FULL_MIDI_NOTEON_F1'
+          assert r["S574_all_seven_named_note_policies_SHA_VERIFIED_before_true_MIDI"]
+          assert len(r['policies'])==7 and len(r['true_MIDI_provenance'])==5
+          assert r['matching_pitch_exact_and_time_tolerance_ms']==[30,50,80]
+          assert r['no_model_training_or_threshold_selection_using_S570_MIDI']
+          assert r['no_promotion'] and r['no_reference_S80_ExactK_freeze_local_combo_live_changes']
+          print('S575 PASS second physical arch 18-source-trained independent held 5-music F1 full NoteOn ±30/50/80')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s575-fourth-new-composer-cohort-real-MIDI-source-verified-S569-temporal-vs-S562-physical34-NoteOn-F1
+          path: model/S575/
+          retention-days: 90
