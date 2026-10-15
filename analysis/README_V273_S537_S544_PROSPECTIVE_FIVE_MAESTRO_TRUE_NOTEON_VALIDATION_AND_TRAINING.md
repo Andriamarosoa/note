@@ -53,3 +53,23 @@ La boucle [S544](https://github.com/Andriamarosoa/note/actions/workflows/v273-s5
 5. Toute promotion réelle demandera **encore une cohorte source entièrement différente** sélectionnée et scellée avant sa lecture, plus reproduction complète d'Exact-K S80, GuitarSet/IDMT et latence Live.
 
 **Aucune fusion dans la branche officielle, aucune nouvelle référence, objectif F1 80 % non atteint.**
+
+
+## Note de provenance : compositeurs associés et correction des plis (S545–S546)
+
+Une vérification supplémentaire a détecté que certains compositeurs sont indiqués sous forme composée, par exemple « Franz Schubert / Franz Liszt », et qu'un autre morceau est crédité « Franz Liszt ». **Les cinq enregistrements S537 sont distincts, mais leurs noms de compositeur au sens d'entités individuelles ne sont pas tous disjoints entre eux.** Cette nuance ne modifie ni l'ordre du gel WAV avant MIDI ni les TP/FP/FN du test S542, mais diminue la diversité réelle de celui-ci. Le tableau S542 est un résultat sur **cinq nouveaux enregistrements, pas une garantie d'indépendance intégrale des cinq compositeurs physiques**.
+
+[S544 réussi #38657684196](https://github.com/Andriamarosoa/note/actions/runs/38657684196) a réellement entraîné 16 modèles de hauteurs sur **huit enregistrements**, avec source tenue à part, mais en utilisant initialement des **chaînes exactes de compositeur**. Lorsque des collaborations partagent une personne, cela peut créer un chevauchement musical entre train et test ; ce chiffre n'est donc **pas** une validation aveugle ni la meilleure preuve d'indépendance des artistes.
+
+| Variante S544 interne rétrospective | TP | FP | FN | F1 NoteOn |
+|---|---:|---:|---:|---:|
+| 7 caractéristiques acoustiques, événements MIDI positifs uniquement, sans déduplication | 622 | 723 | 548 | 49,46 % |
+| 7 caractéristiques acoustiques + déduplication 80 ms | 618 | 475 | 552 | **54,62 %** |
+| 38 caractéristiques avec concurrence harmonique et candidats non appariés négatifs, sans déduplication | 478 | 689 | 692 | 40,91 % |
+| Même concurrence harmonique + déduplication 80 ms | 474 | 411 | 696 | 46,13 % |
+
+**Aucun modèle S544 ne remplace la référence.** Le meilleur 54,62 % n'est qu'un taux rétrospectif du corpus connu, avec une fuite potentielle de compositeurs associés dans les plis. La variante harmonique perd un grand nombre de vraies notes.
+
+[S545 metadata-only réussi #38658066587](https://github.com/Andriamarosoa/note/actions/runs/38658066587) a préenregistré cinq **nouveaux** morceaux du split officiel **MAESTRO TRAIN**, sans ouvrir aucun WAV ni MIDI. Contrairement à S537, les 5 choix de S545 doivent être disjoints des **composants** des noms de compositeurs des 8 anciennes sources (incluant les crédits composés séparés par « / »), et mutuellement disjoints entre eux. Le test final de S545 ne sera **pas** un score sur le split officiel MAESTRO TEST ; ce sera une nouvelle évaluation source tenue à part des 8 sources d'entraînement. Une recherche de provenance dans toutes les branches reste requise.
+
+La nouvelle boucle [S546 — exclusion de co-compositeurs](https://github.com/Andriamarosoa/note/actions/workflows/v273-s546-shared-composer-exclusion-noteon-trained-models.yml) corrige l'entraînement S544 : lors de chaque pli source, **toutes** les autres pièces contenant l'un des co-compositeurs du pli évalué sont retirées de l'entraînement. Ainsi, un pli Liszt ne peut plus être entraîné à partir de Schubert/Liszt, et vice versa. Les 16 poids sont recréés et vérifiés SHA dans des artefacts de développement séparés. Aucune mesure réalisée sur ces huit anciens WAV ne doit être interprétée comme une nouvelle performance sur morceaux inconnus. La vraie prochaine vérification est S545 après scellement indépendant des prédictions.
