@@ -1,0 +1,41 @@
+name: S633 audit frozen S632 corrections regressions and latency
+on:
+  push:
+    branches: [codex/s533-s535-note-fundamental-loops]
+    paths:
+      - scripts/s633_audit_frozen_s632.py
+      - .github/workflows/v273-s633-frozen-risk-ledger.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  verified_development_replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original native S614 runtime
+        run: python -m pip install -r requirements-live-strict.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: S632-trained-risk-cost-heads-original-DEV-only
+          run-id: 38803974784
+          github-token: ${{ github.token }}
+          path: /tmp/S632
+      - name: Audit frozen predictions against original DEV notes without training or threshold tuning
+        run: |
+          python -m scripts.s633_audit_frozen_s632 --models /tmp/S632/S632_Q_emit_train_only.joblib /tmp/S632/S632_Q_reject_train_only.joblib /tmp/S632/S632_Q_wait_train_only.joblib --out /tmp/S633
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S633-frozen-S632-event-corrections-and-regressions
+          path: /tmp/S633/
+          if-no-files-found: warn
+          retention-days: 60
