@@ -73,3 +73,19 @@ Une vérification supplémentaire a détecté que certains compositeurs sont ind
 [S545 metadata-only réussi #38658066587](https://github.com/Andriamarosoa/note/actions/runs/38658066587) a préenregistré cinq **nouveaux** morceaux du split officiel **MAESTRO TRAIN**, sans ouvrir aucun WAV ni MIDI. Contrairement à S537, les 5 choix de S545 doivent être disjoints des **composants** des noms de compositeurs des 8 anciennes sources (incluant les crédits composés séparés par « / »), et mutuellement disjoints entre eux. Le test final de S545 ne sera **pas** un score sur le split officiel MAESTRO TEST ; ce sera une nouvelle évaluation source tenue à part des 8 sources d'entraînement. Une recherche de provenance dans toutes les branches reste requise.
 
 La nouvelle boucle [S546 — exclusion de co-compositeurs](https://github.com/Andriamarosoa/note/actions/workflows/v273-s546-shared-composer-exclusion-noteon-trained-models.yml) corrige l'entraînement S544 : lors de chaque pli source, **toutes** les autres pièces contenant l'un des co-compositeurs du pli évalué sont retirées de l'entraînement. Ainsi, un pli Liszt ne peut plus être entraîné à partir de Schubert/Liszt, et vice versa. Les 16 poids sont recréés et vérifiés SHA dans des artefacts de développement séparés. Aucune mesure réalisée sur ces huit anciens WAV ne doit être interprétée comme une nouvelle performance sur morceaux inconnus. La vraie prochaine vérification est S545 après scellement indépendant des prédictions.
+
+
+### Résultat S546 réellement exécuté, contrôle co-compositeurs corrigé
+
+[Run S546 réussi #38658337209](https://github.com/Andriamarosoa/note/actions/runs/38658337209). La précédente assertion « 8 compositeurs réellement disjoints » était trop forte à cause des noms composés. S546 retrace et **exclut effectivement tous les enregistrements partageant un compositeur individuel avec le pli tenu à part**, donc certains modèles utilisent six sources au lieu de sept. Les 16 nouveaux modèles sont entraînés, évalués et conservés avec leurs empreintes de poids. Le nouveau score est une mesure **rétrospective de validation croisée interne**, et ne remplace PAS la validation prospective S542, qui reste le test nouveau gelé avant MIDI :
+
+| Politique S546 contrôle co-compositeurs | TP | FP | FN | F1 |
+|---|---:|---:|---:|---:|
+| Raw7 notes sur onsets positifs, sans dedup | 611 | 698 | 559 | 49,29 % |
+| **Raw7 + déduplication 80ms** | **609** | **461** | **561** | **54,38 %** |
+| Harmonic38, tous candidats, sans dedup | 461 | 628 | 709 | 40,81 % |
+| Harmonic38 + déduplication 80ms | 459 | 369 | 711 | 45,95 % |
+
+Par rapport à S544 non corrigé (54,62 %), S546 strict descend à **54,38 %**, une différence faible en valeur absolue mais nécessitée par la validité des groupes. Aucun résultat n'atteint l'objectif des 80 %, et les experts harmoniques sont clairement inférieurs. Le gain de la déduplication persiste mais reste accompagné de véritables suppressions de notes.
+
+La cohorte S545 de **cinq autres enregistrements** n'a pas encore été utilisée pour entraîner, sélectionner ou évaluer un seul modèle. Le run S545 validé a uniquement figé ses métadonnées ; **le score de cette cohorte demeure inconnu** et doit rester tel jusqu'à l'exécution d'un modèle entièrement figé et SHA prouvé avant les MIDI. S545 utilise officiellement le split MAESTRO TRAIN, pas TEST.
