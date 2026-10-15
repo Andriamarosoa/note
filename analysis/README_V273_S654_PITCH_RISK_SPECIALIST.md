@@ -93,3 +93,29 @@ S614 et de casser la causalité du LIVE.
 Aucune mesure de latence physique MIDI Windows n'a encore été
 réalisée sur les nouveaux checkpoints. Ne pas confondre ce
 prototype avec une nouvelle architecture officiellement promue.
+
+
+## S655 — LIVE causal conservé, test validé
+
+[Run S655 GitHub Actions : SUCCESS](https://github.com/Andriamarosoa/note/actions/runs/38826717743).
+
+`src/causal_note/s655_specialist_live_runtime.py` est la
+version réelle bloc-par-bloc du même spécialiste S654 : elle
+utilise la même fonction d'extraction de risque, et applique
+la décision ACCEPT / ABSTAIN à la première trame courante
+où une hauteur supplémentaire S648 est éligible.
+
+Les tests exécutent le **vrai checkpoint original S614**
+sur une séquence PCM par trames de 256 échantillons, puis
+sur exactement le même PCM en mode batch causal. Ils exigent
+parité des NoteOn et NoteOff, des temps de disponibilité,
+des refus/acceptations et du nombre de notes réellement
+assistées. Un changement de l'audio futur ne change pas
+les événements déjà émis. Le résultat est **validé pour
+les modèles de test du sélecteur**, pas une garantie
+de performance des poids S654 avant validation du
+checkpoint entraîné, ni une mesure d'E/S microphone
+vers périphérique MIDI réel sur Windows.
+
+La seule architecture de production officielle conservée
+reste S614 ; aucun patch aux modèles historiques.
