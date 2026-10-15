@@ -1,0 +1,28 @@
+name: S635 original MIDI matcher source parity on NOTE shared metric
+on:
+  push:
+    branches: [codex/s634-midi-live-transport]
+    paths:
+      - scripts/s635_midi_source_parity.py
+      - .github/workflows/v273-s635-genuine-midi-matcher-parity.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  actual_original_midi_score_parity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: .:src
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout exact recorded MIDI reference repository revision
+        uses: actions/checkout@v4
+        with:
+          repository: Andriamarosoa/midi
+          ref: 536536f54290fdc4f63db28aa063d2e324121642
+          path: midi_reference
+          persist-credentials: false
+      - name: Verify exact matched-note pairs vs original MIDI causal matcher
+        run: |
+          python -m scripts.s635_midi_source_parity --reference-midi midi_reference/src/polyphonic/causal_event_metrics.py
