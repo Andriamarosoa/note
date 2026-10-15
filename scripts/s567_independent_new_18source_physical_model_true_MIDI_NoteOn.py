@@ -34,7 +34,7 @@ def run(a):
          and not audio["paired_MIDI_annotation_files_OPENED"]
          and feat["status"]=="S565_PRELABEL_FIVE_NEW_PIANO_ALL_V88_RAW_49_PITCH_FEATURES"
          and feat["no_original_true_MIDI_annotation_read"]
-         and freeze["status"]=="S566_FIVE_COMPOSER_S561_PITCH_ONSET_SOURCE_FROZEN_BEFORE_ANY_MIDI"
+         and freeze["status"]=="S566_FIVE_NEW_S561_SOUNDFROZEN_S546_VS_S562_NOTEON_BEFORE_MIDI"
          and freeze["original_S561_MIDI_NOT_read_for_feature_model_or_policy_selection"]
          and freeze["output_pitch_name_ledger_SHA"]==sha(a.predictions)
          and freeze["all_seven_policies_preregistered_before_MIDI"]==list(POLICIES)
