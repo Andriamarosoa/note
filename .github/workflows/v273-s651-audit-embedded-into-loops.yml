@@ -6,6 +6,8 @@ on:
       - src/causal_note/s651_loop_guard.py
       - scripts/s651_replay_audit_all_loops.py
       - test/test_s651_audit_inside_loops.py
+      - src/causal_note/s652_event_round_audit.py
+      - test/test_s652_event_round_audit.py
       - .github/workflows/v273-s651-audit-embedded-into-loops.yml
   workflow_dispatch:
 permissions: {contents: read, actions: read}
@@ -44,10 +46,14 @@ jobs:
           run-id: 38821104076
           github-token: ${{ github.token }}
           path: /tmp/S648
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original causal matcher for true-event audits
+        run: python -m pip install -r requirements-live-strict.txt
       - name: Assert every correction is audited with all individual regressions
         run: |
           python -m compileall -q src/causal_note/s651_loop_guard.py scripts/s651_replay_audit_all_loops.py
-          python -m unittest -v test.test_s651_audit_inside_loops
+          python -m unittest -v test.test_s651_audit_inside_loops test.test_s652_event_round_audit
       - name: Replay S642 S644 S645 S648 selection loops, lock before DEV and archive all failed proposals
         run: |
           python -m scripts.s651_replay_audit_all_loops \
