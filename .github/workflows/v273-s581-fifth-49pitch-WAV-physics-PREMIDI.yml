@@ -27,9 +27,9 @@ jobs:
           python -m scripts.s581_fifth_original_49_pitch_physics_PREMIDI --self-test
       - name: Restore SHA-pinned preselected five new composer names and original V88 event predictions
         run: |
-          gh run download 38674975248 -n s577-fifth-novel-five-original-maestro-train-composers-after28-exposed-ONLY-METADATA -D model/S577 --repo "${{ github.repository }}"
-          gh run download 38675197873 -n s579-five-new-composers-preMIDI-V88-source-frozen-audio-original-S80-era-model -D model/S579 --repo "${{ github.repository }}"
-          gh run download 38675300000 -n s580-next-five-S577-BasicPitch-original-pitch-names-PREMIDI -D model/S580 --repo "${{ github.repository }}"
+          gh run download 38675435536 -n s577-fifth-novel-five-original-maestro-train-composers-after28-exposed-ONLY-METADATA -D model/S577 --repo "${{ github.repository }}"
+          gh run download 38675784995 -n s579-five-new-composers-preMIDI-V88-source-frozen-audio-original-S80-era-model -D model/S579 --repo "${{ github.repository }}"
+          gh run download 38675865231 -n s580-next-five-S577-BasicPitch-original-pitch-names-PREMIDI -D model/S580 --repo "${{ github.repository }}"
       - name: Verify source whole WAV SHA from S579 and extract original all V88 K0 note physics without opening MIDI
         run: |
           python -u -m scripts.s581_fifth_original_49_pitch_physics_PREMIDI \
