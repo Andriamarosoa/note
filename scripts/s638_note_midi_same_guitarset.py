@@ -93,7 +93,7 @@ def midi_events(wav_path,artifact_dir,midi_root,temp):
     return on,report
 
 
-def main(out,midi_root):
+def main(out,midi_root,all_dev=False):
     if out.exists():raise FileExistsError("S638 evidence is immutable")
     out.mkdir(parents=True)
     frozen=json.loads((ROOT/"selection_frozen.json").read_text())
@@ -106,7 +106,9 @@ def main(out,midi_root):
     for s in sorted(items,key=lambda x:x["name"]):
         groups.setdefault(s["composition"],s)
     assert len(groups)==3
-    chosen=[groups[key] for key in sorted(groups)]
+    chosen=(sorted(items,key=lambda x:x["name"]) if all_dev
+            else [groups[key] for key in sorted(groups)])
+    assert len(chosen)==(12 if all_dev else 3)
     assert all(s["name"].startswith("04_") for s in chosen)
     artifact_dir=midi_root/"artifacts/guitar_midi_polyphonic_v2_2_0"
     heads=load_heads(MODEL,expected_sha256=S614_SHA)
@@ -168,5 +170,7 @@ if __name__=="__main__":
     p=argparse.ArgumentParser()
     p.add_argument("--out",type=Path,required=True)
     p.add_argument("--midi-root",type=Path,required=True)
+    p.add_argument("--all-dev",action="store_true",
+                   help="Score the complete 12-recording original GuitarSet DEV, without tuning")
     a=p.parse_args()
-    main(a.out,a.midi_root)
+    main(a.out,a.midi_root,all_dev=a.all_dev)
