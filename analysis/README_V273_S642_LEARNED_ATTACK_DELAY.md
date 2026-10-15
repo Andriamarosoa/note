@@ -87,3 +87,83 @@ No promotion unless:
 
 Until then, S614 **69.03% historical symmetric TEST** remains
 official; S632 remains experimental.
+
+
+## Résultats réels : S642 TRAIN/DEV et S643 audit des effets
+
+[S642 entraînement et évaluation réussis](https://github.com/Andriamarosoa/note/actions/runs/38815758881),
+[les deux checkpoints + résultats](https://github.com/Andriamarosoa/note/actions/runs/38815758881/artifacts/12010852578).
+
+Le contrôle **runtime bloc par bloc** (quatre variantes S642, gestion
+de NoteOff, invariance aux trames futures) a réussi :
+[run de parité S642](https://github.com/Andriamarosoa/note/actions/runs/38816515052).
+Les tests ne sont pas une mesure de latence physique Windows.
+
+Modèles TRAIN 35 sources vérifiées :
+- candidat acoustique SHA256 :
+  `2f7364865803bb0cab8c564911e25574203b129169f6abf5f4ecdf14acc7f256` ;
+- latence de 0–3 hops SHA256 :
+  `c33640563aa8069a658ca599f0253a6dd1b7c0021007639c7da01dc964649a09`.
+- distribution de supervision de latence (5 133 NoteOn TRAIN) :
+  **0 hops : 4 778 ; 1 hop : 156 ; 2 hops : 124 ; 3 hops : 75**.
+  Les classes différées ne représentent que 355/5 133 = 6,92 %
+  des émissions originales annotées par l'enseignant de délai.
+
+| Variante | GuitarSet F1 sym. ±80 ms | URMP F1 sym. ±80 ms |
+|---|---:|---:|
+| S614 référence | **63,1046 %** | **54,5455 %** |
+| Candidats S642 seuls | 63,1046 % | 54,5455 % |
+| Délai S642 seul | 63,1046 % | 54,5455 % |
+| S642 conjoint | 63,1046 % | 54,5455 % |
+
+Même comparaison selon le score causal [0, +80ms] et
+la **plage commune MIDI 40–76** :
+
+| Variante | GuitarSet | URMP |
+|---|---:|---:|
+| S614 référence | 56,9712 % | 52,3697 % |
+| S642 candidat seul | 56,9712 % | 52,3697 % |
+| S642 délai seul | **57,5403 %** | 52,3697 % |
+| S642 conjoint | **57,5403 %** | 52,3697 % |
+
+**Gain causal GuitarSet +0,5691 point F1**, aucune
+amélioration en score original ±80ms et aucune amélioration
+dans URMP. Ce n'est pas la promotion du 69,03 % TEST.
+
+[S643 audit séparé des modèles S642 figés et de leurs effets](https://github.com/Andriamarosoa/note/actions/runs/38816671556),
+[rapport détaillé S643](https://github.com/Andriamarosoa/note/actions/runs/38816671556/artifacts/12010299121).
+
+Constats :
+- Le générateur d'attaques faibles proposé en S642 n'a activé
+  **AUCUNE** candidate additionnelle sur les 12 GuitarSet
+  et les 5 URMP DEV. Sa double condition q ≥0,965 avec
+  garde acoustique physique n'a pas produit de NoteOn supplémentaire.
+  Il faut mesurer séparément les distributions de q et les
+  différents étages des portes avant de modifier le seuil.
+- Tête temporelle : **147/1 583 NoteOn GuitarSet**
+  ont reçu un délai 1–3 hops, contre seulement
+  **3/392 NoteOn URMP**.
+- GuitarSet a retenu 77 notes pour 1 hop,
+  47 pour 2 hops et 23 pour 3 hops.
+  URMP : 2 pour 1 hop, 1 pour 3 hops.
+- La règle de score historique symétrique ne change sur
+  aucune source. Seule la métrique causale, qui ne crédite
+  pas les NoteOn avant la vérité, mesure un léger gain.
+- Aucun effet positif simultané sur GuitarSet et URMP.
+  **AUCUNE PROMOTION.**
+
+### Prochaine expérience raisonnable : S644
+
+Avant d'abaisser arbitrairement le seuil 0,965 :
+faire un audit **par étape** du rappel de vrais candidats
+sur les 613 cas S640 manqués, et des faux candidats générés
+dans les autres enregistrements. Prédire et calibrer q sur
+TRAIN uniquement et séparer défaut de modèle, défaut de
+garde acoustique et défaut de sélection. Apprendre une
+politique de délai qui soit suffisamment représentative
+d'URMP et d'accords d'accompagnement ; conserver
+le comportement original lorsqu'elle reste incertaine.
+
+Le résultat S641 de 59,25 % F1 causal avec retard uniforme
+17,4ms demeure un **contre-factuel sur DEV optimisé a posteriori**,
+pas un score valide de S642.
