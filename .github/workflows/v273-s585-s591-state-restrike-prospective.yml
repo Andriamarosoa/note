@@ -1,0 +1,248 @@
+name: S585-S591 four-state note/restrike training and sixth MIDI-blind source validation
+'on':
+  push:
+    branches:
+    - codex/s533-s535-note-fundamental-loops
+    paths:
+    - scripts/s585_attack_sustain_restrike.py
+    - scripts/s586_register_sixth_cohort.py
+    - scripts/s587_sixth_original_V88_WAV.py
+    - scripts/s588_sixth_basicpitch_WAV.py
+    - scripts/s589_sixth_pitch_features_WAV.py
+    - scripts/s590_freeze_state_note_predictions.py
+    - scripts/s591_score_state_note_predictions.py
+    - .github/workflows/v273-s585-s591-state-restrike-prospective.yml
+  workflow_dispatch: null
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s585-s591-four-state-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  train:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+      TF_CPP_MIN_LOG_LEVEL: '2'
+      TF_NUM_INTRAOP_THREADS: '2'
+      TF_NUM_INTEROP_THREADS: '2'
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Pinned numerical and true MIDI ABI
+      run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 mido==1.3.3
+    - name: Check real restrike, pedal, sustain and protected BP behavior
+      run: python -m scripts.s585_attack_sustain_restrike --self-test
+    - name: Restore oldest original S469 three and S537 five already exposed piano audio/MIDI feature proofs
+      run: |
+        gh run download 38558629021 -n s469-third-corpus-MAESTRO-v3-3-test-piano-filename-only-PREMIDI -D model/S469 --repo "${{ github.repository }}"
+        gh run download 38559667980 -n s471-real-third-source-MAESTRO-piano-V88-birth-vs-MIDI-onset-postfreeze -D model/S471 --repo "${{ github.repository }}"
+        gh run download 38647316407 -n s527-prelabel-575-original-MAESTRO-V88-K0-onsets-with-49-real-raw-audio-note-features -D model/S527 --repo "${{ github.repository }}"
+        gh run download 38654030814 -n s537-predeclared-five-distinct-MAESTRO-composers-only-metadata-no-WAV-no-MIDI -D model/S537 --repo "${{ github.repository }}"
+        gh run download 38656791368 -n s540-five-composers-original-V88-all-event-49x11-WAV-physical-pitch-features-preMIDI -D model/S540 --repo "${{ github.repository }}"
+        gh run download 38657068577 -n s542-VALIDATED-5-new-composer-noteon-F1-genuine-postfrozen-piano-MIDI-and-restrikes -D model/S542 --repo "${{ github.repository }}"
+    - name: Restore originally prospective S545 and S554 five-source MIDI outcomes, NOW annotated development, source
+        SHA only
+      run: |
+        gh run download 38658066587 -n s545-next-five-composer-disjoint-MAESTRO-original-train-split-METADATA-ONLY -D model/S545 --repo "${{ github.repository }}"
+        gh run download 38659675965 -n s549-next-five-S545-composers-V88-raw49-pitch-PREMIDI -D model/S549 --repo "${{ github.repository }}"
+        gh run download 38659753045 -n s551-five-NEW-S545-composers-MIDI-SHA-verified-NoteOn-F1-S528-vs-S546 -D model/S551 --repo "${{ github.repository }}"
+        gh run download 38663678664 -n s554-next-five-metadata-only-composer-component-disjoint-before-new-model-noteon-validation -D model/S554 --repo "${{ github.repository }}"
+        gh run download 38663870685 -n s557-next-five-S554-composers-V88-raw49-pitch-PREMIDI -D model/S557 --repo "${{ github.repository }}"
+        gh run download 38663995955 -n s559-five-NEW-S554-composers-MIDI-SHA-verified-NoteOn-F1-S528-vs-S546 -D model/S559 --repo "${{ github.repository }}"
+    - name: Restore S561 final five already independently scored new sources, NOW training development only
+      run: |
+        gh run download 38666895837 -n s561-next-5-component-disjoint-music-after-18-exposed-METADATA-ONLY -D model/S561 --repo "${{ github.repository }}"
+        gh run download 38667773991 -n s565-next-five-S561-composers-V88-raw49-pitch-PREMIDI -D model/S565 --repo "${{ github.repository }}"
+        gh run download 38668197551 -n s567-five-UNSEEN-new-S561-composers-real-MIDI-noteon-S546-vs-S562-physical34-F1 -D model/S567 --repo "${{ github.repository }}"
+    - name: Include fifth old original S570 cohort after independent S575 real MIDI eval for training only
+      run: |
+        gh run download 38670092733 -n s570-fourth-five-new-source-names-exclude23-previous-composer-components-NO-AUDIO-MIDI -D model/S570 --repo "${{ github.repository }}"
+        gh run download 38670454679 -n s573-next-five-S570-composers-V88-raw49-pitch-PREMIDI -D model/S573 --repo "${{ github.repository }}"
+        gh run download 38671119840 -n s575-fourth-new-composer-cohort-real-MIDI-source-verified-S569-temporal-vs-S562-physical34-NoteOn-F1 -D model/S575 --repo "${{ github.repository }}"
+    - name: Restore original same-28 global control checkpoint and OOF proof
+      run: gh run download 38675146653 -n s578-28-real-composer-midi-trained-global52-and-mid12-52D-before-S577-WAV -D
+        model/S578 --repo "${{ github.repository }}"
+    - name: Train only 28 previously exposed sources, reproduce S578 OOF then fit four states
+      run: python -u -m scripts.s585_attack_sustain_restrike --root model --out model/S585
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: s585-28-source-four-state-training
+        path: model/S585/
+        retention-days: 90
+  audio:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+      TF_CPP_MIN_LOG_LEVEL: '2'
+      TF_NUM_INTRAOP_THREADS: '2'
+      TF_NUM_INTEROP_THREADS: '2'
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Pinned numerical and true MIDI ABI
+      run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 mido==1.3.3
+    - name: Restore metadata of all 33 exposed recordings only
+      run: |-
+        gh run download 38558629021 -n s469-third-corpus-MAESTRO-v3-3-test-piano-filename-only-PREMIDI -D model/S469 --repo "${{ github.repository }}"
+        gh run download 38654030814 -n s537-predeclared-five-distinct-MAESTRO-composers-only-metadata-no-WAV-no-MIDI -D model/S537 --repo "${{ github.repository }}"
+        gh run download 38658066587 -n s545-next-five-composer-disjoint-MAESTRO-original-train-split-METADATA-ONLY -D model/S545 --repo "${{ github.repository }}"
+        gh run download 38663678664 -n s554-next-five-metadata-only-composer-component-disjoint-before-new-model-noteon-validation -D model/S554 --repo "${{ github.repository }}"
+        gh run download 38666895837 -n s561-next-5-component-disjoint-music-after-18-exposed-METADATA-ONLY -D model/S561 --repo "${{ github.repository }}"
+        gh run download 38670092733 -n s570-fourth-five-new-source-names-exclude23-previous-composer-components-NO-AUDIO-MIDI -D model/S570 --repo "${{ github.repository }}"
+        gh run download 38675435536 -n s577-fifth-novel-five-original-maestro-train-composers-after28-exposed-ONLY-METADATA -D model/S577 --repo "${{ github.repository }}"
+    - name: Preregister sixth five-composer cohort before any WAV or MIDI
+      run: |-
+        python -m scripts.s586_register_sixth_cohort --self-test
+        python -u -m scripts.s586_register_sixth_cohort --root model --out model/S586
+    - uses: actions/upload-artifact@v4
+      with:
+        name: s586-sixth-metadata-only
+        path: model/S586/
+        retention-days: 90
+    - name: Original V88 TensorFlow inference ABI
+      run: python -m pip install -r requirements-train.txt numpy==1.26.4 scikit-learn==1.4.2
+    - name: Restore exact original S80-era V84-V88 independent acoustic source pipeline and source code SHA
+      run: |
+        mkdir -p model/source-download
+        gh release download v273-source-recovery-35086829802 \
+           --repo "${{ github.repository }}" --pattern v273-rebuilt-proposal-sources.zip --dir model/source-download
+        python - <<'PY'
+        from pathlib import Path
+        from scripts.restore_v273_original_backup import extract_verified
+        from scripts.rebuild_v273_sources import validate_sources
+        extract_verified(Path('model/source-download/v273-rebuilt-proposal-sources.zip'),
+           Path('model/original-sources'),
+           'fb6bb1049b87c0517936f4f40e5bc1442722fc20b9eba5045a62bb0a12cf2994',
+           validate=validate_sources)
+        PY
+    - name: Restore unchanged original historical freeze_local_combo exact K weights
+      run: |
+        mkdir -p model/freeze-original model/freeze-download
+        gh release download v273-uniform-anchored-freeze-37233793945 \
+          --repo "${{ github.repository }}" --pattern v273-uniform-anchored-freeze-result.tgz --dir model/freeze-download
+        tar -xzf model/freeze-download/v273-uniform-anchored-freeze-result.tgz -C model/freeze-original
+        test -s model/freeze-original/freeze_local_combo.weights.h5
+    - name: Restore original four guitar-only train S466 birth heads, no MAESTRO tuning
+      run: |
+        gh run download 38552253544 \
+          -n s466-GuitarSet-59k-composition-held-birth-continuation-Kblind-4-models-no-promotion \
+          -D model/S466 --repo "${{ github.repository }}"
+        test -f model/S466/S466_birth_vs_nonbirth_fold3.joblib
+    - name: Original V88 on new audio only
+      run: python -u -m scripts.s587_sixth_original_V88_WAV --manifest model/S586/report.json --source-dir model/original-sources
+        --weights model/freeze-original/freeze_local_combo.weights.h5 --birthmodels model/S466 --birthreport model/S466/report.json
+        --out model/S587
+    - name: Switch only BP stage to its original frozen inference ABI
+      run: python -m pip install numpy==1.26.4 tensorflow==2.14.1 basic-pitch==0.4.0 scipy==1.14.1 scikit-learn==1.4.2
+    - name: Unchanged Basic Pitch on same new WAV hashes, no annotations
+      run: python -u -m scripts.s588_sixth_basicpitch_WAV --manifest model/S586/report.json --s587 model/S587/report.json
+        --out model/S588
+    - name: Original 49x11 acoustic features on all V88 sites, no target MIDI
+      run: python -u -m scripts.s589_sixth_pitch_features_WAV --manifest model/S586/report.json --v88 model/S587/S587_MAESTRO_ORIGINAL_V88_K_BIRTH_FROZEN_PREMIDI.npz
+        --v88-report model/S587/report.json --bp model/S588/S588_FIXED_BASIC_PITCH_PRETRAINED_PIANO_NOTES_PRELABEL.jsonl
+        --bp-report model/S588/report.json --out model/S589
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: s586-s589-sixth-audio-only
+        path: |-
+          model/S586/
+          model/S587/report.json
+          model/S587/*.npz
+          model/S588/
+          model/S589/
+        retention-days: 90
+  freeze:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+      TF_CPP_MIN_LOG_LEVEL: '2'
+      TF_NUM_INTRAOP_THREADS: '2'
+      TF_NUM_INTEROP_THREADS: '2'
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Pinned numerical and true MIDI ABI
+      run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 mido==1.3.3
+    - uses: actions/download-artifact@v4
+      with:
+        name: s585-28-source-four-state-training
+        path: model/S585
+    - uses: actions/download-artifact@v4
+      with:
+        name: s586-s589-sixth-audio-only
+        path: model
+    - name: Original S578 deployment checkpoint, not refitted on holdout
+      run: gh run download 38675146653 -n s578-28-real-composer-midi-trained-global52-and-mid12-52D-before-S577-WAV -D
+        model/S578 --repo "${{ github.repository }}"
+    - name: Freeze all three policies before opening target MIDI
+      run: python -u -m scripts.s590_freeze_state_note_predictions --root model --out model/S590
+    - uses: actions/upload-artifact@v4
+      with:
+        name: s590-sixth-three-policies-PREMIDI
+        path: model/S590/
+        retention-days: 90
+    needs:
+    - train
+    - audio
+  score:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+      TF_CPP_MIN_LOG_LEVEL: '2'
+      TF_NUM_INTRAOP_THREADS: '2'
+      TF_NUM_INTEROP_THREADS: '2'
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Pinned numerical and true MIDI ABI
+      run: python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 joblib==1.4.2 mido==1.3.3
+    - uses: actions/download-artifact@v4
+      with:
+        name: s585-28-source-four-state-training
+        path: model/S585
+    - uses: actions/download-artifact@v4
+      with:
+        name: s586-s589-sixth-audio-only
+        path: model
+    - uses: actions/download-artifact@v4
+      with:
+        name: s590-sixth-three-policies-PREMIDI
+        path: model/S590
+    - name: Only now read actual target MIDI and score every note, audit lost/recovered TP
+      run: python -u -m scripts.s591_score_state_note_predictions --root model --out model/S591
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: s591-sixth-prospective-state-noteon-verdict
+        path: model/S591/
+        retention-days: 90
+    needs:
+    - freeze
