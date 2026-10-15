@@ -19,7 +19,8 @@ import json
 from pathlib import Path
 import numpy as np
 from scripts.s511_new_raw_harmonic_pitch_onset_generators import (
-    fetch_track, decode_external_wav, SR)
+    decode_external_wav, SR)
+from scripts.s579_fifth_held_original_V88_real_WAV_no_MIDI import fetch_track
 from scripts.s515_freeze_real_WAV_49_pitch_frame_onset_harmonic_experts import features
 
 
