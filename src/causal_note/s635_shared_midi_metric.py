@@ -19,6 +19,7 @@ import math
 import re
 
 DEADLINES_MS=(12.,18.,24.,35.,46.,80.,250.)
+COMMON_PITCH_MIN,COMMON_PITCH_MAX=40,76
 SHA256_HEX=re.compile(r"^[0-9a-f]{64}$")
 
 
@@ -136,20 +137,29 @@ def compare_manifest(manifest):
         source=clip["audio_sha256"]
         if not isinstance(source,str) or not SHA256_HEX.fullmatch(source):
             raise ValueError("Each evaluated audio must be hashed")
-        refs=extract_reference(clip["reference"],duration)
+        # Both systems must be scored on the SAME supported pitch range:
+        # MIDI V2.2.1 ends at MIDI 76 whereas NOTE supports up to 88.
+        # Out-of-range truth and outputs are not counted in either score.
+        full_reference=extract_reference(clip["reference"],duration)
+        refs=[r for r in full_reference if COMMON_PITCH_MIN<=r[1]<=COMMON_PITCH_MAX]
         engines={}
+        ignored={}
         for system in ("note","midi"):
             info=clip[system]
             if info.get("audio_sha256")!=source:
                 raise ValueError("Both systems must process identical audio bytes")
             if info.get("audio_sample_rate")!=44100:
                 raise ValueError("Both systems must process PCM at 44.1kHz")
-            events=extract_events(info["events"],duration)
+            all_events=extract_events(info["events"],duration)
+            events=[e for e in all_events if COMMON_PITCH_MIN<=e[1]<=COMMON_PITCH_MAX]
+            ignored[system]=len(all_events)-len(events)
             engines[system]={str(int(deadline) if deadline.is_integer() else deadline):
                 causal_score(refs,events,deadline)
                 for deadline in DEADLINES_MS}
         counted[clipid]=dict(corpus=clip.get("corpus","unspecified"),
                              audio_sha256=source,reference_notes=len(refs),
+                             reference_notes_outside_common_range=len(full_reference)-len(refs),
+                             ignored_predictions_outside_common_range=ignored,
                              note=engines["note"],midi=engines["midi"])
     aggregated={}
     for system in ("note","midi"):
@@ -165,7 +175,7 @@ def compare_manifest(manifest):
             aggregated[system][key]=totals
     return dict(protocol="NOTE_MIDI_SHARED_ONSET_V1",recordings=len(counted),
        matching="strictly causal, same pitch, one-to-one, latest reference onset",
-       common_deadlines_ms=DEADLINES_MS,
+       common_deadlines_ms=DEADLINES_MS,common_pitch_range=[40,76],
        emitted_time_not_retroactively_shifted=True,
        overall=aggregated,by_clip=counted,
        no_physical_microphone_latency_claim=True,
