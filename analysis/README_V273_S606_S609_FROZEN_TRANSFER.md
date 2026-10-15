@@ -1,6 +1,6 @@
 # S606–S609 — Transfert de S601 figé sur GuitarSet, IDMT et MAESTRO
 
-Protocole enregistré avant l'inférence de transfert et avant l'ouverture des annotations de cette évaluation. **Aucun résultat sur ces trois cohortes n'est encore revendiqué.** Les 84,91 % précédents concernent uniquement les cinq extraits URMP réservés de S605.
+Protocole enregistré avant l'inférence de transfert et avant l'ouverture des annotations de cette évaluation. **Aucun résultat sur ces trois cohortes n'était revendiqué lors de son enregistrement.** Les 84,91 % précédents concernent uniquement les cinq extraits URMP réservés de S605. La validation est maintenant terminée ; ses [résultats complets S609](README_V273_S606_S609_TRANSFER_RESULTS.md) sont publiés séparément sans modification du manifeste ni des seuils.
 
 | Corpus | Sélection sans audio ni annotations | Extrait |
 |---|---|---|
@@ -27,3 +27,7 @@ Le rapport S609 doit publier tous les corpus, y compris les régressions : chaqu
 La tête S601 n'a appris que sur URMP. GuitarSet et MAESTRO font cependant partie des corpus de préentraînement de Basic Pitch : **ce test ne démontre pas une indépendance vis-à-vis du préentraînement du réseau de base**. IDMT Dataset3 et certains fichiers GuitarSet ont déjà servi aux anciens modèles du projet. Les exclusions MAESTRO couvrent les huit manifestes cités, sans prétendre couvrir toute l'histoire du dépôt. Les morceaux courts de MAESTRO constituent un échantillon défini par le protocole, pas l'ensemble de son test officiel.
 
 Cette validation porte sur le microphone GuitarSet, les cinq prises IDMT et les douze prises de piano choisies. Elle ne certifie pas d'autres guitares, microphones ou pièces acoustiques. NoteOff, Exact-K complet, causalité et Live restent hors de cette mesure. Aucune promotion de S80 ou modification du Live n'est autorisée par ce score.
+
+La [description officielle IDMT](https://zenodo.org/records/7544110) précise que les cinq prises du Dataset3 utilisent **le même instrument**. Les sept guitares de l'ensemble IDMT ne sont donc pas toutes couvertes ici. Les six guitaristes de GuitarSet ne doivent pas non plus être présentés comme six guitares physiques. La présence de GuitarSet et MAESTRO dans l'apprentissage du réseau de base est documentée dans le tableau 1 de [l'article Basic Pitch](https://arxiv.org/pdf/2203.09893) ; le recoupement exact entre fichiers choisis et préentraînement des poids distribués n'a pas été établi.
+
+Les trois fichiers cités par les [errata de timing GuitarSet](https://github.com/marl/GuitarSet/issues/5) et le [signalement de doublon](https://github.com/marl/GuitarSet/issues/4) sont absents de la sélection fixée. Aucun fichier n'a été remplacé ou retiré à la suite de ce contrôle ; aucune annotation n'a été corrigée. [Trace du contrôle](evidence/v273-s606-s609/source_scope_and_known_errata.json).

@@ -1,0 +1,28 @@
+{
+  "BP_source": "https://arxiv.org/pdf/2203.09893",
+  "BP_training_scope": "Original ICASSP paper Table 1 lists GuitarSet and MAESTRO among training corpora; record-level pretrained overlap of the packaged weights has not been established here",
+  "IDMT_scope": "Dataset3: five recordings of the same instrument, per official description; not all seven guitars of the full collection",
+  "IDMT_source": "https://zenodo.org/records/7544110",
+  "affected_selected_sources": [],
+  "annotation_or_prediction_modifications": false,
+  "checked_known_GuitarSet_issues": {
+    "02_Funk2-119-G_comp.jams": {
+      "issue": 4,
+      "problem": "near-duplicate MIDI annotation"
+    },
+    "04_BN3-154-E_comp.jams": {
+      "issue": 5,
+      "reported_delay_seconds": 0.409
+    },
+    "04_Jazz1-200-B_comp.jams": {
+      "issue": 5,
+      "reported_delay_seconds": 0.309
+    }
+  },
+  "preregistration_sha256": "fb27857d10e417db1f62bbda95b3e4b1bb34d673717a52e289261474cdec7951",
+  "source_exclusions_after_prediction": false,
+  "sources": [
+    "https://github.com/marl/GuitarSet/issues/5",
+    "https://github.com/marl/GuitarSet/issues/4"
+  ]
+}
