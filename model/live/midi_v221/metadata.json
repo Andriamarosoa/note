@@ -1,0 +1,96 @@
+{
+  "product_version": "2.2.1",
+  "model_stack": "causal polyphonic frame+onset+20-partial harmonics",
+  "sample_rate": 44100,
+  "hop_samples": 256,
+  "max_window_samples": 4096,
+  "normalization_gain": 1.4932045250002872,
+  "min_pitch": 40,
+  "max_pitch": 76,
+  "maximum_polyphony": 6,
+  "polyphony_supported": true,
+  "frame_threshold": 0.5349999999999999,
+  "onset_threshold": 0.6649999999999999,
+  "decoder": {
+    "midi_min": 40,
+    "midi_max": 76,
+    "frame_on_threshold": 0.5349999999999999,
+    "strong_frame_threshold": 0.8,
+    "frame_off_threshold": 0.32099999999999995,
+    "onset_threshold": 0.6649999999999999,
+    "activation_frames": 2,
+    "release_frames": 3,
+    "minimum_retrigger_frames": 14,
+    "silence_release_frames": 14,
+    "maximum_polyphony": 6,
+    "harmonic_suppression_strength": 0.25,
+    "harmonic_tolerance_cents": 35.0,
+    "audio_onset_lookback_frames": 10,
+    "unattacked_frame_threshold": 0.9,
+    "harmonic_support_threshold": 0.6
+  },
+  "outputs": [
+    "frame",
+    "onset",
+    "harmonic_amplitude",
+    "harmonic_offset_cents"
+  ],
+  "recommended_tflite_threads": 3,
+  "tflite_weight_quantization": "float16",
+  "tflite_io_dtype": "float32",
+  "export_checks_split": "validation",
+  "runtime_validation": {
+    "decision": "accepted_on_validation",
+    "locked_test_used": false,
+    "thresholds_reselected": false,
+    "frame_report": "validation_runtime_fp16_60k.json",
+    "event_report": "validation_runtime_events_fp16.json",
+    "acceptance_report": "runtime_acceptance.json"
+  },
+  "decoder_runtime_policy": {
+    "unattacked_frame_threshold_enforced": true,
+    "recent_physical_attack_uses_frame_on_threshold": true,
+    "pitch_specific_model_onset_remains_available": true,
+    "decision": "accepted_for_desktop_anti_ghost",
+    "locked_test_used": false,
+    "validation_report": "validation_decoder_unattacked_threshold.json",
+    "acceptance_report": "decoder_acceptance.json"
+  },
+  "audio_evidence": {
+    "fft_size": 512,
+    "onset_cooldown_ms": 80.0,
+    "onset_rearm_ratio": 1.35,
+    "onset_rearm_stable_hops": 3,
+    "onset_rearm_attack_ratio": 3.0,
+    "onset_rearm_flux_ratio": 2.0,
+    "onset_rearm_growth_ratio": 8.0,
+    "require_joint_temporal_evidence": true,
+    "continuity_warmup_hops": 2
+  },
+  "automatic_model_input_level": {
+    "enabled_by_default": false,
+    "target_capture_peak_dbfs": -12.0,
+    "minimum_gain_db": 0.0,
+    "maximum_gain_db": 18.0,
+    "recovery_db_per_second": 1.0,
+    "model_headroom_peak": 0.98,
+    "domain": "model_input_only_after_manual_capture_gain",
+    "session_policy": "amplification_only_opt_in",
+    "safety_attenuation_enabled": true,
+    "default_decision": "disabled_after_validation_due_to_false_positive_and_fragmentation_regression",
+    "validation_report": "validation_input_level_weak12.json"
+  },
+  "manual_audio_gain": {
+    "domain": "before_audio_evidence_recording_and_model",
+    "default": 1.0
+  },
+  "artifact": {
+    "tflite": "guitar_midi_polyphonic.tflite",
+    "sha256": "4a4df49d34c1fd359fab98c20bb598f37c7f42f22493c70923a2e829176df744",
+    "parity_examples": "parity_examples.npz",
+    "onnx": "guitar_midi_polyphonic.onnx",
+    "onnx_sha256": "ac5eff9b1051d3f57f24965d6c0154149857cfa3c31aefbe4cab960332ce2da1"
+  },
+  "source_run": "runs\\polyphonic\\polyphonic_v2_2_guitarset_gaps_guitar_techs_20260722_024644",
+  "source_checkpoint": "runs\\polyphonic\\polyphonic_v2_2_guitarset_gaps_guitar_techs_20260722_024644\\selected.keras"
+}

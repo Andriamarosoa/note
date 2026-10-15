@@ -1,5 +1,7 @@
 # NOTE — Détection des notes polyphoniques, Exact-K et Live
-## README d'état du projet : historique S0–S584 et mises à jour S585–S609
+## README d'état du projet : historique S0–S584 et mises à jour S585–S610
+
+> **Priorité Live — S610 : une première voie microphone → notes nommées → MIDI est maintenant disponible dans `scripts/live_notes.py`.** Elle utilise explicitement le modèle causal figé de `midi` v2.2.1 : E2–E5, six notes maximum, blocs de 256 échantillons à 44,1 kHz. Capture, calibration, réattaques, NoteOff, sortie MIDI et récupération après surcharge sont raccordés. Les scores S601 ci-dessous restent hors ligne. Le Live historique et S80 ne sont pas remplacés. **La latence physique sur microphone et la précision musicale de cette intégration restent à valider.** [Démarrer le Live](LIVE.md) · [Essais et limites S610](analysis/README_V273_S610_LIVE.md).
 
 > **Mise à jour S606–S609 — le transfert de S601 est maintenant mesuré : GuitarSet microphone 80,06 %, IDMT Dataset3 82,11 %, MAESTRO 76,26 % de F1 NoteOn ±80 ms**, contre respectivement 76,11 %, 72,15 % et 70,70 % pour Basic Pitch par défaut. **77 enregistrements, 10 887 vraies notes MIDI40–88, même modèle et mêmes seuils figés avant les annotations. Les 80 % ne sont pas validés de façon générale : accompagnement GuitarSet 76,08 %, Rock 74,26 % et piano 76,26 %.** Le Rock et deux extraits piano régressent face à BP. IDMT Dataset3 ne couvre qu'un seul instrument, pas les sept guitares de la collection. Audit : 693 vérifications d'appariement concordantes et toutes les 784 vraies notes perdues face à BP conservées. **Aucune promotion S80/Exact-K ni intégration Live.** [Résultats, limites et audit complet](analysis/README_V273_S606_S609_TRANSFER_RESULTS.md) · [CI de transfert réussie](https://github.com/Andriamarosoa/note/actions/runs/38688389092).
 
@@ -270,7 +272,9 @@ Le dépôt **midi** dispose d'une chaîne **guitare → MIDI réellement exécut
 - [src/product/midi_output.py](https://github.com/Andriamarosoa/midi/blob/main/src/product/midi_output.py) : port MIDI WinMM, panorama des notes actives et **panic All Notes Off**, synthétiseur optionnel FluidSynth ;
 - [métadonnées V2.2.1](https://github.com/Andriamarosoa/midi/blob/main/artifacts/guitar_midi_polyphonic_v2_2_0/metadata.json) et [README midi](https://github.com/Andriamarosoa/midi/blob/main/readme/README.md).
 
-### Comparaison vérifiée
+### Comparaison vérifiée au bilan S584
+
+**Depuis S610**, `note` ajoute une voie autonome de référence avec capture microphone, réseau causal v2.2.1, noms de notes, MIDI et gestion des surcharges : voir [LIVE.md](LIVE.md). Le tableau ci-dessous conserve la comparaison des moteurs historiques et des têtes S80/S569/S578 ; ces têtes ne deviennent pas causales par cette intégration.
 
 | Point | **note** | **midi** |
 |---|---|---|
@@ -331,7 +335,9 @@ La présence du Live complet dans **midi** ne veut pas dire que son modèle de h
 
 La bonne solution n'est pas de remplacer aveuglément le Live de **note** par le réseau de **midi** : la tâche est différente. Il faut **réutiliser l'architecture de flux causal de midi** et **conserver les têtes/routages, preuves et règles musicales de note**.
 
-### Architecture cible proposée (PAS encore livrée)
+### Architecture cible avec Exact-K (PAS encore livrée)
+
+S610 livre déjà la capture, le moteur causal de référence `midi`, le suivi des notes et la sortie. Les têtes propres à NOTE et le couplage Exact-K de l'architecture ci-dessous restent à adapter et à valider.
 
 ~~~text
 MIC 44.1 kHz

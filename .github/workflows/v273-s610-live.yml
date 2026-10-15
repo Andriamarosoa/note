@@ -1,0 +1,45 @@
+name: S610 causal Live contracts and model smoke
+on:
+  push:
+    branches: [codex/s533-s535-note-fundamental-loops]
+    paths:
+      - src/causal_note/live_engine.py
+      - src/causal_note/live_reference/**
+      - scripts/live_notes.py
+      - scripts/s610_validate_live.py
+      - scripts/s610_smoke_live.py
+      - test/test_s610_live.py
+      - model/live/**
+      - requirements-live.txt
+      - .github/workflows/v273-s610-live.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s610-live-${{ github.ref }}
+  cancel-in-progress: false
+env:
+  PYTHONPATH: .:src
+  OPENBLAS_NUM_THREADS: '1'
+  TF_CPP_MIN_LOG_LEVEL: '3'
+jobs:
+  live_contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r requirements-live.txt
+      - name: Streaming contracts and preserved legacy Live
+        run: python -m unittest test.test_s610_live test.test_live_k_midi_bridge test.test_detect_live test.test_pipeline -q
+      - name: Real frozen model; silence, finite outputs, prefix invariance and cleanup
+        run: python scripts/s610_smoke_live.py --output model/S610_ci/smoke.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s610-live-smoke
+          path: model/S610_ci/
+          retention-days: 90
+          if-no-files-found: warn
