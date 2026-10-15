@@ -1,0 +1,44 @@
+name: S632 learn risk of waiting versus false/missed NoteOn
+on:
+  push:
+    branches: [codex/s533-s535-note-fundamental-loops]
+    paths:
+      - src/causal_note/s632_risk_policy.py
+      - scripts/s632_train_decision_cost.py
+      - test/test_s632_risk_policy.py
+      - .github/workflows/v273-s632-risk-of-waiting.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s632-train-risk-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  explicit_cost_training:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install unchanged S614 inference runtime and cost-regression deps
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Verify native causal NOTE decoder and learned risk supervision tests
+        run: |
+          python -m compileall -q src/causal_note/s632_risk_policy.py scripts/s632_train_decision_cost.py
+          python -m unittest -v test.test_s632_risk_policy test.test_s631_adaptive_latency test.test_strict_live
+      - name: Fit three action Q-cost regressors on 35 train audio; score 17 DEV compositions
+        run: |
+          python -m scripts.s632_train_decision_cost --out /tmp/S632
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S632-trained-risk-cost-heads-original-DEV-only
+          path: /tmp/S632/
+          retention-days: 60
+          if-no-files-found: warn
