@@ -32,7 +32,7 @@ jobs:
           gh run download 38670454679 -n s573-next-five-S570-composers-V88-raw49-pitch-PREMIDI -D model/S573 --repo "${{ github.repository }}"
       - name: Restore new genuine S574 seven-policy MIDI-blind SHA-locked source NoteOn predictions
         run: |
-          gh run download 38670600000 -n s574-fourth-source-7-old-vs-restrike-52D-fitted-note-policies-SHA-frozen-BEFORE-MIDI -D model/S574 --repo "${{ github.repository }}"
+          gh run download 38670528441 -n s574-fourth-source-7-old-vs-restrike-52D-fitted-note-policies-SHA-frozen-BEFORE-MIDI -D model/S574 --repo "${{ github.repository }}"
           python - <<'PY'
           import json,hashlib
           from pathlib import Path
