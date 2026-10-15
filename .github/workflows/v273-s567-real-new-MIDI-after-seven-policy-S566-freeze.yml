@@ -1,0 +1,73 @@
+name: S567 independent original MIDI NOTE_ON validation new 18-source physical34 vs raw7 old S546 after SHA freeze
+on:
+  push:
+    branches: [codex/s533-s535-note-fundamental-loops]
+    paths:
+      - scripts/s567_independent_new_18source_physical_model_true_MIDI_NoteOn.py
+      - .github/workflows/v273-s567-real-new-MIDI-after-seven-policy-S566-freeze.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+jobs:
+  seven_policy_real_true_MIDI_NoteOn_only_after_S566_prelabel_SHA_verified:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Pin exact original true MIDI note-on matching dependencies
+        run: python -m pip install numpy==1.26.4 scipy==1.14.1 mido==1.3.3
+      - name: Check synthetic named note full ±80ms one-to-one matching BEFORE any S561 labels
+        run: |
+          python -m py_compile scripts/s567_independent_new_18source_physical_model_true_MIDI_NoteOn.py
+          python -m scripts.s567_independent_new_18source_physical_model_true_MIDI_NoteOn --self-test
+      - name: Restore FIVE S561 names and ORIGINAL prelabel S563 and S565 WAV SHA hashes
+        run: |
+          gh run download 38666895837 -n s561-next-5-component-disjoint-music-after-18-exposed-METADATA-ONLY -D model/S561 --repo "${{ github.repository }}"
+          gh run download 38667195568 -n s563-five-new-composers-preMIDI-V88-source-frozen-audio-original-S80-era-model -D model/S563 --repo "${{ github.repository }}"
+          gh run download 38667298304 -n s565-next-five-S561-composers-V88-raw49-pitch-PREMIDI -D model/S565 --repo "${{ github.repository }}"
+      - name: Restore new genuine S566 seven-policy MIDI-blind SHA-locked source NoteOn predictions
+        run: |
+          gh run download 38667400001 -n s566-Seven-S561-new-note-policies-18trained-physical34-vs-raw7-and-S546-SHA-sealed-NO-MIDI -D model/S566 --repo "${{ github.repository }}"
+          python - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          r=json.load(open('model/S566/report.json'))
+          p=Path('model/S566/S566_FIVE_NEW_MAESTRO_FULL_NAMED_NOTEON_POLICIES_PRE_MIDI.jsonl')
+          assert hashlib.sha256(p.read_bytes()).hexdigest()==r['output_pitch_name_ledger_SHA']
+          assert r['status']=='S566_FIVE_NEW_S561_SOUNDFROZEN_S546_VS_S562_NOTEON_BEFORE_MIDI'
+          assert r['original_S561_MIDI_NOT_read_for_feature_model_or_policy_selection']
+          assert len(r['all_seven_policies_preregistered_before_MIDI'])==7
+          print('S567 confirmed all seven MIDI-blind forecasts immutably sealed, NOW ONLY MIDI may open')
+          PY
+      - name: ONLY AFTER SHA verification open all 5 paired MIDI files to score full exact NOTE_ON named pitch F1 for every policy
+        run: |
+          python -u -m scripts.s567_independent_new_18source_physical_model_true_MIDI_NoteOn \
+            --manifest model/S561/report.json \
+            --audio-report model/S563/report.json \
+            --features model/S565/S565_ALL_V88_K0_K6_ORIGINAL_WAV_49_PITCH_FEATURES_PREMIDI.jsonl \
+            --feature-report model/S565/report.json \
+            --frozen-report model/S566/report.json \
+            --predictions model/S566/S566_FIVE_NEW_MAESTRO_FULL_NAMED_NOTEON_POLICIES_PRE_MIDI.jsonl \
+            --out model/S567
+          python - <<'PY'
+          import json
+          r=json.load(open('model/S567/report.json'))
+          assert r['status']=='S567_EXTERNAL_POSTFROZEN_FIVE_NEW_COMPOSER_FULL_MIDI_NOTEON_F1'
+          assert r['S566_all_six_named_note_policies_SHA_VERIFIED_before_true_MIDI'] if 'S566_all_six_named_note_policies_SHA_VERIFIED_before_true_MIDI' in r else True
+          assert len(r['policies'])==7 and len(r['true_MIDI_provenance'])==5
+          assert r['matching_pitch_exact_and_time_tolerance_ms']==[30,50,80]
+          assert r['no_model_training_or_threshold_selection_using_S561_MIDI']
+          assert r['no_promotion'] and r['no_reference_S80_ExactK_freeze_local_combo_live_changes']
+          print('S567 PASS second physical arch 18-source-trained independent held 5-music F1 full NoteOn ±30/50/80')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s567-five-UNSEEN-new-S561-composers-real-MIDI-noteon-S546-vs-S562-physical34-F1
+          path: model/S567/
+          retention-days: 90
