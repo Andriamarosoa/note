@@ -34,7 +34,7 @@ jobs:
           python -m compileall -q src/causal_note/strict_live.py scripts/s615_prepare_multihop.py scripts/s615_train_multihop.py scripts/live_hop_tuning.py test/test_s615_multihop_training.py
       - name: S613 baseline and multi-hop regression tests
         run: |
-          python -m unittest -v test.test_live_adaptive_hop test.test_live_auto_audio_tuning test.test_s615_multihop_training
+          python -m unittest -v test.test_live_adaptive_hop test.test_live_auto_audio_tuning test.test_s615_multihop_training test.test_s615_exactk_audit
       - name: Source split provenance and train checkpoint assertions
         run: |
           python - <<'PY'
