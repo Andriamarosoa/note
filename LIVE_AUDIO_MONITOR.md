@@ -55,3 +55,32 @@ Si `python -m pip install` n'a installé que le package Python FluidSynth, la bi
 À l'ouverture, le programme affiche maintenant sur stderr la sélection automatique des entrées/sorties, le nom de l'API et les latences négociées, en conservant la sortie JSONL sur stdout. En cas de panne de synthèse répétée ou d'arrêt du flux de sortie, le LIVE remonte une erreur plutôt que de rester silencieux.
 
 Cette sortie piano est une **synthèse des notes prédites** par le moteur NOTE, non un monitoring de la guitare d'origine, non une modification des poids ou des têtes, et non un nouveau score de F1. Le port MIDI externe reste optionnel et s'active séparément avec `--midi-port`. Les tests unitaires du sélecteur sont fournis dans `test/test_live_audio_selection.py`, mais le test matériel Windows et la mesure de latence acoustique restent à effectuer.
+
+## Diagnostic ciblé iRig : cordes graves absentes
+
+Comparer le même signal *avant tout gain et tout modèle*. Le script `scripts/diagnose_low_strings.py` enregistre le premier canal du périphérique effectivement ouvert par le sélecteur audio NOTE, sans le normaliser, et affiche le nom de l'entrée, RMS dBFS, crêtes, clipping, énergie à la fondamentale et aux harmoniques et les pics spectraux principaux. C'est un diagnostic de capture et non une validation de note reconnue.
+
+Depuis le venv actif sous PowerShell :
+
+```powershell
+$env:PYTHONPATH = ".;src"
+python -m unittest -v test.test_low_string_diagnostics
+python -m scripts.live_strict_notes --list-devices
+python -m scripts.diagnose_low_strings --mic --note E2 --duration-s 4 --record-wav "irig_E2.wav"
+python -m scripts.diagnose_low_strings --wav "irig_E2.wav" --note E2
+python -m scripts.live_strict_notes --wav "irig_E2.wav" --out "irig_E2_notes.jsonl"
+```
+
+Au début du diagnostic, jouer uniquement la corde Mi grave E2, puis enregistrer la corde La A2 en remplaçant E2 par A2 et le nom de fichier. Si l'entrée choisie n'est pas l'iRig, passer `--device INDEX` d'après la liste; la sélection automatique suit normalement l'entrée Windows par défaut. D2/Drop D (MIDI38) est en-dessous de la limite MIDI40 du modèle NOTE strict actuel.
+
+Pour tester **seulement le piano**, sans guitare ni modèle, avec une SoundFont existante :
+
+```powershell
+python -m scripts.diagnose_low_strings --test-piano --note E2 --soundfont "C:\Users\user\Documents\Codex\guitarRig\.venv309\Lib\site-packages\pretty_midi\TimGM6mb.sf2"
+```
+
+Interprétation : si E2 ne s'entend pas en test piano direct, examiner d'abord la sortie audio, le périphérique d'écoute ou la SoundFont. Si le piano joue E2 mais que son énergie est très faible ou absente dans le WAV brut, examiner capture iRig, gain et traitements Windows. Si le WAV a une harmonique grave visible mais aucune note E2 dans `irig_E2_notes.jsonl`, examiner le modèle, les caractéristiques et les seuils de sélection de NOTE.
+
+Pour la comparaison avec `midi`, réutiliser **exactement ce WAV brut** dans `guitar-midi-poly-transcribe` avec le bundle polyphonique adéquat, une fois avec `--no-auto-level` puis avec `--auto-level` ; ne pas comparer deux interprétations différentes de la guitare. Les différences de note ou de gain ne prouvent rien sans inspecter les rapports.
+
+Les tests de cette branche sont à exécuter dans le venv ; aucun test d'iRig physique ou mesure réelle par corde n'a encore été effectué. Ne pas changer le modèle ou amplifier chaque note à l'aveugle.
