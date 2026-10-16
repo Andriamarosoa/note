@@ -8,11 +8,13 @@ from __future__ import annotations
 import queue
 import threading
 import numpy as np
+import sys
+
+from scripts.live_audio_io import open_output_stream, parse_device
 
 
 class PianoOutput:
     def __init__(self, soundfont, output_device=None, gain=0.35, samplerate=44100, blocksize=128):
-        import sounddevice as sd
         try:
             import fluidsynth
         except (ImportError, OSError) as exc:
@@ -27,6 +29,7 @@ class PianoOutput:
         self._lock = threading.Lock()
         self.synth = fluidsynth.Synth(samplerate=samplerate, gain=gain)
         self.stream = None
+        self.audio_info = None
         try:
             sfid = self.synth.sfload(str(soundfont))
             if sfid < 0:
@@ -60,15 +63,21 @@ class PianoOutput:
                     self.errors += 1
                     outdata.fill(0.0)
 
-            selected = (
-                int(output_device) if isinstance(output_device, str)
-                and output_device.isdigit() else output_device
+            self.stream, self.audio_info = open_output_stream(
+                preferred_device=parse_device(output_device),
+                samplerate=samplerate,
+                blocksize=blocksize,
+                channels=2,
+                dtype="float32",
+                latency="low",
+                callback=callback,
             )
-            self.stream = sd.OutputStream(
-                samplerate=samplerate, blocksize=blocksize, channels=2,
-                dtype="float32", latency="low", device=selected, callback=callback
+            print(
+                f"Piano audio output: {self.audio_info.host_api} / "
+                f"{self.audio_info.device_name} [{self.audio_info.device_index}] / "
+                f"negotiated latency={self.audio_info.latency_ms:.2f} ms",
+                file=sys.stderr,
             )
-            self.stream.start()
         except Exception:
             self.close()
             raise
