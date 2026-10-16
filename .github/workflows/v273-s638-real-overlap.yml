@@ -1,0 +1,41 @@
+name: S638 TRUE overlapped GuitarSet annotated MIDI notes
+on:
+  push:
+    branches: [codex/s638-guitarset-polyphonic-overlap-audit]
+    paths:
+      - 'scripts/s638_guitarset_true_overlap.py'
+      - 'test/test_s638_guitarset_true_overlap.py'
+      - '.github/workflows/v273-s638-real-overlap.yml'
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s638-real-overlap-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  actual_annotated_polyphonic_overlap:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install NOTE frozen runtime
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Verify overlapping-note definitions and matched recovery
+        run: |
+          python -m compileall -q scripts/s638_guitarset_true_overlap.py test/test_s638_guitarset_true_overlap.py
+          python -m unittest -v test.test_s638_guitarset_true_overlap
+      - name: Benchmark real annotated GuitarSet simultaneous notes
+        run: python -m scripts.s638_guitarset_true_overlap --out /tmp/s638_true_overlap
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S638_GUITARSET_REAL_OVERLAP_TP_FN_FP
+          path: /tmp/s638_true_overlap/report.json
+          if-no-files-found: warn
+          retention-days: 60
