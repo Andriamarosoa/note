@@ -1,0 +1,68 @@
+name: S615 real GuitarSet train-dev pilot
+on:
+  push:
+    branches: [codex/note-live-s615-multihop-training]
+    paths: ['.github/workflows/note-s615-real-pilot.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  real-guitarset-pilot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install training dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "numpy>=1.26,<2" "scipy>=1.11,<1.15" "threadpoolctl>=3" "onnxruntime>=1.17,<1.25"
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Download and verify pinned real GuitarSet train/dev WAVs and annotations
+        run: |
+          python -m scripts.s615_seed_guitarset_pilot --root data/S615_real_pilot --train-sources 6 --dev-sources 3
+      - name: Build three causal hops from same guitar recordings
+        run: |
+          python -m scripts.s615_prepare_multihop --root data/S615_real_pilot --hops 128 256 512 --pilot-train-sources 6 --pilot-dev-sources 3
+      - name: Train real S615 hop128, hop256, hop512, and shared candidates (pilot)
+        run: |
+          for mode in hop128 hop256 hop512 shared; do
+            python -m scripts.s615_train_multihop --root data/S615_real_pilot \
+              --mode "$mode" --out "results/S615_real_pilot/$mode" \
+              --count-epochs 4 --pitch-epochs 6 \
+              --max-pitch-rows 7000 \
+              --pilot-train-sources 6 --pilot-dev-sources 3
+          done
+      - name: Compare development only, record no held-out or F1 promotion
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          reports=[]
+          for path in sorted(Path('results/S615_real_pilot').glob('*/report.json')):
+              data=json.loads(path.read_text())
+              assert data['status']=='EXPERIMENTAL_DEV_ONLY_NOT_PROMOTED'
+              reports.append(dict(mode=data['model_mode'],hops=data['trained_hops'],
+                                  train_sources=data['source_count_train'],
+                                  dev_sources=data['source_count_dev'],
+                                  dev_noteon_f1_80ms={
+                                    k: round(v['best']['scores']['F1'],5)
+                                    for k,v in data['dev_by_hop'].items()}))
+          assert len(reports)==4
+          Path('results/S615_real_pilot/COMPARISON.json').write_text(
+              json.dumps(dict(status='PILOT_NONPROMOTABLE_SMALL_SOURCE_SUBSET',
+                              no_test_split_touched=True,results=reports),indent=2))
+          print(json.dumps(reports,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s615-real-guitarset-pilot-candidates
+          path: results/S615_real_pilot/
+          retention-days: 30
