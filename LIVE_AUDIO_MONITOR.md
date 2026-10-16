@@ -159,3 +159,24 @@ $a.attack_to_sustain_trajectory.maxima_during_next_500_ms | ConvertTo-Json
 ```
 
 Les échantillons à +25/+50/+100/+200/+350/+500 ms ne servent qu'à évaluer la *progression* du modèle déjà causal ; les utiliser pour retarder l'émission violerait le LIVE strict. Aucun seuil, poids, tête, modèle ni sélection n'a été promu. Si la fondamentale devient visible plus tard, la prochaine expérience appropriée est une **tête entraînée de cohérence d'harmoniques à l'attaque** utilisant uniquement l'histoire déjà reçue, avec validation sur accords où les octaves sont des notes réelles.
+
+## Résultat E2 du contre-factuel onset=0.15 et audit de coïncidence des têtes
+
+Sur le seul WAV MME E2 annoté (MIDI40), les statistiques fournies par l'utilisateur sont :
+- Original : E2=0, autres notes=5 (MIDI52,59,61,64,68).
+- Count gate 0.5 : E2=0, autres=5.
+- Mono budget 1 : E2=0, autres=2 (MIDI52,61).
+- Onset 0.15 + reset 0.03 : E2=0, autres=5.
+
+Ne PAS assimiler `max(onset)=0.15213` et `max(sustain)=0.99455` à une coïncidence temporelle. Le sélecteur exige `onset >= seuil` et `sustain >= active_on` **sur la même trame**, plus armement et budget. À t≈1.2074, sustain E2=0.63835 mais onset=0.10857. L'audit suivant mesure la vraie coïncidence et rejoue neuf combinaisons de seuils dans des sélecteurs distincts, **sans rien modifier au LIVE** :
+
+```powershell
+git pull --ff-only
+python -m unittest -v test.test_live_joint_head_overlap
+python -m scripts.audit_live_pitch_count --wav "irig_E2_wasapi.wav" --expected-pitch 40 --report "audit_e2_overlap.json" > $null
+$a = Get-Content audit_e2_overlap.json -Raw | ConvertFrom-Json
+$a.joint_head_overlap.conditional_maxima | Format-Table
+$a.summary | ConvertTo-Json -Depth 4
+```
+
+Les variantes explorent onset {0.05,0.10,0.15} x sustain {0.25,0.40,0.50}, mais l'exploration d'un seul signal n'est **pas** une optimisation validée. Les détections inattendues comptent comme erreurs uniquement sous l'hypothèse documentée « une seule corde E2 ». Pour changer le modèle, les têtes ou les sélections en production, il faut des morceaux/accords indépendants, des mesures d'attaques, des fausses notes et la non-régression Exact-K.
