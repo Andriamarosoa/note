@@ -55,6 +55,36 @@ class LiveOfflineAuditTests(unittest.TestCase):
         self.assertEqual(synth.calls, [("off", 52), ("on", 52, 90)])
         self.assertTrue(synth.active[52])
 
+    def test_input_1024_packets_change_delivery_not_native_decisions(self):
+        from causal_note.strict_live import StrictLiveStream, HOP
+        class OneNoteHeads:
+            metadata = {"selection": {"onset": .6}}
+            def predict(self, features):
+                p = np.zeros((49, 3), np.float32)
+                p[12, 0:2] = .99
+                k = np.zeros(7, np.float32)
+                k[1] = 1.
+                return p, k
+        signal = np.zeros(8 * HOP, np.float32)
+        def replay(chunk):
+            stream = StrictLiveStream(OneNoteHeads())
+            ev = []
+            for i in range(0, len(signal), chunk):
+                ev.extend(stream.push(signal[i:i + chunk], start_sample=i))
+            ev.extend(stream.finish())
+            return ev
+        native = replay(256)
+        buffered = replay(1024)
+        self.assertEqual([event_key(e) for e in native],
+                         [event_key(e) for e in buffered])
+        self.assertTrue(any(e["type"] == "note_on" for e in native))
+        first_native = next(e for e in native if e["type"] == "note_on")
+        first_buffered = next(e for e in buffered if e["type"] == "note_on")
+        self.assertEqual(first_native["decision_sample"], 256)
+        self.assertEqual(first_buffered["decision_sample"], 256)
+        self.assertEqual(first_native["available_sample"], 256)
+        self.assertEqual(first_buffered["available_sample"], 1024)
+
     def test_counts_real_note_durations(self):
         events = [
             {"type": "note_on", "pitch": 40, "decision_sample": 256},
