@@ -1,0 +1,88 @@
+name: "S627 S613 multidimensional TP/FN/FP data forensic audit"
+on:
+  push:
+    branches: [codex/note-s627-multidimensional-causal-audit]
+    paths: ['.github/workflows/note-s627-multidimensional-forensic.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s627-multidimensional-audit-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  audit-all-dimensions:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 85
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install original ONNX neural inference, and scipy for one-to-one NoteOn pairing
+        run: |
+          python -m pip install "numpy>=1.26,<2" "scipy>=1.11,<1.15" "onnxruntime>=1.17,<1.25" "threadpoolctl>=3"
+      - name: Test source true labels, original 126D feature ABI, selector causal state and TP/FN matching
+        run: |
+          python -m compileall -q scripts/s627_multidimensional_failure_audit.py test/test_s627_multidimensional_failure_audit.py
+          python -m unittest -v test.test_s627_multidimensional_failure_audit test.test_s626_audit_missed_combinations
+      - name: Seed source-distinct original GuitarSet/URMP 17 DEV only (no held-out test)
+        run: |
+          python -m scripts.s615_seed_full_development --root data/S627_dev --dev-only
+      - name: Generate original causal hop256 spectral features with verified annotation SHA
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from scripts.s615_prepare_multihop import prepare_one
+          import json
+          root=Path('data/S627_dev')
+          sources=[s for s in json.loads((root/'protocol.json').read_text())['sources'] if s['split']=='dev']
+          assert len(sources)==17
+          for i,s in enumerate(sources,1):
+              print(i,prepare_one(root,s,256),flush=True)
+          PY
+      - name: Record immutable FULL S613 neural+ONNX per-note forensic evidence
+        run: |
+          python -m scripts.s627_multidimensional_failure_audit \
+            --root data/S627_dev \
+            --model model/live/strict_note/NOTE_strict_live.npz \
+            --out results/S627_MULTIDIMENSIONAL_REAL_TP_FN_FP.json
+      - name: Enforce canonical TP/FN/FP truth and show conditions plus matched controls
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          report=json.loads(Path('results/S627_MULTIDIMENSIONAL_REAL_TP_FN_FP.json').read_text())
+          assert report['status']=='S627_MULTIDIMENSIONAL_FORENSIC_AUDIT_S613_17DEV_NO_PROMOTION'
+          assert report['sources']==17 and report['test_sources_read']==0
+          assert report['frozen_hybrid_baseline']['TP']==1241
+          assert report['frozen_hybrid_baseline']['FP']==734
+          assert report['frozen_hybrid_baseline']['FN']==838
+          assert report['note_events']==2079 and report['emitted_false_note_on']==734
+          assert len(report['per_note_truth_rows'])==2079
+          assert len(report['per_false_predicted_event_rows'])==734
+          assert sum(report['missed_head_evidence_classes'].values())==838
+          assert sum(report['false_positive_context_priority'].values())==734
+          for dimension in (
+              'corpus','active_K','onset_K','coactive_interval',
+              'nearest_other_onset','first_frame_onset_bin',
+              'local_head_evidence_class','register',
+          ):
+              grp=report['true_notes_stratified'][dimension]
+              assert sum(x['total'] for x in grp)==2079,(dimension,grp)
+              assert sum(x['missed'] for x in grp)==838,(dimension,grp)
+              print('S627_DIMENSION_'+dimension+' '+json.dumps(grp))
+          print('S627_MATCHED_CONTROLS '+json.dumps(
+              report['matched_FN_vs_TP_controls']))
+          print('S627_FP_CONTEXT '+json.dumps(report['false_positive_context_priority']))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s627-original-S613-17dev-each-TP-FN-FP-all-dimensions
+          path: results/S627_MULTIDIMENSIONAL_REAL_TP_FN_FP.json
+          retention-days: 45
