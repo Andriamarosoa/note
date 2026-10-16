@@ -62,6 +62,9 @@ def main(argv=None):
     source.add_argument("--stdin", action="store_true", help="Raw mono s16le PCM, 44100 Hz")
     source.add_argument("--mic", action="store_true")
     parser.add_argument("--device", help="sounddevice input device name/index")
+    parser.add_argument("--soundfont", type=Path, help="GM-compatible SF2 piano SoundFont: hear detected notes as acoustic piano")
+    parser.add_argument("--piano-output-device", help="Output device name/index, e.g. WASAPI endpoint from --list-devices")
+    parser.add_argument("--piano-gain", type=float, default=0.35, help="FluidSynth piano gain, default 0.35")
     parser.add_argument("--monitor-input", action="store_true", help="Listen to raw microphone audio (headphones recommended); independent of note detection")
     parser.add_argument("--output-device", help="sounddevice output device name/index for monitoring; select a WASAPI endpoint via --list-devices")
     parser.add_argument("--monitor-gain", type=float, default=0.5, help="Raw input monitoring gain, 0.0..1.0 (default 0.5)")
@@ -73,6 +76,14 @@ def main(argv=None):
     parser.add_argument("--queue-blocks", type=int, default=32,
                         help="Maximum buffered microphone blocks before overflow")
     args = parser.parse_args(argv)
+    if args.piano_output_device is not None and args.soundfont is None:
+        parser.error("--piano-output-device requires --soundfont")
+    if args.soundfont is not None and not args.soundfont.is_file():
+        parser.error(f"SoundFont not found: {args.soundfont}")
+    if not 0.0 < args.piano_gain <= 5.0:
+        parser.error("--piano-gain must be > 0 and <= 5")
+    if args.monitor_input and args.soundfont:
+        parser.error("Use either --monitor-input or --soundfont; not both")
     if args.monitor_input and not args.mic:
         parser.error("--monitor-input requires --mic")
     if args.output_device is not None and not args.monitor_input:
@@ -115,6 +126,12 @@ def main(argv=None):
             warm.push(np.zeros(HOP, np.float32), start_sample=j * HOP)
         stream = StrictLiveStream(heads)
         output = stack.enter_context(args.out.open("x")) if args.out else sys.stdout
+        piano = None
+        if args.soundfont:
+            from scripts.live_piano_output import PianoOutput
+            piano = PianoOutput(args.soundfont, output_device=args.piano_output_device,
+                                gain=args.piano_gain, samplerate=SR)
+            stack.callback(piano.close)
         port = None
         if args.midi_port:
             import mido
@@ -123,6 +140,8 @@ def main(argv=None):
             port = stack.enter_context(mido.open_output(args.midi_port))
         def emit(events):
             for event in events:
+                if piano is not None:
+                    piano.send(event)
                 if port:
                     import mido
                     port.send(mido.Message(event["type"], note=event["pitch"], velocity=event["velocity"], channel=0))
