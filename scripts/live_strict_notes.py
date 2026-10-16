@@ -146,7 +146,9 @@ def main(argv=None):
     parser.add_argument("--lookahead-ms", type=float, default=0.0,
                         help="S628 actual future PCM in ms (0=original, 5=experimental), delays physical notes; must use --hop-size 256")
     parser.add_argument("--lookahead-mode", choices=("delay","average","confirm","max_onset","future"), default="average",
-                        help="S628 future score fusion, delay=timing-only control; default average")
+                        help="Frozen NOTE future score fusion, delay=timing-only control; default average")
+    parser.add_argument("--lookahead-engine", choices=("shared","phase"),default="shared",
+                        help="S629 shared (default) computes ONE frozen S613 head per 256 hop, rounds 5ms->5.80ms and 10ms->11.61ms; phase reproduces S628 exact delay but ~2x CPU")
     parser.add_argument("--hop-size", type=str, default=None,
                         help="Neural decision hop 128/256/512 or auto (experimental CPU preflight). Default 256 preserves validated S613.")
     parser.add_argument("--block-size", type=parse_block_size, default=HOP,
@@ -265,17 +267,31 @@ def main(argv=None):
         )
         print(json.dumps(dict(hop_selection=hop_audit)), file=sys.stderr)
         if args.lookahead_ms > 0:
-            from causal_note.lookahead import LookaheadConfig,LookaheadLiveStream
+            from causal_note.lookahead import (
+                LookaheadConfig,LookaheadLiveStream,SharedHopLookaheadLiveStream,
+            )
             cfg=LookaheadConfig(milliseconds=args.lookahead_ms,
                                 mode=args.lookahead_mode)
-            stream=LookaheadLiveStream(heads,config=cfg)
+            if args.lookahead_engine=="shared":
+                stream=SharedHopLookaheadLiveStream(heads,config=cfg)
+                effective_samples=stream.actual_samples
+            else:
+                stream=LookaheadLiveStream(heads,config=cfg)
+                effective_samples=cfg.samples
             print(json.dumps(dict(
-                s628_lookahead="EXPERIMENTAL",
-                requested_ms=args.lookahead_ms,actual_samples=cfg.samples,
-                actual_ms=cfg.samples*1000/SR,mode=cfg.mode,
+                s629_lookahead="EXPERIMENTAL",
+                engine=args.lookahead_engine,
+                requested_ms=args.lookahead_ms,
+                requested_samples=cfg.samples,
+                actual_samples=effective_samples,
+                actual_ms=round(effective_samples*1000/SR,3),
+                quantization_extra_ms=round((effective_samples-cfg.samples)*1000/SR,3),
+                mode=cfg.mode,
+                single_model_inference_per_hop=args.lookahead_engine=="shared",
                 latency_added=True,
-                warning=("Only PHYSICALLY received future PCM used. No event backdating. "
-                         "Frozen S613, no verified F1 gain; compare to --lookahead-mode delay."),
+                warning=("Only PHYSICALLY received future PCM is used; no event backdating. "
+                         "The shared engine is a NEW unpromoted ablation distinct from "
+                         "S628 exact-phase F1; benchmark real iRig CPU and false notes."),
             )),file=sys.stderr)
         elif args.dual_hop_mode != "off":
             from causal_note.dual_hop import DualHopConfig, DualHopLiveStream
@@ -487,7 +503,7 @@ def main(argv=None):
                     print(json.dumps(dict(auto_level_diagnostics=leveler.diagnostics())),
                           file=sys.stderr)
                 if hasattr(stream, "diagnostics"):
-                    field=("s628_lookahead_diagnostics" if args.lookahead_ms>0
+                    field=("s629_lookahead_diagnostics" if args.lookahead_ms>0
                            else "dual_hop_diagnostics")
                     print(json.dumps({field:stream.diagnostics()}),
                           file=sys.stderr)
