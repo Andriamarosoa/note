@@ -153,3 +153,35 @@ waiting intentionally adds physical latency. This is not new
 independent held-out testing.
 
 **Status: experimental research branch, not promoted or merged.**
+
+
+## Verified real-data batch4 semantic parity: 17 original DEV compositions
+
+[GitHub Actions complete run 38896212903 — SUCCESS](https://github.com/Andriamarosoa/note/actions/runs/38896212903).
+
+This is an IMPORTANT second validation separate from synthetic CPU.
+Original frozen S613 hybrid used on each of the 17 original
+composition-disjoint DEV GuitarSet+URMP recordings with its original
+126-dimensional 256-hop frontend and annotations, comparing whole
+track native hybrid predictions to groups of four frames run through
+the SAME frozen ONNX+MLP hybrid.
+
+- **All 17 sources have IDENTICAL nominal NOTE ON and OFF events**,
+  same correct MIDI pitch, same original decision sample and order.
+- **Original vs batch4:** TP=**1241**, FP=**734**, FN=**838**,
+  F1=**61.2235%**, unchanged.
+- **Exact grouped onset K3:** 42/183 in both; K4: 3/44 in both.
+  Exact pitch-set K3=20, K4=0, unchanged. This is the *original
+  source-defined 30ms grouped onset K*, not the historical S80 Exact-K.
+- Maximum difference in raw per-note probability across all dev
+  frames was **0.00344**, in K head **0.00000608**. Therefore the
+  tensor predictions are NOT mathematically bit-for-bit identical,
+  but no selector decisions changed on this DEV corpus.
+- These score fields are computed at NOMINAL decision timestamps,
+  just as S613 DEV baseline. They do not measure the true physical
+  +17.415ms batching wait and its potential effect on evaluation
+  against strict emitted-time tolerance. Hardware latency validation
+  remains mandatory.
+
+No promotion to official NOTE, no guarantee Windows worker can meet
+the deadline. This is only a verified compute-throughput optimization.
