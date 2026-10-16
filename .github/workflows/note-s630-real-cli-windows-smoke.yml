@@ -18,7 +18,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     env:
-      PYTHONPATH: '.:src'
+      PYTHONPATH: 'src' # Cross-platform: ':' is NOT a Windows sys.path separator
       OPENBLAS_NUM_THREADS: '1'
       OMP_NUM_THREADS: '1'
       MKL_NUM_THREADS: '1'
