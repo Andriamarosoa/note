@@ -46,8 +46,11 @@ def emit(ends, predicted, kcount, frames, config, hop):
 
 def evaluate(root, path, *, hops=(128,256,512), out=None):
     original=json.loads((root/"protocol.json").read_text())
+    # The checkpoint was trained on 6 GuitarSet train clips and tuned
+    # against exactly the FIRST THREE development clips of the pinned S613
+    # protocol. This selector audit must replay that identical pilot scope.
     selected=[s for s in original["sources"] if s["split"]=="dev"
-              and s["corpus"]=="GuitarSet"]
+              and s["corpus"]=="GuitarSet"][:3]
     if len(selected)<2:
         raise ValueError("Need development guitar recordings")
     head=NativeLiveHeads(path)
