@@ -29,6 +29,40 @@ def pitch_name(pitch):
     return ("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B")[pitch % 12] + str(pitch // 12 - 1)
 
 
+def raw_harmonic_evidence(features, expected_pitch):
+    """Inspect actual NOTE log-spectral features (not postprocessed audio).
+
+    The first 24 dimensions are raw 3-window x 8-partial harmonic features
+    of each pitch. These are model frontend features, *not* inferred pitch
+    probabilities; scores here are diagnostic only.
+    """
+    h = np.asarray(features[:, :24], dtype=np.float32).reshape(49, 3, 8)
+    weights = (1. / np.arange(1, 9) ** .66).astype(np.float32)
+    harmonic = .75 * (h * weights).sum(-1) / weights.sum() + .25 * h[..., 0]
+    salience = harmonic.mean(axis=1)
+    candidates = {int(expected_pitch), 51, 52, 59, 61, 64, 68}
+    candidates = sorted(p for p in candidates if int(PITCHES[0]) <= p <= int(PITCHES[-1]))
+    best = np.argsort(-salience)[:12]
+    all_indices = sorted(set(int(i) for i in best) | {p - int(PITCHES[0]) for p in candidates})
+    return {
+        "method": "native_3_res_8_harmonics_logged_fft; nonprobabilistic",
+        "salience_top_pitches": [
+            {"pitch": int(PITCHES[i]), "name": pitch_name(int(PITCHES[i])),
+             "score": round(float(salience[i]), 5)}
+            for i in best
+        ],
+        "focus": [
+            {"pitch": int(PITCHES[i]), "name": pitch_name(int(PITCHES[i])),
+             "score": round(float(salience[i]), 5),
+             "window_2048_score": round(float(harmonic[i, 0]), 5),
+             "window_4096_score": round(float(harmonic[i, 1]), 5),
+             "window_8192_score": round(float(harmonic[i, 2]), 5),
+             "h1_to_h4_long_window": [round(float(v), 5) for v in h[i, 2, :4]]}
+            for i in all_indices if int(PITCHES[i]) in candidates
+        ],
+    }
+
+
 def process_wav(wav_path, model_path, *, auto_level=False, expected_pitch=40):
     heads = load_heads(model_path)
     selection = Selection(**heads.metadata["selection"])
@@ -91,6 +125,7 @@ def process_wav(wav_path, model_path, *, auto_level=False, expected_pitch=40):
                 ],
                 "expected": expected_row,
                 "pitch_ranking": candidate_rows,
+                "raw_harmonic_evidence": raw_harmonic_evidence(features, expected_pitch),
                 "original_note_on": [
                     x["pitch"] for x in per_frame_events["original"]
                     if x["type"] == "note_on"
@@ -134,6 +169,7 @@ def process_wav(wav_path, model_path, *, auto_level=False, expected_pitch=40):
         "first_original_attack_frame": first_attack,
         "strongest_onset_frame": strongest[1] if strongest else None,
         "auto_level_diagnostics": leveler.diagnostics() if leveler is not None else None,
+        "additional_diagnostic": ("If native spectral E2 evidence is substantial yet E2 onset and sustain probabilities remain near zero, inspect pitch-head training and microphone domain shift; if spectral evidence itself is absent, inspect capture/front-end. This audit deliberately does not inject any note."),
         "interpretation": (
             "Count gate may suppress spurious simultaneity, but a K head "
             "predicting the wrong K or a pitch head preferring harmonics "
