@@ -82,3 +82,117 @@ a 2-hop attack feature without verifying this.
 This report is an *audit design*. Please see the actual workflow
 conclusion and its archived JSON before asserting measured S627
 correlations, let alone a causal diagnosis.
+
+
+## S627 verified result — 2026-10-16
+
+[Successful full 17-DEV workflow](https://github.com/Andriamarosoa/note/actions/runs/38889998300).
+**All unit tests and numerical audit assertions passed.**
+Artifact `s627-original-S613-17dev-each-TP-FN-FP-all-dimensions`
+contains per-event forensic features for **2,079** true note attacks and
+**734** incorrectly emitted NoteOns. Full frozen source S613 comparator
+**TP=1241, FP=734, FN=838** exactly reproduced.
+
+### Miss rate conditioned on genuine active pitch count (one true attack counted once)
+
+| True active distinct pitches | Missed / total expected notes | Miss % |
+|---|---:|---:|
+| K1 | 219/639 | **34.27%** |
+| K2 | 192/500 | **38.40%** |
+| K3 | 220/544 | **40.44%** |
+| K4 | 117/260 | **45.00%** |
+| K5+ | 90/136 | **66.18%** |
+
+### Miss rate conditioned on coactive pitch interval
+
+These are mutually exclusive priority categories at an expected onset.
+
+| Existing pitch relation | Missed / expected | Miss % |
+|---|---:|---:|
+| No other pitch simultaneously active | 219/639 | 34.27% |
+| Other coactive pitch interval | 289/753 | 38.38% |
+| Perfect-fifth MIDI interval 7 | 89/236 | 37.71% |
+| Semitone/whole-tone 1 or 2 | 29/59 | 49.15% |
+| Octave/12th/two-octave (12/19/24) | 212/392 | **54.08%** |
+
+This is a **pitch-interval ASSOCIATION**, not acoustic proof that a
+harmonic of a single note was mistaken for a truly independent note.
+Higher polyphony, pitch/register, corpus and onset timing can confound
+this comparison.
+
+### Time since latest other-pitch attack
+
+| True recent OTHER pitch attack | FN/total | Miss % |
+|---|---:|---:|
+| None in last 250ms | 260/709 | 36.67% |
+| 0–10ms | 198/448 | 44.20% |
+| 10–30ms | 119/382 | 31.15% |
+| 30–80ms | 80/151 | 52.98% |
+| 80–250ms | 181/389 | 46.53% |
+
+Not monotonic. Do not propose an arbitrary attack-window threshold
+without conditioning on corpus, composition and true K.
+
+### Source/corpus and pitch-register disparities
+
+- GuitarSet 582/1580 FNs = 36.84%; URMP 256/499 = **51.30%**.
+- Low E2–D#3: 193/358 = **53.91%** missed.
+- Middle E3–D#4: 373/1020 = 36.57%.
+- High E4–D#5: 225/638 = 35.27%.
+- Very high E5+: 47/63 = **74.60%**.
+- The pinned DEV has only **3 GuitarSet and 5 URMP independent
+  compositions** represented across 17 source recordings, so 2079
+  note instances are NOT 2079 independent pieces.
+
+### Anatomy of missed notes and corrected feature ABI
+
+- **702/838** missed attacks never showed onset head>=.60 within
+  the posthoc +/-80ms diagnostic window.
+- 103/838 passed onset alone but not SAME-FRAME sustain>=.50.
+- 33/838 had both head thresholds in a frame but still failed
+  matching/selector timing or state.
+- Original first causal decision frame onset p<.15:
+  669/1182 (56.60%) missed; p>=.80: 0/94 missed.
+  This high correlation is unsurprising because S613 selector itself
+  thresholds that SAME score; it does not explain acoustic causation.
+
+**Matched false-negative vs successfully detected cases**:
+712 of 838 missed notes could be paired 1:1 to a detected note,
+at progressively looser matching levels. 314/712 were same
+SOURCE + exact PITCH + active K; 126 misses had no matched control.
+Pooled median FN-minus-TP original head onset = **−0.1264**.
+But matched median fundamental feature H1 = **−0.0112** and
+harmonic2/fundamental ratio = **−0.0107** (feature transformed
+log domain); their small signs and mix should not be interpreted
+as identifying a unique harmonic or volume mechanism.
+Posthoc FN-vs-TP head difference can be downstream of the
+exact selector gate: it is not a learned causal factor.
+
+### False NoteOns (priority of descriptive contexts, not physical causes)
+
+Of original 734 FP:
+- 198 same pitch as an already active labeled note.
+- 180 at interval 12/19/24 from active labeled pitches.
+- 149 at interval 1–2 from active labeled pitches.
+- 93 at other intervals while a labeled note active.
+- 81 had a SAME pitch annotated onset nearby (within 250ms
+  but outside matching tolerance) and are potential timing issues.
+- 33 with no active annotation.
+
+These differ from S626's **230** harmonic-*interval* FP because
+S627 gives priority to possible timing mismatch (81 cases)
+before intervals. Neither is a physical harmonic-source diagnosis.
+Keep definitions explicit rather than treating changes in
+categorization as a correction/improvement of NOTE.
+
+### Verdict, evidence standard
+
+S627 provides strong evidence that misses vary with **context and
+crowding**, and that head onset misses account for the majority of
+observed false negatives. It does **NOT** prove that the acoustic
+partial itself is the cause, that close pitches require more training
+examples, or that a new fusion gate would work independently.
+
+Next: multi-factor contingency analysis (K×corpus×pitch×interval),
+audio/spectrum case-control review on original stems, and
+composition-disjoint perturbation/augmentation *only if validated*.
