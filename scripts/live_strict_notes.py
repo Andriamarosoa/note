@@ -53,6 +53,55 @@ def capture_deadline_exceeded(captured, now, block_size, blocks):
     return blocks > 0 and now - captured > blocks * block_size / SR
 
 
+def parse_block_size(value):
+    """0 requests PortAudio host-chosen size; positive values have no CLI cap."""
+    try:
+        size = int(value)
+    except (TypeError, ValueError) as exc:
+        raise argparse.ArgumentTypeError("block size must be an integer") from exc
+    if size < 0:
+        raise argparse.ArgumentTypeError("block size must be >= 0 (0 = PortAudio auto)")
+    return size
+
+
+def parse_queue_blocks(value):
+    if str(value).casefold() == "auto":
+        return "auto"
+    try:
+        blocks = int(value)
+    except (TypeError, ValueError) as exc:
+        raise argparse.ArgumentTypeError("queue-blocks must be auto or a positive integer") from exc
+    if blocks < 1:
+        raise argparse.ArgumentTypeError("queue-blocks must be >= 1")
+    return blocks
+
+
+def resolve_queue_blocks(option, block_size, *, sample_rate=SR, target_ms=75.0):
+    """Bound queue occupancy by roughly target_ms of captured PCM.
+
+    This is a capacity, NOT a mandatory delay or adaptive hidden FIFO.
+    0 is PortAudio's variable callback size; 256 samples is the nominal
+    queue planning size until actual device frames are known.
+    """
+    if option != "auto":
+        return int(option)
+    nominal = block_size if block_size > 0 else HOP
+    return max(2, int(np.ceil((target_ms / 1000.) * sample_rate / nominal)))
+
+
+def apply_model_input(leveler, audio):
+    """Keep optional gain's hop bound even with variable PortAudio frames."""
+    if leveler is None:
+        return audio
+    hop = leveler.leveler.hop_samples
+    if len(audio) <= hop:
+        return leveler.apply(audio)
+    return np.concatenate([
+        leveler.apply(audio[offset:offset + hop])
+        for offset in range(0, len(audio), hop)
+    ])
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
     parser.add_argument("--model", type=Path, default=DEFAULT_MODEL)
@@ -82,11 +131,12 @@ def main(argv=None):
     parser.add_argument("--auto-level-rms-gate-dbfs", type=float, default=-65.0, help="Raw RMS activity gate in dBFS (default -65)")
     parser.add_argument("--midi-port", help="Exact mido output port name; omit for JSONL events")
     parser.add_argument("--out", type=Path, help="JSONL output; defaults to stdout")
-    parser.add_argument("--block-size", type=int, default=HOP, choices=(128, 256, 512, 1024))
+    parser.add_argument("--block-size", type=parse_block_size, default=HOP,
+                        help="PortAudio callback samples: any positive integer; 0 = driver auto. Large blocks add output latency.")
     parser.add_argument("--capture-deadline-blocks", type=int, default=0,
                         help="0 = no artificial microphone worker deadline (default)")
-    parser.add_argument("--queue-blocks", type=int, default=32,
-                        help="Maximum buffered microphone blocks before overflow")
+    parser.add_argument("--queue-blocks", type=parse_queue_blocks, default="auto",
+                        help="Input queue capacity: auto (default, about 75ms of PCM), or explicit positive block count")
     args = parser.parse_args(argv)
     if args.piano_output_device is not None and args.soundfont is None:
         parser.error("--piano-output-device requires --soundfont")
@@ -118,8 +168,13 @@ def main(argv=None):
         parser.error("--harmonic-threshold must be inside (0,1)")
     if args.capture_deadline_blocks < 0:
         parser.error("--capture-deadline-blocks must be >= 0")
-    if args.queue_blocks < 1:
-        parser.error("--queue-blocks must be >= 1")
+    queue_capacity = resolve_queue_blocks(args.queue_blocks, args.block_size)
+    if args.block_size and args.block_size > HOP:
+        print(json.dumps(dict(
+            warning="A large callback block increases LIVE event-delivery latency",
+            block_size=args.block_size, block_ms=round(args.block_size * 1000 / SR, 3),
+            note="Model decision hop remains 256 samples; callback delivery is grouped",
+        )), file=sys.stderr)
     if args.list_devices:
         for direction, title in (("input", "Microphone INPUT"), ("output", "Piano/audio OUTPUT")):
             print(f"{title} (index | name | host API | native Hz | reported low-latency ms):")
@@ -169,7 +224,7 @@ def main(argv=None):
                 note="Experimental harmonic expert: existing NOTE model and frontend are unchanged",
             )), file=sys.stderr)
         leveler = (NoteAutoLevel(
-            sample_rate=SR, block_size=args.block_size,
+            sample_rate=SR, block_size=(args.block_size or HOP),
             max_gain_db=args.auto_level_max_db,
             peak_gate_dbfs=args.auto_level_peak_gate_dbfs,
             rms_gate_dbfs=args.auto_level_rms_gate_dbfs,
@@ -207,7 +262,7 @@ def main(argv=None):
         try:
             if args.mic:
                 import sounddevice as sd
-                inbox = queue.Queue(maxsize=args.queue_blocks)
+                inbox = queue.Queue(maxsize=queue_capacity)
                 overrun = threading.Event()
                 overrun_reason = [None]
                 capture_start = [0]
@@ -253,9 +308,9 @@ def main(argv=None):
                                     pass
                     except queue.Full:
                         overrun_reason[0] = (
-                            f"input_queue_full(maxsize={args.queue_blocks}, "
+                            f"input_queue_full(maxsize={queue_capacity}, "
                             f"block_size={args.block_size}, "
-                            f"queue_audio_ms={args.queue_blocks * args.block_size * 1000 / SR:.1f})"
+                            f"queue_nominal_audio_ms={queue_capacity * max(args.block_size, HOP) * 1000 / SR:.1f})"
                         )
                         overrun.set()
                         raise sd.CallbackAbort
@@ -291,7 +346,11 @@ def main(argv=None):
                          capture_latency_ms=capture_info.latency_ms,
                          block_ms=args.block_size / SR * 1000,
                          capture_deadline_blocks=args.capture_deadline_blocks,
-                         queue_blocks=args.queue_blocks)), file=sys.stderr)
+                         queue_blocks=queue_capacity,
+                         queue_setting=args.queue_blocks,
+                         queue_nominal_capacity_ms=round(
+                             queue_capacity * (args.block_size or HOP) * 1000 / SR, 2
+                         ))), file=sys.stderr)
                 while True:
                     if piano is not None:
                         piano_error = piano.health_error()
@@ -305,22 +364,23 @@ def main(argv=None):
                         if not capture.active:
                             raise BufferError("Microphone stopped unexpectedly")
                         continue
-                    if capture_deadline_exceeded(captured, time.monotonic(), args.block_size,
+                    if capture_deadline_exceeded(captured, time.monotonic(), len(audio),
                                                  args.capture_deadline_blocks):
                         raise BufferError("Optional capture deadline exceeded before inference")
-                    model_audio = leveler.apply(audio) if leveler is not None else audio
+                    model_audio = apply_model_input(leveler, audio)
                     events = stream.push(model_audio, start_sample=start)
                     if overrun.is_set():
                         raise BufferError(f"Microphone input overflow: {overrun_reason[0]}; notes released")
-                    if capture_deadline_exceeded(captured, time.monotonic(), args.block_size,
+                    if capture_deadline_exceeded(captured, time.monotonic(), len(audio),
                                                  args.capture_deadline_blocks):
                         raise BufferError("Optional capture deadline exceeded after inference")
                     emit(events)
             else:
-                blocks = blocks_wav(args.wav, args.block_size) if args.wav else blocks_stdin(sys.stdin.buffer, args.block_size)
+                file_block = args.block_size or HOP
+                blocks = blocks_wav(args.wav, file_block) if args.wav else blocks_stdin(sys.stdin.buffer, file_block)
                 start = 0
                 for audio in blocks:
-                    model_audio = leveler.apply(audio) if leveler is not None else audio
+                    model_audio = apply_model_input(leveler, audio)
                     emit(stream.push(model_audio, start_sample=start))
                     start += len(audio)
         except KeyboardInterrupt:
