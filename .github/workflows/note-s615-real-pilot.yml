@@ -27,7 +27,7 @@ jobs:
       - name: Download and verify pinned real GuitarSet train/dev WAVs and annotations
         run: |
           python -m scripts.s615_seed_guitarset_pilot --root data/S615_real_pilot --train-sources 6 --dev-sources 3
-      - name: Build three causal hops from same guitar recordings
+      - name: Build real 126-feature causal tensors at three independent hops
         run: |
           python -m scripts.s615_prepare_multihop --root data/S615_real_pilot --hops 128 256 512 --pilot-train-sources 6 --pilot-dev-sources 3
       - name: Train real S615 hop128, hop256, hop512, and shared candidates (pilot)
