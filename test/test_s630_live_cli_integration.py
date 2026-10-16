@@ -93,7 +93,8 @@ class S630RealCliSmokeTests(unittest.TestCase):
             "Peripherique audio ambigu ou absent" in x.stderr
             or "ModuleNotFoundError" in x.stderr
             or "Error querying device" in x.stderr
-            or "No module named 'sounddevice'" in x.stderr,
+            or "No module named 'sounddevice'" in x.stderr
+            or "PortAudio library not found" in x.stderr,
             x.stderr,
         )
 
