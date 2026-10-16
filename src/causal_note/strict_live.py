@@ -111,9 +111,13 @@ class CausalPitchFeatures:
         return result
 
 
-def feature_track(audio, block_size=256):
-    """Training/audit cache made by the SAME stateful PCM frontend as Live."""
-    stream = CausalPitchFeatures()
+def feature_track(audio, block_size=256, *, hop=HOP):
+    """Training/audit cache made by the SAME stateful PCM frontend as Live.
+
+    The original 256-sample default is byte-for-byte compatible. S615
+    experiments use a separate root/cache and pass the desired native hop.
+    """
+    stream = CausalPitchFeatures(hop=hop)
     frames, ends = [], []
     for start in range(0, len(audio), block_size):
         for end, row in stream.push(audio[start:start + block_size], start_sample=start):
