@@ -1,0 +1,28 @@
+name: NOTE LIVE harmonic expert (experimental)
+on:
+  push:
+    branches:
+      - codex/note-live-harmonic-shadow-expert
+  workflow_dispatch:
+
+jobs:
+  harmonic-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install minimal dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "numpy>=1.26,<2.0" "threadpoolctl>=3.0"
+      - name: Validate specialist code compiles
+        run: |
+          python -m compileall -q src/causal_note/harmonic_expert.py scripts/build_live_harmonic_pairs.py scripts/train_live_harmonic_expert.py scripts/benchmark_live_harmonic_expert.py scripts/live_strict_notes.py
+      - name: Run harmonic expert safety tests
+        env:
+          PYTHONPATH: ".:src"
+        run: |
+          python -m unittest -v test.test_live_harmonic_expert
