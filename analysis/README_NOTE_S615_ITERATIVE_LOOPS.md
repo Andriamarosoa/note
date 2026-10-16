@@ -8,8 +8,7 @@ Run: https://github.com/Andriamarosoa/note/actions/runs/38863904669 — **SUCCES
 - 53 train and 17 dev composition-separated recordings, original pinned
   sources/annotations, 0 test labels used.
 - 24 count and 28 pitch epochs on all available NOTE 256-hop data.
-- Frozen S613 native hybrid vs new S615 neural-only on IDENTICAL 17 dev
-  files: F1 NoteOn ±80ms **56.3923% vs 47.5483%**, regression **−8.8440 pp**.
+- Original S615 comparator mistakenly evaluated frozen S613 in **neural-only** mode: **56.3923%** vs 47.5483%. This is NOT the real full S613 hybrid baseline. Corrected native checkpoint dispatch in later full hybrid audit reports **61.2235%** for original S613 vs **47.5483%** S615 neural: regression **−13.6752 pp**.
 - Original S613 model on 17 dev had grouped attack Exact-K
   K1 **446/834**, K2 **75/255**, K3 **52/183**, K4 **5/44**.
 - Trained S615 hop256 had K1 **389/834**, K2 **44/255**,
