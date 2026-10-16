@@ -326,10 +326,23 @@ class CausalSelection:
 class StrictLiveStream:
     """Complete PCM -> native count/pitch/onset/off heads -> note events."""
 
-    def __init__(self, heads, selection=None):
+    def __init__(self, heads, selection=None, *, harmonic_mode="off",
+                 harmonic_checkpoint=None, harmonic_threshold=0.10):
         self.heads = heads
         self.frontend = CausalPitchFeatures()
         self.selector = CausalSelection(selection or Selection(**heads.metadata["selection"]))
+        self.harmonic_selector = None
+        if harmonic_mode not in ("off", "shadow", "guard"):
+            raise ValueError("Unknown harmonic experiment mode")
+        if harmonic_mode == "off" and harmonic_checkpoint is not None:
+            raise ValueError("Harmonic checkpoint provided but experiment is disabled")
+        if harmonic_mode != "off":
+            # Imported lazily: the default S613 path is untouched.
+            from causal_note.harmonic_expert import HarmonicSpecialistSelector
+            self.harmonic_selector = HarmonicSpecialistSelector(
+                self.selector, mode=harmonic_mode, checkpoint=harmonic_checkpoint,
+                genuine_threshold=harmonic_threshold,
+            )
         self.closed = False
         self.timings_ms = deque(maxlen=4096)
 
@@ -341,7 +354,12 @@ class StrictLiveStream:
         events = []
         for end, features in frames:
             p, k = self.heads.predict(features)
-            events.extend(self.selector.step(p, k, end, self.frontend.received))
+            if self.harmonic_selector is None:
+                events.extend(self.selector.step(p, k, end, self.frontend.received))
+            else:
+                events.extend(self.harmonic_selector.step(
+                    features, p, k, end, self.frontend.received,
+                ))
         self.timings_ms.append((time.perf_counter() - before) * 1000)
         return events
 
