@@ -30,7 +30,7 @@ jobs:
       - name: Build real 126-feature causal tensors at three independent hops
         run: |
           python -m scripts.s615_prepare_multihop --root data/S615_real_pilot --hops 128 256 512 --pilot-train-sources 6 --pilot-dev-sources 3
-      - name: Train real S615 hop128, hop256, hop512, and shared candidates (pilot)
+      - name: Train real S615 candidates preserving every genuine onset/release sample
         run: |
           for mode in hop128 hop256 hop512 shared; do
             python -m scripts.s615_train_multihop --root data/S615_real_pilot \
