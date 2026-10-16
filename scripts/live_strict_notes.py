@@ -209,6 +209,7 @@ def main(argv=None):
                 import sounddevice as sd
                 inbox = queue.Queue(maxsize=args.queue_blocks)
                 overrun = threading.Event()
+                overrun_reason = [None]
                 capture_start = [0]
                 # A separate bounded monitor queue cannot delay the recognition path.
                 monitor_queue = queue.Queue(maxsize=4) if args.monitor_input else None
@@ -227,8 +228,11 @@ def main(argv=None):
                         outdata.fill(0.0)
                         monitor_underruns[0] += 1
                 def callback(indata, frames, timing, status):
-                    if status or overrun.is_set():
+                    if status:
+                        overrun_reason[0] = f"portaudio_callback_status={status}"
                         overrun.set()
+                        raise sd.CallbackAbort
+                    if overrun.is_set():
                         raise sd.CallbackAbort
                     try:
                         chunk = indata[:, 0].copy()
@@ -248,6 +252,11 @@ def main(argv=None):
                                 except queue.Full:
                                     pass
                     except queue.Full:
+                        overrun_reason[0] = (
+                            f"input_queue_full(maxsize={args.queue_blocks}, "
+                            f"block_size={args.block_size}, "
+                            f"queue_audio_ms={args.queue_blocks * args.block_size * 1000 / SR:.1f})"
+                        )
                         overrun.set()
                         raise sd.CallbackAbort
                 capture, capture_info = stack.enter_context(managed_input_stream(
@@ -289,7 +298,7 @@ def main(argv=None):
                         if piano_error is not None:
                             raise RuntimeError(piano_error)
                     if overrun.is_set():
-                        raise BufferError("Input overrun: stream stopped and notes released")
+                        raise BufferError(f"Input overrun: {overrun_reason[0]}; stream stopped and notes released")
                     try:
                         start, audio, captured = inbox.get(timeout=.1)
                     except queue.Empty:
@@ -302,7 +311,7 @@ def main(argv=None):
                     model_audio = leveler.apply(audio) if leveler is not None else audio
                     events = stream.push(model_audio, start_sample=start)
                     if overrun.is_set():
-                        raise BufferError("Microphone input overflow; notes released")
+                        raise BufferError(f"Microphone input overflow: {overrun_reason[0]}; notes released")
                     if capture_deadline_exceeded(captured, time.monotonic(), args.block_size,
                                                  args.capture_deadline_blocks):
                         raise BufferError("Optional capture deadline exceeded after inference")
