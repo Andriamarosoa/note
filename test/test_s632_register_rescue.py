@@ -13,7 +13,7 @@ from causal_note.register_rescue import (
 class RegisterRescueTests(unittest.TestCase):
     def setUp(self):
         self.state = CausalSelection(Selection(onset=.6,active_on=.5))
-        self.x = np.zeros((49,110),dtype=np.float32)
+        self.x = np.zeros((49,126),dtype=np.float32)
         self.p = np.zeros((49,3),dtype=np.float32)
         self.p[:,1]=.7
         self.policy=RescuePolicy(BASS_MODERATE,HIGH_MODERATE)
