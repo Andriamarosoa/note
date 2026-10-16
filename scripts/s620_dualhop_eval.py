@@ -38,12 +38,12 @@ GATES=tuple(
 )
 
 
-def prepared_predictions(root, heads, spec):
+def prepared_predictions(root, heads, spec, fast_heads=None):
     end128, x128, _, _, notes, frames=source_data(root,spec,128)
     end256, x256, _, _, _, same_frames=source_data(root,spec,256)
     if frames!=same_frames:
         raise ValueError("Causal 128/256 sources differ")
-    fast, kfast=heads.predict(x128)
+    fast, kfast=(fast_heads if fast_heads is not None else heads).predict(x128)
     slow, kslow=heads.predict(x256)
     features={
         "lag":np.maximum(x128[:,:,60:63],0).max(axis=2),
@@ -112,7 +112,7 @@ def replay(prepared, heads, cfg=None):
                            merger.suppressed_duplicates if merger else 0))
 
 
-def evaluate(root, output, *, checkpoint):
+def evaluate(root, output, *, checkpoint, fast_checkpoint=None):
     if output.exists():
         raise FileExistsError(output)
     protocol=json.loads((root/"protocol.json").read_text())
@@ -122,9 +122,14 @@ def evaluate(root, output, *, checkpoint):
     heads=load_heads(checkpoint)
     if heads.metadata["architecture"]!="native_causal_hybrid":
         raise ValueError("Require true frozen neural+ONNX S613")
+    fast_heads=None
+    if fast_checkpoint is not None:
+        fast_heads=load_heads(fast_checkpoint)
+        if 128 not in fast_heads.metadata.get("trained_hops",()):
+            raise ValueError("Fast candidate checkpoint must declare trained_hops including 128")
     cached=[]
     for i,s in enumerate(sources,1):
-        row=prepared_predictions(root,heads,s)
+        row=prepared_predictions(root,heads,s,fast_heads=fast_heads)
         old,metadata=replay(row,heads)
         scores,matches=event_score(old,row["truth"],.08)
         row["reference"]=old
@@ -179,7 +184,8 @@ def evaluate(root, output, *, checkpoint):
         status="DEV_ONLY_S620_DUAL_HOP_NO_PROMOTION",
         model=str(checkpoint),reference_hop=256,fast_hop=128,
         no_extra_lookahead=True,dev_source_count=17,
-        fast_checkpoint_trained_at_hop128=False,
+        fast_checkpoint_trained_at_hop128=fast_heads is not None,
+        fast_checkpoint=str(fast_checkpoint) if fast_heads is not None else None,
         source_audio_only_up_to_decision=True,
         reference=reference,reference_onset_k=reference_k,
         candidates=tested,best_f1=best_f1,best_recall=best_recall,
@@ -206,8 +212,11 @@ def main():
     parser.add_argument("--model",type=Path,
                         default=Path("model/live/strict_note/NOTE_strict_live.npz"))
     parser.add_argument("--out",type=Path,required=True)
+    parser.add_argument("--fast-model",type=Path,
+                        help="Separate 128-hop trained NOTE candidate checkpoint")
     args=parser.parse_args()
-    evaluate(args.root,args.out,checkpoint=args.model)
+    evaluate(args.root,args.out,checkpoint=args.model,
+             fast_checkpoint=args.fast_model)
 
 
 if __name__=="__main__":
