@@ -120,6 +120,15 @@ def main(argv=None):
     parser.add_argument("--monitor-input", action="store_true", help="Listen to raw microphone audio (headphones recommended); independent of note detection")
     parser.add_argument("--output-device", help="sounddevice output device name/index for monitoring; select a WASAPI endpoint via --list-devices")
     parser.add_argument("--monitor-gain", type=float, default=0.5, help="Raw input monitoring gain, 0.0..1.0 (default 0.5)")
+    parser.add_argument("--dual-hop-mode", choices=("off", "shadow", "guard"), default="off",
+                        help="EXPERIMENTAL: 128+256 note heads, shadow leaves original MIDI unchanged; guard fuses fast acoustic novelty notes")
+    parser.add_argument("--dual-hop-fast-onset", type=float, default=.50,
+                        help="S620 fast 128-hop onset candidate minimum (default .50)")
+    parser.add_argument("--dual-hop-novelty-ratio", type=float, default=.55,
+                        help="S620 independent spectral novelty ratio (default .55)")
+    parser.add_argument("--dual-hop-novelty-min", type=float, default=.04,
+                        help="S620 absolute new spectral evidence minimum (default .04)")
+    parser.add_argument("--dual-hop-novelty-mode", choices=("lag","recent"), default="lag")
     parser.add_argument("--harmonic-mode", choices=("off", "shadow", "guard"), default="off",
                         help="Experimental native harmonic expert: off (default), shadow (no changed events), guard (requires trained checkpoint)")
     parser.add_argument("--harmonic-checkpoint", type=Path,
@@ -176,6 +185,15 @@ def main(argv=None):
                                      else 256)
     except ValueError as exc:
         parser.error(str(exc))
+    if args.dual_hop_mode != "off":
+        if args.harmonic_mode != "off" or args.harmonic_checkpoint is not None:
+            parser.error("Dual-hop prototype and harmonic specialist cannot be combined yet")
+        if hop_request != 256:
+            parser.error("Dual-hop requires --hop-size 256 for its validated reference")
+        if (not 0 < args.dual_hop_fast_onset < 1 or
+                not 0 <= args.dual_hop_novelty_ratio <= 1 or
+                args.dual_hop_novelty_min < 0):
+            parser.error("Invalid S620 dual-hop fast-onset/novelty thresholds")
     queue_capacity = resolve_queue_blocks(args.queue_blocks, args.block_size)
     if args.block_size and args.block_size > HOP:
         print(json.dumps(dict(
@@ -225,11 +243,30 @@ def main(argv=None):
             harmonic_threshold=args.harmonic_threshold,
         )
         print(json.dumps(dict(hop_selection=hop_audit)), file=sys.stderr)
-        stream = StrictLiveStream(
-            heads, hop=selected_hop, harmonic_mode=args.harmonic_mode,
-            harmonic_checkpoint=args.harmonic_checkpoint,
-            harmonic_threshold=args.harmonic_threshold,
-        )
+        if args.dual_hop_mode != "off":
+            from causal_note.dual_hop import DualHopConfig, DualHopLiveStream
+            dual_config = DualHopConfig(
+                mode=args.dual_hop_mode,
+                fast_onset=args.dual_hop_fast_onset,
+                novelty_min=args.dual_hop_novelty_min,
+                novelty_ratio=args.dual_hop_novelty_ratio,
+                novelty_mode=args.dual_hop_novelty_mode,
+            )
+            stream = DualHopLiveStream(heads, config=dual_config)
+            print(json.dumps(dict(
+                s620_dual_hop=dual_config.mode,
+                reference_hop=256, fast_hop=128,
+                reference_model_trained_at_fast_hop=False,
+                warning=("RESEARCH ONLY: 128 path reuses frozen 256-trained "
+                         "weights; extra CPU and wrong fast pitches possible. "
+                         "Only shadow preserves original MIDI exactly."),
+            )), file=sys.stderr)
+        else:
+            stream = StrictLiveStream(
+                heads, hop=selected_hop, harmonic_mode=args.harmonic_mode,
+                harmonic_checkpoint=args.harmonic_checkpoint,
+                harmonic_threshold=args.harmonic_threshold,
+            )
         if args.harmonic_mode != "off":
             print(json.dumps(dict(
                 harmonic_mode=args.harmonic_mode,
@@ -410,6 +447,9 @@ def main(argv=None):
             finally:
                 if leveler is not None:
                     print(json.dumps(dict(auto_level_diagnostics=leveler.diagnostics())),
+                          file=sys.stderr)
+                if hasattr(stream, "diagnostics"):
+                    print(json.dumps(dict(dual_hop_diagnostics=stream.diagnostics())),
                           file=sys.stderr)
                 if stream.harmonic_selector is not None:
                     from dataclasses import asdict
