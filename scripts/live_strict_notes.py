@@ -18,6 +18,7 @@ import wave
 import numpy as np
 from threadpoolctl import threadpool_limits
 from causal_note.strict_live import HOP, SR, load_heads, StrictLiveStream
+from scripts.live_audio_io import audio_devices, managed_input_stream, open_output_stream, parse_device
 
 DEFAULT_MODEL = Path(__file__).resolve().parents[1] / "model/live/strict_note/NOTE_strict_live.npz"
 
@@ -61,9 +62,9 @@ def main(argv=None):
     source.add_argument("--wav", type=Path)
     source.add_argument("--stdin", action="store_true", help="Raw mono s16le PCM, 44100 Hz")
     source.add_argument("--mic", action="store_true")
-    parser.add_argument("--device", help="sounddevice input device name/index")
+    parser.add_argument("--device", help="Microphone name/index; auto WASAPI/system if omitted")
     parser.add_argument("--soundfont", type=Path, help="GM-compatible SF2 piano SoundFont: hear detected notes as acoustic piano")
-    parser.add_argument("--piano-output-device", help="Output device name/index, e.g. WASAPI endpoint from --list-devices")
+    parser.add_argument("--piano-output-device", help="Piano audio output name/index; automatically selects low-latency WDM-KS/WASAPI if omitted")
     parser.add_argument("--piano-gain", type=float, default=0.35, help="FluidSynth piano gain, default 0.35")
     parser.add_argument("--monitor-input", action="store_true", help="Listen to raw microphone audio (headphones recommended); independent of note detection")
     parser.add_argument("--output-device", help="sounddevice output device name/index for monitoring; select a WASAPI endpoint via --list-devices")
@@ -95,8 +96,14 @@ def main(argv=None):
     if args.queue_blocks < 1:
         parser.error("--queue-blocks must be >= 1")
     if args.list_devices:
-        import sounddevice as sd
-        print(sd.query_devices())
+        for direction, title in (("input", "Microphone INPUT"), ("output", "Piano/audio OUTPUT")):
+            print(f"{title} (index | name | host API | native Hz | reported low-latency ms):")
+            for entry in audio_devices(direction):
+                marker = " [system default]" if entry["default"] else ""
+                print(f'  {entry["index"]} | {entry["name"]} | {entry["host_api"]} | '
+                      f'{entry["native_sample_rate"]} Hz | '
+                      f'{entry["low_latency_ms"]:.2f} ms{marker}')
+        print("Auto selection probes live streams and chooses lowest *healthy negotiated* latency at launch.")
         return
     if args.list_midi_ports:
         import mido
@@ -195,20 +202,36 @@ def main(argv=None):
                     except queue.Full:
                         overrun.set()
                         raise sd.CallbackAbort
-                device = int(args.device) if args.device and args.device.isdigit() else args.device
-                capture = stack.enter_context(sd.InputStream(samplerate=SR, blocksize=args.block_size,
-                         channels=1, dtype="float32", device=device, latency="low", callback=callback))
+                capture, capture_info = stack.enter_context(managed_input_stream(
+                    preferred_device=parse_device(args.device),
+                    samplerate=SR,
+                    blocksize=args.block_size,
+                    channels=1,
+                    dtype="float32",
+                    latency="low",
+                    callback=callback,
+                ))
                 if args.monitor_input:
-                    selected_output = (int(args.output_device) if args.output_device and args.output_device.isdigit() else args.output_device)
-                    playback = stack.enter_context(sd.OutputStream(
-                        samplerate=SR, blocksize=args.block_size, channels=1,
-                        dtype="float32", device=selected_output, latency="low",
-                        callback=monitor_callback))
+                    playback, playback_info = open_output_stream(
+                        preferred_device=parse_device(args.output_device),
+                        samplerate=SR,
+                        blocksize=args.block_size,
+                        channels=1,
+                        dtype="float32",
+                        latency="low",
+                        callback=monitor_callback,
+                    )
+                    stack.callback(playback.close)
                     print(json.dumps(dict(monitoring="raw_microphone",
-                        output_device=selected_output, output_latency_ms=playback.latency * 1000,
+                        output_device=playback_info.device_index,
+                        output_host_api=playback_info.host_api,
+                        output_latency_ms=playback_info.latency_ms,
                         warning="Use headphones to avoid feedback; this is not MIDI synthesis")),
                         file=sys.stderr)
-                print(json.dumps(dict(capture_latency_ms=capture.latency * 1000,
+                print(json.dumps(dict(input_device=capture_info.device_name,
+                         input_host_api=capture_info.host_api,
+                         input_device_index=capture_info.device_index,
+                         capture_latency_ms=capture_info.latency_ms,
                          block_ms=args.block_size / SR * 1000,
                          capture_deadline_blocks=args.capture_deadline_blocks,
                          queue_blocks=args.queue_blocks)), file=sys.stderr)
