@@ -2,6 +2,9 @@
 from __future__ import annotations
 
 from pathlib import Path
+from types import SimpleNamespace
+import sys
+from unittest.mock import patch
 import tempfile
 import unittest
 
@@ -62,6 +65,56 @@ class LiveOfflineAuditTests(unittest.TestCase):
         self.assertEqual(counts["note_off"], 1)
         self.assertAlmostEqual(counts["notes"][0]["duration_ms"], 5 * 256 / 44.1, places=2)
         self.assertEqual(counts["pairing_problems"], [])
+
+    def test_piano_callback_exposes_collapsed_midi_note_and_output_status(self):
+        from scripts.live_piano_output import PianoOutput
+
+        class Synth:
+            def __init__(self, *args, **kwargs):
+                self.playing = False
+            def sfload(self, *args):
+                return 1
+            def program_select(self, *args):
+                pass
+            def noteon(self, *args):
+                self.playing = True
+            def noteoff(self, *args):
+                self.playing = False
+            def get_samples(self, frames):
+                return np.full(frames * 2, 5000 if self.playing else 0, np.int16)
+            def delete(self):
+                pass
+
+        class Stream:
+            active = True
+            def stop(self):
+                self.active = False
+            def close(self):
+                self.active = False
+
+        callbacks = []
+        def output_stream(**kwargs):
+            callbacks.append(kwargs["callback"])
+            return Stream(), SimpleNamespace(
+                host_api="TEST", device_name="TEST_OUTPUT",
+                device_index=0, latency_ms=4.0)
+
+        with patch.dict(sys.modules, {"fluidsynth": SimpleNamespace(Synth=Synth)}):
+            with patch("scripts.live_piano_output.open_output_stream",
+                       side_effect=output_stream):
+                piano = PianoOutput("irrelevant-in-mock.sf2")
+                try:
+                    piano.send({"type": "note_on", "pitch": 52, "velocity": 96})
+                    piano.send({"type": "note_off", "pitch": 52})
+                    arr = np.empty((128, 2), np.float32)
+                    callbacks[0](arr, 128, None, "output_underflow")
+                    self.assertTrue(np.all(arr == 0))
+                    status = piano.diagnostics()
+                    self.assertEqual(status["output_status_count"], 1)
+                    self.assertEqual(status["same_callback_on_off_pairs"], 1)
+                    self.assertEqual(status["max_control_events_in_callback"], 2)
+                finally:
+                    piano.close()
 
     def test_event_validation_and_marker_parser(self):
         with self.assertRaises(Exception):
