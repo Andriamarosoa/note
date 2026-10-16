@@ -26,6 +26,8 @@ class PianoOutput:
         self.active = set()
         self.closed = False
         self.errors = 0
+        self.consecutive_errors = 0
+        self.last_render_error = None
         self._lock = threading.Lock()
         self.synth = fluidsynth.Synth(samplerate=samplerate, gain=gain)
         self.stream = None
@@ -59,8 +61,11 @@ class PianoOutput:
                     else:
                         values = samples.astype(np.float32, copy=False)
                     outdata[:] = values.reshape(frames, 2)
-                except Exception:
+                    self.consecutive_errors = 0
+                except Exception as exc:
                     self.errors += 1
+                    self.consecutive_errors += 1
+                    self.last_render_error = repr(exc)
                     outdata.fill(0.0)
 
             self.stream, self.audio_info = open_output_stream(
@@ -97,6 +102,13 @@ class PianoOutput:
             elif kind == "note_off":
                 self.active.discard(pitch)
                 self.commands.put(("off", pitch, 0))
+
+    def health_error(self):
+        if self.consecutive_errors >= 3:
+            return f"FluidSynth failed to render piano audio: {self.last_render_error}"
+        if self.stream is not None and not self.closed and not bool(getattr(self.stream, "active", True)):
+            return "Piano audio output stream stopped unexpectedly"
+        return None
 
     def close(self):
         with self._lock:
