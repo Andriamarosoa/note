@@ -166,6 +166,11 @@ def main(argv=None):
                         help="PortAudio callback samples: any positive integer; 0 = driver auto. Large blocks add output latency.")
     parser.add_argument("--inference-batch-hops", type=int, default=1,
                         help="S630 EXPERIMENT: native 256-hop frozen head frames per vectorized ONNX call (1=original; try 4); batches add up to (N-1)*5.805ms decision wait.")
+    parser.add_argument("--register-rescue-mode", choices=("off","shadow","guard"), default="off",
+                        help="S633 experimental low/high native rescue: shadow reports candidates without changing MIDI; guard alters attacks")
+    parser.add_argument("--register-rescue-policy", choices=("high_moderate","bass_k50_high_moderate"),
+                        default="high_moderate",
+                        help="S632 DEV-selected preset, NOT independently held-out or microphone-validated")
     parser.add_argument("--capture-deadline-blocks", type=int, default=0,
                         help="0 = no artificial microphone worker deadline (default)")
     parser.add_argument("--queue-blocks", type=parse_queue_blocks, default="auto",
@@ -210,6 +215,11 @@ def main(argv=None):
                                      else 256)
     except ValueError as exc:
         parser.error(str(exc))
+    if args.register_rescue_mode != "off":
+        if hop_request != 256 or args.harmonic_mode != "off" or args.dual_hop_mode != "off":
+            parser.error("S633 native register rescue requires hop256 without harmonic/dual-hop sidecars")
+        if args.lookahead_ms > 0 and (args.register_rescue_mode == "guard" or args.inference_batch_hops == 1):
+            parser.error("S633 rescue guard requires lookahead-ms 0; shadow+lookahead needs batch>1")
     if args.inference_batch_hops > 1 and hop_request != 256:
         parser.error("--inference-batch-hops >1 requires --hop-size 256")
     if args.inference_batch_hops > 1 and (args.dual_hop_mode!="off" or args.harmonic_mode!="off"
@@ -286,6 +296,20 @@ def main(argv=None):
             harmonic_threshold=args.harmonic_threshold,
         )
         print(json.dumps(dict(hop_selection=hop_audit)), file=sys.stderr)
+        register_policy = None
+        if args.register_rescue_mode != "off":
+            from causal_note.register_rescue import LIVE_PRESETS
+            register_policy = LIVE_PRESETS[args.register_rescue_policy]
+            print(json.dumps(dict(s633_register_rescue=dict(
+                mode=args.register_rescue_mode,
+                policy=args.register_rescue_policy,
+                original_K_and_weights_unchanged=True,
+                high_register="E5+",
+                bass_register="E2..Dsharp4",
+                zero_future_audio=True,
+                dev_gain_not_hardware_validated=True,
+                warning="EXPERIMENTAL: guard may produce extra false notes or CPU queue overruns",
+            ))),file=sys.stderr)
         if args.inference_batch_hops > 1:
             from causal_note.batched_live import BatchedLiveStream
             from causal_note.lookahead import LookaheadConfig
@@ -293,7 +317,9 @@ def main(argv=None):
                                     mode=args.lookahead_mode)
                     if args.lookahead_ms>0 else None)
             stream=BatchedLiveStream(
-                heads,batch_hops=args.inference_batch_hops,lookahead=config)
+                heads,batch_hops=args.inference_batch_hops,lookahead=config,
+                register_rescue_mode=args.register_rescue_mode,
+                register_rescue_policy=register_policy)
             print(json.dumps(dict(
                 s630_batched_inference="EXPERIMENTAL",
                 batch_hops=args.inference_batch_hops,
@@ -360,6 +386,8 @@ def main(argv=None):
                 heads, hop=selected_hop, harmonic_mode=args.harmonic_mode,
                 harmonic_checkpoint=args.harmonic_checkpoint,
                 harmonic_threshold=args.harmonic_threshold,
+                register_rescue_mode=args.register_rescue_mode,
+                register_rescue_policy=register_policy,
             )
         if args.harmonic_mode != "off":
             print(json.dumps(dict(
@@ -576,6 +604,12 @@ def main(argv=None):
                            else "dual_hop_diagnostics")
                     print(json.dumps({field:stream.diagnostics()}),
                           file=sys.stderr)
+                if args.register_rescue_mode != "off" and hasattr(stream,"register_rescue_stats"):
+                    print(json.dumps(dict(s633_register_rescue_diagnostics=dict(
+                        mode=args.register_rescue_mode,
+                        policy=args.register_rescue_policy,
+                        counts=dict(stream.register_rescue_stats),
+                    ))),file=sys.stderr)
                 if args.lookahead_ms == 0 and hasattr(stream,"timings_ms") and stream.timings_ms:
                     elapsed=np.asarray(stream.timings_ms,np.float64)
                     total_samples=stream_received_samples(stream)
