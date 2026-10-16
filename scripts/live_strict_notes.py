@@ -46,6 +46,11 @@ def blocks_wav(path, block_size):
             yield np.frombuffer(raw, dtype="<i2").astype(np.float32) / 32768
 
 
+def capture_deadline_exceeded(captured, now, block_size, blocks):
+    """Optional input-worker wall-time guard (0 disables it)."""
+    return blocks > 0 and now - captured > blocks * block_size / SR
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
     parser.add_argument("--model", type=Path, default=DEFAULT_MODEL)
@@ -60,7 +65,15 @@ def main(argv=None):
     parser.add_argument("--midi-port", help="Exact mido output port name; omit for JSONL events")
     parser.add_argument("--out", type=Path, help="JSONL output; defaults to stdout")
     parser.add_argument("--block-size", type=int, default=HOP, choices=(128, 256, 512, 1024))
+    parser.add_argument("--capture-deadline-blocks", type=int, default=0,
+                        help="0 = no artificial microphone worker deadline (default)")
+    parser.add_argument("--queue-blocks", type=int, default=32,
+                        help="Maximum buffered microphone blocks before overflow")
     args = parser.parse_args(argv)
+    if args.capture_deadline_blocks < 0:
+        parser.error("--capture-deadline-blocks must be >= 0")
+    if args.queue_blocks < 1:
+        parser.error("--queue-blocks must be >= 1")
     if args.list_devices:
         import sounddevice as sd
         print(sd.query_devices())
@@ -111,7 +124,7 @@ def main(argv=None):
         try:
             if args.mic:
                 import sounddevice as sd
-                inbox = queue.Queue(maxsize=2)
+                inbox = queue.Queue(maxsize=args.queue_blocks)
                 overrun = threading.Event()
                 capture_start = [0]
                 def callback(indata, frames, timing, status):
@@ -127,7 +140,10 @@ def main(argv=None):
                 device = int(args.device) if args.device and args.device.isdigit() else args.device
                 capture = stack.enter_context(sd.InputStream(samplerate=SR, blocksize=args.block_size,
                          channels=1, dtype="float32", device=device, latency="low", callback=callback))
-                print(json.dumps(dict(capture_latency_ms=capture.latency * 1000, block_ms=args.block_size / SR * 1000)), file=sys.stderr)
+                print(json.dumps(dict(capture_latency_ms=capture.latency * 1000,
+                         block_ms=args.block_size / SR * 1000,
+                         capture_deadline_blocks=args.capture_deadline_blocks,
+                         queue_blocks=args.queue_blocks)), file=sys.stderr)
                 while True:
                     if overrun.is_set():
                         raise BufferError("Input overrun: stream stopped and notes released")
@@ -137,11 +153,15 @@ def main(argv=None):
                         if not capture.active:
                             raise BufferError("Microphone stopped unexpectedly")
                         continue
-                    if time.monotonic() - captured > 2 * args.block_size / SR:
-                        raise BufferError("Live worker exceeded its two-block queue budget")
+                    if capture_deadline_exceeded(captured, time.monotonic(), args.block_size,
+                                                 args.capture_deadline_blocks):
+                        raise BufferError("Optional capture deadline exceeded before inference")
                     events = stream.push(audio, start_sample=start)
-                    if overrun.is_set() or time.monotonic() - captured > 2 * args.block_size / SR:
-                        raise BufferError("Live decision missed its deadline; notes released")
+                    if overrun.is_set():
+                        raise BufferError("Microphone input overflow; notes released")
+                    if capture_deadline_exceeded(captured, time.monotonic(), args.block_size,
+                                                 args.capture_deadline_blocks):
+                        raise BufferError("Optional capture deadline exceeded after inference")
                     emit(events)
             else:
                 blocks = blocks_wav(args.wav, args.block_size) if args.wav else blocks_stdin(sys.stdin.buffer, args.block_size)
