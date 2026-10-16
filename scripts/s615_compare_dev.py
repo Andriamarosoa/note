@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import numpy as np
 
 from causal_note.strict_live import NativeLiveHeads, CausalSelection, Selection, SR
 from scripts.s613_train_strict_live import real_notes, event_score, summary
@@ -18,10 +19,15 @@ from scripts.s615_exactk_audit import exact_k_onset_audit, merge_k_reports
 def measure(root, heads, hop, specs):
     rows = []
     k_reports = []
+    # Causal K-head estimates the number of currently ACTIVE notes,
+    # not the number of newly attacked notes. Audit them separately.
+    active_count_confusion = np.zeros((7,7),dtype=np.int64)
     for spec in specs:
-        ends,x,_,_,notes,length=source_data(root,spec,hop)
+        ends,x,_,true_active_k,notes,length=source_data(root,spec,hop)
         truth=real_notes(notes,length/SR)
         p,k=heads.predict(x)
+        np.add.at(active_count_confusion,
+                  (true_active_k.astype(np.int64),k.argmax(axis=-1)),1)
         sel_kwargs=heads.metadata.get("selection_by_hop",{}).get(
             str(hop),heads.metadata["selection"])
         selector=CausalSelection(Selection(**sel_kwargs),hop=hop)
@@ -32,8 +38,20 @@ def measure(root, heads, hop, specs):
         sc,_=event_score(emitted,truth,.08)
         rows.append(dict(source=spec["name"],corpus=spec["corpus"],**sc))
         k_reports.append(exact_k_onset_audit(emitted,truth))
+    diag=active_count_confusion
+    diag_true=diag.sum(axis=1)
+    count_report=dict(
+        frames=int(diag.sum()), accuracy=float(np.trace(diag)/max(1,diag.sum())),
+        by_true_K={str(i): dict(frames=int(diag_true[i]),
+                               correctly_predicted=int(diag[i,i]),
+                               recall=float(diag[i,i]/max(1,diag_true[i])))
+                   for i in range(7)},
+        confusion_true_rows_predicted_columns=diag.tolist(),
+        definition="K-active frames (NOT grouped-onset Exact-K)",
+    )
     return dict(noteon_80ms=summary(rows),
                 onset_k=merge_k_reports(k_reports),
+                count_head_active_k=count_report,
                 by_corpus={corpus:summary([r for r in rows if r["corpus"]==corpus])
                            for corpus in sorted({r["corpus"] for r in rows})},
                 recordings=rows)
@@ -68,7 +86,11 @@ def compare(root, candidate, *, baseline=Path("model/live/strict_note/NOTE_stric
                       FP=v["noteon_80ms"]["FP"],
                       FN=v["noteon_80ms"]["FN"],
                       onset_exact_k_rate=round(v["onset_k"]["onset_exact_k_rate"],5),
-                      by_true_k=v["onset_k"]["by_true_k"])
+                      by_true_k=v["onset_k"]["by_true_k"],
+                      count_active_K_accuracy=v["count_head_active_k"]["accuracy"],
+                      count_active_K3_K4={
+                          str(h):v["count_head_active_k"]["by_true_K"][str(h)]
+                          for h in (3,4)})
              for key,v in results.items()}
     print(json.dumps(dict(status=comparison["status"],dev_sources=len(specs),
                           score=compact),indent=2))
