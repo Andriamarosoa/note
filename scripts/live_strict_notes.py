@@ -393,6 +393,10 @@ def main(argv=None):
             if events:
                 output.flush()
         failure = "stream_end"
+        # This must exist BEFORE entering the microphone try block: importing
+        # PortAudio or opening a device may itself fail. The finally cleanup
+        # must never mask that original exception with UnboundLocalError.
+        capture_stats = None
         try:
             if args.mic:
                 import sounddevice as sd
@@ -537,7 +541,7 @@ def main(argv=None):
             try:
                 emit(stream.finish(failure))
             finally:
-                if args.mic:
+                if args.mic and capture_stats is not None:
                     processed_ms=stream.received*1000/SR
                     print(json.dumps(dict(s630_input_queue_diagnostics=dict(
                         callbacks_received=capture_stats["received"],
