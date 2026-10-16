@@ -97,6 +97,26 @@ class ThreeViewTests(unittest.TestCase):
             for key in ("native","native_k","bass_rescue","high_rescue"):
                 np.testing.assert_array_equal(x[key],y[key])
 
+    def test_real_wav_diagnostic_command_helpers(self):
+        import tempfile
+        import wave
+        from pathlib import Path
+        from scripts.s634_three_view_wav import load_audio,diagnostic
+        with tempfile.TemporaryDirectory() as td:
+            path=Path(td)/"fixture.wav"
+            sound=tones(220.,round(.42*SR))
+            with wave.open(str(path),"wb") as f:
+                f.setnchannels(1);f.setsampwidth(2);f.setframerate(SR)
+                f.writeframes((sound*32767).astype("<i2").tobytes())
+            loaded=load_audio(path,seconds=1.)
+            self.assertEqual(len(loaded),len(sound))
+            result=diagnostic(loaded,MockHeads(),confidence=.6)
+            self.assertEqual(result["frames_analyzed"],len(sound)//HOP)
+            self.assertTrue(result["sound_realtime_notes_unchanged"])
+            self.assertEqual(result["frequency_factors"],dict(bass_x2=2,original=1,high_half=.5))
+            self.assertGreater(result["candidate_counts"].get("bass_x2_candidates",0),0)
+            self.assertGreater(result["candidate_counts"].get("high_half_candidates",0),0)
+
     def test_real_frozen_head_original_branch_exact_parity(self):
         frozen=load_heads(DEFAULT_MODEL)
         data=tones(164.8,70*HOP)
