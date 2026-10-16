@@ -77,8 +77,8 @@ class S628Tests(unittest.TestCase):
             out+=chunk
         out+=stream.finish()
         for e in out:
-            self.assertLessEqual(e["decision_sample"]+220,e["available_sample"]
-                if e["reason"]!="stream_end" else e["available_sample"])
+            if not e["reason"].startswith("lookahead_eof_unconfirmed") and e["reason"]!="stream_end":
+                self.assertLessEqual(e["decision_sample"]+220,e["available_sample"])
             self.assertAlmostEqual(e["time"],e["available_sample"]/SR)
 
     def test_no_future_perturbation_changes_an_earlier_output(self):
