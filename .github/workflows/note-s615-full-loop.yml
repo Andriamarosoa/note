@@ -1,0 +1,113 @@
+name: S615 FULL train-dev loop — native causal NOTE
+on:
+  push:
+    branches: [codex/note-live-s615-full-loops]
+    paths:
+      - '.github/workflows/note-s615-full-loop.yml'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'full native NOTE training mode'
+        required: false
+        type: choice
+        options: [hop256, shared, hop128, hop512]
+        default: hop256
+      count_epochs:
+        description: 'K-head epochs'
+        default: '24'
+        required: false
+      pitch_epochs:
+        description: 'Onset/sustain/release head epochs'
+        default: '28'
+        required: false
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  train-full:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 200
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      S615_MODE: ${{ inputs.mode || 'hop256' }}
+      S615_K_EPOCHS: ${{ inputs.count_epochs || '24' }}
+      S615_PITCH_EPOCHS: ${{ inputs.pitch_epochs || '28' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned CPU dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "numpy>=1.26,<2" "scipy>=1.11,<1.15" "onnxruntime>=1.17,<1.25" "threadpoolctl>=3"
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Confirm locked source protocol and remaining runner storage
+        run: |
+          df -h .
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=json.loads(Path('analysis/evidence/v273-s613-strict-live/protocol.json').read_text())
+          tr=[s for s in p['sources'] if s['split']=='train']
+          dv=[s for s in p['sources'] if s['split']=='dev']
+          assert len(tr)==53 and len(dv)==17
+          assert not [s for s in tr+dv if s['split']=='test']
+          print('FULL SOURCE SCOPE:',len(tr),'train /',len(dv),'dev; test never opened')
+          PY
+      - name: Download real GuitarSet and URMP train/dev audio and MIDI annotations only
+        run: |
+          python -m scripts.s615_seed_full_development --root data/S615_full
+          df -h .
+      - name: Regenerate native causal features at selected training hop(s)
+        run: |
+          if [ "$S615_MODE" = "shared" ]; then
+            python -m scripts.s615_prepare_multihop --root data/S615_full --hops 128 256 512
+          else
+            HOP="${S615_MODE#hop}"
+            python -m scripts.s615_prepare_multihop --root data/S615_full --hops "$HOP" 256
+          fi
+          df -h .
+      - name: Train S615 native K, NoteOn, sustain, release with full train set
+        run: |
+          python -m scripts.s615_train_multihop \
+            --root data/S615_full \
+            --mode "$S615_MODE" \
+            --out "results/S615_full/$S615_MODE" \
+            --count-epochs "$S615_K_EPOCHS" \
+            --pitch-epochs "$S615_PITCH_EPOCHS" \
+            --max-pitch-rows 7000
+      - name: Full development apples-to-apples comparison versus original S613
+        run: |
+          python -m scripts.s615_compare_dev \
+            --root data/S615_full \
+            --candidate "results/S615_full/$S615_MODE/NOTE_multihop_candidate.npz" \
+            --out "results/S615_full/$S615_MODE/COMPARISON_VS_FROZEN_S613_DEV.json"
+      - name: Audit complete corpus scope, K1 through K6 and no promotion
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,os
+          folder=Path('results/S615_full')/os.environ['S615_MODE']
+          r=json.loads((folder/'report.json').read_text())
+          d=json.loads((folder/'COMPARISON_VS_FROZEN_S613_DEV.json').read_text())
+          assert r['source_count_train']==53
+          assert r['source_count_dev']==17
+          assert d['dev_sources']==17
+          assert r['status']=='EXPERIMENTAL_DEV_ONLY_NOT_PROMOTED'
+          assert d['status']=='DEV_ONLY_NO_PROMOTION'
+          for name,result in d['results'].items():
+              print(name,'NoteOn F1:',result['noteon_80ms']['F1'])
+              print('Grouped onset K:',json.dumps(result['onset_k']['by_true_k']))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s615-full-${{ inputs.mode || 'hop256' }}-candidate-and-dev-report
+          path: results/S615_full/
+          retention-days: 45

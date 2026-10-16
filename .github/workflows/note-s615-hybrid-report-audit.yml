@@ -1,0 +1,62 @@
+name: "S615 audited hybrid final report (17 dev sources)"
+on:
+  push:
+    branches: [codex/note-live-s615-full-loops]
+    paths: ['.github/workflows/note-s615-hybrid-report-audit.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  report:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download immutable completed hybrid audit artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p /tmp/S615_hybrid
+          gh run download 38865434173 --repo Andriamarosoa/note \
+            --name s615-restored-hybrid-full-development-audit --dir /tmp/S615_hybrid
+          find /tmp/S615_hybrid -name report.json
+      - name: Contrast true frozen S613 full hybrid against winning S615 hybrid K1-K6
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          docs=list(Path('/tmp/S615_hybrid').rglob('report.json'))
+          assert len(docs)==1,docs
+          d=json.loads(docs[0].read_text())
+          assert d['status']=='DEV_ONLY_HYBRID_ABLATION_NOT_PROMOTED'
+          assert d['dev_sources']==17
+          assert len(d['trials'])==20
+          candidates={'frozen_S613_original':d['original_S613'],
+                      'S615_neural':d['S615_neural']}
+          b=d['best']
+          def compress(row):
+              score=row['noteon_80ms']
+              groups=row['onset_k']
+              active=row['count_head_active_k']
+              return dict(F1=score['F1'],TP=score['TP'],FP=score['FP'],FN=score['FN'],
+                  grouped_K_total=groups['total_groups'],grouped_K_exact=groups['exact_k_groups'],
+                  grouped_K_accuracy=groups['onset_exact_k_rate'],
+                  true_K={key:val for key,val in groups['by_true_k'].items()},
+                  active_K_accuracy=active['accuracy'],
+                  active_K3=active['by_true_K']['3'],
+                  active_K4=active['by_true_K']['4'])
+          print(json.dumps(dict(
+            status='DEV_ONLY_17_SOURCES_NO_PROMOTION',
+            original_S613=compress(candidates['frozen_S613_original']),
+            S615_neural=compress(candidates['S615_neural']),
+            best_S615_hybrid=dict(
+                F1=b['F1'],TP=b['TP'],FP=b['FP'],FN=b['FN'],
+                selection=b['selector'], count_source=b['count_source'],
+                alpha=b['alpha'], grouped_K=b['onset_K'],
+                active_K_accuracy=b['active_K']['accuracy'],
+                active_K3=b['active_K']['by_true_K']['3'],
+                active_K4=b['active_K']['by_true_K']['4']),
+            delta_F1_vs_frozen_S613=b['F1']-candidates['frozen_S613_original']['noteon_80ms']['F1'],
+          ),indent=2))
+          PY

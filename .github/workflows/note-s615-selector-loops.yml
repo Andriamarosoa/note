@@ -1,0 +1,77 @@
+name: "S615 loop - trained pilot selector audits"
+on:
+  push:
+    branches: [codex/note-live-s615-full-loops]
+    paths: ['.github/workflows/note-s615-selector-loops.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  ablation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install inference-only dependencies
+        run: |
+          python -m pip install "numpy>=1.26,<2" "scipy>=1.11,<1.15" "onnxruntime>=1.17,<1.25" "threadpoolctl>=3"
+      - name: Fetch previously trained real GuitarSet shared S615 checkpoint
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p data/S615_pilot_artifacts
+          gh run download 38862219355 --repo Andriamarosoa/note \
+            --name s615-real-guitarset-pilot-candidates --dir data/S615_pilot_artifacts
+          test -f data/S615_pilot_artifacts/shared/NOTE_multihop_candidate.npz
+      - name: Regenerate 3 development-only GuitarSet tracks for the same fixed source groups
+        run: |
+          python -m scripts.s615_seed_guitarset_pilot --root data/S615_pilot_grid --train-sources 6 --dev-sources 3
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from scripts.s615_prepare_multihop import prepare_one
+          root=Path('data/S615_pilot_grid')
+          p=json.loads((root/'protocol.json').read_text())
+          dev=[s for s in p['sources'] if s['split']=='dev' and s['corpus']=='GuitarSet'][:3]
+          assert len(dev)==3
+          for source in dev:
+              for hop in (128,256,512):
+                  print(prepare_one(root,source,hop),flush=True)
+          PY
+      - name: Replay fixed 3 development songs with 108 per-hop selectors and grouped Exact-K
+        run: |
+          python -m scripts.s615_selector_loops \
+            --root data/S615_pilot_grid \
+            --model data/S615_pilot_artifacts/shared/NOTE_multihop_candidate.npz \
+            --out results/S615_pilot_selector_ablation.json
+      - name: Verify K4 protection and report meaningful deltas
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          x=json.loads(Path('results/S615_pilot_selector_ablation.json').read_text())
+          assert x['status']=='EXPLORATORY_DEVELOPMENT_ONLY_NO_PROMOTION'
+          for hop, d in x['results'].items():
+              m=d['f1_best']
+              print(json.dumps(dict(
+                  hop=hop, F1=m['F1'], TP=m['TP'],FP=m['FP'],FN=m['FN'],
+                  onset_exact_k=m['onset_exact_k'],
+                  K3=m['by_true_k'].get('3'),
+                  K4=m['by_true_k'].get('4'),
+              )))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s615-pilot-selector-ablation
+          path: results/
+          retention-days: 30
