@@ -1,0 +1,91 @@
+name: "S623 two hops, one MIDI head: 128 evidence into frozen S613 256"
+on:
+  push:
+    branches: [codex/note-live-s623-dual-evidence]
+    paths: ['.github/workflows/note-s623-dual-evidence.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  evidence-fusion:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install inference-only native NOTE dependencies
+        run: |
+          python -m pip install "numpy>=1.26,<2" "scipy>=1.11,<1.15" "onnxruntime>=1.17,<1.25" "threadpoolctl>=3"
+      - name: Test 128/256 evidence causality and MIDI reference protection
+        run: |
+          python -m unittest -v test.test_s623_fused_evidence test.test_s620_dual_hop
+      - name: Obtain separately trained real hop128 fast head from successful S621 run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p data/S621_checkpoint
+          gh run download 38874449408 --repo Andriamarosoa/note \
+            --name s621-full-trained-hop128-and-dual-hop256-dev-results \
+            --dir data/S621_checkpoint
+          find data/S621_checkpoint -name NOTE_multihop_candidate.npz
+          test -f data/S621_checkpoint/hop128/NOTE_multihop_candidate.npz
+      - name: Only 17 original dev GuitarSet + URMP songs (no test)
+        run: |
+          python -m scripts.s615_seed_full_development --root data/S623_dev --dev-only
+      - name: Extract two native causal hop histories
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from scripts.s615_prepare_multihop import prepare_one
+          import json
+          root=Path('data/S623_dev')
+          p=json.loads((root/'protocol.json').read_text())
+          songs=[s for s in p['sources'] if s['split']=='dev']
+          assert len(songs)==17
+          for i,s in enumerate(songs,1):
+              for hop in (128,256):
+                  print(i,hop,prepare_one(root,s,hop),flush=True)
+          PY
+      - name: Train-free compare 72 two-hop evidence fusion choices with frozen S613 head
+        run: |
+          python -m scripts.s623_fused_evidence \
+            --root data/S623_dev \
+            --slow-model model/live/strict_note/NOTE_strict_live.npz \
+            --fast-model data/S621_checkpoint/hop128/NOTE_multihop_candidate.npz \
+            --out results/S623_17dev_evidence_fusion.json
+      - name: Confirm zero extra MIDI sources and recovered FN vs added FP/K regression
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('results/S623_17dev_evidence_fusion.json').read_text())
+          assert r['status']=='S623_DEV_EVIDENCE_ONLY_NO_PROMOTION'
+          assert r['no_future_audio'] and r['no_fast_independent_MIDI']
+          assert r['baseline']['TP']==1241 and r['baseline']['FP']==734
+          assert r['sources']==17 and len(r['tested'])==r['configurations']==72
+          for name in ('best_f1','best_recall'):
+              row=r[name]
+              print(json.dumps(dict(
+                  method=name,F1=row['F1'],TP=row['TP'],FP=row['FP'],FN=row['FN'],
+                  recovered_old_FN=row['saved_former_FN'],
+                  lost_old_TP=row['lost_old_TP'],
+                  K1=row['K_by_true'].get('1'),
+                  K2=row['K_by_true'].get('2'),
+                  K3=row['K_by_true'].get('3'),
+                  K4=row['K_by_true'].get('4'),
+                  config=row['config'])))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s623-two-context-one-head-17dev
+          path: results/S623_17dev_evidence_fusion.json
+          retention-days: 45
