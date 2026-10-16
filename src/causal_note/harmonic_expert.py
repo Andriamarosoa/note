@@ -36,8 +36,15 @@ FEATURE_NAMES = (
 )
 N_FEATURES = len(FEATURE_NAMES)
 
+# Precompute pitch indices once. This preserves the existing pair order.
+_PARENT_CHILD_HARMONICS = np.asarray([
+    (pitch - shift - int(PITCHES[0]), pitch - int(PITCHES[0]), partial)
+    for shift, partial in HARMONIC_RATIOS
+    for pitch in range(int(PITCHES[0]) + shift, int(PITCHES[-1]) + 1)
+], dtype=np.int16)
 
-def harmonic_pair_features(features, probabilities, count, active):
+
+def harmonic_pair_features(features, probabilities, count, active, *, materialize=True):
     """Return (pairs[N,3], X[N,17]) for possible (parent, child, harmonic).
 
     This is fixed, modest-size and completely past-only. IMPORTANT: a parent's
@@ -58,31 +65,29 @@ def harmonic_pair_features(features, probabilities, count, active):
     if not (np.isfinite(x).all() and np.isfinite(p).all() and np.isfinite(k).all()):
         raise ValueError("Non-finite harmonic input")
     h = x[:, :24].reshape(49, 3, 8)
-    rows = []
-    pairs = []
-    first = int(PITCHES[0])
-    last = int(PITCHES[-1])
-    for distance, harmonic in HARMONIC_RATIOS:
-        for child_pitch in range(first + distance, last + 1):
-            parent = child_pitch - distance - first
-            child = child_pitch - first
-            # Never infer a parent just because a child spectrum has energy:
-            # the parent's own low partial must also be visible.
-            if h[parent, 2, 0] < .1:
-                continue
-            rows.append((
-                h[parent, 2, 0], h[parent, 2, harmonic - 1],
-                h[child, 2, 0], h[child, 2, 1],
-                h[parent, 0, 0], h[child, 0, 0],
-                x[parent, 50], x[child, 50],  # long-window harmonic scores
-                x[parent, 54], x[child, 54],  # change from two hops ago
-                p[parent, 0], p[parent, 1], p[child, 0], p[child, 1],
-                float(a[parent]), float(k[2:].sum()), harmonic / 8.0,
-            ))
-            pairs.append((parent + first, child_pitch, harmonic))
-    if not rows:
-        return np.empty((0, 3), np.int16), np.empty((0, N_FEATURES), np.float32)
-    return np.asarray(pairs, np.int16), np.asarray(rows, np.float32)
+    topology = _PARENT_CHILD_HARMONICS
+    index = topology[:, 0]
+    subset = topology[h[index, 2, 0] >= .1]
+    if not len(subset):
+        return np.empty((0, 3), np.int16), (
+            np.empty((0, N_FEATURES), np.float32) if materialize else None)
+    parents, children, harmonics = subset.T
+    pairs = subset.copy()
+    pairs[:, :2] += int(PITCHES[0])
+    if not materialize:
+        return pairs, None
+    rows = np.column_stack((
+        h[parents, 2, 0], h[parents, 2, harmonics - 1],
+        h[children, 2, 0], h[children, 2, 1],
+        h[parents, 0, 0], h[children, 0, 0],
+        x[parents, 50], x[children, 50],
+        x[parents, 54], x[children, 54],
+        p[parents, 0], p[parents, 1], p[children, 0], p[children, 1],
+        a[parents].astype(np.float32),
+        np.full(len(pairs), float(k[2:].sum()), dtype=np.float32),
+        harmonics.astype(np.float32) / 8.0,
+    ))
+    return pairs, np.asarray(rows, dtype=np.float32)
 
 
 class HarmonicGenuineOnsetHead:
@@ -158,6 +163,7 @@ class HarmonicSpecialistSelector:
     def step(self, features, probabilities, count, end_sample, available_sample):
         pairs, X = harmonic_pair_features(
             features, probabilities, count, self.native_selector.active,
+            materialize=self.head.trained,
         )
         p = np.asarray(probabilities, np.float32)
         c = self.native_selector.config
