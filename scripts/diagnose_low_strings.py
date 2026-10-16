@@ -78,8 +78,8 @@ def capture_audio(device, seconds):
 
 def diagnostics(samples, note):
     x = np.asarray(samples, np.float32)
-    if not np.isfinite(x).all() or x.size < 8192:
-        raise ValueError("Need at least 8192 finite captured PCM samples")
+    if not np.isfinite(x).all() or x.size < 16384:
+        raise ValueError("Need at least 16384 finite captured PCM samples")
     f0 = 440 * 2 ** ((STRINGS[note] - 69) / 12)
     peak = float(np.max(np.abs(x)))
     rms = float(np.sqrt(np.mean(x.astype(np.float64) ** 2)))
