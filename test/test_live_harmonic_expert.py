@@ -67,6 +67,19 @@ class HarmonicExpertTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "requires a separately trained"):
             HarmonicSpecialistSelector(CausalSelection(), mode="guard")
 
+    def test_trained_shadow_flags_false_harmonic_without_changing_events(self):
+        x, p, k = self.inputs()
+        with tempfile.TemporaryDirectory() as temp:
+            path = self.checkpoint(temp, -10.)
+            native = CausalSelection(Selection())
+            specialist = HarmonicSpecialistSelector(
+                CausalSelection(Selection()), mode="shadow", checkpoint=path,
+            )
+            self.assertEqual(native.step(p, k, HOP, HOP),
+                             specialist.step(x, p, k, HOP, HOP))
+            self.assertGreaterEqual(specialist.stats.low_independence_onsets, 1)
+            self.assertEqual(specialist.stats.vetoed_upper_onsets, 0)
+
     def test_guard_can_inhibit_but_not_force_extra_notes(self):
         x, p, k = self.inputs()
         with tempfile.TemporaryDirectory() as temp:
