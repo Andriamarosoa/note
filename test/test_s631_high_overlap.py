@@ -43,7 +43,7 @@ class HighOverlapTests(unittest.TestCase):
 
     def test_superposed_tonal_pcm_creates_distinct_causal_pitch_targets(self):
         first,second=specs()
-        pair=choose_pairs([first,second],1,np.random.default_rng(631))[0]
+        pair=choose_pairs([first,second],3,np.random.default_rng(631))[2]
         t=np.arange(int(6*SR))/SR
         a=(.13*np.sin(2*np.pi*246.94*t)).astype(np.float32)
         b=(.12*np.sin(2*np.pi*987.77*t)).astype(np.float32)
