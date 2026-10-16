@@ -25,6 +25,7 @@ from scripts.live_audio_io import managed_input_stream, audio_devices, parse_dev
 from scripts.live_strict_notes import DEFAULT_MODEL
 from scripts.s613_prepare_strict_live import digest
 from scripts.s634_three_view_wav import diagnostic
+from scripts.s636_three_view_collision import audit_three_view_report
 
 
 def capture_pcm(*, seconds=8., device=None, block_size=1024,
@@ -113,6 +114,7 @@ def run(*, seconds, block_size, device, confidence, out,
     with threadpool_limits(limits=1):
         model=load_heads(DEFAULT_MODEL,expected_sha256=model_sha)
         report=diagnostic(audio,model,confidence=confidence)
+    report["collision_audit"]=audit_three_view_report(report)
     report["source"]="microphone_capture_in_ram"
     report["capture"]=cap
     report["reference_sha256"]=model_sha
@@ -124,6 +126,8 @@ def run(*, seconds, block_size, device, confidence, out,
     print(json.dumps(dict(
         result=str(out),capture=cap,
         candidate_counts=report["candidate_counts"],
+        retrospective_collisions=report["collision_audit"]["retrospective_counts"],
+        strictly_causal_collisions=report["collision_audit"]["strictly_causal_counts"],
         analysis_CPU_over_audio_ratio=report["worker_over_audio_ratio"],
         warning=report["warning"],
     ),indent=2))
