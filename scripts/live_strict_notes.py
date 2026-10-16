@@ -236,6 +236,10 @@ def main(argv=None):
                          capture_deadline_blocks=args.capture_deadline_blocks,
                          queue_blocks=args.queue_blocks)), file=sys.stderr)
                 while True:
+                    if piano is not None:
+                        piano_error = piano.health_error()
+                        if piano_error is not None:
+                            raise RuntimeError(piano_error)
                     if overrun.is_set():
                         raise BufferError("Input overrun: stream stopped and notes released")
                     try:
