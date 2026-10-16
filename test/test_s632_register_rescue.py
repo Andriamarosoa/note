@@ -75,12 +75,13 @@ class RegisterRescueTests(unittest.TestCase):
     def test_native_K_posterior_vetoes_false_bass_proposals(self):
         from causal_note.register_rescue import BASS_K50
         self.strong_fundamental(52)
+        self.p[52-40,0] = .52  # Meets this conservative gate's .48 onset floor.
         policy = RescuePolicy(bass=BASS_K50)
         blocked = np.array([.9,.1,0,0,0,0,0],dtype=np.float32)
         admitted = np.array([.1,.9,0,0,0,0,0],dtype=np.float32)
         unchanged, gates = propose(self.x,self.p,self.state,policy,blocked)
         self.assertFalse(gates["bass"][52-40])
-        self.assertAlmostEqual(float(unchanged[52-40,0]),.45,places=6)
+        self.assertAlmostEqual(float(unchanged[52-40,0]),.52,places=6)
         modified, gates = propose(self.x,self.p,self.state,policy,admitted)
         self.assertTrue(gates["bass"][52-40])
         self.assertAlmostEqual(float(modified[52-40,0]),.6,places=6)
