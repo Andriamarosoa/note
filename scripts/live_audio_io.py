@@ -238,6 +238,18 @@ def resolve_wdm_ks_device(
     reference_name = str(_sd.query_devices(reference_index)["name"])
     reference_tokens = _endpoint_tokens(reference_name)
 
+    # WDM-KS exposes several Realtek pins which share generic vendor words.
+    # "Realtek Audio" alone must NEVER map a default Headphones output to a
+    # Speakers or PC Speaker pin just because the kernel pin is faster.
+    def route_kind(name):
+        words = _endpoint_tokens(name)
+        if "headphones" in words or "headphone" in words:
+            return "headphones"
+        if "speakers" in words or "speaker" in words:
+            return "speakers"
+        return None
+
+    reference_kind = route_kind(reference_name)
     ranked: list[tuple[int, int]] = []
     for index, info in enumerate(_sd.query_devices()):
         if int(info["hostapi"]) != host_index:
@@ -246,6 +258,8 @@ def resolve_wdm_ks_device(
             continue
         native_rate = int(round(float(info["default_samplerate"])))
         if native_rate != int(samplerate):
+            continue
+        if reference_kind and route_kind(str(info["name"])) != reference_kind:
             continue
         common_tokens = reference_tokens & _endpoint_tokens(str(info["name"]))
         if len(common_tokens) < 2:
@@ -320,6 +334,14 @@ def _open_stream(
     selected_is_kernel_streaming = bool(
         device_uses_host(requested_index, wdm_ks_host_index)
     )
+    if (direction == "input" and explicit and selected_is_kernel_streaming
+            and isinstance(parse_device(preferred_device), int)):
+        raise ValueError(
+            "Numeric input index points to WDM-KS (possibly a PC Speaker pin). "
+            "PortAudio indices are unstable. Select the microphone by "
+            "name and API, e.g. --device 'WASAPI:External Microphone'; "
+            "explicit WDM-KS capture must use 'WDM-KS:device name'."
+        )
 
     candidates: list[_StreamCandidate] = []
 
