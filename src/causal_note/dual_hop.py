@@ -46,6 +46,18 @@ class DualHopConfig:
             raise ValueError("unknown novelty metric")
 
 
+def fast_candidate_mask(novelty, pitch_probs, cfg, *,
+                        reference_sustain=.50):
+    """One pitch's NEW spectral evidence independent of other NOTE heads."""
+    p=np.asarray(pitch_probs)
+    n=np.asarray(novelty,dtype=np.float32)
+    if p.shape!=(49,3) or n.shape!=(49,):
+        raise ValueError("Expected 49 pitch probabilities and novelty")
+    ratio=n/max(float(n.max()),1e-5)
+    return ((p[:,0]>=cfg.fast_onset)&(p[:,1]>=reference_sustain)&
+            (n>=cfg.novelty_min)&(ratio>=cfg.novelty_ratio))
+
+
 def novelty_gated_fast_heads(features, pitch_probs, cfg, *,
                              reference_onset=.60, reference_sustain=.50):
     """Gate all fast NoteOn proposals with CURRENT-frame causal evidence.
@@ -62,9 +74,7 @@ def novelty_gated_fast_heads(features, pitch_probs, cfg, *,
     else:
         diff=x[:,114:117]
     novelty=np.maximum(diff,0).max(axis=1)
-    relative=novelty/max(float(novelty.max()),1e-5)
-    qualified=((p[:,0]>=cfg.fast_onset)&(p[:,1]>=reference_sustain)&
-               (novelty>=cfg.novelty_min)&(relative>=cfg.novelty_ratio))
+    qualified=fast_candidate_mask(novelty,p,cfg,reference_sustain=reference_sustain)
     # For the untrained hop128 candidate, every fast attack must have a
     # *separate* acoustic novelty. Even strong network onset alone does not
     # authorize an additional fast event.
