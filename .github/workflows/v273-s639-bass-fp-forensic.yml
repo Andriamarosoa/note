@@ -1,0 +1,41 @@
+name: S639 Real GuitarSet bass FP root cause forensic + native K disable audit
+on:
+  push:
+    branches: [codex/s639-bass-false-positive-root-cause]
+    paths:
+      - scripts/s639_bass_fp_forensic.py
+      - test/test_s639_bass_fp_forensic.py
+      - .github/workflows/v273-s639-bass-fp-forensic.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s639-bass-forensic-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  real_guitarset_false_positive_forensic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install frozen NOTE runtime
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Validate causal selector, original disabled K veto, and forensic labels
+        run: |
+          python -m compileall -q scripts/s639_bass_fp_forensic.py test/test_s639_bass_fp_forensic.py
+          python -m unittest -v test.test_s639_bass_fp_forensic
+      - name: Audit 12 pinned actual GuitarSet recordings with annotations
+        run: python -m scripts.s639_bass_fp_forensic --out /tmp/s639_bass_fp_forensic
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S639_REAL_GUITARSET_BASS_FP_FORENSIC
+          path: /tmp/s639_bass_fp_forensic/report.json
+          if-no-files-found: warn
+          retention-days: 60
