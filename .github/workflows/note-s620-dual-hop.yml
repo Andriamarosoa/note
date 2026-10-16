@@ -1,0 +1,88 @@
+name: "S620 strict LIVE dual 128+256-hop causal fusion audit"
+on:
+  push:
+    branches: [codex/note-live-s620-dual-hop]
+    paths: ['.github/workflows/note-s620-dual-hop.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s620-two-hop-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  validate-dual-hop:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 80
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install native S613 neural + ONNX and CLI dependencies
+        run: |
+          python -m pip install "numpy>=1.26,<2" "scipy>=1.11,<1.15" "onnxruntime>=1.17,<1.25" "threadpoolctl>=3"
+      - name: Validate causal stream and runtime-versus-evaluation event identity
+        run: |
+          python -m compileall -q src/causal_note/dual_hop.py scripts/s620_dualhop_eval.py test/test_s620_dual_hop.py
+          python -m unittest -v test.test_s620_dual_hop test.test_s619_novelty_rescue test.test_live_adaptive_hop
+      - name: Original S613 full 17-song DEV audio only
+        run: |
+          python -m scripts.s615_seed_full_development --root data/S620_dev --dev-only
+      - name: Extract same 17 songs with causal hop128 and original hop256
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          from scripts.s615_prepare_multihop import prepare_one
+          root=Path('data/S620_dev')
+          protocol=json.loads((root/'protocol.json').read_text())
+          tracks=[s for s in protocol['sources'] if s['split']=='dev']
+          assert len(tracks)==17
+          for i,spec in enumerate(tracks,1):
+              for hop in (128,256):
+                  print(dict(index=i,total=len(tracks),hop=hop,
+                             prepared=prepare_one(root,spec,hop)),flush=True)
+          PY
+      - name: Evaluate all 24 causal fast-hop novelty-fusion guards vs frozen S613 hybrid
+        run: |
+          python -m scripts.s620_dualhop_eval \
+            --root data/S620_dev \
+            --model model/live/strict_note/NOTE_strict_live.npz \
+            --out results/S620_dual_hop_17dev.json
+      - name: Check exact old reference, recovered attacks, false note regression and grouped K1-K6
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          x=json.loads(Path('results/S620_dual_hop_17dev.json').read_text())
+          assert x['status']=='DEV_ONLY_S620_DUAL_HOP_NO_PROMOTION'
+          assert x['dev_source_count']==17
+          assert x['reference']['TP']==1241 and x['reference']['FP']==734
+          assert x['reference']['FN']==838
+          assert len(x['candidates'])==24
+          assert x['fast_checkpoint_trained_at_hop128'] is False
+          print('REFERENCE:',json.dumps(x['reference']))
+          for label in ('best_f1','best_recall'):
+              r=x[label]
+              print(label,json.dumps(dict(
+                  F1=r['F1'],TP=r['TP'],FP=r['FP'],FN=r['FN'],
+                  recovered_real_TP=r['gained_real_TP'],
+                  lost_old_TP=r['lost_old_TP'],
+                  relative_novelty=r['config']['novelty_ratio'],
+                  fast_threshold=r['config']['fast_onset'],
+                  K1=r['grouped_onset_k']['by_true_k'].get('1'),
+                  K2=r['grouped_onset_k']['by_true_k'].get('2'),
+                  K3=r['grouped_onset_k']['by_true_k'].get('3'),
+                  K4=r['grouped_onset_k']['by_true_k'].get('4'))))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s620-dual-hop-128-256-17dev-results
+          path: results/S620_dual_hop_17dev.json
+          retention-days: 45
