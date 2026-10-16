@@ -31,9 +31,17 @@ from causal_note.lookahead import LookaheadConfig,combine_reference_and_future
 
 
 class BatchedLiveStream:
-    def __init__(self,heads,*,batch_hops=4,lookahead=None):
+    def __init__(self,heads,*,batch_hops=4,lookahead=None,register_rescue_mode="off",register_rescue_policy=None):
         if not isinstance(batch_hops,int) or not 1<=batch_hops<=32:
             raise ValueError("batch_hops must be 1..32")
+        if register_rescue_mode not in ("off","shadow","guard"):
+            raise ValueError("Unsupported S633 rescue mode")
+        if register_rescue_mode!="off" and register_rescue_policy is None:
+            raise ValueError("S633 rescue requires a fixed explicit policy")
+        if lookahead is not None and register_rescue_mode=="guard":
+            raise ValueError("S633 guard was only validated with zero acoustic lookahead")
+        self.register_rescue_mode=register_rescue_mode
+        self.register_rescue_policy=register_rescue_policy
         self.heads=heads
         self.batch_hops=batch_hops
         self.config=lookahead
@@ -64,18 +72,24 @@ class BatchedLiveStream:
         self.stats["frames_inferred"]+=len(frames)
         self.stats["largest_batch"]=max(self.stats["largest_batch"],len(frames))
         out=[]
-        for (t,_),p,k in zip(frames,predictions,counts):
+        for (t,source_features),p,k in zip(frames,predictions,counts):
             if t>available_sample:
                 raise AssertionError("Inference before source frames captured")
-            self.pending_predictions.append((t,p,k))
+            self.pending_predictions.append((t,p,k,source_features))
             if len(self.pending_predictions)>self.future_hops:
-                original_t,original_p,original_k=self.pending_predictions.popleft()
+                original_t,original_p,original_k,original_features=self.pending_predictions.popleft()
                 if self.future_hops:
                     if t-original_t!=self.actual_lookahead_samples:
                         raise AssertionError("Lookahead future hop misalignment")
                     fused=combine_reference_and_future(original_p,p,self.config.mode)
                 else:
                     fused=original_p
+                if self.register_rescue_mode!="off":
+                    from causal_note.register_rescue import live_apply
+                    fused=live_apply(
+                        original_features,fused,original_k,self.selector,
+                        mode=self.register_rescue_mode,
+                        policy=self.register_rescue_policy,stats=self.stats)
                 out.extend(self.selector.step(fused,original_k,original_t,available_sample))
                 self.stats["frames_selected"]+=1
         return out
@@ -107,7 +121,12 @@ class BatchedLiveStream:
         out=self._predict_pending(self.received)
         # Original predictions with unobserved future kept at EOF only,
         # tagged; no padding/fabricated attack evidence.
-        for t,p,k in self.pending_predictions:
+        for t,p,k,features in self.pending_predictions:
+            if self.register_rescue_mode!="off":
+                from causal_note.register_rescue import live_apply
+                p=live_apply(features,p,k,self.selector,
+                    mode=self.register_rescue_mode,policy=self.register_rescue_policy,
+                    stats=self.stats)
             events=self.selector.step(p,k,t,self.received)
             if self.future_hops:
                 for e in events:
@@ -134,6 +153,8 @@ class BatchedLiveStream:
             future_mode=(self.config.mode if self.config else "off"),
             original_note_heads_frozen=True,
             selected_note_K_from_original_frame=True,
+            s633_register_rescue_mode=self.register_rescue_mode,
+            s633_guard_changes_selected_pitch_onsets=self.register_rescue_mode=="guard",
             source=dict(self.stats),
             samples_received=self.received,
             worker_callback_count=len(worker),
