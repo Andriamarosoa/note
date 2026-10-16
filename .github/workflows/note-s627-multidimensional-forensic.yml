@@ -2,7 +2,10 @@ name: "S627 S613 multidimensional TP/FN/FP data forensic audit"
 on:
   push:
     branches: [codex/note-s627-multidimensional-causal-audit]
-    paths: ['.github/workflows/note-s627-multidimensional-forensic.yml']
+    paths:
+      - '.github/workflows/note-s627-multidimensional-forensic.yml'
+      - 'scripts/s627_multidimensional_failure_audit.py'
+      - 'test/test_s627_multidimensional_failure_audit.py'
   workflow_dispatch:
 permissions:
   contents: read
