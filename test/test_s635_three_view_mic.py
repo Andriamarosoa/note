@@ -79,6 +79,8 @@ class S635MicrophoneTests(unittest.TestCase):
             self.assertTrue(data["not_live_midi_output"])
             self.assertEqual(data["original_samples"],SR)
             self.assertEqual(data["all_three_native_K_source"],"original")
+            self.assertIn("collision_audit",data)
+            self.assertTrue(data["collision_audit"]["never_use_future_native_for_live_decisions"])
             self.assertEqual(data["frames_analyzed"],SR//256)
             self.assertIn("original_candidates",data["candidate_counts"]) if data["candidate_counts"].get("original_candidates") else None
             self.assertEqual(data["capture"]["received"],SR)
