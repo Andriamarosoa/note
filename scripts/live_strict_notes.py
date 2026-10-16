@@ -70,6 +70,12 @@ def main(argv=None):
     parser.add_argument("--monitor-input", action="store_true", help="Listen to raw microphone audio (headphones recommended); independent of note detection")
     parser.add_argument("--output-device", help="sounddevice output device name/index for monitoring; select a WASAPI endpoint via --list-devices")
     parser.add_argument("--monitor-gain", type=float, default=0.5, help="Raw input monitoring gain, 0.0..1.0 (default 0.5)")
+    parser.add_argument("--harmonic-mode", choices=("off", "shadow", "guard"), default="off",
+                        help="Experimental native harmonic expert: off (default), shadow (no changed events), guard (requires trained checkpoint)")
+    parser.add_argument("--harmonic-checkpoint", type=Path,
+                        help="Separately trained harmonic genuine-onset checkpoint; no checkpoint is bundled")
+    parser.add_argument("--harmonic-threshold", type=float, default=0.10,
+                        help="Experimental independent-onset gating threshold, dev-calibration required")
     parser.add_argument("--auto-level", action="store_true", help="Enable bounded causal input gain (+18dB max), adapted from midi; experimental, default OFF")
     parser.add_argument("--auto-level-max-db", type=float, default=18.0, help="Maximum automatic amplification, 0..24 dB (default: 18)")
     parser.add_argument("--auto-level-peak-gate-dbfs", type=float, default=-55.0, help="Raw peak activity gate in dBFS (default -55)")
@@ -102,6 +108,14 @@ def main(argv=None):
         parser.error("--auto-level-peak-gate-dbfs must be within -120..0")
     if not (np.isfinite(args.auto_level_rms_gate_dbfs) and -120 <= args.auto_level_rms_gate_dbfs <= 0):
         parser.error("--auto-level-rms-gate-dbfs must be within -120..0")
+    if args.harmonic_mode == "guard" and args.harmonic_checkpoint is None:
+        parser.error("--harmonic-mode guard requires --harmonic-checkpoint with trained weights")
+    if args.harmonic_mode == "off" and args.harmonic_checkpoint is not None:
+        parser.error("--harmonic-checkpoint requires --harmonic-mode shadow or guard")
+    if args.harmonic_checkpoint is not None and not args.harmonic_checkpoint.is_file():
+        parser.error(f"Harmonic checkpoint not found: {args.harmonic_checkpoint}")
+    if not (np.isfinite(args.harmonic_threshold) and 0 < args.harmonic_threshold < 1):
+        parser.error("--harmonic-threshold must be inside (0,1)")
     if args.capture_deadline_blocks < 0:
         parser.error("--capture-deadline-blocks must be >= 0")
     if args.queue_blocks < 1:
@@ -142,7 +156,18 @@ def main(argv=None):
         warm = StrictLiveStream(heads)
         for j in range(8):
             warm.push(np.zeros(HOP, np.float32), start_sample=j * HOP)
-        stream = StrictLiveStream(heads)
+        stream = StrictLiveStream(
+            heads, harmonic_mode=args.harmonic_mode,
+            harmonic_checkpoint=args.harmonic_checkpoint,
+            harmonic_threshold=args.harmonic_threshold,
+        )
+        if args.harmonic_mode != "off":
+            print(json.dumps(dict(
+                harmonic_mode=args.harmonic_mode,
+                harmonic_checkpoint=str(args.harmonic_checkpoint) if args.harmonic_checkpoint else None,
+                changed_note_events=args.harmonic_mode == "guard",
+                note="Experimental harmonic expert: existing NOTE model and frontend are unchanged",
+            )), file=sys.stderr)
         leveler = (NoteAutoLevel(
             sample_rate=SR, block_size=args.block_size,
             max_gain_db=args.auto_level_max_db,
@@ -301,6 +326,11 @@ def main(argv=None):
                 if leveler is not None:
                     print(json.dumps(dict(auto_level_diagnostics=leveler.diagnostics())),
                           file=sys.stderr)
+                if stream.harmonic_selector is not None:
+                    from dataclasses import asdict
+                    print(json.dumps(dict(harmonic_expert_diagnostics=asdict(
+                        stream.harmonic_selector.stats,
+                    ))), file=sys.stderr)
 
 
 if __name__ == "__main__":
