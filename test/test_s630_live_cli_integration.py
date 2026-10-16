@@ -73,6 +73,73 @@ class S630RealCliSmokeTests(unittest.TestCase):
                  for l in (td/"events4.jsonl").read_text().splitlines()],
             )
 
+    def test_full_mic_and_soundfont_command_with_simulated_capture(self):
+        # Exercise the REAL CLI main(), PortAudio callback -> bounded input
+        # queue -> frozen S613 ONNX batch4 -> MIDI output -> shutdown.
+        # Hardware callback and soundfont engine are intentionally mocked:
+        # the CI runners do not have the user's iRig or their SF2.
+        import io
+        import types
+        from contextlib import contextmanager
+        from unittest.mock import patch
+        from scripts import live_strict_notes
+
+        audio=np.zeros((256,1),dtype=np.float32)
+        seen=[]
+
+        class SimulatedPiano:
+            def __init__(self,*a,**kw):
+                self.events=[]
+                seen.append(self)
+            def send(self,event):
+                self.events.append(event)
+            def health_error(self):
+                return None
+            def diagnostics(self):
+                return {"simulated":True}
+            def close(self):
+                pass
+
+        class FakeCapture:
+            @property
+            def active(self):
+                # Exit the production mic processing loop naturally after
+                # draining six already-captured test blocks.
+                raise KeyboardInterrupt
+
+        @contextmanager
+        def fake_microphone(**kwargs):
+            for _ in range(6):
+                kwargs["callback"](audio,256,None,None)
+            yield FakeCapture(),types.SimpleNamespace(
+                device_name="EXTERNAL_MIC_SIMULATED",
+                host_api="MME",device_index=1,latency_ms=17.4,
+            )
+
+        with tempfile.TemporaryDirectory() as td:
+            sf2=pathlib.Path(td)/"mock.sf2"
+            sf2.write_bytes(b"PLACEHOLDER_FOR_REAL_SF2_ENGINE")
+            with (
+                patch.object(live_strict_notes,"managed_input_stream",fake_microphone),
+                patch.dict(sys.modules,{"sounddevice":types.SimpleNamespace(
+                    CallbackAbort=RuntimeError)}),
+                patch("scripts.live_piano_output.PianoOutput",SimulatedPiano),
+                patch.object(sys,"stdout",io.StringIO()) as out,
+                patch.object(sys,"stderr",io.StringIO()) as err,
+            ):
+                live_strict_notes.main([
+                    "--mic","--device","MME:External Microphone",
+                    "--soundfont",str(sf2),"--hop-size","256",
+                    "--block-size","256","--lookahead-ms","0",
+                    "--inference-batch-hops","4",
+                ])
+                stderr=err.getvalue()
+                self.assertNotIn("Traceback",stderr)
+                self.assertIn('"s630_input_queue_diagnostics"',stderr)
+                self.assertIn('"callbacks_received": 6',stderr)
+                self.assertIn('"callbacks_processed": 6',stderr)
+                self.assertTrue(seen)
+
     def test_invalid_hop_gives_argument_error_not_unbound_variable(self):
         x=cli("--status","--hop-size","128","--inference-batch-hops","4")
         self.assertNotEqual(x.returncode,0)
