@@ -98,6 +98,46 @@ def summarize_trajectory(frames, attack_time, *, expected_pitch=40):
     }
 
 
+def audit_joint_head_overlap(frames, *, anchor_s=None, window_s=0.5):
+    """Locate causal frames meeting *both* onset and sustain requirements.
+
+    This is a measurement only; later frames do not become earlier predictions.
+    The anchor is the first ORIGINAL emitted pitch, not a ground-truth attack.
+    """
+    if anchor_s is None:
+        return {"available": False, "reason": "No original attack anchor"}
+    rows = [
+        row for row in frames
+        if anchor_s <= row["time_s"] <= anchor_s + window_s
+        and row["e2_onset"] is not None and row["e2_sustain"] is not None
+    ]
+    if not rows:
+        return {"available": False, "reason": "No frames in analysis window"}
+    maxima = []
+    for sustain in (0.25, 0.4, 0.5, 0.7, 0.9):
+        eligible = [row for row in rows if row["e2_sustain"] >= sustain]
+        if eligible:
+            row = max(eligible, key=lambda r: r["e2_onset"])
+            maxima.append({
+                "sustain_min": sustain,
+                "max_simultaneous_onset": row["e2_onset"],
+                "at_sustain": row["e2_sustain"],
+                "time_s": row["time_s"],
+                "after_first_false_attack_ms": round(
+                    1000 * (row["time_s"] - anchor_s), 2),
+            })
+        else:
+            maxima.append({"sustain_min": sustain, "max_simultaneous_onset": None})
+    return {
+        "available": True,
+        "anchor_s": anchor_s,
+        "window_s": window_s,
+        "frames": len(rows),
+        "note": "Head overlap alone; selector arming and note budget may still veto emission",
+        "conditional_maxima": maxima,
+    }
+
+
 def process_wav(wav_path, model_path, *, auto_level=False, expected_pitch=40):
     heads = load_heads(model_path)
     selection = Selection(**heads.metadata["selection"])
@@ -114,6 +154,15 @@ def process_wav(wav_path, model_path, *, auto_level=False, expected_pitch=40):
         # Keep onset_reset BELOW onset, otherwise the note immediately rearms.
         "lower_onset_015": replace(selection, onset=0.15, onset_reset=0.03),
     }
+    # Experimental sweep on this ONE WAV; diagnostic, never a promotion.
+    # Distinct names expose onset/sustain interaction at the SAME frame.
+    for onset in (0.05, 0.10, 0.15):
+        for sustain in (0.25, 0.40, 0.50):
+            name = f"grid_on{int(onset * 100):02d}_sus{int(sustain * 100):02d}"
+            variants[name] = replace(
+                selection, onset=onset, active_on=sustain,
+                onset_reset=min(0.02, onset / 2),
+            )
     selectors = {key: CausalSelection(value) for key, value in variants.items()}
     frontend = CausalPitchFeatures()
     leveler = NoteAutoLevel(sample_rate=SR, block_size=HOP) if auto_level else None
@@ -245,6 +294,13 @@ def process_wav(wav_path, model_path, *, auto_level=False, expected_pitch=40):
             trajectory_frames,
             first_attack["time_s"] if first_attack else None,
             expected_pitch=expected_pitch,
+        ),
+        "joint_head_overlap": audit_joint_head_overlap(
+            trajectory_frames, anchor_s=first_attack["time_s"] if first_attack else None,
+        ),
+        "grid_diagnostic_note": (
+            "One labeled monophonic WAV is insufficient to tune LIVE thresholds. "
+            "Compare true polyphony, quiet passages, and note releases before any promotion."
         ),
         "auto_level_diagnostics": leveler.diagnostics() if leveler is not None else None,
         "additional_diagnostic": ("If native spectral E2 evidence is substantial yet E2 onset and sustain probabilities remain near zero, inspect pitch-head training and microphone domain shift; if spectral evidence itself is absent, inspect capture/front-end. This audit deliberately does not inject any note."),
