@@ -507,6 +507,22 @@ def main(argv=None):
                            else "dual_hop_diagnostics")
                     print(json.dumps({field:stream.diagnostics()}),
                           file=sys.stderr)
+                if args.lookahead_ms == 0 and hasattr(stream,"timings_ms") and stream.timings_ms:
+                    elapsed=np.asarray(stream.timings_ms,np.float64)
+                    total_samples=stream.frontend.received
+                    print(json.dumps(dict(
+                        s629_original_worker_diagnostics=dict(
+                            callback_count=int(len(elapsed)),
+                            worker_p95_ms=round(float(np.percentile(elapsed,95)),4),
+                            worker_max_ms=round(float(np.max(elapsed)),4),
+                            worker_total_ms=round(float(np.sum(elapsed)),4),
+                            model_audio_processed_ms=round(total_samples*1000/SR,4),
+                            worker_over_audio_ratio=round(float(np.sum(elapsed))/
+                                max(1.,total_samples*1000/SR),4),
+                            nominal_callback_ms=round((args.block_size or HOP)*1000/SR,4),
+                            warning="Includes acoustic/model CPU, not piano synthesis, and does not prove end-to-end latency.",
+                        )
+                    )),file=sys.stderr)
                 if stream.harmonic_selector is not None:
                     from dataclasses import asdict
                     print(json.dumps(dict(harmonic_expert_diagnostics=asdict(
