@@ -161,6 +161,7 @@ class DualHopLiveStream:
                          "onset":config.fast_onset}),hop=128)
                        if config.mode!="off" else None)
         self.merger=DualSourceEventMerger() if config.mode=="guard" else None
+        self.harmonic_selector=None  # CLI parity; no simultaneous S613 specialist
         self.received=0
         self.closed=False
         self.fast_candidates=0
@@ -218,17 +219,17 @@ class DualHopLiveStream:
         self.timings_ms.append((time.perf_counter()-t0)*1000)
         return emitted
 
-    def finish(self):
+    def finish(self, reason="stream_end"):
         if self.closed:
             return []
         self.closed=True
-        slow=self.reference_selector.panic(self.received)
+        slow=self.reference_selector.panic(self.received, reason=reason)
         if self.config.mode!="guard":
             return slow
         # Both sources are reset together. The shared NOTE voice is ended
         # ONCE even when both internal heads have the same active pitch.
         if self.fast_selector is not None:
-            self.fast_selector.panic(self.received)
+            self.fast_selector.panic(self.received, reason=reason)
         return self.merger.finish(self.received)
 
     def diagnostics(self):
