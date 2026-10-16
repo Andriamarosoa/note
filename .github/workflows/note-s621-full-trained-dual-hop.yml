@@ -1,0 +1,100 @@
+name: "S621 full 53-source trained hop128 + frozen S613 hop256 dual LIVE"
+on:
+  push:
+    branches: [codex/note-live-s621-trained-dual-hop]
+    paths: ['.github/workflows/note-s621-full-trained-dual-hop.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s621-full-trained-dual-hop-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  train-and-evaluate-dual:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 210
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install native training and ONNX hybrid inference dependencies
+        run: |
+          python -m pip install "numpy>=1.26,<2" "scipy>=1.11,<1.15" "onnxruntime>=1.17,<1.25" "threadpoolctl>=3"
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Verify all original train/dev composition boundaries and 128-fast model safety
+        run: |
+          python -m unittest -v test.test_s620_dual_hop test.test_s618_missed_attack_sweep
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=json.loads(Path('analysis/evidence/v273-s613-strict-live/protocol.json').read_text())
+          assert sum(s['split']=='train' for s in p['sources'])==53
+          assert sum(s['split']=='dev' for s in p['sources'])==17
+          print('Original 53 TRAIN + 17 DEV, no TEST labels used')
+          PY
+      - name: Download pinned 53 train and 17 dev GuitarSet + URMP recordings
+        run: |
+          python -m scripts.s615_seed_full_development --root data/S621_full
+      - name: Compute native causal fast-hop128 acoustic features for train and dev
+        run: |
+          python -m scripts.s615_prepare_multihop --root data/S621_full --hops 128
+      - name: Train real NOTE native hop128 head with historical 50% sustain / 8% background
+        run: |
+          python -m scripts.s615_train_multihop \
+            --root data/S621_full --mode hop128 \
+            --out results/S621_full/hop128 \
+            --count-epochs 24 --pitch-epochs 28 --max-pitch-rows 15000
+      - name: Compute ONLY 17 development original hop256 reference acoustic features
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          from scripts.s615_prepare_multihop import prepare_one
+          root=Path('data/S621_full')
+          p=json.loads((root/'protocol.json').read_text())
+          dev=[s for s in p['sources'] if s['split']=='dev']
+          assert len(dev)==17
+          for i,s in enumerate(dev,1):
+              print(i,prepare_one(root,s,256),flush=True)
+          PY
+      - name: Evaluate separate trained fast hop128 plus frozen neural+ONNX S613 hop256
+        run: |
+          python -m scripts.s620_dualhop_eval \
+            --root data/S621_full \
+            --model model/live/strict_note/NOTE_strict_live.npz \
+            --fast-model results/S621_full/hop128/NOTE_multihop_candidate.npz \
+            --out results/S621_full/DUAL_COMPARISON_17DEV.json
+      - name: Audit native baseline, recovered true misses, lost old true pitches, K3 and K4
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          p=Path('results/S621_full')
+          r=json.loads((p/'hop128/report.json').read_text())
+          a=json.loads((p/'DUAL_COMPARISON_17DEV.json').read_text())
+          assert r['source_count_train']==53 and r['source_count_dev']==17
+          assert a['reference']['TP']==1241 and a['reference']['FP']==734
+          assert a['fast_checkpoint_trained_at_hop128']
+          assert a['dev_source_count']==17 and len(a['candidates'])==24
+          for label in ('best_f1','best_recall'):
+              b=a[label]
+              print(json.dumps(dict(
+                  label=label,TP=b['TP'],FP=b['FP'],FN=b['FN'],F1=b['F1'],
+                  recovered_old_missed_notes=b['gained_real_TP'],
+                  lost_old_correct_notes=b['lost_old_TP'],
+                  K3=b['grouped_onset_k']['by_true_k'].get('3'),
+                  K4=b['grouped_onset_k']['by_true_k'].get('4'))))
+          print('Full 128-hop candidate dev F1:',r['dev_by_hop']['128']['best']['scores']['F1'])
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s621-full-trained-hop128-and-dual-hop256-dev-results
+          path: results/S621_full/
+          retention-days: 45
