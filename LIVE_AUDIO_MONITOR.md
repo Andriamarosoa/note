@@ -135,3 +135,27 @@ Trois rejouages causaux sont effectués **sur les mêmes sorties des mêmes têt
 - `mono_budget_1`: borne artificielle à 1 note, simple témoin de diagnostic incompatible avec la polyphonie.
 
 Ne jamais promouvoir directement le mono budget ou le count_gate_050 à partir de la seule corde E2. Il faut également vérifier les vrais accords K2–K6, les régressions, et le comportement LIVE strict. Le code d'audit n'ajoute aucun délai ni aucune fonction à l'architecture de production.
+
+## Après audit E2 v2 : fondamentale/harmoniques et trajectoire causale
+
+Sur le WAV E2 fourni par l'utilisateur (MME ; peak -6.5 dBFS, RMS -23.4 dBFS), l'audit v2 au premier déclenchement (t≈1.155 s) montre :
+- E2 MIDI40: score natif 0.69099, 8192 score 0.13487 ; onset 0.00679, sustain 0.00336.
+- E3 MIDI52: score natif 1.01425, 8192 score 0.22322 ; onset 0.43562, sustain 0.28253.
+- B3 MIDI59: score natif 0.95941 ; onset 0.74672, sustain 0.50990.
+- C#4 MIDI61: onset 0.77878, sustain 0.57643.
+- K3 softmax=0.42313 au premier déclenchement ; puis K4 confidence 0.84286 à 1.184218 s, alors qu'une seule corde était jouée.
+- H2 de E2 sur la fenêtre 8192 et H1 de E3 partagent **exactement** la même valeur log-FFT (0.26238 au premier déclenchement ; 1.09344 au second). H3 de E2 et H1 de B3 partagent aussi la même valeur (0.26672 puis 1.07671). Il s'agit de la même composante physique vue sous plusieurs hypothèses de hauteur, et non de preuves de plusieurs notes. Le sélecteur actuel n'applique pas de décomposition explicite des harmoniques.
+- La fenêtre 8192 est **causale et alignée à droite**. Les scores au tout début de l'attaque peuvent être bas même lorsque le diagnostic spectral trouve une fondamentale clairement visible dans la fenêtre la plus forte du WAV. Cet écart temporel doit être audité avant toute modification d'architecture.
+
+Version v3 de l'audit (rejoue le même fichier, aucune future information fournie au LIVE) :
+
+```powershell
+git pull --ff-only
+python -m unittest -v test.test_live_pitch_trajectory
+python -m scripts.audit_live_pitch_count --wav "irig_E2_wasapi.wav" --expected-pitch 40 --report "audit_e2_timeline.json" > $null
+$a = Get-Content "audit_e2_timeline.json" -Raw | ConvertFrom-Json
+$a.attack_to_sustain_trajectory.sampled_causal_frames | Format-Table offset_requested_ms,time_s,e2_onset,e2_sustain,e2_h1_8192,e2_harmonic_score_8192,e3_harmonic_score_8192,predicted_k
+$a.attack_to_sustain_trajectory.maxima_during_next_500_ms | ConvertTo-Json
+```
+
+Les échantillons à +25/+50/+100/+200/+350/+500 ms ne servent qu'à évaluer la *progression* du modèle déjà causal ; les utiliser pour retarder l'émission violerait le LIVE strict. Aucun seuil, poids, tête, modèle ni sélection n'a été promu. Si la fondamentale devient visible plus tard, la prochaine expérience appropriée est une **tête entraînée de cohérence d'harmoniques à l'attaque** utilisant uniquement l'histoire déjà reçue, avec validation sur accords où les octaves sont des notes réelles.
