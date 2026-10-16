@@ -143,6 +143,10 @@ def main(argv=None):
     parser.add_argument("--auto-level-rms-gate-dbfs", type=float, default=-65.0, help="Raw RMS activity gate in dBFS (default -65)")
     parser.add_argument("--midi-port", help="Exact mido output port name; omit for JSONL events")
     parser.add_argument("--out", type=Path, help="JSONL output; defaults to stdout")
+    parser.add_argument("--lookahead-ms", type=float, default=0.0,
+                        help="S628 actual future PCM in ms (0=original, 5=experimental), delays physical notes; must use --hop-size 256")
+    parser.add_argument("--lookahead-mode", choices=("delay","average","confirm","max_onset","future"), default="average",
+                        help="S628 future score fusion, delay=timing-only control; default average")
     parser.add_argument("--hop-size", type=str, default=None,
                         help="Neural decision hop 128/256/512 or auto (experimental CPU preflight). Default 256 preserves validated S613.")
     parser.add_argument("--block-size", type=parse_block_size, default=HOP,
@@ -180,6 +184,8 @@ def main(argv=None):
         parser.error(f"Harmonic checkpoint not found: {args.harmonic_checkpoint}")
     if not (np.isfinite(args.harmonic_threshold) and 0 < args.harmonic_threshold < 1):
         parser.error("--harmonic-threshold must be inside (0,1)")
+    if not np.isfinite(args.lookahead_ms) or not 0 <= args.lookahead_ms <= 50:
+        parser.error("--lookahead-ms must be finite and within 0..50")
     if args.capture_deadline_blocks < 0:
         parser.error("--capture-deadline-blocks must be >= 0")
     try:
@@ -201,6 +207,11 @@ def main(argv=None):
                 not 0 <= args.dual_hop_novelty_ratio <= 1 or
                 args.dual_hop_novelty_min < 0):
             parser.error("Invalid S620 dual-hop fast-onset/novelty thresholds")
+    if args.lookahead_ms > 0:
+        if hop_request!=256:
+            parser.error("--lookahead-ms >0 requires --hop-size 256 for the frozen S613 selector")
+        if args.dual_hop_mode!="off" or args.harmonic_mode!="off":
+            parser.error("S628 lookahead cannot be combined with dual-hop or harmonic guard at this stage")
     queue_capacity = resolve_queue_blocks(args.queue_blocks, args.block_size)
     if args.block_size and args.block_size > HOP:
         print(json.dumps(dict(
@@ -224,7 +235,10 @@ def main(argv=None):
         return
     if args.status:
         print(json.dumps(dict(status="EXPERIMENTAL_AUTONOMOUS_CAUSAL_NOTE_LIVE", sample_rate=SR, hop=HOP,
-                             lookahead_samples=0, sidecars_required=False, model=str(args.model),
+                             lookahead_samples=round(args.lookahead_ms*SR/1000),
+                             lookahead_ms=args.lookahead_ms,
+                             lookahead_mode=args.lookahead_mode if args.lookahead_ms>0 else "off",
+                             sidecars_required=False, model=str(args.model),
                              model_available=args.model.is_file(), pitch_range=[40, 88], polyphony=6,
                              original_S80_promoted=False, microphone_requires="sounddevice + PortAudio",
                              midi_requires="mido + python-rtmidi", accuracy="see S613 held-out report")))
@@ -250,7 +264,20 @@ def main(argv=None):
             harmonic_threshold=args.harmonic_threshold,
         )
         print(json.dumps(dict(hop_selection=hop_audit)), file=sys.stderr)
-        if args.dual_hop_mode != "off":
+        if args.lookahead_ms > 0:
+            from causal_note.lookahead import LookaheadConfig,LookaheadLiveStream
+            cfg=LookaheadConfig(milliseconds=args.lookahead_ms,
+                                mode=args.lookahead_mode)
+            stream=LookaheadLiveStream(heads,config=cfg)
+            print(json.dumps(dict(
+                s628_lookahead="EXPERIMENTAL",
+                requested_ms=args.lookahead_ms,actual_samples=cfg.samples,
+                actual_ms=cfg.samples*1000/SR,mode=cfg.mode,
+                latency_added=True,
+                warning=("Only PHYSICALLY received future PCM used. No event backdating. "
+                         "Frozen S613, no verified F1 gain; compare to --lookahead-mode delay."),
+            )),file=sys.stderr)
+        elif args.dual_hop_mode != "off":
             from causal_note.dual_hop import DualHopConfig, DualHopLiveStream
             dual_config = DualHopConfig(
                 mode=args.dual_hop_mode,
@@ -460,7 +487,9 @@ def main(argv=None):
                     print(json.dumps(dict(auto_level_diagnostics=leveler.diagnostics())),
                           file=sys.stderr)
                 if hasattr(stream, "diagnostics"):
-                    print(json.dumps(dict(dual_hop_diagnostics=stream.diagnostics())),
+                    field=("s628_lookahead_diagnostics" if args.lookahead_ms>0
+                           else "dual_hop_diagnostics")
+                    print(json.dumps({field:stream.diagnostics()}),
                           file=sys.stderr)
                 if stream.harmonic_selector is not None:
                     from dataclasses import asdict
