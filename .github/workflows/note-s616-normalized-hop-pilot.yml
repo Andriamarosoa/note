@@ -1,0 +1,79 @@
+name: "S616 loop - normalized hop vs S615 real pilot"
+on:
+  push:
+    branches: [codex/note-live-s616-hop-normalized]
+    paths: ['.github/workflows/note-s616-normalized-hop-pilot.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  physical-time-ablation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install CPU native training dependencies
+        run: |
+          python -m pip install "numpy>=1.26,<2" "scipy>=1.11,<1.15" "threadpoolctl>=3" "onnxruntime>=1.17,<1.25"
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Verify original hop256 invariance and physical-time features
+        run: |
+          python -m unittest -v test.test_s616_hop_normalization test.test_live_adaptive_hop test.test_s615_exactk_audit
+      - name: Prepare SAME verified real GuitarSet 6 train and 3 dev recordings
+        run: |
+          python -m scripts.s615_seed_guitarset_pilot --root data/S616_real_pilot --train-sources 6 --dev-sources 3
+          python -m scripts.s615_prepare_multihop --root data/S616_real_pilot --hops 128 256 512 --pilot-train-sources 6 --pilot-dev-sources 3
+      - name: Fit SAME shared head architecture and epoch budget as S615
+        run: |
+          python -m scripts.s615_train_multihop --root data/S616_real_pilot \
+            --mode shared --out results/S616_real_pilot/shared \
+            --count-epochs 4 --pitch-epochs 6 --max-pitch-rows 7000 \
+            --pilot-train-sources 6 --pilot-dev-sources 3
+      - name: Compare S616 with prior completed S615 on same development sources
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 38862219355 --repo Andriamarosoa/note \
+            --name s615-real-guitarset-pilot-candidates --dir /tmp/old_s615
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          old=json.loads(Path('/tmp/old_s615/shared/report.json').read_text())
+          new=json.loads(Path('results/S616_real_pilot/shared/report.json').read_text())
+          assert old['source_count_train']==new['source_count_train']==6
+          assert old['source_count_dev']==new['source_count_dev']==3
+          rows={}
+          for hop in ('128','256','512'):
+              a=old['dev_by_hop'][hop]
+              b=new['dev_by_hop'][hop]
+              rows[hop]=dict(
+                  old_F1=a['best']['scores']['F1'],
+                  new_F1=b['best']['scores']['F1'],
+                  delta_F1=b['best']['scores']['F1']-a['best']['scores']['F1'],
+                  old_K=a['onset_exact_k_dev']['onset_exact_k_rate'],
+                  new_K=b['onset_exact_k_dev']['onset_exact_k_rate'],
+                  old_K4=a['onset_exact_k_dev']['by_true_k'].get('4',{}),
+                  new_K4=b['onset_exact_k_dev']['by_true_k'].get('4',{}),
+                  old_FP=a['best']['scores']['FP'],
+                  new_FP=b['best']['scores']['FP'])
+          output=dict(status='ABLATION_DEV_ONLY_NO_PROMOTION',
+                      scope='6 train, 3 dev real GuitarSet sources',
+                      hypothesis='normalize spectral flux per 256 samples and 1-hop short RMS',
+                      results=rows)
+          Path('results/S616_real_pilot/COMPARISON_VS_S615.json').write_text(json.dumps(output,indent=2))
+          print(json.dumps(output,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s616-normalized-hop-retrained-real-pilot
+          path: results/S616_real_pilot/
+          retention-days: 30
