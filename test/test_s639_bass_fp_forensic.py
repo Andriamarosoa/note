@@ -57,9 +57,9 @@ class ForensicTests(unittest.TestCase):
         out,count=corrected(native,bass,np.zeros_like(bass),k,state,
                             ("bass_080",.8,None,False,0.),True)
         self.assertEqual(count,1)
-        self.assertEqual(float(out[12,0]),.6)
+        self.assertAlmostEqual(float(out[12,0]),.6,places=6)
         self.assertEqual(float(native[12,0]),0.)
-        self.assertEqual(float(out[12,1]),.9)
+        self.assertAlmostEqual(float(out[12,1]),.9,places=6)
 
 
 if __name__=="__main__":
