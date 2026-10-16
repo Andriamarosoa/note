@@ -1,0 +1,49 @@
+name: "S626 exact E2+E3 focus and false-note context"
+on:
+  push:
+    branches: [codex/note-s626-conditioned-missed-pitches]
+    paths: ['.github/workflows/note-s626-spotcheck-e2e3.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  verify-focal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover immutable S626 full S613 prediction/label audit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p /tmp/s626
+          gh run download 38884677850 --repo Andriamarosoa/note \
+            --name s626-full-S613-exact-combination-FN-FP-audit-17dev \
+            --dir /tmp/s626
+          test -f /tmp/s626/S626_FAILURES_BY_EXACT_COMBINATION.json
+      - name: Print E2+E3 failures and hardest full onset-note sets
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/s626/S626_FAILURES_BY_EXACT_COMBINATION.json').read_text())
+          assert r['reference_noteon_80ms']['TP']==1241
+          for section in ('condition_A_overlap_pairs','condition_B_exact_onset_groups'):
+              rows=r[section]['top_failures']
+              print('SECTION',section,'combinations',r[section]['combinations'])
+              for wanted in ('E2+E3','E3+F3','E3+F#3','A3+D4+F#4','A2+E3','C#3+G#3'):
+                  for row in rows:
+                      if row['notes']==wanted:
+                          print('EXACT_SPOTCHECK '+json.dumps(row))
+                          break
+                  else:
+                      print('NOT_IN_TOP_30',wanted)
+              print('TOP_8',json.dumps([
+                  dict(notes=x['notes'],examples=x['examples'],
+                       failed=x['failed_at_least_one'],
+                       independent_compositions=x['distinct_compositions'])
+                  for x in rows[:8]]))
+          print('TRUE_NOTE_FNS_TOP_15',json.dumps(r['most_missed_individual_pitches'][:15]))
+          print('FP_CONTEXT',json.dumps(r['false_positive_context']))
+          PY
