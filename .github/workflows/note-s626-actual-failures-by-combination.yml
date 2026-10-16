@@ -1,0 +1,78 @@
+name: "S626 audit S613 missed attacks by exact pitch pair and chord combination"
+on:
+  push:
+    branches: [codex/note-s626-conditioned-missed-pitches]
+    paths: ['.github/workflows/note-s626-actual-failures-by-combination.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  conditioned-noteon-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 85
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install deterministic NOTE ONNX hybrid CPU inference
+        run: |
+          python -m pip install "numpy>=1.26,<2" "scipy>=1.11,<1.15" "onnxruntime>=1.17,<1.25" "threadpoolctl>=3"
+      - name: Test exact pair and K3 grouping FN accounting (no model assumptions)
+        run: |
+          python -m compileall -q scripts/s626_audit_missed_combinations.py
+          python -m unittest -v test.test_s626_audit_missed_combinations test.test_s625_exact_note_combinations
+      - name: Download pinned 17 DEV recordings only, without accessing TEST
+        run: |
+          python -m scripts.s615_seed_full_development --root data/S626_conditioned --dev-only
+      - name: Build original past-only 256-hop features from the same GuitarSet+URMP originals
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          from scripts.s615_prepare_multihop import prepare_one
+          root=Path('data/S626_conditioned')
+          s=[x for x in json.loads((root/'protocol.json').read_text())['sources'] if x['split']=='dev']
+          assert len(s)==17
+          for i,x in enumerate(s,1):
+              print(i,prepare_one(root,x,256),flush=True)
+          PY
+      - name: Match original S613 real NOTE FNs against exact coactive combinations
+        run: |
+          python -m scripts.s626_audit_missed_combinations \
+            --root data/S626_conditioned \
+            --model model/live/strict_note/NOTE_strict_live.npz \
+            --out results/S626_FAILURES_BY_EXACT_COMBINATION.json
+      - name: Verify canonical correct FULL S613 comparator and print ranking
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          x=json.loads(Path('results/S626_FAILURES_BY_EXACT_COMBINATION.json').read_text())
+          assert x['status']=='S626_FROZEN_S613_EXACT_COMBINATION_FAILURE_AUDIT_DEV_ONLY'
+          assert x['dev_sources']==17 and x['test_sources_read']==0
+          assert x['model_architecture']=='native_causal_hybrid'
+          assert x['reference_noteon_80ms']['TP']==1241
+          assert x['reference_noteon_80ms']['FP']==734
+          assert x['reference_noteon_80ms']['FN']==838
+          for n in ('condition_A_overlap_pairs','condition_B_exact_onset_groups'):
+              print('RANKINGS',n,
+                    json.dumps(dict(
+                        by_total_missed=x[n]['top_failures'][:20],
+                        by_supported_failure_rate=x[n]['highest_rates_supported'][:20],
+                        rare_failure_fragility=x[n]['rare_100pct_failures'][:10])),
+                    flush=True)
+          print('E2+E3',json.dumps([
+              r for r in x['condition_A_overlap_pairs']['top_failures']
+              if r['notes']=='E2+E3']),flush=True)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s626-full-S613-exact-combination-FN-FP-audit-17dev
+          path: results/S626_FAILURES_BY_EXACT_COMBINATION.json
+          retention-days: 45
