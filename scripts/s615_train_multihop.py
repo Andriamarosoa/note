@@ -31,6 +31,7 @@ from causal_note.strict_live import (
 from scripts.s613_train_strict_live import (
     targets, event_score, real_notes, summary,
 )
+from scripts.s615_exactk_audit import exact_k_onset_audit, merge_k_reports
 
 
 HOPS = (128, 256, 512)
@@ -296,6 +297,7 @@ def validate_dev(root,specs,hops,model):
     result={}
     for hop in hops:
         cohorts=[[] for _ in CONFIGS]
+        k_cohorts=[[] for _ in CONFIGS]
         for s in specs:
             ends,x,_,_,notes,length=source_data(root,s,hop)
             truth=real_notes(notes,length/SR)
@@ -309,10 +311,13 @@ def validate_dev(root,specs,hops,model):
                 events.extend(selector.panic(int(length)))
                 sc,_=event_score(events,truth,.08)
                 cohorts[j].append(dict(source=s["name"],corpus=s["corpus"],**sc))
+                k_cohorts[j].append(exact_k_onset_audit(events,truth))
         choices=[dict(selection=asdict(cfg),scores=summary(items))
                  for cfg,items in zip(CONFIGS,cohorts)]
-        best=max(choices,key=lambda row:row["scores"]["F1"])
-        result[str(hop)]=dict(best=best,all=choices)
+        best_index=max(range(len(choices)),key=lambda j:choices[j]["scores"]["F1"])
+        best=choices[best_index]
+        result[str(hop)]=dict(best=best,all=choices,
+                              onset_exact_k_dev=merge_k_reports(k_cohorts[best_index]))
     return result
 
 
