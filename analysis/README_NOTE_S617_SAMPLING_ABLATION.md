@@ -59,8 +59,7 @@ new *experimental* native neural 256-hop checkpoint, and
 `COMPARISON_VS_FROZEN_S613_DEV.json` with F1, K1..K6 grouped
 onset Exact-K and separately K-active frame confusion.
 
-The original S613 frozen hybrid vs previous S615 full neural-only
-on the exact 17 dev compositions scored **56.39% vs 47.55%**.
+The earlier comparator accidentally ran original S613 in neural-only mode at 56.39%. Correct native hybrid checkpoint loading gives **61.22%** for frozen S613, while previous S615 full neural-only has **47.55%** on exactly the same 17 dev songs.
 S617 must beat those **on the SAME 17 dev compositions** before
 independent new-track evaluation is even considered.
 
