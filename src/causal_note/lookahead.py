@@ -158,7 +158,10 @@ class LookaheadLiveStream:
         # probabilities with the actual EOF as arrival; no fake padding.
         out=[]
         for t,p,k in self.pending:
-            out.extend(self.selector.step(p,k,t,self.received))
+            residual=self.selector.step(p,k,t,self.received)
+            for event in residual:
+                event["reason"]="lookahead_eof_unconfirmed_"+event["reason"]
+            out.extend(residual)
             self.stats["EOF_baseline_unconfirmed_frames"]+=1
         self.pending.clear()
         out.extend(self.selector.panic(self.received,reason=reason))
