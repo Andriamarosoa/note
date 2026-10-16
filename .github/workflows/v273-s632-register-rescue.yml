@@ -44,7 +44,7 @@ jobs:
         with: {python-version: '3.11'}
       - name: Install NOTE frozen audio and native ONNX dependencies
         run: python -m pip install -r requirements-live-strict.txt
-      - name: Compare S614 versus twelve causal register options, separately per corpus and register
+      - name: Compare S614 versus 22 causal register and K-veto options, separately per corpus and register
         run: python -m scripts.s632_dual_register_rescue_audit --out /tmp/S632
       - uses: actions/upload-artifact@v4
         if: always()
