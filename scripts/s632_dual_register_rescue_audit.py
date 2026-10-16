@@ -39,7 +39,7 @@ def replay(row, config, policy):
     events = []
     proposals = dict(bass=0, high=0, bass_emitted=0, high_emitted=0)
     for t, features, native, count in zip(row["ends"], row["x"], row["p"], row["k"]):
-        corrected, choices = propose(features, native, state, policy)
+        corrected, choices = propose(features, native, state, policy, count)
         proposals["bass"] += int(choices["bass"].sum())
         proposals["high"] += int(choices["high"].sum())
         emitted = state.step(corrected, count, int(t), int(t))
