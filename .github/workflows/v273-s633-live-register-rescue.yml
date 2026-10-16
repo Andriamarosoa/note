@@ -1,0 +1,41 @@
+name: S633 opt-in Bass and High Pitch Rescue LIVE original-vs-shadow-vs-guard
+on:
+  push:
+    branches: [codex/s633-register-rescue-live-shadow-guard]
+    paths:
+      - 'scripts/live_strict_notes.py'
+      - 'src/causal_note/register_rescue.py'
+      - 'src/causal_note/strict_live.py'
+      - 'src/causal_note/batched_live.py'
+      - 'test/test_s633_live_register_integration.py'
+      - '.github/workflows/v273-s633-live-register-rescue.yml'
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s633-live-register-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  real_cli_native_and_batch:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install frozen NOTE original hybrid runtime
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Compile original/live rescue and verify original versus shadow versus guard
+        run: |
+          python -m compileall -q scripts/live_strict_notes.py src/causal_note/strict_live.py src/causal_note/batched_live.py src/causal_note/register_rescue.py test/test_s633_live_register_integration.py
+          python -m unittest -v test.test_s633_live_register_integration test.test_s630_batched_live test.test_s632_register_rescue
+      - name: Test S633 CLI argument guard on true Python executable
+        run: python -m scripts.live_strict_notes --status --register-rescue-mode shadow --inference-batch-hops 4 --lookahead-ms 5 --hop-size 256
