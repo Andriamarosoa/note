@@ -1,0 +1,42 @@
+name: "S630 REAL python -m CLI startup, Windows+Linux, batch4, WAV, mic"
+on:
+  push:
+    branches: [codex/note-s630-batched-onnx-live-audit]
+    paths:
+      - '.github/workflows/note-s630-real-cli-windows-smoke.yml'
+      - 'scripts/live_strict_notes.py'
+      - 'test/test_s630_live_cli_integration.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  execute-real-cli:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install actual NOTE frozen hybrid ONNX and microphone dependency
+        run: |
+          python -m pip install "numpy>=1.26,<2" "scipy>=1.11,<1.15" "onnxruntime>=1.17,<1.25" "threadpoolctl>=3" sounddevice
+      - name: Compile and execute original console entrypoint, real WAV and invalid microphone device
+        run: |
+          python -m compileall -q scripts/live_strict_notes.py src/causal_note/batched_live.py
+          python -m unittest -v test.test_s630_live_cli_integration
+      - name: Execute exact CLI command through real entrypoint (no hardware)
+        run: |
+          python -m scripts.live_strict_notes --status --hop-size 256 --block-size 256 --lookahead-ms 0 --inference-batch-hops 4
+      - name: Verify frozen model batched NOTE on genuine Windows Python environment
+        run: |
+          python -m unittest -v test.test_s630_batched_live
