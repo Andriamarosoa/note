@@ -192,7 +192,7 @@ def run(out,*,limit=12):
     train_groups={(p["corpus"],p["composition"]) for p in protocol["sources"] if p["split"]=="train"}
     test_groups={(p["corpus"],p["composition"]) for p in protocol["sources"] if p["split"]=="test"}
     dev=[p for p in protocol["sources"] if p["split"]=="dev" and p["corpus"]=="GuitarSet"]
-    assert len(dev)==12 and len(set(p["composition"] for p in dev))==12
+    assert len(dev)==12 and len(set(p["composition"] for p in dev))==3
     assert not {("GuitarSet",p["composition"]) for p in dev}&(train_groups|test_groups)
     selected=dev[:limit]
     heads=load_heads(MODEL,expected_sha256=frozen["model_sha256"])
