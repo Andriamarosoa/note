@@ -19,6 +19,7 @@ import numpy as np
 from threadpoolctl import threadpool_limits
 from causal_note.strict_live import HOP, SR, load_heads, StrictLiveStream
 from scripts.live_audio_io import audio_devices, managed_input_stream, open_output_stream, parse_device
+from scripts.live_input_level import NoteAutoLevel
 
 DEFAULT_MODEL = Path(__file__).resolve().parents[1] / "model/live/strict_note/NOTE_strict_live.npz"
 
@@ -69,6 +70,10 @@ def main(argv=None):
     parser.add_argument("--monitor-input", action="store_true", help="Listen to raw microphone audio (headphones recommended); independent of note detection")
     parser.add_argument("--output-device", help="sounddevice output device name/index for monitoring; select a WASAPI endpoint via --list-devices")
     parser.add_argument("--monitor-gain", type=float, default=0.5, help="Raw input monitoring gain, 0.0..1.0 (default 0.5)")
+    parser.add_argument("--auto-level", action="store_true", help="Enable bounded causal input gain (+18dB max), adapted from midi; experimental, default OFF")
+    parser.add_argument("--auto-level-max-db", type=float, default=18.0, help="Maximum automatic amplification, 0..24 dB (default: 18)")
+    parser.add_argument("--auto-level-peak-gate-dbfs", type=float, default=-55.0, help="Raw peak activity gate in dBFS (default -55)")
+    parser.add_argument("--auto-level-rms-gate-dbfs", type=float, default=-65.0, help="Raw RMS activity gate in dBFS (default -65)")
     parser.add_argument("--midi-port", help="Exact mido output port name; omit for JSONL events")
     parser.add_argument("--out", type=Path, help="JSONL output; defaults to stdout")
     parser.add_argument("--block-size", type=int, default=HOP, choices=(128, 256, 512, 1024))
@@ -91,6 +96,12 @@ def main(argv=None):
         parser.error("--output-device requires --monitor-input")
     if not 0.0 <= args.monitor_gain <= 1.0:
         parser.error("--monitor-gain must be in [0.0, 1.0]")
+    if not (np.isfinite(args.auto_level_max_db) and 0 <= args.auto_level_max_db <= 24):
+        parser.error("--auto-level-max-db must be within 0..24 dB")
+    if not (np.isfinite(args.auto_level_peak_gate_dbfs) and -120 <= args.auto_level_peak_gate_dbfs <= 0):
+        parser.error("--auto-level-peak-gate-dbfs must be within -120..0")
+    if not (np.isfinite(args.auto_level_rms_gate_dbfs) and -120 <= args.auto_level_rms_gate_dbfs <= 0):
+        parser.error("--auto-level-rms-gate-dbfs must be within -120..0")
     if args.capture_deadline_blocks < 0:
         parser.error("--capture-deadline-blocks must be >= 0")
     if args.queue_blocks < 1:
@@ -132,6 +143,18 @@ def main(argv=None):
         for j in range(8):
             warm.push(np.zeros(HOP, np.float32), start_sample=j * HOP)
         stream = StrictLiveStream(heads)
+        leveler = (NoteAutoLevel(
+            sample_rate=SR, block_size=args.block_size,
+            max_gain_db=args.auto_level_max_db,
+            peak_gate_dbfs=args.auto_level_peak_gate_dbfs,
+            rms_gate_dbfs=args.auto_level_rms_gate_dbfs,
+        ) if args.auto_level else None)
+        if leveler is not None:
+            print(json.dumps(dict(auto_level="enabled", max_gain_db=args.auto_level_max_db,
+                 raw_peak_gate_dbfs=args.auto_level_peak_gate_dbfs,
+                 raw_rms_gate_dbfs=args.auto_level_rms_gate_dbfs,
+                 warning="Gain only; cannot recover missing or quantized-out E2 fundamentals")),
+                 file=sys.stderr)
         output = stack.enter_context(args.out.open("x")) if args.out else sys.stdout
         piano = None
         if args.soundfont:
@@ -251,7 +274,8 @@ def main(argv=None):
                     if capture_deadline_exceeded(captured, time.monotonic(), args.block_size,
                                                  args.capture_deadline_blocks):
                         raise BufferError("Optional capture deadline exceeded before inference")
-                    events = stream.push(audio, start_sample=start)
+                    model_audio = leveler.apply(audio) if leveler is not None else audio
+                    events = stream.push(model_audio, start_sample=start)
                     if overrun.is_set():
                         raise BufferError("Microphone input overflow; notes released")
                     if capture_deadline_exceeded(captured, time.monotonic(), args.block_size,
@@ -262,7 +286,8 @@ def main(argv=None):
                 blocks = blocks_wav(args.wav, args.block_size) if args.wav else blocks_stdin(sys.stdin.buffer, args.block_size)
                 start = 0
                 for audio in blocks:
-                    emit(stream.push(audio, start_sample=start))
+                    model_audio = leveler.apply(audio) if leveler is not None else audio
+                    emit(stream.push(model_audio, start_sample=start))
                     start += len(audio)
         except KeyboardInterrupt:
             failure = "shutdown"
@@ -270,7 +295,12 @@ def main(argv=None):
             failure = "stream_error"
             raise
         finally:
-            emit(stream.finish(failure))
+            try:
+                emit(stream.finish(failure))
+            finally:
+                if leveler is not None:
+                    print(json.dumps(dict(auto_level_diagnostics=leveler.diagnostics())),
+                          file=sys.stderr)
 
 
 if __name__ == "__main__":
