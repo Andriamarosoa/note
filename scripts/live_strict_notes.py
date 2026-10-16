@@ -103,6 +103,22 @@ def apply_model_input(leveler, audio):
     ])
 
 
+def stream_received_samples(stream):
+    """Read the actual PCM sample counter from every supported LIVE engine.
+
+    StrictLiveStream only stores it in `frontend.received`, whereas
+    batched, lookahead and dual-hop streams expose `received` directly.
+    Called ONLY for shutdown diagnostics, never in the capture callback.
+    """
+    count = getattr(stream, "received", None)
+    if count is None:
+        frontend = getattr(stream, "frontend", None)
+        if frontend is None:
+            raise AttributeError("Live stream has no received-sample counter")
+        count = frontend.received
+    return int(count)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
     parser.add_argument("--model", type=Path, default=DEFAULT_MODEL)
@@ -542,7 +558,7 @@ def main(argv=None):
                 emit(stream.finish(failure))
             finally:
                 if args.mic and capture_stats is not None:
-                    processed_ms=stream.received*1000/SR
+                    processed_ms=stream_received_samples(stream)*1000/SR
                     print(json.dumps(dict(s630_input_queue_diagnostics=dict(
                         callbacks_received=capture_stats["received"],
                         callbacks_processed=capture_stats["processed"],
@@ -567,7 +583,7 @@ def main(argv=None):
                           file=sys.stderr)
                 if args.lookahead_ms == 0 and hasattr(stream,"timings_ms") and stream.timings_ms:
                     elapsed=np.asarray(stream.timings_ms,np.float64)
-                    total_samples=stream.frontend.received
+                    total_samples=stream_received_samples(stream)
                     print(json.dumps(dict(
                         s629_original_worker_diagnostics=dict(
                             callback_count=int(len(elapsed)),
