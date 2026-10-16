@@ -30,11 +30,19 @@ class CausalPitchFeatures:
     Inputs must be contiguous mono float PCM at 44.1 kHz. Reset on any gap.
     """
 
-    def __init__(self):
+    def __init__(self, *, hop=HOP):
+        if hop not in (128, 256, 512):
+            raise ValueError("Experimental NOTE decision hop must be 128/256/512 samples")
+        self.hop = int(hop)
+        # Preserve the TRAINING-time physical interval of native S613 lags.
+        # This is an approximation, not an independently trained checkpoint.
+        self.lags = tuple(max(1, round(lag * HOP / self.hop)) for lag in (2, 4, 8, 16))
+        self.recent_frames = max(1, round(8 * HOP / self.hop))
+        self.history_frames = max(1, round(32 * HOP / self.hop))
         self.received = 0
-        self.next_end = HOP
+        self.next_end = self.hop
         self.tail = np.empty(0, np.float32)
-        self.history = deque(maxlen=32)
+        self.history = deque(maxlen=self.history_frames)
         self.last_spectra = [None] * len(WINDOWS)
         self.tapers = [np.hanning(n).astype(np.float32) for n in WINDOWS]
         self.indices = []
@@ -57,7 +65,7 @@ class CausalPitchFeatures:
         score = .75 * (h * self.weights).sum(-1) / self.weights.sum() + .25 * h[..., 0]
         physical = np.concatenate((score, h[..., 0]), axis=1)
         zero = np.zeros_like(physical)
-        older = [self.history[-lag] if len(self.history) >= lag else zero for lag in (2, 4, 8, 16)]
+        older = [self.history[-lag] if len(self.history) >= lag else zero for lag in self.lags]
         relative = h / (.1 + h.max(axis=0, keepdims=True))
         features = [h.reshape(49, -1), relative.reshape(49, -1), physical]
         features.extend(physical - old for old in older)
@@ -69,7 +77,10 @@ class CausalPitchFeatures:
                 other[:-offset] = score[offset:]
             features.append(score - other)
         history = np.stack((*self.history, physical))
-        features.extend((history[-8:].mean(0), history.mean(0), physical - history[-8:].min(0)))
+        features.extend((
+            history[-self.recent_frames:].mean(0), history.mean(0),
+            physical - history[-self.recent_frames:].min(0),
+        ))
         scalar = [*flux, np.log1p(100 * np.sqrt(np.mean(signal[-HOP:] ** 2))),
                   np.log1p(100 * np.sqrt(np.mean(signal ** 2)))]
         features.extend((np.broadcast_to(scalar, (49, len(scalar))), PITCHES[:, None] / 127.))
@@ -94,7 +105,7 @@ class CausalPitchFeatures:
             if len(frame) < WINDOWS[-1]:
                 frame = np.pad(frame, (WINDOWS[-1] - len(frame), 0))
             result.append((self.next_end, self._frame(frame)))
-            self.next_end += HOP
+            self.next_end += self.hop
         self.tail = joined[-WINDOWS[-1]:].copy()
         self.received = end
         return result
@@ -267,8 +278,15 @@ class Selection:
 class CausalSelection:
     """Per-pitch attack/restrike/release state; output time is never backdated."""
 
-    def __init__(self, config=Selection()):
+    def __init__(self, config=Selection(), *, hop=HOP):
+        if hop not in (128, 256, 512):
+            raise ValueError("Experimental NOTE selection hop must be 128/256/512 samples")
+        self.hop = hop
         self.config = config
+        # Native S613 thresholds were calibrated at 256 samples. Preserve
+        # release and confirmation *time* in candidate hop variants.
+        self.release_steps = max(1, round(config.release_frames * HOP / hop))
+        self.confirmation_steps = max(1, round(config.confirmation_frames * HOP / hop))
         self.active = np.zeros(49, bool)
         self.armed = np.ones(49, bool)
         self.low = np.zeros(49, np.int32)
@@ -280,12 +298,12 @@ class CausalSelection:
         p, k, c = np.asarray(probability), np.asarray(count), self.config
         if (p.shape != (49, 3) or k.shape != (7,) or not np.isfinite(p).all()
                 or not np.isfinite(k).all() or np.any((p < 0) | (p > 1))
-                or end_sample != self.last_end + HOP or available_sample < end_sample):
+                or end_sample != self.last_end + self.hop or available_sample < end_sample):
             raise ValueError("Invalid probability stream or unavailable audio")
         self.last_end = end_sample
         onset, sustain, release = p.T
         self.armed |= onset < c.onset_reset
-        self.low = np.where((sustain < c.active_off) | (release > .75), np.minimum(self.low + 1, c.release_frames), 0)
+        self.low = np.where((sustain < c.active_off) | (release > .75), np.minimum(self.low + 1, self.release_steps), 0)
         events = []
 
         def emit(kind, i, reason):
@@ -293,12 +311,12 @@ class CausalSelection:
                                available_sample=int(available_sample), time=available_sample / SR,
                                reason=reason, velocity=96 if kind == "note_on" else 0))
 
-        for i in np.flatnonzero(self.active & (self.low >= c.release_frames)):
+        for i in np.flatnonzero(self.active & (self.low >= self.release_steps)):
             emit("note_off", i, "causal_release")
             self.active[i] = False
         confident = (onset >= np.where(self.active, max(c.onset, c.restrike_onset), c.onset)) & (sustain >= c.active_on)
-        self.high = np.where(confident, np.minimum(self.high + 1, c.confirmation_frames), 0)
-        ready = (self.high >= c.confirmation_frames) & self.armed
+        self.high = np.where(confident, np.minimum(self.high + 1, self.confirmation_steps), 0)
+        ready = (self.high >= self.confirmation_steps) & self.armed
         ready &= end_sample - self.last_on >= c.refractory_frames * HOP
         budget = c.max_notes
         if k.max() >= c.count_confidence:
@@ -327,10 +345,13 @@ class StrictLiveStream:
     """Complete PCM -> native count/pitch/onset/off heads -> note events."""
 
     def __init__(self, heads, selection=None, *, harmonic_mode="off",
-                 harmonic_checkpoint=None, harmonic_threshold=0.10):
+                 harmonic_checkpoint=None, harmonic_threshold=0.10,
+                 hop=HOP):
         self.heads = heads
-        self.frontend = CausalPitchFeatures()
-        self.selector = CausalSelection(selection or Selection(**heads.metadata["selection"]))
+        self.hop = hop
+        self.frontend = CausalPitchFeatures(hop=hop)
+        self.selector = CausalSelection(
+            selection or Selection(**heads.metadata["selection"]), hop=hop)
         self.harmonic_selector = None
         if harmonic_mode not in ("off", "shadow", "guard"):
             raise ValueError("Unknown harmonic experiment mode")
