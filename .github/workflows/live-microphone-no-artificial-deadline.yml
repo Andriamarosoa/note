@@ -1,0 +1,28 @@
+name: Windows microphone ignore artificial capture deadline
+on:
+  push:
+    branches: [codex/s654-learned-pitch-risk-selector]
+    paths:
+      - scripts/live_strict_notes.py
+      - test/test_live_mic_deadline_optional.py
+      - .github/workflows/live-microphone-no-artificial-deadline.yml
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  simulate_windows_mic_without_hardware:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original NOTE runtime dependencies
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Prove default ignores late microphone callback but retains strict opt-in
+        run: |
+          python -m compileall -q scripts/live_strict_notes.py
+          python -m unittest -v test.test_live_mic_deadline_optional test.test_strict_live
