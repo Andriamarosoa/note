@@ -125,3 +125,49 @@ using pinned source audio and annotation SHA256. Real pilot workflow
 epochs per candidate, publishing development-only reports/artifacts.
 This is intentionally too small for model promotion. Refer to its
 actual GitHub Actions conclusion and artifact before quoting any score.
+
+## Completed real GuitarSet pilot (measured, NOT held-out)
+
+Workflow: https://github.com/Andriamarosoa/note/actions/runs/38862219355
+Result **SUCCESS**. Pinned pilot uses 6 train GuitarSet MIC recordings
+from composition groups Funk2 and BN1, 3 development GuitarSet MIC recordings
+from BN3. Train/dev songs are composition-disjoint. Only 4 K/count epochs
+and 6 pitch epochs, so this is a low-cost architectural validation, not
+a fair comparison to fully trained S613. All 349 dev reference NoteOn
+events were evaluated with the original pitch-identical +/-80ms metric.
+
+| Mode | Hop | TP | FP | FN | Dev NoteOn F1 | Onset Exact-K groups / 181 |
+|---|---:|---:|---:|---:|---:|---:|
+| Trained specialized | 128 | 80 | 311 | 269 | 21.62% | 24 / 181 = 13.26% |
+| Trained specialized | 256 | 49 | 92 | 300 | 20.00% | 26 / 181 = 14.36% |
+| Trained specialized | 512 | 0 | 0 | 349 | 0.00% | 0 / 181 = 0.00% |
+| Trained shared | 128 | 115 | 263 | 234 | 31.64% | 26 / 181 = 14.36% |
+| Trained shared | 256 | 111 | 230 | 238 | 32.17% | 25 / 181 = 13.81% |
+| Trained shared | 512 | 117 | 271 | 232 | 31.75% | 34 / 181 = 18.78% |
+
+True simultaneous-onset groups in this small dev cohort (30ms grouping):
+**K1=100, K2=15, K3=45, K4=21**. No true K5/K6 onset groups here.
+On the **shared** candidate:
+- hop128: K1 15/100, K2 2/15, K3 9/45, K4 **0/21**;
+- hop256: K1 18/100, K2 1/15, K3 6/45, K4 **0/21**;
+- hop512: K1 26/100, K2 2/15, K3 6/45, K4 **0/21**.
+Exactly matched pitch sets are even less frequent (12/181, 13/181,
+14/181 for shared 128/256/512 respectively). In other words, the
+multi-hop concept **passes software/training tests but does not yet
+solve genuine polyphonic K3/K4 or note identification**.
+
+Do not mistake the 18.78% grouped-onset Exact-K diagnostic for the
+official historical S80 poly K2-K6 Exact-K benchmark: different data,
+onset grouping, thresholds, and evaluation task.
+
+Full replay with 53 train / 17 dev tracks and then a genuinely
+independent new test is needed before comparing to 69.03% frozen S613.
+The original test split has previously been studied by the project;
+a new test would be preferable for an independent promotion decision.
+A trained model must also be tested under actual iRig/FluidSynth
+hardware latency and on true E2+E3/close-note pairs. This pilot does
+NOT provide sufficient evidence to change the official default hop.
+
+For per-K/NoteOn source-of-truth audit, see completed extraction of
+the artifact reports at:
+https://github.com/Andriamarosoa/note/actions/runs/38862872386
