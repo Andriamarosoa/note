@@ -120,3 +120,62 @@ Never claim that NOTE is still "strictly zero-lookahead causal" with
 this flag enabled. It remains *streaming with bounded L-millisecond
 lookahead*, sacrificing minimum latency for a hypothesis about attack
 evidence. To restore strictly no intentional future, pass `--lookahead-ms 0`.
+
+
+## Completed independent-source DEV ablation within same 17 original recordings
+
+[GitHub full causal PCM run 38892231185 — SUCCESS](https://github.com/Andriamarosoa/note/actions/runs/38892231185).
+This is **DEV tuning only**; "independent-source" means GuitarSet/URMP
+training compositions excluded, NOT a fresh independent held-out TEST.
+
+Frozen S613 original no intentional future:
+**TP1241 FP734 FN838 F1=61.2235%**.
+
+### Exact 5 ms variants (220 PCM samples)
+
+| Mode | TP | FP | FN | F1 | Old misses recovered / previous TP lost | K3 exact /183 | K4 exact /44 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| ORIGINAL 0ms | 1241 | 734 | 838 | **61.22%** | reference | **42** | 3 |
+| delay only +5ms | 1226 | 749 | 853 | 60.48% | +2 / -17 | 42 | 3 |
+| average +5ms | 1214 | 684 | 865 | 61.05% | +1 / -28 | 39 | 3 |
+| confirm +5ms | 1198 | 640 | 881 | 61.17% | +2 / -45 | 43 | 2 |
+| max_onset +5ms | 1248 | 775 | 831 | 60.85% | +9 / -2 | 37 | 5 |
+| future +5ms | 1239 | 727 | 840 | **61.26%** | +7 / -9 | **37** | 5 |
+
+The extra 5ms of actual sound produces different predictions, but no
+5ms configuration demonstrates useful *joint* F1 and K3/K4 advantage
+relative to S613. Best 5ms F1 is just **+0.037 percentage points**
+versus 0ms and loses FIVE K3 exact-group cases. The 5ms mode
+`future` has -2 TP, -7 FP and +2 FN, so even the small F1 gain
+is due to fewer FP, not better recall.
+
+`max_onset` shows the tradeoff: +7 net recovered true attacks,
+**+41 FP**, and K3 falls from 42 to 37 despite K4=5.
+
+### Wider 2.5/10ms study
+
+Best F1 among all 15 predeclared DEV configurations:
+`--lookahead-ms 10 --lookahead-mode future`: TP=1241 FP=731
+FN=838 F1=**61.2688%**, K3=40/183, K4=4/44.
+The change versus frozen 0ms is +0.045 percentage points, with no
+net gain of correct notes and slightly worse K3. Insufficient for
+promotion or a causal conclusion. Timing-only controls were also
+recorded, distinguishing latency-induced evaluation differences
+from new future-evidence decisions.
+
+### CPU (Linux synthetic, NOT real Windows roundtrip)
+
+[GitHub CPU benchmark 38892790895 — SUCCESS](https://github.com/Andriamarosoa/note/actions/runs/38892790895).
+Same 1.5sec three-harmonic E2 synthetic waveform, 256-sample blocks:
+- Original: wall/audio 22.09%, callback worker p95=1.36ms.
+- Real +5ms branch: 42.86%, worker p95=2.60ms.
+- **1.94× CPU cost**; this benchmarks frozen inference only,
+  not Windows Realtek iRig capture/FluidSynth output delay.
+
+**Verdict: S628 5ms lookahead is implemented and configurable but
+NOT PROMOTED.** The 5ms best F1 is effectively unchanged within the
+accuracy of this one DEV benchmark, K3 regresses and extra CPU/latency
+are unavoidable. Do not assert that 5ms lookahead improves NOTE.
+To test on user WAV or iRig, compare physically simultaneous
+recordings at 0ms and 5ms `future`, keeping actual emitted event
+timestamps, and perform independent K2–K4 note annotation checks.
