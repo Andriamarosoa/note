@@ -58,7 +58,13 @@ class CausalPitchFeatures:
             spectrum = (np.abs(np.fft.rfft(signal[-n:] * taper)) * (2 / taper.sum())).astype(np.float32)
             log = np.log1p(600 * spectrum).astype(np.float32)
             last = self.last_spectra[j]
-            flux.append(float(np.maximum(log - last, 0).mean()) if last is not None else 0.)
+            # Measured change per *reference* 256 samples. The old
+            # representation used one raw adjacent-frame difference, so
+            # hop128 had roughly half the flux of hop256 even for equivalent
+            # audio dynamics. Keep hop256 bitwise identical to frozen S613.
+            flux.append(
+                (float(np.maximum(log - last, 0).mean()) *
+                 (HOP / self.hop)) if last is not None else 0.)
             self.last_spectra[j] = log
             partials.append(log[ix].max(axis=-1))
         h = np.stack(partials, axis=1)  # pitch, resolution, harmonic
@@ -81,7 +87,7 @@ class CausalPitchFeatures:
             history[-self.recent_frames:].mean(0), history.mean(0),
             physical - history[-self.recent_frames:].min(0),
         ))
-        scalar = [*flux, np.log1p(100 * np.sqrt(np.mean(signal[-HOP:] ** 2))),
+        scalar = [*flux, np.log1p(100 * np.sqrt(np.mean(signal[-self.hop:] ** 2))),
                   np.log1p(100 * np.sqrt(np.mean(signal ** 2)))]
         features.extend((np.broadcast_to(scalar, (49, len(scalar))), PITCHES[:, None] / 127.))
         self.history.append(physical)
