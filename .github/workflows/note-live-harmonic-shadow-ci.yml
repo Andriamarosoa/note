@@ -66,3 +66,21 @@ jobs:
           assert d['identical_decision_events_256_vs_1024'], "block-size changed native note decisions"
           assert d['decision_hop_ms'] < d['input_packet_ms_1024']
           PY
+      - name: Replay real S613 checkpoint at 128, 256, 512 and auto hops
+        env:
+          PYTHONPATH: ".:src"
+        run: |
+          python -m scripts.live_strict_notes --wav /tmp/NOTE_harmonic_check.wav --hop-size 128 --out /tmp/hop128.jsonl
+          python -m scripts.live_strict_notes --wav /tmp/NOTE_harmonic_check.wav --hop-size 256 --out /tmp/hop256.jsonl
+          python -m scripts.live_strict_notes --wav /tmp/NOTE_harmonic_check.wav --hop-size 512 --out /tmp/hop512.jsonl
+          python -m scripts.live_strict_notes --wav /tmp/NOTE_harmonic_check.wav --hop-size auto --out /tmp/hop_auto.jsonl
+          cmp /tmp/note_original.jsonl /tmp/hop256.jsonl
+          python - <<'PY'
+          import json
+          for hop in (128,256,512):
+              rows=[json.loads(v) for v in open('/tmp/hop%d.jsonl'%hop) if v.strip()]
+              assert all(v['decision_sample'] % hop == 0 for v in rows)
+              assert all(v['decision_sample'] <= v['available_sample'] for v in rows)
+              print('hop',hop,'note_events',len(rows))
+          print('real S613 checkpoint manual and auto decisions loaded successfully')
+          PY
