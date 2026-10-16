@@ -116,29 +116,47 @@ class S630RealCliSmokeTests(unittest.TestCase):
                 host_api="MME",device_index=1,latency_ms=17.4,
             )
 
-        with tempfile.TemporaryDirectory() as td:
-            sf2=pathlib.Path(td)/"mock.sf2"
-            sf2.write_bytes(b"PLACEHOLDER_FOR_REAL_SF2_ENGINE")
-            with (
-                patch.object(live_strict_notes,"managed_input_stream",fake_microphone),
-                patch.dict(sys.modules,{"sounddevice":types.SimpleNamespace(
-                    CallbackAbort=RuntimeError)}),
-                patch("scripts.live_piano_output.PianoOutput",SimulatedPiano),
-                patch.object(sys,"stdout",io.StringIO()) as out,
-                patch.object(sys,"stderr",io.StringIO()) as err,
-            ):
-                live_strict_notes.main([
-                    "--mic","--device","MME:External Microphone",
-                    "--soundfont",str(sf2),"--hop-size","256",
-                    "--block-size","256","--lookahead-ms","0",
-                    "--inference-batch-hops","4",
-                ])
-                stderr=err.getvalue()
-                self.assertNotIn("Traceback",stderr)
-                self.assertIn('"s630_input_queue_diagnostics"',stderr)
-                self.assertIn('"callbacks_received": 6',stderr)
-                self.assertIn('"callbacks_processed": 6',stderr)
-                self.assertTrue(seen)
+        for batch in (1,4):
+            with self.subTest(inference_batch_hops=batch):
+                with tempfile.TemporaryDirectory() as td:
+                    sf2=pathlib.Path(td)/"mock.sf2"
+                    sf2.write_bytes(b"PLACEHOLDER_FOR_REAL_SF2_ENGINE")
+                    with (
+                        patch.object(live_strict_notes,"managed_input_stream",fake_microphone),
+                        patch.dict(sys.modules,{"sounddevice":types.SimpleNamespace(
+                            CallbackAbort=RuntimeError)}),
+                        patch("scripts.live_piano_output.PianoOutput",SimulatedPiano),
+                        patch.object(sys,"stdout",io.StringIO()) as out,
+                        patch.object(sys,"stderr",io.StringIO()) as err,
+                    ):
+                        live_strict_notes.main([
+                            "--mic","--device","MME:External Microphone",
+                            "--soundfont",str(sf2),"--hop-size","256",
+                            "--block-size","256","--lookahead-ms","0",
+                            "--inference-batch-hops",str(batch),
+                        ])
+                        stderr=err.getvalue()
+                        self.assertNotIn("Traceback",stderr)
+                        self.assertIn('"s630_input_queue_diagnostics"',stderr)
+                        self.assertIn('"callbacks_received": 6',stderr)
+                        self.assertIn('"callbacks_processed": 6',stderr)
+                        self.assertTrue(seen)
+
+    def test_shutdown_counters_match_normal_native_frontend(self):
+        from types import SimpleNamespace
+        from scripts.live_strict_notes import stream_received_samples
+
+        class Native:
+            frontend = SimpleNamespace(received=44100)
+
+        class Batch:
+            received = 22050
+            frontend = SimpleNamespace(received=22050)
+
+        self.assertEqual(stream_received_samples(Native()),44100)
+        self.assertEqual(stream_received_samples(Batch()),22050)
+        with self.assertRaisesRegex(AttributeError,"received-sample"):
+            stream_received_samples(SimpleNamespace())
 
     def test_invalid_hop_gives_argument_error_not_unbound_variable(self):
         x=cli("--status","--hop-size","128","--inference-batch-hops","4")
