@@ -112,3 +112,26 @@ Get-Content e2_autogain.jsonl | Select-String '"type": "note_on"'
 Réglages : `--auto-level-max-db 18` (0–24), `--auto-level-peak-gate-dbfs -55` et `--auto-level-rms-gate-dbfs -65`. Ne pas monter les seuils/gain sans examiner les notes fantômes. Le contrôleur n'applique aucune normalisation individuelle aux queues de notes. Les diagnostics du contrôleur sont imprimés sur stderr lors de l'arrêt propre.
 
 **Limitation majeure pour cet iRig** : le signal E2 enregistré à RMS ≈ -116.9 dBFS est quasi nul, et l'export PCM16 peut quantifier les faibles composantes à zéro. Un maximum +18 dB ne reconstitue pas une fondamentale manquante ; le gain vise plutôt les signaux faibles mais encore exploitables. Aucune amélioration F1 ou résultat matériel Windows n'est établi. Valider les faux positifs et régressions sur WAV tenus à l'écart avant de promouvoir cette option.
+
+## Audit d'une corde grave perçue comme accord (E2 -> faux harmoniques)
+
+Sur une prise **MME**, E2 enregistrée à peak -6.5 dBFS / RMS -23.4 dBFS est bien présente spectralement. Le LIVE sans gain a émis MIDI 52 (E3), 59 (B3), 64 (E4) et 68 (G#4), coïncidant respectivement avec les harmoniques 2, 3, 4 et 5 de E2, plus MIDI 61 (C#4). Il n'a pas émis E2 MIDI 40. Ce cas prouve une confusion sur une prise guitaristique réelle, mais ne suffit pas pour une statistique F1.
+
+Un défaut observable : la configuration native comporte `count_confidence=1.1`. La sortie de la tête K est une softmax (valeurs entre 0 et 1), donc la sélection actuelle n'utilise **jamais** le budget K pour limiter les notes. Cette valeur peut être issue d'une ablation sélectionnée par validation ; elle ne doit pas être changée sur les jeux d'évaluation sans audit de régressions.
+
+```powershell
+git pull --ff-only
+python -m unittest -v test.test_live_count_veto
+python -m scripts.audit_live_pitch_count --wav "irig_E2_wasapi.wav" --expected-pitch 40 --report "audit_e2.json"
+$a = Get-Content "audit_e2.json" -Raw | ConvertFrom-Json
+$a.note_on_by_selection | ConvertTo-Json -Depth 5
+$a.first_original_attack_frame | Select-Object time_s,predicted_k,k_confidence,k_probabilities_0_through_6,expected | Format-List
+$a.first_original_attack_frame.pitch_ranking | Select-Object -First 8 pitch,name,onset,sustain
+```
+
+Trois rejouages causaux sont effectués **sur les mêmes sorties des mêmes têtes** :
+- `original`: configuration gelée, sans veto K,
+- `count_gate_050`: veto fondé sur la vraie distribution K, si sa probabilité maximale >= .5,
+- `mono_budget_1`: borne artificielle à 1 note, simple témoin de diagnostic incompatible avec la polyphonie.
+
+Ne jamais promouvoir directement le mono budget ou le count_gate_050 à partir de la seule corde E2. Il faut également vérifier les vrais accords K2–K6, les régressions, et le comportement LIVE strict. Le code d'audit n'ajoute aucun délai ni aucune fonction à l'architecture de production.
