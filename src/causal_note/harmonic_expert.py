@@ -125,6 +125,7 @@ class HarmonicExpertStats:
     frames: int = 0
     pairs_considered: int = 0
     candidate_upper_onsets: int = 0
+    low_independence_onsets: int = 0
     vetoed_upper_onsets: int = 0
 
 
@@ -168,20 +169,29 @@ class HarmonicSpecialistSelector:
             if p[j, 0] >= c.onset and p[j, 1] >= c.active_on:
                 candidates.add(j)
         self.stats.candidate_upper_onsets += len(candidates)
-        if self.mode != "guard" or not candidates:
+        if not candidates or not self.head.trained:
+            # Untrained shadow MUST be observational: do not fabricate scores.
             return self.native_selector.step(p, count, end_sample, available_sample)
 
         genuine = self.head.predict(X)
         # A real upper note can overlap multiple potential harmonic parents.
-        # Conservative aggregation: block only if EVERY applicable parent
+        # Conservative aggregation: flag only if EVERY applicable parent
         # classifier votes 'not a new independent onset'. Choosing threshold
         # is delegated to out-of-sample validation, never the E2 example.
-        new_p = p.copy()
+        suspect = []
         for j in candidates:
             indices = np.flatnonzero(pairs[:, 1] == j + int(PITCHES[0]))
             if len(indices) and np.all(genuine[indices] < self.genuine_threshold):
-                new_p[j, 0] = 0.0
-                self.stats.vetoed_upper_onsets += 1
+                suspect.append(j)
+        self.stats.low_independence_onsets += len(suspect)
+
+        if self.mode == "shadow":
+            # A trained head can now quantify risks on an unchanged baseline.
+            return self.native_selector.step(p, count, end_sample, available_sample)
+        new_p = p.copy()
+        for j in suspect:
+            new_p[j, 0] = 0.0
+            self.stats.vetoed_upper_onsets += 1
         return self.native_selector.step(new_p, count, end_sample, available_sample)
 
     def panic(self, sample, reason="stream_end"):
