@@ -180,3 +180,38 @@ $a.summary | ConvertTo-Json -Depth 4
 ```
 
 Les variantes explorent onset {0.05,0.10,0.15} x sustain {0.25,0.40,0.50}, mais l'exploration d'un seul signal n'est **pas** une optimisation validée. Les détections inattendues comptent comme erreurs uniquement sous l'hypothèse documentée « une seule corde E2 ». Pour changer le modèle, les têtes ou les sélections en production, il faut des morceaux/accords indépendants, des mesures d'attaques, des fausses notes et la non-régression Exact-K.
+
+## E2 — résultats expérimentaux finaux sur le seul WAV iRig/Realtek fourni (aucune promotion)
+
+Tests locaux utilisateur : `test.test_live_joint_head_overlap` : 3/3 OK. Le balayage des neuf seuils est terminé. Toutes les variantes ci-dessous ont été appliquées au même unique enregistrement d'une corde E2 (MIDI40), non à un test indépendant.
+
+| Sélection | note_on(E2) | note_on(autres) | premier E2 (s dans WAV) |
+| --- | ---: | ---: | ---: |
+| Référence | 0 | 5 | — |
+| Count gate 0.5 | 0 | 5 | — |
+| Budget mono 1 | 0 | 2 | — |
+| Attaque 0.15 / maintien 0.50 | 0 | 5 | — |
+| 0.05 / 0.25 | 4 | 10 | 1.190023 |
+| 0.05 / 0.40 | 4 | 8 | 1.195828 |
+| 0.05 / 0.50 | 4 | 7 | 1.207438 |
+| 0.10 / 0.25 | 1 | 7 | 1.195828 |
+| 0.10 / 0.40 | 1 | 6 | 1.195828 |
+| **0.10 / 0.50** | **1** | **5** | **1.207438** |
+| 0.15 / 0.25 | 1 | 7 | 1.195828 |
+| 0.15 / 0.40 | 1 | 6 | 1.195828 |
+| 0.15 / 0.50 | 0 | 5 | — |
+
+Premières fausses notes de la référence à t=1.155193 s. Le E2 unique de 0.10/0.50 arrive environ +52.25 ms après ; les autres cinq fausses attaques restent. Les 4 `note_on` E2 obtenus avec seuil 0.05 ne sont **pas** quatre vrais positifs distincts sur une seule corde, mais des redéclenchements indésirables.
+
+**Les maxima de têtes ne coïncident pas** :
+- Pour `sustain >= 0.4`, max onset conjoint = 0.15213 à t=1.195828 ; sustain=0.47819.
+- Pour `sustain >= 0.5`, max onset conjoint = 0.10857 à t=1.207438 ; sustain=0.63835.
+- Pour `sustain >= 0.7`, max onset conjoint = 0.03083 à t=1.219048.
+
+### Décision et prochaine architecture candidate
+
+**Aucune variante de seuil ne remplace la référence** : impossible de sauver E2 sans conserver, voire multiplier, les fausses notes sur cette prise. Conserver strictement la latence causale, les têtes natives NOTE et les vraies notes polyphoniques.
+
+Candidate à évaluer puis entraîner : une tête native de **reconnaissance de parent harmonique / fondamentale manquante** qui apprend la compétition entre E2 et les notes d'harmoniques E3, B3, E4, G#4. Tester comme indices spécifiques les 5e et 7e partiels non expliqués par les hypothèses E3/B3 ainsi que les attaques individuelles et la cohérence temporelle. En présence d'une vraie superposition E2+E3, ne pas supprimer automatiquement E3. Garder une tête de comptage adaptée au signal guitaristique ; K3-K5 sur une monodie montre une confusion parent/harmoniques. Former sur plusieurs cordes et accords réels avec hold-out par prise/jeu/instrument et négatifs difficiles (E3 seul, B3 seul, E2+E3 et triades).
+
+Contrainte : les données de cette ligne proviennent uniquement du **log d'audit de l'utilisateur** ; le WAV ne se trouve pas dans la session de travail du développeur. Aucune mesure F1, calibration, entraînement ou validation sur plusieurs instruments n'a été faite avec ce cas. Mesurer séparément capture->première note erronée, capture->première note correcte, et latence physique du jeu.
