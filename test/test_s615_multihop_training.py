@@ -44,7 +44,7 @@ class S615Tests(unittest.TestCase):
         a2,b2=feature_track(x,hop=256)
         np.testing.assert_array_equal(a,a2)
         np.testing.assert_array_equal(b,b2)
-        self.assertEqual(b.shape[1:],(49,110))
+        self.assertEqual(b.shape[1:],(49,126))
 
     def test_source_cache_and_refusal_to_read_test_labels(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -56,7 +56,7 @@ class S615Tests(unittest.TestCase):
                 self.assertEqual(receipt["hop"],hop)
                 self.assertTrue(prepare_one(root,source,hop)["reused"])
                 ends, feats, y,k,notes,n=source_data(root,source,hop)
-                self.assertEqual(feats.shape,(n//hop,49,110))
+                self.assertEqual(feats.shape,(n//hop,49,126))
                 self.assertEqual(ends[0],hop)
                 self.assertGreater(y[...,0].sum(),0)
                 self.assertGreater(int(k.max()),0)
@@ -90,7 +90,7 @@ class S615Tests(unittest.TestCase):
                                  [128,256,512] if mode=="shared" else [int(mode[3:])])
                 self.assertNotIn("test", [row["split"] for row in
                     json.loads((dst/"training_sources.json").read_text())])
-                x=np.zeros((49,110),np.float32)
+                x=np.zeros((49,126),np.float32)
                 p,k=head.predict(x)
                 self.assertEqual(p.shape,(49,3))
                 self.assertEqual(k.shape,(7,))
