@@ -84,13 +84,22 @@ def prepare_one(root, spec, hop):
     return dict(source=spec["name"], hop=hop, frames=len(ends), reused=False)
 
 
-def prepare(root, hops=VALID_HOPS, *, source_limit=None):
+def prepare(root, hops=VALID_HOPS, *, source_limit=None,
+            pilot_train_sources=None, pilot_dev_sources=None):
     protocol = json.loads((root / "protocol.json").read_text(encoding="utf-8"))
     if protocol.get("schema") != SCHEMA or protocol.get("sample_rate") != SR:
         raise ValueError("S613 protocol schema/sample rate mismatch")
     if not hops or any(h not in VALID_HOPS for h in hops):
         raise ValueError("Valid hops are 128, 256, 512")
     sources = [s for s in protocol["sources"] if s["split"] in ("train", "dev")]
+    if pilot_train_sources is not None or pilot_dev_sources is not None:
+        if not pilot_train_sources or not pilot_dev_sources:
+            raise ValueError("Pilot needs positive train AND dev source limits")
+        sources = ([s for s in sources if s["split"] == "train"][:pilot_train_sources]
+                   + [s for s in sources if s["split"] == "dev"][:pilot_dev_sources])
+        print(json.dumps(dict(status="PILOT_ONLY",
+                              train_sources=pilot_train_sources,
+                              dev_sources=pilot_dev_sources)), flush=True)
     if source_limit is not None:
         if source_limit <= 0:
             raise ValueError("source_limit must be positive")
@@ -108,10 +117,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--hops", type=int, nargs="+", default=list(VALID_HOPS))
+    parser.add_argument("--pilot-train-sources", type=int)
+    parser.add_argument("--pilot-dev-sources", type=int)
     parser.add_argument("--source-limit", type=int,
                         help="Smoke test ONLY, not a scientifically valid train/dev split")
     args = parser.parse_args()
-    prepare(args.root, tuple(args.hops), source_limit=args.source_limit)
+    prepare(args.root, tuple(args.hops), source_limit=args.source_limit,
+            pilot_train_sources=args.pilot_train_sources,
+            pilot_dev_sources=args.pilot_dev_sources)
 
 
 if __name__ == "__main__":
