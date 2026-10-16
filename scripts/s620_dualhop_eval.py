@@ -70,7 +70,9 @@ def replay(prepared, heads, cfg=None):
     fast=(CausalSelection(Selection(**{
         **heads.metadata["selection"],"onset":cfg.fast_onset}),hop=128)
           if cfg.mode!="off" else None)
-    merger=DualSourceEventMerger() if cfg.mode=="guard" else None
+    merger=DualSourceEventMerger(
+        reference_priority=cfg.reference_priority,
+        grace_samples=cfg.reference_grace_samples) if cfg.mode=="guard" else None
     output=[]
     source_events=Counter()
     promoted=0
