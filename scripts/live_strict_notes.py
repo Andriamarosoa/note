@@ -194,6 +194,8 @@ def main(argv=None):
         parser.error("--capture-deadline-blocks must be >= 0")
     if not 1 <= args.inference_batch_hops <= 32:
         parser.error("--inference-batch-hops must be from 1..32")
+    if args.inference_batch_hops > 1 and hop_request != 256:
+        parser.error("--inference-batch-hops >1 requires --hop-size 256")
     if args.inference_batch_hops > 1 and (args.dual_hop_mode!="off" or args.harmonic_mode!="off"
                                           or (args.lookahead_ms>0 and args.lookahead_engine=="phase")):
         parser.error("S630 batched inference currently requires normal S613 or shared lookahead with no dual-hop/harmonic sidecars")
@@ -398,6 +400,8 @@ def main(argv=None):
                 overrun = threading.Event()
                 overrun_reason = [None]
                 capture_start = [0]
+                capture_stats = dict(received=0,processed=0,queue_peak=0,
+                                     total_worker_ms=0.,max_worker_ms=0.)
                 # A separate bounded monitor queue cannot delay the recognition path.
                 monitor_queue = queue.Queue(maxsize=4) if args.monitor_input else None
                 monitor_underruns = [0]
@@ -424,6 +428,8 @@ def main(argv=None):
                     try:
                         chunk = indata[:, 0].copy()
                         inbox.put_nowait((capture_start[0], chunk, time.monotonic()))
+                        capture_stats["received"] += 1
+                        capture_stats["queue_peak"] = max(capture_stats["queue_peak"],inbox.qsize())
                         capture_start[0] += frames
                         if monitor_queue is not None:
                             try:
@@ -501,8 +507,13 @@ def main(argv=None):
                     if capture_deadline_exceeded(captured, time.monotonic(), len(audio),
                                                  args.capture_deadline_blocks):
                         raise BufferError("Optional capture deadline exceeded before inference")
+                    begin_worker=time.perf_counter()
                     model_audio = apply_model_input(leveler, audio)
                     events = stream.push(model_audio, start_sample=start)
+                    worker_ms=(time.perf_counter()-begin_worker)*1000
+                    capture_stats["processed"] += 1
+                    capture_stats["total_worker_ms"] += worker_ms
+                    capture_stats["max_worker_ms"] = max(capture_stats["max_worker_ms"],worker_ms)
                     if overrun.is_set():
                         raise BufferError(f"Microphone input overflow: {overrun_reason[0]}; notes released")
                     if capture_deadline_exceeded(captured, time.monotonic(), len(audio),
@@ -526,6 +537,21 @@ def main(argv=None):
             try:
                 emit(stream.finish(failure))
             finally:
+                if args.mic:
+                    processed_ms=stream.received*1000/SR
+                    print(json.dumps(dict(s630_input_queue_diagnostics=dict(
+                        callbacks_received=capture_stats["received"],
+                        callbacks_processed=capture_stats["processed"],
+                        peak_queue_blocks=capture_stats["queue_peak"],
+                        remaining_queue_blocks=inbox.qsize(),
+                        queue_capacity_blocks=queue_capacity,
+                        worker_total_ms=round(capture_stats["total_worker_ms"],3),
+                        worker_max_ms=round(capture_stats["max_worker_ms"],3),
+                        model_processed_audio_ms=round(processed_ms,3),
+                        worker_over_audio_ratio=round(
+                            capture_stats["total_worker_ms"]/max(1.,processed_ms),4),
+                        last_capture_status=overrun_reason[0],
+                    ))),file=sys.stderr)
                 if leveler is not None:
                     print(json.dumps(dict(auto_level_diagnostics=leveler.diagnostics())),
                           file=sys.stderr)
