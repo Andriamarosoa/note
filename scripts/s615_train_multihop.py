@@ -93,7 +93,7 @@ def sample_train(root, specs, hops, *, max_pitch_rows, seed=615):
             # Rate-controlled sampling of active/background is explicit.
             full_rate = np.where(
                 np.maximum(y[..., 0], y[..., 2]) > 0, 1.,
-                np.where(y[..., 1] > 0, .30, .025),
+                np.where(y[..., 1] > 0, .50, .08),
             )
             mask = rng.random(full_rate.shape) < full_rate
             frame, pitch = np.nonzero(mask)
@@ -128,7 +128,7 @@ def mlp(torch, dim, nout):
 
 
 def fit(root, out, mode, *, count_epochs=24, pitch_epochs=28,
-        max_pitch_rows=7000, pilot_train_sources=None,
+        max_pitch_rows=15000, pilot_train_sources=None,
         pilot_dev_sources=None):
     import torch
     from torch import nn
@@ -201,7 +201,7 @@ def fit(root, out, mode, *, count_epochs=24, pitch_epochs=28,
         for hop in hops:
             _, features, label, _, _, _ = source_data(root, s, hop)
             rate = np.where(np.maximum(label[...,0],label[...,2])>0,1.,
-                            np.where(label[...,1]>0,.30,.025))
+                            np.where(label[...,1]>0,.50,.08))
             mask = rng.random(rate.shape) < rate
             frame, pitch = np.nonzero(mask)
             if len(frame)>max_pitch_rows:
@@ -325,7 +325,7 @@ def main():
     parser.add_argument("--out",type=Path,required=True)
     parser.add_argument("--count-epochs",type=int,default=24)
     parser.add_argument("--pitch-epochs",type=int,default=28)
-    parser.add_argument("--max-pitch-rows",type=int,default=7000)
+    parser.add_argument("--max-pitch-rows",type=int,default=15000)
     parser.add_argument("--pilot-train-sources",type=int,default=None)
     parser.add_argument("--pilot-dev-sources",type=int,default=None)
     args=parser.parse_args()
