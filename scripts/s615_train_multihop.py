@@ -68,7 +68,7 @@ def source_data(root, spec, hop):
     with np.load(fn, allow_pickle=False) as z:
         ends = z["ends"]
         features = z["features"]
-    if (features.shape != (len(ends), 49, 110)
+    if (features.shape != (len(ends), 49, 126)
             or len(ends) != audit["feature_shape"][0]
             or (ends != np.arange(1, len(ends)+1) * hop).any()
             or sha(features.tobytes()) != audit["feature_sha256"]):
@@ -193,7 +193,7 @@ def fit(root, out, mode, *, count_epochs=24, pitch_epochs=28,
                               cross_entropy=float(loss))), flush=True)
     del count_data, count_targets, cx, cy
     # Calibrate pitch head on PREDICTED count probabilities, never true K.
-    # Pitch x has shape (rows,110) while count sees (frames,441).
+    # Pitch x has shape (rows,126) while count sees (frames,441).
     cp = []
     # Recompute chosen rows while predicting count in bounded per-source batches.
     # The sampling indices are regenerated using seed 615 and identical traversal.
