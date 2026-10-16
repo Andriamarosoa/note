@@ -149,8 +149,12 @@ class DualHopLiveStream:
     preserve the real callback's available_sample, even if the callback
     contains many internal 128-hop frames.
     """
-    def __init__(self, frozen_heads, *, config=DualHopConfig()):
+    def __init__(self, frozen_heads, *, config=DualHopConfig(), fast_heads=None):
         self.heads=frozen_heads
+        self.fast_heads=fast_heads if fast_heads is not None else frozen_heads
+        self.fast_model_separate=fast_heads is not None
+        if fast_heads is not None and 128 not in fast_heads.metadata.get("trained_hops",()):
+            raise ValueError("Fast head checkpoint must explicitly be trained at hop128")
         self.config=config
         self.reference_front=CausalPitchFeatures(hop=HOP)
         self.reference_selector=CausalSelection(
@@ -200,7 +204,7 @@ class DualHopLiveStream:
                     self.events_reference[e["type"]]+=1
                     staged.append((end,0,"reference",e))
             for end,features in fast_frames:
-                pitch,k=self.heads.predict(features)
+                pitch,k=self.fast_heads.predict(features)
                 gated,qualified=novelty_gated_fast_heads(features,pitch,self.config,
                         reference_onset=self.reference_selector.config.onset,
                         reference_sustain=self.reference_selector.config.active_on)
@@ -233,7 +237,9 @@ class DualHopLiveStream:
         return self.merger.finish(self.received)
 
     def diagnostics(self):
-        result=dict(mode=self.config.mode,hop_fast=128 if self.fast_front else None,
+        result=dict(mode=self.config.mode,
+                    fast_checkpoint_trained_at_128=self.fast_model_separate,
+                    hop_fast=128 if self.fast_front else None,
                     hop_reference=HOP,fast_pitch_frames_qualified=self.fast_candidates,
                     fast_note_ons=self.fast_note_ons,
                     reference_events=dict(self.events_reference),
