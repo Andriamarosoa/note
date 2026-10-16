@@ -62,12 +62,14 @@ def source_audio(spec, archives, audio_zip, root):
     return arr, data, int(rate), int(signal.shape[1] if signal.ndim == 2 else 1)
 
 
-def seed_full(root, *, corpus=None, subset_sources=None):
+def seed_full(root, *, corpus=None, subset_sources=None, dev_only=False):
     protocol = json.loads(PINNED.read_text(encoding="utf-8"))
     if protocol["schema"] != SCHEMA or protocol["sample_rate"] != SR:
         raise ValueError("Pinned original S613 source protocol incompatible")
     source_groups(protocol)
     sources = [s for s in protocol["sources"] if s["split"] in ("train","dev")]
+    if dev_only:
+        sources = [s for s in sources if s["split"] == "dev"]
     if corpus is not None:
         if corpus not in ("GuitarSet","URMP"):
             raise ValueError("corpus must be GuitarSet or URMP")
@@ -138,7 +140,7 @@ def seed_full(root, *, corpus=None, subset_sources=None):
     finally:
         if audio_zip is not None:
             audio_zip.close()
-    if subset_sources is None and corpus is None:
+    if subset_sources is None and corpus is None and not dev_only:
         n_train = sum(s["split"]=="train" for s in sources)
         n_dev = sum(s["split"]=="dev" for s in sources)
         if n_train!=53 or n_dev!=17:
@@ -150,11 +152,13 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root",type=Path,required=True)
     parser.add_argument("--corpus",choices=("GuitarSet","URMP"))
+    parser.add_argument("--dev-only",action="store_true",
+                        help="Seed all 17 development tracks only (no training or held-out test)")
     parser.add_argument("--subset-sources",type=int,
                         help="Smoke only: source subset, NOT full training")
     opts=parser.parse_args()
     receipts=seed_full(opts.root,corpus=opts.corpus,
-                       subset_sources=opts.subset_sources)
+                       subset_sources=opts.subset_sources,dev_only=opts.dev_only)
     print(json.dumps(dict(result="S615_SEED_FINISHED",
                           count=len(receipts),
                           splits={split:sum(s["split"]==split for s in receipts)
