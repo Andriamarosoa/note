@@ -215,3 +215,35 @@ Premières fausses notes de la référence à t=1.155193 s. Le E2 unique de 0.10
 Candidate à évaluer puis entraîner : une tête native de **reconnaissance de parent harmonique / fondamentale manquante** qui apprend la compétition entre E2 et les notes d'harmoniques E3, B3, E4, G#4. Tester comme indices spécifiques les 5e et 7e partiels non expliqués par les hypothèses E3/B3 ainsi que les attaques individuelles et la cohérence temporelle. En présence d'une vraie superposition E2+E3, ne pas supprimer automatiquement E3. Garder une tête de comptage adaptée au signal guitaristique ; K3-K5 sur une monodie montre une confusion parent/harmoniques. Former sur plusieurs cordes et accords réels avec hold-out par prise/jeu/instrument et négatifs difficiles (E3 seul, B3 seul, E2+E3 et triades).
 
 Contrainte : les données de cette ligne proviennent uniquement du **log d'audit de l'utilisateur** ; le WAV ne se trouve pas dans la session de travail du développeur. Aucune mesure F1, calibration, entraînement ou validation sur plusieurs instruments n'a été faite avec ce cas. Mesurer séparément capture->première note erronée, capture->première note correcte, et latence physique du jeu.
+
+## Mesures indépendantes du WAV réel iRig E2 reçu dans la conversation (2026-10-16)
+
+Le fichier **`irig_E2_wasapi.wav`** a été reçu et inspecté directement (il s'agit bien de la capture MME antérieure, malgré son nom). L'audit ci-dessous est fondé sur les échantillons de **175 104 PCM mono, 44 100 Hz, 3,9706 s**, pas sur une sortie prédite ou un WAV synthétique. Pic = 0,4746704 (-6,47 dBFS), RMS = 0,067455 (-23,42 dBFS), pas de saturation numérique. Une corde grave est pincée vers **1,12 s**, puis décroît jusqu'à EOF ; les premières fausses notes NOTE interviennent à t=1,155193 s (environ 35 ms après le début du signal perceptible).
+
+### Série physique harmonique confirmée sur le vrai signal
+
+Spectres calculés par FFT/Hann, sur fenêtres glissantes séparées de la prédiction `NOTE_strict_live.npz`. Entre 1,3 et 1,6 s, les pics observés autour des composantes d'un F0 ~81,18 Hz sont :
+
+| Harmonique | Pic mesuré (Hz) | Niveau approx. (dBFS) | Hypothèse interprétée à tort comme note |
+|---|---:|---:|---|
+| H1 | 81,1 | -41,8 | E2 MIDI40 (la vraie fondamentale) |
+| H2 | 162,2 | -17,1 | E3 MIDI52 |
+| H3 | 243,3 | -19,4 | B3 MIDI59 |
+| H4 | 324,7 | -24,3 | E4 MIDI64 |
+| H5 | 406,4 | -27,9 | G#4 MIDI68 |
+| H6 | 488,2 | -27,6 | harmonique supérieure |
+| H7 | 569,6 | -28,8 | harmonique supérieure |
+
+La fondamentale est environ **24,7 dB sous H2**, 22,4 dB sous H3 : un cas classique de fondamentale faible, PAS un problème de niveau de capture. C#4 MIDI61 reste une fausse note qui ne correspond pas directement aux premières harmoniques entières. La hauteur estimée varie d'environ 81,7 Hz (1,17–1,29 s) à 80,6 Hz (2–2,5 s), soit environ -15 à -40 cents par rapport à E2 théorique 82,4069 Hz ; la petite dérive de hauteur ne suffit pas à expliquer la confusion d'octaves.
+
+### Évolution temporelle de la preuve
+
+En prenant des fenêtres de 8192 échantillons **causales alignées à droite** et le maximum FFT autour des partiels attendus :
+- À **1,155193 s** (premières fausses émissions), H2≈161,5 Hz et H3≈251,7 Hz sont seulement ~2,3 dB au-dessus du fond spectral local : indices précoces ambigus, fondamentales très faibles.
+- À **1,184218 s**, H2≈162,2 et H3≈247,0 Hz deviennent environ +8,4/+7,8 dB plus distincts.
+- À **1,207438 s**, H2≈162,8 et H3≈245,6 Hz deviennent +12,3/+13,0 dB, avec ratio H3/H2 ≈1,508 : forte indication du parent harmonique E2 (~81,5 Hz).
+- À **1,358367 s**, H2≈162,8 et H3≈244,3 Hz sont très nets (~+41 dB de contraste spectral local chacun).
+
+Le modèle causal tend à émettre trop tôt plusieurs enfants harmoniques, avant que sa tête d'attaque E2 ne monte suffisamment ; plus tard `sustain(E2)` est ~0,995 alors que `onset(E2)` s'est effondré. Une architecture future doit exploiter les relations d'harmoniques **dans les trames déjà reçues**, avec parent E2 et preuves d'indépendance acoustique des enfants. Elle ne doit NI attendre 100–500 ms après l'attaque, NI supprimer systématiquement E3/B3 lorsque ces notes peuvent aussi être réellement jouées.
+
+Le fichier utilisateur **n'a pas été publié dans GitHub**, le dépôt ne contient que cette analyse textuelle. Aucune validation globale de cette nouvelle hypothèse n'a eu lieu : ne pas promouvoir un correcteur construit sur le seul WAV E2. Tester d'abord des vrais E3 seuls, B3 seuls, E2+E3, accords et contre-exemples avec fractionnement indépendant par prise.
