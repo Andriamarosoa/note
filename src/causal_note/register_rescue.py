@@ -21,12 +21,13 @@ class RegisterGate:
     novelty_floor: float
     fundamental_floor: float
     harmonic_ratio_floor: float
+    min_count_support: float = 0.0  # P(native active K > existing active notes)
 
     def __post_init__(self):
         if not 0 < self.onset_floor < 1 or not 0 < self.sustain_floor < 1:
             raise ValueError("Invalid pitch onset/sustain floors")
         if min(self.novelty_floor, self.fundamental_floor,
-               self.harmonic_ratio_floor) < 0:
+               self.harmonic_ratio_floor) < 0 or not 0 <= self.min_count_support <= 1:
             raise ValueError("Negative acoustic evidence thresholds")
 
 
@@ -44,6 +45,15 @@ HIGH_CONSERVATIVE = RegisterGate(.50, .60, .12, .35, .30)
 HIGH_MODERATE = RegisterGate(.40, .50, .07, .22, .20)
 HIGH_SENSITIVE = RegisterGate(.30, .50, .03, .12, .12)
 
+# A new bass note must have posterior support for at least one MORE active note.
+# This is only an experimental veto using the native K0..6 posterior.
+BASS_K10 = RegisterGate(.48, .60, .12, .40, .30, .10)
+BASS_K25 = RegisterGate(.48, .60, .12, .40, .30, .25)
+BASS_K50 = RegisterGate(.48, .60, .12, .40, .30, .50)
+BASS_K75 = RegisterGate(.48, .60, .12, .40, .30, .75)
+BASS_MOD_K25 = RegisterGate(.40, .50, .07, .27, .22, .25)
+BASS_MOD_K50 = RegisterGate(.40, .50, .07, .27, .22, .50)
+
 
 def variants():
     return [
@@ -59,10 +69,20 @@ def variants():
         ("both_sensitive", RescuePolicy(BASS_SENSITIVE, HIGH_SENSITIVE)),
         ("bass_moderate_high_sensitive", RescuePolicy(BASS_MODERATE, HIGH_SENSITIVE)),
         ("bass_sensitive_high_moderate", RescuePolicy(BASS_SENSITIVE, HIGH_MODERATE)),
+        ("bass_conservative_k10", RescuePolicy(bass=BASS_K10)),
+        ("bass_conservative_k25", RescuePolicy(bass=BASS_K25)),
+        ("bass_conservative_k50", RescuePolicy(bass=BASS_K50)),
+        ("bass_conservative_k75", RescuePolicy(bass=BASS_K75)),
+        ("bass_k10_high_moderate", RescuePolicy(BASS_K10, HIGH_MODERATE)),
+        ("bass_k25_high_moderate", RescuePolicy(BASS_K25, HIGH_MODERATE)),
+        ("bass_k50_high_moderate", RescuePolicy(BASS_K50, HIGH_MODERATE)),
+        ("bass_k75_high_moderate", RescuePolicy(BASS_K75, HIGH_MODERATE)),
+        ("bass_moderate_k25_high_moderate", RescuePolicy(BASS_MOD_K25, HIGH_MODERATE)),
+        ("bass_moderate_k50_high_moderate", RescuePolicy(BASS_MOD_K50, HIGH_MODERATE)),
     ]
 
 
-def propose(features, native_pitch, state, policy):
+def propose(features, native_pitch, state, policy, count=None):
     """Return (independent native probability copy, proposed masks).
 
     x[0:24]: three resolutions x eight partial strengths;
@@ -105,6 +125,12 @@ def propose(features, native_pitch, state, policy):
                 (physical_growth >= gate.novelty_floor) &
                 (fundamental_growth >= gate.novelty_floor * .25)
             )
+            if gate.min_count_support > 0:
+                k = np.asarray(count, dtype=np.float32)
+                if k.shape != (7,) or not np.isfinite(k).all():
+                    raise ValueError("Native 7-way active count posterior required")
+                next_k = min(7, int(state.active.sum()) + 1)
+                mask &= k[next_k:].sum() >= gate.min_count_support
             modified[mask, 0] = state.config.onset
         proposed[label] = mask
     return modified, proposed
