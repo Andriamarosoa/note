@@ -196,3 +196,56 @@ examples, or that a new fusion gate would work independently.
 Next: multi-factor contingency analysis (K×corpus×pitch×interval),
 audio/spectrum case-control review on original stems, and
 composition-disjoint perturbation/augmentation *only if validated*.
+
+
+## Interaction audit — verified after full replay
+
+[Successful source-linked interaction workflow 38890656545](https://github.com/Andriamarosoa/note/actions/runs/38890656545), using immutable audited 2,079 TP/FN events from original S627, with zero additional data downloads or changes to any model. Full report artifact `s627-context-interactions-and-conditioned-harmonic-association`.
+
+A serious warning against interpreting one-dimensional correlations as
+independent physical causes:
+
+- Harmonic-INTERVAL relation (12/19/24 semitones) overall 212/392
+  (**54.08%**) missed; this stratum contains higher K, high pitches
+  and corpus-domain shifts, so comparing it to K1/no-overlap 219/639
+  (**34.27%**) confounds multiple dimensions.
+- On **GuitarSet**, harmonic-interval active context missed **99/238
+  (41.60%)**; on **URMP**, **113/154 (73.38%)**. These are dramatically
+  different despite same abstract semitone-interval label.
+- When separately stratifying by corpus × true active-K × register,
+  21 strata contain >=5 harmonic and >=5 comparison examples:
+  harmonic contexts have *higher* missing-note rates in **12**
+  strata but *lower* rates in **9**. Weighted contrast (weights =
+  harmonic subset size) is **+2.83 percentage points**, and 14
+  strata lack two adequate subsets and are excluded.
+- Examples: GuitarSet, K3, middle E3–D#4: harmonic 15/54
+  missed (27.78%) versus others 75/206 (36.41%); relative risk
+  reverses sign. Conversely, URMP K3 high E4–D#5: harmonic 12/16
+  (75%) versus others 20/69 (28.99%). Both observational.
+- Within real K2, intervals 12/19/24 have 52/84 missed (61.90%),
+  whereas K5+ harmonic intervals have 56/83 (67.47%);
+  error depends on context, not simply frequency-ratio overlap.
+- When a different note began 80–250ms ago and harmonic interval
+  is coactive, 35/49 expected notes missed (71.43%). A near-
+  simultaneous <=10ms harmonic pair yields 52/101 missed (51.49%).
+  Again NOT necessarily a harmonic causal mechanism, because the
+  note register, corpus and actual attack signal can differ.
+
+**Implication:** Generic rule `harmonic interval => suppress` is
+unsupported and would risk removing true played octaves.
+The audio+source specific mechanism still needs spectrogram / attack
+envelope / separate stem checks; no selector or data augmentation
+should be justified from this cross-tab alone.
+
+Full reproducible interaction code:
+`scripts/s627_interactions_from_audit.py`.
+
+### Limits
+
+The contrast is **NOT** a causal adjusted effect: it is only simple
+stratification with a low >=5-per-group inclusion threshold. Source
+compositions, instrument attack envelopes, harmonic excitation,
+absolute pitch and pitch reliability are not all controlled.
+The cases within and across source clips are correlated; 21 strata
+are not 21 independent experimental trials. The 2.83pp value should
+not be promoted into a claim that harmonics cause 2.83pp error.
