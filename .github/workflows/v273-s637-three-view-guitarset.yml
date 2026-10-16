@@ -30,7 +30,7 @@ jobs:
         run: |
           python -m compileall -q scripts/s637_guitarset_three_view_groundtruth.py test/test_s637_guitarset_three_view.py
           python -m unittest -v test.test_s637_guitarset_three_view
-      - name: Benchmark the real annotated GuitarSet DEV: 12 held-composition tracks
+      - name: 'Benchmark real annotated GuitarSet DEV 12 compositions'
         run: python -m scripts.s637_guitarset_three_view_groundtruth --out /tmp/s637_real_guitarset --limit 12
       - uses: actions/upload-artifact@v4
         if: always()
