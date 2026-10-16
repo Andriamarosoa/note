@@ -447,7 +447,9 @@ def _open_stream(
                 nonlocal callbacks, status_events, invalid_blocks
                 callbacks += 1
                 status_events += int(bool(status))
-                invalid_blocks += int(int(frames) != int(blocksize))
+                # blocksize=0 delegates callback size to PortAudio: variable
+                # frames are expected and must not invalidate a healthy device.
+                invalid_blocks += int(blocksize > 0 and int(frames) != int(blocksize))
                 if direction == "output":
                     buffer.fill(0.0)
                 if callbacks >= 16:

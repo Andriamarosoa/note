@@ -20,6 +20,7 @@ from threadpoolctl import threadpool_limits
 from causal_note.strict_live import HOP, SR, load_heads, StrictLiveStream
 from scripts.live_audio_io import audio_devices, managed_input_stream, open_output_stream, parse_device
 from scripts.live_input_level import NoteAutoLevel
+from scripts.live_hop_tuning import parse_hop_size, resolve_hop
 
 DEFAULT_MODEL = Path(__file__).resolve().parents[1] / "model/live/strict_note/NOTE_strict_live.npz"
 
@@ -53,6 +54,55 @@ def capture_deadline_exceeded(captured, now, block_size, blocks):
     return blocks > 0 and now - captured > blocks * block_size / SR
 
 
+def parse_block_size(value):
+    """0 requests PortAudio host-chosen size; positive values have no CLI cap."""
+    try:
+        size = int(value)
+    except (TypeError, ValueError) as exc:
+        raise argparse.ArgumentTypeError("block size must be an integer") from exc
+    if size < 0:
+        raise argparse.ArgumentTypeError("block size must be >= 0 (0 = PortAudio auto)")
+    return size
+
+
+def parse_queue_blocks(value):
+    if str(value).casefold() == "auto":
+        return "auto"
+    try:
+        blocks = int(value)
+    except (TypeError, ValueError) as exc:
+        raise argparse.ArgumentTypeError("queue-blocks must be auto or a positive integer") from exc
+    if blocks < 1:
+        raise argparse.ArgumentTypeError("queue-blocks must be >= 1")
+    return blocks
+
+
+def resolve_queue_blocks(option, block_size, *, sample_rate=SR, target_ms=75.0):
+    """Bound queue occupancy by roughly target_ms of captured PCM.
+
+    This is a capacity, NOT a mandatory delay or adaptive hidden FIFO.
+    0 is PortAudio's variable callback size; 256 samples is the nominal
+    queue planning size until actual device frames are known.
+    """
+    if option != "auto":
+        return int(option)
+    nominal = block_size if block_size > 0 else HOP
+    return max(2, int(np.ceil((target_ms / 1000.) * sample_rate / nominal)))
+
+
+def apply_model_input(leveler, audio):
+    """Keep optional gain's hop bound even with variable PortAudio frames."""
+    if leveler is None:
+        return audio
+    hop = leveler.leveler.hop_samples
+    if len(audio) <= hop:
+        return leveler.apply(audio)
+    return np.concatenate([
+        leveler.apply(audio[offset:offset + hop])
+        for offset in range(0, len(audio), hop)
+    ])
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
     parser.add_argument("--model", type=Path, default=DEFAULT_MODEL)
@@ -70,17 +120,26 @@ def main(argv=None):
     parser.add_argument("--monitor-input", action="store_true", help="Listen to raw microphone audio (headphones recommended); independent of note detection")
     parser.add_argument("--output-device", help="sounddevice output device name/index for monitoring; select a WASAPI endpoint via --list-devices")
     parser.add_argument("--monitor-gain", type=float, default=0.5, help="Raw input monitoring gain, 0.0..1.0 (default 0.5)")
+    parser.add_argument("--harmonic-mode", choices=("off", "shadow", "guard"), default="off",
+                        help="Experimental native harmonic expert: off (default), shadow (no changed events), guard (requires trained checkpoint)")
+    parser.add_argument("--harmonic-checkpoint", type=Path,
+                        help="Separately trained harmonic genuine-onset checkpoint; no checkpoint is bundled")
+    parser.add_argument("--harmonic-threshold", type=float, default=0.10,
+                        help="Experimental independent-onset gating threshold, dev-calibration required")
     parser.add_argument("--auto-level", action="store_true", help="Enable bounded causal input gain (+18dB max), adapted from midi; experimental, default OFF")
     parser.add_argument("--auto-level-max-db", type=float, default=18.0, help="Maximum automatic amplification, 0..24 dB (default: 18)")
     parser.add_argument("--auto-level-peak-gate-dbfs", type=float, default=-55.0, help="Raw peak activity gate in dBFS (default -55)")
     parser.add_argument("--auto-level-rms-gate-dbfs", type=float, default=-65.0, help="Raw RMS activity gate in dBFS (default -65)")
     parser.add_argument("--midi-port", help="Exact mido output port name; omit for JSONL events")
     parser.add_argument("--out", type=Path, help="JSONL output; defaults to stdout")
-    parser.add_argument("--block-size", type=int, default=HOP, choices=(128, 256, 512, 1024))
+    parser.add_argument("--hop-size", type=str, default=None,
+                        help="Neural decision hop 128/256/512 or auto (experimental CPU preflight). Default 256 preserves validated S613.")
+    parser.add_argument("--block-size", type=parse_block_size, default=HOP,
+                        help="PortAudio callback samples: any positive integer; 0 = driver auto. Large blocks add output latency.")
     parser.add_argument("--capture-deadline-blocks", type=int, default=0,
                         help="0 = no artificial microphone worker deadline (default)")
-    parser.add_argument("--queue-blocks", type=int, default=32,
-                        help="Maximum buffered microphone blocks before overflow")
+    parser.add_argument("--queue-blocks", type=parse_queue_blocks, default="auto",
+                        help="Input queue capacity: auto (default, about 75ms of PCM), or explicit positive block count")
     args = parser.parse_args(argv)
     if args.piano_output_device is not None and args.soundfont is None:
         parser.error("--piano-output-device requires --soundfont")
@@ -102,10 +161,28 @@ def main(argv=None):
         parser.error("--auto-level-peak-gate-dbfs must be within -120..0")
     if not (np.isfinite(args.auto_level_rms_gate_dbfs) and -120 <= args.auto_level_rms_gate_dbfs <= 0):
         parser.error("--auto-level-rms-gate-dbfs must be within -120..0")
+    if args.harmonic_mode == "guard" and args.harmonic_checkpoint is None:
+        parser.error("--harmonic-mode guard requires --harmonic-checkpoint with trained weights")
+    if args.harmonic_mode == "off" and args.harmonic_checkpoint is not None:
+        parser.error("--harmonic-checkpoint requires --harmonic-mode shadow or guard")
+    if args.harmonic_checkpoint is not None and not args.harmonic_checkpoint.is_file():
+        parser.error(f"Harmonic checkpoint not found: {args.harmonic_checkpoint}")
+    if not (np.isfinite(args.harmonic_threshold) and 0 < args.harmonic_threshold < 1):
+        parser.error("--harmonic-threshold must be inside (0,1)")
     if args.capture_deadline_blocks < 0:
         parser.error("--capture-deadline-blocks must be >= 0")
-    if args.queue_blocks < 1:
-        parser.error("--queue-blocks must be >= 1")
+    try:
+        hop_request = parse_hop_size(args.hop_size if args.hop_size is not None
+                                     else 256)
+    except ValueError as exc:
+        parser.error(str(exc))
+    queue_capacity = resolve_queue_blocks(args.queue_blocks, args.block_size)
+    if args.block_size and args.block_size > HOP:
+        print(json.dumps(dict(
+            warning="A large callback block increases LIVE event-delivery latency",
+            block_size=args.block_size, block_ms=round(args.block_size * 1000 / SR, 3),
+            note="Model decision cadence is set by --hop-size; events are delivered in callback groups",
+        )), file=sys.stderr)
     if args.list_devices:
         for direction, title in (("input", "Microphone INPUT"), ("output", "Piano/audio OUTPUT")):
             print(f"{title} (index | name | host API | native Hz | reported low-latency ms):")
@@ -142,9 +219,26 @@ def main(argv=None):
         warm = StrictLiveStream(heads)
         for j in range(8):
             warm.push(np.zeros(HOP, np.float32), start_sample=j * HOP)
-        stream = StrictLiveStream(heads)
+        selected_hop, hop_audit = resolve_hop(
+            heads, hop_request, harmonic_mode=args.harmonic_mode,
+            harmonic_checkpoint=args.harmonic_checkpoint,
+            harmonic_threshold=args.harmonic_threshold,
+        )
+        print(json.dumps(dict(hop_selection=hop_audit)), file=sys.stderr)
+        stream = StrictLiveStream(
+            heads, hop=selected_hop, harmonic_mode=args.harmonic_mode,
+            harmonic_checkpoint=args.harmonic_checkpoint,
+            harmonic_threshold=args.harmonic_threshold,
+        )
+        if args.harmonic_mode != "off":
+            print(json.dumps(dict(
+                harmonic_mode=args.harmonic_mode,
+                harmonic_checkpoint=str(args.harmonic_checkpoint) if args.harmonic_checkpoint else None,
+                changed_note_events=args.harmonic_mode == "guard",
+                note="Experimental harmonic expert: existing NOTE model and frontend are unchanged",
+            )), file=sys.stderr)
         leveler = (NoteAutoLevel(
-            sample_rate=SR, block_size=args.block_size,
+            sample_rate=SR, block_size=(args.block_size or HOP),
             max_gain_db=args.auto_level_max_db,
             peak_gate_dbfs=args.auto_level_peak_gate_dbfs,
             rms_gate_dbfs=args.auto_level_rms_gate_dbfs,
@@ -182,8 +276,9 @@ def main(argv=None):
         try:
             if args.mic:
                 import sounddevice as sd
-                inbox = queue.Queue(maxsize=args.queue_blocks)
+                inbox = queue.Queue(maxsize=queue_capacity)
                 overrun = threading.Event()
+                overrun_reason = [None]
                 capture_start = [0]
                 # A separate bounded monitor queue cannot delay the recognition path.
                 monitor_queue = queue.Queue(maxsize=4) if args.monitor_input else None
@@ -202,8 +297,11 @@ def main(argv=None):
                         outdata.fill(0.0)
                         monitor_underruns[0] += 1
                 def callback(indata, frames, timing, status):
-                    if status or overrun.is_set():
+                    if status:
+                        overrun_reason[0] = f"portaudio_callback_status={status}"
                         overrun.set()
+                        raise sd.CallbackAbort
+                    if overrun.is_set():
                         raise sd.CallbackAbort
                     try:
                         chunk = indata[:, 0].copy()
@@ -223,6 +321,11 @@ def main(argv=None):
                                 except queue.Full:
                                     pass
                     except queue.Full:
+                        overrun_reason[0] = (
+                            f"input_queue_full(maxsize={queue_capacity}, "
+                            f"block_size={args.block_size}, "
+                            f"queue_nominal_audio_ms={queue_capacity * max(args.block_size, HOP) * 1000 / SR:.1f})"
+                        )
                         overrun.set()
                         raise sd.CallbackAbort
                 capture, capture_info = stack.enter_context(managed_input_stream(
@@ -257,36 +360,43 @@ def main(argv=None):
                          capture_latency_ms=capture_info.latency_ms,
                          block_ms=args.block_size / SR * 1000,
                          capture_deadline_blocks=args.capture_deadline_blocks,
-                         queue_blocks=args.queue_blocks)), file=sys.stderr)
+                         queue_blocks=queue_capacity,
+                         decision_hop_samples=selected_hop,
+                         decision_hop_ms=round(selected_hop * 1000 / SR, 4),
+                         queue_setting=args.queue_blocks,
+                         queue_nominal_capacity_ms=round(
+                             queue_capacity * (args.block_size or HOP) * 1000 / SR, 2
+                         ))), file=sys.stderr)
                 while True:
                     if piano is not None:
                         piano_error = piano.health_error()
                         if piano_error is not None:
                             raise RuntimeError(piano_error)
                     if overrun.is_set():
-                        raise BufferError("Input overrun: stream stopped and notes released")
+                        raise BufferError(f"Input overrun: {overrun_reason[0]}; stream stopped and notes released")
                     try:
                         start, audio, captured = inbox.get(timeout=.1)
                     except queue.Empty:
                         if not capture.active:
                             raise BufferError("Microphone stopped unexpectedly")
                         continue
-                    if capture_deadline_exceeded(captured, time.monotonic(), args.block_size,
+                    if capture_deadline_exceeded(captured, time.monotonic(), len(audio),
                                                  args.capture_deadline_blocks):
                         raise BufferError("Optional capture deadline exceeded before inference")
-                    model_audio = leveler.apply(audio) if leveler is not None else audio
+                    model_audio = apply_model_input(leveler, audio)
                     events = stream.push(model_audio, start_sample=start)
                     if overrun.is_set():
-                        raise BufferError("Microphone input overflow; notes released")
-                    if capture_deadline_exceeded(captured, time.monotonic(), args.block_size,
+                        raise BufferError(f"Microphone input overflow: {overrun_reason[0]}; notes released")
+                    if capture_deadline_exceeded(captured, time.monotonic(), len(audio),
                                                  args.capture_deadline_blocks):
                         raise BufferError("Optional capture deadline exceeded after inference")
                     emit(events)
             else:
-                blocks = blocks_wav(args.wav, args.block_size) if args.wav else blocks_stdin(sys.stdin.buffer, args.block_size)
+                file_block = args.block_size or HOP
+                blocks = blocks_wav(args.wav, file_block) if args.wav else blocks_stdin(sys.stdin.buffer, file_block)
                 start = 0
                 for audio in blocks:
-                    model_audio = leveler.apply(audio) if leveler is not None else audio
+                    model_audio = apply_model_input(leveler, audio)
                     emit(stream.push(model_audio, start_sample=start))
                     start += len(audio)
         except KeyboardInterrupt:
@@ -300,6 +410,14 @@ def main(argv=None):
             finally:
                 if leveler is not None:
                     print(json.dumps(dict(auto_level_diagnostics=leveler.diagnostics())),
+                          file=sys.stderr)
+                if stream.harmonic_selector is not None:
+                    from dataclasses import asdict
+                    print(json.dumps(dict(harmonic_expert_diagnostics=asdict(
+                        stream.harmonic_selector.stats,
+                    ))), file=sys.stderr)
+                if piano is not None:
+                    print(json.dumps(dict(piano_output_diagnostics=piano.diagnostics())),
                           file=sys.stderr)
 
 
