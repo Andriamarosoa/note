@@ -52,7 +52,7 @@ class AdaptiveHopTests(unittest.TestCase):
             self.assertEqual(f.received, len(signal))
 
     def test_first_time_confirmation_release_and_refractory_stay_physical(self):
-        for hop, release, confirmation in [(128, 10, 2), (256, 5, 1), (512, 2, 1)]:
+        for hop, release, confirmation in [(128, 10, 2), (256, 5, 1), (512, 3, 1)]:
             c = CausalSelection(Selection(), hop=hop)
             self.assertEqual(c.release_steps, release)
             self.assertEqual(c.confirmation_steps, confirmation)
