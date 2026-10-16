@@ -10,7 +10,7 @@ import json
 from pathlib import Path
 import numpy as np
 
-from causal_note.strict_live import NativeLiveHeads, CausalSelection, Selection, SR
+from causal_note.strict_live import load_heads, CausalSelection, Selection, SR
 from scripts.s613_train_strict_live import real_notes, event_score, summary
 from scripts.s615_train_multihop import source_data
 from scripts.s615_exactk_audit import exact_k_onset_audit, merge_k_reports
@@ -63,8 +63,12 @@ def compare(root, candidate, *, baseline=Path("model/live/strict_note/NOTE_stric
     specs=[s for s in protocol["sources"] if s["split"]=="dev"]
     if not specs:
         raise ValueError("No development-only recordings")
-    original=NativeLiveHeads(baseline)
-    contender=NativeLiveHeads(candidate)
+    # Do not treat frozen S613's hybrid checkpoint as a neural-only MLP.
+    # load_heads dispatches to the ONNX-tree + neural consensus specified
+    # by checkpoint metadata. This changes the true full-hybrid baseline
+    # from the erroneous ~56.39% to 61.22% on the S613 17-dev protocol.
+    original=load_heads(baseline)
+    contender=load_heads(candidate)
     trained=tuple(contender.metadata.get("trained_hops",()))
     if not trained:
         raise ValueError("Candidate has no declared trained hops")
