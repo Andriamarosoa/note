@@ -1,0 +1,41 @@
+name: S640 learned bass rescue selection on real GuitarSet TRAIN and DEV
+on:
+  push:
+    branches: [codex/s640-overlap-aware-rescue-selector]
+    paths:
+      - scripts/s640_learned_overlap_rescue.py
+      - test/test_s640_learned_overlap_rescue.py
+      - .github/workflows/v273-s640-overlap-aware-rescue.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s640-overlap-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  real_guitarset_train_and_validation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original NOTE runtime including sklearn for logistic gate
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Test original NOTE remains frozen and selection sees no future frames
+        run: |
+          python -m compileall -q scripts/s640_learned_overlap_rescue.py test/test_s640_learned_overlap_rescue.py
+          python -m unittest -v test.test_s640_learned_overlap_rescue
+      - name: Train only annotated GuitarSet TRAIN and validate only GuitarSet DEV
+        run: python -m scripts.s640_learned_overlap_rescue --out /tmp/s640_guitarset_selector
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S640_TRAIN_ONLY_OVERLAP_RESCUE_GUITARSET_DEV
+          path: /tmp/s640_guitarset_selector/report.json
+          if-no-files-found: warn
+          retention-days: 60
