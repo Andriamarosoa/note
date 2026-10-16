@@ -298,12 +298,17 @@ class NoteAutoLevel:
 
     def apply(self, raw):
         x = np.asarray(raw, dtype=np.float32)
-        if x.ndim != 1 or x.shape[0] != self.leveler.hop_samples:
-            raise ValueError("Expected one complete contiguous capture block")
+        if x.ndim != 1 or not (0 < x.shape[0] <= self.leveler.hop_samples):
+            raise ValueError("Expected one contiguous capture block at most one hop long")
         if not np.isfinite(x).all():
             raise ValueError("Non-finite microphone audio")
+        # A WAV/stdin file can end with a partial block; pad ONLY the leveler's
+        # observable current chunk and return only the original real samples.
+        real_samples = x.shape[0]
+        if real_samples < self.leveler.hop_samples:
+            x = np.pad(x, (0, self.leveler.hop_samples - real_samples))
         peak = float(np.max(np.abs(x), initial=0.0))
-        rms = float(np.sqrt(np.mean(x.astype(np.float64) ** 2)))
+        rms = float(np.sqrt(np.mean(x[:real_samples].astype(np.float64) ** 2)))
         active = peak >= self.peak_gate and rms >= self.rms_gate
         result = self.leveler.process(x, audio_active=active)
         self.latest = result
@@ -312,7 +317,7 @@ class NoteAutoLevel:
         self.max_raw_peak = max(self.max_raw_peak, peak)
         scaled = x * result.gain
         self.over_limit_input_samples += int(np.count_nonzero(np.abs(scaled) > 1.0))
-        return np.clip(scaled, -1.0, 1.0).astype(np.float32)
+        return np.clip(scaled[:real_samples], -1.0, 1.0).astype(np.float32)
 
     def diagnostics(self):
         return {
