@@ -340,6 +340,9 @@ def main(argv=None):
                     print(json.dumps(dict(harmonic_expert_diagnostics=asdict(
                         stream.harmonic_selector.stats,
                     ))), file=sys.stderr)
+                if piano is not None:
+                    print(json.dumps(dict(piano_output_diagnostics=piano.diagnostics())),
+                          file=sys.stderr)
 
 
 if __name__ == "__main__":
