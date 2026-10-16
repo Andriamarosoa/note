@@ -354,8 +354,13 @@ class StrictLiveStream:
         self.heads = heads
         self.hop = hop
         self.frontend = CausalPitchFeatures(hop=hop)
+        # S615 shared heads can calibrate different selector thresholds for
+        # each training hop. Old S613 checkpoints have no such metadata, and
+        # remain byte-identical at hop=256.
+        selected = heads.metadata.get("selection_by_hop", {}).get(
+            str(hop), heads.metadata["selection"])
         self.selector = CausalSelection(
-            selection or Selection(**heads.metadata["selection"]), hop=hop)
+            selection or Selection(**selected), hop=hop)
         self.harmonic_selector = None
         if harmonic_mode not in ("off", "shadow", "guard"):
             raise ValueError("Unknown harmonic experiment mode")
