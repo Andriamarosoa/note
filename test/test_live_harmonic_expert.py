@@ -19,7 +19,7 @@ from causal_note.harmonic_expert import (
 
 class HarmonicExpertTests(unittest.TestCase):
     def inputs(self):
-        x = np.zeros((49, 126), np.float32)
+        x = np.zeros((49, 110), np.float32)
         p = np.zeros((49, 3), np.float32)
         k = np.eye(7, dtype=np.float32)[2]
         # A genuine E2 + E3 attack is spectrally compatible with H2(E2)
