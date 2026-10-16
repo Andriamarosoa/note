@@ -63,7 +63,7 @@ def prepare_one(root, spec, hop):
     ends, features = feature_track(audio, block_size=2048, hop=hop)
     # The native feature ABI must not depend on hop. Absolutely no label,
     # time target or MIDI event enters this feature extraction.
-    if features.shape[1:] != (49, 110) or len(ends) != len(audio) // hop:
+    if features.shape[1:] != (49, 126) or len(ends) != len(audio) // hop:
         raise AssertionError(f"Unexpected NOTE feature ABI at hop={hop}: {features.shape}")
     np.savez_compressed(target, ends=ends, features=features)
     receipt = dict(
