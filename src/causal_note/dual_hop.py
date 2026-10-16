@@ -34,6 +34,8 @@ class DualHopConfig:
     novelty_min: float = .04
     novelty_ratio: float = .55
     novelty_mode: str = "lag"  # lag / recent
+    reference_priority: bool = False
+    reference_grace_samples: int = 0
 
     def __post_init__(self):
         if self.mode not in ("off", "shadow", "guard"):
@@ -44,6 +46,8 @@ class DualHopConfig:
             raise ValueError("novelty criteria outside valid range")
         if self.novelty_mode not in ("lag", "recent"):
             raise ValueError("unknown novelty metric")
+        if self.reference_grace_samples<0:
+            raise ValueError("Grace samples cannot be negative")
 
 
 def fast_candidate_mask(novelty, pitch_probs, cfg, *,
@@ -91,12 +95,19 @@ class DualSourceEventMerger:
     physical NoteOff. Baseline events never produce a second NOTE-on for a
     pitch held already by the fast branch. No future sample is consulted.
     """
-    def __init__(self):
+    def __init__(self, *, reference_priority=False, grace_samples=0):
+        if grace_samples<0:
+            raise ValueError("Negative 256-reference retrigger grace")
+        self.reference_priority=bool(reference_priority)
+        self.grace_samples=int(grace_samples)
         self.source_active={"reference":np.zeros(49,bool),
                             "fast":np.zeros(49,bool)}
         self.current=np.zeros(49,bool)
+        self.last_fast_on=np.full(49,-10**12,np.int64)
         self.emitted=Counter()
         self.suppressed_duplicates=0
+        self.reference_retriggers=0
+        self.fast_leases_cut_by_reference=0
 
     def step(self, source, event):
         if source not in self.source_active:
@@ -110,10 +121,37 @@ class DualSourceEventMerger:
             if self.source_active[source][idx]:
                 raise ValueError("Overlapping identical source NOTE-on")
             self.source_active[source][idx]=True
+            if source=="fast":
+                self.last_fast_on[idx]=int(event["decision_sample"])
+            if (source=="reference" and self.reference_priority and first):
+                # Reference is arriving after an earlier fast note_on.
+                # If the early event is too old, an ordinary lease merger
+                # would hide the *correct* baseline onset, losing old TP.
+                # Physically reattack in-place. This trades an audible
+                # re-strike for correct baseline NoteOn timing. Measure it.
+                age=int(event["decision_sample"])-int(self.last_fast_on[idx])
+                if age>self.grace_samples:
+                    ended=dict(event,type="note_off",velocity=0,
+                               reason="dual_reference_takeover_off")
+                    started=dict(event,reason="dual_reference_takeover_on")
+                    self.emitted["note_off"]+=1
+                    self.emitted["note_on"]+=1
+                    self.reference_retriggers+=1
+                    return [ended,started]
         else:
             if not self.source_active[source][idx]:
+                if source=="fast" and self.reference_priority:
+                    # Reference release may have retired the temporary
+                    # fast lease. Ignore its later stale note_off.
+                    return []
                 raise ValueError("Orphan source NOTE-off")
             self.source_active[source][idx]=False
+            if source=="reference" and self.reference_priority:
+                # A validated S613 release takes priority. Otherwise a
+                # stale fast pitch often holds the piano for too long.
+                if self.source_active["fast"][idx]:
+                    self.fast_leases_cut_by_reference+=1
+                    self.source_active["fast"][idx]=False
         now=bool(self.source_active["reference"][idx] or self.source_active["fast"][idx])
         self.current[idx]=now
         if now==first:
@@ -164,7 +202,10 @@ class DualHopLiveStream:
             Selection(**{**frozen_heads.metadata["selection"],
                          "onset":config.fast_onset}),hop=128)
                        if config.mode!="off" else None)
-        self.merger=DualSourceEventMerger() if config.mode=="guard" else None
+        self.merger=DualSourceEventMerger(
+            reference_priority=(getattr(config,"reference_priority",False)),
+            grace_samples=getattr(config,"reference_grace_samples",0),
+        ) if config.mode=="guard" else None
         self.harmonic_selector=None  # CLI parity; no simultaneous S613 specialist
         self.received=0
         self.closed=False
@@ -248,4 +289,6 @@ class DualHopLiveStream:
         if self.merger is not None:
             result["merged_events"]=dict(self.merger.emitted)
             result["duplicate_note_on_suppressed"]=self.merger.suppressed_duplicates
+            result["reference_retriggers"]=self.merger.reference_retriggers
+            result["fast_leases_cut_by_reference"]=self.merger.fast_leases_cut_by_reference
         return result
