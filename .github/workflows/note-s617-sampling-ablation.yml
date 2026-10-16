@@ -1,0 +1,81 @@
+name: "S617 loop - S613-like negative sampling controls"
+on:
+  push:
+    branches: [codex/note-live-s617-negative-sampling]
+    paths: ['.github/workflows/note-s617-sampling-ablation.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  negative-sampling:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install CPU training requirements
+        run: |
+          python -m pip install "numpy>=1.26,<2" "scipy>=1.11,<1.15" "onnxruntime>=1.17,<1.25" "threadpoolctl>=3"
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Prepare the identical 6 train / 3 dev pinned GuitarSet pilot
+        run: |
+          python -m scripts.s615_seed_guitarset_pilot --root data/S617_pilot --train-sources 6 --dev-sources 3
+          python -m scripts.s615_prepare_multihop --root data/S617_pilot --hops 128 256 512 --pilot-train-sources 6 --pilot-dev-sources 3
+      - name: Retrain shared native head with more negative examples
+        run: |
+          python -m scripts.s615_train_multihop --root data/S617_pilot \
+            --mode shared --out results/S617_pilot/shared \
+            --count-epochs 4 --pitch-epochs 6 \
+            --max-pitch-rows 15000 \
+            --pilot-train-sources 6 --pilot-dev-sources 3
+      - name: Compare recorded S615 and new S617 dev F1/FP/K1-K4
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 38862219355 --repo Andriamarosoa/note \
+            --name s615-real-guitarset-pilot-candidates --dir /tmp/S615_pilot
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          old=json.loads(Path('/tmp/S615_pilot/shared/report.json').read_text())
+          new=json.loads(Path('results/S617_pilot/shared/report.json').read_text())
+          assert old['source_count_train']==new['source_count_train']==6
+          assert old['source_count_dev']==new['source_count_dev']==3
+          results={}
+          for h in ('128','256','512'):
+              a=old['dev_by_hop'][h]
+              b=new['dev_by_hop'][h]
+              results[h]=dict(
+                  old_F1=a['best']['scores']['F1'],
+                  new_F1=b['best']['scores']['F1'],
+                  delta=b['best']['scores']['F1']-a['best']['scores']['F1'],
+                  old_FP=a['best']['scores']['FP'],
+                  new_FP=b['best']['scores']['FP'],
+                  old_TP=a['best']['scores']['TP'],
+                  new_TP=b['best']['scores']['TP'],
+                  old_K=a['onset_exact_k_dev']['onset_exact_k_rate'],
+                  new_K=b['onset_exact_k_dev']['onset_exact_k_rate'],
+                  old_K3=a['onset_exact_k_dev']['by_true_k'].get('3'),
+                  new_K3=b['onset_exact_k_dev']['by_true_k'].get('3'),
+                  old_K4=a['onset_exact_k_dev']['by_true_k'].get('4'),
+                  new_K4=b['onset_exact_k_dev']['by_true_k'].get('4'))
+          report=dict(status='DEV_ONLY_S617_SAMPLING_ABLATION_NO_PROMOTION',
+                      scope='identical 6 train/3 dev GuitarSet; 4 K + 6 pitch epochs',
+                      changed='0.30 sustain, 0.025 background => 0.50 sustain, 0.08 background',
+                      results=results)
+          Path('results/S617_pilot/COMPARISON_VS_S615.json').write_text(json.dumps(report,indent=2))
+          print(json.dumps(report,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s617-negative-sampling-causal-pilot
+          path: results/S617_pilot/
+          retention-days: 30

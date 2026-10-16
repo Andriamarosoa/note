@@ -1,0 +1,79 @@
+name: "S617 FULL corpus negative-sampling recovery (hop256)"
+on:
+  push:
+    branches: [codex/note-live-s617-negative-sampling]
+    paths: ['.github/workflows/note-s617-full-256.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  full-s617:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install CPU train and hybrid inference
+        run: |
+          python -m pip install "numpy>=1.26,<2" "scipy>=1.11,<1.15" "onnxruntime>=1.17,<1.25" "threadpoolctl>=3"
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Verify full 53 train / 17 dev input split, no test labels
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=json.loads(Path('analysis/evidence/v273-s613-strict-live/protocol.json').read_text())
+          assert sum(s['split']=='train' for s in p['sources'])==53
+          assert sum(s['split']=='dev' for s in p['sources'])==17
+          print('Full source scope pinned, all test songs excluded')
+          PY
+      - name: Prepare full source-group-disjoint GuitarSet plus URMP PCM and annotations
+        run: |
+          python -m scripts.s615_seed_full_development --root data/S617_full
+      - name: Prepare causal hop256 features (no new FFT or lookahead)
+        run: |
+          python -m scripts.s615_prepare_multihop --root data/S617_full --hops 256
+          df -h .
+      - name: Retrain native S617 with S613-like silence and sustain sampling on FULL corpus
+        run: |
+          python -m scripts.s615_train_multihop \
+            --root data/S617_full --mode hop256 \
+            --out results/S617_full/hop256 \
+            --count-epochs 24 --pitch-epochs 28 \
+            --max-pitch-rows 15000
+      - name: Compare frozen original S613 vs new S617 full dev NoteOn, Exact-K, active K
+        run: |
+          python -m scripts.s615_compare_dev \
+            --root data/S617_full \
+            --candidate results/S617_full/hop256/NOTE_multihop_candidate.npz \
+            --out results/S617_full/hop256/COMPARISON_VS_FROZEN_S613_DEV.json
+      - name: Audit F1+K regressions before any possible promotion
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('results/S617_full/hop256/COMPARISON_VS_FROZEN_S613_DEV.json').read_text())
+          assert r['status']=='DEV_ONLY_NO_PROMOTION'
+          assert r['dev_sources']==17
+          for key,row in r['results'].items():
+              print(json.dumps(dict(model=key,F1=row['noteon_80ms']['F1'],
+                                    TP=row['noteon_80ms']['TP'],
+                                    FP=row['noteon_80ms']['FP'],
+                                    FN=row['noteon_80ms']['FN'],
+                                    onset_K=row['onset_k']['by_true_k'],
+                                    active_K=row['count_head_active_k']['by_true_K'])))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s617-full-hop256-candidate-and-17dev-report
+          path: results/S617_full/
+          retention-days: 45
