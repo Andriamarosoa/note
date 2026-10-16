@@ -20,6 +20,7 @@ from threadpoolctl import threadpool_limits
 from causal_note.strict_live import HOP, SR, load_heads, StrictLiveStream
 from scripts.live_audio_io import audio_devices, managed_input_stream, open_output_stream, parse_device
 from scripts.live_input_level import NoteAutoLevel
+from scripts.live_hop_tuning import parse_hop_size, resolve_hop
 
 DEFAULT_MODEL = Path(__file__).resolve().parents[1] / "model/live/strict_note/NOTE_strict_live.npz"
 
@@ -131,6 +132,8 @@ def main(argv=None):
     parser.add_argument("--auto-level-rms-gate-dbfs", type=float, default=-65.0, help="Raw RMS activity gate in dBFS (default -65)")
     parser.add_argument("--midi-port", help="Exact mido output port name; omit for JSONL events")
     parser.add_argument("--out", type=Path, help="JSONL output; defaults to stdout")
+    parser.add_argument("--hop-size", type=str, default=None,
+                        help="Neural decision hop 128/256/512, or auto (CPU preflight). Default auto on --mic; 256 on WAV/stdin.")
     parser.add_argument("--block-size", type=parse_block_size, default=HOP,
                         help="PortAudio callback samples: any positive integer; 0 = driver auto. Large blocks add output latency.")
     parser.add_argument("--capture-deadline-blocks", type=int, default=0,
@@ -168,12 +171,17 @@ def main(argv=None):
         parser.error("--harmonic-threshold must be inside (0,1)")
     if args.capture_deadline_blocks < 0:
         parser.error("--capture-deadline-blocks must be >= 0")
+    try:
+        hop_request = parse_hop_size(args.hop_size if args.hop_size is not None
+                                     else ("auto" if args.mic else 256))
+    except ValueError as exc:
+        parser.error(str(exc))
     queue_capacity = resolve_queue_blocks(args.queue_blocks, args.block_size)
     if args.block_size and args.block_size > HOP:
         print(json.dumps(dict(
             warning="A large callback block increases LIVE event-delivery latency",
             block_size=args.block_size, block_ms=round(args.block_size * 1000 / SR, 3),
-            note="Model decision hop remains 256 samples; callback delivery is grouped",
+            note="Model decision cadence is set by --hop-size; events are delivered in callback groups",
         )), file=sys.stderr)
     if args.list_devices:
         for direction, title in (("input", "Microphone INPUT"), ("output", "Piano/audio OUTPUT")):
@@ -211,8 +219,14 @@ def main(argv=None):
         warm = StrictLiveStream(heads)
         for j in range(8):
             warm.push(np.zeros(HOP, np.float32), start_sample=j * HOP)
+        selected_hop, hop_audit = resolve_hop(
+            heads, hop_request, harmonic_mode=args.harmonic_mode,
+            harmonic_checkpoint=args.harmonic_checkpoint,
+            harmonic_threshold=args.harmonic_threshold,
+        )
+        print(json.dumps(dict(hop_selection=hop_audit)), file=sys.stderr)
         stream = StrictLiveStream(
-            heads, harmonic_mode=args.harmonic_mode,
+            heads, hop=selected_hop, harmonic_mode=args.harmonic_mode,
             harmonic_checkpoint=args.harmonic_checkpoint,
             harmonic_threshold=args.harmonic_threshold,
         )
@@ -347,6 +361,8 @@ def main(argv=None):
                          block_ms=args.block_size / SR * 1000,
                          capture_deadline_blocks=args.capture_deadline_blocks,
                          queue_blocks=queue_capacity,
+                         decision_hop_samples=selected_hop,
+                         decision_hop_ms=round(selected_hop * 1000 / SR, 4),
                          queue_setting=args.queue_blocks,
                          queue_nominal_capacity_ms=round(
                              queue_capacity * (args.block_size or HOP) * 1000 / SR, 2
