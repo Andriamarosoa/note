@@ -21,7 +21,7 @@ Original S613 path (unchanged when option omitted):
 
 New optional path:
 
-`same causal 110-feature-per-pitch tensor + same native pitch/K heads -> pairwise harmonic genuine-onset expert -> original CausalSelection`
+`same native causal feature-per-pitch tensor + same native pitch/K heads -> pairwise harmonic genuine-onset expert -> original CausalSelection`
 
 - Seven harmonic parent relations: +12/+19/+24/+28/+31/+34/+36 semitones (partials 2..8).
 - Only the existing spectral, onset, sustain, K and earlier-frame-difference features are read. **No new FFT, neural backbone, window, future samples, microphone buffering, MIDI driver, or post-onset waiting.**
