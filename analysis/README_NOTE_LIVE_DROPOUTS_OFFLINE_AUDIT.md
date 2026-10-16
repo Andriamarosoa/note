@@ -104,3 +104,49 @@ It is not a GuitarSet performance estimate and not a validation on user WAVs.
   opt-in branch, with latency and real-octave/no-regression gates.
 - A different NONCAUSAL offline model may produce different predictions,
   but its scores cannot be inferred from this causal WAV replay.
+
+## Auto queue sizing and unrestricted PortAudio capture block sizes (experimental update)
+
+The earlier CLI accepted only block sizes 128/256/512/1024 and used a
+fixed 32-block microphone queue. **That was a CLI/transport policy, not a
+limitation inherent to the native NOTE S613 decision hop.**
+
+Now:
+- `--block-size N` accepts every **positive integer** supported by the
+  underlying PortAudio driver. `--block-size 0` delegates callback buffer
+  sizing to PortAudio. No artificial whitelist or maximum is imposed in CLI.
+- Internally, packets larger than 4096 samples are split into bounded chunks
+  for `CausalPitchFeatures.push`. Existing 256-sample decisions, 8192-sample
+  spectral history and 32-frame feature history stay unchanged.
+- `--queue-blocks auto` is **the default**. At start, allocate approximately
+  75 ms worth of microphone queue slots, at least two packets, e.g.
+  256->13, 512->7, 1024->4, 4096->2. `--queue-blocks 16` retains a manual
+  override. For PortAudio `--block-size 0`, initial planning uses the 256-sample
+  NOTE hop because callback length is driver-dependent; its true queue
+  coverage can vary.
+- The queue is a maximum pending-input budget, **not an extra required
+  wait**. No dynamic unbounded growth, no hidden lookahead, no silent
+  dropped frames: callback status/overflow still fails closed.
+- A large capture block may materially increase event-delivery latency
+  despite a constant 256-sample *model decision* hop. E.g. 8192 samples
+  contain 185.76ms audio and cannot be a 5ms responsive microphone callback.
+  Large values may also be rejected by the audio driver. These are physical
+  latency/driver constraints, not software-chosen size limits.
+- `--capture-deadline-blocks` remains opt-in, default 0 (disabled).
+- Automatic queue capacity is chosen at startup from audio duration, not
+  dynamically stretched to hide a model that runs slower than real-time.
+
+Example:
+
+```powershell
+git pull --ff-only
+python -m scripts.live_strict_notes --mic --device "MME:External Microphone" --harmonic-mode shadow --block-size 0
+# Or choose a specific size; queue remains automatic
+python -m scripts.live_strict_notes --mic --device "MME:External Microphone" --harmonic-mode shadow --block-size 512
+# Manual override, if needed for diagnosis:
+python -m scripts.live_strict_notes --mic --device "MME:External Microphone" --harmonic-mode shadow --block-size 512 --queue-blocks 16
+```
+
+This does not solve missed acoustic NoteOns or change FluidSynth output
+callbacks by itself. Strict real-time musical latency is still best tested
+with small packet sizes and measured device round-trip.
