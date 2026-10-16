@@ -145,3 +145,52 @@ features; its F1/Exact-K must be evaluated on the same dev tracks.
 [17-DEV S629 accuracy workflow](https://github.com/Andriamarosoa/note/actions/workflows/note-s629-original-data-dev-eval.yml).
 Do not promote without exact results and independent heldout + Windows
 measurement. This branch does not change frozen S613/S80 officially.
+
+
+## Measured 17-song accuracy result — NOT a promotion (2026-10-16)
+
+[Original 17 source-distinct DEV full ONNX+neural run **38894253766 — SUCCESS**](https://github.com/Andriamarosoa/note/actions/runs/38894253766).
+All 10 S629 combinations passed canonical original frozen comparator
+TP=1241 FP=734 FN=838, grouped K3=42/183 and K4=3/44.
+The 5ms/10ms parameters are rounded to effective 5.805/11.610ms.
+
+| Requested / actual | Mode | TP | FP | FN | F1 | Recovered old FN / lost prior TP | Grouped K3 exact | Grouped K4 exact |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| 0ms original | original | **1241** | **734** | **838** | **61.2235%** | reference | **42/183** | **3/44** |
+| 5 -> 5.805ms | delay-only | 1226 | 749 | 853 | 60.4835% | 2 / 17 | 42 | 3 |
+| 5 -> 5.805ms | average | 1210 | 672 | 869 | 61.0957% | 1 / 32 | 44 | 3 |
+| 5 -> 5.805ms | confirm | 1192 | 624 | 887 | 61.2067% | 3 / 52 | 41 | 2 |
+| 5 -> 5.805ms | max_onset | 1244 | 759 | 835 | 60.9505% | 3 / 0 | 41 | 3 |
+| 5 -> 5.805ms | future | 1241 | 735 | 838 | **61.2084%** | 0 / 0 | 42 | 3 |
+| 10 -> 11.610ms | delay-only | 1214 | 761 | 865 | 59.8915% | 3 / 30 | 43 | 3 |
+| 10 -> 11.610ms | average | 1156 | 561 | 923 | 60.9062% | 2 / 87 | 38 | 2 |
+| 10 -> 11.610ms | confirm | 1116 | 510 | 963 | 60.2429% | 3 / 128 | 35 | 2 |
+| 10 -> 11.610ms | max_onset | 1250 | 767 | 829 | 61.0352% | 10 / 1 | 41 | 4 |
+| 10 -> 11.610ms | future | 1241 | 735 | 838 | **61.2084%** | 0 / 0 | 42 | 3 |
+
+**Verdict:** **all 10 tested S629 shared-hop candidate modes have
+worse NoteOn F1** than frozen original 0ms. The closest `future`
+mode has zero net additional true note detections and one extra FP.
+The requested exact 10ms `average` also degrades substantially,
+dropping TP by 85 and K3 42->38. A fast solution to user Windows
+overflow does not establish an accuracy benefit: S629 is for
+diagnosing and optionally testing lookahead acoustics; keep
+`--lookahead-ms 0` as recommended operational configuration.
+
+These figures are computed on the SAME 17 original DEV compositions,
+not new held-out music. The original model/selection was frozen.
+
+### Current independent Windows diagnostic
+
+On this branch, the original reference
+`--lookahead-ms 0` now additionally logs
+`s629_original_worker_diagnostics` at stop:
+- `worker_p95_ms`, `worker_max_ms`, `worker_total_ms`;
+- `model_audio_processed_ms` and `worker_over_audio_ratio`;
+- nominal callback duration ms.
+
+Compare these to `s629_lookahead_diagnostics` from shared mode
+on the SAME mic/output/block settings. **worker_over_audio_ratio>=1**
+means the worker cannot keep pace with input across that sampled
+interval, even if a larger queue postpones the overrun. This is
+separate from soundfont rendering and negotiated input latency.
