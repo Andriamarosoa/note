@@ -1,0 +1,39 @@
+name: S635 microphone three-view without WAV safe CPU guard
+on:
+  push:
+    branches: [codex/s635-three-view-microphone-no-wav]
+    paths:
+      - scripts/s635_three_view_mic.py
+      - test/test_s635_three_view_mic.py
+      - src/causal_note/three_view_pitch.py
+      - scripts/s634_three_view_wav.py
+      - .github/workflows/v273-s635-three-view-mic.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s635-three-view-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  fake_microphone_real_note_model:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install frozen NOTE runtime and waveform dependencies
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Verify microphone CLI help and causal three-view fake capture and native model
+        run: |
+          python -m compileall -q scripts/s635_three_view_mic.py test/test_s635_three_view_mic.py
+          python -m scripts.s635_three_view_mic --help
+          python -m unittest -v test.test_s635_three_view_mic test.test_s634_three_view_pitch test.test_s630_batched_live
