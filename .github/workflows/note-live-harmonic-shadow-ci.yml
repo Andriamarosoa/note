@@ -17,7 +17,7 @@ jobs:
       - name: Install minimal dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install "numpy>=1.26,<2.0" "threadpoolctl>=3.0"
+          python -m pip install "numpy>=1.26,<2.0" "threadpoolctl>=3.0" "onnxruntime>=1.17,<1.25"
       - name: Validate specialist code compiles
         run: |
           python -m compileall -q src/causal_note/harmonic_expert.py scripts/build_live_harmonic_pairs.py scripts/train_live_harmonic_expert.py scripts/benchmark_live_harmonic_expert.py scripts/live_strict_notes.py
@@ -26,3 +26,28 @@ jobs:
           PYTHONPATH: ".:src"
         run: |
           python -m unittest -v test.test_live_harmonic_expert
+      - name: Compare real S613 model default and shadow on synthetic E2 + E3
+        env:
+          PYTHONPATH: ".:src"
+        run: |
+          python - <<'PY'
+          import wave
+          import numpy as np
+          sr = 44100
+          t = np.arange(2 * sr, dtype=np.float64) / sr
+          env1 = (t >= .3) * np.exp(-np.maximum(0, t - .3) * 2)
+          env2 = (t >= .6) * np.exp(-np.maximum(0, t - .6) * 2)
+          y = .11 * env1 * np.sin(2 * np.pi * 82.1 * t)
+          y += .09 * env1 * np.sin(2 * np.pi * 164.2 * t)
+          y += .11 * env2 * np.sin(2 * np.pi * 164.85 * t)
+          y = np.asarray(np.clip(y * 32767, -32768, 32767), dtype='<i2')
+          with wave.open('/tmp/NOTE_harmonic_check.wav', 'wb') as wav:
+              wav.setnchannels(1)
+              wav.setsampwidth(2)
+              wav.setframerate(sr)
+              wav.writeframes(y.tobytes())
+          PY
+          python -m scripts.live_strict_notes --wav /tmp/NOTE_harmonic_check.wav --out /tmp/note_original.jsonl
+          python -m scripts.live_strict_notes --wav /tmp/NOTE_harmonic_check.wav --harmonic-mode shadow --out /tmp/note_shadow.jsonl
+          cmp /tmp/note_original.jsonl /tmp/note_shadow.jsonl
+          python -m scripts.benchmark_live_harmonic_expert --wav /tmp/NOTE_harmonic_check.wav
