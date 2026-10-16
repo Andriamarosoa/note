@@ -286,8 +286,8 @@ def fit(root, out, mode, *, count_epochs=24, pitch_epochs=28,
                                    encoding="utf-8")
     print(json.dumps(dict(final_checkpoint=str(selected),
                           report=str(out/"report.json"),
-                          dev_by_hop={hop:row["best"] for hop,row in scores.items()}),
-                     flush=True))
+                          dev_by_hop={hop:row["best"] for hop,row in scores.items()})),
+          flush=True)
     return report
 
 
