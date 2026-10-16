@@ -191,3 +191,106 @@ def replay_lookahead(audio,heads,config,*,block_size=256):
         out.extend(stream.push(pcm[start:start+block_size],start_sample=start))
     out.extend(stream.finish())
     return out,stream.diagnostics()
+
+
+class SharedHopLookaheadLiveStream:
+    """S629 CPU-efficient future evidence using ONE existing S613 frontend.
+
+    Each frozen original 256-hop prediction is computed once. For
+    requested L>0ms, consume the prediction at a later ORIGINAL 256-hop
+    decision boundary. The requested lookahead is rounded UP to a whole
+    number of hops, so 5ms -> 5.805ms and 10ms -> 11.610ms. This
+    changes the precise acoustic future-window boundary vs S628 and is
+    scientifically a NEW configuration, NOT the 10ms S628 result.
+
+    No second FFT, no second ONNX inference, no skipped original frames,
+    no weakened original Exact-K/selection/release, no future samples
+    accessed before real capture. Transport callback may be arbitrarily
+    large; both nominal event time and genuine physical availability
+    are retained in NOTE's standard JSONL.
+    """
+
+    def __init__(self,heads,*,config=LookaheadConfig()):
+        self.heads=heads
+        self.config=config
+        self.requested_samples=config.samples
+        self.hops=int(math.ceil(self.requested_samples/HOP))
+        self.actual_samples=self.hops*HOP
+        self.frontend=CausalPitchFeatures(hop=HOP)
+        self.selector=CausalSelection(Selection(**heads.metadata["selection"]),hop=HOP)
+        self.harmonic_selector=None
+        self.pending=deque()
+        self.received=0
+        self.closed=False
+        self.stats=Counter()
+        self.worker_ms=deque(maxlen=4096)
+
+    def push(self,samples,*,start_sample):
+        if self.closed or start_sample!=self.received:
+            raise ValueError("Closed or discontinuous shared-hop microphone audio")
+        audio=np.asarray(samples)
+        if audio.ndim!=1 or audio.dtype.kind!="f" or not np.isfinite(audio).all():
+            raise ValueError("Expected finite mono float PCM")
+        delivery=start_sample+len(audio)
+        begin=time.perf_counter()
+        events=[]
+        for offset in range(0,len(audio),4096):
+            segment=audio[offset:offset+4096]
+            for t,features in self.frontend.push(
+                    segment,start_sample=start_sample+offset):
+                p,k=self.heads.predict(features)
+                self.pending.append((int(t),p,k))
+                self.stats["native_reference_frames"]+=1
+                if len(self.pending)>self.hops:
+                    old_t,old_p,old_k=self.pending.popleft()
+                    if int(t)-old_t != self.actual_samples:
+                        raise AssertionError("Future reference hop misaligned")
+                    if int(t)>delivery:
+                        raise AssertionError("Shared future not physically captured")
+                    fused=combine_reference_and_future(old_p,p,self.config.mode)
+                    events.extend(self.selector.step(fused,old_k,old_t,delivery))
+                    self.stats["lookahead_confirmed_frames"]+=1
+        self.received=delivery
+        self.worker_ms.append((time.perf_counter()-begin)*1000)
+        return events
+
+    def finish(self,reason="stream_end"):
+        if self.closed:
+            return []
+        self.closed=True
+        events=[]
+        # Never fabricate future or discard the last legitimate note.
+        for t,p,k in self.pending:
+            remaining=self.selector.step(p,k,t,self.received)
+            for event in remaining:
+                event["reason"]="lookahead_eof_unconfirmed_"+event["reason"]
+            events.extend(remaining)
+            self.stats["EOF_baseline_unconfirmed_frames"]+=1
+        self.pending.clear()
+        events.extend(self.selector.panic(self.received,reason=reason))
+        return events
+
+    def diagnostics(self):
+        return dict(
+            engine="shared_single_inference",
+            mode=self.config.mode,
+            requested_lookahead_ms=self.config.milliseconds,
+            requested_lookahead_samples=self.requested_samples,
+            actual_lookahead_samples=self.actual_samples,
+            actual_lookahead_ms=self.actual_samples*1000/SR,
+            additional_quantization_ms=(self.actual_samples-self.requested_samples)*1000/SR,
+            reference_hop=HOP,
+            single_frontend=True,
+            single_native_neural_onnx_inference_per_hop=True,
+            source=dict(self.stats),
+            total_received_samples=self.received,
+            max_worker_callback_ms=float(max(self.worker_ms)) if self.worker_ms else None,
+            p95_worker_callback_ms=float(np.percentile(self.worker_ms,95))
+                                   if self.worker_ms else None,
+            warning=(
+                "Actual lookahead rounded UP to a 256-hop boundary; "
+                "this is a different experiment from S628's precise future-phase "
+                "method. Hardware latency includes capture packets, CPU and piano. "
+                "No automatic speedup or F1 improvement guarantee on Windows."
+            ),
+        )
