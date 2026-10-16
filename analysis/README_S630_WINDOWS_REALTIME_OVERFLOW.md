@@ -185,3 +185,52 @@ the SAME frozen ONNX+MLP hybrid.
 
 No promotion to official NOTE, no guarantee Windows worker can meet
 the deadline. This is only a verified compute-throughput optimization.
+
+
+## S630 critical executable-CLI regression fix and cross-platform verification (October 16)
+
+The first S630 draft accidentally checked `hop_request != 256`
+BEFORE the `parse_hop_size()` assignment, so EVERY batch4
+`python -m scripts.live_strict_notes` process failed immediately
+with `UnboundLocalError` before touching the microphone. This
+bug was missed by older feature/ONNX unit tests and should have
+prevented the branch being offered as a local executable command.
+A second actual microphone-startup test caught an error in the
+new diagnostic `finally`: if importing PortAudio or opening a
+mic fails, `capture_stats` was referenced before initialization,
+masking the genuine input failure.
+
+**Both problems are corrected on this same branch**:
+- Parse `hop_request` BEFORE all experimental batch-size checks.
+- Initialize/guard the input-only telemetry before opening the mic,
+  so the ORIGINAL PortAudio/device error is reported accurately.
+- Add `test/test_s630_live_cli_integration.py` to exercise REAL
+  `python -m scripts.live_strict_notes` command-line subprocesses
+  with `--status`, synthetic PCM16 `--wav`, frozen ONNX batch4,
+  expected argparse failures and invalid-device `--mic` start.
+- A separate test invokes `main()` with the exact `--mic
+  --soundfont --hop-size 256 --block-size 256 --lookahead-ms 0
+  --inference-batch-hops 4` option combination and simulated
+  PortAudio callback/piano to verify full queue processing and
+  graceful notes/piano cleanup, with 6 continuous PCM blocks.
+  This is a SOFTWARE SIMULATION, not a real iRig or SF2 render.
+
+[**GitHub run 38897794841 — Windows-latest PASS AND Ubuntu 24.04 PASS**](https://github.com/Andriamarosoa/note/actions/runs/38897794841).
+Each OS passed all five true CLI integration tests and all five
+frozen Native NOTE predictor tests. The Windows runner required
+a separate environment correction: `PYTHONPATH=src` cross-platform
+instead of Linux's `.:src`.
+
+**What this proves:** these executable entrypoints and frozen
+synthetic WAV/model paths can now start/exit on actual Windows and
+Ubuntu Python runtimes without the earlier `hop_request` or
+`capture_stats` exceptions.
+
+**What it does NOT prove:** opening the user's actual Realtek iRig
+device, rendering Salamander with FluidSynth, sustained Windows
+capture/piano CPU utilization, queue stability and acoustic
+accuracy end-to-end. Capture queue overflow remains unverified
+on user's actual equipment; if it recurs after updating, inspect
+`s630_input_queue_diagnostics` before any further changes.
+
+The branch is not the official NOTE reference.
