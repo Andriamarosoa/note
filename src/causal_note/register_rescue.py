@@ -71,8 +71,8 @@ def propose(features, native_pitch, state, policy):
     """
     x = np.asarray(features, np.float32)
     p = np.asarray(native_pitch, np.float32)
-    if x.shape != (49, 110) or p.shape != (49, 3):
-        raise ValueError("Frozen S613 features (49,110) and pitch (49,3) required")
+    if x.shape != (49, 126) or p.shape != (49, 3):
+        raise ValueError("Frozen S613 features (49,126) and pitch (49,3) required")
     if not np.isfinite(x).all() or not np.isfinite(p).all():
         raise ValueError("Non-finite NOTE rescue input")
     if not isinstance(policy, RescuePolicy):
