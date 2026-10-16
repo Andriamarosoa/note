@@ -84,3 +84,31 @@ Interprétation : si E2 ne s'entend pas en test piano direct, examiner d'abord l
 Pour la comparaison avec `midi`, réutiliser **exactement ce WAV brut** dans `guitar-midi-poly-transcribe` avec le bundle polyphonique adéquat, une fois avec `--no-auto-level` puis avec `--auto-level` ; ne pas comparer deux interprétations différentes de la guitare. Les différences de note ou de gain ne prouvent rien sans inspecter les rapports.
 
 Les tests de cette branche sont à exécuter dans le venv ; aucun test d'iRig physique ou mesure réelle par corde n'a encore été effectué. Ne pas changer le modèle ou amplifier chaque note à l'aveugle.
+
+## Gain automatique causal adapté de `midi` (expérimental, opt-in)
+
+Le fichier `scripts/live_input_level.py` reprend le contrôleur `CausalModelInputLeveler` du dépôt `Andriamarosoa/midi/src/polyphonic/input_level.py`, à gain borné +18 dB et gestion de la décroissance des notes. `note` strict ne dispose **pas** de la calibration d'activité du LIVE `midi` : un adaptateur spécifique exige les seuils bruts peak -55 dBFS et RMS -65 dBFS. Ce n'est donc pas une copie complète du pipeline MIDI. Sans `--auto-level`, les données transmises au modèle restent inchangées.
+
+Exemple dans le venv actif, à partir du dépôt NOTE :
+
+```powershell
+git fetch origin
+git switch codex/note-live-audio-monitor-wasapi
+git pull --ff-only
+$env:PYTHONPATH = ".;src"
+python -m unittest -v test.test_live_input_level
+python -m scripts.live_strict_notes --mic --device "WASAPI:External Microphone" --auto-level --soundfont "C:\Users\user\Documents\Codex\guitarRig\.venv309\Lib\site-packages\pretty_midi\TimGM6mb.sf2"
+```
+
+Comparer **le même** WAV sans et avec auto-level (noms de sortie distincts) :
+
+```powershell
+python -m scripts.live_strict_notes --wav "irig_E2_wasapi.wav" --out "e2_base.jsonl"
+python -m scripts.live_strict_notes --wav "irig_E2_wasapi.wav" --auto-level --out "e2_autogain.jsonl"
+Get-Content e2_base.jsonl | Select-String '"type": "note_on"'
+Get-Content e2_autogain.jsonl | Select-String '"type": "note_on"'
+```
+
+Réglages : `--auto-level-max-db 18` (0–24), `--auto-level-peak-gate-dbfs -55` et `--auto-level-rms-gate-dbfs -65`. Ne pas monter les seuils/gain sans examiner les notes fantômes. Le contrôleur n'applique aucune normalisation individuelle aux queues de notes. Les diagnostics du contrôleur sont imprimés sur stderr lors de l'arrêt propre.
+
+**Limitation majeure pour cet iRig** : le signal E2 enregistré à RMS ≈ -116.9 dBFS est quasi nul, et l'export PCM16 peut quantifier les faibles composantes à zéro. Un maximum +18 dB ne reconstitue pas une fondamentale manquante ; le gain vise plutôt les signaux faibles mais encore exploitables. Aucune amélioration F1 ou résultat matériel Windows n'est établi. Valider les faux positifs et régressions sur WAV tenus à l'écart avant de promouvoir cette option.
