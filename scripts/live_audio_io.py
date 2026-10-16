@@ -100,12 +100,34 @@ def _resolve_index(sd, value, direction: str) -> int | None:
             )
         return selected
 
-    try:
-        info = sd.query_devices(selected, kind=direction)
-        if "index" in info:
-            return int(info["index"])
-    except Exception:
-        pass
+    # A numeric PortAudio index is only meaningful for one enumeration. On
+    # Windows WDM-KS probing, indices can differ between launches and after
+    # stream initialization. Allow a stable host-API qualified endpoint name:
+    #     WASAPI:External Microphone
+    #     MME:External Microphone
+    # Host-qualified lookup must never fall through to an unrelated endpoint.
+    host_filter = None
+    if ":" in selected:
+        maybe_host, name = selected.split(":", 1)
+        maybe_host = maybe_host.strip().casefold()
+        aliases = {
+            "wasapi": "WASAPI",
+            "mme": "MME",
+            "directsound": "DirectSound",
+            "wdm-ks": "WDM-KS",
+        }
+        if maybe_host in aliases:
+            host_filter = aliases[maybe_host].casefold()
+            selected = name.strip()
+            if not selected:
+                raise ValueError("A host-qualified device must include an endpoint name")
+    else:
+        try:
+            info = sd.query_devices(selected, kind=direction)
+            if "index" in info:
+                return int(info["index"])
+        except Exception:
+            pass
 
     needle = selected.casefold()
     matches = [
@@ -113,10 +135,15 @@ def _resolve_index(sd, value, direction: str) -> int | None:
         for index, info in enumerate(sd.query_devices())
         if int(info[_channel_key(direction)]) > 0
         and needle in str(info["name"]).casefold()
+        and (host_filter is None or host_filter in str(
+            sd.query_hostapis()[int(info["hostapi"])]["name"]
+        ).casefold())
     ]
     if len(matches) != 1:
+        qualifier = f"{host_filter}:" if host_filter else ""
         raise ValueError(
-            f"Peripherique audio ambigu ou absent: {selected!r}; correspondances={matches}"
+            f"Peripherique audio ambigu ou absent: {qualifier}{selected!r}; "
+            f"correspondances={matches}; utilisez WASAPI:nom-du-microphone"
         )
     return matches[0]
 
