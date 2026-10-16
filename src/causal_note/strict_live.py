@@ -350,16 +350,27 @@ class StrictLiveStream:
         if self.closed:
             raise ValueError("Closed stream")
         before = time.perf_counter()
-        frames = self.frontend.push(samples, start_sample=start_sample)
+        # The PortAudio callback may deliver arbitrarily sized positive
+        # blocks. Keep the native frontend's 4096-sample invariant, splitting
+        # only in this transport adapter (no extra lookahead or FFT window).
+        x = np.asarray(samples)
         events = []
-        for end, features in frames:
-            p, k = self.heads.predict(features)
-            if self.harmonic_selector is None:
-                events.extend(self.selector.step(p, k, end, self.frontend.received))
-            else:
-                events.extend(self.harmonic_selector.step(
-                    features, p, k, end, self.frontend.received,
-                ))
+        # Every sample in this one transport callback was already received.
+        available_sample = start_sample + len(x)
+        for offset in range(0, len(x), 4096):
+            frames = self.frontend.push(
+                x[offset:offset + 4096], start_sample=start_sample + offset,
+            )
+            for end, features in frames:
+                p, k = self.heads.predict(features)
+                if self.harmonic_selector is None:
+                    events.extend(self.selector.step(
+                        p, k, end, available_sample,
+                    ))
+                else:
+                    events.extend(self.harmonic_selector.step(
+                        features, p, k, end, available_sample,
+                    ))
         self.timings_ms.append((time.perf_counter() - before) * 1000)
         return events
 
