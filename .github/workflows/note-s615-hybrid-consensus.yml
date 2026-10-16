@@ -1,0 +1,81 @@
+name: "S615 loop - restored S613 native hybrid tree consensus"
+on:
+  push:
+    branches: [codex/note-live-s615-full-loops]
+    paths: ['.github/workflows/note-s615-hybrid-consensus.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  compare-frozen-hybrid:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 80
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install native inference-only dependencies
+        run: |
+          python -m pip install "numpy>=1.26,<2" "scipy>=1.11,<1.15" "onnxruntime>=1.17,<1.25" "threadpoolctl>=3"
+      - name: Download already trained full 53/17 S615 checkpoint, no new train
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p data/full_candidate
+          gh run download 38863904669 --repo Andriamarosoa/note \
+            --name s615-full-hop256-candidate-and-dev-report --dir data/full_candidate
+          test -f data/full_candidate/hop256/NOTE_multihop_candidate.npz
+          test -f model/live/strict_note/NOTE_strict_live.npz
+      - name: Materialize EXACT original 17 dev clips, without train or test
+        run: |
+          python -m scripts.s615_seed_full_development --root data/S615_dev_eval --dev-only
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          from scripts.s615_prepare_multihop import prepare_one
+          root=Path('data/S615_dev_eval')
+          p=json.loads((root/'protocol.json').read_text())
+          dev=[s for s in p['sources'] if s['split']=='dev']
+          assert len(dev)==17
+          for i,s in enumerate(dev,1):
+              print(i,prepare_one(root,s,256),flush=True)
+          PY
+      - name: Compare S613 old tree + new S615 neural, count-source and 20 selector/weight combinations
+        run: |
+          python -m scripts.s615_hybrid_consensus_loop \
+            --root data/S615_dev_eval \
+            --new data/full_candidate/hop256/NOTE_multihop_candidate.npz \
+            --out results/S615_full_hybrid_consensus
+      - name: Enforce developer-only nonpromotion and report K3/K4
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          r=json.loads(Path('results/S615_full_hybrid_consensus/report.json').read_text())
+          assert r['status']=='DEV_ONLY_HYBRID_ABLATION_NOT_PROMOTED'
+          assert r['dev_sources']==17
+          assert len(r['trials'])==20
+          print(json.dumps(dict(
+              baseline_F1=r['baseline_F1'],
+              new_neural_F1=r['S615_neural_F1'],
+              best_F1=r['best']['F1'],
+              best_alpha=r['best']['alpha'],
+              best_count_source=r['best']['count_source'],
+              best_selector=r['best']['selector'],
+              best_FP=r['best']['FP'],
+              best_K3=r['best']['onset_K']['by_true_k'].get('3'),
+              best_K4=r['best']['onset_K']['by_true_k'].get('4')),indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s615-restored-hybrid-full-development-audit
+          path: results/S615_full_hybrid_consensus/
+          retention-days: 45
