@@ -49,8 +49,12 @@ def harmonic_pair_features(features, probabilities, count, active):
     p = np.asarray(probabilities, dtype=np.float32)
     k = np.asarray(count, dtype=np.float32)
     a = np.asarray(active, dtype=bool)
-    if x.shape != (49, 110) or p.shape != (49, 3) or k.shape != (7,) or a.shape != (49,):
-        raise ValueError("Expected S613 (49,110) features, (49,3) heads and K0..6")
+    # The specialist only reads spectral indices 0..23, physical scores
+    # at 50 and lag-2 novelty at 54. It must not assume/freeze the native
+    # model's total column count; the underlying S613 checkpoint owns that ABI.
+    if (x.ndim != 2 or x.shape[0] != 49 or x.shape[1] < 55
+            or p.shape != (49, 3) or k.shape != (7,) or a.shape != (49,)):
+        raise ValueError(f"Expected S613 49-pitch spectral inputs (>=55 cols), (49,3) heads and K0..6; got {x.shape}")
     if not (np.isfinite(x).all() and np.isfinite(p).all() and np.isfinite(k).all()):
         raise ValueError("Non-finite harmonic input")
     h = x[:, :24].reshape(49, 3, 8)
