@@ -47,7 +47,7 @@ jobs:
               for hop in (128,256,512):
                   print(prepare_one(root,source,hop),flush=True)
           PY
-      - name: Replay 108 per-hop selectors, F1 and grouped Exact-K per K
+      - name: Replay fixed 3 development songs with 108 per-hop selectors and grouped Exact-K
         run: |
           python -m scripts.s615_selector_loops \
             --root data/S615_pilot_grid \
