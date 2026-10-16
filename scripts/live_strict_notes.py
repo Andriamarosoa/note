@@ -122,6 +122,10 @@ def main(argv=None):
     parser.add_argument("--monitor-gain", type=float, default=0.5, help="Raw input monitoring gain, 0.0..1.0 (default 0.5)")
     parser.add_argument("--dual-hop-mode", choices=("off", "shadow", "guard"), default="off",
                         help="EXPERIMENTAL: 128+256 note heads, shadow leaves original MIDI unchanged; guard fuses fast acoustic novelty notes")
+    parser.add_argument("--dual-hop-reference-priority", action="store_true",
+                        help="EXPERIMENTAL S622: true S613 reference retriggers preempting fast voice rather than silently discarding correct base NOTE-on")
+    parser.add_argument("--dual-hop-reference-grace-ms", type=float, default=25.,
+                        help="S622 required age of fast preempting NOTE-on for base retrigger (default 25ms)")
     parser.add_argument("--dual-hop-fast-model", type=Path,
                         help="S621 separately TRAINED hop128 native NOTE candidate checkpoint, required for scientifically matched cadence")
     parser.add_argument("--dual-hop-fast-onset", type=float, default=.50,
@@ -187,6 +191,11 @@ def main(argv=None):
                                      else 256)
     except ValueError as exc:
         parser.error(str(exc))
+    if args.dual_hop_reference_priority:
+        if args.dual_hop_mode!="guard":
+            parser.error("--dual-hop-reference-priority requires --dual-hop-mode guard")
+        if not np.isfinite(args.dual_hop_reference_grace_ms) or args.dual_hop_reference_grace_ms<0:
+            parser.error("Invalid S622 reference takeover grace period")
     if args.dual_hop_fast_model is not None:
         if args.dual_hop_mode == "off":
             parser.error("--dual-hop-fast-model requires --dual-hop-mode shadow or guard")
@@ -258,6 +267,9 @@ def main(argv=None):
                 novelty_min=args.dual_hop_novelty_min,
                 novelty_ratio=args.dual_hop_novelty_ratio,
                 novelty_mode=args.dual_hop_novelty_mode,
+                reference_priority=args.dual_hop_reference_priority,
+                reference_grace_samples=int(round(
+                    args.dual_hop_reference_grace_ms*SR/1000)),
             )
             fast_heads = (load_heads(args.dual_hop_fast_model)
                           if args.dual_hop_fast_model is not None else None)

@@ -1,0 +1,71 @@
+name: "S622 causal reference-priority 128+256 dual-hop fusion"
+on:
+  push:
+    branches: [codex/note-live-s622-reference-priority-fusion]
+    paths: ['.github/workflows/note-s622-priority-fusion.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  reference-priority-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Python native inference
+        run: |
+          python -m pip install "numpy>=1.26,<2" "scipy>=1.11,<1.15" "onnxruntime>=1.17,<1.25" "threadpoolctl>=3"
+      - name: Validate baseline event parity and original S613 baseline takeover behavior
+        run: |
+          python -m unittest -v test.test_s620_dual_hop test.test_s622_reference_priority
+      - name: Seed original 17 GuitarSet and URMP development sources only
+        run: |
+          python -m scripts.s615_seed_full_development --root data/S622_dev --dev-only
+      - name: Rebuild causal 128+256 NOTE features for the exact original audio
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          from scripts.s615_prepare_multihop import prepare_one
+          root=Path('data/S622_dev')
+          songs=[s for s in json.loads((root/'protocol.json').read_text())['sources'] if s['split']=='dev']
+          assert len(songs)==17
+          for i,song in enumerate(songs,1):
+              for hop in (128,256):
+                  print(i,hop,prepare_one(root,song,hop),flush=True)
+          PY
+      - name: Compare six causal reference-priority takeover/grace policies vs frozen S613
+        run: |
+          python -m scripts.s620_dualhop_eval \
+            --root data/S622_dev --model model/live/strict_note/NOTE_strict_live.npz \
+            --out results/S622_priority_fusion_17dev.json
+      - name: Report exactly saved old TP, newly recovered FN, FP and K3/K4
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('results/S622_priority_fusion_17dev.json').read_text())
+          assert d['reference']['TP']==1241 and d['reference']['FP']==734
+          assert len(d['candidates'])==6
+          for r in d['candidates']:
+              assert r['gained_real_TP']-r['lost_old_TP']==r['delta_TP']
+              print(json.dumps(dict(config=r['config'],
+                  TP=r['TP'],FP=r['FP'],FN=r['FN'],F1=r['F1'],
+                  rescued_earlier_FN=r['gained_real_TP'],
+                  old_true_notes_lost=r['lost_old_TP'],
+                  K3=r['grouped_onset_k']['by_true_k'].get('3'),
+                  K4=r['grouped_onset_k']['by_true_k'].get('4'))))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s622-reference-priority-17dev-onset-fusion
+          path: results/S622_priority_fusion_17dev.json
+          retention-days: 30

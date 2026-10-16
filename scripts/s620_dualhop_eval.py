@@ -31,10 +31,11 @@ from scripts.s615_exactk_audit import exact_k_onset_audit, merge_k_reports
 
 GATES=tuple(
     DualHopConfig(mode="guard",fast_onset=o,novelty_min=.04,
-                  novelty_ratio=ratio,novelty_mode=kind)
-    for o in (.45,.50,.55,.60)
-    for ratio in (.35,.55,.75)
-    for kind in ("lag","recent")
+                  novelty_ratio=.75,novelty_mode="lag",
+                  reference_priority=True,
+                  reference_grace_samples=int(round(grace_ms*SR/1000)))
+    for o in (.45,.50)
+    for grace_ms in (0.,25.,75.)
 )
 
 
@@ -70,7 +71,9 @@ def replay(prepared, heads, cfg=None):
     fast=(CausalSelection(Selection(**{
         **heads.metadata["selection"],"onset":cfg.fast_onset}),hop=128)
           if cfg.mode!="off" else None)
-    merger=DualSourceEventMerger() if cfg.mode=="guard" else None
+    merger=DualSourceEventMerger(
+        reference_priority=cfg.reference_priority,
+        grace_samples=cfg.reference_grace_samples) if cfg.mode=="guard" else None
     output=[]
     source_events=Counter()
     promoted=0
