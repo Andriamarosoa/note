@@ -134,3 +134,31 @@ def propose(features, native_pitch, state, policy, count=None):
             modified[mask, 0] = state.config.onset
         proposed[label] = mask
     return modified, proposed
+
+
+# S633: explicitly OPT-IN LIVE presets. Never inferred from GitHub DEV scores.
+LIVE_PRESETS = {
+    "high_moderate": RescuePolicy(high=HIGH_MODERATE),
+    "bass_k50_high_moderate": RescuePolicy(BASS_K50, HIGH_MODERATE),
+}
+
+
+def live_apply(features, native_pitch, native_k, selector, *,
+               mode="off", policy=None, stats=None):
+    """Optional strictly causal LIVE adapter; shadow returns original MIDI scores.
+
+    Does not perform a second network inference, look ahead, or change active K.
+    Caller must supply the selector state immediately BEFORE the current hop.
+    """
+    if mode == "off":
+        return native_pitch
+    if mode not in ("shadow", "guard") or policy is None:
+        raise ValueError("LIVE S633 requires explicit shadow/guard with rescue policy")
+    enhanced, proposed = propose(features, native_pitch, selector, policy, native_k)
+    if stats is not None:
+        stats["rescue_frames_checked"] += 1
+        stats["rescue_bass_candidates"] += int(proposed["bass"].sum())
+        stats["rescue_high_candidates"] += int(proposed["high"].sum())
+    # Shadow is bitwise-equivalent: downstream selector receives the original
+    # NumPy reference (not copied, fused, or recalibrated).
+    return enhanced if mode == "guard" else native_pitch
