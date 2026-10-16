@@ -62,6 +62,9 @@ def main(argv=None):
     source.add_argument("--stdin", action="store_true", help="Raw mono s16le PCM, 44100 Hz")
     source.add_argument("--mic", action="store_true")
     parser.add_argument("--device", help="sounddevice input device name/index")
+    parser.add_argument("--monitor-input", action="store_true", help="Listen to raw microphone audio (headphones recommended); independent of note detection")
+    parser.add_argument("--output-device", help="sounddevice output device name/index for monitoring; select a WASAPI endpoint via --list-devices")
+    parser.add_argument("--monitor-gain", type=float, default=0.5, help="Raw input monitoring gain, 0.0..1.0 (default 0.5)")
     parser.add_argument("--midi-port", help="Exact mido output port name; omit for JSONL events")
     parser.add_argument("--out", type=Path, help="JSONL output; defaults to stdout")
     parser.add_argument("--block-size", type=int, default=HOP, choices=(128, 256, 512, 1024))
@@ -70,6 +73,12 @@ def main(argv=None):
     parser.add_argument("--queue-blocks", type=int, default=32,
                         help="Maximum buffered microphone blocks before overflow")
     args = parser.parse_args(argv)
+    if args.monitor_input and not args.mic:
+        parser.error("--monitor-input requires --mic")
+    if args.output_device is not None and not args.monitor_input:
+        parser.error("--output-device requires --monitor-input")
+    if not 0.0 <= args.monitor_gain <= 1.0:
+        parser.error("--monitor-gain must be in [0.0, 1.0]")
     if args.capture_deadline_blocks < 0:
         parser.error("--capture-deadline-blocks must be >= 0")
     if args.queue_blocks < 1:
@@ -127,19 +136,59 @@ def main(argv=None):
                 inbox = queue.Queue(maxsize=args.queue_blocks)
                 overrun = threading.Event()
                 capture_start = [0]
+                # A separate bounded monitor queue cannot delay the recognition path.
+                monitor_queue = queue.Queue(maxsize=4) if args.monitor_input else None
+                monitor_underruns = [0]
+                def monitor_callback(outdata, frames, timing, status):
+                    if status:
+                        monitor_underruns[0] += 1
+                    try:
+                        chunk = monitor_queue.get_nowait()
+                        if len(chunk) != frames:
+                            outdata.fill(0.0)
+                            monitor_underruns[0] += 1
+                        else:
+                            outdata[:, 0] = np.clip(chunk * args.monitor_gain, -1.0, 1.0)
+                    except queue.Empty:
+                        outdata.fill(0.0)
+                        monitor_underruns[0] += 1
                 def callback(indata, frames, timing, status):
                     if status or overrun.is_set():
                         overrun.set()
                         raise sd.CallbackAbort
                     try:
-                        inbox.put_nowait((capture_start[0], indata[:, 0].copy(), time.monotonic()))
+                        chunk = indata[:, 0].copy()
+                        inbox.put_nowait((capture_start[0], chunk, time.monotonic()))
                         capture_start[0] += frames
+                        if monitor_queue is not None:
+                            try:
+                                monitor_queue.put_nowait(chunk)
+                            except queue.Full:
+                                # Monitoring is best-effort; never block audio capture.
+                                try:
+                                    monitor_queue.get_nowait()
+                                except queue.Empty:
+                                    pass
+                                try:
+                                    monitor_queue.put_nowait(chunk)
+                                except queue.Full:
+                                    pass
                     except queue.Full:
                         overrun.set()
                         raise sd.CallbackAbort
                 device = int(args.device) if args.device and args.device.isdigit() else args.device
                 capture = stack.enter_context(sd.InputStream(samplerate=SR, blocksize=args.block_size,
                          channels=1, dtype="float32", device=device, latency="low", callback=callback))
+                if args.monitor_input:
+                    selected_output = (int(args.output_device) if args.output_device and args.output_device.isdigit() else args.output_device)
+                    playback = stack.enter_context(sd.OutputStream(
+                        samplerate=SR, blocksize=args.block_size, channels=1,
+                        dtype="float32", device=selected_output, latency="low",
+                        callback=monitor_callback))
+                    print(json.dumps(dict(monitoring="raw_microphone",
+                        output_device=selected_output, output_latency_ms=playback.latency * 1000,
+                        warning="Use headphones to avoid feedback; this is not MIDI synthesis")),
+                        file=sys.stderr)
                 print(json.dumps(dict(capture_latency_ms=capture.latency * 1000,
                          block_ms=args.block_size / SR * 1000,
                          capture_deadline_blocks=args.capture_deadline_blocks,
