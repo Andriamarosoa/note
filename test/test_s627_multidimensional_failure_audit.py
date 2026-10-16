@@ -68,9 +68,9 @@ class S627Tests(unittest.TestCase):
 
     def test_denominators_and_low_source_support_are_reported(self):
         rows=[
-          dict(corpus="GuitarSet",composition="one",matched=True),
-          dict(corpus="GuitarSet",composition="one",matched=False),
-          dict(corpus="URMP",composition="two",matched=False),
+          dict(source="s1",corpus="GuitarSet",composition="one",matched=True),
+          dict(source="s1",corpus="GuitarSet",composition="one",matched=False),
+          dict(source="s2",corpus="URMP",composition="two",matched=False),
         ]
         out=stratified_rates(rows,["corpus"],min_cases=4)
         g=next(x for x in out["corpus"] if x["condition"]=="GuitarSet")
