@@ -71,10 +71,13 @@ def benchmark_hop(heads, *, harmonic_mode="off", harmonic_checkpoint=None,
         )
         costs = []
         # Always submit transport-sized 256 chunks, independent of model hop.
-        # Exclude first 16 frames (FFT/ONNX lazy caches/warmup).
+        # Exclude startup frames while retaining measurements even in short
+        # smoke tests. The normal 64-frame preflight skips 16; a 16-frame
+        # test skips only 4, avoiding empty percentile arrays.
+        warmup_blocks = min(16, max(1, frames // 4))
         for start in range(0, len(signal), HOP):
             stream.push(signal[start:start+HOP], start_sample=start)
-            if start >= 16 * HOP:
+            if start >= warmup_blocks * HOP:
                 # A 256-frame input yields 2, 1, or 0 decision frames
                 # for respective model hops. Account for empty 512 blocks.
                 nframes = (start + HOP)//hop - start//hop
