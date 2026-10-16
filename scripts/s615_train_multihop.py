@@ -100,12 +100,10 @@ def sample_train(root, specs, hops, *, max_pitch_rows, seed=615):
             if len(frame) > max_pitch_rows:
                 strong = np.flatnonzero(full_rate[frame, pitch] >= 1.)
                 other = np.flatnonzero(full_rate[frame, pitch] < 1.)
-                if len(strong) > max_pitch_rows:
-                    # Never silently discard positives to fit an arbitrary cap.
-                    raise ValueError(
-                        f"Increase --max-pitch-rows for {s['name']} hop{hop}: "
-                        f"{len(strong)} onset/release rows")
-                keep_n = max_pitch_rows - len(strong)
+                # Keep every observed positive attack/release even when
+                # the intended row budget is exceeded by positive supervision.
+                # Only sustain/background examples may be downsampled.
+                keep_n = max(0, max_pitch_rows - len(strong))
                 # Uniform over the sampled non-event pool.
                 selected = rng.choice(other, size=keep_n, replace=False)
                 chosen = np.sort(np.concatenate((strong, selected)))
@@ -209,9 +207,8 @@ def fit(root, out, mode, *, count_epochs=24, pitch_epochs=28,
             if len(frame)>max_pitch_rows:
                 strong=np.flatnonzero(rate[frame,pitch]>=1.)
                 other=np.flatnonzero(rate[frame,pitch]<1.)
-                if len(strong)>max_pitch_rows:
-                    raise ValueError("Source positive cap changed")
-                selected=rng.choice(other,size=max_pitch_rows-len(strong),replace=False)
+                # Replay the same positive-preserving sample indices.
+                selected=rng.choice(other,size=max(0,max_pitch_rows-len(strong)),replace=False)
                 keep=np.sort(np.concatenate((strong,selected)))
                 frame,pitch=frame[keep],pitch[keep]
             result=[]
