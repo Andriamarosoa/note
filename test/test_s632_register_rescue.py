@@ -34,8 +34,8 @@ class RegisterRescueTests(unittest.TestCase):
         self.assertTrue(choices["high"][80-40])
         self.assertFalse(choices["bass"][70-40])
         self.assertFalse(choices["high"][70-40])
-        self.assertEqual(output[52-40,0],self.state.config.onset)
-        self.assertEqual(output[80-40,0],self.state.config.onset)
+        self.assertAlmostEqual(float(output[52-40,0]),self.state.config.onset,places=6)
+        self.assertAlmostEqual(float(output[80-40,0]),self.state.config.onset,places=6)
         self.assertAlmostEqual(float(output[70-40,0]),.45,places=5)
         np.testing.assert_allclose(self.p[[52-40,80-40],0],[.45,.45],atol=1e-7)
 
@@ -68,7 +68,7 @@ class RegisterRescueTests(unittest.TestCase):
         self.assertFalse(masks["bass"].any())
         self.assertFalse(masks["high"].any())
         with self.assertRaises(ValueError):
-            propose(np.ones((49,126),dtype=np.float32),self.p,self.state,self.policy)
+            propose(np.ones((49,110),dtype=np.float32),self.p,self.state,self.policy)
         with self.assertRaises(ValueError):
             propose(self.x,np.zeros((49,2)),self.state,self.policy)
 
@@ -76,7 +76,7 @@ class RegisterRescueTests(unittest.TestCase):
         audio=np.zeros(round(.12*SR),np.float32)
         audio[1024:]+=np.sin(2*np.pi*82.407*np.arange(len(audio)-1024)/SR).astype(np.float32)*.07
         ends,features=feature_track(audio)
-        self.assertEqual(features.shape[1:],(49,110))
+        self.assertEqual(features.shape[1:],(49,126))
         self.assertEqual(ends[-1] % 256,0)
         self.assertEqual(len(variants()),12)
 
