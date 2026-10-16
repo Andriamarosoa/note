@@ -1,0 +1,37 @@
+name: S634 three causal pitch views factor2 plus native parity
+on:
+  push:
+    branches: [codex/s634-three-view-factor2-rescue-audit]
+    paths:
+      - 'src/causal_note/three_view_pitch.py'
+      - 'test/test_s634_three_view_pitch.py'
+      - 'scripts/s634_three_view_wav.py'
+      - '.github/workflows/v273-s634-three-view-pitch.yml'
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s634-three-view-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify_three_acoustic_windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install NOTE pinned real ONNX runtime
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Validate 0 x2 /2, causal clocks, native frozen NOTE model
+        run: |
+          python -m compileall -q src/causal_note/three_view_pitch.py test/test_s634_three_view_pitch.py
+          python -m unittest -v test.test_s634_three_view_pitch test.test_s630_batched_live
