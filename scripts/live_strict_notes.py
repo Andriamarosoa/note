@@ -153,6 +153,8 @@ def main(argv=None):
                         help="Neural decision hop 128/256/512 or auto (experimental CPU preflight). Default 256 preserves validated S613.")
     parser.add_argument("--block-size", type=parse_block_size, default=HOP,
                         help="PortAudio callback samples: any positive integer; 0 = driver auto. Large blocks add output latency.")
+    parser.add_argument("--inference-batch-hops", type=int, default=1,
+                        help="S630 EXPERIMENT: native 256-hop frozen head frames per vectorized ONNX call (1=original; try 4); batches add up to (N-1)*5.805ms decision wait.")
     parser.add_argument("--capture-deadline-blocks", type=int, default=0,
                         help="0 = no artificial microphone worker deadline (default)")
     parser.add_argument("--queue-blocks", type=parse_queue_blocks, default="auto",
@@ -190,6 +192,11 @@ def main(argv=None):
         parser.error("--lookahead-ms must be finite and within 0..50")
     if args.capture_deadline_blocks < 0:
         parser.error("--capture-deadline-blocks must be >= 0")
+    if not 1 <= args.inference_batch_hops <= 32:
+        parser.error("--inference-batch-hops must be from 1..32")
+    if args.inference_batch_hops > 1 and (args.dual_hop_mode!="off" or args.harmonic_mode!="off"
+                                          or (args.lookahead_ms>0 and args.lookahead_engine=="phase")):
+        parser.error("S630 batched inference currently requires normal S613 or shared lookahead with no dual-hop/harmonic sidecars")
     try:
         hop_request = parse_hop_size(args.hop_size if args.hop_size is not None
                                      else 256)
@@ -266,7 +273,27 @@ def main(argv=None):
             harmonic_threshold=args.harmonic_threshold,
         )
         print(json.dumps(dict(hop_selection=hop_audit)), file=sys.stderr)
-        if args.lookahead_ms > 0:
+        if args.inference_batch_hops > 1:
+            from causal_note.batched_live import BatchedLiveStream
+            from causal_note.lookahead import LookaheadConfig
+            config=(LookaheadConfig(milliseconds=args.lookahead_ms,
+                                    mode=args.lookahead_mode)
+                    if args.lookahead_ms>0 else None)
+            stream=BatchedLiveStream(
+                heads,batch_hops=args.inference_batch_hops,lookahead=config)
+            print(json.dumps(dict(
+                s630_batched_inference="EXPERIMENTAL",
+                batch_hops=args.inference_batch_hops,
+                native_hop_samples=HOP,
+                requested_lookahead_ms=args.lookahead_ms,
+                effective_lookahead_ms=stream.actual_lookahead_samples*1000/SR,
+                max_batch_wait_ms=(args.inference_batch_hops-1)*HOP*1000/SR,
+                original_model_and_K_frozen=True,
+                warning=("Batch several REAL 256-hop feature frames through one "
+                         "ONNX/MLP call; no data or notes are dropped, "
+                         "but MIDI output latency increases."),
+            )),file=sys.stderr)
+        elif args.lookahead_ms > 0:
             from causal_note.lookahead import (
                 LookaheadConfig,LookaheadLiveStream,SharedHopLookaheadLiveStream,
             )
@@ -503,7 +530,8 @@ def main(argv=None):
                     print(json.dumps(dict(auto_level_diagnostics=leveler.diagnostics())),
                           file=sys.stderr)
                 if hasattr(stream, "diagnostics"):
-                    field=("s629_lookahead_diagnostics" if args.lookahead_ms>0
+                    field=("s630_batched_diagnostics" if args.inference_batch_hops>1
+                           else "s629_lookahead_diagnostics" if args.lookahead_ms>0
                            else "dual_hop_diagnostics")
                     print(json.dumps({field:stream.diagnostics()}),
                           file=sys.stderr)
