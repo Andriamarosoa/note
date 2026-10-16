@@ -194,16 +194,16 @@ def main(argv=None):
         parser.error("--capture-deadline-blocks must be >= 0")
     if not 1 <= args.inference_batch_hops <= 32:
         parser.error("--inference-batch-hops must be from 1..32")
-    if args.inference_batch_hops > 1 and hop_request != 256:
-        parser.error("--inference-batch-hops >1 requires --hop-size 256")
-    if args.inference_batch_hops > 1 and (args.dual_hop_mode!="off" or args.harmonic_mode!="off"
-                                          or (args.lookahead_ms>0 and args.lookahead_engine=="phase")):
-        parser.error("S630 batched inference currently requires normal S613 or shared lookahead with no dual-hop/harmonic sidecars")
     try:
         hop_request = parse_hop_size(args.hop_size if args.hop_size is not None
                                      else 256)
     except ValueError as exc:
         parser.error(str(exc))
+    if args.inference_batch_hops > 1 and hop_request != 256:
+        parser.error("--inference-batch-hops >1 requires --hop-size 256")
+    if args.inference_batch_hops > 1 and (args.dual_hop_mode!="off" or args.harmonic_mode!="off"
+                                          or (args.lookahead_ms>0 and args.lookahead_engine=="phase")):
+        parser.error("S630 batched inference currently requires normal S613 or shared lookahead with no dual-hop/harmonic sidecars")
     if args.dual_hop_fast_model is not None:
         if args.dual_hop_mode == "off":
             parser.error("--dual-hop-fast-model requires --dual-hop-mode shadow or guard")
