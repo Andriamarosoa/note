@@ -7,7 +7,7 @@ an inference input. The longest FFT is HISTORY, not a post-onset timer.
 """
 from __future__ import annotations
 
-from collections import deque
+from collections import deque, Counter
 from dataclasses import asdict, dataclass
 import hashlib
 import json
@@ -350,7 +350,7 @@ class StrictLiveStream:
 
     def __init__(self, heads, selection=None, *, harmonic_mode="off",
                  harmonic_checkpoint=None, harmonic_threshold=0.10,
-                 hop=HOP):
+                 hop=HOP, register_rescue_mode="off", register_rescue_policy=None):
         self.heads = heads
         self.hop = hop
         self.frontend = CausalPitchFeatures(hop=hop)
@@ -362,6 +362,14 @@ class StrictLiveStream:
         self.selector = CausalSelection(
             selection or Selection(**selected), hop=hop)
         self.harmonic_selector = None
+        if register_rescue_mode not in ("off", "shadow", "guard"):
+            raise ValueError("Unknown S633 register rescue mode")
+        if register_rescue_mode != "off" and (
+                register_rescue_policy is None or harmonic_mode != "off" or hop != HOP):
+            raise ValueError("S633 specialist requires pinned hop256 and no harmonic sidecar")
+        self.register_rescue_mode = register_rescue_mode
+        self.register_rescue_policy = register_rescue_policy
+        self.register_rescue_stats = Counter()
         if harmonic_mode not in ("off", "shadow", "guard"):
             raise ValueError("Unknown harmonic experiment mode")
         if harmonic_mode == "off" and harmonic_checkpoint is not None:
@@ -394,6 +402,14 @@ class StrictLiveStream:
             for end, features in frames:
                 p, k = self.heads.predict(features)
                 if self.harmonic_selector is None:
+                    if self.register_rescue_mode != "off":
+                        from causal_note.register_rescue import live_apply
+                        p = live_apply(
+                            features, p, k, self.selector,
+                            mode=self.register_rescue_mode,
+                            policy=self.register_rescue_policy,
+                            stats=self.register_rescue_stats,
+                        )
                     events.extend(self.selector.step(
                         p, k, end, available_sample,
                     ))
