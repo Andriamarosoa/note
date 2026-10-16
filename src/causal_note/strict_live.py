@@ -285,8 +285,8 @@ class CausalSelection:
         self.config = config
         # Native S613 thresholds were calibrated at 256 samples. Preserve
         # release and confirmation *time* in candidate hop variants.
-        self.release_steps = max(1, round(config.release_frames * HOP / hop))
-        self.confirmation_steps = max(1, round(config.confirmation_frames * HOP / hop))
+        self.release_steps = max(1, (config.release_frames * HOP + hop - 1) // hop)
+        self.confirmation_steps = max(1, (config.confirmation_frames * HOP + hop - 1) // hop)
         self.active = np.zeros(49, bool)
         self.armed = np.ones(49, bool)
         self.low = np.zeros(49, np.int32)
