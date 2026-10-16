@@ -80,3 +80,38 @@ GuitarSet/URMP/IDMT and target iRig recordings.
 Promotion requires positive FN recovery with acceptable extra FP,
 minimum regressions of original TP, strict K3/K4 preservation,
 low latency p95 and no future-sample dependency.
+
+## COMPLETED 17-song development experiment — verified 2026-10-16
+
+GitHub Actions [38869340016](https://github.com/Andriamarosoa/note/actions/runs/38869340016):
+**SUCCESS**, all causal gate tests pass and all 18 candidate policies
+were evaluated with the true frozen S613 ONNX+neural hybrid. Pinned
+17 dev GuitarSet/URMP recordings; 2,079 ground-truth NoteOn events.
+
+| Native configuration | TP | FP | FN | NoteOn F1 ±80ms | Recovered previous FN | Lost old TP | Grouped K3 | K4 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Frozen S613 | 1241 | 734 | 838 | 61.2235% | 0 | 0 | 42/183 | 3/44 |
+| Global onset .50 | 1298 | 908 | 781 | 60.5834% | +57 | 0 | 41/183 | 4/44 |
+| **S619 acoustic independent onset gate** (.50 onset min, 55% relative 2-hop novelty) | **1283** | **801** | **796** | **61.638%** | **+42** | **0** | **42/183** | **4/44** |
+| S619 maximize recall gate (.45 onset min, 15% recent novelty) | 1313 | 946 | 766 | 60.535% | +72 | 0 | see artifact | see artifact |
+
+Best F1 gate details:
+`RescueGate(weak_onset_min=.50,
+relative_novelty_min=.55, absolute_novelty_min=.04,
+novelty_mode="lag")`.
+
+**Finding:** restricting weak-onset promotion using already-computed
+causal spectral novelty recovers 42 true notes while losing **zero**
+previous true positives. Additional false notes are +67 versus +174
+for global .50 onset threshold. F1 improves by about +0.41 percentage
+points in-sample (development). The gain is small; K3 grouped exact
+count stays 42/183 and K4 rises 3/44 -> 4/44; the polyphonic score
+remains inadequate. This is not validation of a trainable S619 head.
+Dev-policy selection is optimistic; re-test independent source groups
+and real iRig input before ANY promotion.
+
+We should now train a genuine NOTE-native independent-onset rescue
+head on labeled original TRAIN sources rather than keep hand-tuning
+on the same 17 DEV songs. The unchanged existing S613 note output
+must remain valid in the absence of head confidence, and the
+specialist must be tested on true E2+E3 and adjacent-note attack pairs.
