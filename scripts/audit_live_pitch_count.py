@@ -63,6 +63,41 @@ def raw_harmonic_evidence(features, expected_pitch):
     }
 
 
+def summarize_trajectory(frames, attack_time, *, expected_pitch=40):
+    """Summarize ONLY already-seen causal frames relative to first emission.
+
+    Sampling a future frame here is offline AUDIT, never used to backdate a
+    causal detection. Helps diagnose attack-vs-sustain harmonic evidence.
+    """
+    if not frames or attack_time is None:
+        return {"available": False, "reason": "No original note_on in this WAV"}
+    offsets_ms = (0, 25, 50, 100, 200, 350, 500)
+    selected = []
+    for offset in offsets_ms:
+        target = attack_time + offset / 1000.0
+        future = next((row for row in frames if row["time_s"] >= target), None)
+        if future is None:
+            break
+        selected.append({"offset_requested_ms": offset, **future})
+    observed = [row for row in frames
+                if attack_time <= row["time_s"] <= attack_time + .5]
+    maxima = {}
+    for key in ("e2_onset", "e2_sustain", "e2_h1_8192",
+                "e2_harmonic_score_8192", "e3_harmonic_score_8192"):
+        if observed:
+            row = max(observed, key=lambda v: v[key])
+            maxima[key] = {"value": row[key], "time_s": row["time_s"]}
+    return {
+        "available": True,
+        "first_original_attack_s": attack_time,
+        "expected_pitch": expected_pitch,
+        "latency_note": "Offline audit samples later causal frames; NOT a LIVE lookahead or delayed decision",
+        "sampled_causal_frames": selected,
+        "maxima_during_next_500_ms": maxima,
+        "frames_examined": len(observed),
+    }
+
+
 def process_wav(wav_path, model_path, *, auto_level=False, expected_pitch=40):
     heads = load_heads(model_path)
     selection = Selection(**heads.metadata["selection"])
@@ -80,6 +115,7 @@ def process_wav(wav_path, model_path, *, auto_level=False, expected_pitch=40):
     leveler = NoteAutoLevel(sample_rate=SR, block_size=HOP) if auto_level else None
     outputs = {key: [] for key in variants}
     first_attack = None
+    trajectory_frames = []
     strongest = None
     start = 0
     observed_frames = 0
@@ -139,6 +175,23 @@ def process_wav(wav_path, model_path, *, auto_level=False, expected_pitch=40):
                     if x["type"] == "note_on"
                 ],
             }
+            # Keep a small frame-level trajectory so we can distinguish
+            # sparse early E2 evidence from an unrecognized later sustain.
+            # The piano/LIVE decoder never sees this audit data.
+            focus = {row["pitch"]: row for row in snapshot["raw_harmonic_evidence"]["focus"]}
+            e2_features = focus.get(int(expected_pitch), {})
+            e3_features = focus.get(52, {})
+            trajectory_frames.append({
+                "time_s": snapshot["time_s"],
+                "predicted_k": snapshot["predicted_k"],
+                "k_confidence": snapshot["k_confidence"],
+                "e2_onset": snapshot["expected"]["onset"] if snapshot["expected"] else None,
+                "e2_sustain": snapshot["expected"]["sustain"] if snapshot["expected"] else None,
+                "e2_h1_8192": (e2_features.get("h1_to_h4_long_window") or [0])[0],
+                "e2_harmonic_score_8192": e2_features.get("window_8192_score", 0),
+                "e3_harmonic_score_8192": e3_features.get("window_8192_score", 0),
+                "original_note_on": snapshot["original_note_on"],
+            })
             if snapshot["original_note_on"] and first_attack is None:
                 first_attack = snapshot
             score = float(np.max(p[:, 0] * p[:, 1]))
@@ -168,6 +221,11 @@ def process_wav(wav_path, model_path, *, auto_level=False, expected_pitch=40):
         "note_on_by_selection": note_events,
         "first_original_attack_frame": first_attack,
         "strongest_onset_frame": strongest[1] if strongest else None,
+        "attack_to_sustain_trajectory": summarize_trajectory(
+            trajectory_frames,
+            first_attack["time_s"] if first_attack else None,
+            expected_pitch=expected_pitch,
+        ),
         "auto_level_diagnostics": leveler.diagnostics() if leveler is not None else None,
         "additional_diagnostic": ("If native spectral E2 evidence is substantial yet E2 onset and sustain probabilities remain near zero, inspect pitch-head training and microphone domain shift; if spectral evidence itself is absent, inspect capture/front-end. This audit deliberately does not inject any note."),
         "interpretation": (
