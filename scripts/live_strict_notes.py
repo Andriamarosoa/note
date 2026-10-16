@@ -122,6 +122,8 @@ def main(argv=None):
     parser.add_argument("--monitor-gain", type=float, default=0.5, help="Raw input monitoring gain, 0.0..1.0 (default 0.5)")
     parser.add_argument("--dual-hop-mode", choices=("off", "shadow", "guard"), default="off",
                         help="EXPERIMENTAL: 128+256 note heads, shadow leaves original MIDI unchanged; guard fuses fast acoustic novelty notes")
+    parser.add_argument("--dual-hop-fast-model", type=Path,
+                        help="S621 separately TRAINED hop128 native NOTE candidate checkpoint, required for scientifically matched cadence")
     parser.add_argument("--dual-hop-fast-onset", type=float, default=.50,
                         help="S620 fast 128-hop onset candidate minimum (default .50)")
     parser.add_argument("--dual-hop-novelty-ratio", type=float, default=.55,
@@ -185,6 +187,11 @@ def main(argv=None):
                                      else 256)
     except ValueError as exc:
         parser.error(str(exc))
+    if args.dual_hop_fast_model is not None:
+        if args.dual_hop_mode == "off":
+            parser.error("--dual-hop-fast-model requires --dual-hop-mode shadow or guard")
+        if not args.dual_hop_fast_model.is_file():
+            parser.error("S621 trained hop128 checkpoint not found: " + str(args.dual_hop_fast_model))
     if args.dual_hop_mode != "off":
         if args.harmonic_mode != "off" or args.harmonic_checkpoint is not None:
             parser.error("Dual-hop prototype and harmonic specialist cannot be combined yet")
@@ -252,14 +259,18 @@ def main(argv=None):
                 novelty_ratio=args.dual_hop_novelty_ratio,
                 novelty_mode=args.dual_hop_novelty_mode,
             )
-            stream = DualHopLiveStream(heads, config=dual_config)
+            fast_heads = (load_heads(args.dual_hop_fast_model)
+                          if args.dual_hop_fast_model is not None else None)
+            stream = DualHopLiveStream(heads,config=dual_config,
+                                       fast_heads=fast_heads)
             print(json.dumps(dict(
                 s620_dual_hop=dual_config.mode,
                 reference_hop=256, fast_hop=128,
-                reference_model_trained_at_fast_hop=False,
-                warning=("RESEARCH ONLY: 128 path reuses frozen 256-trained "
-                         "weights; extra CPU and wrong fast pitches possible. "
-                         "Only shadow preserves original MIDI exactly."),
+                fast_model_trained_at_128=fast_heads is not None,
+                warning=("RESEARCH ONLY: 128 path uses an independent trained "
+                         "checkpoint when supplied; otherwise reuses unvalidated "
+                         "256-trained S613 weights. Extra CPU and false pitches "
+                         "remain possible. Only shadow preserves original MIDI."),
             )), file=sys.stderr)
         else:
             stream = StrictLiveStream(
