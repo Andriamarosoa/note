@@ -129,7 +129,8 @@ def mlp(torch, dim, nout):
 
 
 def fit(root, out, mode, *, count_epochs=24, pitch_epochs=28,
-        max_pitch_rows=7000):
+        max_pitch_rows=7000, pilot_train_sources=None,
+        pilot_dev_sources=None):
     import torch
     from torch import nn
     if out.exists():
@@ -144,6 +145,14 @@ def fit(root, out, mode, *, count_epochs=24, pitch_epochs=28,
     test = [s for s in protocol["sources"] if s["split"] == "test"]
     if not train or not dev or not test:
         raise ValueError("All train/dev/test source groups must exist")
+    if pilot_train_sources is not None or pilot_dev_sources is not None:
+        if not pilot_train_sources or not pilot_dev_sources:
+            raise ValueError("Pilot needs positive train AND dev source counts")
+        train = train[:pilot_train_sources]
+        dev = dev[:pilot_dev_sources]
+        print(json.dumps(dict(
+            status="PILOT_SUBSET_ONLY_NOT_A_FULL_CORPUS_RESULT",
+            train_sources=len(train), dev_sources=len(dev))), flush=True)
     groups = {
         part: {(s["corpus"], s["composition"]) for s in seq}
         for part, seq in (("train", train), ("dev", dev), ("test", test))
@@ -186,19 +195,6 @@ def fit(root, out, mode, *, count_epochs=24, pitch_epochs=28,
     # Calibrate pitch head on PREDICTED count probabilities, never true K.
     # Pitch x has shape (rows,110) while count sees (frames,441).
     cp = []
-    rng = np.random.default_rng(616)
-    for s in train:
-        for hop in hops:
-            _, features, labels, _, _, _ = source_data(root, s, hop)
-            full_rate = np.where(
-                np.maximum(labels[..., 0], labels[..., 2]) > 0, 1.,
-                np.where(labels[..., 1] > 0, .30, .025))
-            # For reproducibility and memory bounds, use the EXACT same
-            # row sampling algorithm/seed as the initial training pass.
-            # The chosen frame/pitch indices must be replayed per source.
-            # Generate a per-source deterministic RNG, independent of other rows.
-            # NOTE: list of row keys is stored by sample_train in a followup.
-            pass
     # Recompute chosen rows while predicting count in bounded per-source batches.
     # The sampling indices are regenerated using seed 615 and identical traversal.
     rng = np.random.default_rng(615)
@@ -328,11 +324,15 @@ def main():
     parser.add_argument("--count-epochs",type=int,default=24)
     parser.add_argument("--pitch-epochs",type=int,default=28)
     parser.add_argument("--max-pitch-rows",type=int,default=7000)
+    parser.add_argument("--pilot-train-sources",type=int,default=None)
+    parser.add_argument("--pilot-dev-sources",type=int,default=None)
     args=parser.parse_args()
     if min(args.count_epochs,args.pitch_epochs,args.max_pitch_rows)<1:
         parser.error("Epochs and row cap must be positive")
     fit(args.root,args.out,args.mode,count_epochs=args.count_epochs,
-        pitch_epochs=args.pitch_epochs,max_pitch_rows=args.max_pitch_rows)
+        pitch_epochs=args.pitch_epochs,max_pitch_rows=args.max_pitch_rows,
+        pilot_train_sources=args.pilot_train_sources,
+        pilot_dev_sources=args.pilot_dev_sources)
 
 
 if __name__=="__main__":
