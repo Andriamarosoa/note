@@ -1,0 +1,67 @@
+name: "S625 audit: actual E2+E3 and exact superposed chords"
+on:
+  push:
+    branches: [codex/note-s625-exact-overlap-combinations]
+    paths: ['.github/workflows/note-s625-exact-note-combinations.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  exact-annotated-note-combinations:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 38
+    env:
+      PYTHONPATH: '.:src'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install annotation-only parsing and tests
+        run: |
+          python -m pip install "numpy>=1.26,<2" "scipy>=1.11,<1.15" "onnxruntime>=1.17,<1.25" "threadpoolctl>=3"
+      - name: Verify exact E2+E3, F major plus E minor, F note plus E minor semantics
+        run: |
+          python -m unittest -v test.test_s624_audit_real_overlap test.test_s625_exact_note_combinations
+      - name: Audit exact note combinations from 53 TRAIN / 17 DEV original labels
+        run: |
+          python -m scripts.s625_audit_exact_note_combinations \
+            --root data/S625_annotation_only \
+            --out results/S625_EXACT_NOTE_OVERLAP_COMBINATIONS.json
+      - name: Verify audited distribution matches the previous independent S624 census
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('results/S625_EXACT_NOTE_OVERLAP_COMBINATIONS.json').read_text())
+          assert d['status']=='S625_TRUE_EXACT_PITCH_COMBINATIONS_TRAIN_DEV_ONLY'
+          assert d['test_sources_read']==0
+          assert d['train_sources']==53 and d['dev_sources']==17
+          for split,notes,pairs,onsets in [
+              ('train',7361,11888,{str(i):n for i,n in [(2,827),(3,463),(4,205),(5,67),(6,26)]}),
+              ('dev',2082,2750,{str(i):n for i,n in [(2,255),(3,183),(4,44)]}),
+          ]:
+              row=d['audit_by_split'][split]
+              assert row['sources']==(53 if split=='train' else 17)
+              assert row['total_usable_note_events']==notes
+              assert row['total_exact_pitch_pairs_overlapping_ge10ms']==pairs
+              assert row['onset_K2plus_by_K']==onsets,(split,row['onset_K2plus_by_K'],onsets)
+              print('VERIFIED_COMBINATIONS_'+split.upper(),json.dumps(dict(
+                  unique_pitch_pairs=row['number_of_distinct_exact_midi_pitch_pairs'],
+                  unique_multi_onset_sets=row['number_of_distinct_multi_note_onset_pitch_sets'],
+                  active_exact_sets=row['number_of_distinct_active_pitch_sets'],
+                  F_plus_Em=row['focal_cases']['F_major_chord_plus_E_minor_chord'],
+                  F_note_plus_Em=row['focal_cases']['F_note_plus_Em_chord'],
+                  E2_plus_E3=row['focal_cases']['E2_plus_E3'],
+                  top_pairs=row['most_frequent_exact_midi_pairs'][:12],
+                  top_onset_sets=row['most_frequent_exact_multi_note_onset_sets'][:8],
+              ),sort_keys=True),flush=True)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s625-real-exact-note-combinations-53train-17dev
+          path: results/S625_EXACT_NOTE_OVERLAP_COMBINATIONS.json
+          retention-days: 45
