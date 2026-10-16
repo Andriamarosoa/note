@@ -1,0 +1,41 @@
+name: S637 REAL GuitarSet annotated triple-window +/-octave F1 audit
+on:
+  push:
+    branches: [codex/s637-guitarset-three-view-groundtruth]
+    paths:
+      - 'scripts/s637_guitarset_three_view_groundtruth.py'
+      - 'test/test_s637_guitarset_three_view.py'
+      - '.github/workflows/v273-s637-three-view-guitarset.yml'
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s637-real-guitarset-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  real_guitarset_groundtruth:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 85
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original pinned NOTE runtime (CPU)
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Check native parity and independent bass/high selectors
+        run: |
+          python -m compileall -q scripts/s637_guitarset_three_view_groundtruth.py test/test_s637_guitarset_three_view.py
+          python -m unittest -v test.test_s637_guitarset_three_view
+      - name: Benchmark the real annotated GuitarSet DEV: 12 held-composition tracks
+        run: python -m scripts.s637_guitarset_three_view_groundtruth --out /tmp/s637_real_guitarset --limit 12
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S637_REAL_GUITARSET_ANNOTATED_TP_FP_FN_F1
+          path: /tmp/s637_real_guitarset/report.json
+          if-no-files-found: warn
+          retention-days: 60
