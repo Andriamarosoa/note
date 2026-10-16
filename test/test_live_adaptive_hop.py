@@ -112,8 +112,17 @@ class AdaptiveHopTests(unittest.TestCase):
             128: {"p95_ms": 1.0}, 256: {"p95_ms": .8}, 512: {"p95_ms": .8},
         }):
             selected, info = resolve_hop(Head(), "auto")
-        self.assertEqual(selected, 128)
+        self.assertEqual(selected, 256)  # old S613 is trained only at 256
+        self.assertEqual(info["checkpoint_trained_hops"], [256])
         self.assertEqual(info["method"], "cpu_preflight")
+        class TrainedAtAllHops(Head):
+            metadata = {"selection": {"onset": .6},
+                        "trained_hops": [128, 256, 512]}
+        with patch("scripts.live_hop_tuning.benchmark_hop", return_value={
+            128: {"p95_ms": 1.0}, 256: {"p95_ms": .8}, 512: {"p95_ms": .8},
+        }):
+            selected, info = resolve_hop(TrainedAtAllHops(), "auto")
+        self.assertEqual(selected, 128)
 
     def test_reference_256_bitwise_same(self):
         rng = np.random.default_rng(614)
