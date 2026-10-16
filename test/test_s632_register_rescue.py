@@ -72,13 +72,28 @@ class RegisterRescueTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             propose(self.x,np.zeros((49,2)),self.state,self.policy)
 
+    def test_native_K_posterior_vetoes_false_bass_proposals(self):
+        from causal_note.register_rescue import BASS_K50
+        self.strong_fundamental(52)
+        policy = RescuePolicy(bass=BASS_K50)
+        blocked = np.array([.9,.1,0,0,0,0,0],dtype=np.float32)
+        admitted = np.array([.1,.9,0,0,0,0,0],dtype=np.float32)
+        unchanged, gates = propose(self.x,self.p,self.state,policy,blocked)
+        self.assertFalse(gates["bass"][52-40])
+        self.assertAlmostEqual(float(unchanged[52-40,0]),.45,places=6)
+        modified, gates = propose(self.x,self.p,self.state,policy,admitted)
+        self.assertTrue(gates["bass"][52-40])
+        self.assertAlmostEqual(float(modified[52-40,0]),.6,places=6)
+        with self.assertRaises(ValueError):
+            propose(self.x,self.p,self.state,policy, np.ones(3))
+
     def test_real_causal_frontend_width_and_independent_candidate_list(self):
         audio=np.zeros(round(.12*SR),np.float32)
         audio[1024:]+=np.sin(2*np.pi*82.407*np.arange(len(audio)-1024)/SR).astype(np.float32)*.07
         ends,features=feature_track(audio)
         self.assertEqual(features.shape[1:],(49,126))
         self.assertEqual(ends[-1] % 256,0)
-        self.assertEqual(len(variants()),12)
+        self.assertEqual(len(variants()),22)
 
 
 if __name__ == "__main__":
