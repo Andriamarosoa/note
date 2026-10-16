@@ -109,6 +109,10 @@ def process_wav(wav_path, model_path, *, auto_level=False, expected_pitch=40):
         # Single-note budget *only* as a diagnostic bound. This is NOT a
         # recommended LIVE setting: it would suppress real polyphony.
         "mono_budget_1": replace(selection, max_notes=1),
+        # Counterfactual: would a lower causal onset threshold rescue the
+        # expected note? Do NOT promote without false-positive/accord audits.
+        # Keep onset_reset BELOW onset, otherwise the note immediately rearms.
+        "lower_onset_015": replace(selection, onset=0.15, onset_reset=0.03),
     }
     selectors = {key: CausalSelection(value) for key, value in variants.items()}
     frontend = CausalPitchFeatures()
@@ -174,6 +178,10 @@ def process_wav(wav_path, model_path, *, auto_level=False, expected_pitch=40):
                     x["pitch"] for x in per_frame_events["mono_budget_1"]
                     if x["type"] == "note_on"
                 ],
+                "lower_onset_015_note_on": [
+                    x["pitch"] for x in per_frame_events["lower_onset_015"]
+                    if x["type"] == "note_on"
+                ],
             }
             # Keep a small frame-level trajectory so we can distinguish
             # sparse early E2 evidence from an unrecognized later sustain.
@@ -219,6 +227,18 @@ def process_wav(wav_path, model_path, *, auto_level=False, expected_pitch=40):
         "count_veto_disabled": selection.count_confidence > 1.0,
         "frames_analyzed": observed_frames,
         "note_on_by_selection": note_events,
+        "summary": {
+            key: {
+                "all_note_on": len(events),
+                "expected_pitch_on": sum(row["pitch"] == expected_pitch for row in events),
+                "other_pitch_on": sum(row["pitch"] != expected_pitch for row in events),
+                "distinct_pitches": sorted({row["pitch"] for row in events}),
+                "first_expected_time_s": next(
+                    (row["time_s"] for row in events if row["pitch"] == expected_pitch), None
+                ),
+            }
+            for key, events in note_events.items()
+        },
         "first_original_attack_frame": first_attack,
         "strongest_onset_frame": strongest[1] if strongest else None,
         "attack_to_sustain_trajectory": summarize_trajectory(
