@@ -18,7 +18,7 @@ class MockHeads:
         assert x.shape==(3,49,126),x.shape
         p=np.zeros((3,49,3),np.float32)
         p[1,64-40,:2]=[.9,.8]  # +12 view maps MIDI 64 to original MIDI 52
-        p[2,60-40,:2]=[.95,.85] # -12 view maps MIDI 60 to original MIDI 72
+        p[2,64-40,:2]=[.95,.85] # -12 view maps MIDI 64 to original MIDI 76
         k=np.zeros((3,7),np.float32);k[:,1]=1
         return p,k
 
@@ -82,7 +82,7 @@ class ThreeViewTests(unittest.TestCase):
             self.assertFalse(r["bass_rescue"].any())
         final=records[-1]
         self.assertAlmostEqual(float(final["bass_rescue"][52-40,0]),.9,places=6)
-        self.assertAlmostEqual(float(final["high_rescue"][72-40,0]),.95,places=6)
+        self.assertAlmostEqual(float(final["high_rescue"][76-40,0]),.95,places=6)
         self.assertFalse(final["native"].any())
 
     def test_future_waveform_must_not_modify_prior_three_view_outputs(self):
