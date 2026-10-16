@@ -27,7 +27,7 @@ def parse_hop_size(value):
     return hop
 
 
-def choose_cpu_hop(stats, *, utilization=0.55):
+def choose_cpu_hop(stats, *, utilization=0.55, supported= CANDIDATES):
     """Return lowest hop with enough compute budget, otherwise 512.
 
     The conservative per-frame p95 deadline allows for audio I/O, FluidSynth,
@@ -36,11 +36,14 @@ def choose_cpu_hop(stats, *, utilization=0.55):
     """
     if not 0 < utilization < 1:
         raise ValueError("utilization must be within (0,1)")
-    for hop in CANDIDATES:
+    allowed = tuple(h for h in CANDIDATES if h in supported)
+    if not allowed:
+        raise ValueError("No valid trained hop for auto selection")
+    for hop in allowed:
         estimate = float(stats[hop]["p95_ms"])
         if np.isfinite(estimate) and estimate <= utilization * (1000. * hop / SR):
             return hop
-    return 512
+    return max(allowed)
 
 
 def benchmark_hop(heads, *, harmonic_mode="off", harmonic_checkpoint=None,
@@ -102,11 +105,17 @@ def resolve_hop(heads, option, *, harmonic_mode="off", harmonic_checkpoint=None,
         heads, harmonic_mode=harmonic_mode, harmonic_checkpoint=harmonic_checkpoint,
         harmonic_threshold=harmonic_threshold,
     )
-    choice = choose_cpu_hop(stats)
+    # An old S613 checkpoint was trained ONLY at 256. Do not silently
+    # pretend that CPU headroom validates its spectral/onset model at 128.
+    trained = tuple(heads.metadata.get("trained_hops", [256]))
+    if any(int(h) not in CANDIDATES for h in trained):
+        raise ValueError("Checkpoint advertises unsupported hop")
+    choice = choose_cpu_hop(stats, supported=trained)
     return choice, {
         "method": "cpu_preflight",
         "selected": choice,
+        "checkpoint_trained_hops": list(trained),
         "candidate_p95": stats,
         "cpu_utilization_budget": 0.55,
-        "warning": "CPU-only auto selection. S613 was trained/validated at hop256; other hops are experimental, not proven as accurate.",
+        "warning": "CPU-only selection among hops trained for this checkpoint. F1/Exact-K still require independent validation.",
     }

@@ -111,9 +111,13 @@ class CausalPitchFeatures:
         return result
 
 
-def feature_track(audio, block_size=256):
-    """Training/audit cache made by the SAME stateful PCM frontend as Live."""
-    stream = CausalPitchFeatures()
+def feature_track(audio, block_size=256, *, hop=HOP):
+    """Training/audit cache made by the SAME stateful PCM frontend as Live.
+
+    The original 256-sample default is byte-for-byte compatible. S615
+    experiments use a separate root/cache and pass the desired native hop.
+    """
+    stream = CausalPitchFeatures(hop=hop)
     frames, ends = [], []
     for start in range(0, len(audio), block_size):
         for end, row in stream.push(audio[start:start + block_size], start_sample=start):
@@ -350,8 +354,13 @@ class StrictLiveStream:
         self.heads = heads
         self.hop = hop
         self.frontend = CausalPitchFeatures(hop=hop)
+        # S615 shared heads can calibrate different selector thresholds for
+        # each training hop. Old S613 checkpoints have no such metadata, and
+        # remain byte-identical at hop=256.
+        selected = heads.metadata.get("selection_by_hop", {}).get(
+            str(hop), heads.metadata["selection"])
         self.selector = CausalSelection(
-            selection or Selection(**heads.metadata["selection"]), hop=hop)
+            selection or Selection(**selected), hop=hop)
         self.harmonic_selector = None
         if harmonic_mode not in ("off", "shadow", "guard"):
             raise ValueError("Unknown harmonic experiment mode")
