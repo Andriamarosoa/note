@@ -133,7 +133,7 @@ def main(argv=None):
     parser.add_argument("--midi-port", help="Exact mido output port name; omit for JSONL events")
     parser.add_argument("--out", type=Path, help="JSONL output; defaults to stdout")
     parser.add_argument("--hop-size", type=str, default=None,
-                        help="Neural decision hop 128/256/512, or auto (CPU preflight). Default auto on --mic; 256 on WAV/stdin.")
+                        help="Neural decision hop 128/256/512 or auto (experimental CPU preflight). Default 256 preserves validated S613.")
     parser.add_argument("--block-size", type=parse_block_size, default=HOP,
                         help="PortAudio callback samples: any positive integer; 0 = driver auto. Large blocks add output latency.")
     parser.add_argument("--capture-deadline-blocks", type=int, default=0,
@@ -173,7 +173,7 @@ def main(argv=None):
         parser.error("--capture-deadline-blocks must be >= 0")
     try:
         hop_request = parse_hop_size(args.hop_size if args.hop_size is not None
-                                     else ("auto" if args.mic else 256))
+                                     else 256)
     except ValueError as exc:
         parser.error(str(exc))
     queue_capacity = resolve_queue_blocks(args.queue_blocks, args.block_size)
