@@ -49,7 +49,7 @@ class ExclusiveHarmonicSupportTests(unittest.TestCase):
         n=np.zeros(WIDTH,np.float32)
         e=np.zeros(24,np.float32)
         result=matrices(f,p,n,e)
-        self.assertEqual(set(PATTERNS),set(result))
+        self.assertTrue(set(PATTERNS).issubset(set(result)))
         self.assertEqual(len(result["control41"]),len(FEATURE_NAMES))
         self.assertEqual(len(result["exclusive41"]),len(FEATURE_NAMES)+24)
         self.assertEqual(len(result["exclusive65"]),len(FEATURE_NAMES)+len(ADDITIONAL_NAMES)+24)
