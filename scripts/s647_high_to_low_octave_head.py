@@ -398,7 +398,9 @@ def run(out):
         training_recordings=36,dev_recordings=12,
         training_labels_used_only_for_supervised_fit=True,
         annotation_used_only_for_final_scoring_on_DEV=True,
-        candidates_created_only_from_NATIVE_HIGH_NOTE_note_on=True,\n        octave_rescue_direction="detected_high_note_to_missing_low_octave",\n        physical_motivation="S642 E3 was hidden while E4 survived synchronous octave overlap",
+        candidates_created_only_from_NATIVE_HIGH_NOTE_note_on=True,
+        octave_rescue_direction="detected_high_note_to_missing_low_octave",
+        physical_motivation="S642 E3 was hidden while E4 survived synchronous octave overlap",
         delays_ms_requested=list(DELAYS_MS),
         delays_ms_actual={str(d):round(1000*steps_for_delay(d)*HOP/SR,4)
                           for d in DELAYS_MS},
