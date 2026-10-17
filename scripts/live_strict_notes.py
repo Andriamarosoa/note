@@ -249,10 +249,10 @@ def main(argv=None):
     if hazard_path is not None:
         if not hazard_path.is_file():
             parser.error("Trained NOTE hazard model not found: "+str(hazard_path))
-        if (args.inference_batch_hops<2 or hop_request!=256 or
-            args.lookahead_ms!=0 or args.harmonic_mode!="off" or
-            args.dual_hop_mode!="off" or s667_enabled):
-            parser.error("S680 S672 hazard requires --inference-batch-hops 4 --hop-size 256, no lookahead, harmonic, dual-hop or S667")
+        if (hop_request!=256 or args.lookahead_ms!=0 or
+            args.harmonic_mode!="off" or args.dual_hop_mode!="off" or
+            s667_enabled or args.inference_batch_hops not in range(1,33)):
+            parser.error("S672/S675 hazard supports --inference-batch-hops 1..32, --hop-size 256, no lookahead, harmonic, dual-hop or S667")
     if args.inference_batch_hops > 1 and hop_request != 256:
         parser.error("--inference-batch-hops >1 requires --hop-size 256")
     if args.inference_batch_hops > 1 and (args.dual_hop_mode!="off" or args.harmonic_mode!="off"
@@ -352,7 +352,11 @@ def main(argv=None):
             harmonic_threshold=args.harmonic_threshold,
         )
         print(json.dumps(dict(hop_selection=hop_audit)), file=sys.stderr)
-        if args.inference_batch_hops > 1:
+        if args.inference_batch_hops > 1 or s680_adapter is not None:
+            # Batch=1 with the new NoteOff head uses the same S630
+            # single-batch ONNX engine. Its feature and selector steps are
+            # per source hop; original batch=1 without a model remains the
+            # unmodified StrictLiveStream.
             from causal_note.batched_live import BatchedLiveStream
             from causal_note.lookahead import LookaheadConfig
             config=(LookaheadConfig(milliseconds=args.lookahead_ms,
@@ -369,7 +373,9 @@ def main(argv=None):
                 effective_lookahead_ms=stream.actual_lookahead_samples*1000/SR,
                 max_batch_wait_ms=(args.inference_batch_hops-1)*HOP*1000/SR,
                 original_model_and_K_frozen=True,
-                warning=("Batch several REAL 256-hop feature frames through one "
+                warning=("S630 single-batch ONNX uses every 256-sample native hop"
+                         if args.inference_batch_hops==1 else
+                         "Batch several REAL 256-hop feature frames through one "
                          "ONNX/MLP call; no data or notes are dropped, "
                          "but MIDI output latency increases."),
             )),file=sys.stderr)
