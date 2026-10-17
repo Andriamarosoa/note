@@ -57,10 +57,10 @@ class ToneMultiviewTests(unittest.TestCase):
             self.assertEqual(p.shape,(49,3),policy)
             self.assertTrue(np.isfinite(p).all())
             self.assertTrue(((p>=0)&(p<=1)).all())
-        self.assertEqual(probabilities("S614_original",original,mild,dark,cfg)[idx,0],.49)
-        self.assertEqual(probabilities("original_OR_both_confirmed",original,mild,dark,cfg)[idx,0],.91)
-        self.assertEqual(probabilities("original_AND_mild",original,mild,dark,cfg)[idx,0],0)
-        self.assertEqual(probabilities("vote_2of3",original,mild,dark,cfg)[idx,0],.91)
+        self.assertAlmostEqual(float(probabilities("S614_original",original,mild,dark,cfg)[idx,0]),.49,places=6)
+        self.assertAlmostEqual(float(probabilities("original_OR_both_confirmed",original,mild,dark,cfg)[idx,0]),.91,places=6)
+        self.assertAlmostEqual(float(probabilities("original_AND_mild",original,mild,dark,cfg)[idx,0]),0,places=6)
+        self.assertAlmostEqual(float(probabilities("vote_2of3",original,mild,dark,cfg)[idx,0]),.91,places=6)
         with self.assertRaises(ValueError):
             probabilities("invalid",original,mild,dark,cfg)
 
