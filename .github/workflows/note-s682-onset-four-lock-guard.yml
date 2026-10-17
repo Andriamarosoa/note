@@ -1,0 +1,53 @@
+name: S682 Onset guarded by S675 Offset and Exact-K
+on:
+  push:
+    branches: [codex/note-s682-onset-four-lock-guard]
+    paths:
+      - scripts/s682_onset_four_lock_guard.py
+      - test/test_s682_onset_four_lock_guard.py
+      - .github/workflows/note-s682-onset-four-lock-guard.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: note-s682-onset-4-lock-run
+  cancel-in-progress: true
+jobs:
+  genuine_mic_onset_guard:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 160
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install native NOTE+exact S675 sklearn
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Validate all four non-regression locks before real data
+        run: |
+          python -m compileall -q scripts/s682_onset_four_lock_guard.py test/test_s682_onset_four_lock_guard.py
+          python -m unittest -v test.test_s682_onset_four_lock_guard
+      - name: Retrieve exact S675 TRAIN-only checkpoint, not re-train or optimize on DEV
+        run: |
+          mkdir -p /tmp/s682_s675
+          gh run download 39056766998 --repo "${{ github.repository }}" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s682_s675
+          test -f /tmp/s682_s675/s675_hazard.joblib
+          test -f /tmp/s682_s675/s675_checkpoint.json
+      - name: Evaluate 36 TRAIN and 12 DEV GuitarSet sources under all four locks
+        run: |
+          python -m scripts.s682_onset_four_lock_guard --checkpoint /tmp/s682_s675/s675_hazard.joblib --out /tmp/s682_guard
+      - name: Archive unmodified benchmark evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S682_GUITARSET_ONSET_EXACTK_S675_FULL_NOTE_GUARD
+          path: /tmp/s682_guard/report.json
+          if-no-files-found: warn
+          retention-days: 60
