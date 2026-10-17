@@ -1,0 +1,41 @@
+name: S655 original Exact-K conditioned Tone response selection
+on:
+  push:
+    branches: [codex/s655-tone-k-aware-causal-router]
+    paths:
+      - scripts/s655_k_conditioned_tone_selector.py
+      - test/test_s655_k_conditioned_tone_selector.py
+      - .github/workflows/v273-s655-native-k-tone.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s655-tone-K-conditioned-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  validate_conditional_Tone_real_NOTE:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install pinned native NOTE
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Test 12 K-aware Tone selection policies and causal original K preservation
+        run: |
+          python -m compileall -q scripts/s655_k_conditioned_tone_selector.py test/test_s655_k_conditioned_tone_selector.py
+          python -m unittest -v test.test_s655_k_conditioned_tone_selector
+      - name: Check 5+4 TRAIN compositions and 12 DEV NOTE F1 conditioned on original K
+        run: python -m scripts.s655_k_conditioned_tone_selector --out /tmp/s655_k_tone
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S655_GUITARSET_REAL_TONE_NATIVE_K_CONDITIONAL
+          path: /tmp/s655_k_tone/report.json
+          if-no-files-found: warn
+          retention-days: 60
