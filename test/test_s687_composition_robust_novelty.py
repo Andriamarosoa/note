@@ -20,7 +20,7 @@ class S687Tests(unittest.TestCase):
         self.assertEqual(selected,"native")
         self.assertEqual(eligible,[])
     def test_requires_multi_composition_consistency(self):
-        baseline=metric(900,200,1200)
+        baseline=metric(900,250,1200)
         gain=metric(925,220,1220)
         stats={p:gain for p in POLICIES};stats["native"]=baseline
         groups={f"c{i}":{p:stats[p] for p in POLICIES} for i in range(9)}
