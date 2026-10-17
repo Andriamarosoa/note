@@ -446,7 +446,7 @@ def run(out):
     np.testing.assert_allclose(model.predict_proba(probe),
                                restored.predict_proba(probe),rtol=0,atol=1e-12)
     spec=dict(
-       schema="S680_LIVE_S680_HAZARD_EXPORT_V1",
+       schema="S680_LIVE_S672_HAZARD_EXPORT_V1",
        model_original_sha256=frozen["model_sha256"],
        native_protocol_sha256=frozen["protocol_sha256"],
        model_checkpoint_sha256=hashlib.sha256(checkpoint.read_bytes()).hexdigest(),
