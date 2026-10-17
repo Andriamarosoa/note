@@ -104,3 +104,26 @@ des algorithmes de transcription.
 expérimental validé selon la sélection TRAIN. Les têtes Tone peuvent
 alimenter une future sélection experte, mais ne doivent pas
 automatiquement créer de NoteOn, ni masquer les vrais K3+.
+
+
+## Quantitative 90% feasibility audit for S653's restricted candidate pool
+
+The union created only **35 additional matched NoteOn annotations**
+over S614 (1033 vs 998 TP). Suppose a hypothetical perfect policy
+kept all original S614 predictions and retained **all 35 new true
+Tone candidates** but **none of the 126 extra false events**.
+Then the best restricted S653-style *add-only* result would be:
+- TP 1033, FP 585, FN 547;
+- **F1 = 64.6029%**, still far from 90%.
+
+Even if this restricted 1033-TP pool could somehow also eliminate
+**all false positives** without dropping any true note, its
+F1 would be only **79.07%**.
+
+**This is NOT a mathematical ceiling for NOTE or all possible
+causal multi-view systems**: changing candidate generation,
+decoder state, pitch identity, or offset/onset hypotheses could
+recover events not in S653's fixed union. It is a concrete
+diagnostic showing that **training a better gate on the exact
+S653 candidate pool cannot by itself achieve 90%**.
+Future loops must address missed fundamentals and attacks.
