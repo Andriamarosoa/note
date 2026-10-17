@@ -1,0 +1,41 @@
+name: S649 Shared-vs-exclusive harmonic attack residual on real GuitarSet
+on:
+  push:
+    branches: [codex/s649-exclusive-harmonic-attack-evidence]
+    paths:
+      - scripts/s649_exclusive_harmonic_attack.py
+      - test/test_s649_exclusive_harmonic_attack.py
+      - .github/workflows/v273-s649-exclusive-harmonic.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s649-harmonic-exclusive-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  compare_harmonic_partials_and_preserve_native_NOTE:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install pinned NOTE inference dependencies
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Ensure truly exclusive harmonics and no future PCM
+        run: |
+          python -m compileall -q scripts/s649_exclusive_harmonic_attack.py test/test_s649_exclusive_harmonic_attack.py
+          python -m unittest -v test.test_s649_exclusive_harmonic_attack
+      - name: Fit 5 corrected/false NoteOn strategies on 36 guitar TRAIN and score 12 guitar DEV
+        run: python -m scripts.s649_exclusive_harmonic_attack --out /tmp/s649_real_exclusive
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S649_REAL_GUITARSET_EXCLUSIVE_HARMONIC_RESIDUAL
+          path: /tmp/s649_real_exclusive/report.json
+          if-no-files-found: warn
+          retention-days: 60
