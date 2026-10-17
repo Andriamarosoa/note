@@ -1,0 +1,43 @@
+name: S696 direct K head vs decoded active notes 80-percent audit
+on:
+  push:
+    branches: [codex/note-s696-direct-k-causal-audit]
+    paths:
+      - scripts/s696_direct_K_causal_audit.py
+      - test/test_s696_direct_K_audit.py
+      - .github/workflows/note-s696-direct-k-causal.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: note-s696-direct-k-audit
+  cancel-in-progress: true
+jobs:
+  native_guitarset_k:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 85
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Native causal NOTE pinned dependencies
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Test exact K boundaries and no audio future
+        run: |
+          python -m compileall -q scripts/s696_direct_K_causal_audit.py test/test_s696_direct_K_audit.py
+          python -m unittest -v test.test_s696_direct_K_audit
+      - name: Evaluate actual GuitarSet 9 TRAIN and 3 DEV composition families
+        run: python -m scripts.s696_direct_K_causal_audit --out /tmp/s696
+      - name: Persist rigorous all-frame active-frame and transitions
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S696_NATIVE_K_HEAD_VS_DECODED_MIDI_80_TARGET
+          path: /tmp/s696/report.json
+          if-no-files-found: warn
+          retention-days: 60
