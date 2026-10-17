@@ -27,7 +27,7 @@ class JointCausalTests(unittest.TestCase):
         native,bass,tone,state,scores,contrasts=self.make_case()
         p=joined(native,bass,tone,state,{},scores,
                  .9,"S661_union_recent",contrasts)
-        self.assertGreaterEqual(p[5,0],.7)
+        self.assertAlmostEqual(float(p[5,0]),.7,places=6)
         self.assertGreaterEqual(p[7,0],.9)
         self.assertEqual(float(native.sum()),0.)
 
@@ -46,7 +46,7 @@ class JointCausalTests(unittest.TestCase):
         p=joined(native,bass,tone,state,{},scores,
                  .9,"S660_recent",contrasts)
         self.assertEqual(p[5,0],0.)
-        self.assertGreaterEqual(p[7,0],.7)
+        self.assertAlmostEqual(float(p[7,0]),.9,places=6)
 
     def test_training_holdout_cannot_promote_without_positive_groups(self):
         def make_score(tp,fp):
