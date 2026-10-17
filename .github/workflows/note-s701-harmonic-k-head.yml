@@ -1,0 +1,43 @@
+name: S701 native K independent harmonic evidence GuitarSet 80 percent
+on:
+  push:
+    branches: [codex/note-s701-harmonic-k-independence]
+    paths:
+      - scripts/s701_harmonic_independence_K.py
+      - test/test_s701_harmonic_K_independence.py
+      - .github/workflows/note-s701-harmonic-k-head.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: note-s701-harmonic-independent-k
+  cancel-in-progress: true
+jobs:
+  harmonic_K_strict:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 160
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Pin original strict causal NOTE model and native sklearn
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Check physical K feature source invariance
+        run: |
+          python -m compileall -q scripts/s701_harmonic_independence_K.py test/test_s701_harmonic_K_independence.py
+          python -m unittest -v test.test_s701_harmonic_K_independence test.test_s699_player_held_K
+      - name: Train on 108 source TRAIN tracks, select on unseen player03, DEV player04
+        run: python -m scripts.s701_harmonic_independence_K --out /tmp/s701
+      - name: Save true 80 target on active as well as all frames
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S701_INDEPENDENT_HARMONIC_K_FOUR_LOCK_SHADOW
+          path: /tmp/s701/report.json
+          if-no-files-found: warn
+          retention-days: 60
