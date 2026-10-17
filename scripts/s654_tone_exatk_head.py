@@ -64,7 +64,7 @@ def physical_rows(ends,score_orig,score_mild,score_dark,truth):
             [float(np.sum(a[2:])),float(np.sum(b[2:])),float(np.sum(c[2:]))],
             [-float(np.sum(z*np.log(np.clip(z,1e-8,1.)))) for z in (a,b,c)],
         )).astype(np.float32)
-        if feat.shape!=(46,):
+        if feat.shape!=(54,):
             raise AssertionError(f"S654 multi Tone K features ABI {feat.shape}")
         result.append((feat,K))
         base_orig.append(int(a.argmax()))
@@ -72,7 +72,7 @@ def physical_rows(ends,score_orig,score_mild,score_dark,truth):
         base_dark.append(int(c.argmax()))
         count_by[K]+=1
     return dict(
-        features=np.asarray([v[0] for v in result],np.float32).reshape(-1,46),
+        features=np.asarray([v[0] for v in result],np.float32).reshape(-1,54),
         truth=np.asarray([v[1] for v in result],np.int8),
         original_pred=np.asarray(base_orig,np.int8),
         mild_pred=np.asarray(base_mild,np.int8),
@@ -109,7 +109,7 @@ def models():
             max_leaf_nodes=12,min_samples_leaf=20,learning_rate=.06,
             l2_regularization=8.,random_state=654),
         forest=RandomForestClassifier(n_estimators=150,max_depth=12,
-            min_samples_leaf=8,max_features=".sqrt" if False else "sqrt",
+            min_samples_leaf=8,max_features="sqrt",
             n_jobs=1,random_state=654)
     )
 
