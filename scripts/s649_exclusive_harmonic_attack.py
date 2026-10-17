@@ -313,6 +313,7 @@ def validate(spec,root,archive,heads,config,gates):
     counts=Counter()
     history=deque(maxlen=16)
     for end,x,native,k,bass,valid in iter_acoustic(sound,heads):
+        spectra_cache={} # causal FFT reused across pitch proposals at this hop
         old4,old12=historical(history,x)
         candidates=get_candidates(x,native,k,bass,valid,config.onset)
         # Keep native active/attack competition chronologically identical to TRAIN.
