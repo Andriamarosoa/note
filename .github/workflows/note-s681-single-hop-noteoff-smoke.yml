@@ -19,11 +19,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, windows-2022]
+        include:
+          - os: ubuntu-24.04
+            pythonpath: .:src
+          - os: windows-2022
+            pythonpath: .;src
     runs-on: ${{ matrix.os }}
     timeout-minutes: 25
     env:
-      PYTHONPATH: .:src
+      PYTHONPATH: ${{ matrix.pythonpath }}
       GH_TOKEN: ${{ github.token }}
       OPENBLAS_NUM_THREADS: '1'
       OMP_NUM_THREADS: '1'
