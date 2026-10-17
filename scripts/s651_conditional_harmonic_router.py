@@ -38,7 +38,7 @@ from scripts.s637_guitarset_three_view_groundtruth import ROOT,MODEL,GUITARSET_P
 from scripts.s613_prepare_strict_live import download,digest
 from scripts.s613_train_strict_live import event_score,summary
 from scripts.s638_guitarset_true_overlap import overlap_groups
-from scripts.s640_learned_overlap_rescue import iter_acoustic,get_candidates,relay,pcm_truth
+from scripts.s640_learned_overlap_rescue import iter_acoustic,get_candidates,relay,pcm_truth,FEATURE_NAMES
 from scripts.s641_fundamental_consistency import original_fundamental_evidence
 from scripts.s649_exclusive_harmonic_attack import (
     train_record,novelty_features,exclusive_harmonic_attack,historical,
@@ -96,8 +96,8 @@ def meta_features(scores,features,variant):
     control=np.asarray(features["control41"],np.float32)
     extended=np.asarray(features["exclusive65"],np.float32)
     physical=extended[:,control.shape[1]:control.shape[1]+24]
-    if control.shape[1]!=41 or physical.shape[1]!=24:
-        raise AssertionError("S651 baseline NOTE harmonic-context feature ABI changed")
+    if control.shape[1]!=len(FEATURE_NAMES) or physical.shape[1]!=24:
+        raise AssertionError(f"S651 baseline NOTE harmonic-context ABI changed {control.shape} != {len(FEATURE_NAMES)}")
     return np.asarray(np.column_stack((
         simple,control[:,CONTEXT_FEATURE_INDICES],
         physical[:,PHYSICAL_FEATURE_INDICES])),np.float32)
