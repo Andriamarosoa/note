@@ -158,12 +158,9 @@ def training_data(item):
     return X,y
 
 
-def train(records):
-    xs,ys=[],[]
-    for item in records:
-        x,y=training_data(item)
-        xs.append(x);ys.append(y)
-    X=np.vstack(xs);y=np.concatenate(ys)
+def train(examples):
+    X=np.vstack([pair[0] for pair in examples])
+    y=np.concatenate([pair[1] for pair in examples])
     if y.sum()<500 or (1-y).sum()<1000:raise AssertionError("Undertrained hazard")
     model=HistGradientBoostingClassifier(
         loss="log_loss",learning_rate=.075,max_iter=130,
@@ -274,12 +271,21 @@ def run(out):
             src=proto["guitar_archives"][key]
             download(src["url"],root/"data"/path,src["size"],src["sha256"])
         with zipfile.ZipFile(root/"data/GuitarSet_audio.zip") as archive:
-            records=[]
+            # Keep compact supervised rows, not 36 full 126D track matrices:
+            # each 24s wav yields ~100MB of features. All raw tracks are
+            # released immediately, avoiding OOM and 3GB resident growth.
+            full_data=[];cal=[]
+            held_specs=[]
             for i,s in enumerate(train_specs,1):
-                records.append(prepare(s,root,archive,heads,selection))
+                item=prepare(s,root,archive,heads,selection)
+                examples=training_data(item)
+                full_data.append(examples)
+                if s["composition"] in cal_comps:
+                    cal.append(examples)
+                else:
+                    held_specs.append(s)
+                del item
                 print("S668 PREPARE TRAIN",i,"/36",s["name"],flush=True)
-            cal=[q for q in records if q["spec"]["composition"] in cal_comps]
-            held=[q for q in records if q["spec"]["composition"] not in cal_comps]
             hazard,training=train(cal)
             print("S668 TRAIN CAL",json.dumps(training),flush=True)
             configs=[("native",0.,"native")]
@@ -288,14 +294,16 @@ def run(out):
                            for gate in GATES)
             hold_scores=defaultdict(lambda:Counter())
             by_comp=defaultdict(lambda:defaultdict(lambda:Counter()))
-            for i,item in enumerate(held,1):
+            for i,s in enumerate(held_specs,1):
+                item=prepare(s,root,archive,heads,selection)
                 pro=hazard_predictions(item,hazard)
                 comp=item["spec"]["composition"]
                 for name,gate,mode in configs:
                     s=score(item,pro,gate,mode)
                     hold_scores[name].update({"correct":s["correct"],"eligible":s["eligible"]})
                     by_comp[comp][name].update({"correct":s["correct"],"eligible":s["eligible"]})
-                print("S668 HELD",i,"/",len(held),item["spec"]["name"],flush=True)
+                print("S668 HELD",i,"/",len(held_specs),s["name"],flush=True)
+                del item,pro
             baseline=hold_scores["native"]
             good=[]
             for name,gate,mode in configs[1:]:
@@ -306,7 +314,8 @@ def run(out):
             choice=max(good,key=lambda t:t[3]) if good else ("native",0.,"native",baseline["correct"],0)
             print("S668 TRAIN-FROZEN CHOICE",json.dumps(choice),flush=True)
             del hazard
-            model,full_proof=train(records)
+            model,full_proof=train(full_data)
+            del full_data,cal
             dev=[]
             for i,s in enumerate(dev_specs,1):
                 item=prepare(s,root,archive,heads,selection)
@@ -320,6 +329,7 @@ def run(out):
                                  for name,gate,mode in configs})
                 dev.append(row)
                 print("S668 DEV",i,"/12",s["name"],flush=True)
+                del item,pro
     totals={}
     for label in ("policies","batch4"):
         totals[label]={}
