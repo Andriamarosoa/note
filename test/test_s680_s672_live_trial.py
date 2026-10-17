@@ -69,13 +69,32 @@ class S680Checks(unittest.TestCase):
             self.assertLessEqual(e["decision_sample"],e["available_sample"])
         self.assertEqual(adapter.stats["native_note_on_preserved"],len(orig_on))
 
+    def test_batch_one_and_batch_four_have_identical_native_onsets(self):
+        results={}
+        for batch in (1,4):
+            # Same frozen heads and same source PCM in both modes.
+            native=play(BatchedLiveStream(FrozenHeads(),batch_hops=batch))
+            adapter=S672TrialNoteOff(SimpleHazard(),gate=.6,persistence=1)
+            experimental=play(BatchedLiveStream(FrozenHeads(),
+                                                 batch_hops=batch,
+                                                 offset_adapter=adapter))
+            ons=lambda events:[(e["pitch"],e["decision_sample"])
+                               for e in events if e["type"]=="note_on"]
+            self.assertEqual(ons(native),ons(experimental))
+            self.assertTrue(all(e["decision_sample"]<=e["available_sample"]
+                                for e in experimental))
+            results[batch]=experimental
+        self.assertEqual(
+            [(e["type"],e["pitch"],e["decision_sample"]) for e in results[1]],
+            [(e["type"],e["pitch"],e["decision_sample"]) for e in results[4]],
+            "S672 hazard decision itself should be independent of ONNX batch size")
+
     def test_cli_guard_rejects_bad_combinations(self):
         # The argument rejection is before model loading.
         with tempfile.TemporaryDirectory() as tmp:
             sample=Path(tmp)/"s672_hazard.joblib"
             sample.write_bytes(b"placeholder")
             cases=[
-                ["--inference-batch-hops","1"],
                 ["--inference-batch-hops","4","--lookahead-ms","5"],
                 ["--inference-batch-hops","4","--s667-active-off",".15"],
                 ["--inference-batch-hops","4","--hop-size","128"],
