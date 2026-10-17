@@ -1,0 +1,41 @@
+name: S656 controlled E3 versus real E3+E4 digital-guitar octave tone views
+on:
+  push:
+    branches: [codex/s656-controlled-tone-octave-pair]
+    paths:
+      - scripts/s656_tone_true_octave_pairs.py
+      - test/test_s656_tone_octave_pairs.py
+      - .github/workflows/v273-s656-tone-true-octave.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s656-tone-octaves-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify_real_source_octave_tone_analogue:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install frozen original NOTE native dependencies
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Verify paired tone controls and same original note WAV
+        run: |
+          python -m compileall -q scripts/s656_tone_true_octave_pairs.py test/test_s656_tone_octave_pairs.py
+          python -m unittest -v test.test_s656_tone_octave_pairs
+      - name: Compare 8 original real E3-E4 TRAIN guitar recording pairs across Tone views
+        run: python -m scripts.s656_tone_true_octave_pairs --out /tmp/s656_real_octaves
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S656_GUITARSET_REAL_E3_E4_CAUSAL_TONE_OVERLAP
+          path: /tmp/s656_real_octaves/report.json
+          if-no-files-found: warn
+          retention-days: 60
