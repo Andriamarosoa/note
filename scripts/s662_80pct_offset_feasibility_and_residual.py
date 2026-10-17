@@ -71,9 +71,7 @@ def stats(pred,target,mask):
         correct=int((np.abs(diff)<=50.).sum()),
         accuracy=float((np.abs(diff)<=50.).mean()),
         mae_ms=float(np.abs(diff).mean()),
-        signed_median_ms=float(np.median(diff)),
-        correct_long=int(((np.abs(diff)<=50.)&
-            ((target[mask]-np.minimum(target[mask],pred[mask]-0))/SR*1000.>=1000)).sum())
+        signed_median_ms=float(np.median(diff))
     )
 
 
@@ -230,7 +228,7 @@ def run(frozen,annotations,out):
        no_live_integration=True,
        original_upstream_S80_overlap_with_GuitarSet=True,
        upstream_S425_not_fully_nested=True,
-       80_percent_goal_achieved_on_this_dataset=bool(
+       goal_80_percent_achieved_on_this_dataset=bool(
           max(scores[name]["accuracy"] for name in emission)>=.80),
        oracle_NOT_an_achieved_result=True,
        selected_for_promotion=None,
