@@ -1,0 +1,41 @@
+name: S646 NOTE-native octave candidates 0-190ms causal DEV NoteOn F1
+on:
+  push:
+    branches: [codex/s646-note-native-octave-head-causal]
+    paths:
+      - scripts/s646_native_note_octave_head.py
+      - test/test_s646_native_note_octave_head.py
+      - .github/workflows/v273-s646-native-octave-head.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s646-native-octave-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  original_NOTE_heads_train_test_held_GuitarSet:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install native NOTE frozen dependency stack
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Verify causal sample history, NOTE native candidate generation and exact emissions
+        run: |
+          python -m compileall -q scripts/s646_native_note_octave_head.py test/test_s646_native_note_octave_head.py
+          python -m unittest -v test.test_s646_native_note_octave_head
+      - name: Evaluate real NOTE-generated candidate 0/40/80/190ms heads on GuitarSet TRAIN and DEV
+        run: python -m scripts.s646_native_note_octave_head --out /tmp/s646_note_octave
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S646_NATIVE_NOTE_OCTAVE_RESCUE_CAUSAL
+          path: /tmp/s646_note_octave/report.json
+          if-no-files-found: warn
+          retention-days: 60
