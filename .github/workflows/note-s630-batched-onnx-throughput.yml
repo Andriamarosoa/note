@@ -8,6 +8,7 @@ on:
       - 'scripts/live_strict_notes.py'
       - 'scripts/s630_benchmark_cpu.py'
       - 'test/test_s630_batched_live.py'
+      - 'test/test_s667_s630_alignment.py'
   workflow_dispatch:
 permissions:
   contents: read
@@ -31,7 +32,7 @@ jobs:
       - name: Validate no altered nominal MIDI notes, timestamps, source and float model
         run: |
           python -m compileall -q src/causal_note/batched_live.py scripts/live_strict_notes.py scripts/s630_benchmark_cpu.py
-          python -m unittest -v test.test_s630_batched_live test.test_s629_shared_hop_lookahead
+          python -m unittest -v test.test_s630_batched_live test.test_s629_shared_hop_lookahead test.test_s667_s630_alignment
       - name: CPU benchmark original and frozen batched 2/4/8 with 256 callback
         run: |
           python -m scripts.s630_benchmark_cpu --duration-s 2.0 --callback-size 256
