@@ -1,0 +1,41 @@
+name: S641 real GuitarSet octave remap vs independent native fundamental
+on:
+  push:
+    branches: [codex/s641-roundtrip-fundamental-consistency]
+    paths:
+      - scripts/s641_fundamental_consistency.py
+      - test/test_s641_fundamental_consistency.py
+      - .github/workflows/v273-s641-fundamental-consistency.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s641-real-roundtrip-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  fixed_train_and_held_development_comparison:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install native frozen NOTE CPU inference dependencies
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Tests for physically real fundamental, native features and train-only CV
+        run: |
+          python -m compileall -q scripts/s641_fundamental_consistency.py test/test_s641_fundamental_consistency.py
+          python -m unittest -v test.test_s641_fundamental_consistency
+      - name: 36 GuitarSet TRAIN and 12 untouched DEV 3-view physical consistency audit
+        run: python -m scripts.s641_fundamental_consistency --out /tmp/s641_physical_consistency
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S641_REAL_GUITARSET_FUNDAMENTAL_CONSISTENCY
+          path: /tmp/s641_physical_consistency/report.json
+          retention-days: 60
+          if-no-files-found: warn
