@@ -1,11 +1,11 @@
 name: S670 causal per-note NoteOff hazard on real GuitarSet
 on:
   push:
-    branches: [codex/note-s670-causal-offset-hazard]
+    branches: [codex/note-s670-causal-offset-rhythm-head]
     paths:
       - scripts/s670_causal_rhythm_offset_hazard.py
       - test/test_s670_causal_rhythm_hazard.py
-      - .github/workflows/note-s670-causal-noteoff-hazard.yml
+      - .github/workflows/note-s670-rhythm-offset-hazard.yml
   workflow_dispatch:
 permissions: {contents: read}
 concurrency:
