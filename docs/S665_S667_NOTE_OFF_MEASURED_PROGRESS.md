@@ -63,3 +63,29 @@ percentage to this table.
 
 No official promotion, held future-only prospective TEST, or real
 microphone-to-MIDI hardware latency evidence is claimed.
+
+## S667 — vérification strictement causale terminée
+
+Workflow #39024866675: **success**, 36 GuitarSet TRAIN + 12 DEV, 19 règles de
+relâchement; seul l'original est retenu par la sélection entraînée sans DEV.
+Sur 991 offsets de notes dont l'attaque est correctement appariée à +/-80 ms
+et la fin est observable sur DEV GuitarSet:
+
+| Politique | NoteOn F1 | Offsets exacts +/-50 ms | Offsets tolérance max(50ms,20% durée) |
+|---|---:|---:|---:|
+| original, release 5 / active_off 0.25 | 63.105% | 600/991 = 60.5449% | 61.4531% |
+| release 5 / active_off 0.15 | 63.105% | 605/991 = 61.0494% | 61.9576% |
+
+La précision flexible exacte du baseline est **61.4531%**,
+la variante 5/0.15 **61.9576%**. L'écart strict est seulement **+5
+notes**, une régression possible selon composition. La sélection TRAIN a
+choisi l'original; aucune promotion. Les notes longues détectées exactement
+à +/-50ms ne sont que **5** dans ces résultats; les chiffres DEV ne sont
+pas à comparer directement aux 25 395 notes historiques S425-S666.
+
+Les paramètres de release agissent sur la sortie du sélecteur causal, mais
+ne réapprennent pas la preuve de présence physique indépendante. Les essais
+avec release 1 ou 2 frames diminuent fortement les offsets exacts et les
+fenêtres 12 frames retardent excessivement les fermetures. Pour cibler 80%,
+il faut une **tête de survie/NoteOff entraînée sur les WAV continus avec
+état actif par hauteur**, en conservant les NoteOn et Exact-K originaux.
