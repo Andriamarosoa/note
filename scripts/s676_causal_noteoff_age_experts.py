@@ -237,8 +237,8 @@ class AgeExperts:
     def predict_proba(self,X):
         score=self.general.predict_proba(X)[:,1]
         # Acoustic native 65D original ABI: column 63 is log note age;
-    # later rhythmic features are appended after index 64.
-    age_ms=np.expm1(np.clip(X[:,63],0,12))
+        # later rhythmic features are appended after index 64.
+        age_ms=np.expm1(np.clip(X[:,63],0,12))
         for i,(a,b) in enumerate(zip(AGE_EDGES[:-1],AGE_EDGES[1:])):
             mask=(age_ms>=a)&(age_ms<b)
             if self.experts[i] is not None and mask.any():
