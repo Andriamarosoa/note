@@ -91,10 +91,10 @@ class CandidateOctaveTests(unittest.TestCase):
             self.assertEqual({e["pitch"] for e in ons},{52,64})
             lower=next(e for e in ons if e["pitch"]==52)
             upper=next(e for e in ons if e["pitch"]==64)
-            self.assertEqual(upper["decision_sample"]-lower["decision_sample"],
+            self.assertEqual(lower["decision_sample"]-upper["decision_sample"],
                              steps_for_delay(delay)*HOP)
             self.assertEqual(upper["available_sample"],upper["decision_sample"])
-            self.assertGreaterEqual(upper["time"],lower["time"])
+            self.assertGreaterEqual(lower["time"],upper["time"])
         self.assertEqual(audit["admitted"][0],1)
         self.assertNotIn("52",str(original))
 
