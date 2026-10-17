@@ -87,3 +87,43 @@ CI : https://github.com/Andriamarosoa/note/actions/runs/39062334569
 Aucune optimisation sur DEV ni Oracle de GT à l'inférence. Les statistiques
 sur DEV servent de vérification rétrospective. Les expériences S687/S688
 visent ces conditions mais demeurent expérimentales.
+
+## S687 — robustesse sur les 9 compositions TRAIN
+
+Variant choisi sans DEV : `rescue_0.20_rise_0.24`.
+
+Sur TRAIN (36 extraits) : **+1 TP, +0 FP**, K décodé
+**55,4529 % -> 55,5492 %**, NoteOff S675 et F1 complet sans régression.
+
+Sur DEV : **+0 TP, +3 FP**, F1 Onset **63,1046 -> 63,0449 %**,
+K décodé 54,4721 -> 54,4660 %, F1 complet **48,8776 -> 48,8313 %**.
+**Rejeté** : aucune généralisation du gain TRAIN.
+
+CI : https://github.com/Andriamarosoa/note/actions/runs/39062805269
+
+## S688 — pare-harmoniques des nouveaux Onsets seulement
+
+Le système de récupération ajoute une note aiguë uniquement si sa
+nouveauté spectrale paraît indépendante de la note située une octave plus
+bas. Les Onsets déjà émis par la référence ne sont jamais supprimés.
+L'ancien K et l'ancien Offset sont gelés.
+
+Aucune variante n'a franchi les critères F1 Onset + Exact-K décodé
+sur les neuf compositions TRAIN. **Choix : référence native**. Les
+résultats DEV restent donc inchangés : F1 Onset 63,1046 %,
+Exact-K décodé 54,4721 %, S675 NoteOff 78,0808 %,
+F1 note complète 48,8776 %. **Rejeté.**
+
+CI : https://github.com/Andriamarosoa/note/actions/runs/39063017899
+
+## Bilan S684–S688
+
+5 boucles réelles auditées ; aucune promotion, aucune modification à la
+branche LIVE S630/S675. S686 est le meilleur signal exploratoire DEV
+(63,2856 % F1 Onset, 54,9581 % Exact-K décodé, 49,0355 % F1 complet),
+**mais il régresse en TRAIN tenu à l'écart**, donc n'est pas déployable.
+
+La prochaine recherche devra distinguer un véritable nouvel instrument
+d'une harmonique avec une cible événementielle spécifique, et effectuer
+une validation prospective hors des compositions GuitarSet déjà
+consultées, avant de déplacer la référence.
