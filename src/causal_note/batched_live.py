@@ -31,12 +31,15 @@ from causal_note.lookahead import LookaheadConfig,combine_reference_and_future
 
 
 class BatchedLiveStream:
-    def __init__(self,heads,*,batch_hops=4,lookahead=None,selection=None):
+    def __init__(self,heads,*,batch_hops=4,lookahead=None,selection=None,offset_adapter=None):
         if not isinstance(batch_hops,int) or not 1<=batch_hops<=32:
             raise ValueError("batch_hops must be 1..32")
         self.heads=heads
         self.batch_hops=batch_hops
         self.config=lookahead
+        if offset_adapter is not None and lookahead is not None:
+            raise ValueError('S680 hazard requires zero lookahead')
+        self.offset_adapter=offset_adapter
         self.future_hops=(math.ceil(lookahead.samples/HOP) if lookahead is not None else 0)
         self.actual_lookahead_samples=self.future_hops*HOP
         self.frontend=CausalPitchFeatures(hop=HOP)
@@ -64,19 +67,23 @@ class BatchedLiveStream:
         self.stats["frames_inferred"]+=len(frames)
         self.stats["largest_batch"]=max(self.stats["largest_batch"],len(frames))
         out=[]
-        for (t,_),p,k in zip(frames,predictions,counts):
+        for (t,feature),p,k in zip(frames,predictions,counts):
             if t>available_sample:
                 raise AssertionError("Inference before source frames captured")
-            self.pending_predictions.append((t,p,k))
+            self.pending_predictions.append((t,p,k,feature))
             if len(self.pending_predictions)>self.future_hops:
-                original_t,original_p,original_k=self.pending_predictions.popleft()
+                original_t,original_p,original_k,original_feature=self.pending_predictions.popleft()
                 if self.future_hops:
                     if t-original_t!=self.actual_lookahead_samples:
                         raise AssertionError("Lookahead future hop misalignment")
                     fused=combine_reference_and_future(original_p,p,self.config.mode)
                 else:
                     fused=original_p
-                out.extend(self.selector.step(fused,original_k,original_t,available_sample))
+                native=self.selector.step(fused,original_k,original_t,available_sample)
+                out.extend(native if self.offset_adapter is None else
+                    self.offset_adapter.step(original_t,original_feature,
+                                             original_p,original_k,
+                                             native,available_sample))
                 self.stats["frames_selected"]+=1
         return out
 
@@ -107,15 +114,18 @@ class BatchedLiveStream:
         out=self._predict_pending(self.received)
         # Original predictions with unobserved future kept at EOF only,
         # tagged; no padding/fabricated attack evidence.
-        for t,p,k in self.pending_predictions:
+        for t,p,k,feature in self.pending_predictions:
             events=self.selector.step(p,k,t,self.received)
             if self.future_hops:
                 for e in events:
                     e["reason"]="lookahead_eof_unconfirmed_"+e["reason"]
-            out.extend(events)
+            out.extend(events if self.offset_adapter is None else
+                self.offset_adapter.step(t,feature,p,k,events,self.received))
             self.stats["EOF_unconfirmed_frames"]+=1
         self.pending_predictions.clear()
-        out.extend(self.selector.panic(self.received,reason=reason))
+        native_panic=self.selector.panic(self.received,reason=reason)
+        out.extend(native_panic if self.offset_adapter is None else
+            self.offset_adapter.finish(self.received,reason))
         return out
 
     def diagnostics(self):
@@ -123,6 +133,8 @@ class BatchedLiveStream:
         worker=np.asarray(self.worker_ms,dtype=np.float64)
         return dict(
             engine="S630_single_batched_frozen_onnx",
+            s680_noteoff_trial=(self.offset_adapter.diagnostics()
+                               if self.offset_adapter is not None else None),
             model_inference_batch_hops=self.batch_hops,
             native_decision_hop=HOP,
             native_decision_hop_ms=HOP*1000/SR,
