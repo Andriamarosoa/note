@@ -168,6 +168,8 @@ def main(argv=None):
                         help="EXPERIMENTAL S667 NoteOff: consecutive release frames (original 5)")
     parser.add_argument("--s667-active-off", type=float,
                         help="EXPERIMENTAL S667 NoteOff: sustain-off threshold (original 0.25; try 0.15)")
+    parser.add_argument("--s672-hazard-model", type=Path,
+                        help="S680 EXPERIMENTAL: S672 TRAIN-selected 75D NoteOff hazard model from trusted GitHub workflow ZIP; requires S630 batch ONNX >=2, native 256, no other offset selectors.")
     parser.add_argument("--auto-level", action="store_true", help="Enable bounded causal input gain (+18dB max), adapted from midi; experimental, default OFF")
     parser.add_argument("--auto-level-max-db", type=float, default=18.0, help="Maximum automatic amplification, 0..24 dB (default: 18)")
     parser.add_argument("--auto-level-peak-gate-dbfs", type=float, default=-55.0, help="Raw peak activity gate in dBFS (default -55)")
@@ -239,6 +241,13 @@ def main(argv=None):
         if (hop_request != 256 or args.lookahead_ms > 0 or
                 args.dual_hop_mode != "off" or args.harmonic_mode != "off"):
             parser.error("S667 release options require native hop256 without other fusion/lookahead; batch ONNX is supported")
+    if args.s672_hazard_model is not None:
+        if not args.s672_hazard_model.is_file():
+            parser.error("S680 S672 hazard model not found: "+str(args.s672_hazard_model))
+        if (args.inference_batch_hops<2 or hop_request!=256 or
+            args.lookahead_ms!=0 or args.harmonic_mode!="off" or
+            args.dual_hop_mode!="off" or s667_enabled):
+            parser.error("S680 S672 hazard requires --inference-batch-hops 4 --hop-size 256, no lookahead, harmonic, dual-hop or S667")
     if args.inference_batch_hops > 1 and hop_request != 256:
         parser.error("--inference-batch-hops >1 requires --hop-size 256")
     if args.inference_batch_hops > 1 and (args.dual_hop_mode!="off" or args.harmonic_mode!="off"
@@ -318,6 +327,17 @@ def main(argv=None):
                 zero_future_audio=True,
                 warning="The S667 release variant is not independently promoted; longer batching adds audible NoteOff delivery latency.",
             )), file=sys.stderr)
+        s680_adapter=None
+        if args.s672_hazard_model is not None:
+            from causal_note.s672_live_offset import S672TrialNoteOff
+            s680_adapter=S672TrialNoteOff.load(args.s672_hazard_model,heads)
+            print(json.dumps(dict(
+                s680_noteoff="EXPERIMENTAL_S672_HAZARD_NATIVE_NOTEON_PRESERVED",
+                checkpoint=str(args.s672_hazard_model),
+                gate=s680_adapter.gate,
+                persistence=s680_adapter.persistence,
+                accuracy_caveat="Offline 77.78 pct S672 does NOT validate this microphone LIVE adapter",
+                unchanged_original_Exact_K=True)),file=sys.stderr)
         warm = StrictLiveStream(heads)
         for j in range(8):
             warm.push(np.zeros(HOP, np.float32), start_sample=j * HOP)
@@ -335,7 +355,7 @@ def main(argv=None):
                     if args.lookahead_ms>0 else None)
             stream=BatchedLiveStream(
                 heads,batch_hops=args.inference_batch_hops,lookahead=config,
-                selection=s667_selection)
+                selection=s667_selection,offset_adapter=s680_adapter)
             print(json.dumps(dict(
                 s630_batched_inference="EXPERIMENTAL",
                 batch_hops=args.inference_batch_hops,
