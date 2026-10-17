@@ -131,7 +131,7 @@ def build_model(name):
                            random_state=649))
 
 
-def exclusive_harmonic_attack(sound,end_sample,i,native,active):
+def exclusive_harmonic_attack(sound,end_sample,i,native,active,spectra_cache=None):
     """Original-PCM harmonic support that is UNIQUE to the proposed low note.
 
     Explicitly remove energy at candidate harmonic bins ALSO occupied by
@@ -153,10 +153,16 @@ def exclusive_harmonic_attack(sound,end_sample,i,native,active):
     for n in (4096,8192):
         window=np.hanning(n)
         def spectrum(at):
+            key=(n,at)
+            if spectra_cache is not None and key in spectra_cache:
+                return spectra_cache[key]
             segment=np.asarray(sound[max(0,at-n):at],np.float64)
             if len(segment)<n:
                 segment=np.pad(segment,(n-len(segment),0))
-            return 2./window.sum()*np.abs(np.fft.rfft(segment*window))
+            result=2./window.sum()*np.abs(np.fft.rfft(segment*window))
+            if spectra_cache is not None:
+                spectra_cache[key]=result
+            return result
         now=spectrum(end_sample)
         before4=spectrum(max(0,end_sample-4*256))
         before12=spectrum(max(0,end_sample-12*256))
@@ -224,6 +230,7 @@ def train_record(spec,root,archive,heads,selection):
     candidate_vectors=[]
     history=deque(maxlen=16)
     for end,x,native,k,bass,valid in iter_acoustic(sound,heads):
+        spectra_cache={} # per hop: share the SAME FFT for every proposed pitch
         old4,old12=historical(history,x)
         candidates=get_candidates(x,native,k,bass,valid,selection.onset)
         events0.extend(native_state.step(native,k,int(end),int(end)))
@@ -237,7 +244,7 @@ def train_record(spec,root,archive,heads,selection):
             f=candidates[i]
             phys=original_fundamental_evidence(x,i)
             dyn=novelty_features(x,old4,old12,native,i)
-            excl=exclusive_harmonic_attack(sound,int(end),i,native,native_state.active)
+            excl=exclusive_harmonic_attack(sound,int(end),i,native,native_state.active,spectra_cache)
             candidate_vectors.append((int(end),int(e["pitch"]),
                                       matrices(f,phys,dyn,excl)))
         eventsR.extend(emitted)
@@ -316,7 +323,7 @@ def validate(spec,root,archive,heads,config,gates):
             for i,feature in candidates.items():
                 phys=original_fundamental_evidence(x,i)
                 dyn=novelty_features(x,old4,old12,native,i)
-                excl=exclusive_harmonic_attack(sound,int(end),i,native,states["S614"].active)
+                excl=exclusive_harmonic_attack(sound,int(end),i,native,states["S614"].active,spectra_cache)
                 features=matrices(feature,phys,dyn,excl)
                 for n in PATTERNS:packed[n].append(features[n])
             for n in PATTERNS:
