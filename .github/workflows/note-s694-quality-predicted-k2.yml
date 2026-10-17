@@ -1,0 +1,50 @@
+name: S694 native-respecting Onset quality + predicted K2 gate
+on:
+  push:
+    branches: [codex/note-s694-joint-quality-k2-selection]
+    paths:
+      - scripts/s694_extra_note_quality_K2.py
+      - test/test_s694_quality_K2.py
+      - .github/workflows/note-s694-quality-predicted-k2.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: note-s694-caustic-K2-quality
+  cancel-in-progress: true
+jobs:
+  four_lock_add_onset:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 160
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original native NOTE and sklearn pinned
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Verify only native predicted K and true existing MIDI unaffected
+        run: |
+          python -m compileall -q scripts/s694_extra_note_quality_K2.py test/test_s694_quality_K2.py
+          python -m unittest -v test.test_s694_quality_K2 test.test_s690_extra_note_event_quality
+      - name: Retrieve exact frozen S675 real release model
+        run: |
+          mkdir -p /tmp/s694_s675
+          gh run download 39056766998 --repo "${{ github.repository }}" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s694_s675
+          test -f /tmp/s694_s675/s675_hazard.joblib
+          test -f /tmp/s694_s675/s675_checkpoint.json
+      - name: Train 80 authentic TRAIN tracks, held 16 TRAIN and 12 DEV four lock audit
+        run: python -m scripts.s694_extra_note_quality_K2 --out /tmp/s694 --checkpoint /tmp/s694_s675/s675_hazard.joblib
+      - name: Save all Onset K and S675 offset metrics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S694_GUITARSET_QUALITY_K2_NATIVE_EVENT_GUARD
+          path: /tmp/s694/report.json
+          if-no-files-found: warn
+          retention-days: 60
