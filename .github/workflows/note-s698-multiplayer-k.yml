@@ -1,0 +1,43 @@
+name: S698 multiplayer causal shadow K head 80-percent validation
+on:
+  push:
+    branches: [codex/note-s698-multiplayer-k-shadow]
+    paths:
+      - scripts/s698_multiplayer_K_shadow.py
+      - test/test_s698_multiplayer_K_shadow.py
+      - .github/workflows/note-s698-multiplayer-k.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: note-s698-multiplayer-K-training
+  cancel-in-progress: true
+jobs:
+  K_shadow_5_composition_training:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 155
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Original causal NOTE dependencies
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Test original K count and strict source split
+        run: |
+          python -m compileall -q scripts/s698_multiplayer_K_shadow.py test/test_s698_multiplayer_K_shadow.py
+          python -m unittest -v test.test_s696_direct_K_audit test.test_s697_causal_K_shadow test.test_s698_multiplayer_K_shadow
+      - name: Train 80 authentic GuitarSet player tracks and held 16 + DEV 12 full K accuracy
+        run: python -m scripts.s698_multiplayer_K_shadow --out /tmp/s698
+      - name: Archive measured K0-K6 total and active note accuracies
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S698_GUITARSET_80_PLAYER_TRAIN_K_SHADOW
+          path: /tmp/s698/report.json
+          if-no-files-found: warn
+          retention-days: 60
