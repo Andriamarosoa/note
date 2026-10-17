@@ -28,7 +28,7 @@ class JointCausalTests(unittest.TestCase):
         p=joined(native,bass,tone,state,{},scores,
                  .9,"S661_union_recent",contrasts)
         self.assertAlmostEqual(float(p[5,0]),.7,places=6)
-        self.assertGreaterEqual(p[7,0],.9)
+        self.assertAlmostEqual(float(p[7,0]),.9,places=6)
         self.assertEqual(float(native.sum()),0.)
 
     def test_physical_veto_preserves_original_predictions(self):
