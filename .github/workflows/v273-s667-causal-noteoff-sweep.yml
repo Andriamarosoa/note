@@ -4,7 +4,8 @@ on:
     branches: [codex/s667-causal-noteoff-release-audit]
     paths:
       - scripts/s667_strict_causal_noteoff_release_sweep.py
-      - scripts/s667_strict_causal_noteoff_release_sweep.py
+      - scripts/live_strict_notes.py
+      - test/test_s667_live_offset_controls.py
       - .github/workflows/v273-s667-causal-noteoff-sweep.yml
   workflow_dispatch:
 permissions: {contents: read}
@@ -30,6 +31,7 @@ jobs:
         run: |
           python -m compileall -q scripts/s667_strict_causal_noteoff_release_sweep.py scripts/s667_strict_causal_noteoff_release_sweep.py
           python -m scripts.s667_strict_causal_noteoff_release_sweep --self-test
+          python -m unittest -v test.test_s667_live_offset_controls
       - name: Validate on 36 TRAIN recordings and 12 DEV real GuitarSet
         run: python -m scripts.s667_strict_causal_noteoff_release_sweep --out /tmp/s667_offsets
       - uses: actions/upload-artifact@v4
