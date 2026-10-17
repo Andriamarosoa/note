@@ -1,0 +1,41 @@
+name: S653 Tone-aware correction selection with native NOTE
+on:
+  push:
+    branches: [codex/s653-tone-repair-head-composition-oof]
+    paths:
+      - scripts/s653_learn_tone_noteon_repair.py
+      - test/test_s653_learn_tone_noteon_repair.py
+      - .github/workflows/v273-s653-tone-repair-head.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s653-guitarset-tone-repair-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  score_guitarset_Tone_causal_correction_loops:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install frozen native NOTE requirements
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Check no-lookahead Tone and native K immutability
+        run: |
+          python -m compileall -q scripts/s653_learn_tone_noteon_repair.py test/test_s653_learn_tone_noteon_repair.py
+          python -m unittest -v test.test_s653_learn_tone_noteon_repair
+      - name: Fit 4 Tone rescue heads on real 36 GuitarSet TRAIN by composition; score DEV NOTE F1
+        run: python -m scripts.s653_learn_tone_noteon_repair --out /tmp/s653_guitarset_tone
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S653_TONE_CAUSAL_NOTEON_REPAIR_GUITARSET
+          path: /tmp/s653_guitarset_tone/report.json
+          if-no-files-found: warn
+          retention-days: 60
