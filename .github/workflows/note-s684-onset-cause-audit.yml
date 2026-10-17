@@ -1,0 +1,43 @@
+name: S684 diagnose native Onset harmonic and temporal failures
+on:
+  push:
+    branches: [codex/note-s684-onset-miss-cause-audit]
+    paths:
+      - scripts/s684_onset_failure_cause_audit.py
+      - test/test_s684_onset_failure_audit.py
+      - .github/workflows/note-s684-onset-cause-audit.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: note-s684-only
+  cancel-in-progress: true
+jobs:
+  prove_cause:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Frozen NOTE environment
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Unit tests and compile
+        run: |
+          python -m compileall -q scripts/s684_onset_failure_cause_audit.py test/test_s684_onset_failure_audit.py
+          python -m unittest -v test.test_s684_onset_failure_audit
+      - name: Real GuitarSet 16 held TRAIN plus 12 DEV failure analysis
+        run: python -m scripts.s684_onset_failure_cause_audit --out /tmp/s684
+      - name: Retain full audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S684_NATIVE_ONSET_MISSING_FUNDAMENTAL_HARMONIC_CAUSES
+          path: /tmp/s684/audit.json
+          if-no-files-found: warn
+          retention-days: 60
