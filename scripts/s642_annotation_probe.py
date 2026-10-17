@@ -36,6 +36,7 @@ def main():
             eligible_E2=sum(len(r["E2"]) for r in out),
             eligible_E3=sum(len(r["E3"]) for r in out),
             tracks_E2=[dict(name=r["name"],n=len(r["E2"])) for r in out if r["E2"]],
-            tracks_E3=[dict(name=r["name"],n=len(r["E3"])) for r in out if r["E3"]],\n            pairs=sorted([dict(pitch=m,low=sum(len(r[str(m)]) for r in out),high=sum(len(r[str(m+12)]) for r in out),distinct_low=sum(bool(r[str(m)]) for r in out),distinct_high=sum(bool(r[str(m+12)]) for r in out)) for m in range(40,65)],key=lambda r:-min(r["low"],r["high"]))[:25])),flush=True)
+            tracks_E3=[dict(name=r["name"],n=len(r["E3"])) for r in out if r["E3"]],
+            pairs=sorted([dict(pitch=m,low=sum(len(r[str(m)]) for r in out),high=sum(len(r[str(m+12)]) for r in out),distinct_low=sum(bool(r[str(m)]) for r in out),distinct_high=sum(bool(r[str(m+12)]) for r in out)) for m in range(40,65)],key=lambda r:-min(r["low"],r["high"]))[:25])),flush=True)
 
 if __name__=="__main__":main()
