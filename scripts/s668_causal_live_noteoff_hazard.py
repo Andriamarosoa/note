@@ -24,7 +24,27 @@ from threadpoolctl import threadpool_limits
 from causal_note.strict_live import HOP,SR,Selection,load_heads,feature_track
 from scripts.s613_prepare_strict_live import download,digest,labels
 from scripts.s613_train_strict_live import decode,real_notes,event_score
-from scripts.s637_guitarset_three_view_groundtruth import ROOT,MODEL,raw_guitar_audio,GUITARSET_PINNED_CONTROL
+from scripts.s616_live_dev_ablation import ROOT,MODEL
+from scipy.io import wavfile
+from scipy.signal import resample_poly
+import io
+GUITARSET_PINNED_CONTROL=dict(TP=998,FP=585,FN=582)
+
+def raw_guitar_audio(spec,archive):
+    """Decode S613 pinned GuitarSet MIC WAV without any source future."""
+    blob=archive.read(spec["audio"])
+    rate,pcm=wavfile.read(io.BytesIO(blob))
+    if pcm.dtype not in (np.dtype("int16"),np.dtype("int32")):
+        raise ValueError("Unexpected native guitar PCM")
+    samples=pcm.astype(np.float32)/(32768 if pcm.dtype==np.int16 else 2147483648)
+    if samples.ndim==2:samples=samples.mean(axis=1)
+    if rate!=SR:
+        common=np.gcd(rate,SR)
+        samples=resample_poly(samples,SR//common,rate//common).astype(np.float32)
+    samples=samples[:int(spec["seconds"]*SR)].copy()
+    if len(samples)<16384 or not np.isfinite(samples).all():
+        raise ValueError("Invalid GuitarSet PCM")
+    return samples,digest(blob)
 
 # Precommitted variants, never retuned from DEV.
 GATES=(.30,.50,.70,.85)
