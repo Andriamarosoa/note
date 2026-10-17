@@ -81,3 +81,27 @@ octave rescue** from S657 needs separate evaluation S658 on
 natural GuitarSet songs, with anti-doubling and no K1 regression.
 
 No modification of original S614, S641, S80, or microphone LIVE.
+
+
+## Post-hoc group-level robustness audit
+
+The 12 DEV recordings come from **only three distinct
+compositions** (BN3, Funk3, Rock1), despite 12 audio tracks.
+The best observed `tone_poly_high_register` vs S614 changed:
+
+| DEV composition | F1 difference in percentage points | TP diff | FP diff |
+|---|---:|---:|---:|
+| BN3 | -0.669 | -8 | -12 |
+| Funk3 | +0.005 | -15 | -30 |
+| Rock1 | **+2.913** | +3 | -37 |
+
+Thus the global +0.734 point gain is **concentrated in Rock1**.
+A paired cluster bootstrap resampling the three compositions
+with replacement (10,000 samples, seed 1234) gives a descriptive
+2.5–97.5 percentile range of about **−0.669 to +2.913 F1
+points**. Only **three groups** exist, so this interval is
+too unstable to be a rigorous frequentist confidence bound,
+but the sign reversal in BN3 is concrete.
+
+This confirms that selecting the maximum DEV result would be
+overfitting; held-out truly independent compositions are required.
