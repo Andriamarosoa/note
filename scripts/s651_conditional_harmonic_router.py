@@ -363,7 +363,7 @@ def run(out):
         real_DEV_per_recording=validated,
         elapsed_seconds=round(time.perf_counter()-start,2),
         no_promotion=True,
-        note="S651 selects between NOTE independent harmonic heads using native onset, K and acoustic context, not heuristic thresholds chosen on DEV."),
+        note="S651 selects between NOTE independent harmonic heads using native onset, K and acoustic context, not heuristic thresholds chosen on DEV.")
     out.mkdir(parents=True)
     (out/"report.json").write_text(json.dumps(report,indent=2)+"\n")
     print("S651 FINAL",json.dumps(dict(
