@@ -31,7 +31,7 @@ from causal_note.lookahead import LookaheadConfig,combine_reference_and_future
 
 
 class BatchedLiveStream:
-    def __init__(self,heads,*,batch_hops=4,lookahead=None):
+    def __init__(self,heads,*,batch_hops=4,lookahead=None,selection=None):
         if not isinstance(batch_hops,int) or not 1<=batch_hops<=32:
             raise ValueError("batch_hops must be 1..32")
         self.heads=heads
@@ -40,7 +40,7 @@ class BatchedLiveStream:
         self.future_hops=(math.ceil(lookahead.samples/HOP) if lookahead is not None else 0)
         self.actual_lookahead_samples=self.future_hops*HOP
         self.frontend=CausalPitchFeatures(hop=HOP)
-        self.selector=CausalSelection(Selection(**heads.metadata["selection"]),hop=HOP)
+        self.selector=CausalSelection(selection if selection is not None else Selection(**heads.metadata["selection"]),hop=HOP)
         self.harmonic_selector=None
         self.received=0
         self.closed=False
