@@ -1,0 +1,41 @@
+name: S654 learn native-Tone 3-view Exact-K head on original GuitarSet
+on:
+  push:
+    branches: [codex/s654-tone-multiview-exactk-training]
+    paths:
+      - scripts/s654_tone_exatk_head.py
+      - test/test_s654_tone_exactk_head.py
+      - .github/workflows/v273-s654-tone-exactk.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s654-guitarset-tone-K-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  evaluate_REAL_guitarset_Tone_multiK_heads:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install pinned NOTE native requirements
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Test 54D causal count fusion and group-held K labels
+        run: |
+          python -m compileall -q scripts/s654_tone_exatk_head.py test/test_s654_tone_exactk_head.py
+          python -m unittest -v test.test_s654_tone_exactk_head
+      - name: Group-held CV K1-K6 TRAIN and untouched natural GuitarSet DEV diagnostics
+        run: python -m scripts.s654_tone_exatk_head --out /tmp/s654_tone_k
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S654_TONE_GUITARSET_K_MULTIVIEW_TRAINED_DIAGNOSTIC
+          path: /tmp/s654_tone_k/report.json
+          if-no-files-found: warn
+          retention-days: 60
