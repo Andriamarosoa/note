@@ -1,0 +1,43 @@
+name: S700 K causal temporal alignment and future oracle diagnosis
+on:
+  push:
+    branches: [codex/note-s700-k-temporal-alignment]
+    paths:
+      - scripts/s700_causal_K_temporal_alignment.py
+      - test/test_s700_K_temporal_alignment.py
+      - .github/workflows/note-s700-K-temporal-audit.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: note-s700-K-timing
+  cancel-in-progress: true
+jobs:
+  count_timebase:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Frozen NOTE source and model
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Prove causal delays do not read future audio
+        run: |
+          python -m compileall -q scripts/s700_causal_K_temporal_alignment.py test/test_s700_K_temporal_alignment.py
+          python -m unittest -v test.test_s700_K_temporal_alignment
+      - name: Analyse 48 GuitarSet real MIC sources without changing any Onset/Offset
+        run: python -m scripts.s700_causal_K_temporal_alignment --out /tmp/s700
+      - name: Archive exact source K and timing upper bounds
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S700_GUITARSET_STRICT_CAUSAL_K_TIME_ALIGNMENT_ORACLE_AUDIT
+          path: /tmp/s700/report.json
+          if-no-files-found: warn
+          retention-days: 60
