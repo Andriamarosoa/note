@@ -23,10 +23,48 @@ from scripts.s613_train_strict_live import decode,event_score,real_notes
 from scripts.s672_causal_offset_timing_grid import (
     ROOT,MODEL,raw_guitar_audio,native_posteriors,
     note_instances,native_rhythm_clock)
-from scripts.s683_causal_onset_residual_head import onset_feature_rows
+# The original S683 acoustic-feature helper is embedded below so that
+# this branch does not rely on another unmerged experimental branch.
 from scripts.s686_causal_fundamental_novelty import rescue as novelty_rescue
 from scripts.s682_onset_four_lock_guard import (
     native_metrics,aggregate,score_release,full_aggregate,safe_full)
+
+FEATURE_CHOICES=np.array([0,1,2,8,9,10,16,17,18,24,25,26,
+    54,55,62,63,70,71,78,79,84,85,90,91,96,97,104,105,
+    112,113,120,121],np.int64)
+def onset_feature_rows(features,post,k,frame,pitch):
+    """Pure causal features: current and historical frames only.
+
+    frame and pitch must be 1D integer arrays of equal length;
+    source NOTE feature dim is the frozen 126D native ABI.
+    """
+    frame=np.asarray(frame,dtype=np.int64)
+    pitch=np.asarray(pitch,dtype=np.int64)
+    if frame.shape!=pitch.shape or np.any(pitch<0) or np.any(pitch>48):
+        raise ValueError("Pitch/frame dimensions outside NOTE ABI")
+    if len(frame)==0:
+        return np.empty((0,75),np.float32)
+    now=features[frame,pitch]
+    selected=now[:,FEATURE_CHOICES]
+    old8=features[np.maximum(0,frame-8),pitch][:,FEATURE_CHOICES[:12]]
+    now12=now[:,FEATURE_CHOICES[:12]]
+    t=post[frame,pitch]
+    lag2=post[np.maximum(0,frame-2),pitch]
+    lag8=post[np.maximum(0,frame-8),pitch]
+    lag24=post[np.maximum(0,frame-24),pitch]
+    octave=post[frame,np.minimum(48,pitch+12),:2]
+    low=post[frame,np.maximum(0,pitch-12),:2]
+    krow=k[frame]
+    globalpeak=np.max(post[frame,:,0],axis=1)[:,None]
+    x=np.column_stack((selected,now12-old8,
+                       t,lag2,lag8,lag24,t-lag2,t-lag8,
+                       octave,low,krow,globalpeak,
+                       pitch.astype(np.float32)/127.))
+    if not np.isfinite(x).all():
+        raise ValueError("Non-finite learned onset features")
+    return x.astype(np.float32)
+
+
 
 S686_BASE="rescue_0.30_rise_0.12"
 THRESHOLDS=(0.10,0.20,0.35,0.50,0.65,0.80)
