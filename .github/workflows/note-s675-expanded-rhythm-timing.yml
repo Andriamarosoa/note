@@ -1,0 +1,45 @@
+name: S675 causal per-note NoteOff hazard on real GuitarSet
+on:
+  push:
+    branches: [codex/note-s675-expanded-rhythm-timing]
+    paths:
+      - scripts/s675_expanded_rhythm_timing.py
+      - test/test_s675_expanded_rhythm.py
+      - .github/workflows/note-s675-expanded-rhythm-timing.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: note-s675-causal-offset-one
+  cancel-in-progress: true
+jobs:
+  guitarset_noteoff_hazard:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original native NOTE runtime and supervised head
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+      - name: Compile and test S675 invariance
+        run: |
+          python -m compileall -q scripts/s675_expanded_rhythm_timing.py test/test_s675_expanded_rhythm.py
+          python -m unittest -v test.test_s675_expanded_rhythm
+      - name: Evaluate past-only hazard versus identical NoteOn and K on 36 TRAIN and 12 DEV
+        run: |
+          python -m scripts.s675_expanded_rhythm_timing --out /tmp/s675_hazard
+      - name: Preserve reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S675_CAUSAL_NOTEOFF_HAZARD_GUITARSET
+          path: /tmp/s675_hazard/report.json
+          if-no-files-found: warn
+          retention-days: 60
