@@ -88,12 +88,13 @@ def select_real_examples(protocol,root,archive):
         wave,sha=raw_guitar_audio(s,archive)
         for pitch,collection in ((LOW,low),(HIGH,high)):
             if not chosen[pitch]:continue
-            onset=float(chosen[pitch][0])
-            if clip_has_other_true_note(truth,pitch,onset):
-                raise AssertionError("GuitarSet annotation not physically isolated")
-            x=normalize_loudness(source_clip(wave,onset))
-            collection.append(dict(name=s["name"],composition=s["composition"],
-                                   onset=onset,sha256=sha,pitch=pitch,wave=x))
+            for t in chosen[pitch]:
+                onset=float(t)
+                if clip_has_other_true_note(truth,pitch,onset):
+                    raise AssertionError("GuitarSet annotation not physically isolated")
+                x=normalize_loudness(source_clip(wave,onset))
+                collection.append(dict(name=s["name"],composition=s["composition"],
+                                       onset=onset,sha256=sha,pitch=pitch,wave=x))
     low.sort(key=lambda c:(c["composition"],c["name"]))
     high.sort(key=lambda c:(c["composition"],c["name"]))
     if len(low)<5 or len(high)<5:
@@ -102,7 +103,7 @@ def select_real_examples(protocol,root,archive):
     selected=[]
     for n,a in enumerate(low):
         b=next((v for v in high if v["composition"]!=a["composition"]
-                and v["name"] not in {p[1]["name"] for p in selected}),None)
+                and (v["name"],v["onset"]) not in {(p[1]["name"],p[1]["onset"]) for p in selected}),None)
         if b is None:break
         selected.append((a,b))
         if len(selected)==EXAMPLES:break
