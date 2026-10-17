@@ -1,0 +1,96 @@
+name: S681 latest S675 real trained NoteOff LIVE trial Windows
+on:
+  push:
+    branches: [codex/note-s681-s675-live-trial]
+    paths:
+      - 'scripts/s681_export_s675_live_checkpoint.py'
+      - 'scripts/live_strict_notes.py'
+      - 'src/causal_note/batched_live.py'
+      - 'src/causal_note/s672_live_offset.py'
+      - 'test/test_s680_s672_live_trial.py'
+      - 'test/test_s681_s675_live_cli.py'
+      - '.github/workflows/note-s681-s675-live-trial.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: note-s681-latest-s675-checkpoint
+  cancel-in-progress: true
+jobs:
+  train_and_export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 175
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original native NOTE/ONNX runtime with sklearn
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Compile and validate original S630 plus opt-in S675 NOTE release
+        run: |
+          python -m compileall -q src/causal_note/s672_live_offset.py src/causal_note/batched_live.py scripts/live_strict_notes.py scripts/s681_export_s675_live_checkpoint.py test/test_s680_s672_live_trial.py test/test_s681_s675_live_cli.py
+          python -m unittest -v test.test_s630_batched_live test.test_s630_live_cli_integration test.test_s680_s672_live_trial test.test_s681_s675_live_cli
+      - name: Reproduce 144 authentic TRAIN player tracks and export frozen S675 expert
+        run: python -m scripts.s681_export_s675_live_checkpoint --out /tmp/s681_model
+      - name: Validate real trained hazard on original S630 waveform
+        run: |
+          python - <<'PY'
+          import wave,numpy as np
+          t=np.arange(44100,dtype=np.float64)/44100.
+          pcm=np.asarray(.2*np.sin(2*np.pi*110*t)*32767,np.int16)
+          with wave.open('/tmp/s681_guitar.wav','wb') as w:
+              w.setnchannels(1);w.setsampwidth(2);w.setframerate(44100)
+              w.writeframes(pcm.tobytes())
+          PY
+          python -m scripts.live_strict_notes --wav /tmp/s681_guitar.wav --hop-size 256 --block-size 256 --inference-batch-hops 4 --out /tmp/s681_original.jsonl
+          python -m scripts.live_strict_notes --wav /tmp/s681_guitar.wav --hop-size 256 --block-size 256 --inference-batch-hops 4 --s675-hazard-model /tmp/s681_model/s675_hazard.joblib --out /tmp/s681_trial.jsonl
+          python - <<'PY'
+          import json
+          original=[json.loads(x) for x in open('/tmp/s681_original.jsonl')]
+          trial=[json.loads(x) for x in open('/tmp/s681_trial.jsonl')]
+          ons=lambda e:[(x['pitch'],x['decision_sample']) for x in e if x['type']=='note_on']
+          assert ons(original)==ons(trial),"S675 changed frozen S630 NoteOns!"
+          assert all(x['available_sample']>=x['decision_sample'] for x in trial)
+          print('S681 PASS frozen NoteOn parity count:',len(ons(trial)))
+          PY
+      - name: Publish latest trained S675 checkpoint and SHA provenance
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL
+          path: |
+            /tmp/s681_model/report.json
+            /tmp/s681_model/s675_hazard.joblib
+            /tmp/s681_model/s675_checkpoint.json
+          if-no-files-found: warn
+          retention-days: 60
+  windows_test:
+    needs: train_and_export
+    runs-on: windows-2022
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: .;src
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: python -m pip install -r requirements-live-strict.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL
+          path: s681_model
+      - name: Windows true-ONNX + learned NoteOff WAV smoke
+        shell: pwsh
+        run: |
+          python -m unittest -v test.test_s680_s672_live_trial test.test_s681_s675_live_cli
+          python -c "import wave,numpy as np; x=np.zeros(44100,dtype=np.int16); f=wave.open('smoke.wav','wb'); f.setnchannels(1); f.setsampwidth(2); f.setframerate(44100); f.writeframes(x.tobytes()); f.close()"
+          python -m scripts.live_strict_notes --wav smoke.wav --hop-size 256 --block-size 256 --inference-batch-hops 4 --s675-hazard-model s681_model/s675_hazard.joblib --out s681_smoke.jsonl
