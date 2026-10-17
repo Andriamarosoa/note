@@ -1,0 +1,22 @@
+name: S642 GuitarSet real E2 and E3 isolated onset availability
+on:
+  push:
+    branches: [codex/s642-e2-e3-true-octave-vs-harmonic]
+    paths:
+      - scripts/s642_annotation_probe.py
+      - .github/workflows/v273-s642-e2-e3-discovery.yml
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  real_guitarset_E2_E3_inventory:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: python -m pip install -r requirements-live-strict.txt
+      - run: python -m scripts.s642_annotation_probe
