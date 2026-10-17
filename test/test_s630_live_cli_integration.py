@@ -73,6 +73,31 @@ class S630RealCliSmokeTests(unittest.TestCase):
                  for l in (td/"events4.jsonl").read_text().splitlines()],
             )
 
+    def test_real_s667_noteoff_controls_with_native_and_s630_batch_onnx(self):
+        """Run both real CLI engines with the SAME frozen model and S667
+        release override; batch timing may lag, never alter nominal decisions.
+        """
+        with tempfile.TemporaryDirectory() as td:
+            td=pathlib.Path(td)
+            source=td/"guitar_s667.wav"
+            write_wave(source,duration=.22)
+            decisions={}
+            for batch in (1,4):
+                out=td/f"s667_batch{batch}.jsonl"
+                result=cli("--wav",source,"--hop-size","256","--block-size","256",
+                           "--inference-batch-hops",batch,
+                           "--s667-release-frames","5","--s667-active-off","0.15",
+                           "--out",out)
+                self.assertEqual(result.returncode,0,result.stderr)
+                self.assertIn('"s667_noteoff"',result.stderr)
+                self.assertTrue(out.is_file())
+                events=[json.loads(line) for line in out.read_text().splitlines()]
+                decisions[batch]=[(e["type"],e["pitch"],e["decision_sample"])
+                                  for e in events]
+                self.assertTrue(all(e["decision_sample"]<=e["available_sample"]
+                                    for e in events))
+            self.assertEqual(decisions[1],decisions[4])
+
     def test_full_mic_and_soundfont_command_with_simulated_capture(self):
         # Exercise the REAL CLI main(), PortAudio callback -> bounded input
         # queue -> frozen S613 ONNX batch4 -> MIDI output -> shutdown.
