@@ -1,0 +1,41 @@
+name: S658 natural GuitarSet Tone octave gate independent validation
+on:
+  push:
+    branches: [codex/s658-natural-guitarset-coincident-tone-gate]
+    paths:
+      - scripts/s658_natural_tone_gate_validation.py
+      - test/test_s658_natural_tone_gate_validation.py
+      - .github/workflows/v273-s658-natural-tone-gate.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s658-tone-natural-Octave-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  natural_note_on_original_vs_concurrent_Tone_specialist:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install exact NOTE native dependencies
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Verify natural Tone selection approval guard and causal code
+        run: |
+          python -m compileall -q scripts/s658_natural_tone_gate_validation.py test/test_s658_natural_tone_gate_validation.py
+          python -m unittest -v test.test_s658_natural_tone_gate_validation
+      - name: Evaluate real full GuitarSet TRAIN then DEV native Exact-K preserving Tone specialist
+        run: python -m scripts.s658_natural_tone_gate_validation --out /tmp/s658_natural_tone
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S658_REAL_GUITARSET_NATURAL_TONE_LOWER_GATE
+          path: /tmp/s658_natural_tone/report.json
+          if-no-files-found: warn
+          retention-days: 60
