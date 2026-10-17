@@ -5,6 +5,8 @@ on:
     paths:
       - '.github/workflows/note-s630-real-cli-windows-smoke.yml'
       - 'scripts/live_strict_notes.py'
+      - 'src/causal_note/batched_live.py'
+      - 'test/test_s667_s630_alignment.py'
       - 'test/test_s630_live_cli_integration.py'
   workflow_dispatch:
 permissions:
@@ -33,10 +35,10 @@ jobs:
       - name: Compile and execute original console entrypoint, real WAV and invalid microphone device
         run: |
           python -m compileall -q scripts/live_strict_notes.py src/causal_note/batched_live.py
-          python -m unittest -v test.test_s630_live_cli_integration
+          python -m unittest -v test.test_s630_live_cli_integration test.test_s667_s630_alignment
       - name: Execute exact CLI command through real entrypoint (no hardware)
         run: |
           python -m scripts.live_strict_notes --status --hop-size 256 --block-size 256 --lookahead-ms 0 --inference-batch-hops 4
       - name: Verify frozen model batched NOTE on genuine Windows Python environment
         run: |
-          python -m unittest -v test.test_s630_batched_live
+          python -m unittest -v test.test_s630_batched_live test.test_s667_s630_alignment
