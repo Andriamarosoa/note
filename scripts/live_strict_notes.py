@@ -6,6 +6,7 @@ notes instead of silently processing a delayed or discontinuous queue.
 """
 from __future__ import annotations
 import argparse
+from dataclasses import replace
 from contextlib import ExitStack
 import json
 from pathlib import Path
@@ -17,7 +18,7 @@ import wave
 
 import numpy as np
 from threadpoolctl import threadpool_limits
-from causal_note.strict_live import HOP, SR, load_heads, StrictLiveStream
+from causal_note.strict_live import HOP, SR, load_heads, StrictLiveStream, Selection
 from scripts.live_audio_io import audio_devices, managed_input_stream, open_output_stream, parse_device
 from scripts.live_input_level import NoteAutoLevel
 from scripts.live_hop_tuning import parse_hop_size, resolve_hop
@@ -119,6 +120,16 @@ def stream_received_samples(stream):
     return int(count)
 
 
+def s667_live_selection(metadata, release_frames=None, active_off=None):
+    """Opt-in release calibration shared by normal and S630 batch engines."""
+    if release_frames is None and active_off is None:
+        return None
+    native = Selection(**metadata["selection"])
+    return replace(native,
+                   release_frames=native.release_frames if release_frames is None else release_frames,
+                   active_off=native.active_off if active_off is None else active_off)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
     parser.add_argument("--model", type=Path, default=DEFAULT_MODEL)
@@ -153,6 +164,10 @@ def main(argv=None):
                         help="Separately trained harmonic genuine-onset checkpoint; no checkpoint is bundled")
     parser.add_argument("--harmonic-threshold", type=float, default=0.10,
                         help="Experimental independent-onset gating threshold, dev-calibration required")
+    parser.add_argument("--s667-release-frames", type=int,
+                        help="EXPERIMENTAL S667 NoteOff: consecutive release frames (original 5)")
+    parser.add_argument("--s667-active-off", type=float,
+                        help="EXPERIMENTAL S667 NoteOff: sustain-off threshold (original 0.25; try 0.15)")
     parser.add_argument("--auto-level", action="store_true", help="Enable bounded causal input gain (+18dB max), adapted from midi; experimental, default OFF")
     parser.add_argument("--auto-level-max-db", type=float, default=18.0, help="Maximum automatic amplification, 0..24 dB (default: 18)")
     parser.add_argument("--auto-level-peak-gate-dbfs", type=float, default=-55.0, help="Raw peak activity gate in dBFS (default -55)")
@@ -215,6 +230,15 @@ def main(argv=None):
                                      else 256)
     except ValueError as exc:
         parser.error(str(exc))
+    s667_enabled = args.s667_release_frames is not None or args.s667_active_off is not None
+    if s667_enabled:
+        if args.s667_release_frames is not None and not 1 <= args.s667_release_frames <= 12:
+            parser.error("--s667-release-frames must be 1..12")
+        if args.s667_active_off is not None and not 0 < args.s667_active_off < 1:
+            parser.error("--s667-active-off must be between 0 and 1")
+        if (hop_request != 256 or args.lookahead_ms > 0 or
+                args.dual_hop_mode != "off" or args.harmonic_mode != "off"):
+            parser.error("S667 release options require native hop256 without other fusion/lookahead; batch ONNX is supported")
     if args.inference_batch_hops > 1 and hop_request != 256:
         parser.error("--inference-batch-hops >1 requires --hop-size 256")
     if args.inference_batch_hops > 1 and (args.dual_hop_mode!="off" or args.harmonic_mode!="off"
@@ -282,6 +306,18 @@ def main(argv=None):
         if args.model.resolve() == DEFAULT_MODEL.resolve():
             expected_sha = json.loads(DEFAULT_MODEL.with_name("provenance.json").read_text())["model_sha256"]
         heads = load_heads(args.model, expected_sha256=expected_sha)
+        s667_selection = s667_live_selection(
+            heads.metadata, args.s667_release_frames, args.s667_active_off)
+        if s667_selection is not None:
+            print(json.dumps(dict(
+                s667_noteoff="EXPERIMENTAL_UNPROMOTED",
+                release_frames=s667_selection.release_frames,
+                active_off=s667_selection.active_off,
+                batch_hops=args.inference_batch_hops,
+                original_model_and_K_frozen=True,
+                zero_future_audio=True,
+                warning="The S667 release variant is not independently promoted; longer batching adds audible NoteOff delivery latency.",
+            )), file=sys.stderr)
         warm = StrictLiveStream(heads)
         for j in range(8):
             warm.push(np.zeros(HOP, np.float32), start_sample=j * HOP)
@@ -298,7 +334,8 @@ def main(argv=None):
                                     mode=args.lookahead_mode)
                     if args.lookahead_ms>0 else None)
             stream=BatchedLiveStream(
-                heads,batch_hops=args.inference_batch_hops,lookahead=config)
+                heads,batch_hops=args.inference_batch_hops,lookahead=config,
+                selection=s667_selection)
             print(json.dumps(dict(
                 s630_batched_inference="EXPERIMENTAL",
                 batch_hops=args.inference_batch_hops,
@@ -362,7 +399,8 @@ def main(argv=None):
             )), file=sys.stderr)
         else:
             stream = StrictLiveStream(
-                heads, hop=selected_hop, harmonic_mode=args.harmonic_mode,
+                heads, selection=s667_selection,
+                hop=selected_hop, harmonic_mode=args.harmonic_mode,
                 harmonic_checkpoint=args.harmonic_checkpoint,
                 harmonic_threshold=args.harmonic_threshold,
             )
