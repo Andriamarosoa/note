@@ -15,11 +15,11 @@ from scripts.s641_fundamental_consistency import ADDITIONAL_NAMES
 class ConditionalSelectionRouterTests(unittest.TestCase):
     def test_router_features_per_candidate_never_use_labels(self):
         scores=np.asarray([[.99,.25,.8,.7],[.11,.92,.5,.43]],np.float32)
-        features=dict(control41=np.zeros((2,41),np.float32),
-                      exclusive65=np.zeros((2,41+len(ADDITIONAL_NAMES)+24),np.float32))
+        features=dict(control41=np.zeros((2,len(FEATURE_NAMES)),np.float32),
+                      exclusive65=np.zeros((2,len(FEATURE_NAMES)+len(ADDITIONAL_NAMES)+24),np.float32))
         features["control41"][:,0]=[.1,.8]
         features["control41"][:,9]=[.6,.2]
-        features["exclusive65"][:,41+2]=[2.,4.]
+        features["exclusive65"][:,len(FEATURE_NAMES)+2]=[2.,4.]
         a=meta_features(scores,features,"opinions_only")
         b=meta_features(scores,features,"conditional_context")
         self.assertEqual(a.shape,(2,14))
