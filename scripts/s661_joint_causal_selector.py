@@ -60,8 +60,8 @@ def tone_rescue(native,mild,dark,cfg,ages,selector):
 def _inject(out, proposal, native, selector, keep):
     """Mutate local copy only: original probabilities never modified."""
     for pitch in np.flatnonzero(
-            (proposal[:,0] >= selector.config.onset) &
-            (native[:,0] < selector.config.onset)):
+            (proposal[:,0] >= selector.config.onset - 1e-6) &
+            (native[:,0] < selector.config.onset - 1e-6)):
         i=int(pitch)
         if not keep(i) or selector.active[i] or not selector.armed[i]:
             continue
@@ -86,8 +86,8 @@ def joined(native,bass,tone,selector,candidates,scores,
     if variant=="S661_s641_physical_veto":
         # Only additional S641 pitches are filtered; original S614 intact.
         for i in range(len(native)):
-            if (p[i,0] >= selector.config.onset and
-                native[i,0] < selector.config.onset and
+            if (float(p[i,0])+1e-6 >= selector.config.onset and
+                float(native[i,0])+1e-6 < selector.config.onset and
                 not (i+40 in contrasts and
                      multiscale_permit("probe_short_2",contrasts[i+40]))):
                 p[i]=native[i]
