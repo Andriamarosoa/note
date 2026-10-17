@@ -61,9 +61,10 @@ class CandidateOctaveTests(unittest.TestCase):
               dict(pitch=52,time=1.01,duration=.4)]
         pred=[event(40,1.),event(55,1.25)]
         labeled=candidate_labels(pred,true)
-        self.assertEqual(len(labeled),1)
+        self.assertEqual(len(labeled),2)
         self.assertEqual(labeled[0]["label"],1)
         self.assertEqual(labeled[0]["pitch"],40)
+        self.assertEqual(labeled[1]["label"],0) # extra spurious NOTE low is a hard negative
         # A false native low must NOT become positive just because
         # another true higher harmonic exists.
         false=candidate_labels([event(41,1.)],true)
