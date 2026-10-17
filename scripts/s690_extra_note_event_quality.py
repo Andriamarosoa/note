@@ -91,11 +91,16 @@ def accepted_merge(original,proposals,prob,gate):
                end>int(a["decision_sample"]) for a,b in existing+extra):
             continue
         extra.append((on,off))
-    result=original+[event for pair in extra for event in pair]
+    extra_events=[event for pair in extra for event in pair]
+    # Do not reorder simultaneous *native* events. Exact original event
+    # sequence remains a subsequence, including original restrikes.
+    result=original+extra_events
+    source_index={id(e):i for i,e in enumerate(original)}
+    extra_index={id(e):i for i,e in enumerate(extra_events)}
     result.sort(key=lambda e:(int(e["decision_sample"]),
-                              0 if e["type"]=="note_off" else 1,int(e["pitch"])))
-    # Every original native event must appear in precisely the same order.
-    native_ids={id(e) for e in original}
+                              0 if id(e) in source_index else 1,
+                              source_index.get(id(e),extra_index.get(id(e),0))))
+    native_ids=set(source_index)
     preserved=[e for e in result if id(e) in native_ids]
     if preserved!=original:
         raise AssertionError("S690 modified an original NOTE event sequence")
