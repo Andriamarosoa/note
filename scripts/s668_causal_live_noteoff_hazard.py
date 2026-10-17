@@ -218,7 +218,7 @@ def choose_offset(item,index,frames,prob,gate,mode,batch_hops=1):
     decided=min(decided,n["next_start"])
     # No 3D model uses unobserved future audio; the batch may delay physical
     # emissions to the last captured hop. Preserve the causally emitted time.
-    emission=min(len(item["ends"]),((decided+batch_hops-1)//batch_hops)*batch_hops)
+    emission=min(len(item["ends"]),((decided+1+batch_hops-1)//batch_hops)*batch_hops)
     return float(emission*HOP/SR)
 
 
