@@ -1,0 +1,53 @@
+name: S690 causal rescue event-quality head without changing native MIDI
+on:
+  push:
+    branches: [codex/note-s690-rescue-onset-quality-head]
+    paths:
+      - scripts/s690_extra_note_event_quality.py
+      - test/test_s690_extra_note_event_quality.py
+      - .github/workflows/note-s690-rescue-event-quality.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: note-s690-added-onset-gate
+  cancel-in-progress: true
+jobs:
+  native_preserving_new_notes:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 170
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original native NOTE and sklearn
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Verify exact native MIDI Onset and causal event quality gate
+        run: |
+          python -m compileall -q scripts/s690_extra_note_event_quality.py test/test_s690_extra_note_event_quality.py
+          python -m unittest -v test.test_s690_extra_note_event_quality
+      - name: Retrieve authentic S675 frozen model
+        run: |
+          mkdir -p /tmp/s690_s675
+          gh run download 39056766998 --repo "${{ github.repository }}" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s690_s675
+          test -f /tmp/s690_s675/s675_hazard.joblib
+          test -f /tmp/s690_s675/s675_checkpoint.json
+      - name: Train new-note quality only on source TRAIN then test held TRAIN and DEV
+        run: |
+          python -m scripts.s690_extra_note_event_quality --out /tmp/s690 --checkpoint /tmp/s690_s675/s675_hazard.joblib
+      - name: Save baseline-preserving four-lock scores
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S690_GUITARSET_NATIVE_PRESERVED_ADDED_NOTES
+          path: /tmp/s690/report.json
+          if-no-files-found: warn
+          retention-days: 60
