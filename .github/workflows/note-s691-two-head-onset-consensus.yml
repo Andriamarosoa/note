@@ -1,0 +1,54 @@
+name: S691 two-head causal note attack consensus
+on:
+  push:
+    branches: [codex/note-s691-multihead-onset-consensus]
+    paths:
+      - scripts/s691_two_head_onset_consensus.py
+      - scripts/s691_onset_consensus_four_lock.py
+      - test/test_s691_onset_consensus.py
+      - .github/workflows/note-s691-two-head-onset-consensus.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: note-s691-consensus
+  cancel-in-progress: true
+jobs:
+  genuine_guitarset_onset_consensus:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 160
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Pinned causal NOTE model prerequisites
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Verify causality and original K immutable
+        run: |
+          python -m compileall -q scripts/s691_two_head_onset_consensus.py scripts/s691_onset_consensus_four_lock.py
+          python -m unittest -v test.test_s691_onset_consensus
+      - name: Frozen S675 real GuitarSet release classifier
+        run: |
+          mkdir -p /tmp/s691_s675
+          gh run download 39056766998 --repo "${{ github.repository }}" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s691_s675
+          test -f /tmp/s691_s675/s675_hazard.joblib
+          test -f /tmp/s691_s675/s675_checkpoint.json
+      - name: Composition 9 TRAIN and 12 DEV real GuitarSet Onset, K, S675 full note
+        run: |
+          python -m scripts.s691_onset_consensus_four_lock --out /tmp/s691 --checkpoint /tmp/s691_s675/s675_hazard.joblib
+      - name: Save complete 4 lock evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S691_TWO_CAUSAL_HEADS_FUNDAMENTAL_CONSENSUS
+          path: /tmp/s691/report.json
+          if-no-files-found: warn
+          retention-days: 60
