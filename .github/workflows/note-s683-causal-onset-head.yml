@@ -1,0 +1,53 @@
+name: S683 trained causal Onset against frozen Exact-K S675 full NOTE
+on:
+  push:
+    branches: [codex/note-s683-causal-onset-residual-head]
+    paths:
+      - scripts/s683_causal_onset_residual_head.py
+      - test/test_s683_causal_onset_head.py
+      - .github/workflows/note-s683-causal-onset-head.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: note-s683-trained-causal-onset
+  cancel-in-progress: true
+jobs:
+  learned_onset_four_lock_guitarset:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 170
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install causal NOTE and stable sklearn ONNX runtime
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Compile and test source prefix invariance and four frozen heads
+        run: |
+          python -m compileall -q scripts/s683_causal_onset_residual_head.py test/test_s683_causal_onset_head.py
+          python -m unittest -v test.test_s683_causal_onset_head test.test_s682_onset_four_lock_guard
+      - name: Obtain already validated S675 frozen NoteOff model
+        run: |
+          mkdir -p /tmp/s683_s675
+          gh run download 39056766998 --repo "${{ github.repository }}" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s683_s675
+          test -f /tmp/s683_s675/s675_hazard.joblib
+          test -f /tmp/s683_s675/s675_checkpoint.json
+      - name: Train onset head on TRAIN compositions and separately audit remaining TRAIN and DEV
+        run: |
+          python -m scripts.s683_causal_onset_residual_head --out /tmp/s683_evidence --checkpoint /tmp/s683_s675/s675_hazard.joblib
+      - name: Save immutable Onset K S675 full-note regression audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S683_TRAINED_CAUSAL_ONSET_FROZEN_K_S675_FULL_NOTE
+          path: /tmp/s683_evidence/report.json
+          if-no-files-found: warn
+          retention-days: 60
