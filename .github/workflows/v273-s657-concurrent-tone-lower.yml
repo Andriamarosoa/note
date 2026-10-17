@@ -1,0 +1,41 @@
+name: S657 Tone filtered coincident low octave without delayed high regression
+on:
+  push:
+    branches: [codex/s657-coincident-tone-lower-note-repair]
+    paths:
+      - scripts/s657_coincident_tone_lower_repair.py
+      - test/test_s657_coincident_tone_lower_repair.py
+      - .github/workflows/v273-s657-concurrent-tone-lower.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s657-concurrent-Tone-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  test_causal_noteoctave_gate_on_controlled_original_GuitarSet:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install frozen native NOTE
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Test original high trigger and no future PCM/changed native pitches
+        run: |
+          python -m compileall -q scripts/s657_coincident_tone_lower_repair.py test/test_s657_coincident_tone_lower_repair.py
+          python -m unittest -v test.test_s657_coincident_tone_lower_repair
+      - name: Verify 8 real source octave pairs single/concurrent/delayed with new causal conditional Tone
+        run: python -m scripts.s657_coincident_tone_lower_repair --out /tmp/s657_tone_causal
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S657_REAL_GUITARSET_TONE_COINCIDENT_OCTAVE_GATE
+          path: /tmp/s657_tone_causal/report.json
+          if-no-files-found: warn
+          retention-days: 60
