@@ -1,7 +1,7 @@
 """S680 opt-in microphone trial of the S672 TRAIN-frozen NoteOff specialist.
 
-The specialist has the same 75 acoustic+native-posterior+past-onset-rhythm
-features as S672. The immutable native NOTE selector owns original NoteOn
+The specialist uses the same 75 acoustic+native-posterior+past-onset-rhythm
+features as the S672 and S675 genuine GuitarSet heads. The immutable native NOTE selector owns original NoteOn
 and Exact-K decisions. This wrapper NEVER changes them, and exposes
 new NoteOff events from a separate active-note state.
 
@@ -44,12 +44,17 @@ class S672TrialNoteOff:
     def load(cls, checkpoint, heads):
         import joblib
         checkpoint=Path(checkpoint)
-        meta_path=checkpoint.with_name("s672_checkpoint.json")
+        if checkpoint.name not in ("s672_hazard.joblib","s675_hazard.joblib"):
+            raise ValueError("Unrecognized frozen NOTE specialist filename")
+        family="s675" if checkpoint.name.startswith("s675_") else "s672"
+        meta_path=checkpoint.with_name(f"{family}_checkpoint.json")
         info=json.loads(meta_path.read_text())
-        if info.get("schema")!="S680_LIVE_S672_HAZARD_EXPORT_V1":
-            raise ValueError("S680 checkpoint metadata schema mismatch")
+        expected_schema=("S681_LIVE_S675_HAZARD_EXPORT_V1"
+                         if family=="s675" else "S680_LIVE_S672_HAZARD_EXPORT_V1")
+        if info.get("schema")!=expected_schema:
+            raise ValueError("NOTE specialist checkpoint metadata schema mismatch")
         if info.get("TRAIN_selected_policy")!="hazard_0.60_persist_1":
-            raise ValueError("Expected the TRAIN-selected S672 policy")
+            raise ValueError("Expected the TRAIN-selected causal NOTE policy")
         if checkpoint.name!=info.get("checkpoint_filename"):
             raise ValueError("S680 checkpoint filename mismatch")
         if hashlib.sha256(checkpoint.read_bytes()).hexdigest()!=info["model_checkpoint_sha256"]:
