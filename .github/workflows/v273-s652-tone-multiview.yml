@@ -1,0 +1,41 @@
+name: S652 Guitar Strat Tone proxy causal multiview harmonic error audit
+on:
+  push:
+    branches: [codex/s652-tone-filter-multiview-harmonic-audit]
+    paths:
+      - scripts/s652_tone_filter_multiview.py
+      - test/test_s652_tone_filter_multiview.py
+      - .github/workflows/v273-s652-tone-multiview.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s652-tone-multiview-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  train_tone_proxy_policy_and_verify_real_guitarset:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install frozen original NOTE native CPU dependencies
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Prove causal lowpass, no pitch shift and safe multicandidate policies
+        run: |
+          python -m compileall -q scripts/s652_tone_filter_multiview.py test/test_s652_tone_filter_multiview.py
+          python -m unittest -v test.test_s652_tone_filter_multiview
+      - name: Compare 13 causal Tone selection policies on real 36 GuitarSet TRAIN, then 12 DEV
+        run: python -m scripts.s652_tone_filter_multiview --out /tmp/s652_real_tone
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S652_GUITARSET_TONE_FILTER_MULTIVIEW_REAL
+          path: /tmp/s652_real_tone/report.json
+          if-no-files-found: warn
+          retention-days: 60
