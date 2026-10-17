@@ -3,7 +3,7 @@
 Goal: rescue LOW fundamentals masked by simultaneous high-octave notes in ORIGINAL NOTE
 causal NoteOn selection in a SHADOW decoder, retaining checkpoint and native K.
 In contrast to S645, a candidate is born only when S614 itself emits a
-LOW NoteOn. The head sees original PCM through its real emission time.
+HIGH NoteOn (MIDI 52..76). The head sees original PCM through its real emission time.
 
 Experimental delays 0/40/80/190ms are rounded UP to 256-sample hops.
 Each delay trains its own head on *native NOTE-generated candidates*
@@ -35,17 +35,16 @@ from scripts.s637_guitarset_three_view_groundtruth import ROOT,MODEL,GUITARSET_P
 from scripts.s613_prepare_strict_live import download,digest,labels
 from scripts.s613_train_strict_live import real_notes,event_score,summary
 from scripts.s638_guitarset_true_overlap import overlap_groups
-from scripts.s644_natural_octave_transfer import truth_case
 from scripts.s643_octave_duet_head import NFFT
 
-SEED=646
+SEED=647
 DELAYS_MS=(0,40,80,190)
 THRESHOLDS=(.50,.65,.75,.85,.90,.95,.98,1.01) # 1.01 = abstain
 FUTURE_LOOKAHEAD=0
 # 256-sample NOTE decision hops. No hidden retroactive events.
 def steps_for_delay(delay_ms):
     if delay_ms not in DELAYS_MS:
-        raise ValueError("Unknown precommitted S646 delay")
+        raise ValueError("Unknown precommitted S647 delay")
     return int(np.ceil(delay_ms*SR/(1000*HOP)))
 
 
@@ -263,8 +262,8 @@ def replay_with_gate(sound,ends,p,k,heads,config,models):
         control_emitted=ctrl.step(probs,counts,end,end)
         events["S614_original"].extend(control_emitted)
         for e in control_emitted:
-            if e["type"]=="note_on" and 40<=int(e["pitch"])<=64:
-                pitch=int(e["pitch"])
+            if e["type"]=="note_on" and 52<=int(e["pitch"])<=76:
+                pitch=int(e["pitch"])-12
                 for delay in DELAYS_MS:
                     intended=end+steps_for_delay(delay)*HOP
                     if intended<=int(ends[-1]):
