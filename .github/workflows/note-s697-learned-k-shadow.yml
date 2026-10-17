@@ -1,0 +1,43 @@
+name: S697 learned causal shadow Exact-K 80 percent benchmark
+on:
+  push:
+    branches: [codex/note-s697-causal-k-consensus-head]
+    paths:
+      - scripts/s697_causal_learned_K_shadow.py
+      - test/test_s697_causal_K_shadow.py
+      - .github/workflows/note-s697-learned-k-shadow.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: note-s697-shadow-K-head
+  cancel-in-progress: true
+jobs:
+  causal_shadow_K:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Pin original causal NOTE and native sklearn dependencies
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Compile and prove no future audio or original event modification
+        run: |
+          python -m compileall -q scripts/s697_causal_learned_K_shadow.py test/test_s697_causal_K_shadow.py
+          python -m unittest -v test.test_s697_causal_K_shadow test.test_s696_direct_K_audit
+      - name: Train new K head on 20 real TRAIN compositions, select on 16 held, validate 12 DEV
+        run: python -m scripts.s697_causal_learned_K_shadow --out /tmp/s697
+      - name: Preserve K0-K6 total, active, transition score, all source note invariants
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S697_REAL_GUITARSET_CAUSAL_SHADOW_K_80_TARGET
+          path: /tmp/s697/report.json
+          if-no-files-found: warn
+          retention-days: 60
