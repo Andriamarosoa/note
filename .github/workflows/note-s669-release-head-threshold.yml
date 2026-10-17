@@ -1,0 +1,43 @@
+name: S669 native release posterior calibration real GuitarSet S630
+on:
+  push:
+    branches: [codex/note-s669-native-release-head-calibration]
+    paths:
+      - scripts/s669_native_release_head_threshold_sweep.py
+      - scripts/s668_causal_live_noteoff_hazard.py
+      - test/test_s669_release_head_calibration.py
+      - .github/workflows/note-s669-release-head-threshold.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: note-s669-native-release-one
+  cancel-in-progress: true
+jobs:
+  genuine_guitarset_release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 80
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install frozen NOTE native ONNX runtime
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Validate S669 strict batch emissions and trained output safeguards
+        run: |
+          python -m compileall -q scripts/s669_native_release_head_threshold_sweep.py scripts/s668_causal_live_noteoff_hazard.py
+          python -m unittest -v test.test_s668_causal_noteoff_hazard test.test_s669_release_head_calibration
+      - name: Real GuitarSet 36 TRAIN and 12 DEV fixed original NOTE head
+        run: python -m scripts.s669_native_release_head_threshold_sweep --out /tmp/s669_noteoff
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S669_GUITARSET_NATIVE_RELEASE_PROBABILITY
+          path: /tmp/s669_noteoff/report.json
+          if-no-files-found: warn
+          retention-days: 60
