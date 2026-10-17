@@ -91,8 +91,7 @@ def sample_times(low_sample,delay_ms):
     elif delay_ms==80:
         earlier=low_sample+steps_for_delay(40)*HOP
     else:
-        earlier=low_sample+steps_for_delay(100)*HOP if False else (
-            low_sample+int(round(100*SR/(1000*HOP)))*HOP)
+        earlier=low_sample+int(round(100*SR/(1000*HOP)))*HOP
     assert earlier<=late
     return earlier,late
 
@@ -112,7 +111,9 @@ def octave_features(wave,pitch,low_sample,delay_ms):
 def native_notes_from_audio(wave,heads,config):
     """Original NOTE history and frozen heads, original causal selector only."""
     ends,x=feature_track(wave,block_size=4096)
-    p,k=heads.predict(x)
+    chunks=[heads.predict(x[start:start+128]) for start in range(0,len(x),128)]
+    p=np.concatenate([a for a,_ in chunks])
+    k=np.concatenate([b for _,b in chunks])
     decoder=CausalSelection(config)
     events=[]
     for end,probs,counts in zip(ends,p,k):
@@ -296,8 +297,8 @@ def evaluate_source(spec,root,archive,heads,config,models):
         if name=="S614_original":
             baseline_matches=matched
         metrics[name]=dict(score=sc,
-                           matched_with_overlap=len(matched&gt_groups["onset_overlap"]),
-                           matched_K3plus=len(matched&gt_groups["onset_K3plus"]),
+                           matched_with_overlap=len(matched & gt_groups["onset_overlap"]),
+                           matched_K3plus=len(matched & gt_groups["onset_K3plus"]),
                            correct_truth=matched)
     for name in metrics:
         matched=metrics[name].pop("correct_truth")
