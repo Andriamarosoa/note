@@ -27,15 +27,15 @@ def main():
         out=[]
         for s in tracks:
             truth=real_notes(labels(s,root)["notes"],24.)
-            a={str(m):eligible(truth,m) for m in (40,52)}
-            counts={str(m):sum(n["pitch"]==m for n in truth) for m in (40,52)}
-            out.append(dict(name=s["name"],composition=s["composition"],E2=a["40"],E3=a["52"],count=counts))
+            a={str(m):eligible(truth,m) for m in range(40,77)}
+            counts={str(m):sum(n["pitch"]==m for n in truth) for m in range(40,77)}
+            out.append(dict(name=s["name"],composition=s["composition"],E2=a["40"],E3=a["52"],**a,count=counts))
         print("S642 ISOLATION",json.dumps(dict(n=len(out),
             total_E2=sum(r["count"]["40"] for r in out),
             total_E3=sum(r["count"]["52"] for r in out),
             eligible_E2=sum(len(r["E2"]) for r in out),
             eligible_E3=sum(len(r["E3"]) for r in out),
             tracks_E2=[dict(name=r["name"],n=len(r["E2"])) for r in out if r["E2"]],
-            tracks_E3=[dict(name=r["name"],n=len(r["E3"])) for r in out if r["E3"]])),flush=True)
+            tracks_E3=[dict(name=r["name"],n=len(r["E3"])) for r in out if r["E3"]],\n            pairs=sorted([dict(pitch=m,low=sum(len(r[str(m)]) for r in out),high=sum(len(r[str(m+12)]) for r in out),distinct_low=sum(bool(r[str(m)]) for r in out),distinct_high=sum(bool(r[str(m+12)]) for r in out)) for m in range(40,65)],key=lambda r:-min(r["low"],r["high"]))[:25])),flush=True)
 
 if __name__=="__main__":main()
