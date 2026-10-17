@@ -65,10 +65,31 @@ Run : https://github.com/Andriamarosoa/note/actions/runs/39069662013
 
 ## S699 — Toutes les 9 compositions TRAIN, validation joueur jamais vu
 
-Architecture indépendante : 108 prises authentiques joueurs 00–02
-entraînent une K SHADOW ; 36 prises joueur 03 servent exclusivement à
-la sélection ; joueur DEV 04 reste entièrement inconnu. En cours de
-vérification au moment de cette première rédaction.
+Architecture : 108 prises authentiques joueurs 00–02 (9 compositions)
+entraînent une nouvelle tête K SHADOW, soit **141 294 trames
+d'apprentissage**. 36 prises du joueur 03 restent entièrement exclues de
+l'entraînement. Le joueur 04 et ses 3 compositions DEV sont également
+absents de TRAIN.
+
+La tête `learned` est sélectionnée **sur le joueur 03 tenu à l'écart**
+avant l'ouverture de DEV :
+
+| Tête K | Joueur 03, total / actif | Joueur 04 DEV, total / actif |
+|---|---|---|
+| K natif décodé | 63,36 % / 53,76 % | 54,47 % / 46,71 % |
+| K natif direct | 65,86 % / 62,73 % | 58,20 % / 58,18 % |
+| **S699 appris** | **73,16 % / 70,55 %** | **66,66 % / 65,90 %** |
+
+Les transitions du K appris progressent de 24,96 à **35,74 %** sur
+DEV, mais **aucune mesure ne franchit 80 % sur le joueur inconnu**.
+Aucune dégradation Onset/Offset ne peut apparaître dans cette évaluation
+SHADOW parce que les événements MIDI natifs sont inchangés.
+Il n'est PAS démontré que l'utilisation de cette nouvelle tête pour
+décider de notes futures préserverait les résultats.
+
+La série S698–S699 confirme qu'une tête K supervisée et des
+guitaristes diversifiés sont prometteurs, mais qu'ils ne suffisent pas
+à atteindre 80 % dans les conditions actuelles.
 
 Run : https://github.com/Andriamarosoa/note/actions/runs/39070073982
 
