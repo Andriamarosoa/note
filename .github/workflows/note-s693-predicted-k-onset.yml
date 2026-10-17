@@ -1,0 +1,53 @@
+name: S693 predicted-K causal weak guitar attack policy
+on:
+  push:
+    branches: [codex/note-s693-k-conditioned-onset-rescue]
+    paths:
+      - scripts/s693_poly_predicted_k_onset.py
+      - scripts/s693_k_predicted_four_lock.py
+      - test/test_s693_poly_k_onset.py
+      - .github/workflows/note-s693-predicted-k-onset.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: note-s693-poly-source-k
+  cancel-in-progress: true
+jobs:
+  source_k_nonregression:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 170
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original causal NOTE dependencies
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Verify no future and no native K/midi mutation
+        run: |
+          python -m compileall -q scripts/s693_poly_predicted_k_onset.py scripts/s693_k_predicted_four_lock.py
+          python -m unittest -v test.test_s693_poly_k_onset
+      - name: Load true frozen S675 checkpoint for Offset and full NOTE veto
+        run: |
+          mkdir -p /tmp/s693_s675
+          gh run download 39056766998 --repo "${{ github.repository }}" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s693_s675
+          test -f /tmp/s693_s675/s675_hazard.joblib
+          test -f /tmp/s693_s675/s675_checkpoint.json
+      - name: Real GuitarSet nine composition TRAIN freeze then independent DEV check
+        run: python -m scripts.s693_k_predicted_four_lock --out /tmp/s693 --checkpoint /tmp/s693_s675/s675_hazard.joblib
+      - name: Keep all notes and Exact-K audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S693_CAUSAL_PREDICTED_K_ONSET_4_LOCKS
+          path: /tmp/s693/report.json
+          if-no-files-found: warn
+          retention-days: 60
