@@ -169,7 +169,9 @@ def main(argv=None):
     parser.add_argument("--s667-active-off", type=float,
                         help="EXPERIMENTAL S667 NoteOff: sustain-off threshold (original 0.25; try 0.15)")
     parser.add_argument("--s672-hazard-model", type=Path,
-                        help="S680 EXPERIMENTAL: S672 TRAIN-selected 75D NoteOff hazard model from trusted GitHub workflow ZIP; requires S630 batch ONNX >=2, native 256, no other offset selectors.")
+                        help="S680 EXPERIMENTAL: earlier S672 TRAIN-selected 75D NoteOff specialist")
+    parser.add_argument("--s675-hazard-model", type=Path,
+                        help="S681 EXPERIMENTAL: latest S675 TRAIN-selected 78.08 pct offline NoteOff specialist, requires trusted workflow checkpoint + S630 batch4")
     parser.add_argument("--auto-level", action="store_true", help="Enable bounded causal input gain (+18dB max), adapted from midi; experimental, default OFF")
     parser.add_argument("--auto-level-max-db", type=float, default=18.0, help="Maximum automatic amplification, 0..24 dB (default: 18)")
     parser.add_argument("--auto-level-peak-gate-dbfs", type=float, default=-55.0, help="Raw peak activity gate in dBFS (default -55)")
@@ -241,9 +243,12 @@ def main(argv=None):
         if (hop_request != 256 or args.lookahead_ms > 0 or
                 args.dual_hop_mode != "off" or args.harmonic_mode != "off"):
             parser.error("S667 release options require native hop256 without other fusion/lookahead; batch ONNX is supported")
-    if args.s672_hazard_model is not None:
-        if not args.s672_hazard_model.is_file():
-            parser.error("S680 S672 hazard model not found: "+str(args.s672_hazard_model))
+    if args.s672_hazard_model is not None and args.s675_hazard_model is not None:
+        parser.error("Choose only one of --s672-hazard-model and --s675-hazard-model")
+    hazard_path=args.s675_hazard_model or args.s672_hazard_model
+    if hazard_path is not None:
+        if not hazard_path.is_file():
+            parser.error("Trained NOTE hazard model not found: "+str(hazard_path))
         if (args.inference_batch_hops<2 or hop_request!=256 or
             args.lookahead_ms!=0 or args.harmonic_mode!="off" or
             args.dual_hop_mode!="off" or s667_enabled):
@@ -328,15 +333,15 @@ def main(argv=None):
                 warning="The S667 release variant is not independently promoted; longer batching adds audible NoteOff delivery latency.",
             )), file=sys.stderr)
         s680_adapter=None
-        if args.s672_hazard_model is not None:
+        if hazard_path is not None:
             from causal_note.s672_live_offset import S672TrialNoteOff
-            s680_adapter=S672TrialNoteOff.load(args.s672_hazard_model,heads)
+            s680_adapter=S672TrialNoteOff.load(hazard_path,heads)
             print(json.dumps(dict(
                 s680_noteoff="EXPERIMENTAL_S672_HAZARD_NATIVE_NOTEON_PRESERVED",
-                checkpoint=str(args.s672_hazard_model),
+                checkpoint=str(hazard_path),
                 gate=s680_adapter.gate,
                 persistence=s680_adapter.persistence,
-                accuracy_caveat="Offline 77.78 pct S672 does NOT validate this microphone LIVE adapter",
+                accuracy_caveat="Offline S675 78.08 pct/S672 77.78 pct are NOT measurements of this live microphone adapter",
                 unchanged_original_Exact_K=True)),file=sys.stderr)
         warm = StrictLiveStream(heads)
         for j in range(8):
