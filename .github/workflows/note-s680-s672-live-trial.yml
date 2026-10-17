@@ -1,0 +1,72 @@
+name: S680 export S672 trained NoteOff and test live S630
+on:
+  push:
+    branches: [codex/note-s680-s672-live-trial]
+    paths:
+      - 'scripts/s680_export_s672_live_checkpoint.py'
+      - 'scripts/live_strict_notes.py'
+      - 'src/causal_note/batched_live.py'
+      - 'src/causal_note/s672_live_offset.py'
+      - 'test/test_s680_s672_live_trial.py'
+      - '.github/workflows/note-s680-s672-live-trial.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: note-s680-trained-checkpoint
+  cancel-in-progress: true
+jobs:
+  release_model_and_live_smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install original S630 causal native and ONNX runtime
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Compile and test S630 native + S680 live opt-in
+        run: |
+          python -m compileall -q scripts/live_strict_notes.py scripts/s680_export_s672_live_checkpoint.py src/causal_note/s672_live_offset.py src/causal_note/batched_live.py
+          python -m unittest -v test.test_s630_batched_live test.test_s630_live_cli_integration test.test_s680_s672_live_trial
+      - name: Export exact frozen S672 trained-noteoff checkpoint
+        run: python -m scripts.s680_export_s672_live_checkpoint --out /tmp/s680_s672_model
+      - name: Test Windows-compatible real WAV CLI against trained joblib model
+        run: |
+          python - <<'PY'
+          import wave, numpy as np
+          t=np.arange(44100,dtype=np.float64)/44100
+          pcm=np.asarray(0.2*np.sin(2*np.pi*110*t)*32767,np.int16)
+          with wave.open('/tmp/s680_wave.wav','wb') as w:
+              w.setnchannels(1);w.setsampwidth(2);w.setframerate(44100)
+              w.writeframes(pcm.tobytes())
+          PY
+          python -m scripts.live_strict_notes --wav /tmp/s680_wave.wav --hop-size 256 --block-size 256 --inference-batch-hops 4 --out /tmp/s680_original.jsonl
+          python -m scripts.live_strict_notes --wav /tmp/s680_wave.wav --hop-size 256 --block-size 256 --inference-batch-hops 4 --s672-hazard-model /tmp/s680_s672_model/s672_hazard.joblib --out /tmp/s680_specialist.jsonl
+          python - <<'PY'
+          import json
+          one=[json.loads(x) for x in open('/tmp/s680_original.jsonl')]
+          two=[json.loads(x) for x in open('/tmp/s680_specialist.jsonl')]
+          notes=lambda events:[(e['pitch'],e['decision_sample']) for e in events if e['type']=='note_on']
+          assert notes(one)==notes(two),'Specialist changed native frozen NOTE onsets'
+          assert all(e['available_sample']>=e['decision_sample'] for e in two)
+          print('S680 REAL-WAV TRAINED MODEL LIVE-CLI PASS; NOTE ON PARITY',len(notes(two)))
+          PY
+      - name: Upload reproducible trained S672 NoteOff checkpoint + metadata
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S680_S672_REAL_TRAINED_NOTEOFF_TRIAL
+          path: |
+            /tmp/s680_s672_model/report.json
+            /tmp/s680_s672_model/s672_hazard.joblib
+            /tmp/s680_s672_model/s672_checkpoint.json
+          if-no-files-found: warn
+          retention-days: 60
