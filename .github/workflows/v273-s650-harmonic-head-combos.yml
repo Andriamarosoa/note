@@ -1,0 +1,41 @@
+name: S650 NOTE harmonic heads and selection combinations GuitarSet
+on:
+  push:
+    branches: [codex/s650-harmonic-head-selection-combinations]
+    paths:
+      - scripts/s650_harmonic_head_selection_combos.py
+      - test/test_s650_harmonic_head_selection_combos.py
+      - .github/workflows/v273-s650-harmonic-head-combos.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s650-heads-and-selections-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  validate_real_NOTE_harmonic_head_combinations:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install frozen NOTE native live CPU dependencies
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Assert head-selection interaction rules and composition CV
+        run: |
+          python -m compileall -q scripts/s650_harmonic_head_selection_combos.py test/test_s650_harmonic_head_selection_combos.py
+          python -m unittest -v test.test_s650_harmonic_head_selection_combos
+      - name: Fit independent harmonic heads on 36 GuitarSet TRAIN, select rules via OOF and evaluate GuitarSet 12 DEV
+        run: python -m scripts.s650_harmonic_head_selection_combos --out /tmp/s650_harmonic_heads
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S650_GUITARSET_HARMONIC_HEAD_SELECTION_COMBOS
+          path: /tmp/s650_harmonic_heads/report.json
+          if-no-files-found: warn
+          retention-days: 60
