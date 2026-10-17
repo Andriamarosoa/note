@@ -6,6 +6,7 @@ notes instead of silently processing a delayed or discontinuous queue.
 """
 from __future__ import annotations
 import argparse
+from dataclasses import replace
 from contextlib import ExitStack
 import json
 from pathlib import Path
@@ -17,7 +18,7 @@ import wave
 
 import numpy as np
 from threadpoolctl import threadpool_limits
-from causal_note.strict_live import HOP, SR, load_heads, StrictLiveStream
+from causal_note.strict_live import HOP, SR, load_heads, StrictLiveStream, Selection
 from scripts.live_audio_io import audio_devices, managed_input_stream, open_output_stream, parse_device
 from scripts.live_input_level import NoteAutoLevel
 from scripts.live_hop_tuning import parse_hop_size, resolve_hop
@@ -103,6 +104,32 @@ def apply_model_input(leveler, audio):
     ])
 
 
+def stream_received_samples(stream):
+    """Read the actual PCM sample counter from every supported LIVE engine.
+
+    StrictLiveStream only stores it in `frontend.received`, whereas
+    batched, lookahead and dual-hop streams expose `received` directly.
+    Called ONLY for shutdown diagnostics, never in the capture callback.
+    """
+    count = getattr(stream, "received", None)
+    if count is None:
+        frontend = getattr(stream, "frontend", None)
+        if frontend is None:
+            raise AttributeError("Live stream has no received-sample counter")
+        count = frontend.received
+    return int(count)
+
+
+def s667_live_selection(metadata, release_frames=None, active_off=None):
+    """Opt-in release calibration shared by normal and S630 batch engines."""
+    if release_frames is None and active_off is None:
+        return None
+    native = Selection(**metadata["selection"])
+    return replace(native,
+                   release_frames=native.release_frames if release_frames is None else release_frames,
+                   active_off=native.active_off if active_off is None else active_off)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
     parser.add_argument("--model", type=Path, default=DEFAULT_MODEL)
@@ -137,6 +164,10 @@ def main(argv=None):
                         help="Separately trained harmonic genuine-onset checkpoint; no checkpoint is bundled")
     parser.add_argument("--harmonic-threshold", type=float, default=0.10,
                         help="Experimental independent-onset gating threshold, dev-calibration required")
+    parser.add_argument("--s667-release-frames", type=int,
+                        help="EXPERIMENTAL S667 NoteOff: consecutive release frames (original 5)")
+    parser.add_argument("--s667-active-off", type=float,
+                        help="EXPERIMENTAL S667 NoteOff: sustain-off threshold (original 0.25; try 0.15)")
     parser.add_argument("--auto-level", action="store_true", help="Enable bounded causal input gain (+18dB max), adapted from midi; experimental, default OFF")
     parser.add_argument("--auto-level-max-db", type=float, default=18.0, help="Maximum automatic amplification, 0..24 dB (default: 18)")
     parser.add_argument("--auto-level-peak-gate-dbfs", type=float, default=-55.0, help="Raw peak activity gate in dBFS (default -55)")
@@ -153,6 +184,8 @@ def main(argv=None):
                         help="Neural decision hop 128/256/512 or auto (experimental CPU preflight). Default 256 preserves validated S613.")
     parser.add_argument("--block-size", type=parse_block_size, default=HOP,
                         help="PortAudio callback samples: any positive integer; 0 = driver auto. Large blocks add output latency.")
+    parser.add_argument("--inference-batch-hops", type=int, default=1,
+                        help="S630 EXPERIMENT: native 256-hop frozen head frames per vectorized ONNX call (1=original; try 4); batches add up to (N-1)*5.805ms decision wait.")
     parser.add_argument("--capture-deadline-blocks", type=int, default=0,
                         help="0 = no artificial microphone worker deadline (default)")
     parser.add_argument("--queue-blocks", type=parse_queue_blocks, default="auto",
@@ -190,11 +223,27 @@ def main(argv=None):
         parser.error("--lookahead-ms must be finite and within 0..50")
     if args.capture_deadline_blocks < 0:
         parser.error("--capture-deadline-blocks must be >= 0")
+    if not 1 <= args.inference_batch_hops <= 32:
+        parser.error("--inference-batch-hops must be from 1..32")
     try:
         hop_request = parse_hop_size(args.hop_size if args.hop_size is not None
                                      else 256)
     except ValueError as exc:
         parser.error(str(exc))
+    s667_enabled = args.s667_release_frames is not None or args.s667_active_off is not None
+    if s667_enabled:
+        if args.s667_release_frames is not None and not 1 <= args.s667_release_frames <= 12:
+            parser.error("--s667-release-frames must be 1..12")
+        if args.s667_active_off is not None and not 0 < args.s667_active_off < 1:
+            parser.error("--s667-active-off must be between 0 and 1")
+        if (hop_request != 256 or args.lookahead_ms > 0 or
+                args.dual_hop_mode != "off" or args.harmonic_mode != "off"):
+            parser.error("S667 release options require native hop256 without other fusion/lookahead; batch ONNX is supported")
+    if args.inference_batch_hops > 1 and hop_request != 256:
+        parser.error("--inference-batch-hops >1 requires --hop-size 256")
+    if args.inference_batch_hops > 1 and (args.dual_hop_mode!="off" or args.harmonic_mode!="off"
+                                          or (args.lookahead_ms>0 and args.lookahead_engine=="phase")):
+        parser.error("S630 batched inference currently requires normal S613 or shared lookahead with no dual-hop/harmonic sidecars")
     if args.dual_hop_fast_model is not None:
         if args.dual_hop_mode == "off":
             parser.error("--dual-hop-fast-model requires --dual-hop-mode shadow or guard")
@@ -257,6 +306,18 @@ def main(argv=None):
         if args.model.resolve() == DEFAULT_MODEL.resolve():
             expected_sha = json.loads(DEFAULT_MODEL.with_name("provenance.json").read_text())["model_sha256"]
         heads = load_heads(args.model, expected_sha256=expected_sha)
+        s667_selection = s667_live_selection(
+            heads.metadata, args.s667_release_frames, args.s667_active_off)
+        if s667_selection is not None:
+            print(json.dumps(dict(
+                s667_noteoff="EXPERIMENTAL_UNPROMOTED",
+                release_frames=s667_selection.release_frames,
+                active_off=s667_selection.active_off,
+                batch_hops=args.inference_batch_hops,
+                original_model_and_K_frozen=True,
+                zero_future_audio=True,
+                warning="The S667 release variant is not independently promoted; longer batching adds audible NoteOff delivery latency.",
+            )), file=sys.stderr)
         warm = StrictLiveStream(heads)
         for j in range(8):
             warm.push(np.zeros(HOP, np.float32), start_sample=j * HOP)
@@ -266,7 +327,28 @@ def main(argv=None):
             harmonic_threshold=args.harmonic_threshold,
         )
         print(json.dumps(dict(hop_selection=hop_audit)), file=sys.stderr)
-        if args.lookahead_ms > 0:
+        if args.inference_batch_hops > 1:
+            from causal_note.batched_live import BatchedLiveStream
+            from causal_note.lookahead import LookaheadConfig
+            config=(LookaheadConfig(milliseconds=args.lookahead_ms,
+                                    mode=args.lookahead_mode)
+                    if args.lookahead_ms>0 else None)
+            stream=BatchedLiveStream(
+                heads,batch_hops=args.inference_batch_hops,lookahead=config,
+                selection=s667_selection)
+            print(json.dumps(dict(
+                s630_batched_inference="EXPERIMENTAL",
+                batch_hops=args.inference_batch_hops,
+                native_hop_samples=HOP,
+                requested_lookahead_ms=args.lookahead_ms,
+                effective_lookahead_ms=stream.actual_lookahead_samples*1000/SR,
+                max_batch_wait_ms=(args.inference_batch_hops-1)*HOP*1000/SR,
+                original_model_and_K_frozen=True,
+                warning=("Batch several REAL 256-hop feature frames through one "
+                         "ONNX/MLP call; no data or notes are dropped, "
+                         "but MIDI output latency increases."),
+            )),file=sys.stderr)
+        elif args.lookahead_ms > 0:
             from causal_note.lookahead import (
                 LookaheadConfig,LookaheadLiveStream,SharedHopLookaheadLiveStream,
             )
@@ -317,7 +399,8 @@ def main(argv=None):
             )), file=sys.stderr)
         else:
             stream = StrictLiveStream(
-                heads, hop=selected_hop, harmonic_mode=args.harmonic_mode,
+                heads, selection=s667_selection,
+                hop=selected_hop, harmonic_mode=args.harmonic_mode,
                 harmonic_checkpoint=args.harmonic_checkpoint,
                 harmonic_threshold=args.harmonic_threshold,
             )
@@ -364,6 +447,10 @@ def main(argv=None):
             if events:
                 output.flush()
         failure = "stream_end"
+        # This must exist BEFORE entering the microphone try block: importing
+        # PortAudio or opening a device may itself fail. The finally cleanup
+        # must never mask that original exception with UnboundLocalError.
+        capture_stats = None
         try:
             if args.mic:
                 import sounddevice as sd
@@ -371,6 +458,8 @@ def main(argv=None):
                 overrun = threading.Event()
                 overrun_reason = [None]
                 capture_start = [0]
+                capture_stats = dict(received=0,processed=0,queue_peak=0,
+                                     total_worker_ms=0.,max_worker_ms=0.)
                 # A separate bounded monitor queue cannot delay the recognition path.
                 monitor_queue = queue.Queue(maxsize=4) if args.monitor_input else None
                 monitor_underruns = [0]
@@ -397,6 +486,8 @@ def main(argv=None):
                     try:
                         chunk = indata[:, 0].copy()
                         inbox.put_nowait((capture_start[0], chunk, time.monotonic()))
+                        capture_stats["received"] += 1
+                        capture_stats["queue_peak"] = max(capture_stats["queue_peak"],inbox.qsize())
                         capture_start[0] += frames
                         if monitor_queue is not None:
                             try:
@@ -474,8 +565,13 @@ def main(argv=None):
                     if capture_deadline_exceeded(captured, time.monotonic(), len(audio),
                                                  args.capture_deadline_blocks):
                         raise BufferError("Optional capture deadline exceeded before inference")
+                    begin_worker=time.perf_counter()
                     model_audio = apply_model_input(leveler, audio)
                     events = stream.push(model_audio, start_sample=start)
+                    worker_ms=(time.perf_counter()-begin_worker)*1000
+                    capture_stats["processed"] += 1
+                    capture_stats["total_worker_ms"] += worker_ms
+                    capture_stats["max_worker_ms"] = max(capture_stats["max_worker_ms"],worker_ms)
                     if overrun.is_set():
                         raise BufferError(f"Microphone input overflow: {overrun_reason[0]}; notes released")
                     if capture_deadline_exceeded(captured, time.monotonic(), len(audio),
@@ -499,17 +595,33 @@ def main(argv=None):
             try:
                 emit(stream.finish(failure))
             finally:
+                if args.mic and capture_stats is not None:
+                    processed_ms=stream_received_samples(stream)*1000/SR
+                    print(json.dumps(dict(s630_input_queue_diagnostics=dict(
+                        callbacks_received=capture_stats["received"],
+                        callbacks_processed=capture_stats["processed"],
+                        peak_queue_blocks=capture_stats["queue_peak"],
+                        remaining_queue_blocks=inbox.qsize(),
+                        queue_capacity_blocks=queue_capacity,
+                        worker_total_ms=round(capture_stats["total_worker_ms"],3),
+                        worker_max_ms=round(capture_stats["max_worker_ms"],3),
+                        model_processed_audio_ms=round(processed_ms,3),
+                        worker_over_audio_ratio=round(
+                            capture_stats["total_worker_ms"]/max(1.,processed_ms),4),
+                        last_capture_status=overrun_reason[0],
+                    ))),file=sys.stderr)
                 if leveler is not None:
                     print(json.dumps(dict(auto_level_diagnostics=leveler.diagnostics())),
                           file=sys.stderr)
                 if hasattr(stream, "diagnostics"):
-                    field=("s629_lookahead_diagnostics" if args.lookahead_ms>0
+                    field=("s630_batched_diagnostics" if args.inference_batch_hops>1
+                           else "s629_lookahead_diagnostics" if args.lookahead_ms>0
                            else "dual_hop_diagnostics")
                     print(json.dumps({field:stream.diagnostics()}),
                           file=sys.stderr)
                 if args.lookahead_ms == 0 and hasattr(stream,"timings_ms") and stream.timings_ms:
                     elapsed=np.asarray(stream.timings_ms,np.float64)
-                    total_samples=stream.frontend.received
+                    total_samples=stream_received_samples(stream)
                     print(json.dumps(dict(
                         s629_original_worker_diagnostics=dict(
                             callback_count=int(len(elapsed)),

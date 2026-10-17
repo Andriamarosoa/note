@@ -1,0 +1,236 @@
+# S630 — diagnose/fix Realtek iRig input_queue_full with batched frozen native ONNX
+
+## User's exact failure
+
+```text
+BufferError: Microphone input overflow:
+input_queue_full(maxsize=13, block_size=256, queue_nominal_audio_ms=75.5)
+```
+
+This error comes from `scripts/live_strict_notes.py` producer callback
+`inbox.put_nowait`, not from a corrupted audio file or a piano
+SoundFont. One 256-sample callback is **5.805ms** at 44,100Hz. The input
+thread receives microphone PCM while the inference worker consumes
+queue blocks; 13 blocks = 75.46ms of buffering. When all 13 are
+occupied, NOTE safely stops and releases active notes rather than
+playing stale/late notes. It is not fixed by increasing the queue size;
+that merely adds backpressure delay before failure.
+
+Earlier S628 user log had **p95 19.44ms per 5.805ms incoming callback**
+while exact-phase future lookahead performed 2x FFT/neural/ONNX. S629
+removed the duplicate second pass, but user still reports this
+input_queue_full exception. We **cannot** conclude the remaining
+cause without user-specific S629 worker statistics and input-side
+producer metrics: original frozen S613 might be too slow on Windows
+or PortAudio callback/output-thread contention may consume CPU.
+The CPU microbenchmark on Linux is only a component test.
+
+## S630 new independent optimization
+
+Frozen S613 has already **batched** `heads.predict(features)` support:
+the same three ONNX tree sessions can run across (N,49,126) instead of
+being invoked **three times per individual 256-hop**.
+
+S630 `src/causal_note/batched_live.py` collects N consecutive
+ORIGINAL NOTE causal acoustic hop256 feature rows and runs a SINGLE
+original hybrid MLP+tree-predict call per group. The original
+`CausalSelection` independently consumes each original 49-note
+onset/sustain/release and K0..6 in original time order. There is
+exactly one MIDI note owner; no feature, attack, model checkpoint,
+selector threshold or Exact-K interpretation is replaced.
+
+`--inference-batch-hops` default **1**, so unchanged official
+S613/N629 output; experimental 2,4,8,16,32 possible only with
+`--hop-size 256` and original/no-sidecars or shared lookahead.
+No artificial model audio gaps or enlarged queue.
+
+**Unavoidable cost:** waiting until N future native hop frames have
+arrived to process the previous ones; for N=4 the first frame waits
+**17.415ms** extra before batch inference, plus capture callback
+delivery and computing. This is for throughput, not for any unproven
+5ms lookahead accuracy gain.
+
+## Measured verified Linux CPU results
+
+[GitHub Actions successful 38895654147](https://github.com/Andriamarosoa/note/actions/runs/38895654147).
+[Repeat with actual input-queue diagnostic code 38895991687 SUCCESS](https://github.com/Andriamarosoa/note/actions/runs/38895991687).
+
+11? test suite **10 tests PASSED**; original frozen hybrid sample
+nominal notes invariant under batching, future/callback manipulation
+does not access uncaptured samples. 2s identical synthetic E2, single
+thread CPU, 256-sample PortAudio-like callback:
+
+| Batch hops | Frozen ONNX calls for 344 frames | CPU/audio time | Worker p95 callback | Added intentional max wait |
+|---|---:|---:|---:|---:|
+| 1: original S613 | 344 | 18.45% | 1.151ms | 0ms |
+| 2 | 172 | 15.71% | 1.470ms | 5.805ms |
+| 4 | **86** | **14.04%** | **2.139ms** | **17.415ms** |
+| 8 | 43 | 12.87% | 3.518ms | 40.635ms |
+| 16 | 22 | 12.20% | 6.224ms | 87.075ms |
+
+Batch4 reduces CPU work to about 76% of single-hop baseline in
+this environment. Still **NO WINDOWS/iRig/FluidSynth latency or queue
+stability measured**, and output will be audibly later.
+
+`--block-size 1024` (23.22ms microphone callback) with
+`--inference-batch-hops 4` uses 13.72% audio duration,
+worker callback p95 3.333ms on Linux. This increases input callback
+delivery latency further. The larger callback on its own is a
+transport change; it does NOT retrain or change original model hop256.
+
+## Windows user's CLI test matrix
+
+First update to experimental branch and run unit tests:
+
+```powershell
+git fetch origin
+git switch codex/note-s630-batched-onnx-live-audit
+git pull --ff-only
+python -m unittest -v test.test_s630_batched_live
+```
+
+**A. Frozen reference, same iRig and piano, no lookahead:**
+```powershell
+python -m scripts.live_strict_notes --mic --device "MME:External Microphone" --soundfont ".\SalamanderGrandPiano-V3+20200602.sf2" --hop-size 256 --block-size 256 --lookahead-ms 0 --inference-batch-hops 1
+```
+
+**B. Same original NOTE decision 256 with vectorized batch4:**
+```powershell
+python -m scripts.live_strict_notes --mic --device "MME:External Microphone" --soundfont ".\SalamanderGrandPiano-V3+20200602.sf2" --hop-size 256 --block-size 256 --lookahead-ms 0 --inference-batch-hops 4
+```
+
+**C. If input queue still overflows: reduce callback overhead (higher output latency):**
+```powershell
+python -m scripts.live_strict_notes --mic --device "MME:External Microphone" --soundfont ".\SalamanderGrandPiano-V3+20200602.sf2" --hop-size 256 --block-size 1024 --lookahead-ms 0 --inference-batch-hops 4
+```
+
+Keep same `--device`, piano SF2 and speaker across all tests to avoid
+confounding MME vs WASAPI vs FluidSynth. User's last iRig had selected
+MME automatically; explicitly selecting "WASAPI:External Microphone"
+is separately useful for input quality but changes the capture
+host API/negotiated 22ms latency. Do NOT inadvertently mix up changes.
+
+**D. Optional later, ONLY if batch4 stable: shared-hop future test:**
+```powershell
+python -m scripts.live_strict_notes --mic --device "MME:External Microphone" --soundfont ".\SalamanderGrandPiano-V3+20200602.sf2" --hop-size 256 --block-size 256 --inference-batch-hops 4 --lookahead-ms 5 --lookahead-engine shared --lookahead-mode average
+```
+This adds 5.805ms actual acoustic future *in addition* to the up-to
+17.415ms batch completion delay. It has NOT shown a convincing F1
+benefit; do not recommend it for performance.
+
+## What to send back for machine-specific proof
+
+Compare the JSON emitted **on shutdown or overflow**:
+- `s630_input_queue_diagnostics`:
+  `callbacks_received`, `callbacks_processed`,
+  `peak_queue_blocks`, `remaining_queue_blocks`, 
+  `worker_total_ms`, `model_processed_audio_ms`,
+  `worker_over_audio_ratio`.
+- `s630_batched_diagnostics`: batch inference count,
+  `worker_p95_ms`, `worker_over_audio_ratio`,
+  effective future, batching wait.
+- Original `s629_original_worker_diagnostics` and piano diagnostics.
+
+If `worker_over_audio_ratio>1` across steady recording,
+no finite queue will sustain realtime. If ratio <1 but brief
+producer bursts cause overrun, inspect MME/WASAPI PortAudio callback
+timing, Windows power states, CPU contention and warm-up behavior.
+Never discard frames silently or rewrite event `time` to nominal
+decision time. Test Windows end-to-end latency separately before
+any claimed LIVE promotion.
+
+## Accuracy safety
+
+Batch4 nominal event identity was checked on synthetic frozen test
+PCM with causal invariants. [Real 17 GuitarSet+URMP DEV grouped-K
+validation](https://github.com/Andriamarosoa/note/actions/workflows/note-s630-real-dev-nominal-parity.yml)
+runs frozen original S613 against batch4 `heads.predict` on ALL 17
+original composition-separated clips to detect numeric ONNX batch
+discrepancies and confirm actual NOTEon/F1 and Exact-K.
+The results must not be reported before successful completion.
+Actual MIDI delivery timestamps will necessarily differ: batch
+waiting intentionally adds physical latency. This is not new
+independent held-out testing.
+
+**Status: experimental research branch, not promoted or merged.**
+
+
+## Verified real-data batch4 semantic parity: 17 original DEV compositions
+
+[GitHub Actions complete run 38896212903 — SUCCESS](https://github.com/Andriamarosoa/note/actions/runs/38896212903).
+
+This is an IMPORTANT second validation separate from synthetic CPU.
+Original frozen S613 hybrid used on each of the 17 original
+composition-disjoint DEV GuitarSet+URMP recordings with its original
+126-dimensional 256-hop frontend and annotations, comparing whole
+track native hybrid predictions to groups of four frames run through
+the SAME frozen ONNX+MLP hybrid.
+
+- **All 17 sources have IDENTICAL nominal NOTE ON and OFF events**,
+  same correct MIDI pitch, same original decision sample and order.
+- **Original vs batch4:** TP=**1241**, FP=**734**, FN=**838**,
+  F1=**61.2235%**, unchanged.
+- **Exact grouped onset K3:** 42/183 in both; K4: 3/44 in both.
+  Exact pitch-set K3=20, K4=0, unchanged. This is the *original
+  source-defined 30ms grouped onset K*, not the historical S80 Exact-K.
+- Maximum difference in raw per-note probability across all dev
+  frames was **0.00344**, in K head **0.00000608**. Therefore the
+  tensor predictions are NOT mathematically bit-for-bit identical,
+  but no selector decisions changed on this DEV corpus.
+- These score fields are computed at NOMINAL decision timestamps,
+  just as S613 DEV baseline. They do not measure the true physical
+  +17.415ms batching wait and its potential effect on evaluation
+  against strict emitted-time tolerance. Hardware latency validation
+  remains mandatory.
+
+No promotion to official NOTE, no guarantee Windows worker can meet
+the deadline. This is only a verified compute-throughput optimization.
+
+
+## S630 critical executable-CLI regression fix and cross-platform verification (October 16)
+
+The first S630 draft accidentally checked `hop_request != 256`
+BEFORE the `parse_hop_size()` assignment, so EVERY batch4
+`python -m scripts.live_strict_notes` process failed immediately
+with `UnboundLocalError` before touching the microphone. This
+bug was missed by older feature/ONNX unit tests and should have
+prevented the branch being offered as a local executable command.
+A second actual microphone-startup test caught an error in the
+new diagnostic `finally`: if importing PortAudio or opening a
+mic fails, `capture_stats` was referenced before initialization,
+masking the genuine input failure.
+
+**Both problems are corrected on this same branch**:
+- Parse `hop_request` BEFORE all experimental batch-size checks.
+- Initialize/guard the input-only telemetry before opening the mic,
+  so the ORIGINAL PortAudio/device error is reported accurately.
+- Add `test/test_s630_live_cli_integration.py` to exercise REAL
+  `python -m scripts.live_strict_notes` command-line subprocesses
+  with `--status`, synthetic PCM16 `--wav`, frozen ONNX batch4,
+  expected argparse failures and invalid-device `--mic` start.
+- A separate test invokes `main()` with the exact `--mic
+  --soundfont --hop-size 256 --block-size 256 --lookahead-ms 0
+  --inference-batch-hops 4` option combination and simulated
+  PortAudio callback/piano to verify full queue processing and
+  graceful notes/piano cleanup, with 6 continuous PCM blocks.
+  This is a SOFTWARE SIMULATION, not a real iRig or SF2 render.
+
+[**GitHub run 38897794841 — Windows-latest PASS AND Ubuntu 24.04 PASS**](https://github.com/Andriamarosoa/note/actions/runs/38897794841).
+Each OS passed all five true CLI integration tests and all five
+frozen Native NOTE predictor tests. The Windows runner required
+a separate environment correction: `PYTHONPATH=src` cross-platform
+instead of Linux's `.:src`.
+
+**What this proves:** these executable entrypoints and frozen
+synthetic WAV/model paths can now start/exit on actual Windows and
+Ubuntu Python runtimes without the earlier `hop_request` or
+`capture_stats` exceptions.
+
+**What it does NOT prove:** opening the user's actual Realtek iRig
+device, rendering Salamander with FluidSynth, sustained Windows
+capture/piano CPU utilization, queue stability and acoustic
+accuracy end-to-end. Capture queue overflow remains unverified
+on user's actual equipment; if it recurs after updating, inspect
+`s630_input_queue_diagnostics` before any further changes.
+
+The branch is not the official NOTE reference.
