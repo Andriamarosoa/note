@@ -1,0 +1,41 @@
+name: S643 Genuine GuitarSet single-vs-octave controlled learning
+on:
+  push:
+    branches: [codex/s643-octave-duo-learned-comparison]
+    paths:
+      - scripts/s643_octave_duet_head.py
+      - test/test_s643_octave_duet_head.py
+      - .github/workflows/v273-s643-octave-duet-head.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s643-octave-pair-head-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  validate_octave_head_without_composition_leakage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install frozen NOTE dependencies
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Check train-test recording disjointness and octave evidence math
+        run: |
+          python -m compileall -q scripts/s643_octave_duet_head.py test/test_s643_octave_duet_head.py
+          python -m unittest -v test.test_s643_octave_duet_head
+      - name: Compare single notes and genuine independent guitar octave sources
+        run: python -m scripts.s643_octave_duet_head --out /tmp/s643_guitar_octave
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S643_REAL_GUITARSET_OCTAVE_DUO_GROUP_HOLDOUT
+          path: /tmp/s643_guitar_octave/report.json
+          if-no-files-found: warn
+          retention-days: 60
