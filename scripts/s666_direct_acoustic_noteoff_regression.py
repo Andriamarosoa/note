@@ -45,7 +45,7 @@ def features(p,on,old,surv,base,acoustic,known):
     need(np.isfinite(f).all(),"S666 nonfinite input")
     return f
 
-def train(X,true_duration_ms,base_duration_ms,mask,fold):
+def fit_models(X,true_duration_ms,base_duration_ms,mask,fold):
     data=X[mask]
     ytrue=true_duration_ms[mask]
     baseline=base_duration_ms[mask]
@@ -113,7 +113,7 @@ def run(frozen,s411,annotations,out):
         held=folds==fold
         need(not(set(compositions[train])&set(compositions[held])),
              "S666 train/test composition overlap")
-        models=train_models=train(X,dtrue,dbase,train,fold)
+        models=fit_models(X,dtrue,dbase,train,fold)
         estimates=decode_predictions(models,X[held],on[held],base[held])
         for name,est in estimates.items():
             for alpha in BLENDS:
