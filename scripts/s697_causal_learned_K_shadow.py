@@ -47,7 +47,7 @@ def shadow_features(feat,p,k,events_count):
     if (k.shape!=(n,7) or p.shape!=(n,49,3) or
         feat.shape!=(n,49,126) or len(events_count)!=n):
         raise ValueError("S697 original NOTE ABI mismatch")
-    if n==0:return np.empty((0,87),np.float32)
+    if n==0:return np.empty((0,63),np.float32)
     ks=posterior_ema(k,.25)
     lag8=k[np.maximum(np.arange(n)-8,0)]
     lag32=k[np.maximum(np.arange(n)-32,0)]
