@@ -66,6 +66,34 @@ def onset_feature_rows(features,post,k,frame,pitch):
 
 
 
+def expanded_train_specs(original, archive, annotation_zip):
+    """Use additional authentic players 00..03 ONLY on preexisting TRAIN
+    composition groups. Never use player 04 DEV or player 05 TEST.
+    Reject accidental cross-composition exposure.
+    """
+    wav_names=set(archive.namelist())
+    ann_names=set(annotation_zip.namelist())
+    candidates={}
+    for spec in original:
+        stem=spec["name"][3:]
+        for player in range(4):
+            name=f"{player:02d}_"+stem
+            audio=name+"_mic.wav"
+            annotation=name+".jams"
+            if audio not in wav_names or annotation not in ann_names:
+                continue
+            row=dict(spec,name=name,audio=audio,annotation=annotation)
+            candidates[name]=row
+    actual=list(candidates.values())
+    if len(actual)<len(original) or len(actual)>len(original)*4:
+        raise AssertionError("Player augmentation contract or archive paths failed")
+    if {x["composition"] for x in actual}!={x["composition"] for x in original}:
+        raise AssertionError("Player augmentation changed composition split")
+    if any(x["name"].startswith(("04_","05_")) for x in actual):
+        raise AssertionError("Unseen DEV/TEST player contaminated training")
+    return sorted(actual,key=lambda x:(x["composition"],x["name"]))
+
+
 S686_BASE="rescue_0.30_rise_0.12"
 THRESHOLDS=(0.10,0.20,0.35,0.50,0.65,0.80)
 MATCH_NATIVE_MS=120
@@ -265,11 +293,17 @@ def run(out,checkpoint):
                          ("GuitarSet_annotations","GuitarSet_annotations.zip")):
             source=proto["guitar_archives"][key]
             download(source["url"],root/"data"/name,source["size"],source["sha256"])
-        with zipfile.ZipFile(root/"data/GuitarSet_audio.zip") as archive:
+        with zipfile.ZipFile(root/"data/GuitarSet_audio.zip") as archive, zipfile.ZipFile(
+                 root/"data/GuitarSet_annotations.zip") as annotations:
+            train_original=[s for s in train_specs if s["composition"] in train_comps]
+            train_expanded=expanded_train_specs(train_original,archive,annotations)
+            report["expanded_authentic_TRAIN_sources"]=len(train_expanded)
+            report["extra_TRAIN_players"]=list(range(4))
+            print("S690 REAL TRAIN SOURCES",len(train_expanded),flush=True)
             trainrows=[]
-            for i,s in enumerate([s for s in train_specs if s["composition"] in train_comps],1):
+            for i,s in enumerate(train_expanded,1):
                 trainrows.append(prepare(s,root,archive,heads,selection))
-                print("S690 TRAIN",i,"/20",s["name"],len(trainrows[-1]["proposals"]),flush=True)
+                print("S690 TRAIN",i,"/",len(train_expanded),s["name"],len(trainrows[-1]["proposals"]),flush=True)
             model,trained=train(trainrows)
             report["TRAIN_head"]=trained
             del trainrows
