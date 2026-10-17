@@ -1,0 +1,41 @@
+name: S667 strict causal NoteOff release ablation real GuitarSet
+on:
+  push:
+    branches: [codex/s667-causal-noteoff-release-audit]
+    paths:
+      - scripts/s667_strict_causal_noteoff_release_sweep.py
+      - scripts/s667_strict_causal_noteoff_release_sweep.py
+      - .github/workflows/v273-s667-causal-noteoff-sweep.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s667-causal-offset-sweep
+  cancel-in-progress: true
+jobs:
+  measure_realtime_causal_octaves:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install exact NOTE native runtime
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Compile and unit-test S667
+        run: |
+          python -m compileall -q scripts/s667_strict_causal_noteoff_release_sweep.py scripts/s667_strict_causal_noteoff_release_sweep.py
+          python -m scripts.s667_strict_causal_noteoff_release_sweep --self-test
+      - name: Validate on 36 TRAIN recordings and 12 DEV real GuitarSet
+        run: python -m scripts.s667_strict_causal_noteoff_release_sweep --out /tmp/s667_offsets
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S667_GUITARSET_CAUSAL_FUNDAMENTAL_GUARD
+          path: /tmp/s667_offsets/report.json
+          if-no-files-found: warn
+          retention-days: 60
