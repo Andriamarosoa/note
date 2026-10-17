@@ -1,0 +1,41 @@
+name: S644 Natural GuitarSet octave-onset transfer after S643 constructed duet learning
+on:
+  push:
+    branches: [codex/s644-natural-octave-duo-transfer-audit]
+    paths:
+      - scripts/s644_natural_octave_transfer.py
+      - test/test_s644_natural_octave_transfer.py
+      - .github/workflows/v273-s644-natural-octave.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s644-natural-octave-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify_GuitarSet_natural_octave_discrimination:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original NOTE frozen inference dependencies
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Check annotation-only truth conditions and no instrumental leakage
+        run: |
+          python -m compileall -q scripts/s644_natural_octave_transfer.py test/test_s644_natural_octave_transfer.py
+          python -m unittest -v test.test_s644_natural_octave_transfer
+      - name: Evaluate frozen S643 head on NATURAL unseen GuitarSet DEV tracks
+        run: python -m scripts.s644_natural_octave_transfer --out /tmp/s644_real_natural_guitar
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S644_GUITARSET_NATURAL_OCTAVE_DUO_TRANSFER
+          path: /tmp/s644_real_natural_guitar/report.json
+          if-no-files-found: warn
+          retention-days: 60
