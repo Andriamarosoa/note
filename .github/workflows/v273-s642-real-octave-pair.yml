@@ -1,0 +1,41 @@
+name: S642 Compare real guitar E3 alone versus true E3 E4 octave overlay
+on:
+  push:
+    branches: [codex/s642-e2-e3-true-octave-vs-harmonic]
+    paths:
+      - scripts/s642_real_octave_pair_comparison.py
+      - test/test_s642_real_octave_pair_comparison.py
+      - .github/workflows/v273-s642-real-octave-pair.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s642-real-pair-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  real_annotated_E3_vs_E3_E4:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install frozen NOTE runtime
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Test paired note extraction, mixing and label assertions
+        run: |
+          python -m compileall -q scripts/s642_real_octave_pair_comparison.py test/test_s642_real_octave_pair_comparison.py
+          python -m unittest -v test.test_s642_real_octave_pair_comparison
+      - name: Run controlled real guitar E3 single versus octave duet
+        run: python -m scripts.s642_real_octave_pair_comparison --out /tmp/s642_real_octave
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S642_REAL_GUITAR_NOTE_VS_OCTAVE_COMPARISON
+          path: /tmp/s642_real_octave/report.json
+          if-no-files-found: warn
+          retention-days: 60
