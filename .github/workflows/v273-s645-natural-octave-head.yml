@@ -1,0 +1,41 @@
+name: S645 Natural GuitarSet octave-vs-harmonic selective training
+on:
+  push:
+    branches: [codex/s645-natural-octave-competition-head]
+    paths:
+      - scripts/s645_learn_real_octave.py
+      - test/test_s645_learn_real_octave.py
+      - .github/workflows/v273-s645-natural-octave-head.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s645-real-only-octave-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  natural_octave_composition_group_cv:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install frozen NOTE CPU inference runtime
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Verify natural octave head composition CV and features
+        run: |
+          python -m compileall -q scripts/s645_learn_real_octave.py test/test_s645_learn_real_octave.py
+          python -m unittest -v test.test_s645_learn_real_octave
+      - name: Train only 36 natural GuitarSet TRAIN and evaluate 12 natural DEV
+        run: python -m scripts.s645_learn_real_octave --out /tmp/s645_real_octave_training
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S645_REAL_GUITARSET_NATURAL_OCTAVE_HEAD
+          path: /tmp/s645_real_octave_training/report.json
+          if-no-files-found: warn
+          retention-days: 60
