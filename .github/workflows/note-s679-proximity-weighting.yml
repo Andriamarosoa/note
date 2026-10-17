@@ -1,0 +1,45 @@
+name: S679 causal per-note NoteOff hazard on real GuitarSet
+on:
+  push:
+    branches: [codex/note-s679-release-proximity-weighting]
+    paths:
+      - scripts/s679_weighted_causal_noteoff_hazard.py
+      - test/test_s679_release_proximity.py
+      - .github/workflows/note-s679-proximity-weighting.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: note-s679-causal-offset-one
+  cancel-in-progress: true
+jobs:
+  guitarset_noteoff_hazard:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 130
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original native NOTE runtime and supervised head
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+      - name: Compile and test S679 invariance
+        run: |
+          python -m compileall -q scripts/s679_weighted_causal_noteoff_hazard.py test/test_s679_release_proximity.py
+          python -m unittest -v test.test_s679_release_proximity
+      - name: Evaluate past-only hazard versus identical NoteOn and K on 36 TRAIN and 12 DEV
+        run: |
+          python -m scripts.s679_weighted_causal_noteoff_hazard --out /tmp/s679_hazard
+      - name: Preserve reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S679_CAUSAL_NOTEOFF_HAZARD_GUITARSET
+          path: /tmp/s679_hazard/report.json
+          if-no-files-found: warn
+          retention-days: 60
