@@ -17,7 +17,7 @@ from scripts.s672_causal_offset_timing_grid import (
 from scripts.s682_onset_four_lock_guard import native_metrics,score_release
 from scripts.s689_independent_fundamental_rescue import rescue as independent
 
-POLICIES={
+POLICY_CONFIG={
     "native":None,
     "p2_floor_0.27_ratio_0.8":(2,.27,.8),
     "p2_floor_0.35_ratio_1.2":(2,.35,1.2),
@@ -27,6 +27,7 @@ POLICIES={
     "p2_floor_0.35_ratio_1.6":(2,.35,1.6),
     "p3_floor_0.35_ratio_1.6":(3,.35,1.6)
 }
+POLICIES=tuple(POLICY_CONFIG)
 
 
 def causal_streak(evidence,minimum_hops):
@@ -44,8 +45,8 @@ def causal_streak(evidence,minimum_hops):
 
 def rescue(p,features,policy,native_onset,k):
     if policy=="native":return p
-    if policy not in POLICIES:raise ValueError("Policy not precommitted")
-    persistence,floor,ratio=POLICIES[policy]
+    if policy not in POLICY_CONFIG:raise ValueError("Policy not precommitted")
+    persistence,floor,ratio=POLICY_CONFIG[policy]
     trial=independent(p,features,
         f"independent_floor_{floor:.2f}_ratio_{ratio:.1f}",
         native_onset,k)
