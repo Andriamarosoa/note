@@ -6,6 +6,7 @@ notes instead of silently processing a delayed or discontinuous queue.
 """
 from __future__ import annotations
 import argparse
+from dataclasses import replace
 from contextlib import ExitStack
 import json
 from pathlib import Path
@@ -17,7 +18,7 @@ import wave
 
 import numpy as np
 from threadpoolctl import threadpool_limits
-from causal_note.strict_live import HOP, SR, load_heads, StrictLiveStream
+from causal_note.strict_live import HOP, SR, load_heads, StrictLiveStream, Selection
 from scripts.live_audio_io import audio_devices, managed_input_stream, open_output_stream, parse_device
 from scripts.live_input_level import NoteAutoLevel
 from scripts.live_hop_tuning import parse_hop_size, resolve_hop
@@ -114,6 +115,18 @@ def stream_received_samples(stream):
     return int(count)
 
 
+def s667_live_selection(metadata, release_frames=None, active_off=None):
+    """Research-only, opt-in release sweep; no change when both args omitted."""
+    if release_frames is None and active_off is None:
+        return None
+    base = Selection(**metadata["selection"])
+    return replace(base,
+        release_frames=(base.release_frames if release_frames is None
+                        else release_frames),
+        active_off=(base.active_off if active_off is None
+                    else active_off))
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
     parser.add_argument("--model", type=Path, default=DEFAULT_MODEL)
@@ -148,6 +161,10 @@ def main(argv=None):
                         help="Separately trained harmonic genuine-onset checkpoint; no checkpoint is bundled")
     parser.add_argument("--harmonic-threshold", type=float, default=0.10,
                         help="Experimental independent-onset gating threshold, dev-calibration required")
+    parser.add_argument("--s667-release-frames", type=int,
+                        help="EXPERIMENTAL: S667 consecutive low-sustain frames before NoteOff; default native 5")
+    parser.add_argument("--s667-active-off", type=float,
+                        help="EXPERIMENTAL: S667 active sustain-off threshold (e.g. 0.15); default native 0.25")
     parser.add_argument("--auto-level", action="store_true", help="Enable bounded causal input gain (+18dB max), adapted from midi; experimental, default OFF")
     parser.add_argument("--auto-level-max-db", type=float, default=18.0, help="Maximum automatic amplification, 0..24 dB (default: 18)")
     parser.add_argument("--auto-level-peak-gate-dbfs", type=float, default=-55.0, help="Raw peak activity gate in dBFS (default -55)")
@@ -215,6 +232,17 @@ def main(argv=None):
                                      else 256)
     except ValueError as exc:
         parser.error(str(exc))
+    s667_enabled = args.s667_release_frames is not None or args.s667_active_off is not None
+    if s667_enabled:
+        if args.s667_release_frames is not None and not 1 <= args.s667_release_frames <= 12:
+            parser.error("--s667-release-frames must be from 1 to 12")
+        if args.s667_active_off is not None and not 0 < args.s667_active_off < 1:
+            parser.error("--s667-active-off must be in (0, 1)")
+        if (hop_request != 256 or args.lookahead_ms != 0 or
+                args.dual_hop_mode != "off" or args.harmonic_mode != "off" or
+                args.register_rescue_mode != "off" or
+                args.inference_batch_hops != 1):
+            parser.error("S667 offsets require native hop256 without other experimental selectors")
     if args.register_rescue_mode != "off":
         if hop_request != 256 or args.harmonic_mode != "off" or args.dual_hop_mode != "off":
             parser.error("S633 native register rescue requires hop256 without harmonic/dual-hop sidecars")
@@ -382,8 +410,20 @@ def main(argv=None):
                          "remain possible. Only shadow preserves original MIDI."),
             )), file=sys.stderr)
         else:
+            s667_selection = s667_live_selection(
+                heads.metadata, args.s667_release_frames, args.s667_active_off)
+            if s667_selection is not None:
+                print(json.dumps(dict(
+                    s667_offsets="UNPROMOTED_LIVE_EXPERIMENT",
+                    release_frames=s667_selection.release_frames,
+                    active_off=s667_selection.active_off,
+                    original_K_and_note_heads_frozen=True,
+                    zero_future_audio=True,
+                    warning="S667 release thresholds failed independent TRAIN selection; compare exact same WAV with native before use.",
+                )), file=sys.stderr)
             stream = StrictLiveStream(
-                heads, hop=selected_hop, harmonic_mode=args.harmonic_mode,
+                heads, selection=s667_selection,
+                hop=selected_hop, harmonic_mode=args.harmonic_mode,
                 harmonic_checkpoint=args.harmonic_checkpoint,
                 harmonic_threshold=args.harmonic_threshold,
                 register_rescue_mode=args.register_rescue_mode,
