@@ -1,0 +1,41 @@
+name: S648 Native harmonic residual temporal attack CV research cycles
+on:
+  push:
+    branches: [codex/s648-harmonic-temporal-residual-cv]
+    paths:
+      - scripts/s648_harmonic_temporal_residual.py
+      - test/test_s648_harmonic_temporal_residual.py
+      - .github/workflows/v273-s648-harmonic-temporal.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s648-harmonic-temporal-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  note_native_harmonic_residual_multicycle:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original pinned NOTE live dependencies
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Test temporal residual causality, feature shapes, abstention training
+        run: |
+          python -m compileall -q scripts/s648_harmonic_temporal_residual.py test/test_s648_harmonic_temporal_residual.py
+          python -m unittest -v test.test_s648_harmonic_temporal_residual
+      - name: Evaluate five TRAIN composition group-CV harmonic error mitigation loops and GuitarSet DEV
+        run: python -m scripts.s648_harmonic_temporal_residual --out /tmp/s648_harmonic_temporal
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S648_REAL_GUITARSET_HARMONIC_RESIDUAL_LOOPS
+          path: /tmp/s648_harmonic_temporal/report.json
+          if-no-files-found: warn
+          retention-days: 60
