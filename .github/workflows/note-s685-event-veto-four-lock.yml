@@ -1,0 +1,52 @@
+name: S685 Causal Onset event quality filtered under S675 and Exact-K
+on:
+  push:
+    branches: [codex/note-s685-causal-onset-event-veto]
+    paths:
+      - scripts/s685_causal_onset_event_veto.py
+      - test/test_s685_onset_event_veto.py
+      - .github/workflows/note-s685-event-veto-four-lock.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: note-s685-event-veto
+  cancel-in-progress: true
+jobs:
+  score_native_events:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 160
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Native ONNX plus sklearn prerequisites
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Onset quality feature and emitted event test
+        run: |
+          python -m compileall -q scripts/s685_causal_onset_event_veto.py test/test_s685_onset_event_veto.py
+          python -m unittest -v test.test_s685_onset_event_veto test.test_s682_onset_four_lock_guard
+      - name: Retrieve unchanged real S675 trained NoteOff checkpoint
+        run: |
+          mkdir -p /tmp/s685_s675
+          gh run download 39056766998 --repo "${{ github.repository }}" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s685_s675
+          test -f /tmp/s685_s675/s675_hazard.joblib
+          test -f /tmp/s685_s675/s675_checkpoint.json
+      - name: Train on 20, held-select 16 and independent 12 DEV GuitarSet
+        run: python -m scripts.s685_causal_onset_event_veto --out /tmp/s685 --checkpoint /tmp/s685_s675/s675_hazard.joblib
+      - name: Persist Onset TP/FP K decode NoteOff full-note evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S685_NATIVE_ONSET_FALSE_ATTACK_VETO_FOUR_LOCK
+          path: /tmp/s685/report.json
+          if-no-files-found: warn
+          retention-days: 60
