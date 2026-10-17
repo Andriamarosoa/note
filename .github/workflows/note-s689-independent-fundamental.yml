@@ -1,0 +1,52 @@
+name: S689 genuinely independent fundamentals NOTE Onset+ExactK+S675
+on:
+  push:
+    branches: [codex/note-s689-independent-fundamental-evidence]
+    paths:
+      - scripts/s689_independent_fundamental_rescue.py
+      - scripts/s689_independent_robust_four_lock.py
+      - test/test_s689_independent_fundamental.py
+      - .github/workflows/note-s689-independent-fundamental.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: s689-independent-fundamental
+  cancel-in-progress: true
+jobs:
+  strict_guitarset_four_lock:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Native NOTE dependencies
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Verify causal K invariant and feature contract
+        run: |
+          python -m compileall -q scripts/s689_independent_fundamental_rescue.py scripts/s689_independent_robust_four_lock.py
+          python -m unittest -v test.test_s689_independent_fundamental test.test_s687_composition_robust_novelty
+      - name: Retrieve authentic frozen S675 NoteOff classifier
+        run: |
+          mkdir -p /tmp/s689_s675
+          gh run download 39056766998 --repo "${{ github.repository }}" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s689_s675
+          test -f /tmp/s689_s675/s675_hazard.joblib
+          test -f /tmp/s689_s675/s675_checkpoint.json
+      - name: Cross-composition TRAIN selection, genuine GuitarSet DEV independent check
+        run: |
+          python -m scripts.s689_independent_robust_four_lock --out /tmp/s689 --checkpoint /tmp/s689_s675/s675_hazard.joblib
+      - name: Preserve all variants metrics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S689_INDEPENDENT_FUNDAMENTAL_NOTEON_EXACTK_S675
+          path: /tmp/s689/report.json
+          if-no-files-found: warn
+          retention-days: 60
