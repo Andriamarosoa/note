@@ -1,0 +1,41 @@
+name: S660 real GuitarSet causal multiscale lower octave evidence
+on:
+  push:
+    branches: [codex/s660-multiscale-causal-fundamental]
+    paths:
+      - scripts/s660_multiscale_fundamental_probe.py
+      - test/test_s660_multiscale_fundamental_probe.py
+      - .github/workflows/v273-s660-multiscale-fundamental.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s660-multiscale-only
+  cancel-in-progress: true
+jobs:
+  real_guitarset_multiscale:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 80
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install NOTE native dependencies
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Compile and verify multiscale controls
+        run: |
+          python -m compileall -q scripts/s660_multiscale_fundamental_probe.py test/test_s660_multiscale_fundamental_probe.py
+          python -m unittest -v test.test_s660_multiscale_fundamental_probe
+      - name: Benchmark S660 natural GuitarSet 36 TRAIN and 12 DEV
+        run: python -m scripts.s660_multiscale_fundamental_probe --out /tmp/s660_multiscale
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S660_GUITARSET_MULTISCALE_CAUSAL_FUNDAMENTAL
+          path: /tmp/s660_multiscale/report.json
+          if-no-files-found: warn
+          retention-days: 60
