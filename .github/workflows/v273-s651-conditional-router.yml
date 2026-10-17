@@ -1,0 +1,41 @@
+name: S651 Conditional harmonic heads and nested selection routing
+on:
+  push:
+    branches: [codex/s651-conditional-harmonic-selection-router]
+    paths:
+      - scripts/s651_conditional_harmonic_router.py
+      - test/test_s651_conditional_harmonic_router.py
+      - .github/workflows/v273-s651-conditional-router.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s651-conditional-head-router-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  validate_learned_router_on_real_NOTE_guitar:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install pinned original NOTE runtime dependencies
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Test nested group validation no label leakage and conditional context ABI
+        run: |
+          python -m compileall -q scripts/s651_conditional_harmonic_router.py test/test_s651_conditional_harmonic_router.py
+          python -m unittest -v test.test_s651_conditional_harmonic_router
+      - name: Fit routing heads only on 36 GuitarSet TRAIN and verify held 12 DEV with true NoteOn F1
+        run: python -m scripts.s651_conditional_harmonic_router --out /tmp/s651_harmonic_router
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S651_REAL_GUITARSET_CONDITIONAL_HEAD_ROUTER
+          path: /tmp/s651_harmonic_router/report.json
+          if-no-files-found: warn
+          retention-days: 60
