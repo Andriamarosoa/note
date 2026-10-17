@@ -52,7 +52,7 @@ def onset_feature_rows(features,post,k,frame,pitch):
     if frame.shape!=pitch.shape or np.any(pitch<0) or np.any(pitch>48):
         raise ValueError("Pitch/frame dimensions outside NOTE ABI")
     if len(frame)==0:
-        return np.empty((0,74),np.float32)
+        return np.empty((0,75),np.float32)
     now=features[frame,pitch]
     selected=now[:,FEATURE_CHOICES]
     old8=features[np.maximum(0,frame-8),pitch][:,FEATURE_CHOICES[:12]]
@@ -174,7 +174,7 @@ def eval_one(spec,root,archive,heads,model,policies,offset_model=None):
         results[name]=native_metrics(events,truth,ends)
         if offset_model is not None:
             onset,pairs=event_score(events,truth,tolerance=.080)
-            item=dict(truth=truth,ends=ends,feats=feat,post=chosen,k=k,
+            item=dict(truth=truth,ends=ends,feats=feat,post=p,k=k,
                       events=events,onset=onset,pairs=pairs,
                       notes=note_instances(events,ends),
                       clock=native_rhythm_clock(events,ends))
