@@ -1,0 +1,51 @@
+name: S692 register specialists native causal Onset all four locks
+on:
+  push:
+    branches: [codex/note-s692-register-specific-onset-rescue]
+    paths:
+      - scripts/s692_register_onset_selection.py
+      - scripts/s692_register_four_lock.py
+      - test/test_s692_register_onset.py
+      - .github/workflows/note-s692-register-onset.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: note-s692-register-onset
+  cancel-in-progress: true
+jobs:
+  genuine_onset_S675:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 165
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original native NOTE and sklearn pinned
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Prove pitch register routing does not modify other native heads
+        run: |
+          python -m compileall -q scripts/s692_register_onset_selection.py scripts/s692_register_four_lock.py
+          python -m unittest -v test.test_s692_register_onset
+      - name: Fetch frozen original S675 learned release head
+        run: |
+          mkdir -p /tmp/s692_s675
+          gh run download 39056766998 --repo "${{ github.repository }}" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s692_s675
+          test -f /tmp/s692_s675/s675_hazard.joblib
+          test -f /tmp/s692_s675/s675_checkpoint.json
+      - name: Real GuitarSet 9 composition TRAIN policy freeze and 12 DEV independent validation
+        run: python -m scripts.s692_register_four_lock --out /tmp/s692 --checkpoint /tmp/s692_s675/s675_hazard.joblib
+      - name: Keep full four-lock nonregression report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S692_GUITAR_REGISTER_ONSET_INDEPENDENT_HARMONICS
+          path: /tmp/s692/report.json
+          if-no-files-found: warn
+          retention-days: 60
