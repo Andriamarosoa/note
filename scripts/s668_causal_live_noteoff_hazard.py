@@ -319,9 +319,9 @@ def run(out):
                 pro=hazard_predictions(item,hazard)
                 comp=item["spec"]["composition"]
                 for name,gate,mode in configs:
-                    s=score(item,pro,gate,mode)
-                    hold_scores[name].update({"correct":s["correct"],"eligible":s["eligible"]})
-                    by_comp[comp][name].update({"correct":s["correct"],"eligible":s["eligible"]})
+                    metrics=score(item,pro,gate,mode)
+                    hold_scores[name].update({"correct":metrics["correct"],"eligible":metrics["eligible"]})
+                    by_comp[comp][name].update({"correct":metrics["correct"],"eligible":metrics["eligible"]})
                 print("S668 HELD",i,"/",len(held_specs),s["name"],flush=True)
                 del item,pro
             baseline=hold_scores["native"]
