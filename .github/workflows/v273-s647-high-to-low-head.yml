@@ -1,11 +1,11 @@
 name: S647 NOTE-native octave candidates 0-190ms causal DEV NoteOn F1
 on:
   push:
-    branches: [codex/s647-note-native-octave-head-causal]
+    branches: [codex/s647-high-to-low-octave-causal]
     paths:
       - scripts/s647_high_to_low_octave_head.py
       - test/test_s647_high_to_low_octave_head.py
-      - .github/workflows/v273-s647-native-octave-head.yml
+      - .github/workflows/v273-s647-high-to-low-head.yml
   workflow_dispatch:
 permissions: {contents: read}
 concurrency:
