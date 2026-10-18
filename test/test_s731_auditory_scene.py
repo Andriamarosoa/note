@@ -96,6 +96,21 @@ class S731AuditoryTests(unittest.TestCase):
         self.assertEqual(first[3].old_ownership[12],1.)
         self.assertEqual(first[10].old_ownership[12],0.)
 
+    def test_S707_offline_replay_must_not_backdate_availability(self):
+        x=np.zeros((7,49,288),np.float32)
+        ends=np.arange(1,8)*1024
+        k=np.zeros((7,7),np.float32);k[:,1]=1.
+        events=[
+            dict(type="note_on",pitch=40,decision_sample=1024,available_sample=1024),
+            # Model inferred the offset at 2048, but heard it only at 5120.
+            dict(type="note_off",pitch=40,decision_sample=2048,available_sample=5120),
+        ]
+        observed=scene_scores(x,None,k,events,ends)
+        self.assertEqual(observed[0].old_ownership[12],0.)
+        self.assertEqual(observed[1].old_ownership[12],1.)
+        self.assertEqual(observed[4].old_ownership[12],1.)
+        self.assertEqual(observed[5].old_ownership[12],0.)
+
     def test_invalid_nonfinite_or_changed_original_abi_fails(self):
         k=np.zeros(7,np.float32);a=np.zeros(49,bool)
         agent=AuditoryScene()
