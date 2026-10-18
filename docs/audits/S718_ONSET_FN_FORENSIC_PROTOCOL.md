@@ -1,3 +1,69 @@
+
+## Résultats vérifiés — run S718 du 18/10/2026
+
+[Run S718 (succès)](https://github.com/Andriamarosoa/note/actions/runs/39111634032) : **16 tests réussis**, replay des 44 pistes (32 HELD et 12 DEV), aucun changement de la chaîne source, six métriques S708 reproduites, `DEV TP=1055 FP=434 FN=525`, `HELD FN=834`.
+
+### Diagnostic de 525 faux négatifs DEV
+
+| Catégorie exclusive | DEV | HELD |
+|---|---:|---:|
+| `insufficient_joint_neural_evidence` | **321** | **445** |
+| `network_onset_below_weak_threshold` | **106** | **147** |
+| `high_onset_but_sustain_or_state_insufficient` | 29 | 50 |
+| `weak_evidence_blocked_by_K_gate` | 19 | 75 |
+| `source_predicted_but_match_conflict` | 19 | 12 |
+| `weak_acoustic_rearmed_or_refractory` | 21 | 50 |
+| `weak_attack_without_rising_evidence` | 6 | 46 |
+| `selector_rearming_blocked` | **3** | **3** |
+| `weak_evidence_not_emitted` | 1 | 5 |
+| `source_onset_removed_downstream` | 0 | 1 |
+| **Total** | **525** | **834** |
+
+Les deux premières catégories regroupent **427/525=81,33%** DEV,
+et **592/834=70,98%** HELD. Elles indiquent l'absence d'une
+combinaison d'indices neuronaux exploitable **dans la fenêtre ±80ms**,
+pas nécessairement la destruction de la fondamentale physique dans
+le signal. **Supprimer le verrou `armed` ne corrigerait directement
+que 3/525 (0,57%) des attaques classées sur DEV.**
+
+Les drapeaux **non exclusifs** (ne pas additionner aux catégories)
+montrent DEV : 57 cas avec `onset >= .75` à un moment,
+22 cas avec Onset **et** Sustain au seuil simultanément,
+19 avec preuve d'éligibilité forte au moins sur un bloc,
+et 35 avec preuve faible réarmée. Ces diagnostics expliquent
+pourquoi abaisser un seul seuil peut échanger de nombreux FN contre
+des FP supplémentaires et dégrader les autres scores.
+
+Répartition des FN par registre DEV (nombre de vraies attaques manquées) :
+MIDI 40–52 : **191** ; MIDI 53–64 : **265** ;
+MIDI 65–88 : **69**.
+Ces nombres ne sont pas des taux par registre et ne doivent pas être
+comparés directement aux proportions de frames-note de S714.
+
+### Verdict prioritaire
+
+1. **Cible principale (P1)** : améliorer la **tête acoustique
+   Onset/Sustain conjointe** sur notes manquantes en polyphonie,
+   particulièrement graves et médiums. Plan FIT/CAL : nouveaux
+   contrastes de fondamentales indépendantes et reweight accords
+   + onset faibles, avec comparaison mêmes morceaux.
+2. **Cible complémentaire (P2)** : expert K pour les 19
+   attaques refusées par la branche faible sur DEV, sans dure
+   contrainte K (la tête K sous-estime déjà les accords).
+3. **Cible secondaire (P3)** : l'armement fort seul (3 cas DEV).
+   S719 le teste uniquement en shadow à titre de contrôle, et
+   aucune promotion ne sera faite si les six scores régressent.
+4. **Invariant** : ne pas dégrader les 1055 TP existants,
+   ne pas augmenter aveuglément les 434 FP, maintenir S707 Offset
+   et Exact-K; tous les gains exigent CAL puis HELD/DEV,
+   et un nouveau jeu externe indépendant pour promotion.
+
+**Attention** : l'analyse de seuils et de postérieurs n'est pas une
+preuve étiologique unique ; certains FN peuvent avoir plusieurs
+blocages et la catégorie exclusive reflète une priorité de règles.
+
+---
+
 # S718 — Audit des 525 attaques manquées, sélection versus têtes neuronales
 
 ## Objectif
