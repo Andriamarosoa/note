@@ -4,6 +4,8 @@ on:
     branches: [codex/note-s713-independent-code-audit-agents]
     paths:
       - .github/workflows/note-s728-real-octave-forensics.yml
+      - scripts/s728_real_octave_overlap_audit.py
+      - test/test_s728_real_octave_overlap_audit.py
   workflow_dispatch:
 permissions: {contents: read, actions: read}
 concurrency:
