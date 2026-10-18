@@ -240,7 +240,7 @@ def inspect(args):
                        for name,rows in events_per_mask.items()}
                 baseline=total[REFERENCE]
                 if category=="all":
-                    original=raw[args.phase]["candidate"]
+                    original=(raw["frozen_candidate"]["CAL"] if args.phase=="CAL" else raw[args.phase]["candidate"])
                     for m in SCORES:
                         if abs(baseline[m]-original[m])>1.e-8:
                             raise AssertionError("S708 signed replay mismatch "+m)
