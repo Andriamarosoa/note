@@ -1,0 +1,79 @@
+name: S737 neural per-fragment 32-mask FIT CAL loops (Onset-only)
+on:
+  push:
+    branches: [codex/note-s737-multitarget-fragment-learning-loops]
+    paths:
+      - scripts/s737_train_fragment_onset_loops.py
+      - test/test_s737_fragment_training_loops.py
+      - .github/workflows/note-s737-dynamic-fragment-onset-loops.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: note-s737-neural-fragment-loop
+  cancel-in-progress: true
+jobs:
+  fit_cal_guarded:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install real GuitarSet acoustic runtime and CPU Torch
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Test neural router and FIT-isolated per-fragment research contracts
+        run: |
+          python -m compileall -q src/causal_note/s736_fragment_mask.py scripts/s737_train_fragment_onset_loops.py
+          python -m unittest -v test.test_s736_fragment_mask test.test_s737_fragment_training_loops test.test_s733_one_target_selector test.test_s713_metric_contract
+      - name: Download immutably signed S708 and trained S734 H5; never retrain Exact-K
+        run: |
+          mkdir -p /tmp/s737/s708 /tmp/s737/s707 /tmp/s737/s734
+          gh run download 39094682419 --repo "Andriamarosoa/note" --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s737/s708
+          gh run download 39059008484 --repo "Andriamarosoa/note" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s737/s707
+          gh run download 39137653526 --repo "Andriamarosoa/note" --name S734_ONSET_INDIVIDUAL_NEURAL_EXACTK_LINKED_FIT_CAL_HELD_DEV --dir /tmp/s737/s734
+          test -s /tmp/s737/s708/report.json
+          test -s /tmp/s737/s708/s708_selected.pt
+          test -s /tmp/s737/s707/s675_hazard.joblib
+          test -s /tmp/s737/s734/report.json
+          test -s /tmp/s737/s734/s733_onset.pt
+      - name: Fit neural selector (2 seeds x 1/3/6 epochs) and measure all six causal MIDI scores
+        run: |
+          python -m scripts.s737_train_fragment_onset_loops --s708-dir /tmp/s737/s708 --s734-checkpoint /tmp/s737/s734/s733_onset.pt --s734-report /tmp/s737/s734/report.json --offset-checkpoint /tmp/s737/s707/s675_hazard.joblib --out /tmp/s737/rounds
+      - name: Assert result honest and no automatic promotion
+        if: success()
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/s737/rounds/report.json'))
+          assert r['completed'] and len(r['CAL_rounds']) == 2 * 3 * 3
+          assert not r['LIVE_changed'] and not r['TEST_opened'] and not r['promoted']
+          assert r['training'] == 'FIT80 only'
+          assert 'FIT' in r and 'CAL_rounds' in r
+          if r['selected'] != 'S708_frozen':
+              assert r['frozen_on_CAL']
+              assert 'HELD' in r and 'DEV' in r
+          print('S737_FINAL_GUARDED_RESULT',json.dumps({
+            'selected':r['selected'],
+            'achieved_all_six_gt80':r['achieved_all_six_gt80'],
+            'rounds':len(r['CAL_rounds']),
+            'frozen':r.get('frozen_on_CAL')}))
+          PY
+      - name: Archive independently readable scores, loops and any newly safe checkpoint
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S737_K_CONDITIONAL_32_MASK_FRAGMENT_FIT_CAL_LOOP_NO_LIVE
+          path: |
+            /tmp/s737/rounds/report.json
+            /tmp/s737/rounds/s737_seed*.pt
+          if-no-files-found: warn
+          retention-days: 45
