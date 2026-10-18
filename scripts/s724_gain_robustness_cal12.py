@@ -26,7 +26,7 @@ from causal_note.s724_loudness_timbre import augmented_track
 from causal_note.s705_temporal_heads import predict_track
 from causal_note.s708_cardinality_selection import GuidedPolicy,decode_guided
 from causal_note.s707_causal_release import prepare_hazards,render_release
-from scripts.s704_joint_heads import BATCH,acoustic_features
+from causal_note.s704_joint_heads import BATCH,acoustic_features
 from scripts.s704_joint_metrics import SCORES,metric,aggregate
 from scripts.s613_prepare_strict_live import download,labels,digest
 from scripts.s613_train_strict_live import real_notes
