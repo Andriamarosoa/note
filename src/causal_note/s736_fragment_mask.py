@@ -249,7 +249,7 @@ class FragmentMaskRouter(nn.Module):
         action_by_mask = torch.logsumexp(
             torch.log_softmax(class_logits, dim=-1)[:, None, :] +
             torch.log(by_k.clamp_min(1e-12)), dim=-1)
-        action_by_mask += torch.log(p_fix) - torch.log(p_regress)
+        action_by_mask = action_by_mask + torch.log(p_fix) - torch.log(p_regress)
         action_by_mask = action_by_mask.masked_fill(~available, -1e9)
         action_logits = torch.cat((keep_logit[:, None], action_by_mask), dim=1)
         return dict(
