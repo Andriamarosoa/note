@@ -1,6 +1,7 @@
 """S714 independent tests for cardinality audit; cannot change S708 scoring."""
 import unittest
 import numpy as np
+from causal_note.s708_cardinality_selection import GuidedPolicy, GuidedSelector
 from scripts.s714_audit_s708_cardinality import (
     HOP, SR, events_to_frames, annotation_frames, one_item,
 )
@@ -46,6 +47,26 @@ class S714EventAuditTests(unittest.TestCase):
         self.assertEqual(trial["harmonic_coincidence_fp"],5)
         self.assertEqual(trial["false_note_frames"],5)
         self.assertEqual(trial["over"],5)
+
+    def test_s708_frozen_policy_does_not_strictly_enforce_k_zero(self):
+        # Forensic characterization, NOT a request to change frozen S708.
+        # The historical count_confidence 1.1 explicitly disables the
+        # JointSelector's strong K budget, while K still guides weak attacks.
+        policy=GuidedPolicy(onset=.75,sustain_on=.50,sustain_off=.30,
+            release=.85,count_confidence=1.1,blend=.70,
+            guide_confidence=.50,weak_onset=.15,weak_sustain=.55,
+            rise=.04,trim=False)
+        selector=GuidedSelector(policy)
+        post=np.zeros((49,3),dtype=np.float32)
+        post[[1,8],0]=.9
+        post[[1,8],1]=.9
+        k=np.zeros(7,dtype=np.float32)
+        k[0]=.999
+        k[1]=.001
+        emitted=selector.step(post,k,4*HOP)
+        self.assertEqual([e['pitch'] for e in emitted if e['type']=='note_on'],[41,48])
+        self.assertEqual(int(selector.active.sum()),2)
+        self.assertEqual(int(k.argmax()),0)
 
     def test_reject_invalid_stream_states(self):
         ends=np.arange(1,9)*HOP
