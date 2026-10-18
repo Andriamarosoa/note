@@ -1,0 +1,42 @@
+{
+  "artifacts_verified": 7,
+  "policy_evaluations": 3357,
+  "passing_candidates": [],
+  "all_raw_event_counts_match": true,
+  "TEST_opened": false,
+  "promoted": false,
+  "loops_completed": 19,
+  "training_checkpoints": 12,
+  "refinement_passes": 7,
+  "created_at": "2026-10-18T04:40:17.030Z",
+  "recount_run_id": 39096563672,
+  "recount_commit": "7ec8b6f1e3315159b6c1921d96106045a848addd",
+  "metrics": [
+    "onset_f1",
+    "exact_k",
+    "active_exact_k",
+    "offset_accuracy",
+    "full_note_f1",
+    "frame_pitch_f1"
+  ],
+  "experiment_order": [
+    "s704",
+    "s705",
+    "s706",
+    "s707-705",
+    "s707-706",
+    "s708",
+    "s709"
+  ],
+  "evidence_files": {
+    "s704": "analysis/evidence/s704-s709-loop-audit/s704_verified_summary.json",
+    "s705": "analysis/evidence/s704-s709-loop-audit/s705_verified_summary.json",
+    "s706": "analysis/evidence/s704-s709-loop-audit/s706_verified_summary.json",
+    "s707-705": "analysis/evidence/s704-s709-loop-audit/s707_705_verified_summary.json",
+    "s707-706": "analysis/evidence/s704-s709-loop-audit/s707_706_verified_summary.json",
+    "s708": "analysis/evidence/s704-s709-loop-audit/s708_verified_summary.json",
+    "s709": "analysis/evidence/s704-s709-loop-audit/s709_verified_summary.json"
+  },
+  "source_branches_experimental": true,
+  "official_live_changed": false
+}
