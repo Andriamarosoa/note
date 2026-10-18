@@ -1,3 +1,24 @@
+## Résultat **mesuré** après S725 : modèle non promu
+
+[Run S725 39122894425 (SUCCESS)](https://github.com/Andriamarosoa/note/actions/runs/39122894425) — 21 tests réussis, deux époques FIT pour chaque bras, CAL32/HELD32/DEV12. **Seul `S708_frozen` satisfait les six gardes de non-régression CAL.** Comparaison principale :
+
+| CAL | S708 frozen | Sans mémoire 1 époque + K | Avec mémoire 1 époque + K | Avec mémoire 2 époques + K |
+|---|---:|---:|---:|---:|
+| Onset F1 | 74,2639% | 74,3603% | **74,3876%** | 74,0156% |
+| Exact-K | 62,0455% | 62,0677% | **62,1445%** | 62,3116% |
+| Exact-K actif | 56,2762% | 56,4329% | 56,5217% | **56,8449%** |
+| Offset conditionnel | **77,3292%** | 76,6621% | 76,7063% | 76,7528% |
+| F1 notes complètes | **57,1319%** | 56,6984% | 56,7517% | 56,4869% |
+| F1 frame-pitch | 76,4626% | 76,6269% | 76,6705% | **76,7586%** |
+
+La mémoire apporte, **à époque 1 contre son témoin entraîné à budget identique**, seulement +0,0273 point d'Onset F1, +0,0768 point d'Exact-K et +0,0532 point de full-note F1. Ce n'est pas un gain substantiel ni robuste à davantage d'entraînement (époque 2 se dégrade relativement au contrôle sans mémoire sur plusieurs métriques). Même les petites améliorations de K/frame-pitch restent accompagnées d'une dégradation Offset et full-note contre la référence S708.
+
+HELD/DEV ont donc rejoué **S708 seul**, avec ses scores identiques à l'historique. **`promoted=false`**, LIVE S708/S707 inchangé. Aucune généralisation de la séparation E2/E3 n'est démontrée par les scores agrégés.
+
+Diagnostic E2/E3 ciblé : [premier run CI](https://github.com/Andriamarosoa/note/actions/runs/39123312790) interrompu sur `KeyError: native_features` dans la préparation de l'entrée S707, **sans diagnostic complet**. Corrigé selon l'ABI de la validation globale, puis relancé : [run 39123937037](https://github.com/Andriamarosoa/note/actions/runs/39123937037). Aucun chiffre de détection E2+E3 ne doit être revendiqué avant la fin de ce run.
+
+---
+
 # S725 — Mémoire acoustique des sources et coopération Exact-K
 
 ## Hypothèse : pourquoi entend-on E3 quand E2 continue ?
