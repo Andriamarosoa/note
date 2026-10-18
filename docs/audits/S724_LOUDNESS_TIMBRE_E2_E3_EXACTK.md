@@ -1,3 +1,24 @@
+## Résultat final S724 — 18 octobre 2026 (GuitarSet original, sans gain artificiel)
+
+[Run S724 SUCCESS, 21 tests réussis](https://github.com/Andriamarosoa/note/actions/runs/39118797590), 80 FIT pour l'entraînement ; 32 CAL pour la sélection ; 32 HELD/12 DEV uniquement pour rejouer le **modèle sélectionné** (référence historique S708).
+
+| Score CAL | S708 figé | S724 1 époque + K | S724 2 époques + K | S724 2 époques sans guide faibles-K |
+|---|---:|---:|---:|---:|
+| Onset F1 | **74,2639%** | 74,2481% | 74,2494% | 73,0446% |
+| Exact-K | 62,0455% | 62,3892% | **62,4454%** | 59,8500% |
+| Exact-K actif | 56,2762% | 56,8479% | **56,9845%** | 53,4062% |
+| Offset | **77,3292%** | 76,5657% | 76,6115% | 76,9313% |
+| F1 notes complètes | **57,1319%** | 56,5250% | 56,5591% | 55,8759% |
+| F1 hauteurs / frame | 76,4626% | **76,8728%** | 76,7524% | 73,9989% |
+
+**Conclusion** : nouvelles caractéristiques de timbre + volume relatif = gains exploratoires d'Exact-K et des hauteurs sur CAL, mais **pas de gain Onset**, et dégradation Offset/full-note. Toutes les variantes échouent aux gardes S708 sur les six scores. Seul `S708_frozen` est éligible et les six métriques HELD/DEV du choix sont identiques à S708. `promoted=false`. Cela ne prouve pas la nullité des indices timbraux : 1–2 époques de FIT, leur architecture et la composition du corpus limitent la conclusion.
+
+L'écart de performance `Kguided` vs `KweakOFF` démontre la valeur du **guidage K des attaques faibles** pour cette architecture, et non l'utilité spécifique des features de timbre (les deux modèles utilisent les mêmes données/features). La tête K neuronale reste active dans les deux.
+
+Le gain stress réel `x0.5/x1/x2` est une **seconde épreuve**, distincte de ce résultat S724 : [GitHub Actions](https://github.com/Andriamarosoa/note/actions/runs/39120010839). Ne pas affirmer une invariance au volume avant son rapport définitif.
+
+---
+
 # S724 — Intensité de jeu, timbre harmonique et E2 → E3, avec Exact-K
 
 ## Question scientifique
