@@ -42,6 +42,18 @@ def variants(original):
     return policies
 
 
+def select_cal_only(policies,cal_results,paired):
+    """Freeze before HELD/DEV. Original is mandatory fallback when guards fail."""
+    baseline=cal_results["S708_frozen"]
+    eligible=[name for name in policies if
+        all(cal_results[name][key]>=baseline[key] for key in SCORES)
+        and paired[name]["lost_long"]==0
+        and paired[name]["lost_correct_offsets"]==0]
+    if "S708_frozen" not in eligible:
+        raise AssertionError("S708 CAL should always protect itself")
+    return max(eligible,key=lambda name:target_rank(cal_results[name])),eligible
+
+
 def emitted_for(item, model_name, policy, offset, release):
     """One single causal-note event stream; never oracle K or future labels."""
     events=evaluate_policy(item,model_name,policy)
@@ -126,12 +138,7 @@ def run(args):
             cal_results,cal_paired,cal_sources=phase_results(cal,audio,root,heads,selection,offset,models,
                                            options,release,phase="CAL")
             baseline=cal_results["S708_frozen"]
-            eligible=[name for name in options if all(cal_results[name][key]>=baseline[key] for key in SCORES)
-                  and cal_paired[name]["lost_long"]==0
-                  and cal_paired[name]["lost_correct_offsets"]==0]
-            if "S708_frozen" not in eligible:
-                raise AssertionError("Original S708 CAL must satisfy itself")
-            best=max(eligible,key=lambda name:target_rank(cal_results[name]))
+            best,eligible=select_cal_only(options,cal_results,cal_paired)
             report["CAL"]=dict(scores=cal_results,paired=cal_paired,
                                chosen=best,eligible=eligible,tracks=cal_sources)
             report["selected_shadow_policy"]=dict(name=best,parameters=asdict(options[best]))
