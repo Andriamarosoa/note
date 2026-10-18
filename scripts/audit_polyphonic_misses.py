@@ -53,7 +53,7 @@ def emitted_activity(events, ends):
     return output
 
 
-def missed_diagnostic(note, decision_ends, post, k, active, scene):
+def missed_diagnostic(note, decision_ends, post, k, active, scene, truth_k):
     """A descriptive gate audit, NOT a sufficient-condition simulator."""
     pitch = int(note["pitch"]) - 40
     seconds = np.asarray(decision_ends, dtype=float) / SR
@@ -98,6 +98,8 @@ def missed_diagnostic(note, decision_ends, post, k, active, scene):
         weak_gate_pass=has_weak,
         k_room_gate_pass=has_k_room,
         head_k_at_first=int(head_k[frames[0]]),
+        true_k_at_first=int(truth_k[frames[0]]),
+        k_underestimates_truth_in_all_attack_frames=bool(np.all(head_k[frames] < truth_k[frames])),
         p_k_add_at_first=float(scene[frames[0]].count_room),
         baseline_note_active_at_first=bool(active[frames[0], pitch])
     )
@@ -120,6 +122,7 @@ def compare_group(rows):
         oracle_rescued_reference_misses=sum(m["oracle_K_rescued"] for m in misses),
         scene_rescued_reference_misses=sum(m["S731_rescued"] for m in misses),
         weak_acoustic_gate_present=sum(m.get("weak_gate_pass", False) for m in misses),
+        head_K_underestimates_for_whole_attack=sum(m.get("k_underestimates_truth_in_all_attack_frames", False) for m in misses),
         old_parent_ownership_present=sum(m.get("max_parent_ownership", 0) > 0 for m in misses),
     )
 
@@ -196,7 +199,7 @@ def execute(args):
                             continue
                         diagnostic = missed_diagnostic(
                             note, item["decision_ends"], post, count,
-                            original_activity, old_scene)
+                            original_activity, old_scene, true_k)
                         diagnostic.update(dict(
                             pitch=int(note["pitch"]), onset_seconds=float(note["time"]),
                             duration=float(note["duration"]), true_note_id=int(index),
