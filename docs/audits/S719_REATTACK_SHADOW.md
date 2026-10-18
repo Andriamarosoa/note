@@ -1,3 +1,23 @@
+## Résultat final — S719 REJETÉ (18 octobre 2026)
+
+[Workflow S719 terminé avec succès](https://github.com/Andriamarosoa/note/actions/runs/39111883787), **12 tests unitaires réussis** et contrôle des six métriques S708 sur CAL / HELD / DEV.
+
+**Les six variantes ont émis zéro proposition supplémentaire de réarmement et zéro nouvelle réattaque** sur CAL. Aucune variante n'a modifié une seule métrique par rapport à la référence gelée S708. En conséquence, la sélection CAL a retenu **`S708_frozen`**, puis les scores HELD/DEV ont reproduit exactement la référence historique. `qualifies=false`, `promoted=false`.
+
+| CAL | S708 | meilleur S719 |
+|---|---:|---:|
+| Onset F1 | 74,2639% | 74,2639% |
+| Exact-K | 62,0455% | 62,0455% |
+| Exact-K actif | 56,2762% | 56,2762% |
+| Offset conditionnel | 77,3292% | 77,3292% |
+| F1 notes complètes | 57,1319% | 57,1319% |
+| F1 hauteurs par frame | 76,4626% | 76,4626% |
+
+**Interprétation** : l'obligation d'une montée acoustique postérieure simultanément à un état désarmé, à Onset >=.75, Sustain >=.5, Release <.5 et au délai 90/150ms n'a jamais été remplie sur CAL. Il ne faut **ni assouplir aveuglément ces gardes sur DEV, ni attribuer à S719 un gain inexistant**.
+
+S718 a déjà montré que seuls 3/525 FN DEV relevaient exclusivement du réarmement fort, tandis que 427/525 (81,33%) manquaient de preuves neuronales conjointes suffisantes. La nouvelle priorité concrète est [S720 : repondération / expert d'attaque polyphonique au niveau de la tête neuronale](https://github.com/Andriamarosoa/note/issues/63), apprentissage FIT uniquement, comparaison CAL et six métriques de sortie.
+
+---
 # S719 — Expérience ciblée : nouvelles attaques sur une note déjà active
 
 S719 est un **candidat shadow uniquement**, jamais une modification
