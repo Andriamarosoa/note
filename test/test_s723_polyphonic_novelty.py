@@ -27,7 +27,7 @@ class S723FeaturesTest(unittest.TestCase):
         self.assertEqual(float(f[1,12,0]),2.)
         self.assertEqual(float(f[1,13,0]),0.)
         self.assertEqual(float(f[2,12,0]),0.)
-        self.assertEqual(float(f[1,12,28]),2./3.)
+        self.assertAlmostEqual(float(f[1,12,28]),2./3.,places=6)
         self.assertEqual(float(f[1,12,31]),0.)
 
     def test_missing_lower_pitch_not_clamped_to_E2_false_comparison(self):
