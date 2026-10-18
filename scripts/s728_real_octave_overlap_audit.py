@@ -63,7 +63,7 @@ def overlap_results(events,truth,d):
            "high_77_88":sum(77<=truth[i]["pitch"]<=88 for i in target)},
         matched_pitch_counts=dict(Counter(str(truth[i]["pitch"]) for i in true_hit)),
         matched_delta_ms=[round((predictions[p]["time"]-truth[t]["time"])*1000,3)
-                       for p,t in links if t in target])
+                       for p,t in links if t in target]
     )
     return result
 
