@@ -41,9 +41,28 @@ MAX_TRAIN_ROWS_PER_RECORDING=1800
 def save(path,obj):
     path.write_text(json.dumps(obj,indent=2,sort_keys=True)+"\n")
 
-def acoustic_candidates(post,k,native,scene):
+def active_count_from_events(events,ends):
+    """Count actually emitted active MIDI pitches causally at each decision."""
+    active=np.zeros(49,dtype=bool)
+    result=np.zeros(len(ends),dtype=np.float32)
+    order=sorted(events,key=lambda e:(
+        int(e["available_sample"]),0 if e["type"]=="note_off" else 1))
+    cursor=0
+    for i,end in enumerate(ends):
+        while cursor<len(order) and int(order[cursor]["available_sample"])<=int(end):
+            event=order[cursor]
+            pitch=int(event["pitch"])-40
+            if 0<=pitch<49:
+                active[pitch]=(event["type"]=="note_on")
+            cursor+=1
+        result[i]=min(6,int(active.sum()))/6.
+    return result
+
+
+def acoustic_candidates(post,k,native,scene,emitted,ends):
     """No oracle, no future. Shape [T,49,5] + context [T,49,16]."""
     t=len(post)
+    active_k=active_count_from_events(emitted,ends)
     on=post[:,:,0];sustain=post[:,:,1];release=post[:,:,2]
     original=native[:,:,0]
     novelty=np.stack([e.novelty for e in scene])
@@ -74,7 +93,7 @@ def acoustic_candidates(post,k,native,scene):
         np.broadcast_to(entropy[:,None]/np.log(7),(t,49)),
         np.broadcast_to(np.linspace(0,1,49,dtype=np.float32)[None,:],(t,49)),
         np.broadcast_to((k[:,2:].sum(-1))[:,None],(t,49)),
-        np.broadcast_to(np.maximum(0.,on-original),(t,49))
+        np.broadcast_to(active_k[:,None],(t,49))
         ],axis=-1).astype(np.float32)
     # Candidate gate based ONLY on observed frozen evidence. This prevents
     # a label-driven "candidate" from accidentally entering inference.
@@ -98,7 +117,8 @@ def baseline_input(spec,archive,root,heads,selection,offset,network,policy,relea
     post=(policy.blend*p+(1-policy.blend)*item["native_post"]).astype(np.float32)
     original=emit(item,post,k,policy,offset,release)
     scene=scene_scores(item["x"],post,k,original,item["decision_ends"])
-    candidates,ctx,eligible=acoustic_candidates(post,k,item["native_post"],scene)
+    candidates,ctx,eligible=acoustic_candidates(
+        post,k,item["native_post"],scene,original,item["decision_ends"])
     return item,post,k,original,candidates,ctx,eligible
 
 def collected_examples(proposals,ctx,eligible,y,ktrue,kprobs,source,seed):
@@ -129,7 +149,8 @@ def collected_examples(proposals,ctx,eligible,y,ktrue,kprobs,source,seed):
     base=pp[:,0]; alternatives=pp[:,1:].max(-1)
     # One target at a time: tune ADD or SUPPRESS, never another channel.
     actions=np.zeros(len(ix),np.int64)
-    actions[(yy==1)&(base<.75)&(alternatives>=base+.035)]=ADOPT
+    # H5 can propose missing attacks even if no frozen arm can.
+    actions[(yy==1)&(base<.75)]=ADOPT
     actions[(yy==0)&(base>=.15)]=SUPPRESS
     result=dict(p=pp,context=ctx[times,pitches],
                 k=kprobs[times],y=yy,actions=actions,
@@ -211,6 +232,12 @@ def fit_model(fit,checkpoint,out,epochs=3):
                 inp=tuple(t[s:s+256] for t in x)
                 outp=model(*inp)
                 loss=target_loss(outp,action[s:s+256],risks[s:s+256],inp[3])
+                # Train only the H5 Onset probability; Exact-K/Sustain/Release
+                # remain frozen and are NOT jointly supervised.
+                actual=torch.as_tensor(
+                    fit[int(idx)]["y"][s:s+256],dtype=torch.float32)
+                loss=loss+.30*torch.nn.functional.binary_cross_entropy(
+                    outp["k_linked_onset"].clamp(1e-6,1-1e-6),actual)
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(model.parameters(),2.)
                 opt.step()
@@ -322,7 +349,8 @@ def run(args):
     report=dict(schema="S733_ONSET_ONLY_LEARNED_CLASS_CONDITIONAL_RISK_SELECTOR",
           promoted=False,LIVE_changed=False,TEST_opened=False,
           base_sha256=sha,train_only="FIT80",held_dev_previously_exposed=True,
-          sequence="onset only; Sustain/Release/K/S707 frozen",
+          k_linked_head="H5 learned Onset per pitch; frozen S708 K0..K6 soft posterior + observed active count; no oracle K",
+          sequence="onset only incl. learned individual K-linked H5; Sustain/Release/K/S707 frozen",
           complete=False)
     save(args.out/"report.json",report)
     with tempfile.TemporaryDirectory() as temp:
@@ -346,7 +374,7 @@ def run(args):
                 raise AssertionError("Unexpected FIT/CAL/HELD split")
             fit=[];proof=[]
             for i,spec in enumerate(split["FIT"]):
-                item,post,k,original,candidates,ctx,eligible=baseline_input(
+                item,post,k,baseline_events,candidates,ctx,eligible=baseline_input(
                     spec,audio,root,heads,selection,offset,network,policy,release)
                 true=real_notes(labels(spec,root)["notes"],item["samples"]/SR)
                 y,ktrue=targets(item["decision_ends"],true)
