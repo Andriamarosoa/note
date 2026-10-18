@@ -1,0 +1,109 @@
+name: S716 opt-in real S708 plus causal S707 75D LIVE NoteOff test
+on:
+  push:
+    branches: [codex/note-s713-independent-code-audit-agents]
+    paths:
+      - src/causal_note/s716_s707_online.py
+      - src/causal_note/s712_s708_live.py
+      - scripts/live_strict_notes.py
+      - test/test_s716_online_s707.py
+      - .github/workflows/note-s716-s707-online-live.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: note-s716-online-offset
+  cancel-in-progress: true
+jobs:
+  s707_real_checkpoint_in_S708_source_only_live:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install pinned strict NOTE and CPU PyTorch
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Test exact offline S707 feature ABI, NoteOn/Off, K safety and causal clocks
+        run: |
+          python -m compileall -q src/causal_note/s716_s707_online.py src/causal_note/s712_s708_live.py scripts/live_strict_notes.py
+          python -m unittest -v test.test_s716_online_s707 test.test_s713_live_cpu_and_events test.test_s713_metric_contract
+      - name: Retrieve original SHA-checked S708 and original TRAIN-selected S675/S707 head
+        run: |
+          mkdir -p /tmp/s716/s708 /tmp/s716/s707
+          gh run download 39094682419 --repo "${{ github.repository }}" --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s716/s708
+          gh run download 39059008484 --repo "${{ github.repository }}" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s716/s707
+          test -s /tmp/s716/s707/s675_checkpoint.json
+          test -s /tmp/s716/s707/s675_hazard.joblib
+      - name: Check CLI opts, signed 75D model and released policy
+        run: |
+          python -m scripts.live_strict_notes --help | grep -F -- '--s708-s707-offset-model'
+          python -m scripts.live_strict_notes --status --s708-model /tmp/s716/s708/s708_selected.pt --s708-s707-offset-model /tmp/s716/s707/s675_hazard.joblib > /tmp/s716/status.json
+          python - <<'PY'
+          import json
+          z=json.load(open('/tmp/s716/status.json'))['s708_trial']
+          assert z['checkpoint_verified'] is True
+          assert z['offset_policy']=='S716_CAUSAL_S707_TRIAL_NOT_OFFLINE_SCORE'
+          from causal_note.strict_live import load_heads
+          from causal_note.s716_s707_online import S716S707OnlineRelease
+          from scripts.live_strict_notes import DEFAULT_MODEL
+          native=load_heads(DEFAULT_MODEL)
+          spec=S716S707OnlineRelease.load('/tmp/s716/s707/s675_hazard.joblib',native,
+                dict(gate=.8,persistence=1,grace=24))
+          assert spec.model.n_features_in_==75
+          print('S716_ORIGINAL_S675_S707_SHA_AND_FROZEN_POLICY_VERIFIED')
+          PY
+      - name: Exercise exact real S708+S707 CLI against deterministic PCM and verify event state
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import wave,numpy as np,subprocess,sys,json
+          root=Path('/tmp/s716')
+          sr=44100
+          t=np.arange(sr*2,dtype=np.float64)/sr
+          x=np.zeros_like(t)
+          for start,hz,gain in ((.10,82.41,.32),(.48,110.,.26),(.90,164.81,.24),(1.35,246.94,.2)):
+              index=t>=start
+              x[index]+=gain*np.sin(2*np.pi*hz*(t[index]-start))*np.exp(-2.2*(t[index]-start))
+          with wave.open(str(root/'guitar_like.wav'),'wb') as w:
+              w.setnchannels(1);w.setsampwidth(2);w.setframerate(sr)
+              w.writeframes(np.round(np.clip(x,-1,1)*32767).astype('<i2').tobytes())
+          cmd=[sys.executable,'-m','scripts.live_strict_notes','--wav',
+               str(root/'guitar_like.wav'),'--block-size','256','--hop-size','256',
+               '--s708-model',str(root/'s708/s708_selected.pt'),
+               '--s708-s707-offset-model',str(root/'s707/s675_hazard.joblib'),
+               '--out',str(root/'events.jsonl')]
+          subprocess.run(cmd,check=True)
+          events=[json.loads(line) for line in (root/'events.jsonl').read_text().splitlines()]
+          active=set();counts={'note_on':0,'note_off':0}
+          for e in events:
+              assert e['s707_causal_live_trial'] and e['s708_shadow_trial']
+              assert 40<=e['pitch']<=88 and e['available_sample']>=e['decision_sample']
+              assert abs(e['time']-e['available_sample']/sr)<1e-10
+              if e['type']=='note_on':
+                  assert e['pitch'] not in active and len(active)<6
+                  active.add(e['pitch'])
+              elif e['type']=='note_off':
+                  assert e['pitch'] in active
+                  active.remove(e['pitch'])
+              counts[e['type']]+=1
+          assert counts['note_on']>0 and counts['note_off']>0 and not active
+          print('S716_SIGNED_REAL_S708_S707_EMITTED_EVENTS_VALID',counts)
+          PY
+      - name: Archive emitted source-only WAV proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S716_REAL_S708_S707_SOURCE_ONLY_NOTE_EVENTS_NO_F1_CLAIM
+          path: |
+            /tmp/s716/events.jsonl
+            /tmp/s716/status.json
+          if-no-files-found: warn
+          retention-days: 30
