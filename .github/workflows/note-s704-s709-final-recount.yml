@@ -1,0 +1,37 @@
+name: S704-S709 independent final emitted-event recount
+on:
+  push:
+    branches: [codex/note-s709-string-causal-loops]
+    paths:
+      - scripts/s704_s709_final_recount.py
+      - .github/workflows/note-s704-s709-final-recount.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: note-s704-s709-final-recount
+  cancel-in-progress: false
+jobs:
+  recount:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install only independent numerical counting dependencies
+        run: python -m pip install numpy==1.26.4 scipy==1.13.1
+      - name: Recount raw emissions from seven immutable experiment artifacts
+        run: python -m scripts.s704_s709_final_recount --out /tmp/s704_s709_recount
+      - name: Preserve independent results and original reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S704_S709_INDEPENDENT_FINAL_RECOUNT
+          path: /tmp/s704_s709_recount/
+          retention-days: 60
+          if-no-files-found: error
