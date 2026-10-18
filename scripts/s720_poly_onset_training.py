@@ -55,6 +55,7 @@ def onset_weights(y,k,*,poly_factor=1.,bass_factor=1.):
         raise ValueError("S720 must use native 49-pitch/3-head and true FIT K")
     if poly_factor<1 or bass_factor<1:
         raise ValueError("S720 weights only upweight, never downweight")
+    y=y.float()
     poly=(k>=2).unsqueeze(-1)
     pitch=torch.arange(49,device=y.device)[None,None,:]
     reg=torch.where(pitch<=24,torch.as_tensor(bass_factor,device=y.device),1.)
@@ -69,6 +70,8 @@ def onset_weights(y,k,*,poly_factor=1.,bass_factor=1.):
 
 def training_loss(logits,k_logits,y,k,mask,*,poly_factor=1.,bass_factor=1.):
     """Same original S706 terms and normalization; controlled positive reweight."""
+    y=y.float()
+    k=k.long()
     positive=logits.new_tensor((10.,2.,8.))
     loss=F.binary_cross_entropy_with_logits(logits,y,pos_weight=positive,reduction="none")
     weights=onset_weights(y,k,poly_factor=poly_factor,bass_factor=bass_factor)
