@@ -42,9 +42,9 @@ class FragmentCombinationTests(unittest.TestCase):
         masks = np.asarray((3, 5, 33), dtype=np.uint8)
         revised = apply_fragment_masks(
             self.post, self.heads, self.eligible, masks)
-        self.assertEqual(float(revised[0, 0, 0]), .80)
-        self.assertEqual(float(revised[1, 1, 0]), .75)
-        self.assertEqual(float(revised[2, 2, 0]), .90)
+        self.assertAlmostEqual(float(revised[0, 0, 0]), .80)
+        self.assertAlmostEqual(float(revised[1, 1, 0]), .75)
+        self.assertAlmostEqual(float(revised[2, 2, 0]), .90)
         self.assertTrue(np.array_equal(
             revised[:, :, 1:], self.post[:, :, 1:]))
         self.assertTrue(np.array_equal(
