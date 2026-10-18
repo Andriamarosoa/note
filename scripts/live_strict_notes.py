@@ -170,6 +170,8 @@ def main(argv=None):
                         help="EXPERIMENTAL S667 NoteOff: sustain-off threshold (original 0.25; try 0.15)")
     parser.add_argument("--s672-hazard-model", type=Path,
                         help="S680 EXPERIMENTAL: earlier S672 TRAIN-selected 75D NoteOff specialist")
+    parser.add_argument("--s708-model", type=Path,
+                        help="EXPERIMENTAL S708 selected checkpoint s708_selected.pt; requires sibling report.json and torch CPU")
     parser.add_argument("--s675-hazard-model", type=Path,
                         help="S681 EXPERIMENTAL: latest S675 TRAIN-selected 78.08 pct offline NoteOff specialist, requires trusted workflow checkpoint + S630 batch4")
     parser.add_argument("--auto-level", action="store_true", help="Enable bounded causal input gain (+18dB max), adapted from midi; experimental, default OFF")
@@ -277,6 +279,18 @@ def main(argv=None):
             parser.error("--lookahead-ms >0 requires --hop-size 256 for the frozen S613 selector")
         if args.dual_hop_mode!="off" or args.harmonic_mode!="off":
             parser.error("S628 lookahead cannot be combined with dual-hop or harmonic guard at this stage")
+    if args.s708_model is not None:
+        if not args.s708_model.is_file():
+            parser.error("S708 checkpoint not found: " + str(args.s708_model))
+        if not args.s708_model.with_name("report.json").is_file():
+            parser.error("S708 frozen report.json missing beside checkpoint")
+        if args.model.resolve() != DEFAULT_MODEL.resolve():
+            parser.error("S708 experiment requires the original default S613 native heads")
+        if (hop_request != 256 or args.inference_batch_hops != 1 or
+                args.lookahead_ms != 0 or args.harmonic_mode != "off" or
+                args.dual_hop_mode != "off" or s667_enabled or
+                hazard_path is not None):
+            parser.error("S708 trial: native hop256, batch1, no other lookahead/fusion/offset adapter")
     queue_capacity = resolve_queue_blocks(args.queue_blocks, args.block_size)
     if args.block_size and args.block_size > HOP:
         print(json.dumps(dict(
@@ -352,7 +366,20 @@ def main(argv=None):
             harmonic_threshold=args.harmonic_threshold,
         )
         print(json.dumps(dict(hop_selection=hop_audit)), file=sys.stderr)
-        if args.inference_batch_hops > 1 or s680_adapter is not None:
+        if args.s708_model is not None:
+            from causal_note.s712_s708_live import S708StrictLiveStream, load_s708_checkpoint
+            model, policy, sha = load_s708_checkpoint(
+                args.s708_model, args.s708_model.with_name("report.json"))
+            stream = S708StrictLiveStream(heads, model, policy)
+            print(json.dumps(dict(s708_live="EXPERIMENTAL_UNPROMOTED_MIC_TRIAL",
+                sha256=sha, batch_hops=4, decision_hop_ms=round(4*HOP*1000/SR,3),
+                S708_onset_benchmark="68.75pct F1 GuitarSet DEV, NOT live mic accuracy",
+                source_audio_only=True, no_future_pcm=True,
+                noteoff="S708 joint release; S707 offline hazard NOT yet integrated",
+                original_reference_untouched=True,
+                warning="CPU torch + sharp 3-resolution FFT: monitor callback queue and processing latency")),
+                file=sys.stderr)
+        elif args.inference_batch_hops > 1 or s680_adapter is not None:
             # Batch=1 with the new NoteOff head uses the same S630
             # single-batch ONNX engine. Its feature and selector steps are
             # per source hop; original batch=1 without a model remains the
@@ -647,6 +674,7 @@ def main(argv=None):
                 if hasattr(stream, "diagnostics"):
                     field=("s630_batched_diagnostics" if args.inference_batch_hops>1
                            else "s629_lookahead_diagnostics" if args.lookahead_ms>0
+                           else "s708_trial_diagnostics" if args.s708_model is not None
                            else "dual_hop_diagnostics")
                     print(json.dumps({field:stream.diagnostics()}),
                           file=sys.stderr)
