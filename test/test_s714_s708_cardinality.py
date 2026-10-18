@@ -33,6 +33,7 @@ class S714EventAuditTests(unittest.TestCase):
                                  ("candidate","native","native_s675_causal")}))
         self.assertEqual(row["simultaneous_same_pitch_frames"],3)
         self.assertEqual(row["variants"]["candidate"]["by_true_k"]["2"]["under"],3)
+        self.assertEqual(row["variants"]["candidate"]["unique_pitch_k_correct"],8)
 
     def test_harmonic_coincidence_is_proxy_not_causation(self):
         notes=[dict(pitch=40,time=HOP/SR,duration=5*HOP/SR)]
