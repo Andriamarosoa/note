@@ -1,3 +1,22 @@
+## Résultat final S730 — 15 variantes rejetées
+
+[Run 39126100578 : SUCCESS](https://github.com/Andriamarosoa/note/actions/runs/39126100578). Les 15 variantes de 5 spécialistes S727 × 3 confiances Exact-K (0,35, 0,50, 0,65) ont été évaluées sur CAL32 avec le NoteOff S707 figé. **Seul S708 original** satisfait les six scores et les gardes sur les événements corrects. HELD32/DEV12 reproduisent donc S708 uniquement, aucune promotion LIVE.
+
+| CAL32 | S708 | S730, pénalité 2,6 époque 1 / K 0,65 |
+|---|---:|---:|
+| Onset F1 | **74,2639 %** | 73,7026 % |
+| Exact-K | 62,0455 % | **62,3741 %** |
+| Exact-K actif | 56,2762 % | **56,7591 %** |
+| Offset | **77,3292 %** | 75,5032 % |
+| F1 notes complètes | **57,1319 %** | 55,3458 % |
+| F1 hauteurs/trame | 76,4626 % | **76,6925 %** |
+
+La variante K 0,50 basée sur pénalité 1,8 époque 2 atteint 62,9798 % Exact-K et 77,0390 % frame-pitch F1, mais Onset diminue à 73,2294 %, Offset à 73,8031 % et full-note à 53,7375 %.
+
+**Le fait de préserver tous les événements originaux comme sous-séquence ne préserve pas les appariements de vérité terrain** lorsqu'un autre événement est ajouté. Les scores S730 le démontrent. Aucun gain complet ni objectif 80 % validé.
+
+---
+
 # S730 — Rattrapage causal de notes indépendantes, sans remplacer les notes reconnues par S708
 
 ## Pourquoi une cinquième boucle ?
