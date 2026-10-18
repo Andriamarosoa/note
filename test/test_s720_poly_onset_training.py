@@ -21,7 +21,7 @@ class S720TrainingTests(unittest.TestCase):
         self.assertEqual(float(w[0,1,2,0]),1.)
         self.assertEqual(float(w[0,2,0,0]),1.)
         self.assertEqual(float(w[0,1,0,2]),1.)
-        self.assertEqual(float(w[0,1,0,1]),1.6)
+        self.assertAlmostEqual(float(w[0,1,0,1]),1.6,places=6)
         self.assertTrue(torch.all(w>=1))
 
     def test_control_matches_original_s706_bce_objective(self):
