@@ -97,10 +97,6 @@ def missed_diagnostic(note, decision_ends, post, k, active, scene):
         strong_gate_pass=bool(np.any(strong[frames])),
         weak_gate_pass=has_weak,
         k_room_gate_pass=has_k_room,
-        k_underestimates_active_count=bool(np.all(
-            head_k[frames] < np.maximum(0, [
-                0 for _ in frames
-            ]))) if False else None,
         head_k_at_first=int(head_k[frames[0]]),
         p_k_add_at_first=float(scene[frames[0]].count_room),
         baseline_note_active_at_first=bool(active[frames[0], pitch])
@@ -157,8 +153,8 @@ def execute(args):
                      entry["size"], entry["sha256"])
         original = [s for s in proto["sources"]
                     if s["corpus"] == "GuitarSet" and s["split"] == "train"]
-        with zipfile.ZipFile(root / "data/GuitarSet_audio.zip") as aud, \\
-             zipfile.ZipFile(root / "data/GuitarSet_annotations.zip") as ann:
+        with (zipfile.ZipFile(root / "data/GuitarSet_audio.zip") as aud,
+              zipfile.ZipFile(root / "data/GuitarSet_annotations.zip") as ann):
             whole = expanded_train_specs(original, aud, ann)
             grouped = {
                 "CAL": [s for s in whole
@@ -223,7 +219,7 @@ def execute(args):
                         raise AssertionError("Frozen S708 replay mismatch "+phase+"/"+met)
                 report["tracks"].extend(rows)
                 (args.out/"report.json").write_text(
-                    json.dumps(report, indent=2, sort_keys=True)+"\\n")
+                    json.dumps(report, indent=2, sort_keys=True)+"\n")
                 print("FN GATE SUMMARY", phase, json.dumps(
                     {k:v for k,v in report["groups"].items() if k.startswith(phase)}),
                     flush=True)
