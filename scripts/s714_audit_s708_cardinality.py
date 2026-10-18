@@ -22,8 +22,10 @@ def events_to_frames(events, ends):
     for e in events:
         p = int(e["pitch"]) - 40
         a, d = int(e["available_sample"]), int(e["decision_sample"])
-        if not 0 <= p < 49 or a < d or a < 0:
-            raise ValueError("Invalid pitch or backdated event")
+        if not 0 <= p < 49:
+            raise ValueError("Invalid pitch")
+        if a < d or a < 0:
+            raise ValueError("Backdated event")
         if abs(float(e["time"]) - a / SR) > 1e-10:
             raise ValueError("Event clock does not match availability")
         frame = int(np.searchsorted(ends, a))
