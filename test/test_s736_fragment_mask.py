@@ -108,5 +108,38 @@ class FragmentCombinationTests(unittest.TestCase):
         self.assertGreater(float(model.risk[0].weight.grad.abs().sum()), 0.)
 
 
+    def test_original_exactk_class_decoder_and_independent_keep(self):
+        # Original architecture: conditional distribution for each K, a
+        # learned per-K decoder, plus a separate KEEP decision.
+        model = FragmentMaskRouter()
+        self.assertEqual(model.attention.num_heads, 3)
+        self.assertEqual(model.head_proj[0].out_features, 48)
+        self.assertEqual(model.class_out.out_features, 1)
+        b = len(self.post)
+        x = torch.from_numpy(block_features(
+            self.heads, self.context, self.eligible, self.k))
+        d = torch.from_numpy(subset_descriptors(
+            self.post, self.heads, self.eligible, self.context))
+        audits = torch.zeros(b, 32, 7, 3)
+        legal = torch.ones(b, 32, 7, dtype=torch.bool)
+        legal[:, 1:, 0] = False
+        result = model(x, d, audits, torch.from_numpy(self.k), legal)
+        self.assertEqual(tuple(result["class_logits"].shape), (b, 8))
+        self.assertEqual(tuple(result["action_logits"].shape), (b, 33))
+        self.assertEqual(tuple(result["keep_selection_weights"].shape), (b, 32))
+        self.assertTrue(bool((result["class_selection_weights"][:, 1:, 0] == 0).all()))
+        self.assertTrue(torch.allclose(
+            result["class_selection_weights"][:, :, 0].sum(-1),
+            torch.ones(b), atol=1e-6))
+        # A mask's selection must receive gradient through the original
+        # seven-class decoder, not a hand-coded score-only shortcut.
+        loss = result["action_logits"][:, 2].sum() + result["class_logits"][:, 7].sum()
+        loss.backward()
+        self.assertGreater(float(model.class_out.weight.grad.abs().sum()), 0.)
+        self.assertGreater(float(model.keep_head[-1].weight.grad.abs().sum()), 0.)
+        self.assertGreater(float(model.k_gate.weight.grad.abs().sum()), 0.)
+
+
+
 if __name__ == "__main__":
     unittest.main()
