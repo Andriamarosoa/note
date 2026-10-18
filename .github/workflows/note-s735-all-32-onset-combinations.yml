@@ -1,0 +1,71 @@
+name: S735 all 32 Onset subsets and learned per-note combinations (CAL)
+on:
+  push:
+    branches: [codex/note-s735-32-combinations-onset-audit]
+    paths:
+      - scripts/s735_audit_32_onset_combinations.py
+      - test/test_s735_32_onset_combinations.py
+      - .github/workflows/note-s735-all-32-onset-combinations.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: note-s735-all-onset-combinations
+  cancel-in-progress: true
+jobs:
+  enumerate_all_masks_and_causal_midi:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install pinned real-audio CPU runtime
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Ensure all 32 masks and individual-note isolation are reproducible
+        run: |
+          python -m compileall -q scripts/s735_audit_32_onset_combinations.py
+          python -m unittest -v test.test_s735_32_onset_combinations test.test_s733_one_target_selector test.test_s713_metric_contract
+      - name: Fetch signed S708 S707 and genuinely trained S734
+        run: |
+          mkdir -p /tmp/s735/s708 /tmp/s735/s707 /tmp/s735/s734
+          gh run download 39094682419 --repo "Andriamarosoa/note" --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s735/s708
+          gh run download 39059008484 --repo "Andriamarosoa/note" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s735/s707
+          gh run download 39137653526 --repo "Andriamarosoa/note" --name S734_ONSET_INDIVIDUAL_NEURAL_EXACTK_LINKED_FIT_CAL_HELD_DEV --dir /tmp/s735/s734
+          test -s /tmp/s735/s708/report.json
+          test -s /tmp/s735/s708/s708_selected.pt
+          test -s /tmp/s735/s707/s675_hazard.joblib
+          test -s /tmp/s735/s734/report.json
+          test -s /tmp/s735/s734/s733_onset.pt
+      - name: Replay FIT80 only for audited risk; enumerate 32 masks and dynamic per-note selection CAL32
+        run: |
+          python -m scripts.s735_audit_32_onset_combinations --s708-dir /tmp/s735/s708 --offset-checkpoint /tmp/s735/s707/s675_hazard.joblib --s734-checkpoint /tmp/s735/s734/s733_onset.pt --s734-report /tmp/s735/s734/report.json --phase CAL --out /tmp/s735/audit
+      - name: Verify frozen baseline matched and no forbidden promotions
+        if: success()
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/s735/audit/report.json'))
+          assert r['completed'] and not r['promoted']
+          assert not r['LIVE_changed'] and not r['TEST_opened']
+          assert len(r['tracks'])==32 and r['exhaustive_subsets']==32
+          assert len(r['groups']['all']['valid_noregression_masks'])>=1
+          assert 1 in r['groups']['all']['valid_noregression_masks']
+          print('S735_EXHAUSTIVE_FINAL',json.dumps(r['groups']['all'],sort_keys=True))
+          PY
+      - name: Archive every mask, dynamic subset and counterexample
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S735_CAUSAL_32_MASK_DYNAMIC_PER_NOTE_CAL32_NO_PROMOTION
+          path: /tmp/s735/audit/report.json
+          if-no-files-found: warn
+          retention-days: 45
