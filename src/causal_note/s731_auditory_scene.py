@@ -143,8 +143,15 @@ def scene_scores(track,baseline_on,baseline_k,baseline_events,ends):
         raise ValueError("S731 track/decision ABI mismatch")
     by_time={}
     for e in baseline_events:
-        clock=int(e["decision_sample"])
-        by_time.setdefault(clock,[]).append(e)
+        # The release hazard may infer an end on one native frame but it
+        # cannot actually EMIT that NoteOff until a later causal hop.
+        # Never incorporate an event into the source scene prematurely.
+        available=int(e.get("available_sample",e["decision_sample"]))
+        if available<0:
+            raise ValueError("S731 cannot receive a note before time zero")
+        next_frame=int(np.searchsorted(ends,available,side="left"))
+        if next_frame<len(ends):
+            by_time.setdefault(int(ends[next_frame]),[]).append(e)
     state=np.zeros(49,bool)
     tracker=AuditoryScene()
     result=[]
