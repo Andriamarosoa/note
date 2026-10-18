@@ -1,3 +1,18 @@
+
+## Correctifs S713 désormais vérifiés (code et CI)
+
+Après la rédaction initiale de cette matrice, l'audit a produit les correctifs suivants sur **cette même branche** :
+- **AUD-001 — Couverture logicielle corrigée** : `test/test_s713_live_cpu_and_events.py` impose de vrais `note_on` et `note_off` cohérents depuis la sélection S708 ; la CI exige aussi que le **vrai checkpoint** émette au moins une paire NoteOn/NoteOff sur un PCM test et que les événements de moteurs incrémental et référence soient égaux. **La qualité sur guitare enregistrée reste non validée**.
+- **AUD-002 — Recalcul CPU réduit, ne remplace pas une mesure Windows** : caches temporels par couche et calcul des 192D seulement pour la ligne courante. Le run [S713 final](https://github.com/Andriamarosoa/note/actions/runs/39106989073) passe 19 tests, modèle S708 SHA256 `c81d98dbce8d096b54d71dedd88f521162ea95b19d0c059ab13baf69d5cf0588`, événements identiques sur WAV de contrôle : p95 **14,2701 → 5,0670 ms** et ratio travail/audio **0,7036 → 0,3806** sur GitHub Ubuntu, pas le matériel iRig. Le pas microphone de 256 échantillons vaut 5,805 ms à 44,1 kHz ; p99 et variations Windows restent inconnus.
+- **AUD-004 — Corrigé** : `--status --s708-model` indique modèle réel, hash validé, politique CAL figée et pas de décision 1024 samples ; aucun affichage ambigu de la cadence native 256 samples.
+- **AUD-005 — Contrats de score partiellement testés** : appariement par pitch, NoteOff de fin non crédité, double attaque interdite, réattaque et timestamp non antidaté ; protocole multi-sources toujours à revalider.
+
+**Toujours ouverts :** AUD-003 (S707 Offset spécialisé non branché en LIVE), AUD-006 (harmoniques / accords E2–K6), AUD-007 (inventaire des 848 workflows sans suppression non prouvée), et validation sur vraie guitare/latence physique.
+
+Voir [S713_LIVE_FIXES.md](S713_LIVE_FIXES.md) pour les commandes Windows et limites.
+
+---
+
 # S713 — Matrice des audits indépendants et preuves de code
 
 **Point de départ (18 octobre 2026)** : branche `codex/note-s712-s708-strict-live-trial`, commit `a47dd8cb6bbf36a5649460b44c10f5b743259564`.
