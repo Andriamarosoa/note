@@ -31,6 +31,12 @@ jobs:
       - name: Validate real E2/E3 truth-overlap and unique matched event contracts
         run: |
           python -m compileall -q scripts/s725_real_e2_e3_overlap_audit.py
+          python - <<'PY'
+          from pathlib import Path
+          source=Path('scripts/s725_real_e2_e3_overlap_audit.py').read_text()
+          assert 'item["native_features"]=raw[:,:,:126].copy()' in source, 'Missing original acoustic hazard ABI'
+          print('S725_S707_NATIVE_ABI_PARITY_PASS')
+          PY
           python -m unittest -v test.test_s725_real_e2_e3_overlap_audit test.test_s725_source_memory
       - name: Require previously signed S725 full six-score validation
         run: |
