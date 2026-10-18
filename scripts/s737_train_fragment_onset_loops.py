@@ -125,7 +125,7 @@ def supervision(track, truth, seed):
                 descriptors=track["descriptors"][ix],
                 k=track["k"][ix],
                 source=track["item"]["spec"]["composition"],
-                target=target[ix],audit_true_k=ktruth[ix],
+                target=target[ix],audit_true_k=ktrue[ix],
                 risk=risk,coverage=coverage,
                 total=int(len(y)),rescuable=int(np.count_nonzero(target>0)),
                 sampled=int(len(ix)))
