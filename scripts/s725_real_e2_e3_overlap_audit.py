@@ -108,6 +108,11 @@ def main(args):
             for i,spec in enumerate(cal):
                 item=record(spec,wav,heads,selection,offset)
                 raw=item["x"]
+                # Match the already validated S725 six-metric replay ABI:
+                # S707 uses the original 126D causal acoustic source.
+                # Extract from input before generating candidate events;
+                # no labels or future acoustic data are consulted.
+                item["native_features"]=raw[:,:,:126].copy()
                 actual=augmented_track(raw)
                 emitted={}
                 for name,model in models.items():
