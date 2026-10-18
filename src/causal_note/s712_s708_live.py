@@ -129,7 +129,7 @@ def latest_s708_acoustic_features(feat, post, count):
 
 class S708StrictLiveStream:
     """Four-hop S708 stream with source-only past data and fail-fast continuity."""
-    def __init__(self, heads, model, policy, *, temporal_engine="incremental"):
+    def __init__(self, heads, model, policy, *, temporal_engine="incremental", release_adapter=None):
         self.heads = heads
         self.frontend = CausalPitchFeatures(hop=HOP)
         if temporal_engine not in ("incremental", "reference"):
@@ -139,6 +139,7 @@ class S708StrictLiveStream:
                          if temporal_engine == "incremental" and hasattr(model, "encode")
                          else TemporalHeadStream(model))
         self.selector = GuidedSelector(policy)
+        self.release_adapter = release_adapter
         self.native_feat = deque(maxlen=65)
         self.native_post = deque(maxlen=65)
         self.native_k = deque(maxlen=65)
@@ -175,6 +176,9 @@ class S708StrictLiveStream:
             e["available_sample"] = int(available)
             e["time"] = float(available/SR)
             e["s708_shadow_trial"] = True
+        if self.release_adapter is not None:
+            emitted = self.release_adapter.step(end, emitted, self.native_feat[-1],
+                self.native_post[-1], self.native_k[-1], available)
         return emitted
 
     def push(self, samples, *, start_sample):
@@ -215,6 +219,8 @@ class S708StrictLiveStream:
         self.closed = True
         end = self.received
         events = self.selector.finish(end)
+        if self.release_adapter is not None:
+            events = self.release_adapter.finish(end, reason=reason)
         for e in events:
             e["reason"] = reason
             e["s708_shadow_trial"] = True
@@ -225,5 +231,9 @@ class S708StrictLiveStream:
                     decision_hop=DECISION, model_calls=self.model_calls,
                     source_past_only=True, torch_cpu_inference=True,
                     temporal_engine=self.temporal_engine,
-                    offset_source="S708_joint_selector_not_S707",
+                    offset_source=("S716_online_S707_causal_hazard"
+                                   if self.release_adapter is not None
+                                   else "S708_joint_selector_not_S707"),
+                    s707_online_diagnostics=(self.release_adapter.diagnostics()
+                                             if self.release_adapter is not None else None),
                     native_reference_unmodified=True)
