@@ -29,7 +29,7 @@ from causal_note.s732_source_discriminator import (
 from scripts.s613_prepare_strict_live import download,labels,digest
 from scripts.s613_train_strict_live import real_notes
 from scripts.s699_player_held_full_train_K import expanded_train_specs
-from scripts.s706_train_sharp_temporal_loops import record,load_model
+from scripts.s706_train_sharp_temporal_loops import record,load_model,FIT_COMPS,CAL_COMPS,HELD_COMPS
 from scripts.s705_train_temporal_loops import setup
 from scripts.s704_train_joint_loops import targets
 from scripts.s704_joint_metrics import SCORES,metric,aggregate,target_rank
@@ -185,9 +185,9 @@ def run(args):
              s["corpus"]=="GuitarSet" and s["split"]=="dev"]
         with zipfile.ZipFile(root/"data/GuitarSet_audio.zip") as archive,zipfile.ZipFile(root/"data/GuitarSet_annotations.zip") as ann:
             whole=expanded_train_specs(sources,archive,ann)
-            fit=[s for s in whole if s["composition"] in original["fit_compositions"]]
-            cal=[s for s in whole if s["composition"] in original["cal_compositions"]]
-            held=[s for s in whole if s["composition"] in original["held_compositions"]]
+            fit=[s for s in whole if s["composition"] in FIT_COMPS]
+            cal=[s for s in whole if s["composition"] in CAL_COMPS]
+            held=[s for s in whole if s["composition"] in HELD_COMPS]
             assert (len(fit),len(cal),len(held),len(dev))==(80,32,32,12)
             model_info,training_proof=fit_sources(fit,archive,root,heads,
                 selector,offset,network,policy,release,args.out)
