@@ -5,6 +5,8 @@ on:
     paths:
       - .github/workflows/note-s731-real-auditory-scene-cal.yml
       - scripts/s731_auditory_scene_calibration.py
+      - src/causal_note/s731_auditory_scene.py
+      - test/test_s731_auditory_scene.py
   workflow_dispatch:
 permissions: {contents: read, actions: read}
 concurrency:
