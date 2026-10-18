@@ -176,18 +176,28 @@ def fit_model(fit,checkpoint,out,epochs=3):
     opt=torch.optim.AdamW(model.parameters(),lr=.0006,weight_decay=.003)
     # Leave an entire FIT composition out of each risk profile.
     comp=sorted({d["source"] for d in fit})
+    # Cache source-composition counts once: scanning 79 other recordings for
+    # every held recording would otherwise rescore the same FIT rows 6400 times.
+    stats=[raw_risk_stats(row) for row in fit]
+    histogram=[np.bincount(row["true_k"],minlength=7) for row in fit]
+    all_stats=np.sum(stats,axis=0)
+    all_hist=np.sum(histogram,axis=0)
     packed=[]
-    for row in fit:
-        other=[d for d in fit if d["source"]!=row["source"]]
-        if not other:
-            raise AssertionError("Requires >1 independent FIT composition")
-        audited=fit_audit_rows(row,other)
+    for i,row in enumerate(fit):
+        excluded=[j for j,d in enumerate(fit) if d["source"]==row["source"]]
+        own_stats=np.sum([stats[j] for j in excluded],axis=0)
+        own_hist=np.sum([histogram[j] for j in excluded],axis=0)
+        oof=((all_stats-own_stats)/
+             (all_hist-own_hist+16)[None,:,None]).reshape(1,H,21).astype(np.float32)
+        audited=np.broadcast_to(oof,(len(row["y"]),H,21)).copy()
+        # OOF correction/regression rates, averaged by observed model K.
+        oof_by_k=audited.reshape(-1,H,7,3)
+        risk=(oof_by_k[:,:,:,:2]*row["k"][:,None,:,None]).sum(2)
         packed.append((rows_to_torch(row,audited),
                        torch.as_tensor(row["actions"]).long(),
-                       torch.from_numpy(np.repeat(audited[:,:,:1],2,axis=2)).float()))
-    sizes=[len(d["y"]) for d in fit]
-    # Risk labels: rate of correcting/regressing observed training heads
-    # inferred from OTHER compositions ONLY; no same-row correctness leak.
+                       torch.from_numpy(risk.astype(np.float32))))
+    # Risk labels come exclusively from OTHER FIT compositions, never from
+    # the current example's own true note annotations.
     train_history=[]
     for epoch in range(epochs):
         rng=np.random.default_rng(733+epoch)
