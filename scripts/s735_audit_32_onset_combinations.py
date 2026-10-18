@@ -19,7 +19,7 @@ from threadpoolctl import threadpool_limits
 
 from causal_note.s733_one_target_selector import OneTargetClassConditionalSelector
 from scripts.s733_train_onset_only import (
-    baseline_input, head_schema, REFERENCE, H)
+    baseline_input, head_schema, REFERENCE, H, collected_examples, raw_risk_stats)
 from scripts.s613_prepare_strict_live import download, labels, digest
 from scripts.s613_train_strict_live import real_notes
 from scripts.s699_player_held_full_train_K import expanded_train_specs
@@ -28,6 +28,7 @@ from scripts.s706_train_sharp_temporal_loops import (
 from scripts.s705_train_temporal_loops import setup
 from scripts.s704_joint_metrics import SCORES, metric, aggregate
 from scripts.s731_auditory_scene_calibration import emit
+from scripts.s704_train_joint_loops import targets
 from causal_note.s708_cardinality_selection import GuidedPolicy
 from causal_note.strict_live import SR
 
@@ -136,6 +137,7 @@ def inspect(args):
     report=dict(schema="S735_32_H0_BASED_ONSET_SUBSETS_AND_PER_PITCH_DYNAMIC",
        signed_sha256=sha,source_run=39137653526,
        checkpoint_source="S734 trained FIT80 H5 with frozen Exact-K",
+       audited_profiles_recomputed_from_FIT80_only=True,
        evaluation="32 OR/max subsets (not retrained) + 1 frozen dynamic attention policy",
        dynamic_policy="H0 plus up to two heads with largest S734 attention weights >= 0.10",
        exhaustive_subsets=32, frozen=True, promoted=False,
@@ -155,6 +157,27 @@ def inspect(args):
         with (zipfile.ZipFile(root/"data/GuitarSet_audio.zip") as aud,
               zipfile.ZipFile(root/"data/GuitarSet_annotations.zip") as ann):
             expanded=expanded_train_specs(originals,aud,ann)
+            # Recreate the FIT-only audit features seen in S734 training.
+            # Zero-filled risk features would change the input distribution.
+            fit_specs=[s for s in expanded if s["composition"] in FIT_COMPS]
+            if len(fit_specs)!=80:
+                raise AssertionError("Missing FIT80 compositions")
+            fit_stats=np.zeros((H,7,3),np.float64)
+            fit_hist=np.zeros(7,np.float64)
+            for fi,source in enumerate(fit_specs):
+                item0,post0,k0,stream0,cand0,ctx0,eligible0=baseline_input(
+                    source,aud,root,native_heads,native_selection,offset,
+                    network,policy,release)
+                real=real_notes(labels(source,root)["notes"],item0["samples"]/SR)
+                binary,ktruth=targets(item0["decision_ends"],real)
+                sample=collected_examples(cand0,ctx0,eligible0,binary[:,:,0],
+                    ktruth,k0,source["composition"],seed=733+fi)
+                fit_stats+=raw_risk_stats(sample)
+                fit_hist+=np.bincount(sample["true_k"],minlength=7)
+                if (fi+1)%20==0:
+                    print("S735 FIT-only risk replay",fi+1,flush=True)
+            learned_audit=(fit_stats/(fit_hist[None,:,None]+16)).reshape(
+                H,21).astype(np.float32)
             required=CAL_COMPS if args.phase=="CAL" else HELD_COMPS
             specs=[s for s in expanded if s["composition"] in required]
             if len(specs)!=32:
@@ -168,10 +191,7 @@ def inspect(args):
                 item,post,k,baseline,candidates,ctx,eligible=baseline_input(
                     spec,aud,root,native_heads,native_selection,offset,network,policy,release)
                 # FIT80 summaries only: no labels from this track enter decisions.
-                learned_audit=np.zeros((H,21),np.float32)
-                # S734 audited profiles are not present in its published artifact;
-                # this zero-control isolates audio/per-K learned attention without
-                # recreating target-aware risk labels on the held CAL audio.
+                # Exact S734 FIT80 risk profile; CAL labels are still unopened.
                 augmented,dynamic_mask=k_head_and_dynamic(
                     model,candidates,ctx,eligible,k,learned_audit)
                 histogram.update(str(int(i)) for i in dynamic_mask[eligible].ravel())
