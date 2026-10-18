@@ -108,6 +108,14 @@ jobs:
           a,b=(results[n]['events'] for n in ('reference','incremental'))
           key=lambda e:(e['type'],e['pitch'],e['decision_sample'],e['available_sample'])
           assert list(map(key,a))==list(map(key,b)),'S708 emitted MIDI differs with cached CPU engine'
+          active=set();on=off=0
+          for e in a:
+              pitch=e['pitch']
+              if e['type']=='note_on':
+                  assert pitch not in active,'duplicate NoteOn';active.add(pitch);on+=1
+              else:
+                  assert pitch in active,'orphan NoteOff';active.remove(pitch);off+=1
+          assert on>=1 and off>=1 and not active,'WAV produced no complete NoteOn/NoteOff'
           print('S713 BOTH_ENGINES_WAV_PARITY',json.dumps({
             k:{kk:v[kk] for kk in ('worker_p95_ms','worker_over_audio_ratio')}
             for k,v in results.items()}),'emitted_events',len(a))
