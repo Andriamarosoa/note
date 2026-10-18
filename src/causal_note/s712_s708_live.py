@@ -18,7 +18,7 @@ import time
 import numpy as np
 
 from causal_note.strict_live import CausalPitchFeatures, HOP, SR
-from causal_note.s704_joint_heads import acoustic_features
+from scripts.s701_train_causal_onset_shadow import onset_features
 from causal_note.s705_temporal_heads import TemporalHeadStream, TemporalHeads, pitch_shift
 import torch
 from torch.nn import functional as F
@@ -101,6 +101,32 @@ class IncrementalS708TemporalHead:
             return p[0,0].cpu().numpy(),k[0,0].cpu().numpy()
 
 
+def latest_s708_acoustic_features(feat, post, count):
+    """Exactly S704 acoustic_features(...)[-1] without recomputing 65 frames.
+
+    Only eight previous native frames are needed by the 39D S701 onset
+    embedding; the three 9D frozen context taps require 8/32/64 past frames.
+    Never change the 192D feature ABI or model weights.
+    """
+    n=len(feat)
+    if n==0 or len(post)!=n or len(count)!=n:
+        raise ValueError("S708 acoustic history counts must match and be nonempty")
+    # S701 onset_features uses only the current frame plus lags 2 and 8.
+    recent=max(0,n-9)
+    short_f=np.stack([feat[i] for i in range(recent,n)])
+    short_p=np.stack([post[i] for i in range(recent,n)])
+    short_k=np.stack([count[i] for i in range(recent,n)])
+    current_onset=onset_features(short_f,short_p,short_k)[-1]
+    context=[]
+    for lag in (8,32,64):
+        i=max(0,n-1-lag)
+        context.append(np.concatenate((feat[i][:,48:54],post[i]),axis=-1))
+    out=np.concatenate((feat[-1],current_onset,*context),axis=-1).astype(np.float32)
+    if out.shape!=(49,192) or not np.isfinite(out).all():
+        raise AssertionError("S708 current 192D acoustic feature ABI mismatch")
+    return out
+
+
 class S708StrictLiveStream:
     """Four-hop S708 stream with source-only past data and fail-fast continuity."""
     def __init__(self, heads, model, policy, *, temporal_engine="incremental"):
@@ -124,10 +150,9 @@ class S708StrictLiveStream:
         self.model_calls = 0
 
     def _decide(self, end, available):
-        feat = np.stack(self.native_feat)
-        post = np.stack(self.native_post)
-        count = np.stack(self.native_k)
-        x = acoustic_features(feat, post, count)[-1]
+        x = latest_s708_acoustic_features(
+            self.native_feat, self.native_post, self.native_k)
+        post = self.native_post
         # Exactly two consecutive four-hop FFT instants are required for
         # phase-coherence evidence. First block has no previous FFT.
         ne = len(self.audio)
