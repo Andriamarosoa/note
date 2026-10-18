@@ -116,7 +116,7 @@ class PairedWindows(Windows):
 
     def __getitem__(self,index):
         x,y,k,valid,mask=super().__getitem__(index)
-        if not self.enable_memory:
+        if not self.enable_phase_features:
             x[:,:,BASE:]=self.extra_mean
         return x,y,k,valid,mask
 
