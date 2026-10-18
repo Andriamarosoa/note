@@ -694,7 +694,7 @@ def main(argv=None):
                             warning="Includes acoustic/model CPU, not piano synthesis, and does not prove end-to-end latency.",
                         )
                     )),file=sys.stderr)
-                if stream.harmonic_selector is not None:
+                if getattr(stream, "harmonic_selector", None) is not None:
                     from dataclasses import asdict
                     print(json.dumps(dict(harmonic_expert_diagnostics=asdict(
                         stream.harmonic_selector.stats,
