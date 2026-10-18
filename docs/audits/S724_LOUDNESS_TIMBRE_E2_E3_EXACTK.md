@@ -104,3 +104,15 @@ la façon dont les guitaristes pincent les cordes. Le jeu
 avec doigts plus doux / plus forts exige en plus des prises
 physiques dédiées; multiplier une forme d'onde ne
 reproduit pas le changement réel de timbre de pincement.
+
+
+## Mesure de robustesse au volume sur de vrais fichiers CAL
+
+[Workflow de contrôle gain réel S724](https://github.com/Andriamarosoa/note/actions/runs/39119279340) ; script `scripts/s724_gain_robustness_cal12.py`. Cet audit attend le checkpoint S724 attesté par GitHub Actions puis recalcule **depuis le PCM** toutes les caractéristiques natives et sharp, les probabilités et les vrais NoteOn/NoteOff (pas simplement les features déjà mémorisées) pour 12 pistes CAL fixes, six accords et six solos.
+
+- Gain `0.5` (environ –6.02 dB), `1.0` (original), `2.0` (+6.02 dB), sur les **mêmes prises annotées**.
+- Les deux modèles S708 et S724 époque 2 gardent exactement le même décodeur guidé par Exact-K et le même S707 causal Offset.
+- Le code reconstruit les 288D originaux depuis le PCM, et impose leur égalité au chemin historique pour les exemples originaux à gain 1, avant d'ouvrir les annotations.
+- Rapporte les six métriques, les TP/FP/FN, la différence de chaque score par rapport à la condition gain 1, **le nombre d'échantillons écrêtés** après la multiplication. Une variante +6 dB avec clipping ne prouve pas une robustesse à un gain propre ; elle doit être signalée séparément.
+- Le test **n'intervient pas dans la sélection CAL du modèle S724** et n'est pas une validation indépendante HELD/DEV.
+- **Ne pas confondre** cette multiplication PCM avec la force physique de pincement (l'intensité peut aussi modifier le spectre et la phase). Les enregistrements physiques faible/moyen/fort devront être ajoutés ultérieurement pour vérifier cette généralisation.
