@@ -1,0 +1,80 @@
+name: S731 real all-note auditory old-plus-new competition with Exact-K
+on:
+  push:
+    branches: [codex/note-s713-independent-code-audit-agents]
+    paths:
+      - .github/workflows/note-s731-real-auditory-scene-cal.yml
+      - scripts/s731_auditory_scene_calibration.py
+      - src/causal_note/s731_auditory_scene.py
+      - test/test_s731_auditory_scene.py
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: note-s731-real-auditory-scene
+  cancel-in-progress: true
+jobs:
+  S731_49_pitch_counterfactual_K_evidence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install S708 CPU inference dependencies
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Physical source ownership graph, old vs new real acoustic evidence, causal streaming and metric tests
+        run: |
+          python -m compileall -q src/causal_note/s731_auditory_scene.py scripts/s731_auditory_scene_calibration.py
+          python -m unittest -v test.test_s731_auditory_scene test.test_s713_metric_contract test.test_s730_additive_k_guard
+      - name: Download signed S708 and S707 unchanged
+        run: |
+          mkdir -p /tmp/s731/s708 /tmp/s731/s707
+          gh run download 39094682419 --repo "${{ github.repository }}" --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s731/s708
+          gh run download 39059008484 --repo "${{ github.repository }}" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s731/s707
+          test -s /tmp/s731/s708/report.json
+          test -s /tmp/s731/s708/s708_selected.pt
+          test -s /tmp/s731/s707/s675_hazard.joblib
+      - name: Real GuitarSet causal all-pitch competing explanations, 9 predeclared decisions, six score CAL, freeze then HELD DEV
+        run: |
+          python -m scripts.s731_auditory_scene_calibration --s708-dir /tmp/s731/s708 --offset-checkpoint /tmp/s731/s707/s675_hazard.joblib --out /tmp/s731/report
+      - name: Verify all 32 CAL, selected strictly on CAL, no S708 regression and zero promotion
+        if: success()
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/s731/report/report.json'))
+          assert not r['promoted'] and not r['LIVE_changed'] and not r['TEST_opened']
+          assert r['original_k_and_offset_frozen'] and r['CAL_only_selection']
+          assert len(r['CAL']['tracks'])==32
+          assert len(r['CAL']['scores'])==10
+          assert r['CAL']['selected'] in r['CAL']['eligible']
+          assert len(r['HELD']['tracks'])==32 and len(r['DEV']['tracks'])==12
+          for n,row in r['CAL']['overlap'].items():
+              assert row['12']['observed_real_targets']==151
+              assert row['19']['observed_real_targets']==67
+          print('S731_REAL_AUDITORY_SCENE_FINAL',json.dumps({
+              'selected':r['CAL']['selected'],
+              'eligible':r['CAL']['eligible'],
+              'shadow_qualifies':r['shadow_qualifies'],
+              'CAL_scores':{name:{m:round(v[m],5) for m in (
+                'onset_f1','exact_k','active_exact_k','offset_accuracy',
+                'full_note_f1','frame_pitch_f1')} for name,v in r['CAL']['scores'].items()},
+              'actual_octaves':r['CAL']['overlap']},sort_keys=True),flush=True)
+          PY
+      - name: Archive all-source hypothesis scores and historical note-event preservation
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S731_OLD_PLUS_NEW_ALL_PITCH_PHYSICAL_EXPLANATION_EXACTK_NO_PROMOTION
+          path: /tmp/s731/report/report.json
+          if-no-files-found: warn
+          retention-days: 45

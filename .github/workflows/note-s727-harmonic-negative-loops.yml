@@ -1,0 +1,76 @@
+name: S727 harmonic negative training loops on real guitar with Exact-K + six-score CAL audit
+on:
+  push:
+    branches: [codex/note-s713-independent-code-audit-agents]
+    paths:
+      - src/causal_note/s727_harmonic_competition_loss.py
+      - scripts/s727_train_harmonic_negative_loops.py
+      - test/test_s727_harmonic_competition_loss.py
+      - .github/workflows/note-s727-harmonic-negative-loops.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: note-s727-true-fit-hard-octave-negative
+  cancel-in-progress: true
+jobs:
+  S727_FIT_train_CAL_choice_independent_event_comparison:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original CPU neural and GuitarSet protocol deps
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Prove FIT true E3 positive and E2-only harmonic impostor negative labels and gradients
+        run: |
+          python -m compileall -q src/causal_note/s727_harmonic_competition_loss.py scripts/s727_train_harmonic_negative_loops.py
+          python -m unittest -v test.test_s727_harmonic_competition_loss test.test_s720_poly_onset_training test.test_s718_onset_audit test.test_s713_metric_contract
+      - name: Fetch signed original S708 and S707 75D specialist (no new reference)
+        run: |
+          mkdir -p /tmp/s727/s708 /tmp/s727/s707
+          gh run download 39094682419 --repo "${{ github.repository }}" --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s727/s708
+          gh run download 39059008484 --repo "${{ github.repository }}" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s727/s707
+          test -s /tmp/s727/s708/report.json
+          test -s /tmp/s727/s708/s708_selected.pt
+          test -s /tmp/s727/s707/s675_hazard.joblib
+      - name: FIT-train identical source-memory networks using control vs hard-negative loss, then CAL freeze
+        run: |
+          python -m scripts.s727_train_harmonic_negative_loops --s708-dir /tmp/s727/s708 --offset-checkpoint /tmp/s727/s707/s675_hazard.joblib --out /tmp/s727/results
+      - name: Enforce immutable baseline, true model training and no automatic promotion
+        if: success()
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          p=pathlib.Path('/tmp/s727/results/report.json')
+          a=json.loads(p.read_text())
+          assert a['promoted'] is False and a['TEST_opened'] is False
+          assert a['CAL_only_model_selection'] and a['learned_ExactK_conditioning_preserved']
+          assert set(a['train'])=={f'harmonic_{str(x).replace(chr(46),chr(112))}_epoch{e}' for x in (1.0,1.8,2.6) for e in (1,2)}
+          assert a['CAL']['selected'] in a['CAL']['eligible']
+          assert all(len(a[x]['tracks'])==n for x,n in (('HELD',32),('DEV',12)))
+          print('S727_FROZEN_CAL_EXACT_K_COOPERATION_VALIDATED',
+              json.dumps({'selected':a['CAL']['selected'],
+                'eligible':a['CAL']['eligible'],
+                'shadow_qualifies':a['shadow_qualifies'],
+                'cal_six_scores':{name:{k:round(row[k],5) for k in (
+                    'onset_f1','exact_k','active_exact_k','offset_accuracy',
+                    'full_note_f1','frame_pitch_f1')} for name,row in a['CAL']['scores'].items()}}),flush=True)
+          PY
+      - name: Archive 320D independently trained heads and comparative source evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S727_OCTAVE_HARD_NEGATIVE_EXACTK_FIT_LOOPS
+          path: /tmp/s727/results
+          retention-days: 45
+          if-no-files-found: warn

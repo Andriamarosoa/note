@@ -1,0 +1,69 @@
+name: S718 frozen S708 Onset FN gating forensic audit on real guitar
+on:
+  push:
+    branches: [codex/note-s713-independent-code-audit-agents]
+    paths:
+      - scripts/s718_onset_false_negative_audit.py
+      - test/test_s718_onset_audit.py
+      - .github/workflows/note-s718-onset-fn-forensics.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: note-s718-onset-forensic
+  cancel-in-progress: true
+jobs:
+  exact_S708_FN_replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 110
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install frozen original NOTE dependencies, CPU PyTorch
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Audit fixtures and compiled feature classifier
+        run: |
+          python -m compileall -q scripts/s718_onset_false_negative_audit.py
+          python -m unittest -v test.test_s718_onset_audit test.test_s714_s708_cardinality test.test_s713_metric_contract
+      - name: Retrieve SHA-frozen S708 and S707 offset weights
+        run: |
+          mkdir -p /tmp/s718/s708 /tmp/s718/s707
+          gh run download 39094682419 --repo "${{ github.repository }}" --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s718/s708
+          gh run download 39059008484 --repo "${{ github.repository }}" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s718/s707
+          test -s /tmp/s718/s708/s708_selected.pt
+          test -s /tmp/s718/s707/s675_hazard.joblib
+      - name: Replay every rejected onset and audit 525 DEV false negatives with real source model
+        run: |
+          python -m scripts.s718_onset_false_negative_audit --s708-dir /tmp/s718/s708 --offset-checkpoint /tmp/s718/s707/s675_hazard.joblib --out /tmp/s718/report
+          python - <<'PY'
+          import json
+          x=json.load(open('/tmp/s718/report/report.json'))
+          assert x['phases']['DEV']['fn']==525
+          assert x['phases']['DEV']['tp']==1055
+          assert x['phases']['DEV']['fp']==434
+          assert x['phases']['HELD']['fn']==834
+          for phase in ('HELD','DEV'):
+              p=x['phases'][phase]
+              assert sum(p['categories'].values())==p['fn']
+          assert x['promoted'] is False
+          print('S718_TRUE_ONSET_FN_FROZEN_REPLAY_VALIDATED',json.dumps({
+               phase:x['phases'][phase]['categories'] for phase in ('HELD','DEV')
+          }),flush=True)
+          PY
+      - name: Preserve findings and all unmatched note-level diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S718_FROZEN_ONSET_FNS_BY_CAUSAL_GATE_GUITARSET
+          path: /tmp/s718/report
+          if-no-files-found: warn
+          retention-days: 60

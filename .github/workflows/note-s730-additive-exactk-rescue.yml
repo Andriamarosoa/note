@@ -1,0 +1,78 @@
+name: S730 safe causal additive Exact-K independent-note rescue CAL guarded
+on:
+  push:
+    branches: [codex/note-s713-independent-code-audit-agents]
+    paths:
+      - src/causal_note/s730_additive_k_guard.py
+      - scripts/s730_safe_additive_octave_rescue.py
+      - test/test_s730_additive_k_guard.py
+      - .github/workflows/note-s730-additive-exactk-rescue.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: note-s730-k-safe-additive-rescue
+  cancel-in-progress: true
+jobs:
+  S730_preserve_original_full_note_stream:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install same original NOTE CPU neural and audio dependencies
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Validate unchanged source event streams, Exact-K causal gate, source preemption
+        run: |
+          python -m compileall -q src/causal_note/s730_additive_k_guard.py scripts/s730_safe_additive_octave_rescue.py
+          python -m unittest -v test.test_s730_additive_k_guard test.test_s727_harmonic_competition_loss test.test_s713_metric_contract
+      - name: Load original S708, signed S727 trained harmonic specialists and original S707 NoteOff
+        run: |
+          mkdir -p /tmp/s730/s708 /tmp/s730/s727 /tmp/s730/s707
+          gh run download 39094682419 --repo "${{ github.repository }}" --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s730/s708
+          gh run download 39124756179 --repo "${{ github.repository }}" --name S727_OCTAVE_HARD_NEGATIVE_EXACTK_FIT_LOOPS --dir /tmp/s730/s727
+          gh run download 39059008484 --repo "${{ github.repository }}" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s730/s707
+          test -s /tmp/s730/s708/s708_selected.pt
+          test -s /tmp/s730/s727/harmonic_2p6_epoch1.pt
+          test -s /tmp/s730/s727/harmonic_1p8_epoch2.pt
+          test -s /tmp/s730/s707/s675_hazard.joblib
+      - name: Replay original S708 plus Strictly Causal K-gated additive independent octave NoteOns on real CAL, freeze choice
+        run: |
+          python -m scripts.s730_safe_additive_octave_rescue --s708-dir /tmp/s730/s708 --s727-dir /tmp/s730/s727 --offset-checkpoint /tmp/s730/s707/s675_hazard.joblib --out /tmp/s730/results
+      - name: Verify CAL choice, six metrics and no chance of unreviewed promotion
+        if: success()
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/s730/results/report.json'))
+          assert not r['promoted'] and not r['TEST_opened'] and not r['LIVE_changed']
+          assert r['original_events_preserved_identically']
+          assert r['CAL']['selected'] in r['CAL']['eligible']
+          assert len(r['CAL']['tracks'])==32
+          assert len(r['CAL']['scores'])==16
+          assert all(len(r[k]['tracks'])==n for k,n in (('HELD',32),('DEV',12)))
+          print('S730_CAUSAL_ADDITIVE_K_RESCUE_FINAL',json.dumps({
+             'selected':r['CAL']['selected'],
+             'eligible':r['CAL']['eligible'],
+             'CAL_six':{n:{m:round(row[m],5) for m in ('onset_f1','exact_k',
+                'active_exact_k','offset_accuracy','full_note_f1','frame_pitch_f1')}
+                for n,row in r['CAL']['scores'].items()},
+             'shadow_qualifies':r['shadow_qualifies']},sort_keys=True),flush=True)
+          PY
+      - name: Archive every candidate note, original preservation proof, and six metric outcomes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S730_K_GATED_ADDITIVE_ONSETS_PRESERVE_S708_NO_PROMOTION
+          path: /tmp/s730/results/report.json
+          retention-days: 45
+          if-no-files-found: warn
