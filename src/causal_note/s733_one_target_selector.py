@@ -126,11 +126,25 @@ class OneTargetClassConditionalSelector(nn.Module):
 
 def target_loss(outputs,actions,risk_labels,head_mask,risk_weight=.20):
     """FIT-only single-target supervised action and OOF head-risk loss."""
-    if outputs["head_risk"].shape!=risk_labels.shape:
+    # H5 is freshly trained Onset: it has no independent historical OOF
+    # risk profile. Mask it out rather than silently forging risk labels.
+    expected=outputs["head_risk"].shape
+    if (risk_labels.shape[0]!=expected[0] or risk_labels.shape[2]!=2
+        or head_mask.shape!=risk_labels.shape[:2]):
         raise ValueError("risk target shapes mismatch")
-    if actions.ndim!=1 or actions.shape[0]!=risk_labels.shape[0]:
+    if risk_labels.shape[1]+1==expected[1]:
+        blank=torch.zeros(expected[0],1,2,device=risk_labels.device,
+                          dtype=risk_labels.dtype)
+        risk_labels=torch.cat([risk_labels,blank],dim=1)
+        active=torch.cat([head_mask,torch.zeros(expected[0],1,
+                           device=head_mask.device,dtype=head_mask.dtype)],dim=1)
+    elif risk_labels.shape==expected:
+        active=head_mask
+    else:
+        raise ValueError("unexpected number of independently audited heads")
+    if actions.ndim!=1 or actions.shape[0]!=expected[0]:
         raise ValueError("one action required for each row")
-    active=head_mask.float()[:,:,None]
+    active=active.float()[:,:,None]
     bce=F.binary_cross_entropy(
         outputs["head_risk"].clamp(1.e-6,1-1.e-6),risk_labels,
         reduction="none")
