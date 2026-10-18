@@ -1,0 +1,77 @@
+name: S735 all 32 per-pitch Onset combination audit
+on:
+  push:
+    branches: [codex/note-s735-32-combination-audit]
+    paths:
+      - scripts/s735_audit_per_candidate_combinations.py
+      - test/test_s735_combinations.py
+      - .github/workflows/note-s735-all-32-per-pitch-combinations.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: s735-32-onset-combinations
+  cancel-in-progress: true
+jobs:
+  audit_all_32_exactk_conditional_subsets:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install real S708 frozen audio and S734 inference dependencies
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Verify 32 masks, one-row dynamic selection and Onset-only mutations
+        run: |
+          python -m compileall -q scripts/s735_audit_per_candidate_combinations.py
+          python -m unittest -v test.test_s735_combinations test.test_s733_one_target_selector
+      - name: Retrieve signed S708, S707 and trained S734 H5
+        run: |
+          mkdir -p /tmp/s735/s708 /tmp/s735/s707 /tmp/s735/s734
+          gh run download 39094682419 --repo "${{ github.repository }}" --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s735/s708
+          gh run download 39059008484 --repo "${{ github.repository }}" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s735/s707
+          gh run download 39137653526 --repo "${{ github.repository }}" --name S734_ONSET_INDIVIDUAL_NEURAL_EXACTK_LINKED_FIT_CAL_HELD_DEV --dir /tmp/s735/s734
+          test -s /tmp/s735/s708/report.json
+          test -s /tmp/s735/s708/s708_selected.pt
+          test -s /tmp/s735/s707/s675_hazard.joblib
+          test -s /tmp/s735/s734/s733_onset.pt
+      - name: Evaluate 32 genuine causal MIDI output combinations on CAL32, freeze one, audit HELD DEV
+        run: |
+          python -m scripts.s735_audit_per_candidate_combinations --s708-dir /tmp/s735/s708 --s734-checkpoint /tmp/s735/s734/s733_onset.pt --offset-checkpoint /tmp/s735/s707/s675_hazard.joblib --out /tmp/s735/report
+      - name: Verify exhaustive labels and all six CAL metric gates
+        if: success()
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/s735/report/report.json'))
+          assert r["complete"] and not r["promoted"]
+          assert not r["LIVE_changed"] and not r["TEST_opened"]
+          assert len(r["masks"])==32 and len(r["CAL"]["scores"])==34
+          assert len(r["CAL"]["records"])==32
+          assert len(r["HELD"]["records"])==32
+          assert len(r["DEV"]["records"])==12
+          print("S735_COMBINATIONS_VERDICT",json.dumps({
+              "selected":r["CAL"]["selected"],
+              "qualifying":r["CAL"]["eligible"],
+              "original":r["CAL"]["scores"]["S708_frozen"],
+              "selected_scores":r["CAL"]["scores"][r["CAL"]["selected"]],
+              "dynamic":r["CAL"]["scores"]["per_row_dynamic"],
+              "changed":r["CAL"]["changes"]["per_row_dynamic"]},sort_keys=True))
+          PY
+      - name: Archive full real events and 32-mask six-metric comparisons
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S735_ALL_32_PER_PITCH_ONSET_COMBINATIONS_REAL_MIDI_METRICS
+          path: /tmp/s735/report
+          if-no-files-found: warn
+          retention-days: 45
