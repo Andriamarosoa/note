@@ -173,6 +173,8 @@ def main(argv=None):
                         help="S680 EXPERIMENTAL: earlier S672 TRAIN-selected 75D NoteOff specialist")
     parser.add_argument("--s708-temporal-engine", choices=("incremental","reference"), default="incremental",
                         help="S708 CPU temporal inference: per-layer cached incremental (default), or original full-history reference")
+    parser.add_argument("--s708-s707-offset-model", type=Path,
+                        help="S716 opt-in: signed s675_hazard.joblib S707-style 75D causal release with frozen S708 gate 0.80; requires --s708-model")
     parser.add_argument("--s708-model", type=Path,
                         help="EXPERIMENTAL S708 selected checkpoint s708_selected.pt; requires sibling report.json and torch CPU")
     parser.add_argument("--s675-hazard-model", type=Path,
@@ -282,6 +284,13 @@ def main(argv=None):
             parser.error("--lookahead-ms >0 requires --hop-size 256 for the frozen S613 selector")
         if args.dual_hop_mode!="off" or args.harmonic_mode!="off":
             parser.error("S628 lookahead cannot be combined with dual-hop or harmonic guard at this stage")
+    if args.s708_s707_offset_model is not None:
+        if args.s708_model is None:
+            parser.error("--s708-s707-offset-model requires --s708-model")
+        if not args.s708_s707_offset_model.is_file():
+            parser.error("S716 S707 signed offset checkpoint not found")
+        if args.s708_s707_offset_model.name != "s675_hazard.joblib":
+            parser.error("S716 requires the original s675_hazard.joblib filename")
     if args.s708_model is not None:
         if not args.s708_model.is_file():
             parser.error("S708 checkpoint not found: " + str(args.s708_model))
@@ -326,7 +335,9 @@ def main(argv=None):
                 frozen_policy=trial_report.get("frozen_candidate",{}).get("choice",{}).get("policy"),
                 native_hop_samples=HOP, decision_hop_samples=4*HOP,
                 temporal_engine=args.s708_temporal_engine,
-                offset_policy="joint_selector_only_NO_S707",
+                offset_policy=("S716_CAUSAL_S707_TRIAL_NOT_OFFLINE_SCORE"
+                               if args.s708_s707_offset_model is not None
+                               else "joint_selector_only_NO_S707"),
                 guitarset_dev_onset_f1_is_not_micro_f1=True)
         print(json.dumps(dict(status="EXPERIMENTAL_AUTONOMOUS_CAUSAL_NOTE_LIVE", sample_rate=SR, hop=HOP,
                              lookahead_samples=round(args.lookahead_ms*SR/1000),
@@ -386,14 +397,23 @@ def main(argv=None):
             from causal_note.s712_s708_live import S708StrictLiveStream, load_s708_checkpoint
             model, policy, sha = load_s708_checkpoint(
                 args.s708_model, args.s708_model.with_name("report.json"))
+            s716_release = None
+            if args.s708_s707_offset_model is not None:
+                from causal_note.s716_s707_online import S716S707OnlineRelease
+                frozen_release = json.loads(args.s708_model.with_name("report.json").read_text())[
+                    "frozen_candidate"]["choice"]["release"]
+                s716_release = S716S707OnlineRelease.load(
+                    args.s708_s707_offset_model, heads, frozen_release)
             stream = S708StrictLiveStream(heads, model, policy,
-                temporal_engine=args.s708_temporal_engine)
+                temporal_engine=args.s708_temporal_engine, release_adapter=s716_release)
             print(json.dumps(dict(s708_live="EXPERIMENTAL_UNPROMOTED_MIC_TRIAL",
                 sha256=sha, batch_hops=4, decision_hop_ms=round(4*HOP*1000/SR,3),
                 temporal_engine=args.s708_temporal_engine,
                 S708_onset_benchmark="68.75pct F1 GuitarSet DEV, NOT live mic accuracy",
                 source_audio_only=True, no_future_pcm=True,
-                noteoff="S708 joint release; S707 offline hazard NOT yet integrated",
+                noteoff=("S716 causal S707-like trained release, experimental; no offline F1 claim"
+                         if s716_release is not None
+                         else "S708 joint release; S707 offline hazard NOT yet integrated"),
                 original_reference_untouched=True,
                 warning="CPU torch + sharp 3-resolution FFT: monitor callback queue and processing latency")),
                 file=sys.stderr)
