@@ -4,7 +4,7 @@
 
 ## Résultat S721 vérifié avant l'audit
 
-[GitHub Actions 39114792725](https://github.com/Andriamarosoa/note/actions/runs/39114792725) : **succès technique**, S708 reste seul modèle éligible parmi 15 (1 témoin + 14 mélanges), aucune promotion. CAL `sustain_0.10` gagne faiblement quatre métriques (Onset 74,26386%→74,29299%; Exact-K 62,04554%→62,07246%; Offset 77,32919%→77,35264%; full note 57,13193%→57,17197%), **mais perd deux Offset individuels antérieurement corrects**, interdisant promotion par garde stricte. HELD et DEV ont rejoué S708 inchangé.
+[GitHub Actions 39114792725](https://github.com/Andriamarosoa/note/actions/runs/39114792725) : **succès technique**, S708 reste seul modèle éligible parmi 15 (1 témoin + 14 mélanges), aucune promotion. CAL `sustain_0.10` gagne marginalement sur **les six métriques agrégées** (Onset 74,26386%→74,29299%; Exact-K 62,04554%→62,07246%; Exact-K actif 56,27625%→56,29919%; Offset 77,32919%→77,35264%; full note 57,13193%→57,17197%; frame-pitch 76,46264%→76,48583%), **mais perd deux Offset individuels antérieurement corrects**, interdisant promotion par garde stricte. HELD et DEV ont rejoué S708 inchangé.
 
 ## Cartographie vérifiée des 288 entrées S708
 
