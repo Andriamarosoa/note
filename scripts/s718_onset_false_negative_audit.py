@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 from collections import Counter
 from dataclasses import asdict
+from dataclasses import asdict
 import json
 from pathlib import Path
 import tempfile
@@ -81,7 +82,6 @@ def categorize_missing(note, states, source_matched=False):
     window=[s for s in states if abs(s["end"]/SR-t)<=TOLERANCE+1e-12]
     if not window:
         return "no_decision_in_match_window",{}
-    p=next(iter(window))
     strong=lambda s: (s["on"][idx]>=.75 and s["sustain"][idx]>=.50)
     ready=lambda s: (strong(s) and bool(s["armed"][idx])
         and int(s["since_last"][idx])>=.065*SR)
@@ -146,7 +146,7 @@ def inspect_one(truth, source_events, emitted, states):
     _, matched_final=event_score(emitted,truth)
     source_ids={j for _,j in matched_source}
     final_ids={j for _,j in matched_final}
-    reasons=Counter();flags=Counter();by_texture=Counter();by_register=Counter()
+    reasons=Counter();flags=Counter();by_register=Counter()
     missed=[]
     for j,note in enumerate(truth):
         if j in final_ids:continue
