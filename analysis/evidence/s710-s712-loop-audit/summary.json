@@ -1,0 +1,126 @@
+{
+  "schema": "S710_S712_FINAL_VERIFIED_SUMMARY",
+  "goal": "All six metrics strictly greater than .8 on HELD and common DEV",
+  "goal_reached": false,
+  "counts": {
+    "previous_rounds": 19,
+    "previous_CAL_comparisons": 3357,
+    "new_rounds": 7,
+    "new_CAL_comparisons": 386,
+    "total_rounds": 26,
+    "total_CAL_comparisons": 3743,
+    "S712_scope": "24 CAL-only comparisons, rejected before HELD/DEV"
+  },
+  "S710": {
+    "selected": "709_control",
+    "HELD": {
+      "onset_f1": 0.7149684988051271,
+      "exact_k": 0.6467253265602322,
+      "active_exact_k": 0.6062517308843367,
+      "offset_accuracy": 0.6621287128712872,
+      "full_note_f1": 0.4649141864001738,
+      "frame_pitch_f1": 0.828338648871795
+    },
+    "DEV": {
+      "onset_f1": 0.6685534591194968,
+      "exact_k": 0.6249948948335716,
+      "active_exact_k": 0.5722761596548004,
+      "offset_accuracy": 0.7333965844402277,
+      "full_note_f1": 0.4861635220125786,
+      "frame_pitch_f1": 0.7146855787304949
+    }
+  },
+  "S711": {
+    "selected": {
+      "CAL": {
+        "active_exact_k": 0.5529962191873746,
+        "active_frames": 100243,
+        "active_k_correct": 55434,
+        "all_targets_above_80": false,
+        "exact_k": 0.6196795034203192,
+        "fn": 1280,
+        "fp": 731,
+        "frame_pitch_f1": 0.7651007841574378,
+        "frame_pitch_fn": 68257,
+        "frame_pitch_fp": 15439,
+        "frame_pitch_tp": 136305,
+        "frames": 126304,
+        "full_note_f1": 0.5519233293947748,
+        "k_correct": 78268,
+        "latency_ms_percentiles_10_50_95": [
+          6.475283446763311,
+          26.442630385353993,
+          55.78049886619248
+        ],
+        "long_offset_correct": 26,
+        "max_active": 6,
+        "offset_accuracy": 0.7544867193108399,
+        "offset_correct": 2102,
+        "offset_eligible": 2786,
+        "onset_f1": 0.735985296048313,
+        "onset_precision": 0.7931522354272779,
+        "onset_recall": 0.686505020818026,
+        "tp": 2803
+      },
+      "epoch": 16,
+      "policy": "joint_on0.75_active0.5_off0.3_mix0.7"
+    },
+    "HELD": {
+      "onset_f1": 0.7383638928067701,
+      "exact_k": 0.6398085994194485,
+      "active_exact_k": 0.5992388575716697,
+      "offset_accuracy": 0.6726094003241491,
+      "full_note_f1": 0.48777621062529386,
+      "frame_pitch_f1": 0.8231179688219871
+    },
+    "DEV": {
+      "onset_f1": 0.6754208754208754,
+      "exact_k": 0.5890136818460282,
+      "active_exact_k": 0.5217098166127292,
+      "offset_accuracy": 0.7296482412060301,
+      "full_note_f1": 0.4888888888888889,
+      "frame_pitch_f1": 0.6980452371109668
+    },
+    "paired": {
+      "HELD": {
+        "lost": 164,
+        "lost_correct_offsets": 369,
+        "lost_long": 3,
+        "recovered": 181
+      },
+      "DEV": {
+        "lost": 68,
+        "lost_correct_offsets": 144,
+        "lost_long": 0,
+        "recovered": 79
+      }
+    },
+    "non_regression": {
+      "HELD": false,
+      "DEV": false
+    }
+  },
+  "S712": {
+    "scope": "CAL only; no HELD/DEV evaluation or promotion",
+    "source_probability_artifact_id": 12125556863,
+    "source_probability_artifact_sha256": "9d02179aa2d20dce4edce32cdbfcc6238fd726e80f98f340502f094c5355112f",
+    "policy_evaluations": 24,
+    "rounds": 2,
+    "selected": "709_on1_presence0",
+    "local_tests_passed": 4,
+    "controls_reproduce_S710_CAL": true,
+    "selected_CAL_independent_recount": true,
+    "all_targets_above_80": false,
+    "rejection_reference": {
+      "name": "S707-706",
+      "CAL_sources": 32,
+      "CAL_frames": 126304,
+      "CAL_truth_notes": 4083,
+      "min_six_score": 0.5628323174685514
+    },
+    "candidate_min_six_score": 0.559739319333816
+  },
+  "TEST_opened": false,
+  "promoted": false,
+  "official_LIVE_changed": false
+}

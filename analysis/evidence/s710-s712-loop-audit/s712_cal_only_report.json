@@ -1,0 +1,1007 @@
+{
+  "schema": "S712_CAUSAL_ATTACK_PRESENCE_MEMORY_CAL",
+  "TEST_opened": false,
+  "promoted": false,
+  "official_LIVE_changed": false,
+  "HELD_evaluated": false,
+  "DEV_evaluated": false,
+  "source_checkpoints": {
+    "706": "3b953ae77f975522cb7a48c7f478e78e55023b97cd35dd49aa16417e7489a1e0",
+    "709": "68327c6b5e44ad4497af91b25259f454905d8d3801e68113a565b18d7b4c01a5"
+  },
+  "policies": {
+    "706_on0_presence0": {
+      "family": "706",
+      "memory": {
+        "onset_blocks": 0,
+        "presence_blocks": 0,
+        "current_presence_floor": 0.25
+      }
+    },
+    "706_on0_presence1": {
+      "family": "706",
+      "memory": {
+        "onset_blocks": 0,
+        "presence_blocks": 1,
+        "current_presence_floor": 0.25
+      }
+    },
+    "706_on0_presence2": {
+      "family": "706",
+      "memory": {
+        "onset_blocks": 0,
+        "presence_blocks": 2,
+        "current_presence_floor": 0.25
+      }
+    },
+    "706_on1_presence0": {
+      "family": "706",
+      "memory": {
+        "onset_blocks": 1,
+        "presence_blocks": 0,
+        "current_presence_floor": 0.25
+      }
+    },
+    "706_on1_presence1": {
+      "family": "706",
+      "memory": {
+        "onset_blocks": 1,
+        "presence_blocks": 1,
+        "current_presence_floor": 0.25
+      }
+    },
+    "706_on1_presence2": {
+      "family": "706",
+      "memory": {
+        "onset_blocks": 1,
+        "presence_blocks": 2,
+        "current_presence_floor": 0.25
+      }
+    },
+    "706_on2_presence0": {
+      "family": "706",
+      "memory": {
+        "onset_blocks": 2,
+        "presence_blocks": 0,
+        "current_presence_floor": 0.25
+      }
+    },
+    "706_on2_presence1": {
+      "family": "706",
+      "memory": {
+        "onset_blocks": 2,
+        "presence_blocks": 1,
+        "current_presence_floor": 0.25
+      }
+    },
+    "706_on2_presence2": {
+      "family": "706",
+      "memory": {
+        "onset_blocks": 2,
+        "presence_blocks": 2,
+        "current_presence_floor": 0.25
+      }
+    },
+    "706_on3_presence0": {
+      "family": "706",
+      "memory": {
+        "onset_blocks": 3,
+        "presence_blocks": 0,
+        "current_presence_floor": 0.25
+      }
+    },
+    "706_on3_presence1": {
+      "family": "706",
+      "memory": {
+        "onset_blocks": 3,
+        "presence_blocks": 1,
+        "current_presence_floor": 0.25
+      }
+    },
+    "706_on3_presence2": {
+      "family": "706",
+      "memory": {
+        "onset_blocks": 3,
+        "presence_blocks": 2,
+        "current_presence_floor": 0.25
+      }
+    },
+    "709_on0_presence0": {
+      "family": "709",
+      "memory": {
+        "onset_blocks": 0,
+        "presence_blocks": 0,
+        "current_presence_floor": 0.25
+      }
+    },
+    "709_on0_presence1": {
+      "family": "709",
+      "memory": {
+        "onset_blocks": 0,
+        "presence_blocks": 1,
+        "current_presence_floor": 0.25
+      }
+    },
+    "709_on0_presence2": {
+      "family": "709",
+      "memory": {
+        "onset_blocks": 0,
+        "presence_blocks": 2,
+        "current_presence_floor": 0.25
+      }
+    },
+    "709_on1_presence0": {
+      "family": "709",
+      "memory": {
+        "onset_blocks": 1,
+        "presence_blocks": 0,
+        "current_presence_floor": 0.25
+      }
+    },
+    "709_on1_presence1": {
+      "family": "709",
+      "memory": {
+        "onset_blocks": 1,
+        "presence_blocks": 1,
+        "current_presence_floor": 0.25
+      }
+    },
+    "709_on1_presence2": {
+      "family": "709",
+      "memory": {
+        "onset_blocks": 1,
+        "presence_blocks": 2,
+        "current_presence_floor": 0.25
+      }
+    },
+    "709_on2_presence0": {
+      "family": "709",
+      "memory": {
+        "onset_blocks": 2,
+        "presence_blocks": 0,
+        "current_presence_floor": 0.25
+      }
+    },
+    "709_on2_presence1": {
+      "family": "709",
+      "memory": {
+        "onset_blocks": 2,
+        "presence_blocks": 1,
+        "current_presence_floor": 0.25
+      }
+    },
+    "709_on2_presence2": {
+      "family": "709",
+      "memory": {
+        "onset_blocks": 2,
+        "presence_blocks": 2,
+        "current_presence_floor": 0.25
+      }
+    },
+    "709_on3_presence0": {
+      "family": "709",
+      "memory": {
+        "onset_blocks": 3,
+        "presence_blocks": 0,
+        "current_presence_floor": 0.25
+      }
+    },
+    "709_on3_presence1": {
+      "family": "709",
+      "memory": {
+        "onset_blocks": 3,
+        "presence_blocks": 1,
+        "current_presence_floor": 0.25
+      }
+    },
+    "709_on3_presence2": {
+      "family": "709",
+      "memory": {
+        "onset_blocks": 3,
+        "presence_blocks": 2,
+        "current_presence_floor": 0.25
+      }
+    }
+  },
+  "rounds": [
+    {
+      "family": "706",
+      "scores": {
+        "706_on0_presence0": {
+          "tp": 2995,
+          "fp": 1056,
+          "fn": 1088,
+          "frames": 126304,
+          "k_correct": 79101,
+          "active_frames": 100243,
+          "active_k_correct": 55795,
+          "frame_pitch_tp": 136012,
+          "frame_pitch_fp": 15566,
+          "frame_pitch_fn": 68550,
+          "offset_eligible": 2977,
+          "offset_correct": 2223,
+          "long_offset_correct": 22,
+          "onset_f1": 0.7364150479468896,
+          "onset_precision": 0.7393236237965934,
+          "onset_recall": 0.7335292676953221,
+          "exact_k": 0.6262747023055485,
+          "active_exact_k": 0.5565974681523896,
+          "offset_accuracy": 0.7467248908296943,
+          "full_note_f1": 0.5465945414310303,
+          "frame_pitch_f1": 0.7638119840512159,
+          "max_active": 6,
+          "latency_ms_percentiles_10_50_95": [
+            2.5375056689092905,
+            27.409523809480916,
+            59.37895691609291
+          ],
+          "all_targets_above_80": false
+        },
+        "706_on0_presence1": {
+          "tp": 3000,
+          "fp": 1080,
+          "fn": 1083,
+          "frames": 126304,
+          "k_correct": 79088,
+          "active_frames": 100243,
+          "active_k_correct": 55792,
+          "frame_pitch_tp": 136197,
+          "frame_pitch_fp": 15765,
+          "frame_pitch_fn": 68365,
+          "offset_eligible": 2982,
+          "offset_correct": 2224,
+          "long_offset_correct": 22,
+          "onset_f1": 0.735023888276369,
+          "onset_precision": 0.7352941176470589,
+          "onset_recall": 0.7347538574577517,
+          "exact_k": 0.6261717760324297,
+          "active_exact_k": 0.5565675408756721,
+          "offset_accuracy": 0.7458081824279007,
+          "full_note_f1": 0.5448977091755483,
+          "frame_pitch_f1": 0.7640271061695706,
+          "max_active": 6,
+          "latency_ms_percentiles_10_50_95": [
+            2.312834467170172,
+            27.218140589573725,
+            59.36965986391502
+          ],
+          "all_targets_above_80": false
+        },
+        "706_on0_presence2": {
+          "tp": 3001,
+          "fp": 1111,
+          "fn": 1082,
+          "frames": 126304,
+          "k_correct": 79065,
+          "active_frames": 100243,
+          "active_k_correct": 55783,
+          "frame_pitch_tp": 136319,
+          "frame_pitch_fp": 16039,
+          "frame_pitch_fn": 68243,
+          "offset_eligible": 2983,
+          "offset_correct": 2225,
+          "long_offset_correct": 22,
+          "onset_f1": 0.7323978035387432,
+          "onset_precision": 0.7298151750972762,
+          "onset_recall": 0.7349987754102376,
+          "exact_k": 0.6259896757030656,
+          "active_exact_k": 0.5564777590455194,
+          "offset_accuracy": 0.7458933959101576,
+          "full_note_f1": 0.5430140329469189,
+          "frame_pitch_f1": 0.7638630505435392,
+          "max_active": 6,
+          "latency_ms_percentiles_10_50_95": [
+            2.0807256236885507,
+            27.07755102037268,
+            59.36780045347945
+          ],
+          "all_targets_above_80": false
+        },
+        "706_on1_presence0": {
+          "tp": 3060,
+          "fp": 1097,
+          "fn": 1023,
+          "frames": 126304,
+          "k_correct": 80573,
+          "active_frames": 100243,
+          "active_k_correct": 57325,
+          "frame_pitch_tp": 139522,
+          "frame_pitch_fp": 15998,
+          "frame_pitch_fn": 65040,
+          "offset_eligible": 3041,
+          "offset_correct": 2272,
+          "long_offset_correct": 22,
+          "onset_f1": 0.7427184466019418,
+          "onset_precision": 0.7361077700264614,
+          "onset_recall": 0.7494489346069066,
+          "exact_k": 0.6379291233848493,
+          "active_exact_k": 0.5718603792783536,
+          "offset_accuracy": 0.7471226570207169,
+          "full_note_f1": 0.5514563106796116,
+          "frame_pitch_f1": 0.7749457068112263,
+          "max_active": 6,
+          "latency_ms_percentiles_10_50_95": [
+            2.684172335603566,
+            27.845804988679724,
+            62.065578231164025
+          ],
+          "all_targets_above_80": false
+        },
+        "706_on1_presence1": {
+          "tp": 3065,
+          "fp": 1122,
+          "fn": 1018,
+          "frames": 126304,
+          "k_correct": 80560,
+          "active_frames": 100243,
+          "active_k_correct": 57322,
+          "frame_pitch_tp": 139703,
+          "frame_pitch_fp": 16205,
+          "frame_pitch_fn": 64859,
+          "offset_eligible": 3046,
+          "offset_correct": 2273,
+          "long_offset_correct": 22,
+          "onset_f1": 0.7412333736396615,
+          "onset_precision": 0.7320277048005732,
+          "onset_recall": 0.7506735243693363,
+          "exact_k": 0.6378261971117304,
+          "active_exact_k": 0.5718304520016361,
+          "offset_accuracy": 0.7462245567957978,
+          "full_note_f1": 0.5496977025392986,
+          "frame_pitch_f1": 0.7751158210114573,
+          "max_active": 6,
+          "latency_ms_percentiles_10_50_95": [
+            2.427029478465672,
+            27.658956916120303,
+            62.04208616769404
+          ],
+          "all_targets_above_80": false
+        },
+        "706_on1_presence2": {
+          "tp": 3065,
+          "fp": 1154,
+          "fn": 1018,
+          "frames": 126304,
+          "k_correct": 80518,
+          "active_frames": 100243,
+          "active_k_correct": 57297,
+          "frame_pitch_tp": 139767,
+          "frame_pitch_fp": 16477,
+          "frame_pitch_fn": 64795,
+          "offset_eligible": 3046,
+          "offset_correct": 2273,
+          "long_offset_correct": 22,
+          "onset_f1": 0.7383762948687064,
+          "onset_precision": 0.7264754681204076,
+          "onset_recall": 0.7506735243693363,
+          "exact_k": 0.6374936660755004,
+          "active_exact_k": 0.5715810580289895,
+          "offset_accuracy": 0.7462245567957978,
+          "full_note_f1": 0.5475788966514094,
+          "frame_pitch_f1": 0.7747487569497181,
+          "max_active": 6,
+          "latency_ms_percentiles_10_50_95": [
+            2.3845804989154127,
+            27.56825396820517,
+            61.95827664400822
+          ],
+          "all_targets_above_80": false
+        },
+        "706_on2_presence0": {
+          "tp": 3070,
+          "fp": 1149,
+          "fn": 1013,
+          "frames": 126304,
+          "k_correct": 80986,
+          "active_frames": 100243,
+          "active_k_correct": 57762,
+          "frame_pitch_tp": 141110,
+          "frame_pitch_fp": 16346,
+          "frame_pitch_fn": 63452,
+          "offset_eligible": 3051,
+          "offset_correct": 2278,
+          "long_offset_correct": 22,
+          "onset_f1": 0.739580823897856,
+          "onset_precision": 0.7276605830765585,
+          "onset_recall": 0.7518981141317659,
+          "exact_k": 0.6411990119077781,
+          "active_exact_k": 0.5762197859202138,
+          "offset_accuracy": 0.74664044575549,
+          "full_note_f1": 0.5487834256805589,
+          "frame_pitch_f1": 0.7795744962957643,
+          "max_active": 6,
+          "latency_ms_percentiles_10_50_95": [
+            2.718095238122409,
+            27.97052154193058,
+            62.71714285710288
+          ],
+          "all_targets_above_80": false
+        },
+        "706_on2_presence1": {
+          "tp": 3074,
+          "fp": 1179,
+          "fn": 1009,
+          "frames": 126304,
+          "k_correct": 80956,
+          "active_frames": 100243,
+          "active_k_correct": 57751,
+          "frame_pitch_tp": 141279,
+          "frame_pitch_fp": 16585,
+          "frame_pitch_fn": 63283,
+          "offset_eligible": 3055,
+          "offset_correct": 2279,
+          "long_offset_correct": 22,
+          "onset_f1": 0.7375239923224568,
+          "onset_precision": 0.722783917234893,
+          "onset_recall": 0.7528777859417095,
+          "exact_k": 0.6409614897390423,
+          "active_exact_k": 0.5761100525722495,
+          "offset_accuracy": 0.7459901800327332,
+          "full_note_f1": 0.5467850287907869,
+          "frame_pitch_f1": 0.7796294967800323,
+          "max_active": 6,
+          "latency_ms_percentiles_10_50_95": [
+            2.5535600906783533,
+            27.77777777776702,
+            62.691473922923514
+          ],
+          "all_targets_above_80": false
+        },
+        "706_on2_presence2": {
+          "tp": 3074,
+          "fp": 1219,
+          "fn": 1009,
+          "frames": 126304,
+          "k_correct": 80943,
+          "active_frames": 100243,
+          "active_k_correct": 57755,
+          "frame_pitch_tp": 141431,
+          "frame_pitch_fp": 16909,
+          "frame_pitch_fn": 63131,
+          "offset_eligible": 3055,
+          "offset_correct": 2279,
+          "long_offset_correct": 22,
+          "onset_f1": 0.7340019102196753,
+          "onset_precision": 0.7160493827160493,
+          "onset_recall": 0.7528777859417095,
+          "exact_k": 0.6408585634659235,
+          "active_exact_k": 0.5761499556078729,
+          "offset_accuracy": 0.7459901800327332,
+          "full_note_f1": 0.5441738299904489,
+          "frame_pitch_f1": 0.779444588346165,
+          "max_active": 6,
+          "latency_ms_percentiles_10_50_95": [
+            2.4738321995249284,
+            27.658956916035816,
+            62.674920634907615
+          ],
+          "all_targets_above_80": false
+        },
+        "706_on3_presence0": {
+          "tp": 3074,
+          "fp": 1173,
+          "fn": 1009,
+          "frames": 126304,
+          "k_correct": 81368,
+          "active_frames": 100243,
+          "active_k_correct": 58169,
+          "frame_pitch_tp": 142064,
+          "frame_pitch_fp": 16512,
+          "frame_pitch_fn": 62498,
+          "offset_eligible": 3055,
+          "offset_correct": 2279,
+          "long_offset_correct": 22,
+          "onset_f1": 0.7380552220888356,
+          "onset_precision": 0.7238050388509536,
+          "onset_recall": 0.7528777859417095,
+          "exact_k": 0.6442234608563466,
+          "active_exact_k": 0.5802799197948983,
+          "offset_accuracy": 0.7459901800327332,
+          "full_note_f1": 0.5471788715486194,
+          "frame_pitch_f1": 0.7824243125203091,
+          "max_active": 6,
+          "latency_ms_percentiles_10_50_95": [
+            2.716462585066459,
+            28.02312925169481,
+            62.884081632600264
+          ],
+          "all_targets_above_80": false
+        },
+        "706_on3_presence1": {
+          "tp": 3077,
+          "fp": 1209,
+          "fn": 1006,
+          "frames": 126304,
+          "k_correct": 81343,
+          "active_frames": 100243,
+          "active_k_correct": 58174,
+          "frame_pitch_tp": 142246,
+          "frame_pitch_fp": 16778,
+          "frame_pitch_fn": 62316,
+          "offset_eligible": 3058,
+          "offset_correct": 2280,
+          "long_offset_correct": 22,
+          "onset_f1": 0.7353327757199187,
+          "onset_precision": 0.7179188054129725,
+          "onset_recall": 0.7536125397991673,
+          "exact_k": 0.6440255257157335,
+          "active_exact_k": 0.5803297985894277,
+          "offset_accuracy": 0.7455853499018966,
+          "full_note_f1": 0.5448679651093321,
+          "frame_pitch_f1": 0.7824613708998697,
+          "max_active": 6,
+          "latency_ms_percentiles_10_50_95": [
+            2.5391383219574237,
+            27.843083900219057,
+            62.83863945572249
+          ],
+          "all_targets_above_80": false
+        },
+        "706_on3_presence2": {
+          "tp": 3077,
+          "fp": 1253,
+          "fn": 1006,
+          "frames": 126304,
+          "k_correct": 81370,
+          "active_frames": 100243,
+          "active_k_correct": 58221,
+          "frame_pitch_tp": 142387,
+          "frame_pitch_fp": 17129,
+          "frame_pitch_fn": 62175,
+          "offset_eligible": 3058,
+          "offset_correct": 2280,
+          "long_offset_correct": 22,
+          "onset_f1": 0.7314869844288601,
+          "onset_precision": 0.7106235565819862,
+          "onset_recall": 0.7536125397991673,
+          "exact_k": 0.6442392956675956,
+          "active_exact_k": 0.580798659258003,
+          "offset_accuracy": 0.7455853499018966,
+          "full_note_f1": 0.5420183050041603,
+          "frame_pitch_f1": 0.7821785441581199,
+          "max_active": 6,
+          "latency_ms_percentiles_10_50_95": [
+            2.44009070294844,
+            27.68163265314172,
+            62.813061224415094
+          ],
+          "all_targets_above_80": false
+        }
+      }
+    },
+    {
+      "family": "709",
+      "scores": {
+        "709_on0_presence0": {
+          "tp": 2986,
+          "fp": 1035,
+          "fn": 1097,
+          "frames": 126304,
+          "k_correct": 79987,
+          "active_frames": 100243,
+          "active_k_correct": 57164,
+          "frame_pitch_tp": 139745,
+          "frame_pitch_fp": 17553,
+          "frame_pitch_fn": 64817,
+          "offset_eligible": 2970,
+          "offset_correct": 2260,
+          "long_offset_correct": 21,
+          "onset_f1": 0.7369200394866733,
+          "onset_precision": 0.7426013429495151,
+          "onset_recall": 0.7313250061229488,
+          "exact_k": 0.6332895236888776,
+          "active_exact_k": 0.5702542820945103,
+          "offset_accuracy": 0.7609427609427609,
+          "full_note_f1": 0.5577492596248766,
+          "frame_pitch_f1": 0.7723705300392417,
+          "max_active": 6,
+          "latency_ms_percentiles_10_50_95": [
+            3.7360544218486558,
+            27.049433106562493,
+            60.60317460311104
+          ],
+          "all_targets_above_80": false
+        },
+        "709_on0_presence1": {
+          "tp": 2991,
+          "fp": 1060,
+          "fn": 1092,
+          "frames": 126304,
+          "k_correct": 80113,
+          "active_frames": 100243,
+          "active_k_correct": 57307,
+          "frame_pitch_tp": 140139,
+          "frame_pitch_fp": 17735,
+          "frame_pitch_fn": 64423,
+          "offset_eligible": 2975,
+          "offset_correct": 2263,
+          "long_offset_correct": 21,
+          "onset_f1": 0.735431522006393,
+          "onset_precision": 0.7383362132806714,
+          "onset_recall": 0.7325495958853784,
+          "exact_k": 0.6342871167975678,
+          "active_exact_k": 0.5716808156180482,
+          "offset_accuracy": 0.760672268907563,
+          "full_note_f1": 0.556429800835997,
+          "frame_pitch_f1": 0.7733172201436943,
+          "max_active": 6,
+          "latency_ms_percentiles_10_50_95": [
+            3.449433106545996,
+            26.958730158691324,
+            60.77687074830873
+          ],
+          "all_targets_above_80": false
+        },
+        "709_on0_presence2": {
+          "tp": 2995,
+          "fp": 1073,
+          "fn": 1088,
+          "frames": 126304,
+          "k_correct": 80194,
+          "active_frames": 100243,
+          "active_k_correct": 57393,
+          "frame_pitch_tp": 140376,
+          "frame_pitch_fp": 17858,
+          "frame_pitch_fn": 64186,
+          "offset_eligible": 2979,
+          "offset_correct": 2265,
+          "long_offset_correct": 21,
+          "onset_f1": 0.7348791559317875,
+          "onset_precision": 0.7362340216322517,
+          "onset_recall": 0.7335292676953221,
+          "exact_k": 0.6349284266531543,
+          "active_exact_k": 0.572538730883952,
+          "offset_accuracy": 0.7603222557905337,
+          "full_note_f1": 0.55576002944424,
+          "frame_pitch_f1": 0.7738563820990308,
+          "max_active": 6,
+          "latency_ms_percentiles_10_50_95": [
+            3.182766439942822,
+            26.71473922893064,
+            60.59664399087125
+          ],
+          "all_targets_above_80": false
+        },
+        "709_on1_presence0": {
+          "tp": 3067,
+          "fp": 1136,
+          "fn": 1016,
+          "frames": 126304,
+          "k_correct": 82147,
+          "active_frames": 100243,
+          "active_k_correct": 59428,
+          "frame_pitch_tp": 144585,
+          "frame_pitch_fp": 18697,
+          "frame_pitch_fn": 59977,
+          "offset_eligible": 3050,
+          "offset_correct": 2319,
+          "long_offset_correct": 22,
+          "onset_f1": 0.7402848177649046,
+          "onset_precision": 0.7297168689031645,
+          "onset_recall": 0.7511633602743081,
+          "exact_k": 0.6503911198378516,
+          "active_exact_k": 0.5928394002573746,
+          "offset_accuracy": 0.7603278688524591,
+          "full_note_f1": 0.559739319333816,
+          "frame_pitch_f1": 0.7861212905470797,
+          "max_active": 6,
+          "latency_ms_percentiles_10_50_95": [
+            4.0324716553506335,
+            27.658956916090993,
+            64.92181405892427
+          ],
+          "all_targets_above_80": false
+        },
+        "709_on1_presence1": {
+          "tp": 3071,
+          "fp": 1164,
+          "fn": 1012,
+          "frames": 126304,
+          "k_correct": 82254,
+          "active_frames": 100243,
+          "active_k_correct": 59556,
+          "frame_pitch_tp": 144849,
+          "frame_pitch_fp": 18909,
+          "frame_pitch_fn": 59713,
+          "offset_eligible": 3054,
+          "offset_correct": 2321,
+          "long_offset_correct": 22,
+          "onset_f1": 0.7383986535224814,
+          "onset_precision": 0.7251475796930342,
+          "onset_recall": 0.7521430320842518,
+          "exact_k": 0.6512382822396757,
+          "active_exact_k": 0.5941162973973245,
+          "offset_accuracy": 0.7599869024230518,
+          "full_note_f1": 0.5580668429911037,
+          "frame_pitch_f1": 0.7865388792354474,
+          "max_active": 6,
+          "latency_ms_percentiles_10_50_95": [
+            4.00816326528286,
+            27.525623582723924,
+            64.90929705212434
+          ],
+          "all_targets_above_80": false
+        },
+        "709_on1_presence2": {
+          "tp": 3073,
+          "fp": 1177,
+          "fn": 1010,
+          "frames": 126304,
+          "k_correct": 82303,
+          "active_frames": 100243,
+          "active_k_correct": 59622,
+          "frame_pitch_tp": 145089,
+          "frame_pitch_fp": 19049,
+          "frame_pitch_fn": 59473,
+          "offset_eligible": 3056,
+          "offset_correct": 2323,
+          "long_offset_correct": 22,
+          "onset_f1": 0.7375495019800792,
+          "onset_precision": 0.7230588235294118,
+          "onset_recall": 0.7526328679892236,
+          "exact_k": 0.6516262351152774,
+          "active_exact_k": 0.5947746974851111,
+          "offset_accuracy": 0.7601439790575916,
+          "full_note_f1": 0.5575423016920676,
+          "frame_pitch_f1": 0.7870301057770546,
+          "max_active": 6,
+          "latency_ms_percentiles_10_50_95": [
+            3.708843537513355,
+            27.208163265243,
+            64.83718820854321
+          ],
+          "all_targets_above_80": false
+        },
+        "709_on2_presence0": {
+          "tp": 3073,
+          "fp": 1211,
+          "fn": 1010,
+          "frames": 126304,
+          "k_correct": 82934,
+          "active_frames": 100243,
+          "active_k_correct": 60225,
+          "frame_pitch_tp": 146748,
+          "frame_pitch_fp": 19161,
+          "frame_pitch_fn": 57814,
+          "offset_eligible": 3056,
+          "offset_correct": 2321,
+          "long_offset_correct": 22,
+          "onset_f1": 0.7345524082705869,
+          "onset_precision": 0.7173202614379085,
+          "onset_recall": 0.7526328679892236,
+          "exact_k": 0.6566221180643527,
+          "active_exact_k": 0.600790080105344,
+          "offset_accuracy": 0.7594895287958116,
+          "full_note_f1": 0.5547986136010518,
+          "frame_pitch_f1": 0.7922239527520373,
+          "max_active": 6,
+          "latency_ms_percentiles_10_50_95": [
+            4.031383219993501,
+            27.68163265314172,
+            65.03800453508359
+          ],
+          "all_targets_above_80": false
+        },
+        "709_on2_presence1": {
+          "tp": 3077,
+          "fp": 1234,
+          "fn": 1006,
+          "frames": 126304,
+          "k_correct": 82963,
+          "active_frames": 100243,
+          "active_k_correct": 60271,
+          "frame_pitch_tp": 146850,
+          "frame_pitch_fp": 19359,
+          "frame_pitch_fn": 57712,
+          "offset_eligible": 3060,
+          "offset_correct": 2323,
+          "long_offset_correct": 22,
+          "onset_f1": 0.7331427209911842,
+          "onset_precision": 0.7137555091626073,
+          "onset_recall": 0.7536125397991673,
+          "exact_k": 0.6568517228274638,
+          "active_exact_k": 0.6012489650150136,
+          "offset_accuracy": 0.7591503267973856,
+          "full_note_f1": 0.5534905885156064,
+          "frame_pitch_f1": 0.7921331495721079,
+          "max_active": 6,
+          "latency_ms_percentiles_10_50_95": [
+            3.958276644043225,
+            27.64444444441594,
+            65.02331065753742
+          ],
+          "all_targets_above_80": false
+        },
+        "709_on2_presence2": {
+          "tp": 3078,
+          "fp": 1242,
+          "fn": 1005,
+          "frames": 126304,
+          "k_correct": 82963,
+          "active_frames": 100243,
+          "active_k_correct": 60288,
+          "frame_pitch_tp": 147016,
+          "frame_pitch_fp": 19449,
+          "frame_pitch_fn": 57546,
+          "offset_eligible": 3061,
+          "offset_correct": 2324,
+          "long_offset_correct": 22,
+          "onset_f1": 0.732595501606569,
+          "onset_precision": 0.7125,
+          "onset_recall": 0.7538574577516532,
+          "exact_k": 0.6568517228274638,
+          "active_exact_k": 0.6014185529164131,
+          "offset_accuracy": 0.7592290101274094,
+          "full_note_f1": 0.553135784838748,
+          "frame_pitch_f1": 0.7924814097087274,
+          "max_active": 6,
+          "latency_ms_percentiles_10_50_95": [
+            3.55029478459894,
+            27.273469387750993,
+            64.97469387750535
+          ],
+          "all_targets_above_80": false
+        },
+        "709_on3_presence0": {
+          "tp": 3073,
+          "fp": 1264,
+          "fn": 1010,
+          "frames": 126304,
+          "k_correct": 83415,
+          "active_frames": 100243,
+          "active_k_correct": 60789,
+          "frame_pitch_tp": 148457,
+          "frame_pitch_fp": 19465,
+          "frame_pitch_fn": 56105,
+          "offset_eligible": 3056,
+          "offset_correct": 2318,
+          "long_offset_correct": 22,
+          "onset_f1": 0.7299287410926366,
+          "onset_precision": 0.7085543002075168,
+          "onset_recall": 0.7526328679892236,
+          "exact_k": 0.6604303901697491,
+          "active_exact_k": 0.6064164081282484,
+          "offset_accuracy": 0.7585078534031413,
+          "full_note_f1": 0.5505938242280285,
+          "frame_pitch_f1": 0.7971188024183589,
+          "max_active": 6,
+          "latency_ms_percentiles_10_50_95": [
+            3.990022675775152,
+            27.68163265314172,
+            65.12417233559265
+          ],
+          "all_targets_above_80": false
+        },
+        "709_on3_presence1": {
+          "tp": 3077,
+          "fp": 1289,
+          "fn": 1006,
+          "frames": 126304,
+          "k_correct": 83450,
+          "active_frames": 100243,
+          "active_k_correct": 60847,
+          "frame_pitch_tp": 148684,
+          "frame_pitch_fp": 19674,
+          "frame_pitch_fn": 55878,
+          "offset_eligible": 3060,
+          "offset_correct": 2320,
+          "long_offset_correct": 22,
+          "onset_f1": 0.7283702213279678,
+          "onset_precision": 0.7047640861200183,
+          "onset_recall": 0.7536125397991673,
+          "exact_k": 0.6607074993666076,
+          "active_exact_k": 0.6069950021447882,
+          "offset_accuracy": 0.7581699346405228,
+          "full_note_f1": 0.5491774174458516,
+          "frame_pitch_f1": 0.7974042690121206,
+          "max_active": 6,
+          "latency_ms_percentiles_10_50_95": [
+            3.8902494331679818,
+            27.658956916031485,
+            65.10312925162445
+          ],
+          "all_targets_above_80": false
+        },
+        "709_on3_presence2": {
+          "tp": 3078,
+          "fp": 1300,
+          "fn": 1005,
+          "frames": 126304,
+          "k_correct": 83516,
+          "active_frames": 100243,
+          "active_k_correct": 60932,
+          "frame_pitch_tp": 148838,
+          "frame_pitch_fp": 19792,
+          "frame_pitch_fn": 55724,
+          "offset_eligible": 3061,
+          "offset_correct": 2321,
+          "long_offset_correct": 22,
+          "onset_f1": 0.7275735728637277,
+          "onset_precision": 0.7030607583371402,
+          "onset_recall": 0.7538574577516532,
+          "exact_k": 0.6612300481378262,
+          "active_exact_k": 0.6078429416517862,
+          "offset_accuracy": 0.758248938255472,
+          "full_note_f1": 0.5486349131308356,
+          "frame_pitch_f1": 0.7976483954639971,
+          "max_active": 6,
+          "latency_ms_percentiles_10_50_95": [
+            3.5376870747889204,
+            27.273469387750993,
+            65.01963718815087
+          ],
+          "all_targets_above_80": false
+        }
+      }
+    }
+  ],
+  "policy_evaluations": 24,
+  "frozen_candidate": {
+    "name": "709_on1_presence0",
+    "choice": {
+      "family": "709",
+      "memory": {
+        "onset_blocks": 1,
+        "presence_blocks": 0,
+        "current_presence_floor": 0.25
+      }
+    },
+    "CAL": {
+      "tp": 3067,
+      "fp": 1136,
+      "fn": 1016,
+      "frames": 126304,
+      "k_correct": 82147,
+      "active_frames": 100243,
+      "active_k_correct": 59428,
+      "frame_pitch_tp": 144585,
+      "frame_pitch_fp": 18697,
+      "frame_pitch_fn": 59977,
+      "offset_eligible": 3050,
+      "offset_correct": 2319,
+      "long_offset_correct": 22,
+      "onset_f1": 0.7402848177649046,
+      "onset_precision": 0.7297168689031645,
+      "onset_recall": 0.7511633602743081,
+      "exact_k": 0.6503911198378516,
+      "active_exact_k": 0.5928394002573746,
+      "offset_accuracy": 0.7603278688524591,
+      "full_note_f1": 0.559739319333816,
+      "frame_pitch_f1": 0.7861212905470797,
+      "max_active": 6,
+      "latency_ms_percentiles_10_50_95": [
+        4.0324716553506335,
+        27.658956916090993,
+        64.92181405892427
+      ],
+      "all_targets_above_80": false
+    }
+  },
+  "controls_reproduce_S710_CAL": true,
+  "selected_CAL_independent_recount": {
+    "tp": 3067,
+    "fp": 1136,
+    "fn": 1016,
+    "k_correct": 82147,
+    "frames": 126304,
+    "active_k_correct": 59428,
+    "active_frames": 100243,
+    "offset_correct": 2319,
+    "offset_eligible": 3050,
+    "long_offset_correct": 22,
+    "frame_pitch_tp": 144585,
+    "frame_pitch_fp": 18697,
+    "frame_pitch_fn": 59977,
+    "onset_f1": 0.7402848177649046,
+    "exact_k": 0.6503911198378516,
+    "active_exact_k": 0.5928394002573746,
+    "offset_accuracy": 0.7603278688524591,
+    "full_note_f1": 0.559739319333816,
+    "frame_pitch_f1": 0.7861212905470797,
+    "max_active": 6,
+    "all_targets_above_80": false
+  },
+  "improves_best_control": true,
+  "best_control": "709_on0_presence0",
+  "calibration_only": true
+}

@@ -1,0 +1,23 @@
+{
+  "checkpoint_bytes_match_report": true,
+  "checkpoint_sha256": "5b7e5174812510b4b77a4e82e568e4961bcb08286caf972c2e3f4dae794e71ba",
+  "inner_raw_zip_sha256": "6fb328148e2a97b13adc8a66c15e2953cb5b03232f0973d7328613dad7942204",
+  "baseline_counts_equal_S710": true,
+  "phases": {
+    "HELD": {
+      "sources": 32,
+      "same_audio_and_truth_as_S710": true,
+      "same_baseline_events_as_S710": true,
+      "regular_emissions_at_actual_4hop_block_ends": 8831,
+      "EOF_panic_events_not_credited_as_correct_offsets": 63
+    },
+    "DEV": {
+      "sources": 12,
+      "same_audio_and_truth_as_S710": true,
+      "same_baseline_events_as_S710": true,
+      "regular_emissions_at_actual_4hop_block_ends": 2770,
+      "EOF_panic_events_not_credited_as_correct_offsets": 10
+    }
+  },
+  "CAL_selection_is_best_of_all_216_reported_policies": true
+}

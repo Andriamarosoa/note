@@ -1,0 +1,84 @@
+{
+  "schema": "S710_S711_EXPERIMENT_PROVENANCE",
+  "status": "Completed; target not reached; no promotion",
+  "S710": {
+    "branch": "codex/note-s710-causal-state-recovery",
+    "head_sha": "de619b5fd9ef75a13a83f083d8afa57e48d256d3",
+    "run_id": 39098582673,
+    "artifact_id": 12125961589,
+    "artifact_name": "S710_JOINT_STATE_CAUSAL_RECOVERY",
+    "artifact_bytes": 2126216,
+    "artifact_sha256": "6be7b5db982a8123b53e9bfe820f82a86c9869b3d280c66b9a9d8a1649953167",
+    "inner_raw_zip_sha256": "6908896002f95fa2f896a56e9d941ba312bc2f9061649e799bc9c1f9db875762",
+    "cal_artifact_id": 12125556863,
+    "cal_artifact_sha256": "9d02179aa2d20dce4edce32cdbfcc6238fd726e80f98f340502f094c5355112f",
+    "control_reproduces_S709_exactly": true,
+    "cal_diagnostic_profile_counts_match": true
+  },
+  "S711": {
+    "branch": "codex/note-s711-global-context-loops",
+    "head_sha": "352ac6f3780826f7defaa8cad92d5f06091e914a",
+    "run_id": 39099109305,
+    "intermediate_artifacts": [
+      {
+        "epoch": 4,
+        "id": 12126426341,
+        "name": "S711_CAL_LOOP_4",
+        "bytes": 13477,
+        "sha256": "2b1a82ab0ddf0ef44a2e54cdeee64bb9bd514b910e4d6686b6237890b6ba9721"
+      },
+      {
+        "epoch": 8,
+        "id": 12126178210,
+        "name": "S711_CAL_LOOP_8",
+        "bytes": 13149,
+        "sha256": "2a647ae98c895c9bedf66a561e92a5e72cc893304f8d7d04cd54df7c5df0c9b1"
+      }
+    ],
+    "artifact_id": 12126357427,
+    "artifact_name": "S711_GLOBAL_CONTEXT_CAUSAL_LOOPS",
+    "artifact_bytes": 4480691,
+    "artifact_sha256": "e164082096583d9d8d796d7337da4188885076b52dc0f5a283d1ea0c5d68b612",
+    "inner_raw_zip_sha256": "6fb328148e2a97b13adc8a66c15e2953cb5b03232f0973d7328613dad7942204",
+    "checkpoint_sha256": "5b7e5174812510b4b77a4e82e568e4961bcb08286caf972c2e3f4dae794e71ba",
+    "selected_epoch": 16,
+    "policy_evaluations": 216,
+    "rounds": 3,
+    "CI_tests_passed": 13,
+    "independent_local_recount": true,
+    "non_regression_passed": false,
+    "all_targets_above_80": false
+  },
+  "official_LIVE_changed": false,
+  "TEST_opened": false,
+  "promoted": false,
+  "S712": {
+    "scope": "CAL only; no HELD/DEV evaluation or promotion",
+    "source_probability_artifact_id": 12125556863,
+    "source_probability_artifact_sha256": "9d02179aa2d20dce4edce32cdbfcc6238fd726e80f98f340502f094c5355112f",
+    "policy_evaluations": 24,
+    "rounds": 2,
+    "selected": "709_on1_presence0",
+    "local_tests_passed": 4,
+    "controls_reproduce_S710_CAL": true,
+    "selected_CAL_independent_recount": true,
+    "all_targets_above_80": false,
+    "rejection_reference": {
+      "name": "S707-706",
+      "CAL_sources": 32,
+      "CAL_frames": 126304,
+      "CAL_truth_notes": 4083,
+      "min_six_score": 0.5628323174685514
+    },
+    "candidate_min_six_score": 0.559739319333816
+  },
+  "counts": {
+    "previous_rounds": 19,
+    "previous_CAL_comparisons": 3357,
+    "new_rounds": 7,
+    "new_CAL_comparisons": 386,
+    "total_rounds": 26,
+    "total_CAL_comparisons": 3743,
+    "S712_scope": "24 CAL-only comparisons, rejected before HELD/DEV"
+  }
+}
