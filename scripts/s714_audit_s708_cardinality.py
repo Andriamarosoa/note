@@ -69,6 +69,7 @@ def one_item(item):
         predicted = events_to_frames(item["events"][variant],ends)
         pc = predicted.sum(axis=1)
         diff = np.minimum(pc,6)-np.minimum(count,6)
+        unique_diff = np.minimum(pc,6)-np.minimum(unique,6)
         miss = truth & ~predicted
         fp = predicted & ~truth
         harmonic = np.zeros_like(fp)
@@ -90,6 +91,7 @@ def one_item(item):
            active_frames=int(np.count_nonzero(count)),
            active_correct=int(np.count_nonzero((count>0)&(diff==0))),
            under=int(np.count_nonzero(diff<0)), over=int(np.count_nonzero(diff>0)),
+           unique_pitch_k_correct=int(np.count_nonzero(unique_diff==0)),
            missed_note_frames=int(miss.sum()), false_note_frames=int(fp.sum()),
            harmonic_coincidence_fp=int((fp&harmonic).sum()),
            by_true_k=rows,by_register=by_register)
@@ -101,9 +103,11 @@ def aggregate(rows):
     for variant in VARIANTS:
         raw=[row["variants"][variant] for row in rows]
         keys=("frames","correct","active_frames","active_correct","under","over",
+              "unique_pitch_k_correct",
               "missed_note_frames","false_note_frames","harmonic_coincidence_fp")
         r={k:sum(x[k] for x in raw) for k in keys}
         r["exact_k"]=r["correct"]/max(1,r["frames"])
+        r["unique_pitch_exact_k_DIAGNOSTIC_ONLY"]=r["unique_pitch_k_correct"]/max(1,r["frames"])
         r["active_exact_k"]=r["active_correct"]/max(1,r["active_frames"])
         r["under_rate"]=r["under"]/max(1,r["frames"])
         r["over_rate"]=r["over"]/max(1,r["frames"])
