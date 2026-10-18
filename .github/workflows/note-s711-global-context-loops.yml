@@ -1,0 +1,88 @@
+name: S711 global causal acoustic context and transition learning
+on:
+  push:
+    branches: [codex/note-s711-global-context-loops]
+    paths:
+      - src/causal_note/s711_context_heads.py
+      - scripts/s711_train_context_heads.py
+      - test/test_s711_context_heads.py
+      - .github/workflows/note-s711-global-context-loops.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: note-s711-global-context-loops
+  cancel-in-progress: false
+jobs:
+  context_loops:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+      PYTHONUNBUFFERED: '1'
+      S711_ARGS: --work /tmp/s711_work --out /tmp/s711_out --offset-checkpoint /tmp/s711_s675/s675_hazard.joblib --warmstart /tmp/s711_s706/s706_selected.pt
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install pinned training and inference dependencies
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Test warm-start equivalence, future isolation, incremental parity and transition objective
+        run: |
+          python -m compileall -q src/causal_note/s711_context_heads.py scripts/s711_train_context_heads.py
+          python -m unittest -v test.test_s711_context_heads test.test_s705_temporal_heads test.test_s710_joint_state_filter
+      - name: Retrieve pinned native baseline and warm encoder
+        run: |
+          mkdir -p /tmp/s711_s675 /tmp/s711_s706
+          gh run download 39059008484 --repo "${{ github.repository }}" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s711_s675
+          gh run download 39093239181 --repo "${{ github.repository }}" --name S706_SHARP_SPECTRAL_TEMPORAL_CAUSAL_LOOPS --dir /tmp/s711_s706
+      - name: Prepare separated FIT and CAL acoustic histories
+        run: python -m scripts.s711_train_context_heads prepare $S711_ARGS
+      - name: Learning loop 1 - epochs 1 to 4
+        run: python -m scripts.s711_train_context_heads train $S711_ARGS --epoch 4
+      - name: Calibration loop 1 - 72 complete causal decoders
+        run: python -m scripts.s711_train_context_heads calibrate $S711_ARGS --epoch 4
+      - name: Preserve first CAL checkpoint
+        uses: actions/upload-artifact@v4
+        with:
+          name: S711_CAL_LOOP_4
+          path: |
+            /tmp/s711_out/round_4.json
+            /tmp/s711_out/training_to_4.json
+          retention-days: 60
+      - name: Learning loop 2 - epochs 5 to 8
+        run: python -m scripts.s711_train_context_heads train $S711_ARGS --epoch 8
+      - name: Calibration loop 2 - 72 complete causal decoders
+        run: python -m scripts.s711_train_context_heads calibrate $S711_ARGS --epoch 8
+      - name: Preserve second CAL checkpoint
+        uses: actions/upload-artifact@v4
+        with:
+          name: S711_CAL_LOOP_8
+          path: |
+            /tmp/s711_out/round_8.json
+            /tmp/s711_out/training_to_8.json
+          retention-days: 60
+      - name: Learning loop 3 - epochs 9 to 16
+        run: python -m scripts.s711_train_context_heads train $S711_ARGS --epoch 16
+      - name: Final calibration and freeze
+        run: python -m scripts.s711_train_context_heads calibrate $S711_ARGS --epoch 16
+      - name: Evaluate frozen choice on HELD and diagnostic DEV
+        run: python -m scripts.s711_train_context_heads evaluate $S711_ARGS
+      - name: Independently recount serialized emissions without loading a model
+        run: |
+          python -c 'import zipfile; from pathlib import Path; p=Path("/tmp/s711_out"); z=zipfile.ZipFile(p/"raw_recount_inputs.zip","w",zipfile.ZIP_DEFLATED); [z.write(p/n,n) for n in ("report.json","held_events.jsonl","dev_events.jsonl")]; z.close()'
+          python scripts/s704_verify_emitted_artifact.py /tmp/s711_out/raw_recount_inputs.zip --out /tmp/s711_out/independent_recount.json
+          python -c 'from pathlib import Path; print("S711 VERIFIED "+Path("/tmp/s711_out/independent_recount.json").read_text().replace("\n",""))'
+      - name: Preserve models, all loops and exact events
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S711_GLOBAL_CONTEXT_CAUSAL_LOOPS
+          path: /tmp/s711_out/
+          if-no-files-found: warn
+          retention-days: 60
