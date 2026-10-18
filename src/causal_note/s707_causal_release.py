@@ -63,8 +63,12 @@ def render_release(plan, ends, samples, *, gate=.60, persistence=1, grace=24):
         off=dict(type='note_off',pitch=n['pitch'],decision_sample=decision,
                  available_sample=available,time=available/SR,reason=reason,velocity=0)
         planned.append((off,i))
-    planned.sort(key=lambda row:(row[0]['available_sample'],row[0]['decision_sample'],
-        0 if row[0]['type']=='note_off' else 1,row[1]))
+    # EOF is a finish operation AFTER this sample's normal decisions. It
+    # cannot free slots early and admit notes that a continuing stream would
+    # reject. Older normal instances close before their same-time restrikes;
+    # within one instance an onset precedes a zero-duration EOF panic.
+    planned.sort(key=lambda row:(row[0]['available_sample'],row[0]['reason']=='stream_end',row[0]['decision_sample'],
+        row[1],0 if row[0]['type']=='note_on' else 1))
     active={};events=[];skipped=0
     for e,i in planned:
         pitch=e['pitch']

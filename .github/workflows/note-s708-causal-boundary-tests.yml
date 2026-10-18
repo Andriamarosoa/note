@@ -1,0 +1,21 @@
+name: S708 fast causal boundary and cardinality tests
+on:
+  push:
+    branches: [codex/note-s708-count-guided-joint-loops]
+    paths:
+      - src/causal_note/s707_causal_release.py
+      - test/test_s707_causal_prefix.py
+      - .github/workflows/note-s708-causal-boundary-tests.yml
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  causal_boundary:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: python -m pip install -r requirements-live-strict.txt
+      - name: Verify exact EOF, full causal prefixes and K-guided selection
+        env: {PYTHONPATH: '.:src'}
+        run: python -m unittest -v test.test_s707_causal_prefix test.test_s707_causal_release test.test_s708_cardinality_selection test.test_s704_joint_loops
