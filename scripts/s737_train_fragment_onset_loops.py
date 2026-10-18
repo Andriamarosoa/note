@@ -192,6 +192,13 @@ def train_one(seed, examples, audits, mean, std, epochs, cal_callback):
     opt=torch.optim.AdamW(model.parameters(),lr=5e-4,weight_decay=.002)
     prepared=[model_data(ex,audit,mean,std)
               for ex,audit in zip(examples,audits)]
+    # FIT-only imbalance correction: roughly 1-2% of observed blocks
+    # admit a useful correction. A plain CE objective otherwise learns KEEP.
+    # Cap weights so rare positives cannot overwhelm regression penalties.
+    positives=sum(int(torch.count_nonzero(item[5])) for item in prepared)
+    rows=sum(len(item[5]) for item in prepared)
+    neg=max(rows-positives, 1)
+    boost=float(min(16., max(1., (neg/max(positives,1))**.5)))
     results=[]
     for epoch in range(1,epochs+1):
         model.train()
@@ -207,7 +214,12 @@ def train_one(seed, examples, audits, mean, std, epochs, cal_callback):
                     tensor[ix] for tensor in tensors]
                 out=model(x,d,a,k,mask)
                 # Learn one action per fragment, not one selector per song/pitch.
-                ce=F.cross_entropy(out["action_logits"],target)
+                per_example=F.cross_entropy(
+                    out["action_logits"],target,reduction="none")
+                weights=torch.where(
+                    target!=0,torch.full_like(per_example,boost),
+                    torch.ones_like(per_example))
+                ce=(per_example*weights).sum()/weights.sum().clamp_min(1.)
                 auxiliary=F.binary_cross_entropy(
                     torch.stack([out["p_correction"],out["p_regression"]],-1),
                     risk)
@@ -289,6 +301,8 @@ def main(args):
         target="Onset alone; Sustain/Release/Offset/Exact-K/pitch FROZEN",
         selection_unit="4-hop 23.22ms block, one combination shared across 49 pitches",
         target_granularity="each individual note remains separately predicted",
+        architecture="PyTorch port of original Exact-K ClassConditionalAuditSelector with learned class decoder and separate KEEP",
+        selection_imbalance_correction="FIT-only sqrt(negative/positive) positive CE boost capped at 16",
         seeds=list(SEEDS),epochs=list(STEPS),confidences=list(CAL_CONFIDENCE),
         post_s708_held_dev_previously_exposed=True,
         promoted=False,LIVE_changed=False,TEST_opened=False,
@@ -376,7 +390,7 @@ def main(args):
                         print("S737 CAL ROUND",json.dumps({
                             k:record[k] for k in
                             ("seed","epoch","confidence","FIT_loss",
-                             "actual","safe","all_gt80")}),flush=True)
+                             "actual","safe","all_gt80","mask_histogram")}),flush=True)
                         # Don't evaluate held until a gate passing checkpoint is frozen.
                         if record["safe"] and any(
                                 record["delta"][k]>1e-10 for k in SCORES):

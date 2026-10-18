@@ -139,36 +139,41 @@ def subset_class_compatibility(head_available, head_k_mask):
 
 
 class FragmentMaskRouter(nn.Module):
-    """Risk-aware neural router inspired by historical Exact-K combo arbiter.
+    """Exact-K ClassConditionalAuditSelector architecture, ported to fragments.
 
-    Per 4-hop block:
-      - 32 H0-inclusive subsets, full pairwise attention across subsets;
-      - separate learned distribution for EACH possible K0..K6;
-      - correction and regression risk estimates per subset;
-      - a distinct learned KEEP decision;
-      - no fixed top-N selection; no supervised K input at inference.
+    Faithful structural port of
+    scripts.learn_v273_neural_head_selector.ClassConditionalAuditSelector:
+      head projection, context projection, 3-head self-attention, fuse;
+      independent softmax OVER 32 proposals FOR EACH of K0..K6;
+      class-specific pooled states/evidence, class decoder K0..K6;
+      independent learned KEEP head and risk-per-proposal head.
 
-    The audits MUST come from disjoint FIT inner folds. The model has no
-    trained weights until a separate, properly isolated FIT run completes.
+    Onset-specific *adapters*, not replacements of that central network:
+      32 H0-inclusive proposals instead of seven-class expert heads,
+      12 measured acoustic subset descriptors added to head projection,
+      33-way fragment decision adapted from class logits/conditional weights.
+    Inputs and training weights are not shared with the historical K network.
     """
 
-    def __init__(self, n_features=FEATURE_DIM, width=64):
+    def __init__(self, n_features=FEATURE_DIM, width=48):
         super().__init__()
-        if n_features != FEATURE_DIM or width % 4:
-            raise ValueError("S736 requires 37 features and width divisible by 4")
-        self.context = nn.Sequential(
-            nn.Linear(n_features + 7, width), nn.GELU())
-        self.option = nn.Sequential(
-            nn.Linear(12 + 21, width), nn.GELU())
-        self.attention = nn.MultiheadAttention(
-            width, num_heads=4, batch_first=True)
-        self.fuse = nn.Sequential(nn.Linear(width, width),
-                                  nn.GELU(), nn.LayerNorm(width))
-        self.k_gate = nn.Linear(width, 7)
-        self.risk = nn.Sequential(nn.Linear(width, 2), nn.Sigmoid())
+        if n_features != FEATURE_DIM or width % 3:
+            raise ValueError("Original Exact-K requires 37 context features and 3 attention heads")
+        self.context_dim = n_features
+        # Source: Dense(8+21+4 -> hidden). Twelve onset subset descriptors
+        # are an explicit input adapter; all subsequent Exact-K stages match.
+        self.head_proj = nn.Sequential(nn.Linear(8 + 21 + 4 + 12, width), nn.GELU())
+        self.context_proj = nn.Sequential(nn.Linear(n_features + 7, width), nn.GELU())
+        self.attention = nn.MultiheadAttention(width, num_heads=3, batch_first=True, dropout=0.)
+        self.fuse = nn.Sequential(nn.Linear(width, width), nn.GELU())
+        self.k_gate = nn.Linear(width, 7)  # Original class_gate.
+        self.class_hidden = nn.Sequential(nn.Linear(2 * width + 8, width), nn.GELU())
+        self.class_out = nn.Linear(width, 1)
+        self.keep_gate = nn.Linear(width, 1)
         self.keep_head = nn.Sequential(
-            nn.Linear(width + n_features + 7, width), nn.GELU(),
+            nn.Linear(2 * width + n_features + 8, width), nn.GELU(),
             nn.Linear(width, 1))
+        self.risk = nn.Sequential(nn.Linear(width, 2), nn.Sigmoid())
 
     def forward(self, features, descriptors, audit, k_probs, compatible):
         b = len(features)
@@ -177,46 +182,82 @@ class FragmentMaskRouter(nn.Module):
                 or audit.shape != (b, 32, 7, 3)
                 or k_probs.shape != (b, 7)
                 or compatible.shape != (b, 32, 7)):
-            raise ValueError("S736 per-fragment learned subset ABI mismatch")
-        if not all(bool(torch.isfinite(x).all()) for x in
-                   (features, descriptors, audit, k_probs)):
-            raise ValueError("Nonfinite S736 inputs")
-        if not bool(torch.allclose(
-                k_probs.sum(dim=1), torch.ones_like(k_probs[:, 0]),
-                atol=1e-3)):
-            raise ValueError("Frozen K posterior must sum to one")
-        compat = compatible.bool()
-        if not bool(compat[:, 0, :].all()):
-            raise ValueError("H0-only KEEP fallback must be legal for all K")
-        ctx = self.context(torch.cat([features, k_probs], -1))
-        x = self.option(torch.cat(
-            [descriptors, audit.flatten(start_dim=2)], -1))
-        present = compat.any(dim=-1)
+            raise ValueError("Exact-K port: per-fragment 32-option input mismatch")
+        if not all(bool(torch.isfinite(x).all())
+                   for x in (features, descriptors, audit, k_probs)):
+            raise ValueError("Nonfinite learned selector input")
+        if bool((k_probs < 0).any()) or not bool(torch.allclose(
+                k_probs.sum(-1), torch.ones_like(k_probs[:, 0]), atol=1e-3)):
+            raise ValueError("Exact-K frozen soft posteriors required")
+        class_mask = compatible.bool()
+        available = class_mask.any(dim=-1)
+        if not bool(class_mask[:, 0, :].all()):
+            raise ValueError("H0-only option must support all hypothetical K")
+        if not bool(class_mask.any(dim=1).all()):
+            raise ValueError("Each K class must retain a legal proposal")
+
+        # Exact-K's original head input interface is [K0..K6+KEEP,
+        # OOF audit(21), head type(4)]. Option-specific onset measurements
+        # are appended as an adapter; no truth K or future audio is supplied.
+        k_logits = torch.log(k_probs.clamp_min(1e-7))
+        keep_evidence = -descriptors[:, :, 1:2].clamp_min(0.)
+        head_logits = torch.cat((
+            k_logits[:, None, :].expand(-1, 32, -1), keep_evidence), dim=-1)
+        head_post = torch.softmax(head_logits, dim=-1)
+        kind = torch.zeros(b, 32, 4, device=features.device, dtype=features.dtype)
+        kind[:, 0, 0] = 1.  # H0 baseline
+        kind[:, 1:, 1] = 1.  # Other combinations: acoustic predictors
+        head_input = torch.cat((head_post, audit.flatten(start_dim=2),
+                                kind, descriptors), dim=-1)
+        heads = self.head_proj(head_input)
+        ctx = self.context_proj(torch.cat((features, k_probs), dim=-1))
+        # Source attention: each proposed head interacts with all other
+        # available heads; unavailable ones receive zero probability.
         attended, _ = self.attention(
-            x, x, x, key_padding_mask=~present, need_weights=False)
-        state = self.fuse(x + attended + ctx[:, None, :])
-        logits_by_k = self.k_gate(state).masked_fill(~compat, -1e9)
-        # Softmax OVER combinations, conditioned on each K separately.
-        weights_by_k = torch.softmax(logits_by_k, dim=1) * compat
-        weights_by_k = weights_by_k / weights_by_k.sum(
-            dim=1, keepdim=True).clamp_min(1e-9)
-        marginal = torch.einsum("bmk,bk->bm", weights_by_k, k_probs)
-        risks = self.risk(state).clamp(1e-5, 1 - 1e-5)
-        p_fix, p_regress = risks[:, :, 0], risks[:, :, 1]
-        # Risks influence the actual selection logits, not just reporting.
-        scores = (torch.log(marginal.clamp_min(1e-9)) +
-                  torch.log(p_fix) - torch.log(p_regress))
-        scores = scores.masked_fill(~present, -1e9)
-        keep_logit = self.keep_head(
-            torch.cat([ctx, features, k_probs], dim=-1)).squeeze(-1)
-        # Index zero represents KEEP; 1..32 correspond to MASKS.
-        action_logits = torch.cat([keep_logit[:, None], scores], dim=1)
+            heads, heads, heads, key_padding_mask=~available,
+            need_weights=False)
+        state = self.fuse(heads + attended + ctx[:, None, :])
+
+        # The original Exact-K class-conditional gate is preserved, not a
+        # single mixture reused across K0..K6.
+        by_k_logits = self.k_gate(state).masked_fill(~class_mask, -1e9)
+        by_k = torch.softmax(by_k_logits, dim=1) * class_mask
+        by_k = by_k / by_k.sum(dim=1, keepdim=True).clamp_min(1e-9)
+        class_states = torch.einsum("bhk,bhd->bkd", by_k, state)
+        evidence = (by_k * head_post[:, :, :7]).sum(dim=1)
+        identities = torch.eye(7, device=features.device,
+                               dtype=features.dtype).unsqueeze(0).expand(b, -1, -1)
+        class_features = torch.cat((
+            class_states, ctx[:, None, :].expand(-1, 7, -1),
+            evidence[:, :, None], identities), dim=-1)
+        class_logits = self.class_out(self.class_hidden(class_features)).squeeze(-1)
+
+        # Exact-K has an independent KEEP path, not a special combination.
+        keep_scores = self.keep_gate(state).squeeze(-1).masked_fill(~available, -1e9)
+        keep_weights = torch.softmax(keep_scores, dim=1)
+        keep_state = torch.einsum("bh,bhd->bd", keep_weights, state)
+        keep_prob = torch.einsum("bh,bh->b", keep_weights, head_post[:, :, 7])
+        keep_logit = self.keep_head(torch.cat((
+            keep_state, ctx, features, k_probs, keep_prob[:, None]), dim=-1)).squeeze(-1)
+
+        # Adapter from original K0..K6+KEEP logits to 32 actual onset
+        # combination actions + KEEP. Each candidate is conditioned on all
+        # seven classes and can vary independently for every audio fragment.
+        p_fix, p_regress = self.risk(state).clamp(1e-5, 1 - 1e-5).unbind(-1)
+        class_prob = torch.softmax(class_logits, dim=-1)
+        subset_weights = torch.einsum("bhk,bk->bh", by_k, class_prob)
+        action_by_mask = torch.logsumexp(
+            torch.log_softmax(class_logits, dim=-1)[:, None, :] +
+            torch.log(by_k.clamp_min(1e-12)), dim=-1)
+        action_by_mask = action_by_mask + torch.log(p_fix) - torch.log(p_regress)
+        action_by_mask = action_by_mask.masked_fill(~available, -1e9)
+        action_logits = torch.cat((keep_logit[:, None], action_by_mask), dim=1)
         return dict(
-            action_logits=action_logits,
-            class_selection_weights=weights_by_k,
-            subset_weights=marginal,
-            p_correction=p_fix,
-            p_regression=p_regress,
+            action_logits=action_logits, class_logits=torch.cat(
+                (class_logits, keep_logit[:, None]), dim=-1),
+            class_probability=class_prob, class_selection_weights=by_k,
+            subset_weights=subset_weights, keep_selection_weights=keep_weights,
+            p_correction=p_fix, p_regression=p_regress,
             keep_logit=keep_logit,
         )
 
