@@ -1,0 +1,43 @@
+name: S700 chord-weighted causal K2 K3 K4 K5 K6 validation
+on:
+  push:
+    branches: [codex/note-s700-polyphonic-k-specialist]
+    paths:
+      - scripts/s700_weighted_polyphonic_K_shadow.py
+      - test/test_s700_weighted_polyphonic_K.py
+      - .github/workflows/note-s700-polyphonic-k-head.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: note-s700-weighted-chord-k
+  cancel-in-progress: true
+jobs:
+  full_chord_5_way:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 160
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Original frozen live NOTE dependencies
+        run: python -m pip install -r requirements-live-strict.txt
+      - name: Test causal features and train-only K2plus weighting
+        run: |
+          python -m compileall -q scripts/s700_weighted_polyphonic_K_shadow.py test/test_s700_weighted_polyphonic_K.py
+          python -m unittest -v test.test_s700_weighted_polyphonic_K test.test_s697_causal_K_shadow test.test_s699_player_held_K
+      - name: Train source GuitarSet 108 authentic players 00-02 and validate 36 held player03 and 12 DEV
+        run: python -m scripts.s700_weighted_polyphonic_K_shadow --out /tmp/s700
+      - name: Keep source score proof and per-record chord performance
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S700_GUITARSET_K2PLUS_POLY_WEIGHTED_HEAD
+          path: /tmp/s700/report.json
+          if-no-files-found: warn
+          retention-days: 60
