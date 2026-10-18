@@ -6,9 +6,12 @@ on:
       - AGENTS.md
       - docs/audits/S713_CODE_AUDIT_MATRIX.md
       - test/test_s713_metric_contract.py
+      - test/test_s713_live_cpu_and_events.py
+      - src/causal_note/s712_s708_live.py
+      - scripts/live_strict_notes.py
       - .github/workflows/note-s713-independent-code-audit.yml
   workflow_dispatch:
-permissions: {contents: read}
+permissions: {contents: read, actions: read}
 concurrency:
   group: note-s713-audit-contract
   cancel-in-progress: true
@@ -21,6 +24,7 @@ jobs:
       OPENBLAS_NUM_THREADS: '1'
       MKL_NUM_THREADS: '1'
       OMP_NUM_THREADS: '1'
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -32,7 +36,46 @@ jobs:
       - name: Check compile + contract and causal selection unit tests
         run: |
           python -m compileall -q scripts/s704_joint_metrics.py src/causal_note/s712_s708_live.py scripts/live_strict_notes.py
-          python -m unittest -v test.test_s713_metric_contract test.test_s712_s708_live test.test_s708_cardinality_selection
+          python -m unittest -v test.test_s713_metric_contract test.test_s713_live_cpu_and_events test.test_s712_s708_live test.test_s708_cardinality_selection
+      - name: Verify selected S708 checkpoint and status reporting (native vs experimental)
+        run: |
+          mkdir -p /tmp/s713_s708
+          gh run download 39094682419 --repo "${{ github.repository }}" --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s713_s708
+          python -m scripts.live_strict_notes --status --s708-model /tmp/s713_s708/s708_selected.pt > /tmp/s713_s708/status.json
+          python -m scripts.live_strict_notes --status > /tmp/s713_s708/native_status.json
+          python - <<'PY'
+          import json
+          p='/tmp/s713_s708/'
+          status=json.load(open(p+'status.json'))
+          trial=status['s708_trial']
+          assert trial['checkpoint_verified'] is True
+          assert trial['decision_hop_samples']==1024
+          assert trial['native_hop_samples']==256
+          assert trial['temporal_engine']=='incremental'
+          assert trial['offset_policy']=='joint_selector_only_NO_S707'
+          assert json.load(open(p+'native_status.json'))['s708_trial'] is None
+          print('S713 S708 CHECKPOINT_STATUS_VERIFIED')
+          PY
+      - name: Validate selected S708 real weights against offline track model
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import numpy as np,torch,time
+          from causal_note.s712_s708_live import load_s708_checkpoint,IncrementalS708TemporalHead
+          from causal_note.s705_temporal_heads import predict_track
+          model,policy,sha=load_s708_checkpoint('/tmp/s713_s708/s708_selected.pt','/tmp/s713_s708/report.json')
+          rng=np.random.default_rng(713)
+          x=(rng.standard_normal((72,49,288))*.2).astype(np.float32)
+          begin=time.perf_counter();p,k=predict_track(model,x,chunk=256)
+          reference_ms=(time.perf_counter()-begin)*1000
+          stream=IncrementalS708TemporalHead(model)
+          begin=time.perf_counter();out=[stream.step(row) for row in x]
+          incremental_ms=(time.perf_counter()-begin)*1000
+          pp=np.stack([r[0] for r in out]);kk=np.stack([r[1] for r in out])
+          np.testing.assert_allclose(pp,p,rtol=3e-6,atol=3e-6)
+          np.testing.assert_allclose(kk,k,rtol=3e-6,atol=3e-6)
+          print('S713 REAL_S708_INCREMENTAL_MATCHES_OFFLINE',sha,dict(reference_ms=round(reference_ms,3),incremental_ms=round(incremental_ms,3)))
+          PY
       - name: State the hard limitation of unit results
         run: |
           echo "All source code contracts ran; no microphone device, independent F1 or promotion measured."
