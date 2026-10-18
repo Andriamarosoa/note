@@ -1,12 +1,14 @@
 """S713 independent tests: real causal NoteOn/NoteOff emission and accelerated S708 CPU parity."""
 import unittest
+from collections import deque
 import numpy as np
 import torch
 
 from causal_note.strict_live import HOP, SR
 from causal_note.s708_cardinality_selection import GuidedPolicy
 from causal_note.s705_temporal_heads import TemporalHeads, predict_track
-from causal_note.s712_s708_live import S708StrictLiveStream, IncrementalS708TemporalHead, DECISION
+from causal_note.s712_s708_live import S708StrictLiveStream, IncrementalS708TemporalHead, latest_s708_acoustic_features, DECISION
+from causal_note.s704_joint_heads import acoustic_features
 from test.test_s712_s708_live import FrozenStubHeads, NativeTemporalStub
 
 
@@ -78,6 +80,17 @@ class S713LiveTests(unittest.TestCase):
         self.assertEqual(end[0]["pitch"],52)
         self.assertEqual(end[0]["reason"],"shutdown")
         self.assertEqual(stream.finish(),[])
+
+    def test_latest_only_acoustic_matches_frozen_full_65_history(self):
+        rng=np.random.default_rng(713)
+        f=deque(maxlen=65);p=deque(maxlen=65);k=deque(maxlen=65)
+        for index in range(82):
+            f.append(rng.random((49,126),dtype=np.float32))
+            p.append(rng.random((49,3),dtype=np.float32))
+            k.append(rng.random(7,dtype=np.float32))
+            want=acoustic_features(np.stack(f),np.stack(p),np.stack(k))[-1]
+            got=latest_s708_acoustic_features(f,p,k)
+            np.testing.assert_allclose(got,want,atol=1e-6,rtol=1e-6)
 
     def test_fast_temporal_head_matches_offline_reference_framewise(self):
         torch.manual_seed(713)
