@@ -1,3 +1,26 @@
+## Gain-stress final S724 — VALIDÉ sur vrais WAV CAL (12 pistes)
+
+[Run 39120010839 — succès](https://github.com/Andriamarosoa/note/actions/runs/39120010839). Un premier essai de CI `39119279340` a échoué **sur un import Python incorrect**, corrigé avant l'analyse ; les 12 pistes du run définitif sont traitées, la reconstruction à gain=1 reproduit la chaîne 288D originale. 6 accords et 6 solos, mêmes annotations et mêmes décisions causales S707, aucun clipping observé à aucun gain. Les chiffres concernent **exclusivement ce sous-ensemble de 12 CAL** et ne sont pas interchangeables avec les résultats officiels 32 CAL ou 12 DEV.
+
+| Gain PCM | Modèle | Onset F1 | Exact-K | K actif | Offset | F1 notes complètes | F1 hauteurs |
+|---|---|---:|---:|---:|---:|---:|---:|
+| ×0,5 (–6,02 dB) | S708 | 66,80% | 52,09% | 46,17% | 74,07% | 49,28% | 68,44% |
+| ×0,5 | S724 2 ép. + K | **68,02%** | **52,23%** | **46,35%** | 73,57% | **49,85%** | **69,29%** |
+| ×1 (0 dB) | S708 | 70,13% | 54,89% | 50,16% | **74,78%** | 52,26% | 72,89% |
+| ×1 | S724 2 ép. + K | **70,82%** | **55,10%** | **50,59%** | 74,66% | **52,66%** | **73,34%** |
+| ×2 (+6,02 dB) | S708 | 70,42% | 56,50% | 52,98% | **72,29%** | **50,70%** | 73,53% |
+| ×2 | S724 2 ép. + K | **70,51%** | **56,91%** | **53,73%** | 71,71% | 50,36% | **74,14%** |
+
+Comparaison **des mêmes pistes d'un même modèle** entre ×1 et ×0,5 :
+- S708 : Onset F1 **–3,333 points**, Exact-K **–2,807 points**, K actif **–3,989 points**, frame-pitch **–4,450 points**.
+- S724 : Onset F1 **–2,798 points**, Exact-K **–2,861 points**, K actif **–4,238 points**, frame-pitch **–4,046 points**.
+- S724 montre une amélioration *locale et descriptive* de résistance de l'Onset au signal atténué (réduction de perte d'environ 0,54 point), **mais K actif baisse un peu davantage** et Offset devient légèrement pire.
+- À ×2 S708 augmente légèrement son F1 Onset (70,13 → 70,42%), alors que S724 baisse (70,82 → 70,51%). Cela montre une vraie dépendance du seuil et des features au volume même sans clipping.
+- **Aucune promotion** : sur l'ensemble complet des 32 CAL S724 ne franchit pas les six métriques contre S708. Le gain-stress 12 CAL est une preuve diagnostique, pas un argument autorisant la promotion, et les quatre ensembles n'ont pas été rééchantillonnés ou choisis pour avantager le modèle.
+
+**Suite technique concrète** : pour améliorer réellement l'invariance, utiliser le test ×0,5/×1/×2 comme critère séparé et entraîner sur FIT avec de vraies augmentations de gain PCM et des commandes de tonalité/EQ ; contrôler le spectre et les partiels faibles, puis ajouter un modèle de différence temporelle des rapports pairs/impairs E2 au moment de E3. Mais le gain PCM seul ne simule pas la différence de pincement doux/fort ; des prises dédiées restent nécessaires.
+
+---
 ## Résultat final S724 — 18 octobre 2026 (GuitarSet original, sans gain artificiel)
 
 [Run S724 SUCCESS, 21 tests réussis](https://github.com/Andriamarosoa/note/actions/runs/39118797590), 80 FIT pour l'entraînement ; 32 CAL pour la sélection ; 32 HELD/12 DEV uniquement pour rejouer le **modèle sélectionné** (référence historique S708).
