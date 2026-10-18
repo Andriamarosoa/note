@@ -42,7 +42,9 @@ class OneTargetClassConditionalSelector(nn.Module):
     context [B,C], k_probs [B,7] (frozen S708), baseline [B].
     Outputs: action_logits [B,3] KEEP/ADOPT/SUPPRESS,
     class_selection_weights [B,H,7], selection_weights [B,H],
-    head_risk [B,H,2], offered_probability [B].
+    head_risk [B,H+1,2], offered_probability [B], and
+    k_linked_onset [B]. The final H5 proposal is an independently
+    parameterized K-conditioned neural attack head, not a K0..K6 classifier.
     """
     def __init__(self, context_dim=16, width=48, n_attention_heads=3):
         super().__init__()
@@ -56,6 +58,12 @@ class OneTargetClassConditionalSelector(nn.Module):
         self.fuse = nn.Sequential(nn.Linear(width,width),nn.GELU())
         self.k_gate = nn.Linear(width,7)
         self.risk = nn.Sequential(nn.Linear(width,2),nn.Sigmoid())
+        # Separate *per-note* learned head. It receives the frozen K distribution,
+        # causal pitch context, and original baseline Onset. It can disagree with
+        # an underestimated K because K is soft evidence, not a hard veto.
+        self.k_linked_onset = nn.Sequential(
+            nn.Linear(context_dim+8,width),nn.GELU(),nn.LayerNorm(width),
+            nn.Linear(width,width//2),nn.GELU(),nn.Linear(width//2,1))
         self.action = nn.Sequential(nn.Linear(width*2+9,width),nn.GELU(),
                                     nn.Linear(width,3))
 
@@ -78,6 +86,23 @@ class OneTargetClassConditionalSelector(nn.Module):
             raise ValueError("Expected probabilities")
         if bool((k_probs.sum(-1)-1).abs().max()>1.e-3):
             raise ValueError("Frozen K posteriors must sum to one")
+        # The five original frozen proposals remain independent of learned H5.
+        # Attach the new head only after validating their signed input ABI.
+        klinked=torch.sigmoid(self.k_linked_onset(
+            torch.cat([context,k_probs,baseline[:,None]],-1))).squeeze(-1)
+        head_scores=torch.cat([head_scores,klinked[:,None]],dim=1)
+        # H5 has no historical OOF per-K risk calibration. Do NOT fabricate one;
+        # all-zero audit marks it absent while it is trained on genuine FIT labels.
+        audit=torch.cat([audit,torch.zeros(b,1,21,device=audit.device,
+                          dtype=audit.dtype)],dim=1)
+        extra_type=torch.zeros(b,1,4,device=head_type.device,dtype=head_type.dtype)
+        extra_type[:,:,1]=1. # learned predictor, not historical KEEP
+        head_type=torch.cat([head_type,extra_type],dim=1)
+        mask=torch.cat([mask,torch.ones(b,1,device=mask.device,
+                        dtype=torch.bool)],dim=1)
+        # Always available even when K is wrong; no hard K suppression.
+        class_mask=torch.cat([class_mask,torch.ones(b,1,7,
+                        device=class_mask.device,dtype=torch.bool)],dim=1)
         features=torch.cat([head_scores[:,:,None],audit,head_type],-1)
         heads=self.head_proj(features)
         ctx=self.context_proj(torch.cat([context,k_probs,baseline[:,None]],-1))
@@ -94,7 +119,9 @@ class OneTargetClassConditionalSelector(nn.Module):
                                 offered[:,None]],-1)
         return dict(action_logits=self.action(action_input),
                     class_selection_weights=by_k,selection_weights=selection,
-                    head_risk=self.risk(state),offered_probability=offered)
+                    head_risk=self.risk(state),offered_probability=offered,
+                    k_linked_onset=klinked,
+                    k_linked_head_weight=selection[:,-1])
 
 
 def target_loss(outputs,actions,risk_labels,head_mask,risk_weight=.20):
