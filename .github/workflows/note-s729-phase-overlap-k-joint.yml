@@ -6,6 +6,7 @@ on:
       - src/causal_note/s729_phase_overlap_evidence.py
       - scripts/s729_phase_source_exactk_training.py
       - test/test_s729_phase_overlap_evidence.py
+      - test/test_s729_phase_training_contract.py
       - .github/workflows/note-s729-phase-overlap-k-joint.yml
   workflow_dispatch:
 permissions: {contents: read, actions: read}
@@ -34,7 +35,7 @@ jobs:
       - name: Prove phase-reset from real octave excitation vs uniform parent phase and S708 logits
         run: |
           python -m compileall -q src/causal_note/s729_phase_overlap_evidence.py scripts/s729_phase_source_exactk_training.py
-          python -m unittest -v test.test_s729_phase_overlap_evidence test.test_s720_poly_onset_training test.test_s718_onset_audit test.test_s713_metric_contract
+          python -m unittest -v test.test_s729_phase_training_contract test.test_s729_phase_overlap_evidence test.test_s720_poly_onset_training test.test_s718_onset_audit test.test_s713_metric_contract
       - name: Fetch signed original S708 and S707 75D specialist (no new reference)
         run: |
           mkdir -p /tmp/s729/s708 /tmp/s729/s707
