@@ -1,0 +1,87 @@
+name: S710 causal state recovery with CAL error diagnosis
+on:
+  push:
+    branches: [codex/note-s710-causal-state-recovery]
+    paths:
+      - src/causal_note/s710_joint_state_filter.py
+      - scripts/s710_joint_state_loops.py
+      - test/test_s710_joint_state_filter.py
+      - .github/workflows/note-s710-causal-state-recovery.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: note-s710-causal-state-recovery
+  cancel-in-progress: false
+env:
+  PYTHONPATH: .:src
+  GH_TOKEN: ${{ github.token }}
+  OPENBLAS_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '2'
+  OMP_NUM_THREADS: '2'
+  PYTHONUNBUFFERED: '1'
+  S710_ARGS: --work /tmp/s710_work --cache /tmp/s710_cache --out /tmp/s710_out --s706 /tmp/s710_s706/s706_selected.pt --s709 /tmp/s710_s709/s709_selected.pt --offset-checkpoint /tmp/s710_s675/s675_hazard.joblib
+jobs:
+  calibration_diagnosis:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install pinned inference dependencies
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Retrieve immutable acoustic checkpoints and native offset baseline
+        run: |
+          mkdir -p /tmp/s710_s675 /tmp/s710_s706 /tmp/s710_s709
+          gh run download 39059008484 --repo "${{ github.repository }}" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s710_s675
+          gh run download 39093239181 --repo "${{ github.repository }}" --name S706_SHARP_SPECTRAL_TEMPORAL_CAUSAL_LOOPS --dir /tmp/s710_s706
+          gh run download 39095466721 --repo "${{ github.repository }}" --name S709_SIX_STRING_NATIVE_CAUSAL_HEADS --dir /tmp/s710_s709
+      - name: Verify causal state, acoustic evidence and actual event capacity
+        run: |
+          python -m compileall -q src/causal_note/s710_joint_state_filter.py scripts/s710_joint_state_loops.py
+          python -m unittest -v test.test_s710_joint_state_filter test.test_s704_joint_loops test.test_s707_causal_prefix
+      - name: Diagnose CAL misses and cache received-only model probabilities
+        run: python -m scripts.s710_joint_state_loops prepare $S710_ARGS
+      - name: Preserve CAL probability cache and diagnosis
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S710_CAL_DIAGNOSIS_AND_PROBABILITIES
+          path: /tmp/s710_cache/
+          if-no-files-found: error
+          retention-days: 60
+  state_loops:
+    needs: calibration_diagnosis
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install pinned inference dependencies
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Retrieve immutable acoustic checkpoints and native offset baseline
+        run: |
+          mkdir -p /tmp/s710_s675 /tmp/s710_s706 /tmp/s710_s709
+          gh run download 39059008484 --repo "${{ github.repository }}" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s710_s675
+          gh run download 39093239181 --repo "${{ github.repository }}" --name S706_SHARP_SPECTRAL_TEMPORAL_CAUSAL_LOOPS --dir /tmp/s710_s706
+          gh run download 39095466721 --repo "${{ github.repository }}" --name S709_SIX_STRING_NATIVE_CAUSAL_HEADS --dir /tmp/s710_s709
+      - name: Retrieve CAL cache from this same immutable run
+        uses: actions/download-artifact@v4
+        with:
+          name: S710_CAL_DIAGNOSIS_AND_PROBABILITIES
+          path: /tmp/s710_cache
+      - name: Compare 146 joint state configurations, freeze, evaluate and independently recount
+        run: python -m scripts.s710_joint_state_loops search $S710_ARGS
+      - name: Preserve selected model, all CAL comparisons and exact events
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S710_JOINT_STATE_CAUSAL_RECOVERY
+          path: /tmp/s710_out/
+          if-no-files-found: error
+          retention-days: 60
