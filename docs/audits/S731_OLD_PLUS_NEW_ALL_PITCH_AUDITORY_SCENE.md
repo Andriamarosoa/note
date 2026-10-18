@@ -1,3 +1,21 @@
+## Correction de causalité pendant la validation
+
+Le NoteOff S707 peut porter un `decision_sample` antérieur
+à son émission effective (`available_sample`). L'audit source
+ne doit jamais supprimer une source dans son historique
+*avant* `available_sample`.
+Le moteur S731 traite désormais les événements **uniquement
+au premier bloc effectivement reçu après leur disponibilité**.
+Le contrôle vérifie explicitement le cas où un NoteOff est
+daté à 2048 échantillons mais n'est connu qu'à 5120 :
+la note reste active pour les décisions intermédiaires.
+[Tests corrigés : SUCCESS](https://github.com/Andriamarosoa/note/actions/runs/39128765445).
+[Validation complète après correction](https://github.com/Andriamarosoa/note/actions/runs/39128785724).
+Ne pas utiliser les résultats d'un run démarré avant ce correctif
+pour conclure à une véritable causalité LIVE.
+
+---
+
 # S731 — « Comme l'oreille » : ancien son + nouvelle source, pour toutes les notes
 
 ## Ce qui change réellement après l'échec S720–S730
