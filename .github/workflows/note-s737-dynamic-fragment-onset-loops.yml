@@ -3,6 +3,8 @@ on:
   push:
     branches: [codex/note-s737-multitarget-fragment-learning-loops, codex/note-s739-original-exactk-onset-fragments]
     paths:
+      - src/causal_note/s736_fragment_mask.py
+      - test/test_s736_fragment_mask.py
       - scripts/s737_train_fragment_onset_loops.py
       - test/test_s737_fragment_training_loops.py
       - .github/workflows/note-s737-dynamic-fragment-onset-loops.yml
