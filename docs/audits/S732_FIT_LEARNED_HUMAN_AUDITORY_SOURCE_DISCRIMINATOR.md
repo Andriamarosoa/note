@@ -1,3 +1,28 @@
+## Verdict mesuré S732 — rejet
+
+[Run GitHub 39130284723 : SUCCESS](https://github.com/Andriamarosoa/note/actions/runs/39130284723), 18 tests, deux modèles HGB entraînés seulement sur FIT80, 359 834 observations d'entraînement, dont 29 030 positifs Onset. **S708 seul sélectionné**. Aucune promotion LIVE.
+
+Sur CAL32, les variantes `control` et `scene` sans pénalité (gains 0,20 / 0,45 / 0,75) produisent exactement les mêmes événements et les mêmes six métriques que S708 :
+
+| Score CAL | S708 | S732 sélectionné |
+|---|---:|---:|
+| Onset F1 | 74,2639% | 74,2639% |
+| Exact-K | 62,0455% | 62,0455% |
+| Exact-K actif | 56,2762% | 56,2762% |
+| Offset | 77,3292% | 77,3292% |
+| F1 note complète | 57,1319% | 57,1319% |
+| F1 hauteur/trame | 76,4626% | 76,4626% |
+
+Le modèle `scene` avec `penalty=0,08` a modifié quelques décisions : Onset 74,2908%, K 62,0099%, K actif 56,2034%, Offset 77,3513%, full-note 57,1684%, frame-pitch 76,4040%. **Régression K et frame-pitch.** Sur les 151 vrais chevauchements d'octave de CAL32 : S708 = 99 vrais et 43 faux enfants ; S732 `scene` pénalisé = 97 vrais et 40 faux enfants. Deux vrais perdus pour trois faux supprimés. Seul le modèle S708 original est acceptable ; HELD32 et DEV12 reproduisent donc exclusivement les résultats historiques S708.
+
+### Cause structurelle de l'échec
+
+Le nouveau HGB prédit `P(onset)`, mais `apply_evidence` n'augmente la tête Onset S708 que lorsque le HGB est **plus confiant que S708** ; ce supplément est ensuite multiplié par `P(K>nb_actifs)` du réseau S708. Les tests complets révèlent que ces corrections positives n'ont produit aucun NoteOn supplémentaire, dans les trois amplitudes testées. Les corrections négatives changent certains événements et créent le compromis faux-vrais. Cela ne signifie PAS qu'aucune information de scène n'existe : **ce couplage après-coup n'exploite pas correctement les cas que la tête S708 et son Exact-K ratent déjà**.
+
+La prochaine rupture à éprouver doit être une architecture entraînée **conjointement** à expliquer le signal par plusieurs sources indépendantes, avec mécanisme de compétition/reconstruction au coeur de la sélection (ou tête indépendante sur événements candidats), plutôt qu'une probabilité ajoutée à la sortie de S708 et verrouillée par son K inchangé. Il faut mesurer le résultat sur des splits réellement inconnus et toutes les combinaisons de notes, pas multiplier les réglages CAL.
+
+---
+
 # S732 — Apprendre à distinguer une vraie nouvelle source d'une ancienne harmonique
 
 ## Point de départ factuel
