@@ -31,6 +31,7 @@ jobs:
       - name: Verify original and timbre feature contracts, compile gain-stress script
         run: |
           python -m compileall -q scripts/s724_gain_robustness_cal12.py
+          python -c 'import scripts.s724_gain_robustness_cal12; print("S724_GAIN_IMPORTS_PASS")'
           python -m unittest -v test.test_s724_loudness_timbre test.test_s713_metric_contract
       - name: Ensure original experiment S724 finished successfully before sourcing weights
         run: |
