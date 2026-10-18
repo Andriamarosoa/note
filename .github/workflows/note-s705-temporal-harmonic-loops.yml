@@ -1,0 +1,82 @@
+name: S705 causal temporal harmonic heads iterative joint validation
+on:
+  push:
+    branches: [codex/note-s705-temporal-harmonic-loops]
+    paths:
+      - src/causal_note/s705_temporal_heads.py
+      - scripts/s705_train_temporal_loops.py
+      - test/test_s705_temporal_heads.py
+      - .github/workflows/note-s705-temporal-harmonic-loops.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: note-s705-temporal-harmonic-loops
+  cancel-in-progress: false
+jobs:
+  temporal_loops:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+      PYTHONUNBUFFERED: '1'
+      S705_ARGS: --work /tmp/s705_work --out /tmp/s705 --offset-checkpoint /tmp/s705_s675/s675_hazard.joblib
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install pinned causal inference and training dependencies
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Verify temporal prefixes, incremental parity and causal event metrics
+        run: |
+          python -m compileall -q src/causal_note/s705_temporal_heads.py scripts/s705_train_temporal_loops.py
+          python -m unittest -v test.test_s705_temporal_heads test.test_s704_joint_loops
+      - name: Retrieve verified S675 baseline
+        run: |
+          mkdir -p /tmp/s705_s675
+          gh run download 39059008484 --repo "${{ github.repository }}" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s705_s675
+      - name: Prepare separated FIT and CAL with causal acoustic histories
+        run: python -m scripts.s705_train_temporal_loops prepare $S705_ARGS
+      - name: Learning loop 1 - epochs 1 to 10
+        run: python -m scripts.s705_train_temporal_loops train $S705_ARGS --epoch 10
+      - name: Calibration loop 1 - 96 joint selections
+        run: python -m scripts.s705_train_temporal_loops calibrate $S705_ARGS --epoch 10
+      - name: Publish first calibration checkpoint
+        uses: actions/upload-artifact@v4
+        with:
+          name: S705_CAL_LOOP_10
+          path: |
+            /tmp/s705/round_10.json
+            /tmp/s705/training_to_10.json
+          retention-days: 60
+      - name: Learning loop 2 - epochs 11 to 20
+        run: python -m scripts.s705_train_temporal_loops train $S705_ARGS --epoch 20
+      - name: Calibration loop 2 - 96 joint selections
+        run: python -m scripts.s705_train_temporal_loops calibrate $S705_ARGS --epoch 20
+      - name: Publish second calibration checkpoint
+        uses: actions/upload-artifact@v4
+        with:
+          name: S705_CAL_LOOP_20
+          path: |
+            /tmp/s705/round_20.json
+            /tmp/s705/training_to_20.json
+          retention-days: 60
+      - name: Learning loop 3 - epochs 21 to 32
+        run: python -m scripts.s705_train_temporal_loops train $S705_ARGS --epoch 32
+      - name: Calibration loop 3 and final freeze
+        run: python -m scripts.s705_train_temporal_loops calibrate $S705_ARGS --epoch 32
+      - name: Evaluate frozen model on HELD and diagnostic DEV once
+        run: python -m scripts.s705_train_temporal_loops evaluate $S705_ARGS
+      - name: Preserve checkpoints, all loops and exact emissions
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S705_TEMPORAL_HARMONIC_CAUSAL_LOOPS
+          path: /tmp/s705/
+          if-no-files-found: warn
+          retention-days: 60
