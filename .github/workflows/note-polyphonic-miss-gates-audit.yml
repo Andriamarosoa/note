@@ -1,0 +1,67 @@
+name: Audit polyphonic missed notes CAL and HELD (S708/S731 frozen)
+on:
+  push:
+    branches: [codex/note-missed-note-audit-20261018]
+    paths:
+      - scripts/audit_polyphonic_misses.py
+      - .github/workflows/note-polyphonic-miss-gates-audit.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: note-polyphonic-misses-frozen
+  cancel-in-progress: true
+jobs:
+  inspect_heads_count_and_selection:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install frozen CPU dependencies
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Compile audit and test existing causal selectors
+        run: |
+          python -m compileall -q scripts/audit_polyphonic_misses.py
+          python -m unittest -v test.test_s731_auditory_scene test.test_s713_metric_contract
+      - name: Retrieve original signed S708 and S707 models
+        run: |
+          mkdir -p /tmp/poly/s708 /tmp/poly/s707
+          gh run download 39094682419 --repo "${{ github.repository }}" --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/poly/s708
+          gh run download 39059008484 --repo "${{ github.repository }}" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/poly/s707
+          test -s /tmp/poly/s708/report.json
+          test -s /tmp/poly/s708/s708_selected.pt
+          test -s /tmp/poly/s707/s675_hazard.joblib
+      - name: Compare real CAL and HELD misses vs head acoustic, K gate, and oracle-K diagnostic
+        run: |
+          python -m scripts.audit_polyphonic_misses --s708-dir /tmp/poly/s708 --offset-checkpoint /tmp/poly/s707/s675_hazard.joblib --out /tmp/poly/audit
+      - name: Verify original is frozen and TEST untouched
+        if: success()
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/poly/audit/report.json'))
+          assert not r['promoted'] and not r['LIVE_changed'] and not r['TEST_opened']
+          assert len(r['tracks']) == 64
+          for phase in ('CAL','HELD'):
+              for texture in ('comp','solo'):
+                  assert r['groups'][phase+'_'+texture]['n_tracks'] == 16
+          print('AUDIT_POLY_FN_FINAL',json.dumps(r['groups'],sort_keys=True),flush=True)
+          PY
+      - name: Preserve per-event gated and rescued note errors
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: AUDIT_S708_S731_MISSED_POLYPHONIC_GATE_CAL_HELD
+          path: /tmp/poly/audit/report.json
+          if-no-files-found: warn
+          retention-days: 45
