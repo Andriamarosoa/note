@@ -1,3 +1,52 @@
+## Vérification finale de S727 et S728 — boucles réelles, non promues
+
+[S727](https://github.com/Andriamarosoa/note/actions/runs/39124756179) **SUCCESS**, 20 tests ; S708 seul éligible parmi les 13 variantes CAL (1 référence + 3 pertes × 2 époques × 2 guidages Exact-K).
+
+| Métrique CAL | S708 | S727 pénalité ×2,6 à 1 époque + K |
+|---|---:|---:|
+| Onset F1 | 74,2639% | **74,3223%** |
+| Exact-K | 62,0455% | **62,3171%** |
+| Exact-K actif | 56,2762% | **56,8169%** |
+| Offset | **77,3292%** | 77,1215% |
+| F1 note complète | **57,1319%** | 57,0281% |
+| F1 frame-pitch | **76,4626%** | 76,4486% |
+
+Le renforcement des faux négatifs de note enfant
+améliore un peu K et Onset, mais *ne passe pas* le seuil de
+non-régression des six scores. Le choix gelé HELD/DEV
+reproduit exactement le benchmark d'origine S708 :
+aucune promotion et aucune modification de LIVE.
+
+[S728](https://github.com/Andriamarosoa/note/actions/runs/39125079903) **SUCCESS** : comparaison NoteOn réelle unique, tolérance ±80 ms,
+sur les 151 attaques d'octave **nouvellement jouée** avec
+une fondamentale inférieure déjà active et les 67 attaques
+à +19 demi-tons de CAL32.
+
+| Candidat | Octave, bons / 151 | Octave manqués | Fausse note octave tandis que parent joue | +19, bons / 67 | Faux +19 |
+|---|---:|---:|---:|---:|---:|
+| S708 original | 99 | 52 | 43 | 37 | 17 |
+| S727 témoin ×1,0 / époque 1 | **102** | **49** | 55 | **42** | 21 |
+| S727 faux harmonique ×1,8 / époque 1 | 100 | 51 | 49 | 40 | 22 |
+| S727 faux harmonique ×2,6 / époque 1 | 95 | 56 | **37** | 39 | 21 |
+
+**Verdict technique spécifique** : à pénalité forte on supprime 6
+fausses notes enfants (43→37), mais on perd 4 attaques d'octave
+vraiment jouées (99→95). À pénalité faible/témoin on récupère
+3 attaques d'octave (99→102), mais on invente 12 notes enfants
+supplémentaires (43→55). **C'est un compromis causal réel
+rappel/précision**, non une amélioration simultanée.
+Le score Onset global de S727 ne peut donc pas, seul,
+démontrer qu'E2/E3 est résolu. L'unique E2/E3 CAL reste
+un cas très faible statistiquement.
+
+S729 étudie le signal complexe/phase des partiels communs
+et S730 le rattrapage additif des notes proposées par
+les spécialistes tout en préservant chaque ancien événement S708 :
+les résultats sont distincts et ne sont pas présumés
+promus sans validation.
+
+---
+
 # S726–S728 — Boucles empiriques sur la séparation harmonique des notes
 
 ## Boucle 1 : S725 diagnostiqué sur le cas E2→E3 réel
