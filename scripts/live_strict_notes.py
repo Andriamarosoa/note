@@ -6,6 +6,7 @@ notes instead of silently processing a delayed or discontinuous queue.
 """
 from __future__ import annotations
 import argparse
+import hashlib
 from dataclasses import replace
 from contextlib import ExitStack
 import json
@@ -170,6 +171,8 @@ def main(argv=None):
                         help="EXPERIMENTAL S667 NoteOff: sustain-off threshold (original 0.25; try 0.15)")
     parser.add_argument("--s672-hazard-model", type=Path,
                         help="S680 EXPERIMENTAL: earlier S672 TRAIN-selected 75D NoteOff specialist")
+    parser.add_argument("--s708-temporal-engine", choices=("incremental","reference"), default="incremental",
+                        help="S708 CPU temporal inference: per-layer cached incremental (default), or original full-history reference")
     parser.add_argument("--s708-model", type=Path,
                         help="EXPERIMENTAL S708 selected checkpoint s708_selected.pt; requires sibling report.json and torch CPU")
     parser.add_argument("--s675-hazard-model", type=Path,
@@ -313,6 +316,18 @@ def main(argv=None):
         print(json.dumps(mido.get_output_names()))
         return
     if args.status:
+        trial_status = None
+        if args.s708_model is not None:
+            trial_report = json.loads(args.s708_model.with_name("report.json").read_text(encoding="utf-8"))
+            model_sha = hashlib.sha256(args.s708_model.read_bytes()).hexdigest()
+            trial_status = dict(mode="S708_OPT_IN_TRIAL_UNPROMOTED",
+                checkpoint=str(args.s708_model), checkpoint_sha256=model_sha,
+                checkpoint_verified=model_sha==trial_report.get("checkpoint_sha256"),
+                frozen_policy=trial_report.get("frozen_candidate",{}).get("choice",{}).get("policy"),
+                native_hop_samples=HOP, decision_hop_samples=4*HOP,
+                temporal_engine=args.s708_temporal_engine,
+                offset_policy="joint_selector_only_NO_S707",
+                guitarset_dev_onset_f1_is_not_micro_f1=True)
         print(json.dumps(dict(status="EXPERIMENTAL_AUTONOMOUS_CAUSAL_NOTE_LIVE", sample_rate=SR, hop=HOP,
                              lookahead_samples=round(args.lookahead_ms*SR/1000),
                              lookahead_ms=args.lookahead_ms,
@@ -320,7 +335,8 @@ def main(argv=None):
                              sidecars_required=False, model=str(args.model),
                              model_available=args.model.is_file(), pitch_range=[40, 88], polyphony=6,
                              original_S80_promoted=False, microphone_requires="sounddevice + PortAudio",
-                             midi_requires="mido + python-rtmidi", accuracy="see S613 held-out report")))
+                             midi_requires="mido + python-rtmidi", accuracy="see S613 held-out report",
+                             s708_trial=trial_status)))
         return
     if not (args.wav or args.stdin or args.mic):
         parser.error("Choose --wav, --stdin or --mic")
@@ -370,9 +386,11 @@ def main(argv=None):
             from causal_note.s712_s708_live import S708StrictLiveStream, load_s708_checkpoint
             model, policy, sha = load_s708_checkpoint(
                 args.s708_model, args.s708_model.with_name("report.json"))
-            stream = S708StrictLiveStream(heads, model, policy)
+            stream = S708StrictLiveStream(heads, model, policy,
+                temporal_engine=args.s708_temporal_engine)
             print(json.dumps(dict(s708_live="EXPERIMENTAL_UNPROMOTED_MIC_TRIAL",
                 sha256=sha, batch_hops=4, decision_hop_ms=round(4*HOP*1000/SR,3),
+                temporal_engine=args.s708_temporal_engine,
                 S708_onset_benchmark="68.75pct F1 GuitarSet DEV, NOT live mic accuracy",
                 source_audio_only=True, no_future_pcm=True,
                 noteoff="S708 joint release; S707 offline hazard NOT yet integrated",
@@ -601,8 +619,8 @@ def main(argv=None):
                          block_ms=args.block_size / SR * 1000,
                          capture_deadline_blocks=args.capture_deadline_blocks,
                          queue_blocks=queue_capacity,
-                         decision_hop_samples=selected_hop,
-                         decision_hop_ms=round(selected_hop * 1000 / SR, 4),
+                         decision_hop_samples=4*HOP if args.s708_model else selected_hop,
+                         decision_hop_ms=round((4*HOP if args.s708_model else selected_hop) * 1000 / SR, 4),
                          queue_setting=args.queue_blocks,
                          queue_nominal_capacity_ms=round(
                              queue_capacity * (args.block_size or HOP) * 1000 / SR, 2
