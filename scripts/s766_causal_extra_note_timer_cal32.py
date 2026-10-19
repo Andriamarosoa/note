@@ -55,7 +55,7 @@ def timer_limited_pairs(pairs,cap_blocks):
         raise ValueError("S766 unregistered causal timer duration")
     budget=int(cap_blocks*BLOCK)
     limited=[]
-    counts=Counter()
+    counts=Counter(timer_capped=0,natural_release=0)
     for on,off in pairs:
         sample=int(on["available_sample"])
         natural=int(off["available_sample"])
