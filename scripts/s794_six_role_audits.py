@@ -65,8 +65,9 @@ def architecture(r,s,args):
             "untrained audit falsely became model")
     require("events=events,truth=truth" in source,
             "S794 audit silently replaced signed source events")
-    require("baseline_input(" in source and "SCORES" in source,
-            "missing authentic S708 source")
+    require("s708_source(" in source and "s708_decode(" in source
+            and "render_release(" in source and "SCORES" in source,
+            "missing byte-unchanged original S708 acoustic and MIDI decoder path")
     require("veto_added_event_delay" in args.taxonomy.read_text(),
             "S793 event-lineage guard missing")
     return dict(immutable_MIDI=True,fitted_specialists=0,
