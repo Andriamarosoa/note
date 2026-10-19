@@ -1,11 +1,11 @@
 ---
 serie: S788
-statut: en_cours
+statut: termine
 type: infrastructure
 reference: S708
 branche: codex/note-s788-mandatory-series-reports
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39272602006
+commit_sha: 6dc47ac5056458a86f5ecab9a981bc7ed8603bba
 promotion: false
 ---
 
@@ -50,4 +50,4 @@ Pour cette série d'infrastructure, aucun nouvel entraînement acoustique n'est 
 
 ## Statut
 
-**En cours — infrastructure documentaire et tests GitHub Actions.** Aucun gain de performance revendiqué.
+**Terminé pour la validation documentaire** — [GitHub Actions #39272602006](https://github.com/Andriamarosoa/note/actions/runs/39272602006) : SUCCESS (tests unitaires et contrôle des deux documents). Le SHA contrôlé est `6dc47ac5056458a86f5ecab9a981bc7ed8603bba`. Aucun gain de performance revendiqué.
