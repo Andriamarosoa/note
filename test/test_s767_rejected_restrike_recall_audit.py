@@ -23,7 +23,7 @@ class FilteredCandidateAuditTests(unittest.TestCase):
         self.assertGreaterEqual(len(x),2)
         self.assertIn("source_active",[z["group"] for z in x])
         self.assertIn("eligible",[z["group"] for z in x])
-        self.assertEqual(len(x),sum(diag[g] for g in CAUSAL_GROUPS))
+        self.assertEqual(len(x),sum(diag.get(g,0) for g in CAUSAL_GROUPS))
 
     def test_future_signed_baseline_does_not_change_earlier_group(self):
         item,post,source,acoustic,ctx=self.fixture()
