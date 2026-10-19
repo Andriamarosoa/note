@@ -123,7 +123,7 @@ def decode(original,decision_ends,X,probabilities,mask,cut,samples):
     NO fixed hold/persistence/retiming. No later original MIDI emission.
     """
     SchedulingContract().validate()
-    if mask not in MASKS or cut not in CUTS:
+    if mask not in MASKS or (cut not in CUTS and not(mask==0 and cut==0.)):
         raise ValueError("undeclared FIT selection")
     ends=np.asarray(decision_ends,np.int64)
     if X.shape!=(len(ends),49,FEATURES) or samples<ends[-1]:
