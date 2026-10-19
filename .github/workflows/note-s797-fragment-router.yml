@@ -72,7 +72,7 @@ jobs:
           path: /tmp/s797/archive
       - name: Independent ${{ matrix.role }} checks
         run: |
-          python -m scripts.s797_six_role_audits             --role ${{ matrix.role }}             --smoke /tmp/s797/archive/loops.json             --failed /tmp/s797/archive/experiment/report.json             --router src/causal_note/s797_fragment_router.py             --out /tmp/s797/audits/role_${{ matrix.role }}.json
+          python -m scripts.s797_six_role_audits             --role ${{ matrix.role }}             --smoke /tmp/s797/archive/loops.json             --failed "$(find /tmp/s797/archive -name report.json -type f -print -quit)"             --router src/causal_note/s797_fragment_router.py             --out /tmp/s797/audits/role_${{ matrix.role }}.json
       - name: Preserve independent audit
         if: always()
         uses: actions/upload-artifact@v4
