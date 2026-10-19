@@ -23,7 +23,7 @@ def eligibility(X,post):
     t=len(post)
     sustain=post[:,:,1]
     before=np.concatenate((sustain[:1],sustain[:-1]),axis=0)
-    parents=np.stack((X[:,:,FEATURE_DIM-10+i] for i in range(5)),axis=-1).max(-1)
+    parents=np.stack([X[:,:,FEATURE_DIM-10+i] for i in range(5)],axis=-1).max(-1)
     bass=np.broadcast_to((np.arange(PITCHES)<8)[None,:],(t,PITCHES))
     harmonic=parents>.30
     transition=((np.abs(sustain-before)>.09) |
