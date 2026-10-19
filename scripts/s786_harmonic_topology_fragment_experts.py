@@ -86,14 +86,6 @@ def fit_topology(X,y,weight):
     model.fit(X,y,logisticregression__sample_weight=sample)
     return model
 
-def candidate(topology_model,baseline_model,topology,base,gate,native):
-    if topology_model is None:
-        return native.copy()
-    base_out=base_predicted(baseline_model,base,np.eye(7,dtype=np.float32)[native])
-    new_out=topology_model.predict(topology).astype(np.int8)
-    # Exact same tail guard as S781; low-K->K5/6 hallucinations forbidden.
-    new_out=np.where((native<3)&(new_out>=5),native,new_out)
-    return np.where(gate>=0.,new_out,base_out).astype(np.int8)
 
 def gated_candidate(topology_model,baseline_model,topology,base,harmonic,gate_threshold,native):
     """Switch heads at every causal 1024-sample fragment, not by track."""
