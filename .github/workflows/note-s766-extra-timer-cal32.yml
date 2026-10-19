@@ -1,0 +1,89 @@
+name: S766 causal extra-note timer twelve GuitarSet CAL32 loops
+on:
+  push:
+    branches: [codex/note-s766-causal-extra-note-timer-cal32]
+    paths:
+      - scripts/s766_causal_extra_note_timer_cal32.py
+      - test/test_s766_causal_extra_note_timer_cal32.py
+      - .github/workflows/note-s766-extra-timer-cal32.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: note-s766-causal-duration-cap
+  cancel-in-progress: true
+jobs:
+  signed_source_priority_and_twelve_causal_lifetime_cal32:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install signed NOTE runtime
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Verify private axes and causal timer before using any CAL truth
+        run: |
+          python -m compileall -q scripts/s766_causal_extra_note_timer_cal32.py
+          python -m unittest -v \
+            test.test_s763_independent_decoders \
+            test.test_s764_six_decoder_shadow_cal32 \
+            test.test_s765_fit_independent_arbiter \
+            test.test_s766_causal_extra_note_timer_cal32 \
+            test.test_s746_instance_guard
+      - name: Restore frozen S708/S707 signed model artifacts
+        run: |
+          mkdir -p /tmp/s766/s708 /tmp/s766/s707
+          gh run download 39094682419 --repo "Andriamarosoa/note" --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s766/s708
+          gh run download 39059008484 --repo "Andriamarosoa/note" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s766/s707
+          test -s /tmp/s766/s708/report.json
+          test -s /tmp/s766/s708/s708_selected.pt
+          test -s /tmp/s766/s707/s675_hazard.joblib
+      - name: Learn on FIT80 then verify 12 protected complete MIDI streams on CAL32
+        run: |
+          python -m scripts.s766_causal_extra_note_timer_cal32 \
+            --s708-dir /tmp/s766/s708 \
+            --offset-checkpoint /tmp/s766/s707/s675_hazard.joblib \
+            --out /tmp/s766/analysis
+      - name: Strict signed replay and candidate attribution assertions
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          a=json.loads(Path("/tmp/s766/analysis/report.json").read_text())
+          assert a["schema"]=="S766_CAUSAL_EXTRA_NOTE_TIMERS_TWELVE_CAL32"
+          assert a["complete"] and a["source_reference_parity"]["valid"]
+          assert a["fit_recordings_done"]==80 and a["cal_recordings_done"]==32
+          assert not a["promoted"] and not a["LIVE_changed"]
+          assert not a["TEST_opened"] and not a["HELD_opened"]
+          assert a["no_truth_at_inference"] and a["no_future_audio_at_noteon"]
+          assert a["original_S708_S707_unchanged"]
+          assert a["FIT"]["folds"]==5
+          assert len(a["CAL"])==12 and len(a["parameter_grid"])==12
+          assert all(abs(x)<1e-8 for x in a["source_reference_parity"]["delta"].values())
+          for key,item in a["CAL"].items():
+              assert len(item["metrics"])==6
+              assert item["six_gt80"] == (
+                  item["safe"] and all(v>.80 for v in item["metrics"].values()))
+          print("S766_CAUSAL_TIMER_FULL_REPORT",json.dumps(dict(
+              source=a["source"],fit=a["FIT"],trials=a["CAL"],
+              winner=a["diagnostic_winner"],promoted=False)))
+          PY
+      - name: Publish FIT models and full diagnostic report, including failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S766_CAUSAL_TIMER_TWELVE_CAL32
+          path: |
+            /tmp/s766/analysis/report.json
+            /tmp/s766/analysis/s766_fit_heads.joblib
+          retention-days: 45
+          if-no-files-found: warn
