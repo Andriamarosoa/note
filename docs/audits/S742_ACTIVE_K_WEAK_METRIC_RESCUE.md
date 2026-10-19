@@ -18,6 +18,19 @@ S714 reported on **exposed DEV, diagnostic only**:
 - low register MIDI40–52 missing 44.42% of true pitch frames
 - known same-pitch-unison annotation ambiguity is under 0.5% of frames and does not explain the main gap.
 
+
+## Confirmed S742 CAL32 forensic result (signed and independently replayed)
+
+[Successful GitHub run 39195539087](https://github.com/Andriamarosoa/note/actions/runs/39195539087).
+
+- Exact emitted MIDI Active Exact-K = **56.27624871562104%** (precisely matches signed S708 CAL baseline).
+- **36,890** active native-hop frames under-counted versus **6,940** over-counted; **43,830** erroneous active frames total. Under-counts therefore account for **84.16%** of active-count errors.
+- By true K, exact emitted cardinality: K1 **41,378/52,950 = 78.15%**, K2 **5,318/14,903 = 35.68%**, K3 **3,909/11,880 = 32.90%**, K4 **5,480/16,773 = 32.67%**, K5 **279/2,971 = 9.39%**, K6+ **49/766 = 6.40%**.
+- The soft K diagnostic finds only **2,225** weak acoustically eligible true missing pitches (as pre-event fragment/pitch occurrences) versus **17,498** truly missing pitches before source decisions. Of these 2,225, **458** were vetoed by low K confidence and **246** by the K no-room condition. Another 1,521 occurred while the source K gate was supportive, before executing the original decision. **Do not interpret these 1,521 as unrecovered after the original step**.
+- The acoustic evidence availability count uses 4-hop decision/pitch occurrences; the 36,890/6,940 active count errors use single-hop frames. **The numbers have different denominators and should not be directly subtracted.**
+- Frozen S741 alternate K heads got the right class for 5,492 active decision fragments where H0 argmax was wrong. This is diagnostic potential, *not* evidence of 5,492 corrected emitted notes.
+- **No candidate promoted; this run is descriptive.** The next experiment is to compare actual full emitted NoteOn/NoteOff for soft-K plus acoustic evidence. Even if it rescues an attack, all six metrics and previously correct offsets/long onsets must remain non-regressive.
+
 ## Actual changes implemented
 
 1. `scripts/s742_activek_forensics.py`: exact S714-compatible original emitted MIDI interval active-count reconstruction, replay assertion against signed S708 six-score metric, K0–K6 truth-specific under/over, unison diagnostic, harmonic-independent frozen K proposal coverage, pre-event weak K acoustic eligibility trace. No annotation enters note generation.
