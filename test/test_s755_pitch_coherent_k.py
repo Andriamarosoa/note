@@ -20,7 +20,7 @@ class S755PitchCoherenceTests(unittest.TestCase):
         return coherent_k_features(self.x,self.p,self.k,self.native)
 
     def test_feature_contract_and_grid(self):
-        self.assertEqual(self.features().shape,(self.T,232))
+        self.assertEqual(self.features().shape,(self.T,240))
         self.assertEqual(len(GRID),12)
         self.assertGreater(WEIGHTS["rare"][3],WEIGHTS["rare"][2])
         self.assertGreater(WEIGHTS["rare_strong"][3],WEIGHTS["rare"][3])
