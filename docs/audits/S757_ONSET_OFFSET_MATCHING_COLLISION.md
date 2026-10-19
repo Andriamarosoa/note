@@ -70,3 +70,36 @@ https://github.com/Andriamarosoa/note/pull/88
 
 Aucun nouveau F1 S757 n'est revendiqué avant lecture du
 rapport complet `report.json` de ce run.
+
+## Résultat réel S757 — exécution terminée
+
+GitHub Actions `39216827575` : **SUCCESS**, 42 tests, 12/12
+boucles CAL32 ; référence S708 parité exacte et 0 candidat sûr.
+L'essai précédent `39216651039` a échoué seulement à cause d'une
+fixture synthétique K0/K1 contradictoire ; corrigé avant le run validé.
+
+Point crucial : **les trois gardes 85 / 160 / 240 ms donnent des
+métriques et des nombres de propositions acceptées identiques pour
+chaque famille** sur CAL32. L'hypothèse que les attaques
+supplémentaires se présentaient entre ces trois seuils, causant la
+régression, **n'est pas étayée par cette expérience**. Cela n'exclut
+pas d'autres collisions Onset ni des offsets supplémentaires erronés.
+
+Meilleure Active-K S757 `depth5_rare_guard85ms` (mêmes résultats
+pour `guard160ms` et `guard240ms`) :
+- Onset 74,3176336 %, Exact-K 62,2545604 %,
+  Active-K 56,5575651 %, Offset 77,1556166 %,
+  Full Note 57,0267868 %, Frame Pitch 76,6179303 %.
+- 32 notes supplémentaires acceptées ; 12 préemptions.
+- 3 anciennes fins de notes correctes non maintenues,
+  zéro ancien long Onset perdu.
+- 0/12 variante safe selon les six scores et les correspondances
+  de notes précédemment correctes.
+
+**Verdict P1 : FAIL / non-promotion.** L'augmentation du
+refractory de même hauteur n'est pas un moyen utile de corriger
+les pertes d'Offset dans le corpus CAL32. Prochaine expérience
+requise : audit *des trois paires concrètes* source/truth perdues,
+ainsi que des candidates ajoutées appariées aux mêmes vérités,
+en différenciant réassignation Hungarian, notes supplémentaires
+avec relâchement incorrect, et préemption par source.
