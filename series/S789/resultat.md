@@ -76,3 +76,7 @@ Consensus `consensus/report.json` : `passed=true`, `audits_received=6`, `issues=
 ## Prochaine action
 
 Créer S790 avec les deux rapports obligatoires dès le démarrage et les six audits. Mesurer une nouvelle tête Frame Pitch avec erreurs par registre/harmonique et validation par composition, FIT seulement pour choisir ; vérifier après intégration réelle au flux MIDI 256 et ne pas ouvrir TEST avant le protocole figé.
+
+## Contrôle des exécutions redondantes
+
+Un contrôle des derniers runs a montré que les modifications de `resume.md` et `resultat.md` relançaient inutilement les six audits S789. Le déclencheur scientifique a été limité aux changements de script, tests ou workflow. La vérification documentaire demeure active séparément et les deux workflows regroupent les exécutions simultanées par branche. Les métriques historiques ci-dessus restent issues du run audité #39274713682 ; cette correction CI ne constitue pas une nouvelle mesure.
