@@ -88,7 +88,9 @@ def evaluate(args):
                 rows.append(scores)
                 confusion+=np.asarray(detail["confusion_k0_k6"],np.int64)
                 for k,v in detail["per_true_k"].items():
-                    per_true[k].update(v)
+                    per_true[k].update({
+                        name:int(v[name]) for name in
+                        ("true_frames","exact","under","over")})
                 for register,reg in detail["register"].items():
                     by_register[register].update({
                         key:int(reg[key]) for key in
@@ -124,7 +126,12 @@ def evaluate(args):
     report["reference_parity"]=dict(valid=okay,six=parity)
     report["metrics"]={name:float(overall[name]) for name in SCORES}
     report["true_k0_k6_confusion"]=confusion.tolist()
-    report["per_true_k"]={k:dict(v) for k,v in per_true.items()}
+    report["per_true_k"]={
+        k:{**dict(v),
+           "exact_rate":v["exact"]/max(1,v["true_frames"]),
+           "under_rate":v["under"]/max(1,v["true_frames"]),
+           "over_rate":v["over"]/max(1,v["true_frames"])}
+        for k,v in per_true.items()}
     report["register"]={k:dict(v) for k,v in by_register.items()}
     report["harmonic_false_alarm_near_miss"]=dict(harmonics)
     report["offset_reasons"]=dict(release_reasons)
