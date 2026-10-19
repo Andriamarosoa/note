@@ -25,7 +25,11 @@ class S757OnsetCollisionTests(unittest.TestCase):
         p=np.zeros((len(ends),49,3),np.float32)
         p[candidate_index,1]=[.9,.9,.1]
         source=np.zeros((len(ends),7),np.float32)
-        source[:,1]=1.
+        # The signed note is already released at this candidate time:
+        # baseline posterior K0, whereas the specialist proposes K2.
+        # K1=1 would make source and specialist both assign unit mass
+        # to K>=1 with no independent K-tail evidence, correctly rejecting.
+        source[:,0]=1.
         k=source.copy()
         k[candidate_index,:]=[0,.1,.9,0,0,0,0]
         return baseline,proposed,ends,p,source,k
