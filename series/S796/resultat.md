@@ -9,11 +9,15 @@ commit_sha: en_attente
 promotion: false
 ---
 
-# S796 — État et preuves
+# S796 — Bilan mesuré de S795 et correctif logiciel non promu
 
-**S795 run scientifique** [39340511467](https://github.com/Andriamarosoa/note/actions/runs/39340511467), artefact `S795_ACTIVEK_MULTIHEAD_REAL_MIDI256_FIT80_CAL32` : FIT80 et CAL32 parcourus ; contrôle CAL signé échoué de +1 trame correcte K, six audits S795 non exécutés.
+## Exécution
 
-| Métrique FIT80 | Source | Meilleur Active-K candidat S795 |
+S795 : [run 39340511467](https://github.com/Andriamarosoa/note/actions/runs/39340511467) et artefact `S795_ACTIVEK_MULTIHEAD_REAL_MIDI256_FIT80_CAL32`. FIT80 + CAL32 parcourus, mais CAL refusé avant publication, car k_correct=78367 au lieu de 78366 dans le rapport signé. S796 exécute des tests et audits légers sans réentraîner les 80+32 fichiers.
+
+## Métriques
+
+| Métrique FIT80 GuitarSet | Référence S708/FIT | Meilleur candidat Active-K S795/FIT |
 |---|---:|---:|
 | Onset F1 | 73,2520 % | 68,7671 % |
 | Exact-K | 61,6972 % | 62,7075 % |
@@ -22,6 +26,27 @@ promotion: false
 | Full Note F1 | 50,6528 % | 41,8761 % |
 | Frame Pitch F1 | 78,7278 % | 79,6088 % |
 
-Candidat `mask31_cut0.85` rejeté : +1,27 point Active-K, mais −8,78 points Full Note et −8,33 points Offset. Tous les 24 candidats non-identité échouent à la non-régression FIT. S795 doit garder l'identité S708.
+Candidat `mask31_cut0.85` : +1,27 point Active Exact-K contre −8,78 points Full Note F1, −8,33 points Offset et −4,48 points Onset. Un seul candidat sur 25 admissible = identité native (0 tête retenue). Le score S796 après correctif n'est pas mesuré. Pas de chiffres CAL publiables.
 
-**S796 nouveau garde anti-réarmement simultané** : test unitaire ajouté ; résultat CI en attente. Aucun gain S796 déclaré, six scores officiels **non mesurés** ; mesure matérielle de latence **UNKNOWN**. Statuts des six audits : données UNKNOWN, acoustique UNKNOWN, architecture UNKNOWN, entraînement UNKNOWN, métriques UNKNOWN, LIVE UNKNOWN. Pas de promotion.
+## Comparaison à S708
+
+Le système S708/S707 de production reste strictement inchangé. Aucun gain S796 déclaré et aucune confirmation de non-régression des six axes, donc aucune promotion. Les scores du tableau concernent FIT80 sur l'ancien S795 non promu.
+
+## Audits
+
+| Rôle | Statut | Preuve |
+|---|---|---|
+| Données | UNKNOWN | Exécution S796 en attente |
+| Acoustique | UNKNOWN | Exécution S796 en attente |
+| Architecture | UNKNOWN | Exécution S796 en attente |
+| Apprentissage | UNKNOWN | Exécution S796 en attente |
+| Métriques | UNKNOWN | Exécution S796 en attente |
+| LIVE | UNKNOWN | Exécution S796 en attente |
+
+## Verdict
+
+Échec scientifique S795 confirmé ; correctif S796 seulement candidat d'ingénierie. La causalité du guard est testable, mais le benchmark réel du microphone et la latence additionnelle CPU ne sont pas mesurés. Aucune promotion vers LIVE, ni accès HELD/TEST.
+
+## Prochaine action
+
+Valider le test de réarmement et les six audits indépendants, puis concevoir une sélection de têtes adaptée à chaque fragment (et pas un masque global) qui pénalise directement les faux NoteOn et l'erreur NoteOff. Exiger tous les scores midi256 et absence de latence ajoutée avant d'envisager une promotion.
