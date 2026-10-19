@@ -1,0 +1,85 @@
+name: S768 independent onset all-pitch lattice FIT80 OOF and GuitarSet CAL32
+on:
+  push:
+    branches: [codex/note-s768-independent-onset-rescue-80]
+    paths:
+      - scripts/s768_independent_onset_lattice_fit80.py
+      - test/test_s768_independent_onset_lattice.py
+      - .github/workflows/note-s768-onset-lattice-fit80.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: note-s768-onset-lattice
+  cancel-in-progress: true
+jobs:
+  separate_causal_onset_fit_and_calibration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install frozen signed NOTE runtime
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Validate no future acoustic use and independent onset predictions
+        run: |
+          python -m compileall -q scripts/s768_independent_onset_lattice_fit80.py
+          python -m unittest -v \
+            test.test_s763_independent_decoders \
+            test.test_s765_fit_independent_arbiter \
+            test.test_s768_independent_onset_lattice
+      - name: Download signed S708 and frozen S707 checkpoints
+        run: |
+          mkdir -p /tmp/s768/s708 /tmp/s768/s707
+          gh run download 39094682419 --repo "Andriamarosoa/note" --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s768/s708
+          gh run download 39059008484 --repo "Andriamarosoa/note" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s768/s707
+          test -s /tmp/s768/s708/report.json
+          test -s /tmp/s768/s708/s708_selected.pt
+          test -s /tmp/s768/s707/s675_hazard.joblib
+      - name: FIT80 full-pitch independent onset learner and five-composition OOF followed by CAL32 frozen test
+        run: |
+          python -m scripts.s768_independent_onset_lattice_fit80 \
+            --s708-dir /tmp/s768/s708 \
+            --offset-checkpoint /tmp/s768/s707/s675_hazard.joblib \
+            --out /tmp/s768/results
+      - name: Enforce strict reference parity and never mislabel onset-only as MIDI
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          j=json.loads(Path('/tmp/s768/results/report.json').read_text())
+          assert j["schema"]=="S768_FIT80_INDEPENDENT_ONSET_FULL_LATTICE"
+          assert j["complete"] and j["source_reference_parity"]["valid"]
+          assert j["fit_recordings_done"]==80 and j["cal_recordings_done"]==32
+          assert j["ONSET_only_not_MIDI"] and not j["promoted"]
+          assert not j["LIVE_changed"] and not j["TEST_opened"] and not j["HELD_opened"]
+          assert j["no_future_inputs"] and j["no_truth_at_inference"]
+          assert len(j["FIT"]["folds"])==5 and len(j["FIT"]["thresholds"])==11
+          assert len(j["CAL"]["onset_only"])==11
+          assert j["selected"]=="S708_frozen"
+          assert all(abs(x)<1e-8 for x in j["source_reference_parity"]["delta"].values())
+          assert j["CAL"]["frozen_risk_over_80"] == (
+              j["CAL"]["frozen_score"]["f1"] >.80)
+          print("S768_FIT80_ONSET_RESCUE_FULL_REPORT",json.dumps({
+              "reference":j["source"],"fit":j["FIT"],"cal":j["CAL"],
+              "candidate_for_full_MIDI_validation":(
+                  j["CAL"]["frozen_risk_over_80"] and
+                  j["CAL"]["frozen_score"]["f1"]>j["CAL"]["source_onset"]["f1"])}))
+          PY
+      - name: Preserve onset research report even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S768_ONSET_FULL_LATTICE_FIT80_CAL32
+          path: /tmp/s768/results/report.json
+          retention-days: 45
+          if-no-files-found: warn
