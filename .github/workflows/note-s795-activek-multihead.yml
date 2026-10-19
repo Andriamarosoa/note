@@ -1,0 +1,163 @@
+name: S795 independently trained Active-K heads in immediate real MIDI256
+on:
+  push:
+    branches: [codex/note-s795-activek-multihead-immediate-midi]
+    paths:
+      - src/causal_note/s795_activek_experts.py
+      - scripts/s795_train_activek_midi256.py
+      - scripts/s795_six_role_audits.py
+      - test/test_s795_activek_experts.py
+      - .github/workflows/note-s795-activek-multihead.yml
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+  actions: read
+env:
+  PYTHONPATH: .:src
+  GH_TOKEN: ${{ github.token }}
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '2'
+  OMP_NUM_THREADS: '2'
+jobs:
+  activek_midi256:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install pinned S708 CPU runtime
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Unit-test real NoteOn NoteOff, zero added latency and causality
+        run: |
+          python -m compileall -q src/causal_note/s795_activek_experts.py scripts/s795_train_activek_midi256.py scripts/s795_six_role_audits.py
+          python -m unittest -v test.test_s795_activek_experts test.test_s793_zero_added_latency
+          python -m scripts.verify_series_reports --series S795
+      - name: Restore identical signed S708/S707 original model
+        run: |
+          mkdir -p /tmp/s795/s708 /tmp/s795/s707
+          gh run download 39094682419 --repo Andriamarosoa/note \
+            --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s795/s708
+          gh run download 39059008484 --repo Andriamarosoa/note \
+            --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL \
+            --dir /tmp/s795/s707
+          test -s /tmp/s795/s708/report.json
+          test -s /tmp/s795/s708/s708_selected.pt
+          test -s /tmp/s795/s707/s675_hazard.joblib
+      - name: Confirm only S795 files differ from validated S794 source
+        run: |
+          git fetch --no-tags origin codex/note-s794-activek-zero-delay-forensics
+          git diff --name-only FETCH_HEAD HEAD > /tmp/s795/changed_paths.txt
+          echo S795_CHANGED_PATHS
+          cat /tmp/s795/changed_paths.txt
+      - name: FIT80 train five distinct specialists, OOF choose masks, frozen CAL32 real MIDI256
+        run: |
+          python -m scripts.s795_train_activek_midi256 \
+            --s708 /tmp/s795/s708 \
+            --offset-checkpoint /tmp/s795/s707/s675_hazard.joblib \
+            --out /tmp/s795/experiment
+      - name: Require exact signed source CAL32 parity, six metrics, FIT-only selection
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/s795/experiment/report.json'))
+          assert r['schema']=='S795_CAUSAL_MULTIHEAD_ACTIVEK_REAL_MIDI256'
+          assert r['complete'] and (r['fit_done'],r['cal_done'])==(80,32)
+          assert r['CAL']['official_source_parity']
+          assert r['metric_clock_samples']==256 and r['decision_clock_samples']==1024
+          assert r['candidate_policies']==25
+          assert not any(r[k] for k in
+            ('promoted','production_LIVE_modified','physical_microphone_latency_measured',
+             'HELD_opened','TEST_opened','cal_used_for_training','cal_used_for_selection'))
+          assert r['source_midi_events_untouched'] and r['zero_added_scheduling']
+          print('S795_FIT_SPECIALISTS',r['FIT']['final_training'])
+          print('S795_FIT_SELECTED',r['selected_candidate'],r['FIT']['kept_experts'])
+          print('S795_SIX_CAL_S708',r['CAL']['original'])
+          print('S795_SIX_CAL_TRIAL',r['CAL']['candidate'])
+          print('S795_CAL_NONREGRESSION',r['CAL']['six_metric_no_regression'])
+          print('S795_NO_HARDWARE_LATENCY_MEASURE_NO_PROMOTION')
+          PY
+      - name: Archive frozen evidence on success or failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S795_ACTIVEK_MULTIHEAD_REAL_MIDI256_FIT80_CAL32
+          path: |
+            /tmp/s795/experiment/report.json
+            /tmp/s795/s708/report.json
+            /tmp/s795/s708/s708_selected.pt
+            /tmp/s795/changed_paths.txt
+          retention-days: 45
+          if-no-files-found: warn
+  six_audits:
+    needs: activek_midi256
+    name: S795 independent ${{ matrix.role }} specialist audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [data, acoustics, architecture, training, metrics, live]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          name: S795_ACTIVEK_MULTIHEAD_REAL_MIDI256_FIT80_CAL32
+          path: /tmp/s795
+      - name: Independent ${{ matrix.role }} scientific veto
+        run: |
+          python -m scripts.s795_six_role_audits \
+            --role ${{ matrix.role }} \
+            --report /tmp/s795/experiment/report.json \
+            --signed /tmp/s795/s708/report.json \
+            --checkpoint /tmp/s795/s708/s708_selected.pt \
+            --train scripts/s795_train_activek_midi256.py \
+            --bank src/causal_note/s795_activek_experts.py \
+            --changed /tmp/s795/changed_paths.txt \
+            --out /tmp/s795/audits/role_${{ matrix.role }}.json
+      - name: Retain actual auditor verdict
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S795_AUDIT_${{ matrix.role }}
+          path: /tmp/s795/audits/role_${{ matrix.role }}.json
+          retention-days: 45
+          if-no-files-found: warn
+  consensus:
+    needs: [activek_midi256, six_audits]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: S795_AUDIT_*
+          path: /tmp/s795/audits
+          merge-multiple: true
+      - name: Require all six audited results and fail closed
+        run: |
+          python -m scripts.s787_audit_consensus \
+            --reports-dir /tmp/s795/audits \
+            --out /tmp/s795/consensus/report.json
+      - name: Archive six-role consensus
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S795_SIX_INDEPENDENT_MIDI_AUDITS
+          path: |
+            /tmp/s795/audits/role_*.json
+            /tmp/s795/consensus/report.json
+          retention-days: 45
+          if-no-files-found: warn
