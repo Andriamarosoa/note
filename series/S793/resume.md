@@ -1,11 +1,11 @@
 ---
 serie: S793
-statut: en_cours
+statut: termine
 type: infrastructure
 reference: S708
 branche: codex/note-s793-zero-added-latency-hard-gate
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39332676717
+commit_sha: f768e0b9ca9f2100bb33f5db406e7297371e7310
 promotion: false
 ---
 
@@ -39,4 +39,4 @@ Données : mêmes paramètres et même matériel. Acoustique : aucun futur audio
 
 ## Statut
 
-Infrastructure en cours de validation sur GitHub. Aucun nouveau modèle scientifique ni mesure du microphone matériel revendiqués. Le contrat logiciel ne constitue pas une preuve de latence physique du LIVE.
+**Infrastructure terminée.** [GitHub Actions #39332676717](https://github.com/Andriamarosoa/note/actions/runs/39332676717) : SUCCESS. La validation documentaire séparée [#39332676774](https://github.com/Andriamarosoa/note/actions/runs/39332676774) : SUCCESS. La barrière de promotion exige désormais une preuve brute de latence pour toute série expérimentale S794+ qui se déclare promue, et rejette les candidats sans preuve. La règle reste dans la branche de travail S793 tant qu'elle n'est pas intégrée à la branche de référence. Aucun nouveau modèle scientifique ni mesure du microphone matériel revendiqués.
