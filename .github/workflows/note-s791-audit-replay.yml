@@ -1,0 +1,100 @@
+name: S791 replay six audits on frozen multi-expert report (no retraining)
+on:
+  push:
+    branches: [codex/note-s791-framepitch-complementary-experts]
+    paths:
+      - scripts/s791_six_role_audits_replay.py
+      - .github/workflows/note-s791-audit-replay.yml
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+  actions: read
+env:
+  PYTHONPATH: .:src
+  GH_TOKEN: ${{ github.token }}
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    name: S791 replay ${{ matrix.role }} audit
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [data, acoustics, architecture, training, metrics, live]
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install audit-only NumPy, not machine-learning runtime
+        run: |
+          python -m pip install numpy==1.26.4
+      - name: Preserve exact S791 originally trained source ABI
+        run: |
+          git diff --exit-code ff96ffec8aa34b5dd55d92142413a4a8690c745c HEAD -- \
+            src/causal_note/s791_framepitch_expert_bank.py \
+            scripts/s791_train_framepitch_complementary.py \
+            test/test_s791_framepitch_expert_bank.py \
+            test/test_s791_train_framepitch_complementary.py
+          python -m compileall -q scripts/s791_six_role_audits_replay.py
+      - name: Recover experiment report without refitting
+        run: |
+          mkdir -p /tmp/s791
+          gh run download 39280680273 --repo Andriamarosoa/note \
+            --name S791_FRAMEPITCH_MULTIEXPERT_FIT80_CAL32 \
+            --dir /tmp/s791
+          test -s /tmp/s791/experiment/report.json
+          test -s /tmp/s791/s708/report.json
+          test -s /tmp/s791/s708/s708_selected.pt
+          test -s /tmp/s791/changed_paths.txt
+      - name: Independently validate ${{ matrix.role }} scientific evidence
+        run: |
+          python -m scripts.s791_six_role_audits_replay \
+            --role ${{ matrix.role }} \
+            --report /tmp/s791/experiment/report.json \
+            --signed /tmp/s791/s708/report.json \
+            --checkpoint /tmp/s791/s708/s708_selected.pt \
+            --train scripts/s791_train_framepitch_complementary.py \
+            --bank src/causal_note/s791_framepitch_expert_bank.py \
+            --changed /tmp/s791/changed_paths.txt \
+            --out /tmp/s791/audits/role_${{ matrix.role }}.json
+      - name: Preserve each auditor's actual report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S791_REPLAY_${{ matrix.role }}
+          path: /tmp/s791/audits/role_${{ matrix.role }}.json
+          retention-days: 45
+          if-no-files-found: warn
+  consensus:
+    if: always()
+    needs: audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: S791_REPLAY_*
+          path: /tmp/s791/audits
+          merge-multiple: true
+      - name: Six independent audits mandatory and fail-closed
+        run: |
+          python -m scripts.s787_audit_consensus \
+            --reports-dir /tmp/s791/audits \
+            --out /tmp/s791/consensus/report.json
+      - name: Preserve immutable consensus evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S791_REPLAY_SIX_AUDITS_CONSENSUS
+          path: |
+            /tmp/s791/audits/role_*.json
+            /tmp/s791/consensus/report.json
+          retention-days: 45
+          if-no-files-found: warn
