@@ -153,7 +153,9 @@ def merge_events(reference, pairs, probabilities, indices, k, gate):
             continue
         if origin == "extra_off":
             if pitch in extra and extra[pitch][0] == i:
-                out.append(e.copy())
+                emitted = e.copy()
+                emitted["_s746_extra"] = True
+                out.append(emitted)
                 del extra[pitch]
             continue
         if not np.isfinite(probabilities[i]) or probabilities[i] < gate.risk:
@@ -169,7 +171,9 @@ def merge_events(reference, pairs, probabilities, indices, k, gate):
         if float(counts[frame, active+1:].sum()) < gate.k_tail:
             detail["blocked_k"] += 1
             continue
-        out.append(e.copy())
+        emitted = e.copy()
+        emitted["_s746_extra"] = True
+        out.append(emitted)
         extra[pitch] = (i, float(probabilities[i]))
         detail["accepted"] += 1
     if extra or base:
@@ -179,7 +183,8 @@ def merge_events(reference, pairs, probabilities, indices, k, gate):
     original = [(e["type"], e["pitch"], e["available_sample"], e["reason"])
                 for e in reference]
     retained = [(e["type"], e["pitch"], e["available_sample"], e["reason"])
-                for e in out if not str(e.get("reason", "")).startswith(("s743_", "s746_"))]
+                for e in out if not e.get("_s746_extra")
+                and not str(e.get("reason", "")).startswith("s746_")]
     if original != retained:
         raise AssertionError("S746 replaced a frozen source MIDI event")
     return out, detail
