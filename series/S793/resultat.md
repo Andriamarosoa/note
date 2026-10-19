@@ -1,11 +1,11 @@
 ---
 serie: S793
-statut: en_cours
+statut: termine
 type: infrastructure
 reference: S708
 branche: codex/note-s793-zero-added-latency-hard-gate
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39332676717
+commit_sha: f768e0b9ca9f2100bb33f5db406e7297371e7310
 promotion: false
 ---
 
@@ -13,7 +13,7 @@ promotion: false
 
 ## Exécution
 
-Treize tests anti-régression exécutés localement avec succès. Rejeu sur le rapport S792 GitHub #39328341071 : retenue zéro bloc. Validation CI dédiée : en attente. Aucun test physique Windows/iRig effectué.
+Treize tests anti-régression exécutés localement avec succès. Rejeu sur le rapport S792 GitHub #39328341071 : retenue zéro bloc. Validation CI [GitHub Actions #39332676717](https://github.com/Andriamarosoa/note/actions/runs/39332676717) : **SUCCESS** (13 tests de veto et 4 scénarios d'application du garde-fou au validateur de promotion, plus les tests de reporting existants). Aucun test physique Windows/iRig effectué.
 
 ## Métriques
 
@@ -29,17 +29,17 @@ S708 reste intacte. S792 a été rejetée à cause des pertes Offset/Full Note e
 
 | Rôle | Statut | Preuve |
 | --- | --- | --- |
-| Données | UNKNOWN | CI en attente |
-| Acoustique | UNKNOWN | CI en attente |
-| Architecture | UNKNOWN | CI en attente |
-| Apprentissage | UNKNOWN | CI en attente |
-| Métriques | UNKNOWN | CI en attente |
-| LIVE | UNKNOWN | CI en attente |
+| Données | UNKNOWN | Contrôle de provenance logique, aucune nouvelle source évaluée |
+| Acoustique | UNKNOWN | Aucun nouvel essai acoustique |
+| Architecture | UNKNOWN | Politique 0 retard testée, pas audit expérimental d'une nouvelle architecture |
+| Apprentissage | UNKNOWN | Aucun modèle nouvellement entraîné |
+| Métriques | UNKNOWN | Scores S708 inchangés, pas de nouvelle évaluation métrique |
+| LIVE | UNKNOWN | Aucune mesure réelle de microphone ; promotion bloquée sans preuve |
 
 ## Verdict
 
-Règle : rejeter une architecture dès qu'elle augmente la latence d'une attaque, d'une extinction, d'un traitement ou de la sortie, indépendamment des gains F1. La latence physique incompressible existe ; le critère est l'augmentation par rapport à la référence. Le CI ne peut pas mesurer à distance un périphérique LIVE.
+**Contrôle logiciel terminé et validé en CI.** Règle : rejeter une architecture dès qu'elle augmente la latence d'une attaque, d'une extinction, d'un traitement ou de la sortie, indépendamment des gains F1. La latence physique incompressible existe ; le critère est l'augmentation par rapport à la référence. Le CI ne peut pas mesurer à distance un périphérique LIVE.
 
 ## Prochaine action
 
-Valider le CI et faire de cette barrière une condition obligatoire de toutes les promotions suivantes, incluant les mesures physiques appariées.
+Intégrer S793 à la branche retenue du projet pour que les futures branches héritent de la règle, puis exiger la mesure matérielle couplée pour chaque promotion S794+. Tant que S793 n'est pas fusionnée, elle ne protège automatiquement que les branches qui l'incluent.
