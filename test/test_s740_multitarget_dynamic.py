@@ -104,7 +104,7 @@ class S740DomainTests(unittest.TestCase):
         self.assertAlmostEqual(chosen["probabilities"][0][0], .2, places=6)
         self.assertNotAlmostEqual(chosen["probabilities"][0][1], .4, places=4)
         self.assertAlmostEqual(chosen["probabilities"][1][0], .7, places=6)
-        np.testing.assert_array_equal(plan["probabilities"][0], [.2, .4])
+        np.testing.assert_array_equal(plan["probabilities"][0], np.array([.2, .4], np.float32))
         # A changed future note must not alter an earlier note candidate.
         updated = post.copy()
         updated[15:, :, :] = .9
