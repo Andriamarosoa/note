@@ -1,0 +1,69 @@
+name: S773 causal stage reproducibility FIT CAL no-label
+on:
+  push:
+    branches: [codex/note-s773-causal-repro-by-stage]
+    paths:
+      - scripts/s773_causal_repro_by_stage.py
+      - test/test_s773_causal_repro_by_stage.py
+      - .github/workflows/note-s773-repro-by-stage.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+jobs:
+  stage_repro:
+    strategy:
+      fail-fast: false
+      matrix:
+        threads: [1, 2]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install NOTE frozen replay runtime
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Verify stage fingerprint tests
+        run: |
+          python -m compileall -q scripts/s773_causal_repro_by_stage.py
+          python -m unittest -v test.test_s773_causal_repro_by_stage
+      - name: Download frozen signed S708 and S707 models
+        run: |
+          mkdir -p /tmp/s773/s708 /tmp/s773/s707
+          gh run download 39094682419 --repo Andriamarosoa/note --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s773/s708
+          gh run download 39059008484 --repo Andriamarosoa/note --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s773/s707
+          test -s /tmp/s773/s708/report.json
+          test -s /tmp/s773/s708/s708_selected.pt
+          test -s /tmp/s773/s707/s675_hazard.joblib
+      - name: Repeat causal extraction and source MIDI on two FIT and two CAL tracks
+        run: |
+          python -m scripts.s773_causal_repro_by_stage \
+            --s708-dir /tmp/s773/s708 \
+            --offset-checkpoint /tmp/s773/s707/s675_hazard.joblib \
+            --threads ${{ matrix.threads }} \
+            --repeats 3 \
+            --out /tmp/s773/result
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/s773/result/report.json'))
+          assert r['complete'] and r['no_labels_read']
+          assert len(r['experiments'])==4
+          assert all(x['repeats']==3 for x in r['experiments'])
+          assert not r['promoted'] and not r['LIVE_changed']
+          print('S773_STAGES_WRITTEN')
+          PY
+      - name: Keep identical and divergent fingerprints as artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S773_REPRO_THREADS_${{ matrix.threads }}
+          path: /tmp/s773/result/report.json
+          retention-days: 45
+          if-no-files-found: warn
