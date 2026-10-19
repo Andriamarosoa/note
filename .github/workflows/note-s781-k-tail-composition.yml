@@ -1,0 +1,83 @@
+name: S781 K5 K6 composition and texture forensic validation
+on:
+  push:
+    branches: [codex/note-s781-k-tail-composition-forensics]
+    paths:
+      - scripts/s781_k_tail_composition_audit.py
+      - test/test_s781_k_tail_composition_audit.py
+      - .github/workflows/note-s781-k-tail-composition.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+jobs:
+  train_k_tail:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install pinned CPU runtime
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Test class-tail causal independence
+        run: |
+          python -m compileall -q scripts/s781_k_tail_composition_audit.py
+          python -m unittest -v test.test_s781_k_tail_composition_audit
+      - name: Check schema contract before expensive FIT80 processing
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('scripts/s781_k_tail_composition_audit.py').read_text()
+          assert 'schema="S781_KTAIL_COMPOSITION_AND_TEXTURE_AUDIT"' in s
+          assert 'by_composition_specialist=by_composition' in s
+          print('S781_SCHEMA_PREFLIGHT_OK')
+          PY
+      - name: Restore signed S708 and S707
+        run: |
+          mkdir -p /tmp/s781/s708 /tmp/s781/s707
+          gh run download 39094682419 --repo Andriamarosoa/note --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s781/s708
+          gh run download 39059008484 --repo Andriamarosoa/note --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s781/s707
+          test -s /tmp/s781/s708/report.json
+          test -s /tmp/s781/s708/s708_selected.pt
+          test -s /tmp/s781/s707/s675_hazard.joblib
+      - name: FIT80 grouped OOF 31D K-tail head and frozen CAL32 evaluation
+        run: |
+          python -m scripts.s781_k_tail_composition_audit \
+            --s708-dir /tmp/s781/s708 \
+            --offset-checkpoint /tmp/s781/s707/s675_hazard.joblib \
+            --out /tmp/s781/report
+      - name: Verify no live or MIDI promotion
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/s781/report/report.json'))
+          assert r['complete'] and r['fit_recordings_done']==80 and r['cal_recordings_done']==32
+          assert r['schema']=='S781_KTAIL_COMPOSITION_AND_TEXTURE_AUDIT'
+          assert r['decision_clock_samples']==1024
+          assert not r['promoted'] and not r['LIVE_changed'] and not r['final_MIDI_changed']
+          assert not r['TEST_opened'] and not r['HELD_opened']
+          print('S781_FIT_SELECTED',r['selected_tail_weight'])
+          assert set(r['FIT']['oof_by_composition'])=={'1.0','2.0','4.0','8.0'}
+          assert len(r['FIT']['baseline_by_composition'])==5
+          assert set(r['CAL']['by_composition_specialist'])=={'BN2','Jazz2'}
+          assert set(r['CAL']['by_composition_base'])=={'BN2','Jazz2'}
+          assert sum(r['CAL']['tail_histogram_specialist']['6'])==r['CAL']['selected']['per_k'][6]['n']
+          assert sum(r['CAL']['tail_histogram_specialist']['5'])==r['CAL']['selected']['per_k'][5]['n']
+          print('S781_CAL_INDEPENDENT_K',r['CAL']['selected']['exact_accuracy'])
+          PY
+      - name: Keep full FIT and CAL 7x7 confusion reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S781_K5_K6_BY_COMPOSITION_AND_TEXTURE_AUDIT
+          path: /tmp/s781/report/report.json
+          retention-days: 45
+          if-no-files-found: warn
