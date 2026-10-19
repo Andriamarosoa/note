@@ -12,7 +12,7 @@ promotion: false
 # S795 — Rapport en cours
 
 ## Exécution
-En attente.
+Run 39339203180, tentative 1, FAILURE, SHA eb2f0ecec7e3bba6ec598705a82a6108abdd97c0. Fichier resume.md manquant. Aucun entraînement. GuitarSet FIT80 prévu, CAL32 diagnostic, HELD et TEST fermés.
 
 ## Métriques
 Onset F1 : non mesuré. Exact-K : non mesuré. Active Exact-K : non mesuré. Offset : non mesuré. Full Note F1 : non mesuré. Frame Pitch F1 : non mesuré.
