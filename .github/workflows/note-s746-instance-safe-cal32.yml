@@ -1,0 +1,86 @@
+name: S746 FIT-only event-instance classifier and 12 full MIDI CAL loops
+on:
+  push:
+    branches: [codex/note-s746-instance-safe-multimetric-loops]
+    paths:
+      - src/causal_note/s746_instance_guard.py
+      - scripts/s746_instance_safe_fit_cal_loops.py
+      - test/test_s746_instance_guard.py
+      - .github/workflows/note-s746-instance-safe-cal32.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: note-s746-native-instance-safe-fit-cal
+  cancel-in-progress: true
+jobs:
+  train_fit80_evaluate_twelve_unchanged_s708_cal32_streams:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install signed NOTE causal runtime
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Check syntax and instance-preservation unit tests
+        run: |
+          python -m compileall -q src/causal_note/s746_instance_guard.py scripts/s746_instance_safe_fit_cal_loops.py
+          python -m unittest -v test.test_s746_instance_guard test.test_s745_calibrated_birth test.test_s743_fundamental_router
+      - name: Recover the SAME signed S708 S707 and S734 checkpoints
+        run: |
+          mkdir -p /tmp/s746/s708 /tmp/s746/s707 /tmp/s746/s734
+          gh run download 39094682419 --repo "Andriamarosoa/note" --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s746/s708
+          gh run download 39059008484 --repo "Andriamarosoa/note" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s746/s707
+          gh run download 39137653526 --repo "Andriamarosoa/note" --name S734_ONSET_INDIVIDUAL_NEURAL_EXACTK_LINKED_FIT_CAL_HELD_DEV --dir /tmp/s746/s734
+          test -s /tmp/s746/s708/report.json
+          test -s /tmp/s746/s708/s708_selected.pt
+          test -s /tmp/s746/s707/s675_hazard.joblib
+          test -s /tmp/s746/s734/report.json
+          test -s /tmp/s746/s734/s733_onset.pt
+      - name: FIT80 complete event supervision; 12 real CAL32 full-MIDI loops
+        run: |
+          python -m scripts.s746_instance_safe_fit_cal_loops \
+            --s708-dir /tmp/s746/s708 \
+            --s734-checkpoint /tmp/s746/s734/s733_onset.pt \
+            --s734-report /tmp/s746/s734/report.json \
+            --offset-checkpoint /tmp/s746/s707/s675_hazard.joblib \
+            --out /tmp/s746/output
+      - name: Verify signed source parity, every metric and loss gate
+        if: success()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/s746/output/report.json').read_text())
+          assert r['complete'] and r['loops']==12 and len(r['CAL'])==12
+          assert r['selected']=='S708_frozen' and not r['promoted']
+          assert not r['LIVE_changed'] and not r['TEST_opened']
+          assert r['original_release_unchanged'] and not r['event_truth_used_at_inference']
+          for name,v in r['CAL'].items():
+              assert len(v['scores'])==6 and len(v['delta'])==6
+              assert v['baseline_events_preserved']
+              assert not v['six_gt80'] or v['safe']
+          print('S746_REAL_CAL32_SIX_METRICS',json.dumps({
+              'baseline':r['reference_scores'],
+              'candidate':r['CAL_candidate'],
+              'all_loops':r['CAL']}))
+          PY
+      - name: Publish FIT checkpoints and CAL results, even after failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S746_INSTANCE_SAFE_FIT80_12_REAL_CAL32_MIDI
+          path: |
+            /tmp/s746/output/report.json
+            /tmp/s746/output/s746_depth*.joblib
+          retention-days: 45
+          if-no-files-found: warn
