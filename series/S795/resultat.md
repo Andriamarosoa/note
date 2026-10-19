@@ -21,7 +21,7 @@ Onset F1 : non mesuré. Exact-K : non mesuré. Active Exact-K : non mesuré. Off
 Aucune nouvelle mesure.
 
 ## Audits
-Six audits non exécutés.
+Données : UNKNOWN. Acoustique : UNKNOWN. Architecture : UNKNOWN. Apprentissage : UNKNOWN. Métriques : UNKNOWN. LIVE : UNKNOWN. Six audits non exécutés, consensus absent, promotion interdite.
 
 ## Verdict
 Non promu.
