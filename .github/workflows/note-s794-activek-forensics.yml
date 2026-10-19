@@ -1,0 +1,158 @@
+name: S794 Active Exact-K true MIDI256 zero-delay root-cause forensics
+on:
+  push:
+    branches: [codex/note-s794-activek-zero-delay-forensics]
+    paths:
+      - scripts/s794_activek_failure_taxonomy.py
+      - scripts/s794_activek_midi256_rootcauses.py
+      - scripts/s794_six_role_audits.py
+      - test/test_s794_activek_failure_taxonomy.py
+      - .github/workflows/note-s794-activek-forensics.yml
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+  actions: read
+env:
+  PYTHONPATH: .:src
+  GH_TOKEN: ${{ github.token }}
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '2'
+  OMP_NUM_THREADS: '2'
+jobs:
+  exact_256hop_forensics:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install frozen CPU dependencies
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Prove zero-future acoustic lookup and exact Active K source
+        run: |
+          python -m compileall -q scripts/s794_activek_failure_taxonomy.py scripts/s794_activek_midi256_rootcauses.py scripts/s794_six_role_audits.py
+          python -m unittest -v test.test_s794_activek_failure_taxonomy
+          python -m scripts.verify_series_reports --series S794
+      - name: Recover signed S708/S707 source
+        run: |
+          mkdir -p /tmp/s794/s708 /tmp/s794/s707
+          gh run download 39094682419 --repo Andriamarosoa/note \
+            --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS \
+            --dir /tmp/s794/s708
+          gh run download 39059008484 --repo Andriamarosoa/note \
+            --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL \
+            --dir /tmp/s794/s707
+          test -s /tmp/s794/s708/report.json
+          test -s /tmp/s794/s708/s708_selected.pt
+          test -s /tmp/s794/s707/s675_hazard.joblib
+      - name: Enumerate S794 changes and protect S793 zero added latency
+        run: |
+          git fetch --no-tags origin codex/note-s793-zero-added-latency-hard-gate
+          git diff --name-only FETCH_HEAD HEAD > /tmp/s794/changed_paths.txt
+          cat /tmp/s794/changed_paths.txt
+      - name: FIT80 and CAL32 official six-score source replay and Active-K taxonomy
+        run: |
+          python -m scripts.s794_activek_midi256_rootcauses \
+            --s708 /tmp/s794/s708 \
+            --offset-checkpoint /tmp/s794/s707/s675_hazard.joblib \
+            --out /tmp/s794/experiment
+      - name: Confirm MIDI parity, K0-K6 accounting and zero delay
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/s794/experiment/report.json'))
+          assert r['complete'] and (r['fit_done'],r['cal_done'])==(80,32)
+          assert r['source_identity_confirmed']
+          assert not any(r[x] for x in ['LIVE_changed','final_MIDI_changed','promoted',
+              'TEST_opened','HELD_opened','real_microphone_latency_measured'])
+          assert r['fitted_specialists']==0
+          assert (r['extra_lookahead_samples'],r['extra_buffer_samples'],
+              r['extra_confirmation_samples'],r['extra_hold_samples'])==(0,0,0,0)
+          print('S794_REAL_MIDI_ACTIVEK_SOURCE',r['CAL']['metrics']['active_exact_k'])
+          print('S794_TRUE_K1_6_ERRORS',r['CAL']['audit']['by_true_k'])
+          print('S794_CAUSAL_EXPERT_COVERAGE',r['CAL']['audit']['expert_opportunity'])
+          PY
+      - name: Archive forensic report and immutable signed inputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S794_REAL_MIDI_ACTIVEK_ROOTCAUSE_FIT80_CAL32
+          path: |
+            /tmp/s794/experiment/report.json
+            /tmp/s794/s708/report.json
+            /tmp/s794/s708/s708_selected.pt
+            /tmp/s794/changed_paths.txt
+          retention-days: 45
+          if-no-files-found: warn
+  independent_audits:
+    needs: exact_256hop_forensics
+    name: S794 independent ${{ matrix.role }} ActiveK audit
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [data, acoustics, architecture, training, metrics, live]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          name: S794_REAL_MIDI_ACTIVEK_ROOTCAUSE_FIT80_CAL32
+          path: /tmp/s794
+      - name: Independently inspect ${{ matrix.role }} ActiveK evidence
+        run: |
+          python -m scripts.s794_six_role_audits \
+            --role ${{ matrix.role }} \
+            --report /tmp/s794/experiment/report.json \
+            --signed /tmp/s794/s708/report.json \
+            --checkpoint /tmp/s794/s708/s708_selected.pt \
+            --source scripts/s794_activek_midi256_rootcauses.py \
+            --taxonomy scripts/s794_activek_failure_taxonomy.py \
+            --changed /tmp/s794/changed_paths.txt \
+            --out /tmp/s794/audits/role_${{ matrix.role }}.json
+      - name: Archive independent role's audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S794_AUDIT_${{ matrix.role }}
+          path: /tmp/s794/audits/role_${{ matrix.role }}.json
+          retention-days: 45
+          if-no-files-found: warn
+  consensus:
+    if: always()
+    needs: [exact_256hop_forensics, independent_audits]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: S794_AUDIT_*
+          path: /tmp/s794/audits
+          merge-multiple: true
+      - name: Require six positive audits, block promotional claims
+        run: |
+          python -m scripts.s787_audit_consensus \
+            --reports-dir /tmp/s794/audits \
+            --out /tmp/s794/consensus/report.json
+      - name: Preserve independent consensus
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S794_SIX_ZERO_DELAY_ACTIVEK_AUDITS
+          path: |
+            /tmp/s794/audits/role_*.json
+            /tmp/s794/consensus/report.json
+          retention-days: 45
+          if-no-files-found: warn
