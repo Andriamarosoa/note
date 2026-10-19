@@ -1,0 +1,79 @@
+name: S743 GuitarSet 12 dynamic fundamental masks Exact-K-active loops
+on:
+  push:
+    branches: [codex/note-s743-activek-fundamental-multihead-loops]
+    paths:
+      - src/causal_note/s743_fundamental_router.py
+      - scripts/s743_run_fundamental_loops.py
+      - scripts/s740_train_posterior_specialists.py
+      - test/test_s743_fundamental_router.py
+      - .github/workflows/note-s743-12-activek-loops.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: note-s743-real-12-head-causal-cal
+  cancel-in-progress: true
+jobs:
+  twelve_real_midi_loops:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install signed frozen NOTE S708/S707 research dependencies
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Validate 6-head 32-mask causal evidence and all unit tests
+        run: |
+          python -m compileall -q src/causal_note/s743_fundamental_router.py scripts/s743_run_fundamental_loops.py scripts/s740_train_posterior_specialists.py
+          python -m unittest -v test.test_s743_fundamental_router test.test_s742_soft_activek_decoder test.test_s742_activek_forensics
+      - name: Retrieve original signed S708 and frozen NoteOff checkpoints
+        run: |
+          mkdir -p /tmp/s743/s708 /tmp/s743/s707 /tmp/s743/s734
+          gh run download 39094682419 --repo "Andriamarosoa/note" --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s743/s708
+          gh run download 39059008484 --repo "Andriamarosoa/note" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s743/s707
+          gh run download 39137653526 --repo "Andriamarosoa/note" --name S734_ONSET_INDIVIDUAL_NEURAL_EXACTK_LINKED_FIT_CAL_HELD_DEV --dir /tmp/s743/s734
+          test -s /tmp/s743/s708/report.json
+          test -s /tmp/s743/s708/s708_selected.pt
+          test -s /tmp/s743/s707/s675_hazard.joblib
+          test -s /tmp/s743/s734/report.json
+          test -s /tmp/s743/s734/s733_onset.pt
+      - name: Loop 12 causal per-fragment 32-mask fundamental proposals on GuitarSet CAL32
+        run: |
+          python -m scripts.s743_run_fundamental_loops --s708-dir /tmp/s743/s708 --s734-checkpoint /tmp/s743/s734/s733_onset.pt --s734-report /tmp/s743/s734/report.json --offset-checkpoint /tmp/s743/s707/s675_hazard.joblib --out /tmp/s743/experiment
+      - name: Verify 12 genuine complete MIDI six-score evaluations and immutable S708
+        if: success()
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/s743/experiment/report.json'))
+          assert r['completed'] and r['loop_count']==12 and len(r['candidate_rows'])==12
+          assert r['selected']=='S708_frozen' and not r['promoted']
+          assert not r['LIVE_changed'] and not r['TEST_opened']
+          for key,v in r['candidate_rows'].items():
+              assert len(v['scores'])==6 and len(v['delta'])==6
+              assert not v['all_six_above_80'] or v['safe']
+          print('S743_VERIFIED_REAL_LOOPS',json.dumps({
+              'reference':r['reference_scores'],
+              'best_cal_candidate':r['CAL_candidate'],
+              'trials':[{'name':k,'active_K':v['scores']['active_exact_k'],
+                'safe':v['safe'],'acoustic_births':v['acoustic_births']}
+                for k,v in r['candidate_rows'].items()]}))
+          PY
+      - name: Preserve every genuine loop report for independent audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S743_CAL32_12_DYNAMIC_FUNDAMENTAL_ACTIVEK_MIDI_LOOPS
+          path: /tmp/s743/experiment/report.json
+          retention-days: 45
+          if-no-files-found: warn
