@@ -147,7 +147,7 @@ def candidate_rows(item,post,k,source,shadow,ctx,proposals=None):
     pos=0
     features,pairs,indices=[],[],[]
     excluded=Counter()
-    for on,off in proposals:
+    for on,off in proposed:
         sample=int(on["available_sample"])
         pitch=int(on["pitch"])
         ix=pitch-40
