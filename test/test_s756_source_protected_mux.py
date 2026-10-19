@@ -99,8 +99,8 @@ class ProtectedBirthTests(unittest.TestCase):
             ["s708_future_on","s707_future_off"])
 
     def test_bad_opaque_pair_timing_rejected(self):
-        bad=[event("note_on",41,self.ends[2]),
-             event("note_off",41,self.ends[1])]
+        bad=[event("note_on",41,self.ends[1]),
+             event("note_off",41,self.ends[0])]
         with self.assertRaises(AssertionError):
             self.select(bad)
 
