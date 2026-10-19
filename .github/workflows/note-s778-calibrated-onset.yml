@@ -36,6 +36,15 @@ jobs:
           python -m unittest -v \
             test.test_s768_independent_onset_lattice \
             test.test_s778_calibrated_harmonic_onset
+      - name: Preflight frozen report schema contract before heavy training
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          script = Path('scripts/s778_calibrated_harmonic_onset_fit80.py').read_text()
+          required = 'schema="S778_FIT80_INDEPENDENT_ONSET_FULL_LATTICE"'
+          assert required in script, 'S778 workflow/schema contract drift'
+          print('S778_SCHEMA_PREFLIGHT_PASS')
+          PY
       - name: Restore immutable S708 and S707
         run: |
           mkdir -p /tmp/s778/s708 /tmp/s778/s707
@@ -56,7 +65,7 @@ jobs:
           import json
           from pathlib import Path
           r=json.loads(Path('/tmp/s778/report/report.json').read_text())
-          assert r['schema']=='S778_FIT80_UNWEIGHTED_STRICT_THRESHOLD_HARMONIC_ONSET'
+          assert r['schema']=='S778_FIT80_INDEPENDENT_ONSET_FULL_LATTICE'
           assert r['complete'] and r['source_reference_parity']['valid']
           assert r['fit_recordings_done']==80 and r['cal_recordings_done']==32
           assert len(r['FIT']['folds'])==5
