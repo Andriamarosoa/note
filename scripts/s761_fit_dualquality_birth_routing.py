@@ -192,7 +192,8 @@ def save(folder,report):
     (folder/"report.json").write_text(
         json.dumps(report,sort_keys=True,indent=2)+"\n")
 
-def evaluate(args):
+def evaluate(args, *, score_variants_impl=score_variants, grid=GRID,
+             schema="S761_FIT80_DUAL_ONSET_COMPLETE_QUALITY_CAL32"):
     if args.out.exists():
         raise FileExistsError("S761 requires a fresh immutable output folder")
     args.out.mkdir(parents=True)
@@ -217,16 +218,16 @@ def evaluate(args):
     torch.set_num_threads(2)
     network=load_model(args.s708_dir/"s708_selected.pt")[0]
     report=dict(
-        schema="S761_FIT80_DUAL_ONSET_COMPLETE_QUALITY_CAL32",
+        schema=schema,
         source_sha256=sha,source="S708_frozen",heads="FIT80_onset_and_complete",
         complete=False,promoted=False,selected="S708_frozen",
         original_release_unchanged=True,no_truth_at_inference=True,
         LIVE_changed=False,HELD_opened=False,TEST_opened=False,
-        loops=12,FIT_recordings_done=0,CAL_recordings_done=0,
+        loops=len(grid),FIT_recordings_done=0,CAL_recordings_done=0,
         parameter_grid={name:{"expert":FAMILIES[i],
                                "threshold":threshold,
                                "confirmation_blocks":CONFIRM_BLOCKS}
-                        for name,(i,threshold) in GRID.items()},
+                        for name,(i,threshold) in grid.items()},
         FIT={},CAL={},CAL_candidate=None,reference_parity=None)
     save(args.out,report)
     with tempfile.TemporaryDirectory() as tmp:
@@ -276,13 +277,13 @@ def evaluate(args):
                                complete_class_balance=np.bincount(y_full,minlength=2).tolist(),
                                trained_composition_count=len(FIT_COMPS))
             save(args.out,report)
-            rows={name:[] for name in ("S708_frozen",*GRID)}
-            losses={name:Counter() for name in GRID}
-            counts={name:Counter() for name in GRID}
+            rows={name:[] for name in ("S708_frozen",*grid)}
+            losses={name:Counter() for name in grid}
+            counts={name:Counter() for name in grid}
             for idx,spec in enumerate(cal):
                 item,post,k,source,_,_,_=baseline_input(
                     spec,audio,root,heads,selection,offset,network,policy,release)
-                alternatives,details=score_variants(
+                alternatives,details=score_variants_impl(
                     source,post,k,item,experts,heads_fit,policy,offset,release)
                 # No CAL annotations are inspected until ALL 12 MIDI streams exist.
                 truth=real_notes(labels(spec,root)["notes"],item["samples"]/SR)
@@ -291,7 +292,7 @@ def evaluate(args):
                 base=measured["S708_frozen"]
                 for name,entry in measured.items():
                     rows[name].append(entry)
-                for name in GRID:
+                for name in grid:
                     trial=measured[name]
                     losses[name].update({
                         "correct_offsets":len(set(base["correct_offset_truth_ids"])-
@@ -312,7 +313,7 @@ def evaluate(args):
     report["reference_parity"]=dict(valid=parity,delta=delta)
     report["reference_scores"]={key:float(source[key]) for key in SCORES}
     eligible=[]
-    for name in GRID:
+    for name in grid:
         r=summary[name]
         changes={key:float(r[key]-source[key]) for key in SCORES}
         lost=dict(losses[name])
