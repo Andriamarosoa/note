@@ -1,0 +1,82 @@
+name: S785 FIT80 independent causal native onset false-positive veto
+on:
+  push:
+    branches: [codex/note-s785-onset-fp-independent-veto]
+    paths:
+      - scripts/s785_native_onset_fp_veto.py
+      - test/test_s785_native_onset_fp_veto.py
+      - .github/workflows/note-s785-native-onset-fp-veto.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install frozen NOTE CPU runtime
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Verify event-causal NOTE_ON false-positive veto and leave-composition-out FIT selection
+        run: |
+          python -m compileall -q scripts/s785_native_onset_fp_veto.py
+          python -m unittest -v test.test_s785_native_onset_fp_veto
+      - name: Preflight onset report schema and 48 guarded policies
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import scripts.s785_native_onset_fp_veto as m
+          s=Path('scripts/s785_native_onset_fp_veto.py').read_text()
+          assert 'schema="S785_FIT80_NATIVE_ONSET_FP_VETO"' in s
+          assert len(m.CS)*len(m.CUTS)==15
+          assert m.DIM==20
+          print('S785_PREFLIGHT_OK')
+          PY
+      - name: Restore signed S708/S707 snapshots
+        run: |
+          mkdir -p /tmp/s785/s708 /tmp/s785/s707
+          gh run download 39094682419 --repo Andriamarosoa/note --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s785/s708
+          gh run download 39059008484 --repo Andriamarosoa/note --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s785/s707
+          test -s /tmp/s785/s708/report.json
+          test -s /tmp/s785/s708/s708_selected.pt
+          test -s /tmp/s785/s707/s675_hazard.joblib
+      - name: Train independent native NOTE_ON veto on FIT80 OOF, evaluate frozen CAL32
+        run: |
+          python -m scripts.s785_native_onset_fp_veto \
+            --s708-dir /tmp/s785/s708 \
+            --offset-checkpoint /tmp/s785/s707/s675_hazard.joblib \
+            --out /tmp/s785/report
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/s785/report/report.json'))
+          assert r['complete'] and r['cal_recordings_done']==32
+          assert r['schema']=='S785_FIT80_NATIVE_ONSET_FP_VETO'
+          assert r['ONSET_only_not_MIDI'] and r['labels_only_after_causal_predictions']
+          assert r['no_CAL_training_or_selection'] and r['final_MIDI_changed'] is False
+          assert not r['promoted'] and not r['LIVE_changed'] and not r['TEST_opened'] and not r['HELD_opened']
+          assert r['fit_recordings_done']==80 and r['cal_recordings_done']==32
+          assert len(r['FIT']['thresholds'])==15
+          assert r['FIT']['selection_objective']=='worst_composition_F1_nonregression'
+          assert r['selected_policy'] in r['FIT']['eligible'] or r['selected_policy'] is None
+          assert abs(r['CAL']['delta_f1']-(r['CAL']['frozen']['f1']-r['CAL']['baseline']['f1']))<1e-9
+          print('S785_FIT_SELECTED',r['selected_policy'])
+          print('S785_CAL_ONSET_F1',r['CAL']['frozen']['f1'])
+          PY
+      - name: Preserve immutable FIT80 OOF and CAL32 F1 veto reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S785_NATIVE_ONSET_FALSE_POSITIVE_VETO_FIT80_CAL32
+          path: /tmp/s785/report/report.json
+          retention-days: 45
+          if-no-files-found: warn
