@@ -1,11 +1,11 @@
 ---
 serie: S797
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s797-fragment-router-six-audit-loops
-run_id: pending
-commit_sha: pending
+run_id: 39344715462
+commit_sha: 26d393c3536c628f6fa6e904d249ec6e04978055
 promotion: false
 ---
 
@@ -33,4 +33,4 @@ Six rôles indépendants : Données, Acoustique, Architecture, Apprentissage, M�
 
 ## Statut
 
-Expérience S797 en cours : branche expérimentale uniquement, tests et runs CI en attente. Les cinq boucles sont conçues comme tests de programmation, pas comme démonstration d'un gain de score sur GuitarSet.
+Terminé : les cinq boucles synthétiques, 28 tests unitaires, six audits indépendants et consensus strict ont réussi dans le [run S797 #39344715462](https://github.com/Andriamarosoa/note/actions/runs/39344715462), commit testé `26d393c3536c628f6fa6e904d249ec6e04978055`. Trois notes réelles de la fixture ont été reconnues sans fausse attaque par le routeur adaptatif, contre une attaque harmonique fantôme dans le consensus brut. Score GuitarSet après S797 toujours non mesuré. Aucun déploiement ni promotion, coût CPU physique inconnu.
