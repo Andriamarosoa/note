@@ -110,7 +110,7 @@ def train_head(X,y):
     if len(y)==0:
         return None
     if len(np.unique(y))==1:
-        return DummyClassifier(strategy="constant",constant=int(y[0])).fit(X,y)
+        return None  # Ambiguous FIT evidence: fail closed, do not infer a positive probability
     return make_pipeline(StandardScaler(),LogisticRegression(
         C=.25,class_weight="balanced",max_iter=500,random_state=761
     )).fit(X,y)
