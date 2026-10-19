@@ -36,7 +36,7 @@ def demo():
         dict(pitch=52,time=float(ends[3]/SR),duration=float(
             2*DECISION_SAMPLES/SR)),
     ]
-    native=np.arange(256,n*DECISION_SAMPLES+256,256,dtype=np.int64)
+    native=np.arange(256,(n+1)*DECISION_SAMPLES+256,256,dtype=np.int64)
     return ends,post,k,source,truth,native
 
 class ShadowAuditTests(unittest.TestCase):
