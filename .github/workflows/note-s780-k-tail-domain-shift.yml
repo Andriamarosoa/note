@@ -1,0 +1,57 @@
+name: S780 audit K5 K6 FIT to CAL shift without model retraining
+on:
+  push:
+    branches: [codex/note-s780-k-tail-domain-shift-audit]
+    paths:
+      - scripts/s780_k_tail_domain_shift_audit.py
+      - test/test_s780_k_tail_domain_shift.py
+      - .github/workflows/note-s780-k-tail-domain-shift.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Compile and test audit before reading artifact
+        run: |
+          python -m compileall -q scripts/s780_k_tail_domain_shift_audit.py
+          python -m unittest -v test.test_s780_k_tail_domain_shift
+      - name: Download immutable S779 result only
+        run: |
+          mkdir -p /tmp/s780/input
+          gh run download 39253787743 \
+            --repo Andriamarosoa/note \
+            --name S779_K5_K6_FIT80_OOF_CAL32_SPECIALIST \
+            --dir /tmp/s780/input
+          test -s /tmp/s780/input/report.json
+      - name: Quantify K5 K6 degradation and held-out composition risks
+        run: |
+          python -m scripts.s780_k_tail_domain_shift_audit \
+            --s779-report /tmp/s780/input/report.json \
+            --out /tmp/s780/output/report.json
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/s780/output/report.json'))
+          assert r['complete'] and not r['promoted']
+          assert r['evaluation_cadence_samples']==1024
+          assert r['selected_FIT_weight']==4.0
+          assert r['selected_CAL']['per_k']['5']['correct']==213
+          assert r['selected_CAL']['per_k']['6']['correct']==2
+          assert r['selected_CAL']['per_k']['6']['n']==189
+          print('S780_GAP_AUDIT_VERIFIED')
+          PY
+      - name: Publish final analytic report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S780_K5_K6_FIT_TO_CAL_GENERALIZATION_AUDIT
+          path: /tmp/s780/output/report.json
+          retention-days: 45
+          if-no-files-found: warn
