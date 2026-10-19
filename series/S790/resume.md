@@ -1,11 +1,11 @@
 ---
 serie: S790
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s790-independent-framepitch-causal-expert
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39277971956
+commit_sha: a56362661f11df109e4cfafdecb07bb38e27a7cc
 promotion: false
 ---
 
@@ -13,35 +13,35 @@ promotion: false
 
 ## Objectif
 
-Améliorer prioritairement **Frame Pitch F1** en conservant S708/S707 et le flux MIDI LIVE. Former une tête indépendante par hauteur avec sélection causale par fragment (et par pitch), analyser très profondément les erreurs des accompagnements, registres graves et voisinages harmoniques.
+Tester une première tête Frame Pitch réellement indépendante sur 49 hauteurs, avant de comparer ultérieurement son apport avec une banque d'experts hétérogènes. Préserver intégralement S708/S707, les événements MIDI finaux et la causalité LIVE.
 
 ## Hypothèse
 
-Frame Pitch est à 76,46 % sur CAL32 et 80,96 % sur HELD déjà exposé. Une tête de sustain par pitch, utilisant les indices spectraux, l'historique causal et les notes réellement actives dans la sortie MIDI S708, pourrait séparer les notes réellement présentes des harmoniques et augmenter le score Frame Pitch. Le score HELD étant déjà exposé, il ne doit pas servir au réglage.
+Une tête Sustain/Pitch apprenant des caractéristiques causales spectrales et harmoniques peut augmenter l'occupation correcte des notes, particulièrement des fondamentales graves et des accompagnements, sans accéder aux annotations pendant l'inférence.
 
 ## Modifications
 
-- Tête de classification Frame Pitch indépendante et **sélecteur par fragment**.
-- Entraînement FIT80 avec validation par composition laissée à l'écart.
-- Détection d'erreurs par composition et par registre, mesure des confusions harmonic-neighbor.
-- Six audits : données, acoustique, architecture, apprentissage, métriques, LIVE.
-- Rapport systématique de chaque résultat dans `series/S790/resultat.md`, en respectant les règles de l'audit documentaire.
+- `scripts/s790_independent_framepitch_expert.py` : tête logistique 40D indépendante, 49 hauteurs, neuf politiques FIT-only à seuil et pénalité harmonique.
+- `test/test_s790_independent_framepitch_expert.py` : tests d'occupation à partir des événements émis, causalité préfixe et géométrie F1.
+- `scripts/s790_six_role_audits.py` : six audits indépendants, source S708 contrôlée.
+- `.github/workflows/note-s790-framepitch.yml` : FIT80/CAL32, métriques de tête SHADOW, consensus bloquant.
+- Les deux fichiers obligatoires `resume.md`, `resultat.md` retracent les résultats et limites.
 
 ## Protocole
 
-Signé S708 #39094682419 ; S707 #39059008484 ; GuitarSet FIT80 pour entraîner et choisir la politique, CAL32 uniquement pour diagnostic. HELD et TEST protégés. L'expert produit une **prédiction de sustain par hauteur à 1024 échantillons (SHADOW)**, et NON un nouveau flux MIDI final ; il ne peut donc pas être promu sur ce seul score. Aucun post-traitement non causal ni inférence avec labels.
+GuitarSet FIT80 sur cinq compositions pour le choix OOF, puis CAL32 uniquement pour le diagnostic gelé ; HELD/TEST non ouverts. Six jobs d'audit distincts et consensus avant toute validation documentaire. **Sortie évaluée = masque de notes actives à décision 1024, pas le MIDI final hop 256.** S708 reste la référence officielle.
 
-Comparaison des valeurs Frame Pitch sur la même horloge et les mêmes labels pour base et candidat ; écart global et par composition, précision/recall, K et impact hypothétique. Il faudra ensuite intégrer un candidat retenu et valider les six métriques sur le même MIDI 256 sans dégradation avant toute promotion.
+Le modèle FIT sélectionné est `cut0.45_harm0.00`. Valeurs mesurées SHADOW : FIT base 79,9293 %, FIT sélectionné 86,7532 % ; CAL32 base 77,8353 %, candidat 85,1177 %. Les chiffres ne démontrent pas une amélioration du F1 officiel.
 
 ## Audits obligatoires
 
-- Données : contrôle PCM/annotations, FIT80/CAL32, noms des enregistrements, distributions des classes/hauteurs, graves et polyphonie.
-- Acoustique : spectre causal, notes fondamentales, harmoniques et ambiguïté de fondamentale.
-- Architecture : tête autonome par hauteur, sélection par fragment, pas de réemploi trompeur des métriques MIDI.
-- Apprentissage : OOF par cinq compositions, choix FIT-only et garde anti-régression.
-- Métriques : TP/FP/FN frame pitch, recomptage, comparaison base/candidat, texture/composition.
-- LIVE : invariants S708/S707, information disponible au temps de décision, aucune modification en production.
+- Données : signature S708, split FIT/CAL disjoint, HELD/TEST fermés.
+- Acoustique : causalité des indices temporels et relations harmoniques.
+- Architecture : une tête indépendante et neuf politiques sélectionnées sur FIT.
+- Apprentissage : reconstitution des neuf scores FIT et du gagnant.
+- Métriques : recompte F1/precision/recall et séparation SHADOW vs MIDI officiel.
+- LIVE : aucune modification des événements, du décodeur ou de S707/S708.
 
 ## Statut
 
-**En cours.** Nouveau résultat Frame Pitch : **non mesuré**. Aucun candidat promu.
+**Terminé**, [GitHub Actions #39277971956](https://github.com/Andriamarosoa/note/actions/runs/39277971956) SUCCESS, SHA `a56362661f11df109e4cfafdecb07bb38e27a7cc`, six audits et consensus réussis. Nouveau Frame Pitch SHADOW CAL32 **85,12 %**. Aucune promotion scientifique du MIDI final.
