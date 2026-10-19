@@ -1,0 +1,160 @@
+name: S791 data-driven Frame Pitch complementary experts and six independent audits
+on:
+  push:
+    branches: [codex/note-s791-framepitch-complementary-experts]
+    paths:
+      - src/causal_note/s791_framepitch_expert_bank.py
+      - scripts/s791_train_framepitch_complementary.py
+      - scripts/s791_six_role_audits.py
+      - test/test_s791_framepitch_expert_bank.py
+      - test/test_s791_train_framepitch_complementary.py
+      - .github/workflows/note-s791-framepitch.yml
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+  actions: read
+env:
+  PYTHONPATH: .:src
+  GH_TOKEN: ${{ github.token }}
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '2'
+  OMP_NUM_THREADS: '2'
+jobs:
+  candidate_frozen:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install pinned CPU runtime
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Unit-test independent specialist population and 16 dynamic masks
+        run: |
+          python -m compileall -q src/causal_note/s791_framepitch_expert_bank.py scripts/s791_train_framepitch_complementary.py scripts/s791_six_role_audits.py
+          python -m unittest -v test.test_s791_framepitch_expert_bank test.test_s791_train_framepitch_complementary
+          python -m scripts.verify_series_reports --series S791
+      - name: Restore signed S708 and frozen S707
+        run: |
+          mkdir -p /tmp/s791/s708 /tmp/s791/s707
+          gh run download 39094682419 --repo Andriamarosoa/note \
+            --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS \
+            --dir /tmp/s791/s708
+          gh run download 39059008484 --repo Andriamarosoa/note \
+            --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL \
+            --dir /tmp/s791/s707
+          test -s /tmp/s791/s708/report.json
+          test -s /tmp/s791/s708/s708_selected.pt
+          test -s /tmp/s791/s707/s675_hazard.joblib
+      - name: Capture exact S791 changes excluding S790 protected code
+        run: |
+          git fetch --no-tags origin codex/note-s790-independent-framepitch-causal-expert
+          git diff --name-only FETCH_HEAD HEAD > /tmp/s791/changed_paths.txt
+          echo S791_CHANGED_PATHS
+          cat /tmp/s791/changed_paths.txt
+      - name: FIT80 five composition OOF bank plus FIT-only fragment router and CAL32 frozen diagnosis
+        run: |
+          python -m scripts.s791_train_framepitch_complementary \
+            --s708 /tmp/s791/s708 \
+            --offset-checkpoint /tmp/s791/s707/s675_hazard.joblib \
+            --out /tmp/s791/experiment
+      - name: Stop if report claims MIDI promotion or invents training coverage
+        run: |
+          python - <<'PY'
+          import json
+          p='/tmp/s791/experiment/report.json'
+          r=json.load(open(p))
+          assert r['schema']=='S791_DATA_DRIVEN_FRAMEPITCH_COMPLEMENTARY_EXPERTS'
+          assert r['complete'] and (r['fit_recordings_done'],r['cal_recordings_done'])==(80,32)
+          assert r['candidate_masks']==16 and r['decision_clock_samples']==1024
+          assert not any(r[k] for k in ('promoted','LIVE_changed','final_MIDI_changed','ONSET_OFFSET_changed','HELD_opened','TEST_opened'))
+          assert r['no_CAL_training_or_selection']
+          assert r['FIT']['actual_retained_expert_count']==len(r['retained_specialists'])
+          print('S791_RETAINED_EXPERTS',r['retained_specialists'])
+          print('S791_FIT_OOF',r['FIT']['baseline']['f1'],r['FIT']['router']['f1'])
+          print('S791_CAL_FROZEN',r['CAL']['baseline']['f1'],r['CAL']['frozen']['f1'])
+          PY
+      - name: Keep full signed inputs and experimental head evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S791_FRAMEPITCH_MULTIEXPERT_FIT80_CAL32
+          path: |
+            /tmp/s791/experiment/report.json
+            /tmp/s791/s708/report.json
+            /tmp/s791/s708/s708_selected.pt
+            /tmp/s791/changed_paths.txt
+          retention-days: 45
+          if-no-files-found: warn
+  audits:
+    name: ${{ matrix.role }} independent specialist report
+    needs: candidate_frozen
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [data, acoustics, architecture, training, metrics, live]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          name: S791_FRAMEPITCH_MULTIEXPERT_FIT80_CAL32
+          path: /tmp/s791
+      - name: Audit one independent S791 domain
+        run: |
+          python -m scripts.s791_six_role_audits \
+            --role ${{ matrix.role }} \
+            --report /tmp/s791/experiment/report.json \
+            --signed /tmp/s791/s708/report.json \
+            --checkpoint /tmp/s791/s708/s708_selected.pt \
+            --train scripts/s791_train_framepitch_complementary.py \
+            --bank src/causal_note/s791_framepitch_expert_bank.py \
+            --changed /tmp/s791/changed_paths.txt \
+            --out /tmp/s791/audits/role_${{ matrix.role }}.json
+      - name: Archive separate audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S791_AUDIT_${{ matrix.role }}
+          path: /tmp/s791/audits/role_${{ matrix.role }}.json
+          retention-days: 45
+          if-no-files-found: warn
+  consensus:
+    needs: [candidate_frozen, audits]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: S791_AUDIT_*
+          path: /tmp/s791/audits
+          merge-multiple: true
+      - name: Require all six independent positive reviews
+        run: |
+          python -m scripts.s787_audit_consensus \
+            --reports-dir /tmp/s791/audits \
+            --out /tmp/s791/consensus/report.json
+      - name: Archive audit consensus for S791 resultat.md
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S791_SIX_AGENT_AUDIT_CONSENSUS
+          path: |
+            /tmp/s791/audits/role_*.json
+            /tmp/s791/consensus/report.json
+          retention-days: 45
+          if-no-files-found: warn
