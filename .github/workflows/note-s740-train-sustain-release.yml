@@ -1,0 +1,82 @@
+name: S740 real GuitarSet FIT/CAL Sustain and Release learning (no LIVE)
+on:
+  push:
+    branches: [codex/note-s740-six-domain-exactk-fragment-routers]
+    paths:
+      - scripts/s740_train_posterior_specialists.py
+      - src/causal_note/s740_multitarget_dynamic.py
+      - .github/workflows/note-s740-train-sustain-release.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: note-s740-training-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  independently_trained_target:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [sustain, release]
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install live-acoustics runtime and CPU torch
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Validate experiment code
+        run: |
+          python -m compileall -q src/causal_note/s740_multitarget_dynamic.py scripts/s740_train_posterior_specialists.py
+          python -m unittest -q test.test_s740_multitarget_dynamic
+      - name: Download signed frozen S708 model, S734 H5 and frozen S707 hazard
+        run: |
+          mkdir -p /tmp/s740/s708 /tmp/s740/s707 /tmp/s740/s734
+          gh run download 39094682419 --repo "Andriamarosoa/note" --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s740/s708
+          gh run download 39059008484 --repo "Andriamarosoa/note" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s740/s707
+          gh run download 39137653526 --repo "Andriamarosoa/note" --name S734_ONSET_INDIVIDUAL_NEURAL_EXACTK_LINKED_FIT_CAL_HELD_DEV --dir /tmp/s740/s734
+          test -s /tmp/s740/s708/report.json
+          test -s /tmp/s740/s708/s708_selected.pt
+          test -s /tmp/s740/s707/s675_hazard.joblib
+          test -s /tmp/s740/s734/report.json
+          test -s /tmp/s740/s734/s733_onset.pt
+      - name: Train only ${{ matrix.target }} and score all six real MIDI metrics
+        run: |
+          python -m scripts.s740_train_posterior_specialists --target "${{ matrix.target }}" --s708-dir /tmp/s740/s708 --s734-checkpoint /tmp/s740/s734/s733_onset.pt --s734-report /tmp/s740/s734/report.json --offset-checkpoint /tmp/s740/s707/s675_hazard.joblib --out "/tmp/s740/rounds_${{ matrix.target }}"
+      - name: Assert honest completed evaluation, no automatic LIVE promotion
+        if: success()
+        run: |
+          python - <<'PY'
+          import json,os
+          target=os.environ['TARGET']
+          r=json.load(open(f'/tmp/s740/rounds_{target}/report.json'))
+          assert r['completed'] and r['target']==target
+          assert len(r['CAL_rounds'])==18
+          assert not r['LIVE_changed'] and not r['TEST_opened'] and not r['promoted']
+          assert r['training']=='FIT80 only'
+          print('S740_REAL_AUDIO_RESULT',json.dumps({
+              'target':target, 'selected':r['selected'],
+              'above_80_all_six':r['achieved_all_six_gt80'],
+              'rounds':len(r['CAL_rounds'])}))
+          PY
+        env:
+          TARGET: ${{ matrix.target }}
+      - name: Retain readable S740 performance report and safe checkpoints
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S740_${{ matrix.target }}_FIT_CAL_32_SUBSETS_SHADOW
+          path: |
+            /tmp/s740/rounds_${{ matrix.target }}/report.json
+            /tmp/s740/rounds_${{ matrix.target }}/s740_*.pt
+          retention-days: 45
+          if-no-files-found: warn
