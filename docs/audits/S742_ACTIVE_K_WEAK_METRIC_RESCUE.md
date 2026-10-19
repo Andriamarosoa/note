@@ -46,6 +46,32 @@ S714 reported on **exposed DEV, diagnostic only**:
 
 Only mark the experiment complete after the final `S742_FINAL` and `S742_SOFT_FINAL` lines and published JSON artifacts have been checked. Unit tests and GitHub job success alone do not constitute >80%.
 
+
+## S742 real MIDI soft-tail ablation — completed
+
+[Successful CAL32 run 39195600077](https://github.com/Andriamarosoa/note/actions/runs/39195600077).
+All six trials used the **same signed S708 predictions and exact original S707 NoteOff model**, with causal supplemental acoustically gated NoteOn actions. None were accepted.
+
+| Candidate | Added NoteOns | Active Exact-K | Onset F1 | Offset accuracy | Full-note F1 | Frame-pitch F1 | All-six no-regression |
+|---|---:|---:|---:|---:|---:|---:|---|
+| S708 reference | 0 | 56.2762% | 74.2639% | 77.3292% | 57.1319% | 76.4626% | baseline |
+| soft055_on025_s065 | 27 | 56.6374% | 74.3169% | 77.2430% | 57.1102% | 76.6702% | **No** |
+| soft065_on025_s065 | 25 | 56.5426% | 74.2850% | 77.2962% | 57.1247% | 76.6393% | **No** |
+| soft055_on030_s075 | 16 | 56.5266% | 74.3352% | 77.2884% | 57.1574% | 76.6030% | **No** |
+| soft065_on030_s075 | 14 | 56.4359% | 74.3286% | 77.3494% | 57.1974% | 76.5733% | **No — one previously correct Offset lost** |
+| soft070_on020_s060 | 42 | **56.6613%** | **74.3974%** | 77.3055% | **57.2190%** | **76.7192%** | **No — two previously correct Offsets lost** |
+| soft075_on025_s065 | 22 | 56.5456% | 74.3039% | 77.2962% | 57.1392% | 76.6360% | **No** |
+
+The best Active Exact-K improvement is **+0.3851 percentage points**, but the paired no-regression gate rejects it due to Offset accuracy decline and two previously correct offsets lost. It is an ablation, **not** the official reference. The original S708 remains unchanged.
+
+### Scientific diagnosis
+
+- 36,890 actual active native-hop under-counted frames versus 6,940 over-counted: the research priority is adding true independent fundamental note instances, not K probability argmax alone.
+- 42 additional acoustic-confirmed NoteOn events improve Active Exact-K by only 0.385 point. This is vastly short of the >23-point gap.
+- The S742 learner can be made Offset-preserving later, but a simple threshold adjustment is incapable of repairing cases for which no correct pitch is offered.
+- **Next target:** independently trained FIT-only low-fundamental and overlapping-source birth proposals, with harmonic negative examples (E2/E3 and K2–K6), then link them through the original Exact-K class-conditional fragment router. Score the complete emitted MIDI stream on CAL, including the untouched 50 ms Offset criteria.
+- Do not distill/compress the architecture before the six official metrics pass >80%, per user instruction.
+
 ## Scientific next decision
 
 If the missing pitch has no acoustic candidate, improve independent harmonic fundamental heads before adjusting routing.
