@@ -1,0 +1,61 @@
+name: S777 quantify native FFT and harmonic numerical cross-run drift
+on:
+  push:
+    branches: [codex/note-s777-spectral-numeric-magnitude]
+    paths:
+      - scripts/s777_spectral_numeric_magnitude.py
+      - .github/workflows/note-s777-numeric-magnitude.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+jobs:
+  quantify:
+    strategy:
+      fail-fast: false
+      matrix:
+        threads: [1, 2]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install pinned NOTE frozen CPU requirements
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Validate audit and restore frozen offset
+        run: |
+          python -m compileall -q scripts/s777_spectral_numeric_magnitude.py
+          python -m unittest -v test.test_s773_causal_repro_by_stage
+          mkdir -p /tmp/s777/s707
+          gh run download 39059008484 --repo Andriamarosoa/note --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s777/s707
+          test -s /tmp/s777/s707/s675_hazard.joblib
+      - name: Capture paired raw PCM native FFT and sharp harmonic numeric values
+        run: |
+          python -m scripts.s777_spectral_numeric_magnitude \
+            --offset-checkpoint /tmp/s777/s707/s675_hazard.joblib \
+            --threads ${{ matrix.threads }} \
+            --out /tmp/s777/report
+          python - <<'PY'
+          import json
+          import numpy as np
+          r=json.load(open('/tmp/s777/report/report.json'))
+          assert r['complete'] and len(r['records'])==2 and not r['promoted']
+          z=np.load('/tmp/s777/report/sampled_vectors.npz')
+          assert all(key in z for key in ('0_pcm','1_pcm','0_native_FFT','1_native_FFT','0_sharp','1_sharp'))
+          print('S777_SAMPLES_CAPTURED',len(z.files))
+          PY
+      - name: Save stage report and sampled values
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S777_SPECTRAL_NUMERIC_THREADS_${{ matrix.threads }}
+          path: /tmp/s777/report/
+          retention-days: 45
+          if-no-files-found: warn
