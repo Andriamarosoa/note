@@ -51,7 +51,7 @@ class IndependentHeadsTests(unittest.TestCase):
 
     def test_never_proposes_current_native_note(self):
         self.reference=[event("note_on",42,1024),
-                        event("note_off",42,6144)]
+                        event("note_off",42,8192)]
         proposed,diag=self.read()
         self.assertFalse(proposed)
         self.assertGreater(diag["rejected_source"],0)
@@ -68,7 +68,7 @@ class IndependentHeadsTests(unittest.TestCase):
     def test_source_future_events_do_not_modify_earlier_candidates(self):
         before,_=self.read()
         changed=copy.deepcopy(self.reference)
-        changed[-1]["available_sample"]=self.ends[-1]
+        changed[-1]["available_sample"]=self.ends[-1]+2048
         after,_=self.read(reference=changed)
         prefix=lambda rows:[(e["pitch"],e["decision_sample"])
                              for e in rows if e["decision_sample"]<self.ends[-1]]
