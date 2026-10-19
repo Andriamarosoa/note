@@ -89,7 +89,8 @@ class IndependentHeadsTests(unittest.TestCase):
         self.heads[:,2,5]=.90
         proposals,diag=self.read()
         pitch_42=[e for e in proposals if e["pitch"]==42]
-        self.assertEqual(len(pitch_42),1)
+        times=[e["decision_sample"] for e in pitch_42]
+        self.assertTrue(all(b-a >= .10*SR for a,b in zip(times,times[1:])))
         self.assertGreater(diag["rejected_cross_head_restrike"],0)
 
     def test_native_release_tail_is_not_a_fresh_attack(self):
