@@ -26,7 +26,8 @@ from scripts.s706_train_sharp_temporal_loops import CAL_COMPS,FIT_COMPS,load_mod
 from scripts.s733_train_onset_only import baseline_input
 from scripts.s748_six_axis_failure_audit import axis_audit
 
-def evaluate(args):
+def evaluate(args, *, decision_audit=None,
+             schema="S750_REAL_S708_GUITARSET_CAL32_K0_K6_SIX_AXIS_ROOTCAUSE"):
     if args.out.exists():
         raise FileExistsError("S750 requires a new immutable audit folder")
     args.out.mkdir(parents=True)
@@ -41,7 +42,7 @@ def evaluate(args):
     network=load_model(args.s708_dir/"s708_selected.pt")[0]
     policy=GuidedPolicy(**choice["policy"])
     torch.set_num_threads(2)
-    report=dict(schema="S750_REAL_S708_GUITARSET_CAL32_K0_K6_SIX_AXIS_ROOTCAUSE",
+    report=dict(schema=schema,
         signed_sha256=sha,complete=False,training=False,promoted=False,
         LIVE_changed=False,TEST_opened=False,HELD_opened=False,
         recordings=[],split="CAL32 BN2 Jazz2 composition-disjoint",
@@ -54,6 +55,7 @@ def evaluate(args):
     harmonics=Counter()
     release_reasons=Counter()
     totals=Counter()
+    decision_records=[]
     with tempfile.TemporaryDirectory() as td:
         root=Path(td);(root/"data").mkdir()
         proto,heads,selection,offset=setup(root,args.offset_checkpoint)
@@ -85,6 +87,10 @@ def evaluate(args):
                                  item["samples"]/SR)
                 detail=axis_audit(events,truth,item["ends"])
                 scores=metric(events,truth,item["ends"])
+                if decision_audit is not None:
+                    diagnosis=decision_audit(
+                        item["decision_ends"],k,events,truth)
+                    decision_records.append(diagnosis)
                 rows.append(scores)
                 confusion+=np.asarray(detail["confusion_k0_k6"],np.int64)
                 for k,v in detail["per_true_k"].items():
@@ -110,7 +116,9 @@ def evaluate(args):
                     offset_reasons=detail["offset_reasons"],
                     k_gt6_frames=detail["k_gt6_frames"],
                     overcount_active_frames=detail["overcount_active_frames"],
-                    undercount_active_frames=detail["undercount_active_frames"]))
+                    undercount_active_frames=detail["undercount_active_frames"],
+                    **({"khead_vs_decoder":diagnosis}
+                       if decision_audit is not None else {})))
                 report["recordings_done"]=i+1
                 (args.out/"report.json").write_text(json.dumps(report,indent=2)+"\n")
                 print("S750 AUDIT",i+1,32,spec["name"],
@@ -136,6 +144,9 @@ def evaluate(args):
     report["harmonic_false_alarm_near_miss"]=dict(harmonics)
     report["offset_reasons"]=dict(release_reasons)
     report["totals"]=dict(totals)
+    if decision_audit is not None:
+        from scripts.s753_khead_decoder_anatomy import aggregate_decision_audit
+        report["khead_vs_decoder"]=aggregate_decision_audit(decision_records)
     report["complete"]=okay
     (args.out/"report.json").write_text(json.dumps(report,indent=2)+"\n")
     if not okay:
