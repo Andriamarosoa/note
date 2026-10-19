@@ -59,3 +59,20 @@ Lecture seule des PR A–E. Contre-exemples et chemins d'échec ; refuser toute 
 
 ## Coordination
 Agent D définit d'abord le protocole de score et les jeux tenus à l'écart, puis A/B/C travaillent en branches distinctes. E automatise, F vérifie. Les agents ne peuvent pas s'auto-attribuer un passage à 80% sur des données déjà explorées. Si la mesure n'est pas disponible, écrire « non mesuré ».
+
+## Livraison obligatoire par série (à partir de S788)
+
+**Chaque nouvelle série S788, S789, etc., commence avec deux fichiers versionnés :**
+
+- `series/Sxxx/resume.md` — objectif, hypothèse, architecture, modifications, protocole FIT/CAL, six audits prévus et statut.
+- `series/Sxxx/resultat.md` — run GitHub, SHA, corpus/split, métriques réellement mesurées, comparaison S708, six audits, régressions et verdict.
+
+Au démarrage, créer LES DEUX fichiers avec `statut: en_cours`, et écrire « non mesuré » pour les résultats absents. Ne jamais inventer de scores.
+À la fin d'une expérience, ajouter les six audits indépendants avec statuts PASS/FAIL/UNKNOWN, liens/preuves, métriques et verdict ; mettre les deux fichiers à `statut: termine` avec run ID et SHA.
+Un audit échoué ou manquant interdit toute promotion scientifique. Tout changement de code/protocole nécessite l'actualisation des deux fichiers et des six audits.
+
+Avant le run : `python -m scripts.verify_series_reports --series Sxxx`.
+Au terme des vérifications : `python -m scripts.verify_series_reports --series Sxxx --mode release`.
+Le workflow `.github/workflows/note-series-documentation.yml` contrôle les branches `codex/note-s*` qui héritent de ce workflow.
+Ce validateur vérifie la documentation, pas la véracité scientifique des mesures. Les six audits S787 et la validation finale MIDI à hop 256 restent obligatoires.
+Pour imposer cette règle à toutes les branches existantes / par défaut, intégrer le workflow dans chacune ou activer sa protection requise sur GitHub.
