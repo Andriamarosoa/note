@@ -102,10 +102,7 @@ def replay(args):
                 scene=scene_scores(item["x"],tr["post"],tr["k"],
                                    tr["baseline"],item["decision_ends"])
                 alternative=candidate_heads(tr["post"],item["native_post"],
-                          tr["context"] if "context" in tr else
-                          # S740 one_track has to expose context, don't
-                          # silently substitute predictions if absent.
-                          None,item["x"],scene)
+                          tr["context"],item["x"],scene)
                 predictions={"S708_frozen":tr["baseline"]}
                 local={}
                 for key,parameters in CHOICES.items():
