@@ -6,12 +6,13 @@ on:
       - scripts/s789_deep_data_microscope.py
       - test/test_s789_deep_data_microscope.py
       - .github/workflows/note-s789-deep-data-audit.yml
-      - series/S789/resume.md
-      - series/S789/resultat.md
   workflow_dispatch:
 permissions:
   contents: read
   actions: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 env:
   PYTHONPATH: .:src
   GH_TOKEN: ${{ github.token }}
