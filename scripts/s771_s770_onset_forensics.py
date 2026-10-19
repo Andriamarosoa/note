@@ -99,7 +99,7 @@ def audit(r, signed):
             x["birth_reaches_base"] for x in by_q),
         combinations=curves,
         decision=("REJECT_S770_AND_NEW_HEAD_GENERATOR_REQUIRED"
-                  if not all(abs(x)<1e-8 for x in parity)
+                  if not all(abs(x)<1e-8 for x in parity.values())
                   or trials[frozen]["f1"]<=reference["onset_f1"] else
                   "ONSET_ONLY_SHADOW_GAIN_NOT_MIDI_PROMOTION"))
 
