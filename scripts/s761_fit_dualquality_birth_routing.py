@@ -16,6 +16,7 @@ import argparse
 from collections import Counter
 from itertools import product
 import json
+import hashlib
 from pathlib import Path
 import tempfile
 import zipfile
@@ -280,18 +281,37 @@ def evaluate(args, *, score_variants_impl=score_variants, grid=GRID,
                                trained_composition_count=len(FIT_COMPS))
             save(args.out,report)
             rows={name:[] for name in ("S708_frozen",*grid)}
+            trace_source=schema.startswith("S762_")
+            if trace_source:
+                report["source_replay_integrity"]=[]
             losses={name:Counter() for name in grid}
             counts={name:Counter() for name in grid}
             for idx,spec in enumerate(cal):
                 item,post,k,source,_,_,_=baseline_input(
                     spec,audio,root,heads,selection,offset,network,policy,release)
+                before_signature=hashlib.sha256(
+                    json.dumps(source,sort_keys=True).encode()).hexdigest() if trace_source else None
                 alternatives,details=score_variants_impl(
                     source,post,k,item,experts,heads_fit,policy,offset,release)
+                if trace_source:
+                    after_signature=hashlib.sha256(
+                        json.dumps(source,sort_keys=True).encode()).hexdigest()
+                    if before_signature!=after_signature:
+                        raise AssertionError("S762 fragment router modified signed source events")
                 # No CAL annotations are inspected until ALL 12 MIDI streams exist.
                 truth=real_notes(labels(spec,root)["notes"],item["samples"]/SR)
                 measured={name:metric(stream,truth,item["ends"])
                           for name,stream in alternatives.items()}
                 base=measured["S708_frozen"]
+                if trace_source:
+                    report["source_replay_integrity"].append(dict(
+                        recording=spec["name"],source_sha256=before_signature,
+                        source_events_unchanged=True,
+                        base_counts={key:int(base[key]) for key in (
+                            "tp","fp","fn","frames","k_correct",
+                            "active_frames","active_k_correct",
+                            "frame_pitch_tp","frame_pitch_fp","frame_pitch_fn",
+                            "offset_eligible","offset_correct")}))
                 for name,entry in measured.items():
                     rows[name].append(entry)
                 for name in grid:
@@ -335,6 +355,13 @@ def evaluate(args, *, score_variants_impl=score_variants, grid=GRID,
     report["complete"]=parity
     save(args.out,report)
     if not parity:
+        print("S762_REFERENCE_DRIFT_DIAGNOSTIC",json.dumps({
+            "source_scores":report["reference_scores"],
+            "baseline_deltas":report["reference_parity"]["delta"],
+            "source_events_unchanged":all(
+                x["source_events_unchanged"] for x in
+                report.get("source_replay_integrity",[])),
+            "recordings":len(report.get("source_replay_integrity",[]))}),flush=True)
         raise AssertionError("S761 signed CAL32 parity failed")
     print("S761_COMPLETE",json.dumps({
         "reference":report["reference_scores"],
