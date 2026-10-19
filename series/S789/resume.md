@@ -1,11 +1,11 @@
 ---
 serie: S789
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s789-deep-data-audit
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39274713682
+commit_sha: e0e5bccb9386d7704f771d18a9a66816e4014ff4
 promotion: false
 ---
 
@@ -13,36 +13,36 @@ promotion: false
 
 ## Objectif
 
-Auditer les données S708/S781/S782 **au niveau des enregistrements, textures, compositions, hauteurs et cardinalités**, avec six vérifications indépendantes, et classer la probabilité raisonnable que chaque métrique atteigne 80 %.
+Auditer profondément les données S708/S781/S782, à l'échelle de chaque enregistrement puis des groupes par composition, texture, registre, environnement harmonique et polyphonie. Déterminer quelle caractéristique pourrait franchir 80 % en premier **sans confondre proximité au seuil et généralisation réelle**.
 
 ## Hypothèse
 
-La distance au seuil 80 % ne suffit pas à classer les métriques. Les écarts entre CAL32, DEV exposé et HELD exposé, les erreurs en accords, les registres E2–B2, les voisinages harmoniques et l'évolution K5/K6 permettent de distinguer un gain structurel d'un réglage insuffisant.
+L'Offset est le plus proche de 80 % sur CAL32, mais sa mesure conditionnelle aux attaques correctes et ses fortes régressions d'un morceau à l'autre rendent sa promotion incertaine. Frame Pitch présente un meilleur potentiel observable au-delà de CAL32. Les mauvais scores des graves et de K5/K6 sont liés à des défauts structurels et à un changement de distribution FIT/CAL.
 
 ## Modifications
 
-- Six audits indépendants sur des artefacts figés des runs S708, S781 et S782.
-- Recalcul par piste et par texture des TP/FP/FN, de la précision, du rappel, des métriques de hauteur et des offsets.
-- Mesure de l'hétérogénéité par morceau/composition et intervalle descriptif par rééchantillonnage de morceaux.
-- Recalcul des confusions K5/K6 et du décalage FIT/CAL.
-- Vérification de la causalité des preuves : S782 observe jusqu'à trois fenêtres **après** l'attaque uniquement pour les diagnostics rétrospectifs.
-- Fichier `resultat.md` à compléter d'après la CI, sans annoncer de gains de modèle.
+- `scripts/s789_deep_data_microscope.py` : six audits réellement exécutés en parallèle et contrôles numériques indépendants sur les artefacts originaux.
+- `test/test_s789_deep_data_microscope.py` : tests des formules métriques, intervalles descriptifs, identités et six rôles.
+- `.github/workflows/note-s789-deep-data-audit.yml` : téléchargement immuable S708/S781/S782, exécution matricielle de six audits et consensus bloquant.
+- `series/S789/resume.md`, `series/S789/resultat.md` : rapports obligatoires et preuve de la décision.
+
+Aucun changement du modèle de transcription, du pipeline LIVE, de l'Offset ni de l'architecture de sélection en production.
 
 ## Protocole
 
-Les artefacts originaux sont téléchargés via GitHub Actions. Tous les rapports sont immuables et identifiés par run : S708 `39094682419`, S781 `39256936602`, S782 `39257378677`. Aucun apprentissage, changement de tête, tuning CAL, opening TEST ou promotion.
+Sources figées : [S708 run 39094682419](https://github.com/Andriamarosoa/note/actions/runs/39094682419), [S781 run 39256936602](https://github.com/Andriamarosoa/note/actions/runs/39256936602), [S782 run 39257378677](https://github.com/Andriamarosoa/note/actions/runs/39257378677). Audits indépendants sur DEV (12 morceaux, déjà exposé), HELD (32 morceaux, déjà exposé), CAL32 agrégé et diagnostics FIT80/CAL32. Aucun entraînement, réglage sur CAL ou ouverture de TEST.
 
-Les six contrôles calculent séparément leurs conclusions ; la synthèse est `scripts/s787_audit_consensus.py`. La différence de métrique entre CAL32 et HELD doit être explicitement indiquée avec la réserve que HELD est **déjà exposé**.
+L'audit de données recalcule les métriques à partir des TP/FP/FN et des dénominateurs, contrôle la cohérence micro/macro et les pistes individuelles. Le bootstrap sur morceaux est uniquement descriptif, car les morceaux d'une même composition sont corrélés.
 
 ## Audits obligatoires
 
-- Données : profils par morceau, composition, texture, couverture, incohérences.
-- Acoustique : registre, superposition harmonique, attaques manquées, fenêtre causale.
-- Architecture : confusions K5/K6, erreurs de décodage et horloges distinctes.
-- Apprentissage : composition held-out FIT, distribution shift, contamination CAL.
-- Métriques : six scores signés, supports, gaps vers 80, écarts DEV/HELD/CAL.
-- LIVE : absence de mise à jour des fichiers LIVE ou modèles signés, pas de verdict temps réel depuis un audit rétrospectif.
+- Données : noms/splits uniques, comptages par piste, textures/compositions, portée des échantillons et variabilité.
+- Acoustique : grave E2–B2, voisinages harmoniques, superposition K1–K6, diagnostic post-attaque sans prétention causale.
+- Architecture : reconstitution des confusions K5/K6, différences tête isolée 1024 vs MIDI officiel 256.
+- Apprentissage : sélection 5 compositions FIT sans CAL, écart FIT/CAL des classes rares.
+- Métriques : recalcule six scores, supports, nombres minimaux de corrections et variations DEV/CAL/HELD.
+- LIVE : S708/S707 immuables, aucun modèle/promotions, aucune latence matérielle déduite de ces fichiers.
 
 ## Statut
 
-En cours. Nouvelle mesure scientifique : **non mesuré**. La série ne crée aucun nouveau candidat.
+**Terminé : six audits PASS, consensus PASS**, <https://github.com/Andriamarosoa/note/actions/runs/39274713682>, SHA source `e0e5bccb9386d7704f771d18a9a66816e4014ff4`. Aucune amélioration d'un modèle, aucune promotion ; résultats détaillés dans `resultat.md`.
