@@ -11,7 +11,7 @@ promotion: false
 
 # S792 — Résultats
 
-## Sources et statut de validation
+## Exécution
 
 - Expérience réelle : [GitHub Actions #39328341071](https://github.com/Andriamarosoa/note/actions/runs/39328341071) **SUCCESS**. SHA `aec47655049d89ddf297348ca1ec89b08c8d1daf`.
 - Artefact scientifique : `S792_REAL_CAUSAL_MIDI256_SIX_METRICS`, `experiment/report.json`.
@@ -21,7 +21,7 @@ promotion: false
 - Horloge de mesure **officielle : 256 échantillons**, `scripts.s704_joint_metrics.metric`, six scores sur le même MIDI sérialisé.
 - Contrôle documentaire S792 : workflow dédié, sans lancement de nouveaux tests scientifiques sur simple changement de Markdown.
 
-## Six métriques MIDI officielles — CAL32
+## Métriques
 
 Le choix FIT étant **0 bloc**, le candidat CAL32 est un replay à l'identique de S708.
 
@@ -67,13 +67,13 @@ Les variantes longues atteignent aussi neuf fermetures anticipées pour contrain
 
 Les accompagnements polyphoniques restent nettement plus difficiles que les solos. Ces valeurs ne doivent pas être interprétées comme de nouveaux gains.
 
-## Comparaison à S708 et S790
+## Comparaison à S708
 
 - **S790 SHADOW CAL32** : 85,1177 % F1 sur des masques à 1024 échantillons. Ce résultat est réel dans son protocole, mais ne fabrique pas des notes MIDI manquantes.
 - **S792 MIDI 256 CAL32** : 76,4626 % de Frame Pitch, parité exacte du flux S708, aucune amélioration après protection des cinq autres métriques.
 - Aucune promotion, aucune altération du modèle S708/S707 et aucune prétention de performance microphone.
 
-## Audits indépendants
+## Audits
 
 Source : [Run GitHub #39328341071](https://github.com/Andriamarosoa/note/actions/runs/39328341071). Les six audits ont rendu des artifacts distincts ; le consensus obligatoire est **SUCCESS**.
 
