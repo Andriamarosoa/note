@@ -1,11 +1,11 @@
 ---
 serie: S796
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s796-retrigger-forensics-no-extra-latency
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39342636819
+commit_sha: 7cdeb9c961408fe7963e8e1dabf814f88203940f
 promotion: false
 ---
 
@@ -13,7 +13,7 @@ promotion: false
 
 ## Exécution
 
-S795 : [run 39340511467](https://github.com/Andriamarosoa/note/actions/runs/39340511467) et artefact `S795_ACTIVEK_MULTIHEAD_REAL_MIDI256_FIT80_CAL32`. FIT80 + CAL32 parcourus, mais CAL refusé avant publication, car k_correct=78367 au lieu de 78366 dans le rapport signé. S796 exécute des tests et audits légers sans réentraîner les 80+32 fichiers.
+S795 : [run 39340511467](https://github.com/Andriamarosoa/note/actions/runs/39340511467) et artefact `S795_ACTIVEK_MULTIHEAD_REAL_MIDI256_FIT80_CAL32`. FIT80 + CAL32 parcourus, mais CAL refusé avant publication, car k_correct=78367 au lieu de 78366 dans le rapport signé. S796 a exécuté les tests et les six audits indépendants sans réentraîner les 80+32 fichiers : [run S796 #39342636819](https://github.com/Andriamarosoa/note/actions/runs/39342636819), commit scientifique `7cdeb9c961408fe7963e8e1dabf814f88203940f`. Tests et consensus terminés avec succès.
 
 ## Métriques
 
@@ -36,16 +36,16 @@ Le système S708/S707 de production reste strictement inchangé. Aucun gain S796
 
 | Rôle | Statut | Preuve |
 |---|---|---|
-| Données | UNKNOWN | Exécution S796 en attente |
-| Acoustique | UNKNOWN | Exécution S796 en attente |
-| Architecture | UNKNOWN | Exécution S796 en attente |
-| Apprentissage | UNKNOWN | Exécution S796 en attente |
-| Métriques | UNKNOWN | Exécution S796 en attente |
-| LIVE | UNKNOWN | Exécution S796 en attente |
+| Données | PASS | [Run S796 #39342636819](https://github.com/Andriamarosoa/note/actions/runs/39342636819), audit indépendant archivé |
+| Acoustique | PASS | [Run S796 #39342636819](https://github.com/Andriamarosoa/note/actions/runs/39342636819), audit indépendant archivé |
+| Architecture | PASS | [Run S796 #39342636819](https://github.com/Andriamarosoa/note/actions/runs/39342636819), audit indépendant archivé |
+| Apprentissage | PASS | [Run S796 #39342636819](https://github.com/Andriamarosoa/note/actions/runs/39342636819), audit indépendant archivé |
+| Métriques | PASS | [Run S796 #39342636819](https://github.com/Andriamarosoa/note/actions/runs/39342636819), audit indépendant archivé |
+| LIVE | PASS | [Run S796 #39342636819](https://github.com/Andriamarosoa/note/actions/runs/39342636819), audit indépendant archivé |
 
 ## Verdict
 
-Échec scientifique S795 confirmé ; correctif S796 seulement candidat d'ingénierie. La causalité du guard est testable, mais le benchmark réel du microphone et la latence additionnelle CPU ne sont pas mesurés. Aucune promotion vers LIVE, ni accès HELD/TEST.
+S796 terminé : six audits PASS et consensus PASS sur l'archive d'échec S795, test anti-réarmement et gardes S793 PASS. Échec scientifique S795 confirmé ; correctif S796 seulement candidat d'ingénierie. La causalité du guard est testable, mais le benchmark réel du microphone et la latence additionnelle CPU ne sont pas mesurés. Aucune promotion vers LIVE, ni accès HELD/TEST.
 
 ## Prochaine action
 

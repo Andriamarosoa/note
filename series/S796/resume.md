@@ -1,11 +1,11 @@
 ---
 serie: S796
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s796-retrigger-forensics-no-extra-latency
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39342636819
+commit_sha: 7cdeb9c961408fe7963e8e1dabf814f88203940f
 promotion: false
 ---
 
@@ -33,4 +33,4 @@ Données, acoustique, architecture, apprentissage, métriques, LIVE ; six exécu
 
 ## Statut
 
-En cours. Score S796 non mesuré, latence matérielle et coût CPU non mesurés ; aucune nouvelle promotion. Ne pas dupliquer le run d'entraînement S795 pour un audit logique.
+Terminé : tests unitaires, six audits et consensus PASS dans le [run S796 #39342636819](https://github.com/Andriamarosoa/note/actions/runs/39342636819). Score S796 non mesuré, latence matérielle et coût CPU non mesurés ; aucune nouvelle promotion. Ne pas dupliquer le run d'entraînement S795 pour un audit logique.
