@@ -159,7 +159,7 @@ def trace_weak_k_gate(post, frozen_k, decision_ends, policy, true_sustain):
                 (missing&h["weak"]).sum())
         flags["weak_eligible_any_nontruth_pitch"]+=int(
             (h["weak"]&~row).sum())
-    return dict(flags)
+    return dict(flags=dict(flags))
 
 
 def full_track_forensics(track):
