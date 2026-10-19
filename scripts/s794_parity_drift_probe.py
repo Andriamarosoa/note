@@ -14,7 +14,6 @@ import tempfile
 import zipfile
 import numpy as np
 import torch
-from threadpoolctl import threadpool_limits
 
 from causal_note.s708_cardinality_selection import GuidedPolicy
 from causal_note.strict_live import SR
@@ -77,18 +76,16 @@ def run(args):
             summaries=[]
             for iteration in (1,2):
                 rows=[]
-                with threadpool_limits(limits=2):
-                    for idx,spec in enumerate(specs):
-                        item,p,k,events,*_=baseline_input(spec,audio,root,
-                            heads,selection,offset,model,policy,choice["release"])
-                        # Labels after MIDI generated.
-                        truth=real_notes(labels(spec,root)["notes"],item["samples"]/SR)
-                        measured=metric(events,truth,item["ends"])
-                        rows.append(dict(name=spec["name"],sha=event_signature(events),
-                                         counts={k:int(measured[k]) for k in COUNTS},
-                                         metrics={k:float(measured[k]) for k in SCORES}))
-                        print(f"S794_PARITY_REPEAT_{iteration}",idx+1,"/32",spec["name"],flush=True)
-                aggregated=aggregate([dict(**r["counts"]) for r in []]) if False else None
+                for idx,spec in enumerate(specs):
+                    item,p,k,events,*_=baseline_input(spec,audio,root,
+                        heads,selection,offset,model,policy,choice["release"])
+                    # Labels after MIDI generated.
+                    truth=real_notes(labels(spec,root)["notes"],item["samples"]/SR)
+                    measured=metric(events,truth,item["ends"])
+                    rows.append(dict(name=spec["name"],sha=event_signature(events),
+                                     counts={k:int(measured[k]) for k in COUNTS},
+                                     metrics={k:float(measured[k]) for k in SCORES}))
+                    print(f"S794_PARITY_REPEAT_{iteration}",idx+1,"/32",spec["name"],flush=True)
                 # Aggregation requires the richer records; explicitly sum only
                 # count fields and verify official six metrics against the signed
                 # source by independently recomputing all metric formulas.
