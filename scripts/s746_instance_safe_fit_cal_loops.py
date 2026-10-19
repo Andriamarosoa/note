@@ -76,7 +76,9 @@ def emit_result(out, report):
     save(out / "report.json", report)
 
 
-def run(args):
+def run(args, *, proposal_builder=None, schema=None, proposal_metadata=None):
+    if proposal_builder is None:
+        proposal_builder = proposals
     if args.out.exists():
         raise FileExistsError("S746 requires an immutable fresh result folder")
     args.out.mkdir(parents=True)
@@ -95,14 +97,15 @@ def run(args):
     network = load_model(args.s708_dir / "s708_selected.pt")[0]
     h5 = load_s734(args.s734_checkpoint, sha)
     report = dict(
-        schema="S746_REAL_FIT80_EVENT_INSTANCE_SAFE_CAL32",
+        schema=schema or "S746_REAL_FIT80_EVENT_INSTANCE_SAFE_CAL32",
         signed_sha256=sha, split="FIT80 CAL32 composition-disjoint",
         complete=False, promoted=False, LIVE_changed=False,
         TEST_opened=False, selected="S708_frozen", loops=len(CHOICES),
         event_truth_used_at_inference=False,
         original_release_unchanged=True,
         FIT={}, CAL={}, CAL_candidate=None,
-        source_birth_policy=asdict(BIRTH),
+        source_birth_policy=proposal_metadata if proposal_metadata is not None else asdict(BIRTH),
+        proposal_generator=proposal_builder.__module__ + "." + proposal_builder.__name__,
         param_grid={name:dict(model=model, policy=asdict(gate))
                     for name,(model, gate) in CHOICES.items()})
     emit_result(args.out, report)
@@ -133,7 +136,7 @@ def run(args):
                 tr = track_sources(spec,audio,root,heads,selection,offset,
                                    network,policy,source["frozen_candidate"]
                                    ["choice"]["release"],h5)
-                pairs, feat, ids, diag = proposals(tr,policy,offset)
+                pairs, feat, ids, diag = proposal_builder(tr,policy,offset)
                 truth = real_notes(labels(spec,root)["notes"],
                                    tr["item"]["samples"] / SR)
                 baseline_pairs = event_score(tr["baseline"],truth)[1]
@@ -179,7 +182,17 @@ def run(args):
                                  network,policy,source["frozen_candidate"]
                                  ["choice"]["release"],h5)
                 item=tr["item"]
-                pairs,feat,indices,diag=proposals(tr,policy,offset)
+                original_source=tuple(
+                    (e["type"],int(e["pitch"]),int(e["decision_sample"]),
+                     int(e["available_sample"]),str(e["reason"]))
+                    for e in tr["baseline"])
+                pairs,feat,indices,diag=proposal_builder(tr,policy,offset)
+                after_proposal=tuple(
+                    (e["type"],int(e["pitch"]),int(e["decision_sample"]),
+                     int(e["available_sample"]),str(e["reason"]))
+                    for e in tr["baseline"])
+                if original_source!=after_proposal:
+                    raise AssertionError("S747 candidate generator mutated signed S708 event objects")
                 mask_hist.update(diag["masks"])
                 probabilities={
                     name:trained[name].predict_proba(feat)[:,1]
@@ -215,19 +228,31 @@ def run(args):
                       "best_activeK",round(max(measured[name]["active_exact_k"]
                                                for name in CHOICES),4),flush=True)
                 report["CAL_recordings_done"]=i+1
+                report.setdefault("source_per_recording",[]).append(dict(
+                    name=spec["name"],
+                    source_events=len(original_source),
+                    scores={k:float(base[k]) for k in SCORES},
+                    tp=int(base["tp"]),fp=int(base["fp"]),fn=int(base["fn"]),
+                    k_correct=int(base["k_correct"]),frames=int(base["frames"])))
                 emit_result(args.out,report)
             sums={name:aggregate(records)
                   for name,records in all_metrics.items()}
             base=sums["S708_frozen"]
-            for name in SCORES:
-                if abs(base[name]-source["frozen_candidate"]["CAL"][name])>1e-8:
-                    raise AssertionError("S746 drifted signed S708 metric: "+name)
+            original_signed=source["frozen_candidate"]["CAL"]
+            report["baseline_parity"]=dict(
+                original={name:float(original_signed[name]) for name in SCORES},
+                current={name:float(base[name]) for name in SCORES},
+                diff={name:float(base[name]-original_signed[name]) for name in SCORES},
+                valid=bool(all(abs(base[name]-original_signed[name])<=1e-8
+                               for name in SCORES)))
             report["reference_scores"]={name:float(base[name]) for name in SCORES}
+            emit_result(args.out,report)
             report["candidate_masks"]=dict(mask_hist)
             eligible=[]
             for name in CHOICES:
                 scores=sums[name]
-                passed=bool(all(scores[k]>=base[k]-1e-12 for k in SCORES)
+                passed=bool(report["baseline_parity"]["valid"]
+                    and all(scores[k]>=base[k]-1e-12 for k in SCORES)
                     and lost[name]["correct_offsets"]==0
                     and lost[name]["long_onsets"]==0
                     and lost[name]["onset_tp"]==0
@@ -247,8 +272,11 @@ def run(args):
                 eligible, key=lambda n:(min(report["CAL"][n]["scores"].values()),
                                         sum(report["CAL"][n]["delta"].values())),
                 default=None)
-            report["complete"]=True
+            report["complete"]=bool(report["baseline_parity"]["valid"])
             emit_result(args.out,report)
+            if not report["baseline_parity"]["valid"]:
+                raise AssertionError("S747 signed S708 metric mismatch; see "
+                                     "report.json baseline_parity and source_per_recording")
             print("S746 COMPLETE",json.dumps(dict(
                 selected=report["selected"],
                 candidate=report["CAL_candidate"],
