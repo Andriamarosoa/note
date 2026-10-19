@@ -1,0 +1,68 @@
+name: S793 mandatory zero additional latency promotion gate
+on:
+  push:
+    branches: [codex/note-s793-zero-added-latency-hard-gate]
+    paths:
+      - src/causal_note/s793_zero_added_latency.py
+      - scripts/s793_zero_added_latency_gate.py
+      - scripts/verify_series_reports.py
+      - test/test_s793_zero_added_latency.py
+      - test/test_s793_promotion_gate.py
+      - .github/workflows/note-s793-zero-added-latency.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  PYTHONPATH: .:src
+  GH_TOKEN: ${{ github.token }}
+  PYTHONUNBUFFERED: '1'
+jobs:
+  strict_latency_veto:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Strict unit tests including future model promotion verifier
+        run: |
+          python -m compileall -q src/causal_note/s793_zero_added_latency.py scripts/s793_zero_added_latency_gate.py scripts/verify_series_reports.py test/test_s793_zero_added_latency.py test/test_s793_promotion_gate.py
+          python -m unittest -v test.test_s793_zero_added_latency test.test_s793_promotion_gate test.test_verify_series_reports
+          python -m scripts.verify_series_reports --series S793
+      - name: Fetch frozen S792 real MIDI256 evidence (no retraining)
+        run: |
+          mkdir -p /tmp/s793/s792
+          gh run download 39328341071 --repo Andriamarosoa/note \
+            --name S792_REAL_CAUSAL_MIDI256_SIX_METRICS \
+            --dir /tmp/s793/s792
+          test -s /tmp/s793/s792/experiment/report.json
+      - name: Reject all latency-inducing S792 hold candidates
+        run: |
+          python -m scripts.s793_zero_added_latency_gate \
+            --s792-report /tmp/s793/s792/experiment/report.json \
+            --out /tmp/s793/historical_audit.json
+      - name: Fail closed if latency policy lies about physical LIVE measurements
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('/tmp/s793/historical_audit.json'))
+          assert x['zero_added_latency_policy']
+          assert x['accepted_hold_blocks']==0
+          assert x['rejected_hold_blocks']==[1,2,4]
+          assert not x['physical_microphone_latency_measured']
+          assert not x['production_promotion_allowed']
+          assert x['future_candidate_must_supply_repeated_paired_runtime_metrics']
+          print('S793_GATE_VERIFIED: no extra hold; hardware latency evidence required')
+          PY
+      - name: Archive verified policy test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S793_ZERO_EXTRA_LATENCY_VETO_EVIDENCE
+          path: /tmp/s793/historical_audit.json
+          retention-days: 45
+          if-no-files-found: warn

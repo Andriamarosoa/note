@@ -13,6 +13,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import json
 import os
 from pathlib import Path
 import re
@@ -134,6 +135,29 @@ def validate_series(root: Path, series: str, mode: str = "draft") -> dict[str, s
                 raise ValueError(f"S{n}: no final audit table row for {role}")
             if a["promotion"] == "true" and match.group(1) != "PASS":
                 raise ValueError(f"S{n}: promotion blocked by {role} audit")
+    # S793 global promotion veto: research may continue freely, but every
+    # future S794+ model promotion MUST supply raw provenance and repeated
+    # paired physical latency evidence. Never accept a precomputed boolean.
+    if n >= 794 and a["type"] == "experience" and a["promotion"] == "true":
+        from src.causal_note.s793_zero_added_latency import (
+            LatencyViolation, SchedulingContract, veto_promotion
+        )
+        proof = directory / "latency_evidence.json"
+        if not proof.is_file():
+            raise ValueError(f"S{n}: missing mandatory S793 hardware latency evidence")
+        try:
+            evidence = json.loads(proof.read_text(encoding="utf-8"))
+            veto_promotion(
+                contract=SchedulingContract(**evidence["scheduling"]),
+                reference=evidence["reference_events"],
+                candidate=evidence["candidate_events"],
+                baseline_runtime=evidence["baseline_runtime"],
+                candidate_runtime=evidence["candidate_runtime"],
+                baseline_metrics=evidence["baseline_metrics"],
+                candidate_metrics=evidence["candidate_metrics"],
+            )
+        except (ValueError, KeyError, TypeError, LatencyViolation) as exc:
+            raise ValueError(f"S{n}: S793 zero-added-latency promotion veto: {exc}") from exc
     return {"series": f"S{n}", "status": a["statut"],
             "type": a["type"], "promotion": a["promotion"],
             "mode": mode, "path": str(directory)}
