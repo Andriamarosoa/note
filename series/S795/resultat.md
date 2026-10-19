@@ -4,30 +4,47 @@ statut: en_cours
 type: experience
 reference: S708
 branche: codex/note-s795-activek-multihead-immediate-midi
-run_id: 39339203180
-commit_sha: eb2f0ecec7e3bba6ec598705a82a6108abdd97c0
+run_id: en_attente
+commit_sha: en_attente
 promotion: false
 ---
 
-# S795 — Rapport en cours
+# S795 — Résultats Active Exact-K MIDI256
 
 ## Exécution
-Run 39339203180, tentative 1, FAILURE, SHA eb2f0ecec7e3bba6ec598705a82a6108abdd97c0. Fichier resume.md manquant. Voir https://github.com/Andriamarosoa/note/actions/runs/39339203180. Aucun entraînement. GuitarSet FIT80 prévu, CAL32 diagnostic, HELD et TEST fermés.
+
+Cinq familles de spécialistes candidats, entraînement FIT80 et CAL32 figé ; résultats du nouveau modèle encore non mesurés. Aucun changement du système microphone.
 
 ## Métriques
-Onset F1 : non mesuré. Exact-K : non mesuré. Active Exact-K : non mesuré. Offset : non mesuré. Full Note F1 : non mesuré. Frame Pitch F1 : non mesuré.
+
+| Métrique officielle GuitarSet CAL32 | S708 | S795 |
+| --- | ---: | --- |
+| Onset F1 | 74,2639 % | non mesuré |
+| Exact-K | 62,0455 % | non mesuré |
+| Active Exact-K | 56,2762 % | non mesuré |
+| Offset accuracy | 77,3292 % | non mesuré |
+| Full Note F1 | 57,1319 % | non mesuré |
+| Frame Pitch F1 | 76,4626 % | non mesuré |
 
 ## Comparaison à S708
-Aucune nouvelle mesure. Baseline CAL32 S708 : Onset F1 74,2639 %, Exact-K 62,0455 %, Active Exact-K 56,2762 %, Offset 77,3292 %, Full Note F1 57,1319 %, Frame Pitch F1 76,4626 %. Aucun flux MIDI256 candidat produit.
+
+Aucun gain déclaré. La source doit être identique et chacune des cinq autres métriques non régressive. Un modèle sans mesure de latence physique appariée ne peut pas être promu, même si ses six métriques s'améliorent.
 
 ## Audits
-Données : UNKNOWN. Acoustique : UNKNOWN. Architecture : UNKNOWN. Apprentissage : UNKNOWN. Métriques : UNKNOWN. LIVE : UNKNOWN. Six audits non exécutés, consensus absent, promotion interdite.
 
-## Régressions
-Échec documentaire du premier run. Régressions musicales : non mesuré.
+| Rôle | Statut | Preuve |
+| --- | --- | --- |
+| Données | UNKNOWN | Run en attente |
+| Acoustique | UNKNOWN | Run en attente |
+| Architecture | UNKNOWN | Run en attente |
+| Apprentissage | UNKNOWN | Run en attente |
+| Métriques | UNKNOWN | Run en attente |
+| LIVE | UNKNOWN | Run en attente |
 
 ## Verdict
-En cours, non promu. Aucun gain vérifié.
+
+En cours, non promu. Cinq experts sont candidats : leur nombre retenu dépend des erreurs corrigées, pas d'un quota.
 
 ## Prochaine action
-Évaluer FIT hors composition puis MIDI256.
+
+Exécuter FIT80 cinq plis, choisir le sous-ensemble et évaluer les vrais événements MIDI sur CAL32, avec six audits et contrainte S793.
