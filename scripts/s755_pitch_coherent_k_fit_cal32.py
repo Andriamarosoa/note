@@ -129,8 +129,8 @@ def coherent_k_features(x,post,k,native):
     features=np.concatenate((
         original,aligned_p,aligned_n,harmonics,aligned_rise,
         np.stack(pairs,axis=-1)),axis=-1).astype(np.float32)
-    if features.shape!=(t,232) or not np.isfinite(features).all():
-        raise AssertionError("S755 pitch-coherent 232D K feature ABI mismatch")
+    if features.shape!=(t,240) or not np.isfinite(features).all():
+        raise AssertionError("S755 pitch-coherent 240D K feature ABI mismatch")
     return features
 
 
