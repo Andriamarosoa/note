@@ -83,6 +83,24 @@ class IndependentHeadsTests(unittest.TestCase):
         self.assertTrue(any(e["s747_head"]==5 for e in proposals))
         self.assertTrue(any(e["s747_head"]==1 for e in proposals))
 
+    def test_adjacent_heads_cannot_retrigger_same_pitch_immediately(self):
+        # Independent experts may alternate but the MIDI mux must not
+        # dispatch repeated NoteOn for a sustained pitch within 100ms.
+        self.heads[:,2,5]=.90
+        proposals,diag=self.read()
+        pitch_42=[e for e in proposals if e["pitch"]==42]
+        times=[e["decision_sample"] for e in pitch_42]
+        self.assertTrue(all(b-a >= .10*SR for a,b in zip(times,times[1:])))
+        self.assertGreater(diag["rejected_cross_head_restrike"],0)
+
+    def test_native_release_tail_is_not_a_fresh_attack(self):
+        self.reference=[event("note_on",42,1024),
+                        event("note_off",42,2048)]
+        proposed,diag=self.read()
+        self.assertTrue(all(e["decision_sample"]-2048 >= .07*SR
+                            for e in proposed))
+        self.assertGreater(diag["rejected_native_tail"],0)
+
     def test_invalid_schema_or_policy_fails_closed(self):
         with self.assertRaises(ValueError):
             self.read(k=np.zeros((6,6),np.float32))

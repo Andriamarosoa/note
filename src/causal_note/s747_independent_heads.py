@@ -26,12 +26,16 @@ class IsolatedBirthPolicy:
     refractory_seconds: float = .09
     max_per_fragment: int = 2
     mask_delta: float = .04
+    proposal_refractory_seconds: float = .10
+    native_release_guard_seconds: float = .07
 
     def validate(self):
         vals=(self.min_sustain,self.min_acoustic,self.min_gain,
               self.min_rise,self.min_tail,self.mask_delta)
         if any(not 0 <= x <= 1 for x in vals) or not (
                 .01 <= self.refractory_seconds <= 1.5
+                and .01 <= self.proposal_refractory_seconds <= 1.5
+                and 0 <= self.native_release_guard_seconds <= .5
                 and 1 <= self.max_per_fragment <= 6):
             raise ValueError("Invalid independent H1..H5 policy")
         return self
@@ -67,10 +71,13 @@ def isolated_onsets(ends, post, k, heads, context, reference, config=None):
     source_active=set()
     cursor=0
     last=np.full((5,49),-10**12,dtype=np.int64)
+    last_proposal=np.full(49,-10**12,dtype=np.int64)
+    last_native_release=np.full(49,-10**12,dtype=np.int64)
     previous=np.zeros((49,3),np.float32)
     result=[]
     diag=dict(mask_histogram={},per_head={},proposed=0,
-              rejected_source=0,rejected_k=0,rejected_acoustic=0)
+              rejected_source=0,rejected_k=0,rejected_acoustic=0,
+              rejected_cross_head_restrike=0,rejected_native_tail=0)
     choose=MultiHeadBirthPolicy(k_tail=c.min_tail,min_onset=c.min_acoustic,
         min_sustain=c.min_sustain,mask_delta=c.mask_delta,
         mask_strategy="adaptive",min_rise=c.min_rise).validate()
@@ -85,6 +92,8 @@ def isolated_onsets(ends, post, k, heads, context, reference, config=None):
                 source_active.add(pitch)
             elif e["type"]=="note_off":
                 source_active.discard(pitch)
+                if 40 <= pitch <= 88:
+                    last_native_release[pitch-40]=int(e["available_sample"])
             cursor+=1
         mask=select_fragment_subset(heads[t],post[t],context[t],choose)
         key=str(mask)
@@ -117,6 +126,15 @@ def isolated_onsets(ends, post, k, heads, context, reference, config=None):
                 if pitch in source_active:
                     diag["rejected_source"]+=1
                     continue
+                # Two independently trained heads may propose the SAME
+                # pitch on successive 23ms fragments. This is an output
+                # deduplication gate, NOT shared expert learning state.
+                if int(end)-last_proposal[ix] < c.proposal_refractory_seconds*SR:
+                    diag["rejected_cross_head_restrike"]+=1
+                    continue
+                if int(end)-last_native_release[ix] < c.native_release_guard_seconds*SR:
+                    diag["rejected_native_tail"]+=1
+                    continue
                 quality=float(heads[t,ix,head]*post[t,ix,1]*gain[ix])
                 proposals.append((quality,int(ix),head))
         if not proposals:
@@ -134,6 +152,7 @@ def isolated_onsets(ends, post, k, heads, context, reference, config=None):
                 break
             seen.add(ix)
             last[head-1,ix]=int(end)
+            last_proposal[ix]=int(end)
             # Per-head single proposal at fragment; all other experts
             # remain eligible at later acoustic observations.
             result.append(dict(type="note_on",pitch=ix+40,

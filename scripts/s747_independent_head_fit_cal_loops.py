@@ -42,7 +42,7 @@ def independent_proposals(track,policy,offset):
 
 def main():
     run(parse_args(),proposal_builder=independent_proposals,
-        schema="S747_INDEPENDENT_HEAD_STATES_FIT80_CAL32",
+        schema="S748_CROSS_HEAD_RESTRIKE_DEDUP_FIT80_CAL32",
         proposal_metadata=asdict(CONFIG))
 
 
