@@ -93,7 +93,7 @@ def replay_delayed_noteoffs(events,decision_ends,expert_mask,max_hold_blocks,sam
             now_mask=mask[frame]
             frame+=1
             for pitch,saved in list(pending.items()):
-                if not now_mask[pitch]:
+                if not now_mask[pitch-40]:
                     close(pitch,moment,"expert_off")
                 elif moment>=saved["deadline"]:
                     close(pitch,moment,"timeout")
@@ -168,9 +168,9 @@ def build_item(spec,archive,root,heads,selection,offset,network,policy,release):
     occupancy=targets(item["decision_ends"],truth)[0][:,:,1].astype(bool)
     return dict(name=spec["name"],composition=spec["composition"],
         texture=spec["name"].rsplit("_",1)[-1],
-        X=X.astype(np.float16),source=source,harm=harm.astype(np.float16),
+        X=X.astype(np.float32),source=source,harm=harm.astype(np.float16),
         sustain=sustain.astype(np.float16),
-        post=post.astype(np.float16),
+        post=post.astype(np.float32),
         truth=truth,occupancy=occupancy,
         events=events,decision_ends=item["decision_ends"],
         ends=item["ends"],samples=item["samples"])
@@ -261,9 +261,12 @@ def run(args):
             for i,spec in enumerate(fit_specs):
                 row=build_item(spec,audio,root,heads,selection,offset,
                                network,policy,choice["release"])
-                X=row["X"].astype(np.float32)
-                post=row["post"].astype(np.float32)
+                # Match S790: select training samples from original float32,
+                # BEFORE its float16 cache quantization for inference.
+                X=row["X"]; post=row["post"]
                 training_x,training_y=sample_training(X,row["occupancy"],post,790+i)
+                row["X"]=X.astype(np.float16)
+                row["post"]=post.astype(np.float16)
                 path=root/f"fit_{i:03d}.joblib"
                 joblib.dump(row,path,compress=0)
                 fitrows.append(dict(cache=path,train_x=training_x,
@@ -278,8 +281,25 @@ def run(args):
                 model=fit_specialist(fitrows,omit=comp)
                 for entry in (r for r in fitrows if r["composition"]==comp):
                     record=joblib.load(entry["cache"])
+                    # Compute pitch probabilities ONCE per recording, then
+                    # replay all four FIT policies on identical evidence.
+                    shadow=pair_from_cached(record,model)
+                    baseline=metric(record["events"],record["truth"],record["ends"])
+                    empty=dict((x,0) for x in
+                        ("held","extended","capacity","retrigger","timeout",
+                         "expert_off","eof"))
                     for hold in HOLD_BLOCKS:
-                        variants[hold].append(score_row(record,model,hold))
+                        if hold:
+                            emitted,changes=replay_delayed_noteoffs(
+                                record["events"],record["decision_ends"],
+                                shadow,hold,record["samples"])
+                            measured=metric(emitted,record["truth"],record["ends"])
+                        else:
+                            changes=dict(empty);measured=dict(baseline)
+                        variants[hold].append(dict(
+                            name=record["name"],composition=record["composition"],
+                            texture=record["texture"],baseline=dict(baseline),
+                            trial=measured,changes=changes))
                 print("S792_MIDI256_OOF_COMP",comp,flush=True)
             rows={}
             base=totals(variants[0],"baseline")
