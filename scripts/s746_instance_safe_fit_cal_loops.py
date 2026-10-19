@@ -76,9 +76,16 @@ def emit_result(out, report):
     save(out / "report.json", report)
 
 
-def run(args, *, proposal_builder=None, schema=None, proposal_metadata=None):
+def run(args, *, proposal_builder=None, schema=None, proposal_metadata=None,
+        choices_override=None, cal_variant_builder=None):
     if proposal_builder is None:
         proposal_builder = proposals
+    # S749 may combine distinct strictly causal supplemental Offset heads.
+    # FIT trains the onset-only admission model as before; each CAL variant
+    # must be rendered BEFORE any reference labels become available.
+    choices = CHOICES if choices_override is None else choices_override
+    if not choices or any(len(v) not in (2,3) for v in choices.values()):
+        raise ValueError("S749 invalid candidate configuration grid")
     if args.out.exists():
         raise FileExistsError("S746 requires an immutable fresh result folder")
     args.out.mkdir(parents=True)
@@ -100,14 +107,15 @@ def run(args, *, proposal_builder=None, schema=None, proposal_metadata=None):
         schema=schema or "S746_REAL_FIT80_EVENT_INSTANCE_SAFE_CAL32",
         signed_sha256=sha, split="FIT80 CAL32 composition-disjoint",
         complete=False, promoted=False, LIVE_changed=False,
-        TEST_opened=False, selected="S708_frozen", loops=len(CHOICES),
+        TEST_opened=False, selected="S708_frozen", loops=len(choices),
         event_truth_used_at_inference=False,
         original_release_unchanged=True,
         FIT={}, CAL={}, CAL_candidate=None,
         source_birth_policy=proposal_metadata if proposal_metadata is not None else asdict(BIRTH),
         proposal_generator=proposal_builder.__module__ + "." + proposal_builder.__name__,
-        param_grid={name:dict(model=model, policy=asdict(gate))
-                    for name,(model, gate) in CHOICES.items()})
+        param_grid={name:dict(model=cfg[0], policy=asdict(cfg[1]),
+                              offset_specialist=cfg[2] if len(cfg)==3 else "default")
+                    for name,cfg in choices.items()})
     emit_result(args.out, report)
     with tempfile.TemporaryDirectory() as temporary:
         root = Path(temporary)
@@ -172,10 +180,10 @@ def run(args, *, proposal_builder=None, schema=None, proposal_metadata=None):
                     features=X.shape[1], kind="complete_event_instance"),
                     args.out / f"s746_{name}.joblib")
                 trained[name]=model
-            names=["S708_frozen",*CHOICES]
+            names=["S708_frozen",*choices]
             all_metrics={name:[] for name in names}
-            lost={name:Counter() for name in CHOICES}
-            details={name:Counter() for name in CHOICES}
+            lost={name:Counter() for name in choices}
+            details={name:Counter() for name in choices}
             mask_hist=Counter()
             for i,spec in enumerate(groups["CAL"]):
                 tr=track_sources(spec,audio,root,heads,selection,offset,
@@ -186,23 +194,35 @@ def run(args, *, proposal_builder=None, schema=None, proposal_metadata=None):
                     (e["type"],int(e["pitch"]),int(e["decision_sample"]),
                      int(e["available_sample"]),str(e["reason"]))
                     for e in tr["baseline"])
-                pairs,feat,indices,diag=proposal_builder(tr,policy,offset)
+                if cal_variant_builder is None:
+                    variants={"default":proposal_builder(tr,policy,offset)}
+                else:
+                    variants=cal_variant_builder(tr,policy,offset)
+                if not variants or not all(
+                        len(group)==4 for group in variants.values()):
+                    raise AssertionError("S749 invalid independently rendered Offset variants")
                 after_proposal=tuple(
                     (e["type"],int(e["pitch"]),int(e["decision_sample"]),
                      int(e["available_sample"]),str(e["reason"]))
                     for e in tr["baseline"])
                 if original_source!=after_proposal:
                     raise AssertionError("S747 candidate generator mutated signed S708 event objects")
-                mask_hist.update(diag["masks"])
-                probabilities={
-                    name:trained[name].predict_proba(feat)[:,1]
-                    if len(feat) else np.empty(0,np.float32)
-                    for name in MODELS
-                }
+                mask_hist.update(next(iter(variants.values()))[3]["masks"])
+                # Frozen inference: only acoustic onset features and the
+                # selected release policy's causal MIDI endpoint, no labels.
+                probabilities={}
+                for variant,(pairs,feat,indices,diag) in variants.items():
+                    for family in MODELS:
+                        probabilities[family,variant]=(
+                            trained[family].predict_proba(feat)[:,1]
+                            if len(feat) else np.empty(0,np.float32))
                 events={"S708_frozen":tr["baseline"]}
-                for name,(family,gate) in CHOICES.items():
-                    stream, mux=merge_events(
-                        tr["baseline"],pairs,probabilities[family],
+                for name,cfg in choices.items():
+                    family,gate=cfg[:2]
+                    variant=cfg[2] if len(cfg)==3 else "default"
+                    pairs,feat,indices,diag=variants[variant]
+                    stream,mux=merge_events(
+                        tr["baseline"],pairs,probabilities[family,variant],
                         indices,tr["k"],gate)
                     events[name]=stream
                     details[name].update(mux)
@@ -214,7 +234,7 @@ def run(args, *, proposal_builder=None, schema=None, proposal_metadata=None):
                 base=measured["S708_frozen"]
                 for name in names:
                     all_metrics[name].append(measured[name])
-                for name in CHOICES:
+                for name in choices:
                     now=measured[name]
                     lost[name]["correct_offsets"]+=len(
                         set(base["correct_offset_truth_ids"])-
@@ -224,9 +244,9 @@ def run(args, *, proposal_builder=None, schema=None, proposal_metadata=None):
                         set(now["long_onset_truth_ids"]))
                     lost[name]["onset_tp"]+=max(0,base["tp"]-now["tp"])
                 print("S746 CAL",i+1,32,spec["name"],
-                      "extra",len(pairs),
+                      "extra_by_release",{key:len(group[0]) for key,group in variants.items()},
                       "best_activeK",round(max(measured[name]["active_exact_k"]
-                                               for name in CHOICES),4),flush=True)
+                                               for name in choices),4),flush=True)
                 report["CAL_recordings_done"]=i+1
                 report.setdefault("source_per_recording",[]).append(dict(
                     name=spec["name"],
@@ -249,7 +269,7 @@ def run(args, *, proposal_builder=None, schema=None, proposal_metadata=None):
             emit_result(args.out,report)
             report["candidate_masks"]=dict(mask_hist)
             eligible=[]
-            for name in CHOICES:
+            for name in choices:
                 scores=sums[name]
                 passed=bool(report["baseline_parity"]["valid"]
                     and all(scores[k]>=base[k]-1e-12 for k in SCORES)
@@ -282,7 +302,7 @@ def run(args, *, proposal_builder=None, schema=None, proposal_metadata=None):
                 candidate=report["CAL_candidate"],
                 baseline=report["reference_scores"],
                 best_activeK=max((name,report["CAL"][name]["scores"]["active_exact_k"])
-                                 for name in CHOICES),
+                                 for name in choices),
                 safe_candidates=eligible)),flush=True)
 
 
