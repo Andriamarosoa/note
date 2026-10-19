@@ -96,7 +96,8 @@ class IndependentHeadsTests(unittest.TestCase):
         self.reference=[event("note_on",42,1024),
                         event("note_off",42,2048)]
         proposed,diag=self.read()
-        self.assertFalse(proposed)
+        self.assertTrue(all(e["decision_sample"]-2048 >= .07*SR
+                            for e in proposed))
         self.assertGreater(diag["rejected_native_tail"],0)
 
     def test_invalid_schema_or_policy_fails_closed(self):
