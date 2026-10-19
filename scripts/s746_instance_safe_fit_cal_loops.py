@@ -182,7 +182,17 @@ def run(args, *, proposal_builder=None, schema=None, proposal_metadata=None):
                                  network,policy,source["frozen_candidate"]
                                  ["choice"]["release"],h5)
                 item=tr["item"]
+                original_source=tuple(
+                    (e["type"],int(e["pitch"]),int(e["decision_sample"]),
+                     int(e["available_sample"]),str(e["reason"]))
+                    for e in tr["baseline"])
                 pairs,feat,indices,diag=proposal_builder(tr,policy,offset)
+                after_proposal=tuple(
+                    (e["type"],int(e["pitch"]),int(e["decision_sample"]),
+                     int(e["available_sample"]),str(e["reason"]))
+                    for e in tr["baseline"])
+                if original_source!=after_proposal:
+                    raise AssertionError("S747 candidate generator mutated signed S708 event objects")
                 mask_hist.update(diag["masks"])
                 probabilities={
                     name:trained[name].predict_proba(feat)[:,1]
@@ -218,19 +228,31 @@ def run(args, *, proposal_builder=None, schema=None, proposal_metadata=None):
                       "best_activeK",round(max(measured[name]["active_exact_k"]
                                                for name in CHOICES),4),flush=True)
                 report["CAL_recordings_done"]=i+1
+                report.setdefault("source_per_recording",[]).append(dict(
+                    name=spec["name"],
+                    source_events=len(original_source),
+                    scores={k:float(base[k]) for k in SCORES},
+                    tp=int(base["tp"]),fp=int(base["fp"]),fn=int(base["fn"]),
+                    k_correct=int(base["k_correct"]),frames=int(base["frames"])))
                 emit_result(args.out,report)
             sums={name:aggregate(records)
                   for name,records in all_metrics.items()}
             base=sums["S708_frozen"]
-            for name in SCORES:
-                if abs(base[name]-source["frozen_candidate"]["CAL"][name])>1e-8:
-                    raise AssertionError("S746 drifted signed S708 metric: "+name)
+            original_signed=source["frozen_candidate"]["CAL"]
+            report["baseline_parity"]=dict(
+                original={name:float(original_signed[name]) for name in SCORES},
+                current={name:float(base[name]) for name in SCORES},
+                diff={name:float(base[name]-original_signed[name]) for name in SCORES},
+                valid=bool(all(abs(base[name]-original_signed[name])<=1e-8
+                               for name in SCORES)))
             report["reference_scores"]={name:float(base[name]) for name in SCORES}
+            emit_result(args.out,report)
             report["candidate_masks"]=dict(mask_hist)
             eligible=[]
             for name in CHOICES:
                 scores=sums[name]
-                passed=bool(all(scores[k]>=base[k]-1e-12 for k in SCORES)
+                passed=bool(report["baseline_parity"]["valid"]
+                    and all(scores[k]>=base[k]-1e-12 for k in SCORES)
                     and lost[name]["correct_offsets"]==0
                     and lost[name]["long_onsets"]==0
                     and lost[name]["onset_tp"]==0
@@ -250,8 +272,11 @@ def run(args, *, proposal_builder=None, schema=None, proposal_metadata=None):
                 eligible, key=lambda n:(min(report["CAL"][n]["scores"].values()),
                                         sum(report["CAL"][n]["delta"].values())),
                 default=None)
-            report["complete"]=True
+            report["complete"]=bool(report["baseline_parity"]["valid"])
             emit_result(args.out,report)
+            if not report["baseline_parity"]["valid"]:
+                raise AssertionError("S747 signed S708 metric mismatch; see "
+                                     "report.json baseline_parity and source_per_recording")
             print("S746 COMPLETE",json.dumps(dict(
                 selected=report["selected"],
                 candidate=report["CAL_candidate"],
