@@ -60,7 +60,7 @@ def source(args):
     a=json.loads((args.s782/"report.json").read_text())
     ensure(s["schema"]=="S708_K_GUIDED_S706_CAL_LOOPS","S708 source mismatch")
     ensure(o["schema"]=="S781_KTAIL_COMPOSITION_AND_TEXTURE_AUDIT","S781 mismatch")
-    ensure(a["schema"]=="S782_MISSED_ONSET_SPECTRAL_TAXONOMY","S782 mismatch")
+    ensure(a["schema"]=="S782_CAUSAL_MISSED_ONSET_DIAGNOSTIC_CAL32","S782 mismatch")
     ensure(s["checkpoint_sha256"]==__import__("hashlib").sha256(
         (args.s708/"s708_selected.pt").read_bytes()).hexdigest(),
         "S708 signed checkpoint SHA mismatch")
