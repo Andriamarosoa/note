@@ -1,0 +1,78 @@
+name: S742 Active Exact-K K1-K6 Root Cause Forensics (S708 frozen)
+on:
+  push:
+    branches: [codex/note-s742-active-exactk-causal-audit]
+    paths:
+      - src/causal_note/s741_exactk_sources.py
+      - scripts/s742_activek_forensics.py
+      - scripts/s742_run_activek_audit.py
+      - test/test_s742_activek_forensics.py
+      - .github/workflows/note-s742-activek-forensics.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: note-s742-cal32-k-active-audit
+  cancel-in-progress: true
+jobs:
+  forensic_cal32:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install the original S708 runtime
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Verify independent exact active-K and acoustic gate diagnostics
+        run: |
+          python -m compileall -q scripts/s742_activek_forensics.py scripts/s742_run_activek_audit.py
+          python -m unittest -v test.test_s714_s708_cardinality test.test_s741_exactk_sources test.test_s742_activek_forensics
+      - name: Fetch frozen source checkpoints (signed)
+        run: |
+          mkdir -p /tmp/s742/s708 /tmp/s742/s707 /tmp/s742/s734
+          gh run download 39094682419 --repo "Andriamarosoa/note" --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s742/s708
+          gh run download 39059008484 --repo "Andriamarosoa/note" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s742/s707
+          gh run download 39137653526 --repo "Andriamarosoa/note" --name S734_ONSET_INDIVIDUAL_NEURAL_EXACTK_LINKED_FIT_CAL_HELD_DEV --dir /tmp/s742/s734
+          test -s /tmp/s742/s708/report.json
+          test -s /tmp/s742/s708/s708_selected.pt
+          test -s /tmp/s742/s707/s675_hazard.joblib
+          test -s /tmp/s742/s734/report.json
+          test -s /tmp/s742/s734/s733_onset.pt
+      - name: Replay all 32 GuitarSet CAL tracks with S708 and analyze active MIDI K
+        run: |
+          python -m scripts.s742_run_activek_audit --s708-dir /tmp/s742/s708 --s734-checkpoint /tmp/s742/s734/s733_onset.pt --s734-report /tmp/s742/s734/report.json --offset-checkpoint /tmp/s742/s707/s675_hazard.joblib --out /tmp/s742/audit
+      - name: Verify exact replay, completion and no promotion
+        if: success()
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/s742/audit/report.json'))
+          assert r['completed'] and r['split']=='CAL32'
+          assert len(r['records'])==32 and r['research_only']
+          assert not r['promoted'] and not r['LIVE_changed'] and not r['TEST_opened']
+          assert abs(r['summary']['active_exact_k']-r['summary']['scores_replayed_exactly']['active_exact_k'])<1e-12
+          assert r['summary']['under_active']+r['summary']['over_active']+r['summary']['active_correct']==r['summary']['active_frames']
+          print('S742_VERIFIED',json.dumps({
+              'active_exact_k':r['summary']['active_exact_k'],
+              'under_active':r['summary']['under_active'],
+              'over_active':r['summary']['over_active'],
+              'by_true_k':r['summary']['by_true_k'],
+              'weak_onset_gate':r['summary']['weak_onset_gate']}))
+          PY
+      - name: Retain detailed forensic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S742_CAL32_S708_ACTIVE_K_K1_K6_CAUSAL_ROOT_CAUSES
+          path: /tmp/s742/audit/report.json
+          retention-days: 45
+          if-no-files-found: warn
