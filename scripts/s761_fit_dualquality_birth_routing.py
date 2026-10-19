@@ -193,7 +193,8 @@ def save(folder,report):
         json.dumps(report,sort_keys=True,indent=2)+"\n")
 
 def evaluate(args, *, score_variants_impl=score_variants, grid=GRID,
-             schema="S761_FIT80_DUAL_ONSET_COMPLETE_QUALITY_CAL32"):
+             schema="S761_FIT80_DUAL_ONSET_COMPLETE_QUALITY_CAL32",
+             parameter_info=None):
     if args.out.exists():
         raise FileExistsError("S761 requires a fresh immutable output folder")
     args.out.mkdir(parents=True)
@@ -224,10 +225,11 @@ def evaluate(args, *, score_variants_impl=score_variants, grid=GRID,
         original_release_unchanged=True,no_truth_at_inference=True,
         LIVE_changed=False,HELD_opened=False,TEST_opened=False,
         loops=len(grid),FIT_recordings_done=0,CAL_recordings_done=0,
-        parameter_grid={name:{"expert":FAMILIES[i],
-                               "threshold":threshold,
-                               "confirmation_blocks":CONFIRM_BLOCKS}
-                        for name,(i,threshold) in grid.items()},
+        parameter_grid=(parameter_info if parameter_info is not None else {
+            name:{"expert":FAMILIES[i],
+                  "threshold":threshold,
+                  "confirmation_blocks":CONFIRM_BLOCKS}
+            for name,(i,threshold) in grid.items()}),
         FIT={},CAL={},CAL_candidate=None,reference_parity=None)
     save(args.out,report)
     with tempfile.TemporaryDirectory() as tmp:
