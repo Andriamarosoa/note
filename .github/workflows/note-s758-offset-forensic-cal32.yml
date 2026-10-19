@@ -1,0 +1,83 @@
+name: S758 forensic audit of lost signed S708 Offset matches on real CAL32
+on:
+  push:
+    branches: [codex/note-s758-forensic-lost-offset-pair-audit]
+    paths:
+      - scripts/s758_forensic_offset_rematches.py
+      - test/test_s758_offset_forensic.py
+      - .github/workflows/note-s758-offset-forensic-cal32.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: note-s758-offset-forensic-cal32
+  cancel-in-progress: true
+jobs:
+  audit_exact_lost_source_offs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original signed runtime
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Unit tests including synthetic Hungarian Offset rematching
+        run: |
+          python -m compileall -q scripts/s758_forensic_offset_rematches.py
+          python -m unittest -v \
+            test.test_s758_offset_forensic \
+            test.test_s757_source_collision_guard \
+            test.test_s756_source_protected_mux \
+            test.test_s755_pitch_coherent_k \
+            test.test_s750_six_axis_audit
+      - name: Restore signed S708 S707 and FIT80 S755 checkpoints
+        run: |
+          mkdir -p /tmp/s758/s708 /tmp/s758/s707 /tmp/s758/models
+          gh run download 39094682419 --repo "Andriamarosoa/note" --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s758/s708
+          gh run download 39059008484 --repo "Andriamarosoa/note" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s758/s707
+          gh run download 39213327892 --repo "Andriamarosoa/note" --name S755_PITCH_COHERENT_RARE_K_FIT80_CAL32 --dir /tmp/s758/models
+          test -s /tmp/s758/s708/report.json
+          test -s /tmp/s758/s708/s708_selected.pt
+          test -s /tmp/s758/s707/s675_hazard.joblib
+          test -s /tmp/s758/models/s755_depth5_rare.joblib
+      - name: Reconstruct real S757 protected MIDI and explain lost Offsets by track
+        run: |
+          python -m scripts.s758_forensic_offset_rematches \
+            --s708-dir /tmp/s758/s708 \
+            --offset-checkpoint /tmp/s758/s707/s675_hazard.joblib \
+            --specialist-dir /tmp/s758/models \
+            --out /tmp/s758/output
+      - name: Verify six-metric signed S708 and chosen S757 full MIDI parity
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/s758/output/report.json').read_text())
+          assert r['complete'] and r['source_parity']['valid']
+          assert r['candidate_parity']['valid']
+          assert r['recordings_done']==32
+          assert not r['promoted'] and not r['HELD_opened'] and not r['TEST_opened']
+          assert not r['LIVE_changed'] and not r['trained_on_CAL']
+          print('S758_LOST_OFFSET_CASES_VERIFIED',json.dumps({
+            'count':len(r['lost_cases']),'causes':r['case_causes'],
+            'cases':r['lost_cases'],
+            'reference_scores':r['source_scores'],
+            'trial_scores':r['candidate_scores']}))
+          PY
+      - name: Publish detailed loss cases including on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S758_CAUSAL_S708_S757_THREE_OFFSET_LOSSES
+          path: /tmp/s758/output/report.json
+          retention-days: 45
+          if-no-files-found: warn
