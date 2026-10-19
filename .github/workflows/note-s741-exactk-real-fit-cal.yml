@@ -1,0 +1,75 @@
+name: S741 real FIT/CAL independent Exact-K 32-mask selection (no LIVE)
+on:
+  push:
+    branches: [codex/note-s740-six-domain-exactk-fragment-routers]
+    paths:
+      - src/causal_note/s741_exactk_sources.py
+      - scripts/s741_train_exactk_fragments.py
+      - test/test_s741_k_training.py
+      - .github/workflows/note-s741-exactk-real-fit-cal.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: note-s741-k-learning
+  cancel-in-progress: true
+jobs:
+  train_k0_k6_fragment_router:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install genuine real-audio runtime and CPU torch
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Assert K proposals, all K0-K6 masks, and FIT code are executable
+        run: |
+          python -m compileall -q src/causal_note/s741_exactk_sources.py scripts/s741_train_exactk_fragments.py
+          python -m unittest -q test.test_s741_exactk_sources test.test_s741_k_training
+      - name: Download signed S708 source, S734 H5 and S707 hazard
+        run: |
+          mkdir -p /tmp/s741/s708 /tmp/s741/s707 /tmp/s741/s734
+          gh run download 39094682419 --repo "Andriamarosoa/note" --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s741/s708
+          gh run download 39059008484 --repo "Andriamarosoa/note" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s741/s707
+          gh run download 39137653526 --repo "Andriamarosoa/note" --name S734_ONSET_INDIVIDUAL_NEURAL_EXACTK_LINKED_FIT_CAL_HELD_DEV --dir /tmp/s741/s734
+          test -s /tmp/s741/s708/report.json
+          test -s /tmp/s741/s708/s708_selected.pt
+          test -s /tmp/s741/s707/s675_hazard.joblib
+          test -s /tmp/s741/s734/report.json
+          test -s /tmp/s741/s734/s733_onset.pt
+      - name: Run K0-K6 FIT80 learning and real MIDI CAL32 scoring
+        run: |
+          python -m scripts.s741_train_exactk_fragments --s708-dir /tmp/s741/s708 --s734-checkpoint /tmp/s741/s734/s733_onset.pt --s734-report /tmp/s741/s734/report.json --offset-checkpoint /tmp/s741/s707/s675_hazard.joblib --out /tmp/s741/results
+      - name: Validate no regression and no automated promotion
+        if: success()
+        run: |
+          python - <<'PY'
+          import json
+          report=json.load(open('/tmp/s741/results/report.json'))
+          assert report['completed'] and report['target']=='exact_k'
+          assert len(report['CAL_rounds'])==18
+          assert not report['promoted'] and not report['TEST_opened'] and not report['LIVE_changed']
+          print('S741_REAL_K_RESULT',json.dumps({
+              'selected':report['selected'],
+              'all_six_gt80':report['achieved_all_six_gt80'],
+              'rounds':len(report['CAL_rounds'])}))
+          PY
+      - name: Retain real score report and safely selected checkpoints
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S741_K0_K6_FIT_CAL_FULL_MIDI_NO_LIVE
+          path: |
+            /tmp/s741/results/report.json
+            /tmp/s741/results/s741_*.pt
+          retention-days: 45
+          if-no-files-found: warn
