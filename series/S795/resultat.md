@@ -12,7 +12,7 @@ promotion: false
 # S795 — Rapport en cours
 
 ## Exécution
-Run 39339203180, tentative 1, FAILURE, SHA eb2f0ecec7e3bba6ec598705a82a6108abdd97c0. Fichier resume.md manquant. Aucun entraînement. GuitarSet FIT80 prévu, CAL32 diagnostic, HELD et TEST fermés.
+Run 39339203180, tentative 1, FAILURE, SHA eb2f0ecec7e3bba6ec598705a82a6108abdd97c0. Fichier resume.md manquant. Voir https://github.com/Andriamarosoa/note/actions/runs/39339203180. Aucun entraînement. GuitarSet FIT80 prévu, CAL32 diagnostic, HELD et TEST fermés.
 
 ## Métriques
 Onset F1 : non mesuré. Exact-K : non mesuré. Active Exact-K : non mesuré. Offset : non mesuré. Full Note F1 : non mesuré. Frame Pitch F1 : non mesuré.
@@ -23,8 +23,11 @@ Aucune nouvelle mesure. Baseline CAL32 S708 : Onset F1 74,2639 %, Exact-K 62,045
 ## Audits
 Données : UNKNOWN. Acoustique : UNKNOWN. Architecture : UNKNOWN. Apprentissage : UNKNOWN. Métriques : UNKNOWN. LIVE : UNKNOWN. Six audits non exécutés, consensus absent, promotion interdite.
 
+## Régressions
+Échec documentaire du premier run. Régressions musicales : non mesuré.
+
 ## Verdict
-Non promu.
+En cours, non promu. Aucun gain vérifié.
 
 ## Prochaine action
 Évaluer FIT hors composition puis MIDI256.
