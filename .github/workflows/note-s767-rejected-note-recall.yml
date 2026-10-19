@@ -1,0 +1,79 @@
+name: S767 genuine missed GuitarSet note recovery blocked by source-active filter
+on:
+  push:
+    branches: [codex/note-s767-rejected-note-recall-audit]
+    paths:
+      - scripts/s767_rejected_restrike_recall_audit.py
+      - test/test_s767_rejected_restrike_recall_audit.py
+      - .github/workflows/note-s767-rejected-note-recall.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: note-s767-restrike-source-filter
+  cancel-in-progress: true
+jobs:
+  forensic_recall_ceiling_of_real_blocked_notes:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install signed NOTE analysis environment
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Test on/off temporal causality, MIDI source and post-hoc label isolation
+        run: |
+          python -m compileall -q scripts/s767_rejected_restrike_recall_audit.py
+          python -m unittest -v \
+            test.test_s763_independent_decoders \
+            test.test_s765_fit_independent_arbiter \
+            test.test_s767_rejected_restrike_recall_audit
+      - name: Restore frozen S708/S707 signed checkpoints
+        run: |
+          mkdir -p /tmp/s767/s708 /tmp/s767/s707
+          gh run download 39094682419 --repo "Andriamarosoa/note" --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s767/s708
+          gh run download 39059008484 --repo "Andriamarosoa/note" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s767/s707
+          test -s /tmp/s767/s708/report.json
+          test -s /tmp/s767/s708/s708_selected.pt
+          test -s /tmp/s767/s707/s675_hazard.joblib
+      - name: Quantify whether source-active rejection hides true new attacks on CAL32
+        run: |
+          python -m scripts.s767_rejected_restrike_recall_audit \
+            --s708-dir /tmp/s767/s708 \
+            --offset-checkpoint /tmp/s767/s707/s675_hazard.joblib \
+            --out /tmp/s767/report
+      - name: Strict source parity and offline-only candidate coverage
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/s767/report/report.json').read_text())
+          assert r["schema"]=="S767_S765_FILTERED_MISSING_TRUTH_RECALL_CAL32"
+          assert r["complete"] and r["source_reference_parity"]["valid"]
+          assert r["CAL_recordings_done"]==32 and len(r["CAL"])==32
+          assert not r["promoted"] and not r["LIVE_changed"] and r["no_training"]
+          assert not r["HELD_opened"] and not r["TEST_opened"]
+          assert r["label_use"]=="OFFLINE_ONLY_POST_CAUSAL_EMISSION"
+          assert all(abs(x)<1e-8 for x in r["source_reference_parity"]["delta"].values())
+          n=r["summary"]["missing_truth"]
+          assert 0<=r["summary"]["recoverable_by_all_existing_proposals"]<=n
+          print("S767_BLOCKED_TRUE_MISSING_NOTE_RECALL",json.dumps({
+              "source":r["source"],"census":r["census"],"summary":r["summary"]}))
+          PY
+      - name: Upload immutable S767 diagnostic
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S767_REAL_CAL32_BLOCKED_MISSING_NOTES
+          path: /tmp/s767/report/report.json
+          retention-days: 45
+          if-no-files-found: warn
