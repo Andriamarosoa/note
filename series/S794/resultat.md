@@ -62,6 +62,14 @@ Total trames actives sous-comptées : **36 890** ; surcomptées : **6 939**. Les
 
 Une deuxième exécution de reproductibilité (CAL32 deux fois avec hachage de chaque flux MIDI) est lancée dans [run #39335625292](https://github.com/Andriamarosoa/note/actions/runs/39335625292). Ne pas masquer l'écart par une tolérance sur la parité.
 
+## Investigation indépendante de la reproductibilité
+
+- [Rejeu CAL32 deux fois #39335625292](https://github.com/Andriamarosoa/note/actions/runs/39335625292) : **SUCCESS**. Les **32/32 fichiers donnent des événements MIDI strictement identiques d'un rejeu à l'autre** (`0` enregistrement divergent). Les deux répétitions présentent exactement le même écart de **+1 `k_correct`** avec le rapport signé de S708. Le problème n'est donc pas une variation aléatoire **entre ces deux répétitions**.
+- [Comparaison ancienne voie S708 et wrapper moderne #39336494854](https://github.com/Andriamarosoa/note/actions/runs/39336494854) : **SUCCESS**. Les deux voies produisent les **mêmes événements sur 32/32 fichiers**. Toutes deux affichent les mêmes différences avec les compteurs signés, donc **le wrapper S733 n'est pas la cause**.
+- Le score officiel S708 reste celui qui figure dans le rapport original. Les micro-différences entre le rapport historique et sa reconstruction exacte ne peuvent ni être masquées par une tolérance de parité, ni être présentées comme une amélioration de l'Active Exact-K.
+- La divergence demeure **une question de reproductibilité inter-exécutions** (environnement numérique, calculs sensibles aux seuils ou autre facteur encore indéterminé). Aucun mécanisme précis n'a été démontré.
+- La chaîne S794 a été replacée sur les fonctions S708 d'origine, strictement inchangées, pour une provenance plus claire. Toute promotion reste bloquée par l'absence de parité stricte et de mesure matérielle LIVE.
+
 ## Verdict
 
 Analyse en cours. Aucune architecture multi-têtes promue, aucun changement du MIDI final ni de la latence.
