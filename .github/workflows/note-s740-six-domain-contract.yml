@@ -3,7 +3,7 @@ on:
   push:
     branches: [codex/note-s740-six-domain-exactk-fragment-routers]
     paths:
-      - src/causal_note/s740_multitarget_dynamic.py src/causal_note/s740_event_action_bridge.py
+      - src/causal_note/s740_multitarget_dynamic.py
       - src/causal_note/s740_event_action_bridge.py
       - test/test_s740_multitarget_dynamic.py
       - test/test_s740_event_action_bridge.py
@@ -28,7 +28,7 @@ jobs:
           python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
       - name: Compile exact architecture and all six adapters
         run: |
-          python -m compileall -q src/causal_note/s736_fragment_mask.py src/causal_note/s738_multitarget_routing_contract.py src/causal_note/s740_multitarget_dynamic.py
+          python -m compileall -q src/causal_note/s736_fragment_mask.py src/causal_note/s738_multitarget_routing_contract.py src/causal_note/s740_multitarget_dynamic.py src/causal_note/s740_event_action_bridge.py
       - name: Run original Exact-K port and independent S740 domain tests
         run: |
           python -m unittest -v test.test_s736_fragment_mask test.test_s738_multitarget_routing_contract test.test_s740_multitarget_dynamic test.test_s740_event_action_bridge
