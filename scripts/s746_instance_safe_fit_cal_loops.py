@@ -76,7 +76,9 @@ def emit_result(out, report):
     save(out / "report.json", report)
 
 
-def run(args):
+def run(args, *, proposal_builder=None, schema=None, proposal_metadata=None):
+    if proposal_builder is None:
+        proposal_builder = proposals
     if args.out.exists():
         raise FileExistsError("S746 requires an immutable fresh result folder")
     args.out.mkdir(parents=True)
@@ -95,14 +97,15 @@ def run(args):
     network = load_model(args.s708_dir / "s708_selected.pt")[0]
     h5 = load_s734(args.s734_checkpoint, sha)
     report = dict(
-        schema="S746_REAL_FIT80_EVENT_INSTANCE_SAFE_CAL32",
+        schema=schema or "S746_REAL_FIT80_EVENT_INSTANCE_SAFE_CAL32",
         signed_sha256=sha, split="FIT80 CAL32 composition-disjoint",
         complete=False, promoted=False, LIVE_changed=False,
         TEST_opened=False, selected="S708_frozen", loops=len(CHOICES),
         event_truth_used_at_inference=False,
         original_release_unchanged=True,
         FIT={}, CAL={}, CAL_candidate=None,
-        source_birth_policy=asdict(BIRTH),
+        source_birth_policy=proposal_metadata if proposal_metadata is not None else asdict(BIRTH),
+        proposal_generator=proposal_builder.__module__ + "." + proposal_builder.__name__,
         param_grid={name:dict(model=model, policy=asdict(gate))
                     for name,(model, gate) in CHOICES.items()})
     emit_result(args.out, report)
@@ -133,7 +136,7 @@ def run(args):
                 tr = track_sources(spec,audio,root,heads,selection,offset,
                                    network,policy,source["frozen_candidate"]
                                    ["choice"]["release"],h5)
-                pairs, feat, ids, diag = proposals(tr,policy,offset)
+                pairs, feat, ids, diag = proposal_builder(tr,policy,offset)
                 truth = real_notes(labels(spec,root)["notes"],
                                    tr["item"]["samples"] / SR)
                 baseline_pairs = event_score(tr["baseline"],truth)[1]
@@ -179,7 +182,7 @@ def run(args):
                                  network,policy,source["frozen_candidate"]
                                  ["choice"]["release"],h5)
                 item=tr["item"]
-                pairs,feat,indices,diag=proposals(tr,policy,offset)
+                pairs,feat,indices,diag=proposal_builder(tr,policy,offset)
                 mask_hist.update(diag["masks"])
                 probabilities={
                     name:trained[name].predict_proba(feat)[:,1]
