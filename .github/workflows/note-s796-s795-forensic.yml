@@ -1,0 +1,117 @@
+name: S796 forensic six audits no duplicate S795 training
+on:
+  push:
+    branches: [codex/note-s796-retrigger-forensics-no-extra-latency]
+    paths:
+      - src/causal_note/s795_activek_experts.py
+      - test/test_s795_activek_experts.py
+      - scripts/s796_s795_forensic.py
+      - series/S796/resume.md
+      - series/S796/resultat.md
+      - .github/workflows/note-s796-s795-forensic.yml
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+  actions: read
+env:
+  PYTHONPATH: .:src
+  GH_TOKEN: ${{ github.token }}
+  PYTHONUNBUFFERED: '1'
+jobs:
+  source_guard_tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install S795 pinned CPU runtime
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Prove S796 same-clock release guard and S793 causal timing
+        run: |
+          python -m compileall -q src/causal_note/s795_activek_experts.py scripts/s796_s795_forensic.py
+          python -m unittest -v test.test_s795_activek_experts test.test_s793_zero_added_latency
+          python -m scripts.verify_series_reports --series S796
+      - name: Reuse archived FIT80/CAL32, do not retrain
+        run: |
+          mkdir -p /tmp/s796/s795
+          gh run download 39340511467 --repo Andriamarosoa/note \
+            --name S795_ACTIVEK_MULTIHEAD_REAL_MIDI256_FIT80_CAL32 \
+            --dir /tmp/s796/s795
+          test -s /tmp/s796/s795/experiment/report.json
+          test -s /tmp/s796/s795/s708/report.json
+      - name: Preserve signed historical evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: S796_FROZEN_S795_FIT80
+          path: |
+            /tmp/s796/s795/experiment/report.json
+            /tmp/s796/s795/s708/report.json
+          retention-days: 45
+  six_audits:
+    needs: source_guard_tests
+    name: S796 independent ${{ matrix.role }} audit
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [data, acoustics, architecture, training, metrics, live]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          name: S796_FROZEN_S795_FIT80
+          path: /tmp/s796/s795
+      - name: Independent audit of S795 FIT failure
+        run: |
+          python -m scripts.s796_s795_forensic \
+            --role ${{ matrix.role }} \
+            --report /tmp/s796/s795/experiment/report.json \
+            --signed /tmp/s796/s795/s708/report.json \
+            --bank src/causal_note/s795_activek_experts.py \
+            --out /tmp/s796/audits/role_${{ matrix.role }}.json
+      - name: Retain independent verdict
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S796_AUDIT_${{ matrix.role }}
+          path: /tmp/s796/audits/role_${{ matrix.role }}.json
+          retention-days: 45
+          if-no-files-found: warn
+  consensus:
+    if: always()
+    needs: [source_guard_tests, six_audits]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: S796_AUDIT_*
+          path: /tmp/s796/audits
+          merge-multiple: true
+      - name: Require all six independent audit artifacts
+        run: |
+          python -m scripts.s787_audit_consensus \
+            --reports-dir /tmp/s796/audits \
+            --out /tmp/s796/consensus/report.json
+      - name: Preserve fail-closed consensus
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S796_SIX_AUDIT_CONSENSUS
+          path: |
+            /tmp/s796/audits/role_*.json
+            /tmp/s796/consensus/report.json
+          retention-days: 45
+          if-no-files-found: warn

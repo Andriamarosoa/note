@@ -165,6 +165,7 @@ def decode(original,decision_ends,X,probabilities,mask,cut,samples):
                 source.remove(pitch)
             out.append(e);at+=1
         if frame<len(ends) and t==int(ends[frame]):
+            closed_this_frame=set()
             alive=X[frame,:,1];released=X[frame,:,2]
             onset=X[frame,:,0]
             # All added notes stop at the first AVAILABLE evidence of end,
@@ -174,11 +175,12 @@ def decode(original,decision_ends,X,probabilities,mask,cut,samples):
                 if alive[ix]<.30 or released[ix]>.65:
                     out.append(midi("note_off",pitch,t,"s795_first_release_evidence"))
                     extra.remove(pitch);closed+=1
+                    closed_this_frame.add(pitch)
             if mask:
                 offers=[]
                 for ix in range(49):
                     pitch=ix+MIDI_MIN
-                    if pitch in source or pitch in extra:continue
+                    if pitch in source or pitch in extra or pitch in closed_this_frame:continue
                     chosen=[float(probabilities[name][frame,ix])
                         for h,name in enumerate(HEADS)
                         if mask&(1<<h) and eligibility[name][frame,ix]]

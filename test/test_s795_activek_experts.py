@@ -104,6 +104,22 @@ class S795IndependentCausalExpertTests(unittest.TestCase):
                             and e["available_sample"]==3072 for e in out))
         self.assertEqual(c["new_offsets"],c["new_onsets"])
 
+    def test_same_decision_release_does_not_rearm_synthetic_pitch(self):
+        d,X,original,P=self.fixture()
+        X[1,3,0]=.8
+        X[1,3,1]=.20
+        X[1,3,2]=.10
+        X[1,3,5]=.50
+        X[1,3,6]=.35
+        P["general"][1,3]=.99
+        out,c=decode(original,d,X,P,1,.93,3072)
+        artificial=[e for e in out if e.get(SOURCE_ID) is None and e["pitch"]==43]
+        self.assertEqual([(e["type"],e["available_sample"]) for e in artificial],
+                         [("note_on",1024),("note_off",2048)])
+        self.assertEqual(c["new_onsets"],1)
+        self.assertEqual(c["new_offsets"],1)
+        self.assertEqual(c["extra_lookahead_samples"],0)
+
     def test_training_uses_supervised_targets_only_in_fit_function(self):
         d,X,orig,P=self.fixture()
         y=onset_targets([dict(pitch=43,time=900/SR,duration=.3)],d,
