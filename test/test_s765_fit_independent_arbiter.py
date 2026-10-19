@@ -11,7 +11,7 @@ from scripts.s765_fit_independent_arbiter import (
 class ArbiterTests(unittest.TestCase):
     def fixture(self):
         ends,post,k,source,truth,native=demo()
-        item=dict(decision_ends=ends,x=np.zeros((len(ends),49,288),
+        item=dict(decision_ends=ends,samples=int(native[-1]),x=np.zeros((len(ends),49,288),
                                                  np.float32),
                   native_post=post.copy())
         ctx=np.zeros((len(ends),49,16),np.float32)
