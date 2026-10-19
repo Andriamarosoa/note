@@ -1,0 +1,39 @@
+name: S752 six-role adversarial causal MIDI and DSP audit
+on:
+  push:
+    branches: [codex/note-s752-six-role-integrity-audit]
+    paths:
+      - scripts/s748_six_axis_failure_audit.py
+      - test/test_s752_six_role_integrity.py
+      - .github/workflows/note-s752-six-role-integrity.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: note-s752-six-role-integrity
+  cancel-in-progress: true
+jobs:
+  six_role_adversarial_unit_tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original signed NOTE dependencies
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Compile, run six-role adversarial unit suite and previous guards
+        run: |
+          python -m compileall -q scripts/s748_six_axis_failure_audit.py test/test_s752_six_role_integrity.py
+          python -m unittest -v \
+            test.test_s752_six_role_integrity \
+            test.test_s750_six_axis_audit \
+            test.test_s746_instance_guard \
+            test.test_s747_independent_heads \
+            test.test_s743_fundamental_router
