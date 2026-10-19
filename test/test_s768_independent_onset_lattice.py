@@ -68,8 +68,9 @@ class OnsetLatticeTests(unittest.TestCase):
         score[0:4,14]=.95
         score[5,14]=.95
         notes=proposals(score,ends,source,.5)
-        self.assertEqual(len(notes),1)
+        self.assertEqual(len(notes),2)
         self.assertEqual(notes[0]["pitch"],54)
+        self.assertEqual(notes[1]["available_sample"],int(ends[5]))
         self.assertEqual(notes[0]["available_sample"],int(ends[0]))
         self.assertEqual(notes[0]["decision_sample"],int(ends[0]))
 
@@ -77,7 +78,7 @@ class OnsetLatticeTests(unittest.TestCase):
         item,p,k,source,ctx=setup()
         ends=item["decision_ends"]
         score=np.zeros((len(ends),49),np.float32)
-        score[3,0]=.99
+        score[2,0]=.99
         score[3,12]=.99
         before=[e.copy() for e in source]
         result=proposals(score,ends,source,.5)
