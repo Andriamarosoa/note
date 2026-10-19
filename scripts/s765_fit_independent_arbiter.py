@@ -42,7 +42,71 @@ DIM=40
 MIN_NATIVE_RECENT=.100
 FAMILIES=("onset","complete")
 
-def candidate_rows(item,post,k,source,shadow,ctx):
+def acoustic_birth_pairs(item, post, proposals, ctx):
+    """Independent H4/novelty + sustain candidate generator (strictly causal).
+
+    Unlike S763 FullNote it may propose a missing pitch even when the
+    original 0.75 onset decoder did not fire. Every closure is determined
+    later by received release/sustain state. Neither future offsets nor
+    annotations enter the proposal choice.
+    """
+    ends=np.asarray(item["decision_ends"],np.int64)
+    p=np.asarray(post,np.float32)
+    q=np.asarray(proposals,np.float32)
+    context=np.asarray(ctx,np.float32)
+    if (p.shape!=(len(ends),49,3) or q.shape!=(len(ends),49,5)
+        or context.shape!=(len(ends),49,16)):
+        raise ValueError("S765 acoustic candidate ABI mismatch")
+    active={}
+    last_open=np.full(49,-10**12,np.int64)
+    pairs=[]
+    opened=closed=0
+    for frame,now in enumerate(ends):
+        now=int(now)
+        # Local acoustic release, not another decoder's state.
+        for ix,(on,start) in list(active.items()):
+            age=now-int(on["available_sample"])
+            if age>=2*1024 and (
+                p[frame,ix,2]>=.8 or p[frame,ix,1]<.30
+                or age>=96*1024):
+                off=dict(type="note_off",pitch=ix+40,
+                    decision_sample=now,available_sample=now,
+                    time=now/SR,reason="s765_acoustic_causal_release",
+                    velocity=0)
+                pairs.append((on,off));del active[ix];closed+=1
+        for ix in range(49):
+            if ix in active or now-last_open[ix]<6*1024:
+                continue
+            on=float(p[frame,ix,0])
+            sustain=float(p[frame,ix,1])
+            novelty=float(context[frame,ix,4])
+            rise=float(context[frame,ix,8])
+            harmonics=float(context[frame,ix,7])
+            h4=float(q[frame,ix,4])
+            strong_h4=(h4>=.80 and on<.75 and novelty>.075
+                       and harmonics>=.25 and sustain>.45)
+            soft_novel=(on>.055 and sustain>.48 and novelty>.035
+                        and rise>.018 and harmonics>=.125)
+            if not (strong_h4 or soft_novel):
+                continue
+            # This is a proposal not a verified MIDI note.
+            active[ix]=dict(type="note_on",pitch=ix+40,
+                decision_sample=now,available_sample=now,
+                time=now/SR,reason="s765_independent_acoustic_birth",
+                velocity=96)
+            last_open[ix]=now;opened+=1
+    end=int(item["samples"])
+    for ix,(on,start) in sorted(active.items()):
+        off=dict(type="note_off",pitch=ix+40,
+            decision_sample=end,available_sample=end,
+            time=end/SR,reason="stream_end",velocity=0)
+        pairs.append((on,off))
+    return pairs,dict(acoustic_opened=opened,
+                      acoustic_closed=closed,
+                      acoustic_stream_end=len(active))
+
+
+def candidate_rows(item,post,k,source,shadow,ctx,proposals=None):
     """Causal 40D features of NEW FullNote proposals, all six heads used.
 
     Candidate future release data is opaque, never inspected. Source
@@ -64,9 +128,20 @@ def candidate_rows(item,post,k,source,shadow,ctx):
             for e in shadow["offset"]}
     source_sorted=sorted(enumerate(source),key=lambda x:(
         int(x[1]["available_sample"]),x[0]))
-    proposals=sorted(pairs_from_events(shadow["full"]),
-                     key=lambda row:(int(row[0]["available_sample"]),
-                                     int(row[0]["pitch"])))
+    paired=pairs_from_events(shadow["full"])
+    acoustic_info={}
+    if proposals is not None:
+        extra,acoustic_info=acoustic_birth_pairs(item,p,proposals,ctx)
+        paired.extend(extra)
+    deduplicated={}
+    for on,off in paired:
+        key=(int(on["available_sample"]),int(on["pitch"]))
+        if key not in deduplicated or on["reason"]=="s765_independent_acoustic_birth":
+            deduplicated[key]=(on,off)
+    original_proposed=len(paired)
+    proposed=sorted(deduplicated.values(),
+                    key=lambda row:(int(row[0]["available_sample"]),
+                                    int(row[0]["pitch"])))
     active=set()
     laston=np.full(49,-10**12,dtype=np.int64)
     pos=0
@@ -128,7 +203,9 @@ def candidate_rows(item,post,k,source,shadow,ctx):
         indices.append((frame,ix))
         pairs.append((on,off))
     X=np.stack(features) if features else np.empty((0,DIM),np.float32)
-    return pairs,X,indices,dict(excluded,proposed=len(proposals),eligible=len(pairs))
+    return pairs,X,indices,dict(excluded,proposed=original_proposed,
+                                  unique=len(proposed),eligible=len(pairs),
+                                  **acoustic_info)
 
 def train_one(X,y):
     if not len(X) or len(np.unique(y))<2:
@@ -186,11 +263,12 @@ def grouped_quality(X,y_on,y_complete,groups):
                        thresholds=stats)
 
 def collect(spec,archive,root,heads,selection,offset,network,policy,release):
-    item,post,k,source,_,ctx,_=baseline_input(
+    item,post,k,source,acoustic,ctx,_=baseline_input(
         spec,archive,root,heads,selection,offset,network,policy,release)
     # SIX heads completed before reading any annotations.
     shadow=replay_six(item["decision_ends"],post,k,source,item["samples"])
-    pairs,X,indices,census=candidate_rows(item,post,k,source,shadow,ctx)
+    pairs,X,indices,census=candidate_rows(
+        item,post,k,source,shadow,ctx,proposals=acoustic)
     return item,source,k,pairs,X,indices,census
 
 def emit_trial(source,pairs,features,indices,k,heads,risk):
