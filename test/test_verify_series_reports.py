@@ -17,6 +17,17 @@ class MandatorySeriesReportsTests(unittest.TestCase):
         root=Path(ctx.name)
         (root/"series").mkdir()
         shutil.copytree(SOURCE,root/"series"/"S788")
+        # Tests use a synthetic DRAFT fixture even after the committed S788
+        # series itself has moved to a verified, completed state.
+        for name in ("resume.md", "resultat.md"):
+            path = root / "series" / "S788" / name
+            txt = path.read_text(encoding="utf-8")
+            txt = txt.replace("statut: termine", "statut: en_cours", 1)
+            txt = txt.replace("run_id: 39272602006", "run_id: en_attente", 1)
+            txt = txt.replace(
+                "commit_sha: 6dc47ac5056458a86f5ecab9a981bc7ed8603bba",
+                "commit_sha: en_attente", 1)
+            path.write_text(txt, encoding="utf-8")
         return root
 
     def replace(self,root,name,a,b):
