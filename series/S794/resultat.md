@@ -43,6 +43,25 @@ S794 ne modifie aucun événement source. Le rapport scientifique doit démontre
 | Métriques | UNKNOWN | En attente |
 | LIVE | UNKNOWN | En attente |
 
+## Incident de reproductibilité — Run #39333999180
+
+Le calcul scientifique a traité **80/80 FIT et 32/32 CAL**, mais le garde-fou de signature S708 a refusé la comparaison. GitHub [run #39333999180](https://github.com/Andriamarosoa/note/actions/runs/39333999180) : `failure`, causée précisément par `k_correct=78367` contre `78366` signé. Les autres petites différences comptables sont `active_k_correct: 56414 vs 56413`, `frame_pitch_tp: 140540 vs 140541`, `frame_pitch_fp: 22501 vs 22504`, `frame_pitch_fn: 64022 vs 64021`. Aucun changement au modèle LIVE n'est à l'origine de cet échec, mais la **parité stricte n'est pas établie**. Onset et Offset sont inchangés. Ces données demeurent diagnostiques et ne peuvent autoriser aucune promotion.
+
+L'audit a néanmoins calculé sur CAL32 les erreurs suivantes, sur les événements émis :
+
+| Nombre réel de voix | Trames | K correct | Sous-comptages | Surcomptages |
+| --- | ---: | ---: | ---: | ---: |
+| K1 | 52 950 | 41 379 | 8 450 | 3 121 |
+| K2 | 14 903 | 5 318 | 8 165 | 1 420 |
+| K3 | 11 880 | 3 909 | 6 380 | 1 591 |
+| K4 | 16 773 | 5 480 | 10 572 | 721 |
+| K5 | 2 971 | 279 | 2 606 | 86 |
+| K6+ | 766 | 49 | 717 | 0 |
+
+Total trames actives sous-comptées : **36 890** ; surcomptées : **6 939**. Les fréquences élevées de sous-comptage ne constituent pas de nouveaux scores de modèle : elles motivent la recherche de spécialistes de voix manquantes.
+
+Une deuxième exécution de reproductibilité (CAL32 deux fois avec hachage de chaque flux MIDI) est lancée dans [run #39335625292](https://github.com/Andriamarosoa/note/actions/runs/39335625292). Ne pas masquer l'écart par une tolérance sur la parité.
+
 ## Verdict
 
 Analyse en cours. Aucune architecture multi-têtes promue, aucun changement du MIDI final ni de la latence.
