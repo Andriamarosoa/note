@@ -25,7 +25,10 @@ from scripts.s704_joint_metrics import SCORES,aggregate,metric
 from scripts.s705_train_temporal_loops import setup
 from scripts.s706_train_sharp_temporal_loops import (
     FIT_COMPS,CAL_COMPS,load_model)
-from scripts.s733_train_onset_only import baseline_input
+from causal_note.s707_causal_release import prepare_hazards,render_release
+from scripts.s708_count_guided_joint_loops import (
+    source as s708_source, evaluate_policy as s708_decode
+)
 from scripts.s794_activek_failure_taxonomy import diagnostic,summarize
 
 SCHEMA="S794_ZERO_DELAY_REAL_MIDI256_ACTIVEK_ROOTCAUSE"
@@ -34,8 +37,17 @@ def save(path,report):
     path.write_text(json.dumps(report,indent=2,sort_keys=True)+"\n")
 
 def scan(spec,archive,root,heads,selection,offset,network,policy,release):
-    item,post,k,events,*_=baseline_input(
-        spec,archive,root,heads,selection,offset,network,policy,release)
+    # Use the ORIGINAL bitwise-unchanged S708 source+decode functions,
+    # instead of reconstructing its audio/decision path in a newer wrapper.
+    # At no point is future audio or an annotation used for MIDI inference.
+    model_name="s708_selected.pt"
+    item=s708_source(spec,archive,heads,selection,offset,
+                     {model_name:network},706)
+    p,k=item["predictions"][model_name]
+    post=policy.blend*p+(1-policy.blend)*item["native_post"]
+    native=s708_decode(item,model_name,policy)
+    events,_=render_release(prepare_hazards(item,native,offset),
+                            item["ends"],item["samples"],**release)
     # No GT labels until AFTER the full original MIDI has been generated.
     truth=real_notes(labels(spec,root)["notes"],item["samples"]/SR)
     measured=metric(events,truth,item["ends"])
