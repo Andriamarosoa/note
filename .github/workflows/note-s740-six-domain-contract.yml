@@ -5,8 +5,10 @@ on:
     paths:
       - src/causal_note/s740_multitarget_dynamic.py
       - src/causal_note/s740_event_action_bridge.py
+      - src/causal_note/s741_exactk_sources.py
       - test/test_s740_multitarget_dynamic.py
       - test/test_s740_event_action_bridge.py
+      - test/test_s741_exactk_sources.py
       - .github/workflows/note-s740-six-domain-contract.yml
   workflow_dispatch:
 permissions: {contents: read}
@@ -28,10 +30,10 @@ jobs:
           python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
       - name: Compile exact architecture and all six adapters
         run: |
-          python -m compileall -q src/causal_note/s736_fragment_mask.py src/causal_note/s738_multitarget_routing_contract.py src/causal_note/s740_multitarget_dynamic.py src/causal_note/s740_event_action_bridge.py
+          python -m compileall -q src/causal_note/s736_fragment_mask.py src/causal_note/s738_multitarget_routing_contract.py src/causal_note/s740_multitarget_dynamic.py src/causal_note/s740_event_action_bridge.py src/causal_note/s741_exactk_sources.py
       - name: Run original Exact-K port and independent S740 domain tests
         run: |
-          python -m unittest -v test.test_s736_fragment_mask test.test_s738_multitarget_routing_contract test.test_s740_multitarget_dynamic test.test_s740_event_action_bridge
+          python -m unittest -v test.test_s736_fragment_mask test.test_s738_multitarget_routing_contract test.test_s740_multitarget_dynamic test.test_s740_event_action_bridge test.test_s741_exactk_sources
       - name: Verify shadow-only and no published 80-percent claims
         run: |
           python - <<'PY'
