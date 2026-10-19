@@ -70,7 +70,7 @@ def acoustic_audit(r,s,src,tree,args):
           and "targets" not in terms and "y" not in terms,
           "annotations leaked into acoustic extractor")
     check({"spectrum","parents","harmonic","sustain","old","old2",
-           "source"}.issubset(terms)|{"active"}, "not all causal acoustic components present")
+           "source","active"}.issubset(terms), "not all causal acoustic components present")
     check("INTERVALS=(12,19,24,28,31)" in src,
           "E2 harmonic neighbors changed")
     check(r["feature_dimension"]==40,"feature ABI mismatch")
