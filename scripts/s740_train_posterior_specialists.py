@@ -59,7 +59,7 @@ def one_track(spec, audio, root, heads, selection, offset, network,
         base, offers, eligible, novelty=context[:, :, 4])
     return dict(item=item, post=post, k=k, baseline=baseline, base=base,
                 head=offers, eligible=eligible, features=feat,
-                descriptors=descriptors)
+                descriptors=descriptors, context=context)
 
 
 def supervision(track, truth, seed, target):
