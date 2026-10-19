@@ -15,7 +15,11 @@ promotion: false
 
 Évaluer **sur le véritable flux de notes MIDI NoteOn/NoteOff** si le gain Frame Pitch SHADOW S790 (85,12 % sur CAL32 à horloge 1024) peut être transféré dans la mesure officielle `scripts.s704_joint_metrics.metric` à horloge 256, sans perte d'Onset, Exact-K, Active Exact-K, Offset ni Full Note.
 
-## Architecture testée
+## Hypothèse
+
+Le gain SHADOW S790 peut améliorer l'occupation des notes lorsque le décodeur officiel coupe certaines durées trop tôt ; cependant, une prolongation naïve peut produire une fin de note incorrecte et dégrader Full Note. Cette expérience doit tester et, si nécessaire, réfuter cette hypothèse sur de vrais événements MIDI.
+
+## Modifications
 
 - Référence S708 immuable, modèle S707 immuable.
 - Tête S790 indépendante, entraînée sur GuitarSet FIT80, politique de tête gelée `cut0.45_harm0.00`.
@@ -23,6 +27,10 @@ promotion: false
 - Retenue accordée seulement si la tête S790 indique que la hauteur est encore active au moment du NoteOff ; sortie retardée jusqu'à extinction de la preuve, nouveau NoteOn de la même hauteur, limite des six voix, échéance ou EOF.
 - Mesure commune des six axes sur les événements MIDI effectivement émis ; vérification des comptes et scores de la référence signée S708.
 - Sélection d'une durée sur **FIT80 uniquement**, validation hors composition en cinq plis, garde contre chaque régression. CAL32 appliqué après gel du choix ; HELD/TEST jamais ouverts.
+
+## Protocole
+
+FIT80 GuitarSet par cinq plis de compositions disjointes pour entraîner et choisir une politique. CAL32 réservé exclusivement au test du modèle déjà sélectionné. La source S708/S707 signée est vérifiée et le flux de notes est mesuré sur la grille officielle 256 échantillons, sans ouvrir HELD ni TEST.
 
 ## Exécutions
 
@@ -36,7 +44,7 @@ Le meilleur Frame Pitch FIT isolément vient de la rétention de quatre blocs (8
 
 Le replay CAL32 reproduit exactement **les six scores S708** (Onset 74,2639 %, Exact-K 62,0455 %, Active Exact-K 56,2762 %, Offset 77,3292 %, Full Note 57,1319 %, Frame Pitch 76,4626 %). **Aucun nouveau score officiel au-delà de 80 %.** Aucun modèle ni pipeline LIVE n'a été promu.
 
-## Six audits réalisés
+## Audits obligatoires
 
 - Données : 80 FIT, 32 CAL, séparation compositions, SHA S708.
 - Acoustique : tête S790 gelée, observations contemporaines ou passées, sans oracle.
@@ -44,6 +52,10 @@ Le replay CAL32 reproduit exactement **les six scores S708** (Onset 74,2639 %, E
 - Apprentissage : quatre politiques et choix sur cinq plis FIT seulement.
 - Métriques : recomptage des six métriques S704 et parité signée exacte.
 - LIVE : pipeline production inchangé ; validation sur replay causal, pas mesure de latence microphone.
+
+## Statut
+
+**Terminé, six audits PASS, consensus PASS et aucune promotion.** Les prolongations de notes expérimentales ont été rejetées sur FIT pour régression des fins de notes. La référence MIDI reste S708.
 
 ## Verdict
 
