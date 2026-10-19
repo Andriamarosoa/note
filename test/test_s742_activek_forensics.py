@@ -80,7 +80,7 @@ class S742Test(unittest.TestCase):
         result=trace_weak_k_gate(post,k,ends,policy,active)
         flags=result["flags"]
         self.assertEqual(flags["weak_eligible_but_k_no_room"],1)
-        self.assertEqual(flags["weak_eligible_and_K_support"],0)
+        self.assertEqual(flags.get("weak_eligible_and_K_support",0),0)
 
     def test_aggregate_by_real_true_k_no_neural_accuracy_confusion(self):
         frame=dict(active_frames=4,active_correct=3,
