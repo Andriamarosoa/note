@@ -10,7 +10,7 @@ from causal_note.strict_live import SR
 from scripts.s613_train_strict_live import event_score
 from scripts.s704_joint_metrics import metric
 
-REGISTERS = (("low_E2_C3",40,52),("middle_Csharp3_A4",53,69),
+REGISTERS = (("low_E2_E3",40,52),("middle_F3_A4",53,69),
              ("high_Asharp4_E6",70,88))
 
 
