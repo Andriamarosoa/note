@@ -1,0 +1,84 @@
+name: S753 K-head vs MIDI decoder causal K2–K6 CAL32 audit
+on:
+  push:
+    branches: [codex/note-s753-khead-vs-decoder-causal-audit]
+    paths:
+      - scripts/s753_khead_decoder_anatomy.py
+      - test/test_s753_khead_decoder_anatomy.py
+      - scripts/s750_six_axis_cal32_audit.py
+      - scripts/s748_six_axis_failure_audit.py
+      - test/test_s750_six_axis_audit.py
+      - .github/workflows/note-s753-khead-vs-decoder-cal32.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: note-s753-khead-decoder-cal32
+  cancel-in-progress: true
+jobs:
+  audit_guitarset_s708_six_metrics_and_true_K:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install signed NOTE runtime
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Verify signed metrics, K2–K7 head/decoder partition and causal future invariance
+        run: |
+          python -m compileall -q scripts/s753_khead_decoder_anatomy.py scripts/s750_six_axis_cal32_audit.py scripts/s748_six_axis_failure_audit.py
+          python -m unittest -v test.test_s753_khead_decoder_anatomy test.test_s752_six_role_integrity test.test_s750_six_axis_audit test.test_s746_instance_guard
+      - name: Restore signed S708 and original S707 hazard
+        run: |
+          mkdir -p /tmp/s750/s708 /tmp/s750/s707
+          gh run download 39094682419 --repo "Andriamarosoa/note" --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s750/s708
+          gh run download 39059008484 --repo "Andriamarosoa/note" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s750/s707
+          test -s /tmp/s750/s708/report.json
+          test -s /tmp/s750/s708/s708_selected.pt
+          test -s /tmp/s750/s707/s675_hazard.joblib
+      - name: Audit real CAL32 K-head versus decoded polyphonic undercount by class
+        run: |
+          python -m scripts.s753_khead_decoder_anatomy \
+            --s708-dir /tmp/s750/s708 \
+            --offset-checkpoint /tmp/s750/s707/s675_hazard.joblib \
+            --out /tmp/s750/output
+      - name: Confirm S708 six-axis parity and true-K audit
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/s750/output/report.json').read_text())
+          assert r['complete'] and r['reference_parity']['valid']
+          assert len(r['recordings'])==32
+          assert r['schema']=='S753_CAUSAL_KHEAD_VS_EMITTED_DECODER_GUITARSET_CAL32'
+          assert r['khead_vs_decoder']['tracks']==32
+          assert r['khead_vs_decoder']['diagnostic_only']
+          for group in r['khead_vs_decoder']['per_true_k'].values():
+              assert group['emitted_k_under']==group['both_under']+group['head_enough_but_midi_under']
+          assert not r['training'] and not r['promoted']
+          assert not r['LIVE_changed'] and not r['TEST_opened'] and not r['HELD_opened']
+          assert sum(v['true_frames'] for v in r['per_true_k'].values())>0
+          assert len(r['true_k0_k6_confusion'])==7
+          print('S753_KHEAD_DECODER_VALIDATED',json.dumps({
+              'decoder_anatomy':r['khead_vs_decoder'],
+              'scores':r['metrics'],'K0_K6':r['per_true_k'],
+              'register':r['register'],'harmonics':r['harmonic_false_alarm_near_miss'],
+              'totals':r['totals']}))
+          PY
+      - name: Always publish root-cause audit, even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S753_KHEAD_DECODER_REAL_CAL32_ROOTCAUSE
+          path: /tmp/s750/output/report.json
+          retention-days: 45
+          if-no-files-found: warn
