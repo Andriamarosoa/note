@@ -18,7 +18,7 @@ Run 39339203180, tentative 1, FAILURE, SHA eb2f0ecec7e3bba6ec598705a82a6108abdd9
 Onset F1 : non mesuré. Exact-K : non mesuré. Active Exact-K : non mesuré. Offset : non mesuré. Full Note F1 : non mesuré. Frame Pitch F1 : non mesuré.
 
 ## Comparaison à S708
-Aucune nouvelle mesure.
+Aucune nouvelle mesure. Baseline CAL32 S708 : Onset F1 74,2639 %, Exact-K 62,0455 %, Active Exact-K 56,2762 %, Offset 77,3292 %, Full Note F1 57,1319 %, Frame Pitch F1 76,4626 %. Aucun flux MIDI256 candidat produit.
 
 ## Audits
 Données : UNKNOWN. Acoustique : UNKNOWN. Architecture : UNKNOWN. Apprentissage : UNKNOWN. Métriques : UNKNOWN. LIVE : UNKNOWN. Six audits non exécutés, consensus absent, promotion interdite.
