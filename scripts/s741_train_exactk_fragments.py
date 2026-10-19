@@ -134,7 +134,7 @@ def train_one(seed,examples,audits,mean,std,callback):
                 out=model(x,d,a,k,compat)
                 loss_each=F.cross_entropy(
                     out["action_logits"],target,reduction="none")
-                w=torch.where(target!=0,boost,1.)
+                w=torch.where(target!=0,torch.full_like(loss_each,boost),torch.ones_like(loss_each))
                 main=(loss_each*w).sum()/w.sum().clamp_min(1.)
                 auxiliary=F.binary_cross_entropy(
                     torch.stack([out["p_correction"],out["p_regression"]],-1),
