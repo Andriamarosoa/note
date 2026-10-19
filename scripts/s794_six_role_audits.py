@@ -130,6 +130,10 @@ def live(r,s,args):
         "scripts/s794_six_role_audits.py",
         "test/test_s794_activek_failure_taxonomy.py",
         ".github/workflows/note-s794-activek-forensics.yml",
+        "scripts/s794_parity_drift_probe.py",
+        ".github/workflows/note-s794-parity-probe.yml",
+        "scripts/s794_source_path_parity.py",
+        ".github/workflows/note-s794-source-path-parity.yml",
     }
     changes=set(filter(None,(x.strip() for x in args.changed.read_text().splitlines())))
     require(changes<=allowed,"S794 source LIVE modified "+str(changes-allowed))
