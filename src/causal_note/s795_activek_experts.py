@@ -128,7 +128,7 @@ def decode(original,decision_ends,X,probabilities,mask,cut,samples):
     ends=np.asarray(decision_ends,np.int64)
     if X.shape!=(len(ends),49,FEATURES) or samples<ends[-1]:
         raise ValueError("invalid frozen causal evidence")
-    eligibility=regions(X,np.zeros((len(ends),49),bool))
+    eligibility=regions(X,X[:,:,12]>.5)
     # Eligibility for new notes is re-filtered by CURRENT source and extras.
     for name in HEADS:
         if name not in probabilities or np.shape(probabilities[name])!=(len(ends),49):
