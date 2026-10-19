@@ -88,7 +88,7 @@ def audit(r, signed):
         frozen_choice=frozen,selected_CAL_f1=trials[frozen]["f1"],
         official_S708_onset_f1=reference["onset_f1"],
         selected_delta=trials[frozen]["f1"]-reference["onset_f1"],
-        signed_source_parity_valid=all(abs(x)<1e-8 for x in parity),
+        signed_source_parity_valid=all(abs(x)<1e-8 for x in parity.values()),
         signed_source_parity_delta=parity,
         signed_source_exactk_correct_delta=round(parity["exact_k"]*reference["frames"]),
         signed_source_activek_correct_delta=round(parity["active_exact_k"]*reference["active_frames"]),
