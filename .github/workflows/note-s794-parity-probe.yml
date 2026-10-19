@@ -1,0 +1,73 @@
+name: S794 two-pass CAL32 signed MIDI source parity drift investigation
+on:
+  push:
+    branches: [codex/note-s794-activek-zero-delay-forensics]
+    paths:
+      - scripts/s794_parity_drift_probe.py
+      - .github/workflows/note-s794-parity-probe.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  PYTHONPATH: .:src
+  GH_TOKEN: ${{ github.token }}
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '2'
+  OMP_NUM_THREADS: '2'
+jobs:
+  replay_cal32_twice:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install identical S794 frozen CPU environment
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Compile reproducibility probe and unit-test source
+        run: |
+          python -m compileall -q scripts/s794_parity_drift_probe.py
+          python -m unittest -v test.test_s794_activek_failure_taxonomy
+      - name: Restore exact signed S708 S707 models
+        run: |
+          mkdir -p /tmp/s794probe/s708 /tmp/s794probe/s707
+          gh run download 39094682419 --repo Andriamarosoa/note \
+            --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s794probe/s708
+          gh run download 39059008484 --repo Andriamarosoa/note \
+            --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s794probe/s707
+          test -s /tmp/s794probe/s708/s708_selected.pt
+          test -s /tmp/s794probe/s707/s675_hazard.joblib
+      - name: Replay signed CAL32 twice record by record and compare every MIDI event
+        run: |
+          python -m scripts.s794_parity_drift_probe \
+            --s708 /tmp/s794probe/s708 \
+            --offset-checkpoint /tmp/s794probe/s707/s675_hazard.joblib \
+            --out /tmp/s794probe/experiment
+      - name: Confirm provenance; preserve true parity as evidence, do not relax gate
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('/tmp/s794probe/experiment/report.json'))
+          assert x['complete'] and x['CAL_count']==32
+          assert len(x['iterations'])==2
+          assert not x['promoted'] and not x['TEST_opened'] and not x['HELD_opened']
+          print('S794_TWO_PASS_DIFFERENT_RECORDS',len(x['difference_by_record']))
+          for p in x['iterations']:
+            print('S794_PARITY_REPLAY',p['iteration'],p['exact_parity'],p['drift'])
+          print('S794_RESULT_IS_DIAGNOSTIC_NO_SCORE_PROMOTION')
+          PY
+      - name: Upload actual per-record evidence even if experiment fails
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S794_PARITY_DRIFT_TWO_PASS_CAL32_EVIDENCE
+          path: /tmp/s794probe/experiment/report.json
+          retention-days: 45
+          if-no-files-found: warn
