@@ -1,0 +1,126 @@
+name: S787 Six independent NOTE audits with consensus gate
+on:
+  push:
+    branches: [codex/note-s787-six-auditor-per-loop-gate]
+    paths:
+      - scripts/s787_six_role_audit.py
+      - scripts/s787_audit_consensus.py
+      - test/test_s787_six_role_audit.py
+      - .github/workflows/note-s787-six-role-audits.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+env:
+  GH_TOKEN: ${{ github.token }}
+  SOURCE_RUN_ID: '39268870649'
+jobs:
+  prepare_experiment:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Check auditor and consensus negative tests first
+        env: {PYTHONPATH: .:src}
+        run: |
+          python -m compileall -q scripts/s787_six_role_audit.py scripts/s787_audit_consensus.py
+          python -m unittest -v test.test_s787_six_role_audit
+      - name: Wait for completed S786 experiment, fail on technical error
+        run: |
+          gh run watch "$SOURCE_RUN_ID" --repo Andriamarosoa/note --interval 20 --exit-status
+          gh run view "$SOURCE_RUN_ID" --repo Andriamarosoa/note --json status,conclusion,url
+      - name: Download signed S708 and frozen S786 report
+        run: |
+          mkdir -p /tmp/s787/input/experiment /tmp/s787/input/signed
+          gh run download "$SOURCE_RUN_ID" --repo Andriamarosoa/note \
+            --name S786_HARMONIC_TOPOLOGY_DYNAMIC_FRAGMENT_FIT80_CAL32 \
+            --dir /tmp/s787/input/experiment
+          gh run download 39094682419 --repo Andriamarosoa/note \
+            --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS \
+            --dir /tmp/s787/input/signed
+          test -s /tmp/s787/input/experiment/report.json
+          test -s /tmp/s787/input/signed/report.json
+          test -s /tmp/s787/input/signed/s708_selected.pt
+      - name: Audit exactly which project files changed
+        run: |
+          git fetch --no-tags origin codex/note-s782-onset-miss-causal-forensics
+          git diff --name-only FETCH_HEAD HEAD > /tmp/s787/input/changed_files.txt
+          echo 'S787 changed paths:'
+          cat /tmp/s787/input/changed_files.txt
+      - name: Make identical immutable audit inputs available to 6 reviewers
+        uses: actions/upload-artifact@v4
+        with:
+          name: S787_FROZEN_AUDIT_INPUTS
+          path: /tmp/s787/input/
+          retention-days: 45
+          if-no-files-found: error
+  audit:
+    name: ${{ matrix.role }} specialist audit
+    needs: prepare_experiment
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [data, acoustics, architecture, training, metrics, live]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          name: S787_FROZEN_AUDIT_INPUTS
+          path: /tmp/s787/input
+      - name: Execute independent ${{ matrix.role }} auditor, fail closed
+        env: {PYTHONPATH: .:src}
+        run: |
+          python -m scripts.s787_six_role_audit \
+            --role "${{ matrix.role }}" \
+            --source scripts/s786_harmonic_topology_fragment_experts.py \
+            --experiment /tmp/s787/input/experiment/report.json \
+            --signed /tmp/s787/input/signed/report.json \
+            --checkpoint /tmp/s787/input/signed/s708_selected.pt \
+            --changed-files /tmp/s787/input/changed_files.txt \
+            --out "/tmp/s787/out/role_${{ matrix.role }}.json"
+      - name: Preserve independent signed auditor evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S787_AUDIT_${{ matrix.role }}
+          path: /tmp/s787/out/role_${{ matrix.role }}.json
+          retention-days: 45
+          if-no-files-found: warn
+  consensus:
+    name: Mandatory six-reviewer consensus and no-promotion protection
+    if: always()
+    needs: [prepare_experiment, audit]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Collect all six independent audit reports
+        uses: actions/download-artifact@v4
+        with:
+          pattern: S787_AUDIT_*
+          path: /tmp/s787/audits
+          merge-multiple: true
+      - name: Enforce consensus even if an individual audit failed
+        env: {PYTHONPATH: .:src}
+        run: |
+          python -m scripts.s787_audit_consensus \
+            --reports-dir /tmp/s787/audits \
+            --out /tmp/s787/consensus/report.json
+      - name: Keep consensus and all six separate audit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S787_SIX_ROLE_AUDIT_CONSENSUS
+          path: |
+            /tmp/s787/consensus/report.json
+            /tmp/s787/audits/role_*.json
+          retention-days: 45
+          if-no-files-found: warn
