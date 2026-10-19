@@ -1,0 +1,79 @@
+name: S770 65 causal onset FIT80 OOF loops and CAL32
+on:
+  push:
+    branches: [codex/note-s770-joint-onset-oof-fit80]
+    paths:
+      - scripts/s770_joint_onset_fit80.py
+      - test/test_s770_joint_onset_fit80.py
+      - .github/workflows/note-s770-joint-onset-fit80.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: note-s770-onset-fit80-oof
+  cancel-in-progress: true
+jobs:
+  run_causal_joint_onset:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install frozen NOTE runtime
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Test temporal firewall and isolated heads
+        run: |
+          python -m compileall -q scripts/s770_joint_onset_fit80.py
+          python -m unittest -v \
+            test.test_s768_independent_onset_lattice \
+            test.test_s769_source_onset_precision \
+            test.test_s770_joint_onset_fit80
+      - name: Restore signed S708/S707 model artifacts
+        run: |
+          mkdir -p /tmp/s770/s708 /tmp/s770/s707
+          gh run download 39094682419 --repo Andriamarosoa/note --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s770/s708
+          gh run download 39059008484 --repo Andriamarosoa/note --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s770/s707
+          test -s /tmp/s770/s708/report.json
+          test -s /tmp/s770/s708/s708_selected.pt
+          test -s /tmp/s770/s707/s675_hazard.joblib
+      - name: Train independent models on FIT80, choose by OOF, replay 32 CAL audio tracks
+        run: |
+          python -m scripts.s770_joint_onset_fit80 \
+            --s708-dir /tmp/s770/s708 \
+            --offset-checkpoint /tmp/s770/s707/s675_hazard.joblib \
+            --out /tmp/s770/report
+      - name: Enforce signed six-axis source parity and forbid shadow promotion
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/s770/report/report.json').read_text())
+          assert r['schema']=='S770_GROUPED_JOINT_ONSET_SHADOW'
+          assert r['complete'] and r['source_reference_parity']['valid']
+          assert r['fit_recordings_done']==80 and r['cal_recordings_done']==32
+          assert len(r['FIT']['folds'])==5 and len(r['FIT']['onset_oof'])==65
+          assert len(r['CAL']['onset_shadow_grid'])==65
+          assert r['ONSET_only_not_MIDI'] and r['source_midi_immutable']
+          assert not r['promoted'] and r['selected']=='S708_frozen'
+          assert not r['LIVE_changed'] and not r['HELD_opened'] and not r['TEST_opened']
+          assert r['CAL']['frozen_risk_over_80']==(r['CAL']['frozen_score']['f1']>.8)
+          print('S770_FIT_CHOICE',r['FIT']['selected_frozen'])
+          print('S770_CAL_ONSET_F1',r['CAL']['frozen_score']['f1'])
+          PY
+      - name: Publish report including failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S770_JOINT_ONSET_65_FIT_OOF_CAL32
+          path: /tmp/s770/report/report.json
+          retention-days: 45
+          if-no-files-found: warn
