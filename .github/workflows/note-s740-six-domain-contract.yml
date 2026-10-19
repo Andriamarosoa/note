@@ -1,0 +1,39 @@
+name: S740 six-domain Exact-K architecture contracts (shadow only)
+on:
+  push:
+    branches: [codex/note-s740-six-domain-exactk-fragment-routers]
+    paths:
+      - src/causal_note/s740_multitarget_dynamic.py
+      - test/test_s740_multitarget_dynamic.py
+      - .github/workflows/note-s740-six-domain-contract.yml
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  six_domain_contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONPATH: .:src
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install NOTE dependencies and CPU Torch
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Compile exact architecture and all six adapters
+        run: |
+          python -m compileall -q src/causal_note/s736_fragment_mask.py src/causal_note/s738_multitarget_routing_contract.py src/causal_note/s740_multitarget_dynamic.py
+      - name: Run original Exact-K port and independent S740 domain tests
+        run: |
+          python -m unittest -v test.test_s736_fragment_mask test.test_s738_multitarget_routing_contract test.test_s740_multitarget_dynamic
+      - name: Verify shadow-only and no published 80-percent claims
+        run: |
+          python - <<'PY'
+          from causal_note.s740_multitarget_dynamic import TARGETS
+          assert len(TARGETS)==6
+          print('S740_ARCHITECTURE_TEST_ONLY: no trained S740 checkpoints, no CAL claims, no Live changes')
+          PY
