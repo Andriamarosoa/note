@@ -1,0 +1,53 @@
+name: NOTE mandatory resume.md and resultat.md for every S788+ series
+on:
+  push:
+    branches:
+      - 'codex/note-s*'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'draft for in-progress, release for completed evidence'
+        required: true
+        default: draft
+        type: choice
+        options: [draft, release]
+permissions:
+  contents: read
+jobs:
+  verify_series_documents:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      PYTHONPATH: .:src
+      VERIFY_MODE: ${{ github.event.inputs.mode || 'draft' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Negative and positive documentation contract unit tests
+        run: |
+          python -m compileall -q scripts/verify_series_reports.py test/test_verify_series_reports.py
+          python -m unittest -v test.test_verify_series_reports
+      - name: Require resume.md and resultat.md for the running Sxxx
+        run: |
+          python -m scripts.verify_series_reports --series-from-branch --mode "$VERIFY_MODE"
+      - name: Validate all versioned series S788 and newer
+        run: |
+          python -m scripts.verify_series_reports --all --mode draft
+      - name: Archive both per-series reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: NOTE_MANDATORY_SERIES_MARKDOWN
+          path: series/S*/resume.md
+          retention-days: 45
+          if-no-files-found: error
+      - name: Archive each series measured result report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: NOTE_MANDATORY_SERIES_RESULTS
+          path: series/S*/resultat.md
+          retention-days: 45
+          if-no-files-found: error
