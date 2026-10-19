@@ -1,0 +1,83 @@
+name: S764 six independent decoders GuitarSet CAL32 shadow measurements
+on:
+  push:
+    branches: [codex/note-s764-six-shadow-cal32-audit]
+    paths:
+      - scripts/s764_six_decoder_shadow_cal32.py
+      - src/causal_note/s763_independent_decoders.py
+      - test/test_s764_six_decoder_shadow_cal32.py
+      - .github/workflows/note-s764-six-shadow-cal32.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: s764-shadow-independent-six-axes
+  cancel-in-progress: true
+jobs:
+  six_isolated_audio_decoder_measures:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install signed NOTE runtime
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Test six individually scored decoders without oracle data
+        run: |
+          python -m compileall -q scripts/s764_six_decoder_shadow_cal32.py src/causal_note/s763_independent_decoders.py
+          python -m unittest -v test.test_s763_independent_decoders test.test_s764_six_decoder_shadow_cal32
+      - name: Restore signed S708 source and frozen S707 note-off model
+        run: |
+          mkdir -p /tmp/s764/s708 /tmp/s764/s707
+          gh run download 39094682419 --repo "Andriamarosoa/note" --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s764/s708
+          gh run download 39059008484 --repo "Andriamarosoa/note" --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s764/s707
+          test -s /tmp/s764/s708/report.json
+          test -s /tmp/s764/s708/s708_selected.pt
+          test -s /tmp/s764/s707/s675_hazard.joblib
+      - name: Replay and evaluate all six independent heads on 32 GuitarSet CAL recordings
+        run: |
+          python -m scripts.s764_six_decoder_shadow_cal32 \
+            --s708-dir /tmp/s764/s708 \
+            --offset-checkpoint /tmp/s764/s707/s675_hazard.joblib \
+            --out /tmp/s764/report
+      - name: Independently validate all S708 scores and head-only diagnostic definitions
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path("/tmp/s764/report/report.json").read_text())
+          assert r["schema"]=="S764_SHADOW_SIX_INDEPENDENT_DECODERS_CAL32"
+          assert r["recordings_done"]==32 and len(r["recordings"])==32
+          assert r["complete"] and r["source_reference_parity"]
+          assert not r["promoted"] and not r["training"]
+          assert r["selection"]=="S708_frozen"
+          assert not r["LIVE_changed"] and not r["HELD_opened"] and not r["TEST_opened"]
+          assert all(abs(delta)<1e-8 for delta in r["source_reference_delta"].values())
+          assert all(row["signed_events_untouched"] for row in r["recordings"])
+          assert set(r["shadows"])==set(("exact_k","active_exact_k","onset",
+              "offset","frame_pitch","full_note"))
+          assert r["shadows"]["exact_k"]["total"]>0
+          assert r["shadows"]["active_exact_k"]["total"]>0
+          assert "unpaired release-boundary" in r["shadows"]["offset"]["definition"]
+          assert "independent FULL NOTE" in r["shadows"]["full_note"]["definition"]
+          print("S764_SIX_ISOLATED_DECODERS_MEASURED_NO_PROMOTION",json.dumps({
+              "source":r["source"],"shadow":r["shadows"],
+              "conflicts":r["conflicts"]}))
+          PY
+      - name: Preserve full diagnostic report even if one step fails
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S764_SIX_ISOLATED_GUITARSET_CAL32
+          path: /tmp/s764/report/report.json
+          retention-days: 45
+          if-no-files-found: warn
