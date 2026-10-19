@@ -143,7 +143,12 @@ def main():
     p.add_argument("--out",required=True,type=Path)
     shared_evaluate(
         p.parse_args(),score_variants_impl=score_variants,grid=GRID,
-        schema="S762_DYNAMIC_FRAGMENT_FOUR_EXPERT_FIT80_CAL32")
+        schema="S762_DYNAMIC_FRAGMENT_FOUR_EXPERT_FIT80_CAL32",
+        parameter_info={name:dict(expert="ALL_FOUR_PER_FRAGMENT",
+                                  quality=mode,threshold=risk,
+                                  confirmation_blocks=CONFIRM_BLOCKS)
+                        for mode,risk in product(QUALITY,THRESHOLDS)
+                        for name in [f"fragment_{mode}_risk{int(risk*100)}"]})
 
 if __name__=="__main__":
     main()
