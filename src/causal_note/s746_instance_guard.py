@@ -109,11 +109,12 @@ def merge_events(reference, pairs, probabilities, indices, k, gate):
         raise ValueError("S746 invalid native Exact-K posterior")
     timeline = []
     for seq, event in enumerate(reference):
-        priority = 0 if event["type"] == "note_off" else 1
-        timeline.append((int(event["available_sample"]), priority, seq, "base", event, -1))
+        # Preserve the original order of ALL frozen events, including ties.
+        timeline.append((int(event["available_sample"]), 0, seq, "base", event, -1))
     for i, (on, off) in enumerate(pairs):
-        timeline.append((int(on["available_sample"]), 3, i, "extra_on", on, i))
-        timeline.append((int(off["available_sample"]), 2, i, "extra_off", off, i))
+        timeline.append((int(on["available_sample"]), 2, i, "extra_on", on, i))
+        off_priority = 3 if off["available_sample"] == on["available_sample"] else 1
+        timeline.append((int(off["available_sample"]), off_priority, i, "extra_off", off, i))
     timeline.sort(key=lambda z: (z[0], z[1], z[2]))
     out, base, extra = [], set(), {}
     detail = dict(accepted=0, blocked_risk=0, blocked_k=0,
