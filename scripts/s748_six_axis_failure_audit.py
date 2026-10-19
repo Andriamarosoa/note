@@ -106,7 +106,8 @@ def axis_audit(events,truth,ends):
         ons_fn=len(actual_ids)-sum(j in matched_gt for j in actual_ids)
         strata[key]=dict(onset_f1=_f1(ons_tp,ons_fp,ons_fn),
                          frame_pitch_f1=_f1(tps,fps,fns),
-                         onset_tp=ons_tp,onset_fp=ons_fp,onset_fn=ons_fn)
+                         onset_tp=ons_tp,onset_fp=ons_fp,onset_fn=ons_fn,
+                         frame_pitch_tp=tps,frame_pitch_fp=fps,frame_pitch_fn=fns)
     near_harmonics={}
     for offset in (12,19,24):
         # Rate of pitch misses accompanied by a potential octave/partial
