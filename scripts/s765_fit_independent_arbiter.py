@@ -64,7 +64,7 @@ def acoustic_birth_pairs(item, post, proposals, ctx):
     for frame,now in enumerate(ends):
         now=int(now)
         # Local acoustic release, not another decoder's state.
-        for ix,(on,start) in list(active.items()):
+        for ix,on in list(active.items()):
             age=now-int(on["available_sample"])
             if age>=2*1024 and (
                 p[frame,ix,2]>=.8 or p[frame,ix,1]<.30
@@ -96,7 +96,7 @@ def acoustic_birth_pairs(item, post, proposals, ctx):
                 velocity=96)
             last_open[ix]=now;opened+=1
     end=int(item["samples"])
-    for ix,(on,start) in sorted(active.items()):
+    for ix,on in sorted(active.items()):
         off=dict(type="note_off",pitch=ix+40,
             decision_sample=end,available_sample=end,
             time=end/SR,reason="stream_end",velocity=0)
