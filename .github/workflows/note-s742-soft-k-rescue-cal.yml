@@ -34,7 +34,7 @@ jobs:
       - name: Verify causal soft-K NoteOn implementation and 80-percent gate
         run: |
           python -m compileall -q src/causal_note/s742_soft_activek_decoder.py scripts/s742_shadow_soft_activek_cal.py
-          python -m unittest -v test.test_s742_soft_activek_decoder test.test_s742_activek_forensics
+          python -m unittest -v test.test_s714_s708_cardinality test.test_s742_soft_activek_decoder test.test_s742_activek_forensics
       - name: Download signed S708, S734 and S707 checkpoints
         run: |
           mkdir -p /tmp/s742/soft_s708 /tmp/s742/soft_s707 /tmp/s742/soft_s734
