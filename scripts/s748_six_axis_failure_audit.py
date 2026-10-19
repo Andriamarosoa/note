@@ -78,7 +78,10 @@ def axis_audit(events,truth,ends):
         ix=true_count==k if k<6 else true_count>=6
         if not np.any(ix):
             continue
-        diff=pred_count[ix]-true_count[ix]
+        # Match signed S704's K0..6 clipping, even for ground-truth
+        # K>6. The unsaturated true K remains exposed separately via
+        # k_gt6_frames; otherwise per-K percentages contradict Exact-K.
+        diff=np.minimum(pred_count[ix],6)-np.minimum(true_count[ix],6)
         per_k[str(k)]=dict(
             true_frames=int(ix.sum()),
             exact=int(np.count_nonzero(diff==0)),
@@ -109,13 +112,25 @@ def axis_audit(events,truth,ends):
                          onset_tp=ons_tp,onset_fp=ons_fp,onset_fn=ons_fn,
                          frame_pitch_tp=tps,frame_pitch_fp=fps,frame_pitch_fn=fns)
     near_harmonics={}
+    near_harmonics_directional={}
+    miss=gt&~pred
+    false_positive=pred&~gt
     for offset in (12,19,24):
-        # Rate of pitch misses accompanied by a potential octave/partial
-        # false alarm. Diagnostic correlation, NOT proof of cause.
-        miss=(gt&~pred)
-        shifted=np.zeros_like(pred)
-        shifted[:,offset:]=pred[:,:49-offset]&~gt[:,offset:]
-        near_harmonics[str(offset)]=int(np.count_nonzero(miss&shifted))
+        # Both relative directions: true E2 falsely detected as E3
+        # (+12), AND true E3 falsely detected as E2 (-12).
+        # The S748 prototype only counted the second case.
+        false_above=np.zeros_like(pred)
+        false_below=np.zeros_like(pred)
+        false_above[:,:49-offset]=false_positive[:,offset:]
+        false_below[:,offset:]=false_positive[:,:49-offset]
+        above=int(np.count_nonzero(miss&false_above))
+        below=int(np.count_nonzero(miss&false_below))
+        near_harmonics_directional[str(offset)]=dict(
+            false_above=above,false_below=below)
+        # OR per missed truth pitch/frame to avoid double counting if
+        # BOTH lower and higher false alarms are present.
+        near_harmonics[str(offset)]=int(np.count_nonzero(
+            miss&(false_above|false_below)))
     return dict(
         source_metrics={k:float(source[k]) for k in
           ("onset_f1","exact_k","active_exact_k","offset_accuracy",
@@ -125,6 +140,7 @@ def axis_audit(events,truth,ends):
         k_gt6_frames=int(np.count_nonzero(true_count>6)),
         register=strata,
         harmonic_false_alarms_near_miss=near_harmonics,
+        harmonic_false_alarms_by_direction=near_harmonics_directional,
         note_durations=dict(note_duration),
         offset_reasons=dict(offsets_by_reason),
         max_predicted_voices=int(pred_count.max()),
