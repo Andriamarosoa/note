@@ -122,6 +122,7 @@ def select_fit_examples(features,onset_targets,source_active,
     if not np.isfinite(out).all():
         raise ValueError("Unusable acoustic FIT source")
     return out,y,dict(positives=int(y.sum()),rows=int(len(ids)),
+                      natural_candidate_population=int(valid.sum()),
                       true_positive_candidates=int(positive.sum()),
                       all_true_onsets=int(truth.sum()))
 
