@@ -1,0 +1,61 @@
+name: S771 forensic audit of all S770 candidate combinations
+on:
+  push:
+    branches: [codex/note-s771-onset-tradeoff-forensics]
+    paths:
+      - scripts/s771_s770_onset_forensics.py
+      - test/test_s771_s770_onset_forensics.py
+      - .github/workflows/note-s771-forensics.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: s771-report-only
+  cancel-in-progress: true
+jobs:
+  run_forensic_audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Test audit invariants without Torch
+        run: |
+          python -m compileall -q scripts/s771_s770_onset_forensics.py
+          python -m unittest -v test.test_s771_s770_onset_forensics
+      - name: Download exact S770 first-attempt artifact and signed S708
+        run: |
+          mkdir -p /tmp/s771/s770 /tmp/s771/s708
+          gh api repos/Andriamarosoa/note/actions/artifacts/12183896251/zip > /tmp/s771/s770.zip
+          unzip -q /tmp/s771/s770.zip -d /tmp/s771/s770
+          gh run download 39094682419 --repo Andriamarosoa/note --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s771/s708
+          test -s /tmp/s771/s770/report.json
+          test -s /tmp/s771/s708/report.json
+      - name: Analyze 65 candidate combinations and strict signed frame mismatch
+        run: |
+          python -m scripts.s771_s770_onset_forensics \
+            --s770-report /tmp/s771/s770/report.json \
+            --s708-report /tmp/s771/s708/report.json \
+            --out /tmp/s771/out/report.json
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/s771/out/report.json'))
+          assert r['complete'] and r['number_of_combinations']==65
+          assert r['true_onsets']==4083
+          assert r['selected']['new_TP_needed_at_fixed_FP']==363
+          assert r['selected']['FP_to_remove_at_fixed_TP']==544
+          assert r['number_of_q_where_additions_beat_no_birth']==0
+          assert not r['signed_source_parity_valid'] and not r['promoted']
+          print('S771_CAL_ONSET_AUDIT_VERIFIED')
+          PY
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S771_S770_65_COMBINATIONS_FORENSICS
+          path: /tmp/s771/out/report.json
+          retention-days: 45
+          if-no-files-found: warn
