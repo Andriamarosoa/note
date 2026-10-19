@@ -1,0 +1,93 @@
+name: S783 56D causal K5 K6 temporal maximin FIT80 CAL32
+on:
+  push:
+    branches: [codex/note-s783-tail-temporal-maximin]
+    paths:
+      - scripts/s783_temporal_maximin_tail_fit80.py
+      - test/test_s783_temporal_maximin_tail.py
+      - .github/workflows/note-s783-temporal-maximin-tail.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+jobs:
+  train_k_tail:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install pinned CPU runtime
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Test class-tail causal independence
+        run: |
+          python -m compileall -q scripts/s783_temporal_maximin_tail_fit80.py
+          python -m unittest -v test.test_s783_temporal_maximin_tail
+      - name: Check schema contract before expensive FIT80 processing
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('scripts/s783_temporal_maximin_tail_fit80.py').read_text()
+          assert 'schema="S783_TEMPORAL_MAXIMIN_TAIL_FIT80"' in s
+          assert 'by_composition_specialist=by_composition' in s
+          assert 'DIM=56' in s
+          assert 'K6_BIASES=(0.,.5,1.,1.5)' in s
+          assert 'selection_objective="maximin_K6_then_K5_composition_recall"' in s
+          print('S783_SCHEMA_PREFLIGHT_OK')
+          PY
+      - name: Restore signed S708 and S707
+        run: |
+          mkdir -p /tmp/s783/s708 /tmp/s783/s707
+          gh run download 39094682419 --repo Andriamarosoa/note --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s783/s708
+          gh run download 39059008484 --repo Andriamarosoa/note --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s783/s707
+          test -s /tmp/s783/s708/report.json
+          test -s /tmp/s783/s708/s708_selected.pt
+          test -s /tmp/s783/s707/s675_hazard.joblib
+      - name: FIT80 5-fold 56D temporal 16-policy maximin and frozen CAL32
+        run: |
+          python -m scripts.s783_temporal_maximin_tail_fit80 \
+            --s708-dir /tmp/s783/s708 \
+            --offset-checkpoint /tmp/s783/s707/s675_hazard.joblib \
+            --out /tmp/s783/report
+      - name: Verify no live or MIDI promotion
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/s783/report/report.json'))
+          assert r['complete'] and r['fit_recordings_done']==80 and r['cal_recordings_done']==32
+          assert r['schema']=='S783_TEMPORAL_MAXIMIN_TAIL_FIT80'
+          assert r['decision_clock_samples']==1024
+          assert not r['promoted'] and not r['LIVE_changed'] and not r['final_MIDI_changed']
+          assert not r['TEST_opened'] and not r['HELD_opened']
+          print('S783_FIT_SELECTED',r['selected_tail_weight'])
+          assert len(r['FIT']['oof_by_composition'])==16
+          assert r['FIT']['selection_objective']=='maximin_K6_then_K5_composition_recall'
+          assert r['selected_k6_bias'] in (None,0.,.5,1.,1.5)
+          assert r['FIT']['selected'] in r['FIT']['eligible'] or r['FIT']['selected'] is None
+          if r['FIT']['selected'] is not None:
+              assert r['selected_tail_weight'] in (1.,2.,4.,8.)
+              selected=r['FIT']['trial_ood'][r['FIT']['selected']]
+              assert selected['exact_accuracy']>=r['FIT']['baseline']['exact_accuracy']-.005
+          assert len(r['FIT']['baseline_by_composition'])==5
+          assert set(r['CAL']['by_composition_specialist'])=={'BN2','Jazz2'}
+          assert set(r['CAL']['by_composition_base'])=={'BN2','Jazz2'}
+          assert sum(r['CAL']['tail_histogram_specialist']['6'])==r['CAL']['selected']['per_k'][6]['n']
+          assert sum(r['CAL']['tail_histogram_specialist']['5'])==r['CAL']['selected']['per_k'][5]['n']
+          print('S783_CAL_INDEPENDENT_K',r['CAL']['selected']['exact_accuracy'])
+          PY
+      - name: Keep full FIT and CAL 7x7 confusion reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S783_TEMPORAL_KTAIL_MAXIMIN_FIT80_CAL32
+          path: /tmp/s783/report/report.json
+          retention-days: 45
+          if-no-files-found: warn
