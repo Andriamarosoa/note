@@ -1,7 +1,7 @@
 name: S778 causal unweighted harmonic onset strict FIT80 confidence gates
 on:
   push:
-    branches: [codex/note-s774-harmonic-onset-lattice]
+    branches: [codex/note-s778-onset-prior-calibration]
     paths:
       - scripts/s778_calibrated_harmonic_onset_fit80.py
       - test/test_s778_calibrated_harmonic_onset.py
@@ -38,24 +38,24 @@ jobs:
             test.test_s778_calibrated_harmonic_onset
       - name: Restore immutable S708 and S707
         run: |
-          mkdir -p /tmp/s774/s708 /tmp/s774/s707
-          gh run download 39094682419 --repo Andriamarosoa/note --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s774/s708
-          gh run download 39059008484 --repo Andriamarosoa/note --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s774/s707
-          test -s /tmp/s774/s708/report.json
-          test -s /tmp/s774/s708/s708_selected.pt
-          test -s /tmp/s774/s707/s675_hazard.joblib
+          mkdir -p /tmp/s778/s708 /tmp/s778/s707
+          gh run download 39094682419 --repo Andriamarosoa/note --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s778/s708
+          gh run download 39059008484 --repo Andriamarosoa/note --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s778/s707
+          test -s /tmp/s778/s708/report.json
+          test -s /tmp/s778/s708/s708_selected.pt
+          test -s /tmp/s778/s707/s675_hazard.joblib
       - name: Fit 5 compositions and score frozen all-pitch harmonic hypotheses on CAL32
         run: |
           python -m scripts.s778_calibrated_harmonic_onset_fit80 \
-            --s708-dir /tmp/s774/s708 \
-            --offset-checkpoint /tmp/s774/s707/s675_hazard.joblib \
-            --out /tmp/s774/report
+            --s708-dir /tmp/s778/s708 \
+            --offset-checkpoint /tmp/s778/s707/s675_hazard.joblib \
+            --out /tmp/s778/report
       - name: Enforce strict signed source parity and no MIDI promotion
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
-          r=json.loads(Path('/tmp/s774/report/report.json').read_text())
+          r=json.loads(Path('/tmp/s778/report/report.json').read_text())
           assert r['schema']=='S778_FIT80_UNWEIGHTED_STRICT_THRESHOLD_HARMONIC_ONSET'
           assert r['complete'] and r['source_reference_parity']['valid']
           assert r['fit_recordings_done']==80 and r['cal_recordings_done']==32
@@ -71,6 +71,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: S778_UNWEIGHTED_HARMONIC_ONSET_FIT80_CAL32
-          path: /tmp/s774/report/report.json
+          path: /tmp/s778/report/report.json
           retention-days: 45
           if-no-files-found: warn
