@@ -1,11 +1,11 @@
 ---
 serie: S792
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s792-framepitch-six-metric-midi-replay
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39328341071
+commit_sha: aec47655049d89ddf297348ca1ec89b08c8d1daf
 promotion: false
 ---
 
@@ -13,38 +13,44 @@ promotion: false
 
 ## Objectif
 
-Valider le candidat Frame Pitch S790 dans **un véritable flux causal d'événements MIDI NoteOn/NoteOff** et recomputer les six métriques officielles sur un même flux, à la cadence de base 256 échantillons.
+Évaluer **sur le véritable flux de notes MIDI NoteOn/NoteOff** si le gain Frame Pitch SHADOW S790 (85,12 % sur CAL32 à horloge 1024) peut être transféré dans la mesure officielle `scripts.s704_joint_metrics.metric` à horloge 256, sans perte d'Onset, Exact-K, Active Exact-K, Offset ni Full Note.
 
-## Hypothèse
+## Architecture testée
 
-Le gain SHADOW S790 85,12 % peut être partiellement transféré en prolongeant avec prudence certains NoteOff S708 jugés prématurés à partir des **preuves de Sustain déjà disponibles**. Cette hypothèse peut échouer : la tête SHADOW détecte aussi des notes jamais émises, qu'un simple ajustement de NoteOff ne peut récupérer.
+- Référence S708 immuable, modèle S707 immuable.
+- Tête S790 indépendante, entraînée sur GuitarSet FIT80, politique de tête gelée `cut0.45_harm0.00`.
+- Rejeu des **NoteOff seulement**, jamais de NoteOn inventé, avec rétention causale bornée de 0, 1, 2 ou 4 décisions 1024 échantillons.
+- Retenue accordée seulement si la tête S790 indique que la hauteur est encore active au moment du NoteOff ; sortie retardée jusqu'à extinction de la preuve, nouveau NoteOn de la même hauteur, limite des six voix, échéance ou EOF.
+- Mesure commune des six axes sur les événements MIDI effectivement émis ; vérification des comptes et scores de la référence signée S708.
+- Sélection d'une durée sur **FIT80 uniquement**, validation hors composition en cinq plis, garde contre chaque régression. CAL32 appliqué après gel du choix ; HELD/TEST jamais ouverts.
 
-## Modifications
+## Exécutions
 
-- Rejeu causal par événements, **aucun oracle** : toujours conserver les NoteOn source et ne prolonger un NoteOff qu'après une nouvelle preuve S790 ; durée prolongée bornée.
-- Vérification stricte du délai, des notes actives, des retriggers et de la cardinalité maximale six.
-- Sélection de la durée maximale de rétention sur FIT80 uniquement, validation hors-composition FIT, CAL32 verrouillé.
-- Validation de **parité avec le S708 signé sur les six métriques** avant de considérer les nouveaux résultats comme comparables.
-- Mesure de six métriques sur les événements produits et rapport par composition/texture, y compris tous les rejets.
-- Six audits indépendants + consensus, fichiers resume.md et resultat.md.
+1. [Run scientifique #39328081673](https://github.com/Andriamarosoa/note/actions/runs/39328081673) : FAIL pendant les tests unitaires ; défaut d'indexation pitch MIDI 40 vers case 0, identifié avant tout réentraînement.
+2. Correction `aec47655049d89ddf297348ca1ec89b08c8d1daf` : indexation, vérification des cas de rejouement MIDI, préparation de FIT S790 et cache de prédictions.
+3. [Run #39328341071](https://github.com/Andriamarosoa/note/actions/runs/39328341071) : **SUCCESS**, FIT80 + CAL32 complets, six audits indépendants **6/6 PASS** et consensus **SUCCESS**. Artefact `S792_REAL_CAUSAL_MIDI256_SIX_METRICS`, rapports des six auditeurs et consensus conservés.
 
-## Protocole
+## Résultat
 
-Sources S708 signé #39094682419 et S707 immuable ; GuitarSet FIT80 pour apprentissage et sélection, CAL32 uniquement pour évaluer la politique figée, sans lecture de HELD/TEST. La tête S790 est réentraînée à partir de FIT80 selon le code gelé, et la politique de tête est celle gelée `cut0.45_harm0.00`, sélectionnée auparavant uniquement sur FIT.
+Le meilleur Frame Pitch FIT isolément vient de la rétention de quatre blocs (80,4416 % contre 78,7278 %), mais ses pertes d'Offset (66,1887 % contre 69,8862 %) et de Full Note (47,9729 % contre 50,6528 %) rendent la stratégie inadmissible. Les durées 1 et 2 blocs sont également inadmissibles. FIT sélectionne donc **0 bloc / aucune intervention**, avant l'ouverture CAL.
 
-Les durées S792 candidates sont 0, 1, 2 et 4 fenêtres de 1024 échantillons ; ne sont conservées que les politiques qui respectent la non-régression à chaque composition FIT. Les mesures officielles utilisent **les mêmes intervalles MIDI** reconstruits sur la grille 256, et non les probabilités 1024.
+Le replay CAL32 reproduit exactement **les six scores S708** (Onset 74,2639 %, Exact-K 62,0455 %, Active Exact-K 56,2762 %, Offset 77,3292 %, Full Note 57,1319 %, Frame Pitch 76,4626 %). **Aucun nouveau score officiel au-delà de 80 %.** Aucun modèle ni pipeline LIVE n'a été promu.
 
-Un score SHADOW supérieur à 80 % n'est pas une preuve de progrès MIDI ; la promotion n'est possible qu'après l'audit des six métriques intégrées.
+## Six audits réalisés
 
-## Audits obligatoires
+- Données : 80 FIT, 32 CAL, séparation compositions, SHA S708.
+- Acoustique : tête S790 gelée, observations contemporaines ou passées, sans oracle.
+- Architecture : événements MIDI réels, NoteOff causaux, zéro NoteOn créé et six voix au plus.
+- Apprentissage : quatre politiques et choix sur cinq plis FIT seulement.
+- Métriques : recomptage des six métriques S704 et parité signée exacte.
+- LIVE : pipeline production inchangé ; validation sur replay causal, pas mesure de latence microphone.
 
-- Données : SHA, split, compositions FIT/CAL, nombre d'enregistrements, vérité terrain après inférence.
-- Acoustique : Sustain, harmonique et incertitude réelle des NoteOff prématurés.
-- Architecture : événement réel, états MIDI isolés et causalité du retard.
-- Apprentissage : 5 compositions OOF, aucune recherche sur CAL, protocole S790 préfigé.
-- Métriques : parité six scores S708, recalcul des comptes 256, régressions croisées.
-- LIVE : émetteur événementiel sans rétrodater, pas de modification du décodeur utilisé par le microphone.
+## Verdict
 
-## Statut
+**Terminé ; six audits et consensus validés ; S792 rejeté comme amélioration.** Les données montrent qu'améliorer la persistance des hauteurs sans prédiction des attaques et gestion indépendante des fins de notes détériore Offset et Full Note.
 
-En cours. Aucun nouveau score MIDI validé. Aucune promotion.
+Voir `series/S792/resultat.md` pour les scores et les statistiques de modifications MIDI.
+
+## Suite expérimentale
+
+Ne plus prolonger globalement les NoteOff ; auditer les cas de vrais NoteOn absents et les notes dont la sortie est trop courte. Tester des candidats conçus pour préserver les vraies fins de notes, avec une tête/stratégie dédiée aux attaques manquées si nécessaire. À chaque tentative, sélectionner sur FIT et vérifier les six mesures du même flux MIDI causal sur CAL, sans toucher HELD/TEST.
