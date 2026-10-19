@@ -6,7 +6,7 @@ from test.test_s764_six_decoder_shadow_cal32 import demo
 from scripts.s764_six_decoder_shadow_cal32 import replay_six
 from scripts.s765_fit_independent_arbiter import (
     DIM,RISK,candidate_rows,grouped_quality,positive_probability,
-    emit_trial,train_one)
+    emit_trial,train_one,acoustic_birth_pairs)
 
 class ArbiterTests(unittest.TestCase):
     def fixture(self):
@@ -28,6 +28,59 @@ class ArbiterTests(unittest.TestCase):
         self.assertGreater(stats["source_active"],0)
         self.assertGreater(stats["eligible"],0)
         self.assertTrue(np.isfinite(X).all())
+
+    def test_acoustic_independent_birth_when_fullnote_proposed_none(self):
+        item,post,k,source,shadow,ctx=self.fixture()
+        # An acoustically coherent low-onset/high-novelty pitch that the
+        # FullNote attack threshold deliberately missed.
+        pitch=56
+        ix=pitch-40
+        post=post.copy();ctx=ctx.copy()
+        candidate=np.zeros((len(post),49,5),np.float32)
+        post[2:5,ix,0]=.11
+        post[2:5,ix,1]=.78
+        post[5,ix,2]=.96
+        ctx[2,ix,4]=.15
+        ctx[2,ix,7]=.375
+        ctx[2,ix,8]=.06
+        candidate[2,ix,4]=.82
+        pairs,stats=acoustic_birth_pairs(item,post,candidate,ctx)
+        self.assertEqual(stats["acoustic_opened"],1)
+        self.assertEqual(stats["acoustic_closed"],1)
+        self.assertEqual(len(pairs),1)
+        self.assertEqual(pairs[0][0]["pitch"],pitch)
+        self.assertEqual(pairs[0][0]["available_sample"],
+                         int(item["decision_ends"][2]))
+        self.assertEqual(pairs[0][1]["available_sample"],
+                         int(item["decision_ends"][5]))
+        selected,X,indices,counts=candidate_rows(
+            item,post,k,source,shadow,ctx,proposals=candidate)
+        self.assertTrue(any(on["pitch"]==pitch for on,off in selected))
+        self.assertGreaterEqual(counts["acoustic_opened"],1)
+        self.assertEqual(X.shape[1],DIM)
+        self.assertTrue(np.isfinite(X).all())
+
+    def test_future_changes_do_not_affect_acoustic_birth_decision(self):
+        item,post,k,source,shadow,ctx=self.fixture()
+        post=post.copy();ctx=ctx.copy()
+        q=np.zeros((len(post),49,5),np.float32)
+        ix=16
+        post[1:5,ix,0]=.10
+        post[1:5,ix,1]=.75
+        ctx[1,ix,4]=.14
+        ctx[1,ix,7]=.25
+        q[1,ix,4]=.82
+        a,_=acoustic_birth_pairs(item,post,q,ctx)
+        modified=post.copy()
+        modified[4:,ix,2]=.99
+        modified[4:,ix,1]=0.
+        b,_=acoustic_birth_pairs(item,modified,q,ctx)
+        self.assertEqual([(on["pitch"],on["available_sample"])
+                          for on,off in a],
+                         [(on["pitch"],on["available_sample"])
+                          for on,off in b])
+        self.assertNotEqual([off["available_sample"] for on,off in a],
+                            [off["available_sample"] for on,off in b])
 
     def test_future_signed_source_event_cannot_change_present_decision(self):
         item,post,k,source,shadow,ctx=self.fixture()
