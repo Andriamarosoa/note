@@ -18,7 +18,7 @@ jobs:
           echo "NOTE GitHub -> Gmail notification smoke test"
           echo "Repository: ${{ github.repository }}"
           echo "Workflow run ID: ${{ github.run_id }}"
-          echo "Expected result: success"
+          echo "Expected result: success (Gmail email delivery re-test #2)"
           echo "No project data, model or reference has been changed."
       - name: Test successful completion
         run: |
