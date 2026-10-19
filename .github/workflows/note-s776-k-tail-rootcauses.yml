@@ -1,0 +1,65 @@
+name: S776 Exact-K K5 K6 causal error taxonomy CAL32
+on:
+  push:
+    branches: [codex/note-s776-k5k6-cardinality-rootcauses]
+    paths:
+      - scripts/s776_k5k6_count_rootcauses.py
+      - test/test_s776_k5k6_rootcauses.py
+      - .github/workflows/note-s776-k-tail-rootcauses.yml
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    env:
+      PYTHONPATH: .:src
+      GH_TOKEN: ${{ github.token }}
+      PYTHONUNBUFFERED: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install frozen NOTE CPU runtime
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Verify cardinality and class-tail unit tests
+        run: |
+          python -m compileall -q scripts/s776_k5k6_count_rootcauses.py
+          python -m unittest -v test.test_s776_k5k6_rootcauses
+      - name: Restore signed S708/S707 snapshots
+        run: |
+          mkdir -p /tmp/s776/s708 /tmp/s776/s707
+          gh run download 39094682419 --repo Andriamarosoa/note --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s776/s708
+          gh run download 39059008484 --repo Andriamarosoa/note --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s776/s707
+          test -s /tmp/s776/s708/report.json
+          test -s /tmp/s776/s708/s708_selected.pt
+          test -s /tmp/s776/s707/s675_hazard.joblib
+      - name: Audit 7x7 raw and active K matrices on 32 CAL tracks
+        run: |
+          python -m scripts.s776_k5k6_count_rootcauses \
+            --s708-dir /tmp/s776/s708 \
+            --offset-checkpoint /tmp/s776/s707/s675_hazard.joblib \
+            --out /tmp/s776/report
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/s776/report/report.json'))
+          assert r['complete'] and r['cal_recordings_done']==32
+          assert r['decision_clock_samples']==1024
+          assert not r['promoted'] and not r['LIVE_changed'] and not r['TEST_opened'] and not r['HELD_opened']
+          assert set(r['groups'])=={'all','comp','solo'}
+          assert sum(row['n'] for row in r['overall']['raw_head']['per_k'])==r['overall']['raw_head']['frames']
+          print('S776_VERIFIED_K_TAIL',json.dumps(r['overall']['raw_head']['per_k'][-2:]))
+          PY
+      - name: Preserve full confusion and recovery diagnostic
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S776_K5_K6_CAUSAL_CONFUSION_CAL32
+          path: /tmp/s776/report/report.json
+          retention-days: 45
+          if-no-files-found: warn
