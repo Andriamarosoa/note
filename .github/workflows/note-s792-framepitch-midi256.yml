@@ -1,0 +1,165 @@
+name: S792 S790 Frame Pitch causal full-MIDI256 six metric validation
+on:
+  push:
+    branches: [codex/note-s792-framepitch-six-metric-midi-replay]
+    paths:
+      - scripts/s792_framepitch_midi256_replay.py
+      - test/test_s792_framepitch_midi256_replay.py
+      - scripts/s792_six_role_audits.py
+      - .github/workflows/note-s792-framepitch-midi256.yml
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+  actions: read
+env:
+  PYTHONPATH: .:src
+  GH_TOKEN: ${{ github.token }}
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '2'
+  OMP_NUM_THREADS: '2'
+jobs:
+  full_midi_replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install frozen CPU runtime
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Compile and prove MIDI causality, six-voice limit and anti-regression
+        run: |
+          python -m compileall -q scripts/s792_framepitch_midi256_replay.py scripts/s792_six_role_audits.py
+          python -m unittest -v test.test_s792_framepitch_midi256_replay
+          python -m scripts.verify_series_reports --series S792
+      - name: Restore signed S708, S707 and FIT-frozen S790 head policy
+        run: |
+          mkdir -p /tmp/s792/s708 /tmp/s792/s707 /tmp/s792/s790
+          gh run download 39094682419 --repo Andriamarosoa/note \
+            --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s792/s708
+          gh run download 39059008484 --repo Andriamarosoa/note \
+            --name S681_LATEST_S675_TRAINED_NOTEOFF_WINDOWS_TRIAL --dir /tmp/s792/s707
+          gh run download 39277971956 --repo Andriamarosoa/note \
+            --name S790_FIT80_CAL32_FRAMEPITCH_INDEPENDENT_SHADOW \
+            --dir /tmp/s792/s790
+          test -s /tmp/s792/s708/report.json
+          test -s /tmp/s792/s708/s708_selected.pt
+          test -s /tmp/s792/s707/s675_hazard.joblib
+          test -s /tmp/s792/s790/experiment/report.json
+      - name: Record restricted file diff from S790 before modeling
+        run: |
+          git fetch --no-tags origin codex/note-s790-independent-framepitch-causal-expert
+          git diff --name-only FETCH_HEAD HEAD > /tmp/s792/changed_paths.txt
+          echo S792_CHANGED_PATHS
+          cat /tmp/s792/changed_paths.txt
+      - name: FIT80 5 composition OOF then independent CAL32 six-metric MIDI replay
+        run: |
+          python -m scripts.s792_framepitch_midi256_replay \
+            --s708 /tmp/s792/s708 \
+            --s790-report /tmp/s792/s790/experiment/report.json \
+            --offset-checkpoint /tmp/s792/s707/s675_hazard.joblib \
+            --out /tmp/s792/experiment
+      - name: Fail if signed S708 MIDI256 parity or official six-score reporting missing
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/s792/experiment/report.json'))
+          assert r['complete'] and (r['fit_done'],r['cal_done'])==(80,32)
+          assert r['schema']=='S792_FRAMEPITCH_S790_TRANSFER_REAL_MIDI256'
+          assert r['score_clock_samples']==256
+          assert r['pitch_head_clock_samples']==1024
+          assert r['CAL']['official_source_parity']
+          assert set(r['FIT']['variants'])=={'0','1','2','4'}
+          assert not r['promoted'] and not r['official_LIVE_changed']
+          assert not r['TEST_opened'] and not r['HELD_opened']
+          assert r['cal_selection_forbidden']
+          print('S792_SIX_OFFICIAL_MIDI256_BASELINE',r['CAL']['baseline'])
+          print('S792_SIX_OFFICIAL_MIDI256_TRIAL',r['CAL']['trial'])
+          print('S792_FIT_SELECTED_HOLD',r['selected_hold'])
+          print('S792_NO_REGRESSION',r['CAL']['six_metric_no_regression'])
+          PY
+      - name: Preserve complete frozen experiment and immutable audit inputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S792_REAL_CAUSAL_MIDI256_SIX_METRICS
+          path: |
+            /tmp/s792/experiment/report.json
+            /tmp/s792/s708/report.json
+            /tmp/s792/s708/s708_selected.pt
+            /tmp/s792/s790/experiment/report.json
+            /tmp/s792/changed_paths.txt
+          retention-days: 45
+          if-no-files-found: warn
+  six_auditors:
+    needs: full_midi_replay
+    name: Independent ${{ matrix.role }} MIDI256 auditor
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [data, acoustics, architecture, training, metrics, live]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          name: S792_REAL_CAUSAL_MIDI256_SIX_METRICS
+          path: /tmp/s792
+      - name: ${{ matrix.role }} independently validates complete MIDI256 evidence
+        run: |
+          python -m scripts.s792_six_role_audits \
+            --role ${{ matrix.role }} \
+            --report /tmp/s792/experiment/report.json \
+            --signed /tmp/s792/s708/report.json \
+            --checkpoint /tmp/s792/s708/s708_selected.pt \
+            --s790 /tmp/s792/s790/experiment/report.json \
+            --source scripts/s792_framepitch_midi256_replay.py \
+            --changed /tmp/s792/changed_paths.txt \
+            --out /tmp/s792/audits/role_${{ matrix.role }}.json
+      - name: Archive actual independent audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S792_AUDIT_${{ matrix.role }}
+          path: /tmp/s792/audits/role_${{ matrix.role }}.json
+          retention-days: 45
+          if-no-files-found: warn
+  consensus:
+    if: always()
+    needs: [full_midi_replay, six_auditors]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: S792_AUDIT_*
+          path: /tmp/s792/audits
+          merge-multiple: true
+      - name: Six independent auditors MUST pass; no automatic promotion
+        run: |
+          python -m scripts.s787_audit_consensus \
+            --reports-dir /tmp/s792/audits \
+            --out /tmp/s792/consensus/report.json
+      - name: Archive six reports and collective veto
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S792_SIX_REAL_MIDI_AUDIT_CONSENSUS
+          path: |
+            /tmp/s792/audits/role_*.json
+            /tmp/s792/consensus/report.json
+          retention-days: 45
+          if-no-files-found: warn
