@@ -322,11 +322,13 @@ def evaluate(args):
         "CAL_candidate":report["CAL_candidate"],
         "safe":safe,
         "best_head_k6":max(
-            (name,metrics["head"]["k6_correct"])
-            for name,metrics in report["CAL"].items()),
+            ((name,metrics["head"]["k6_correct"])
+             for name,metrics in report["CAL"].items()),
+            key=lambda trial: (trial[1],trial[0])),
         "best_active":max(
-            (name,metrics["scores"]["active_exact_k"])
-            for name,metrics in report["CAL"].items())}),flush=True)
+            ((name,metrics["scores"]["active_exact_k"])
+             for name,metrics in report["CAL"].items()),
+            key=lambda trial: (trial[1],trial[0]))}),flush=True)
 
 
 if __name__=="__main__":
