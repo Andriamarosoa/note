@@ -53,17 +53,21 @@ def axis_audit(events,truth,ends):
         raise ValueError("S748 stream ended without matched NoteOff")
     times=ends/SR
     note_duration=Counter()
+    true_count=np.zeros(len(ends),dtype=np.int32)
     for n in truth:
         pitch=int(n["pitch"])-40
         if not 0<=pitch<49:
             raise ValueError("S748 ground truth pitch outside MIDI40..88")
-        gt[(times>=float(n["time"]))&
-           (times<float(n["time"])+float(n["duration"])),pitch]=True
+        valid=(times>=float(n["time"]))&(
+            times<float(n["time"])+float(n["duration"]))
+        gt[valid,pitch]=True
+        true_count+=valid.astype(np.int32)
         if float(n["duration"])>=1:
             note_duration["long"]+=1
         else:
             note_duration["short"]+=1
-    true_count=gt.sum(1).astype(np.int32)
+    # Preserve the signed S704 K definition, including coincident
+    # same-pitch truth instances even though frame-pitch is binary.
     pred_count=pred.sum(1).astype(np.int32)
     confused=np.zeros((7,7),dtype=np.int64)
     for actual,proposed in zip(np.minimum(true_count,6),
