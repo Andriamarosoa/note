@@ -1,0 +1,40 @@
+name: S763 six-axis decoder isolation and causal contract
+on:
+  push:
+    branches: [codex/note-s763-isolated-decoders-six-axes]
+    paths:
+      - src/causal_note/s763_independent_decoders.py
+      - test/test_s763_independent_decoders.py
+      - .github/workflows/note-s763-isolated-decoders.yml
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s763-six-independent-decoder-tests
+  cancel-in-progress: true
+jobs:
+  isolated_decoders_and_signed_source_protection:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: .:src
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install minimal test dependency
+        run: python -m pip install "numpy>=1.26,<3"
+      - name: Verify six private decoders and strict causal inputs
+        run: |
+          python -m compileall -q src/causal_note/s763_independent_decoders.py test/test_s763_independent_decoders.py
+          python -m unittest -v test.test_s763_independent_decoders
+      - name: Confirm that no production baseline was modified
+        run: |
+          test -f src/causal_note/s708_cardinality_selection.py
+          test -f src/causal_note/s707_causal_release.py
+          test -f scripts/s704_joint_metrics.py
+          python - <<'PY'
+          from causal_note.s763_independent_decoders import AXES, default_decoders
+          assert len(AXES)==6 and len(default_decoders())==6
+          print("S763_INDEPENDENT_DECODERS_ISOLATION_TESTED_NO_LIVE_PROMOTION")
+          PY
