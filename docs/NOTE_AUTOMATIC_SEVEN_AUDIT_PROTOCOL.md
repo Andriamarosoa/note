@@ -45,3 +45,16 @@ Les mises à jour documentaires post-run de `resume.md` et `resultat.md` ne doiv
 ## Distinction importante
 
 Les six auditeurs GitHub sont six scripts/rôles déterministes ; ils ne sont **pas** les six agents ChatGPT Work personnalisés. NVIDIA est le septième relecteur scientifique LLM externe. Le succès 7/7 valide le **protocole d'audit**, pas l'atteinte des six métriques musicales à 80 %.
+
+
+## Extension depuis S804 : trois modèles NVIDIA, neuf preuves indépendantes
+
+Le protocole **7/7** ci-dessus reste l'historique valide S802/S803 ; il ne constitue pas la nouvelle norme de revue code/données. S804 introduit un protocole **9/9** : les six audits déterministes habituels ET trois modèles NVIDIA indépendants sur les preuves GitHub signées des 80 pistes FIT. Voir `.github/workflows/note-s804-deep-nine-audits.yml`.
+
+- Audit externe d'architecture : Gemma 4 31B ;
+- Audit externe des données : Nemotron 3.5 Lightning ;
+- Contre-audit externe : Poolside Laguna XS 2.1.
+
+Les trois jobs externes et six locaux s'exécutent **en parallèle seulement après** production d'un bundle de preuve : scan AST de tous les Python suivis par Git, extraits numérotés des chemins critiques, validation des 80 cartes OOF, statistiques réelles des erreurs par pitch/composition et contrôles SHA256. Le modèle ne lit pas chaque ligne du dépôt ni les fichiers audio entiers : cette limite doit être explicitement déclarée. CAL32, HELD et TEST sont interdits. La réussite de la consultation d'une API ne prouve ni absence de bug, ni F1 musical, ni latence physique.
+
+Pour chaque **future série S805+**, faire partir les trois demandes du même bundle et bloquer le consensus si un modèle ne répond pas ou si les preuves d'audit sont périmées, non authentifiées ou sur un autre SHA. Garder les anciens rapports S802/S803 inchangés. N'activer jamais de workflows historiques NVIDIA en parallèle du nouveau mécanisme pour éviter un double déclenchement. Les nouvelles série doivent explicitement adopter ce flux ; l'ajout documentaire ne modifie pas les workflows déjà existants.
