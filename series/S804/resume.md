@@ -21,7 +21,7 @@ Une lecture des seuls `resultat.md` par un LLM ne suffit pas pour découvrir des
 
 ## Modifications
 
-Création d'un pipeline S804 autonome : `scripts/s804_deep_audit_bundle.py` parcourt tous les Python suivis par Git et vérifie numériquement les 80 traces FIT S800 originales ; `scripts/s804_nvidia_deep_review.py` attribue trois modèles distincts (GLM-5.3-Flash : code/architecture ; NVIDIA Nemotron 3.5 Lightning : données ; NVIDIA Nemotron 3.5 Super VL : contre-audit). Les tâches partent en parallèle, utilisent des extraits source numérotés et SHA256 avec les données statistiques signées FIT80. `scripts/s804_local_six_audits.py` garde six rôles indépendants et `scripts/s804_nine_consensus.py` bloque si l'une des neuf preuves manque. Aucun nouveau routeur, tête, politique MIDI ou état LIVE de production n'est modifié.
+Création d'un pipeline S804 autonome : `scripts/s804_deep_audit_bundle.py` parcourt tous les Python suivis par Git et vérifie numériquement les 80 traces FIT S800 originales ; `scripts/s804_nvidia_deep_review.py` attribue trois modèles distincts (GLM-5.3-Flash : code/architecture ; NVIDIA Nemotron 3.5 Lightning : données ; DeepSeek V4.1 Flash : contre-audit). Les tâches partent en parallèle, utilisent des extraits source numérotés et SHA256 avec les données statistiques signées FIT80. `scripts/s804_local_six_audits.py` garde six rôles indépendants et `scripts/s804_nine_consensus.py` bloque si l'une des neuf preuves manque. Aucun nouveau routeur, tête, politique MIDI ou état LIVE de production n'est modifié.
 
 ## Protocole
 

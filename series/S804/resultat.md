@@ -43,7 +43,7 @@ La référence S708 reste inchangée, promotion=false. Ni le pipeline de product
 | Métriques | UNKNOWN | future exécution S804 |
 | LIVE | UNKNOWN | future exécution S804 |
 
-NVIDIA architecture (GLM-5.3-Flash) : UNKNOWN. NVIDIA données (Nemotron 3.5 Lightning) : UNKNOWN. NVIDIA red-team (Nemotron 3.5 Super) : UNKNOWN. Consensus neuf audits : UNKNOWN.
+NVIDIA architecture (GLM-5.3-Flash) : UNKNOWN. NVIDIA données (Nemotron 3.5 Lightning) : UNKNOWN. NVIDIA red-team (DeepSeek V4.1 Flash) : UNKNOWN. Consensus neuf audits : UNKNOWN.
 
 ## Verdict
 

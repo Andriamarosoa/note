@@ -13,7 +13,7 @@ SCHEMA="NOTE_S804_NVIDIA_DEEP_CODE_DATA_REVIEW_V1"
 ROLES={
     "architecture":"z-ai/glm-5.3-flash",
     "data":"nvidia/nemotron-3.5-lightning-30b-a3b",
-    "redteam":"nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "redteam":"deepseek-ai/deepseek-v4.1-flash",
 }
 PROMPTS={
 "architecture":(
@@ -99,10 +99,15 @@ def context(role,bundle):
     return content
 
 def payload(role,evidence):
-    return {"model":ROLES[role],
+    req={"model":ROLES[role],
         "messages":[{"role":"system","content":BASE_PROMPT+" "+PROMPTS[role]},
                     {"role":"user","content":evidence}],
-        "stream":False,"max_tokens":2400,"temperature":0.2}
+        "stream":False,"max_tokens":4200,"temperature":0.7}
+    if role=="data":
+        req["temperature"]=1.0
+        req["top_p"]=0.95
+        req["chat_template_kwargs"]={"enable_thinking":False}
+    return req
 
 def call(role,key,evidence,timeout=300):
     if not isinstance(key,str) or not key.startswith("nvapi-") or len(key)<20:
