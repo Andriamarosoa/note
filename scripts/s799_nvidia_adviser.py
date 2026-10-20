@@ -14,7 +14,7 @@ def make_payload(model, context):
     if model not in CANDIDATES: raise ValueError("unapproved model")
     req={"model":model,
          "messages":[{"role":"system","content":SYSTEM},
-                     {"role":"user","content":"Analyse S795-S797 comme septieme avis independant. Cinq hypotheses ablatables, anti regression six scores, zero lookahead/latence. Toute hypothese non verifiee doit etre identifiee.\n"+context}],
+                     {"role":"user","content":"Analyse S795-S797 comme septieme avis independant. Cinq hypotheses ablatables sur les harmoniques, confusions octaves, attaques onset et extinctions offset, anti regression six scores, zero lookahead/latence. Toute hypothese non verifiee doit etre identifiee.\n"+context}],
          "stream":False,"max_tokens":4500,
          "temperature":0.6 if model==CANDIDATES[0] else 0.4}
     if model==CANDIDATES[0]:
