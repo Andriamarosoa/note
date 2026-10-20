@@ -43,6 +43,11 @@ S798 infrastructure terminée et tous les six audits déterministes validés dan
 
 Run [#39346769099](https://github.com/Andriamarosoa/note/actions/runs/39346769099), commit `26eba6a86b1cca26d7226779f27e1c06b14d01c1` : les six audits PASS, consensus PASS, et le septième job Kimi a été exécuté mais s'est arrêté sur le garde-fou `NVIDIA_API_KEY secret missing`. Le secret GitHub Actions `NVIDIA_API_KEY` n'est pas disponible pour ce workflow. Aucun appel API au modèle n'a été envoyé, aucun avis de Kimi obtenu, aucune nouvelle valeur des six métriques calculée, aucun modèle LIVE modifié. Le statut global de ce run est FAILURE, **pas** un succès de Kimi. Le branchement one-shot par message de commit a été supprimé ensuite ; retour au déclenchement explicite `workflow_dispatch` uniquement.
 
+
+## Diagnostic du troisième essai du 7e conseiller — 20 octobre 2026
+
+Le run [#39347743466](https://github.com/Andriamarosoa/note/actions/runs/39347743466) termine six audits PASS et consensus PASS, mais le septième job FAIL sur `NVIDIA_API_KEY is missing or malformed`. Dans le run [#39347543851](https://github.com/Andriamarosoa/note/actions/runs/39347543851), la valeur du secret était déjà présente, mais le log masquait ce diagnostic. La vérification confirme : une variable `NVIDIA_API_KEY` non vide existe dans GitHub Actions, mais elle ne commence pas par `nvapi-` ou est trop courte pour le client. Aucune requête externe NVIDIA ni réponse Kimi n'a été produite. Ne pas réutiliser la clé du fichier `test.py` ; créer une nouvelle clé officielle et enregistrer uniquement la valeur réelle, sans préfixe `Bearer`, sans guillemets ou caractères parasites. Aucune évolution des six scores officiels S708 ni du LIVE. Le déclencheur de commit `[run-kimi-once]` est supprimé après diagnostic ; seul `workflow_dispatch` demeure.
+
 ## Prochaine action
 
 1. Révoquer la clé visible dans `test.py` et créer une clé NVIDIA neuve.
