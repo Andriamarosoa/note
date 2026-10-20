@@ -1,11 +1,11 @@
 ---
 serie: S801
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s801-fit-fragment-metric-ablations
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39354733640
+commit_sha: ce470b37a0cc5c21533086cd46e3793a9490b7a3
 promotion: false
 ---
 
@@ -33,4 +33,4 @@ Données : cinq plis tenus à part et aucun CAL. Acoustique : attaques, extincti
 
 ## Statut
 
-En cours : les sorties FIT réelles seront obtenues depuis la reconstruction S800 validée, sans entraîner une nouvelle fois. La branche S801 reste expérimentale, la référence officielle reste S708 et aucun score d'amélioration n'est revendiqué avant un run réellement terminé.
+**Terminée — évaluation FIT80 réelle et six audits PASS.** Run [#39354733640](https://github.com/Andriamarosoa/note/actions/runs/39354733640), commit `ce470b37a0cc5c21533086cd46e3793a9490b7a3`. Les huit politiques ont toutes été évaluées sans nouvel entraînement depuis les 80 traces OOF signées de S800. Tous les audits et leur consensus sont PASS, mais **aucun candidat non identitaire ne franchit les six garde-fous** : sept alternatives rejetées, référence S708 non modifiée. L'analyse des événements met en évidence 95 fermetures lors de réattaque native pour 136 attaques additionnelles (consensus), 81/118 (adaptive), 61/90 (poly-gap). Aucune latence physique mesurée ou promotion.
