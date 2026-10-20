@@ -1,0 +1,159 @@
+name: S802 real FIT80 ground-truth synthetic native retrigger forensic audit
+on:
+  push:
+    branches: [codex/note-s802-synthetic-native-retrigger-forensics]
+    paths:
+      - scripts/s802_retrigger_forensics.py
+      - test/test_s802_retrigger_forensics.py
+      - scripts/s802_six_role_audits.py
+      - .github/workflows/note-s802-native-retrigger-forensics.yml
+      - scripts/note_seventh_adviser.py
+      - scripts/note_seventh_consensus.py
+      - test/test_note_seventh_adviser.py
+      - test/test_note_seventh_consensus.py
+      - .github/workflows/note-reusable-seventh-adviser.yml
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+  actions: read
+env:
+  PYTHONPATH: .:src
+  GH_TOKEN: ${{ github.token }}
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '2'
+  OMP_NUM_THREADS: '2'
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install frozen S795 note decoder and scientific matcher
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Unit tests on true-vs-false synthetic retrigger collision
+        run: |
+          python -m compileall -q scripts/s802_retrigger_forensics.py test/test_s802_retrigger_forensics.py scripts/s802_six_role_audits.py
+          python -m unittest -v test.test_s802_retrigger_forensics test.test_s801_fit_fragment_ablations test.test_note_seventh_adviser test.test_note_seventh_consensus
+          python -m scripts.verify_series_reports --series S802
+  fit80_forensics:
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original scientific metric ABI
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Fetch authentic S800 full OOF and signed S801 eight-policy measurements
+        run: |
+          mkdir -p /tmp/s802/evidence /tmp/s802/traces /tmp/s802/s801
+          gh run download 39352880035 --repo Andriamarosoa/note \
+            --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/s802/evidence
+          gh run download 39352880035 --repo Andriamarosoa/note \
+            --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/s802/traces
+          gh run download 39354733640 --repo Andriamarosoa/note \
+            --name S801_REAL_FIT80_EIGHT_POLICY_MIDI256 --dir /tmp/s802/s801
+          test -s /tmp/s802/evidence/replay/report.json
+          test -s /tmp/s802/s801/real_fit80.json
+          test -s "$(find /tmp/s802/traces -name fit_000.npz -type f -print -quit)"
+      - name: Match all supplemental onsets with retrospective FIT annotations
+        run: |
+          trace_file="$(find /tmp/s802/traces -name fit_000.npz -type f -print -quit)"
+          python -m scripts.s802_retrigger_forensics \
+            --manifest /tmp/s802/evidence/replay/report.json \
+            --traces "$(dirname "$trace_file")" \
+            --s801 /tmp/s802/s801/real_fit80.json \
+            --out /tmp/s802/forensic.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S802_REAL_FIT80_TRUTH_MATCHED_COLLISION_CAUSES
+          path: /tmp/s802/forensic.json
+          retention-days: 45
+          if-no-files-found: warn
+  nvidia_seventh_adviser:
+    name: S802 seventh adviser GLM (parallel to six independent roles)
+    needs: [smoke,fit80_forensics]
+    uses: ./.github/workflows/note-reusable-seventh-adviser.yml
+    with:
+      series: S802
+    secrets: inherit
+  six_audits:
+    if: always()
+    needs: [smoke,fit80_forensics]
+    name: S802 independent ${{ matrix.role }} deep forensic audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [data, acoustics, architecture, training, metrics, live]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: S802_REAL_FIT80_TRUTH_MATCHED_COLLISION_CAUSES
+          path: /tmp/s802/evidence
+      - name: Independent role checks retrospectively labeled MIDI evidence
+        run: |
+          python -m scripts.s802_six_role_audits \
+            --role ${{ matrix.role }} \
+            --report /tmp/s802/evidence/forensic.json \
+            --out /tmp/s802/audits/role_${{ matrix.role }}.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S802_AUDIT_${{ matrix.role }}
+          path: /tmp/s802/audits/role_${{ matrix.role }}.json
+          if-no-files-found: warn
+  consensus:
+    needs: [smoke,fit80_forensics,six_audits,nvidia_seventh_adviser]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: S802_AUDIT_*
+          path: /tmp/s802/audits
+          merge-multiple: true
+      - name: Download real NVIDIA seventh review, fail closed if missing
+        uses: actions/download-artifact@v4
+        with:
+          name: S802_SEVENTH_NVIDIA_INDEPENDENT_REVIEW
+          path: /tmp/s802/seventh
+      - name: Six local audit consensus AND real seventh review both required
+        run: |
+          python -m scripts.s787_audit_consensus \
+            --reports-dir /tmp/s802/audits \
+            --out /tmp/s802/consensus.json
+          python -m scripts.note_seventh_consensus \
+            --series S802 \
+            --six-consensus /tmp/s802/consensus.json \
+            --seventh-advice /tmp/s802/seventh/review.json \
+            --out /tmp/s802/seven_consensus.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S802_SIX_ROLE_CONSENSUS
+          path: |
+            /tmp/s802/consensus.json
+            /tmp/s802/seven_consensus.json
+          if-no-files-found: warn
