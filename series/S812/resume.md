@@ -1,11 +1,11 @@
 ---
 serie: S812
-statut: en_cours
+statut: termine
 type: infrastructure
 reference: S708
 branche: codex/note-s812-protect-six-native-h0-axes
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39395720777
+commit_sha: 4e4cef6bda8d37ba521e3e66b1a36c9116dc6099
 promotion: false
 ---
 # S812 — conservation du véritable historique H0 dans six chaînes indépendantes
@@ -38,4 +38,12 @@ Données : vérification S800 SHA256 de chaque JSON/NPZ et de 80 pistes ; Acoust
 
 ## Statut
 
-Sept tests unitaires et 80 traces FIT réelles ont passé un replay **local** des six copies MIDI H0 sans modification ; le contrôle officiel S704 GitHub reste à exécuter avant de clore. S708 reste officielle. Aucune promotion, aucune régression et aucun déploiement LIVE.
+Sept tests unitaires et 80 traces FIT réelles ont passé un replay **local** des six copies MIDI H0 sans modification ; le contrôle officiel S704 GitHub a réussi et la série peut être clôturée. S708 reste officielle. Aucune promotion, aucune régression et aucun déploiement LIVE.
+
+## Finalisation scientifique S812 — aucune régression historique
+
+Exécution [GitHub Actions #39395720777](https://github.com/Andriamarosoa/note/actions/runs/39395720777) sur le commit original `4e4cef6bda8d37ba521e3e66b1a36c9116dc6099` : **smoke SUCCESS** et **replay FIT80 SUCCESS**. Les vrais 80 tracks GuitarSet FIT80 de [S800 #39352880035](https://github.com/Andriamarosoa/note/actions/runs/39352880035) ont passé les validations SHA256 des 160 fichiers d'observation. Les six sorties H0 sont indépendantes en état, et **144 204 événements originaux copiés** à travers les six chaînes ont conservé exactement leurs attributs. Les **306 536 frames MIDI256**, 12 compteurs historiques, six scores S704 et cinq groupes de composition sont identiques à la référence signée. **2 400 comparaisons de non-interférence entre axes** sous six tentatives shadow par piste : PASS. L'archive GitHub `S812_GUITARSET_FIT80_H0_SIX_AXIS_BITEXACT_S708_MIDI256` contient `report.json`, sans score hypothétique H1.
+
+F1 Onset=0,7325201855351314 ; Exact-K=0,6169715791946133 ; Active Exact-K=0,5701953803160246 ; Offset=0,6988622896420953 ; Full Note F1=0,5065280879573957 ; Frame Pitch F1=0,7872775892898732. **Différence zéro sur chacune des six mesures**, sans arrondir pour cacher de petites pertes : parité exacte des 12 numérateurs/dénominateurs.
+
+Cette réussite ne crée aucun nouveau modèle historique et n'entraîne aucune des têtes S810. H0 est bien la vue fidèle du même flux historique S708/S707, pas six anciennes architectures acoustiques reconstituées. S708 demeure officielle, sans promotion automatique de modèle indépendant, et le surcoût CPU/iRig n'est pas mesuré physiquement.
