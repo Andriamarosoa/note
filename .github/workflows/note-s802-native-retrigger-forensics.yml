@@ -7,8 +7,11 @@ on:
       - test/test_s802_retrigger_forensics.py
       - scripts/s802_six_role_audits.py
       - .github/workflows/note-s802-native-retrigger-forensics.yml
-      - series/S802/resume.md
-      - series/S802/resultat.md
+      - scripts/note_seventh_adviser.py
+      - scripts/note_seventh_consensus.py
+      - test/test_note_seventh_adviser.py
+      - test/test_note_seventh_consensus.py
+      - .github/workflows/note-reusable-seventh-adviser.yml
   workflow_dispatch:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -38,7 +41,7 @@ jobs:
       - name: Unit tests on true-vs-false synthetic retrigger collision
         run: |
           python -m compileall -q scripts/s802_retrigger_forensics.py test/test_s802_retrigger_forensics.py scripts/s802_six_role_audits.py
-          python -m unittest -v test.test_s802_retrigger_forensics test.test_s801_fit_fragment_ablations
+          python -m unittest -v test.test_s802_retrigger_forensics test.test_s801_fit_fragment_ablations test.test_note_seventh_adviser test.test_note_seventh_consensus
           python -m scripts.verify_series_reports --series S802
   fit80_forensics:
     needs: smoke
@@ -79,6 +82,13 @@ jobs:
           path: /tmp/s802/forensic.json
           retention-days: 45
           if-no-files-found: warn
+  nvidia_seventh_adviser:
+    name: S802 seventh adviser GLM (parallel to six independent roles)
+    needs: [smoke,fit80_forensics]
+    uses: ./.github/workflows/note-reusable-seventh-adviser.yml
+    with:
+      series: S802
+    secrets: inherit
   six_audits:
     if: always()
     needs: [smoke,fit80_forensics]
@@ -111,7 +121,7 @@ jobs:
           path: /tmp/s802/audits/role_${{ matrix.role }}.json
           if-no-files-found: warn
   consensus:
-    needs: [smoke,fit80_forensics,six_audits]
+    needs: [smoke,fit80_forensics,six_audits,nvidia_seventh_adviser]
     if: always()
     runs-on: ubuntu-24.04
     timeout-minutes: 8
@@ -124,14 +134,26 @@ jobs:
           pattern: S802_AUDIT_*
           path: /tmp/s802/audits
           merge-multiple: true
-      - name: Six PASS roles or full failure, no promotor authority
+      - name: Download real NVIDIA seventh review, fail closed if missing
+        uses: actions/download-artifact@v4
+        with:
+          name: S802_SEVENTH_NVIDIA_INDEPENDENT_REVIEW
+          path: /tmp/s802/seventh
+      - name: Six local audit consensus AND real seventh review both required
         run: |
           python -m scripts.s787_audit_consensus \
             --reports-dir /tmp/s802/audits \
             --out /tmp/s802/consensus.json
+          python -m scripts.note_seventh_consensus \
+            --series S802 \
+            --six-consensus /tmp/s802/consensus.json \
+            --seventh-advice /tmp/s802/seventh/review.json \
+            --out /tmp/s802/seven_consensus.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: S802_SIX_ROLE_CONSENSUS
-          path: /tmp/s802/consensus.json
+          path: |
+            /tmp/s802/consensus.json
+            /tmp/s802/seven_consensus.json
           if-no-files-found: warn

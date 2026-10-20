@@ -2,7 +2,8 @@
 
 Read only three GitHub-committed research result summaries, never code/audio/OOF.
 External NVIDIA opinion is untrusted and CANNOT update models or promote scores.
-The caller must first prove that all six independent audits reached PASS.
+The GitHub workflow runs this reviewer in parallel with six independent audits.
+The FINAL seven-reviewer consensus must verify all six and this opinion.
 """
 from __future__ import annotations
 import argparse
@@ -64,8 +65,8 @@ def payload(series,model,context):
     req=dict(model=model,messages=[
         {"role":"system","content":PROMPT},
         {"role":"user","content":(
-            f"Audit scientifique indépendant de {series}, après six contrôles "
-            "locaux PASS. Il ne s'agit pas d'un agent qui exécute du code. "
+            f"Audit scientifique indépendant de {series}, en parallèle des six "
+            "audits locaux. Il ne s'agit pas d'un agent qui exécute du code. "
             "Analyse notamment les collisions natives/synthétiques si présentes. "
             "Focalise-toi sur les chiffres actuels et refuse de les inventer.\n\n"
             +context)}],
@@ -103,7 +104,7 @@ def request_one(series,model,key,context,timeout=115):
     return dict(schema=SCHEMA,series=series,provider="NVIDIA NIM",
         model=model,status="review_received",
         seventh_adviser_executed=True,
-        six_independent_audits_must_pass_before_call=True,
+        six_independent_audits_run_in_parallel=True,
         independent_opinion_only=True,
         recommendations_unvalidated=True,official_promotion_allowed=False,
         real_guitarset_scores_measured=False,live_code_modified=False,

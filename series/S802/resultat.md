@@ -105,3 +105,7 @@ L'avis ne mesure aucune amélioration CAL32, aucune latence physique ni aucun ga
 ## Prochaine action
 
 Étudier les sous-groupes de faux positifs observés, surtout SS1/Jazz1, sans chercher un simple délai de confirmation. Les distributions initiales des probabilités des têtes se recouvrent fortement entre vrais et faux positifs ; une règle de veto naïve risquerait donc de supprimer de vraies notes. Proposer seulement ensuite un éventuel veto par caractéristiques audio présentes à l'instant de création. Tout candidat devra d'abord satisfaire les six métriques FIT, puis une validation indépendante CAL32 et le test physique S793.
+
+## Automatisation 7/7 S802
+
+La configuration scientifique S802 a été modifiée pour exécuter les six rôles indépendants et le modèle NVIDIA GLM simultanément après le job FIT80, sans déclenchement manuel. Le job final rejette l'exécution si un seul des six audits échoue ou si l'avis externe réel manque/échoue. Les six mesures GuitarSet et la référence S708 restent inchangées. Le résultat de cette nouvelle intégration doit encore être confirmé par son propre run GitHub Actions ; il ne remplace pas le run scientifique archivé #39357068590 ni le septième avis archivé #39358229144.

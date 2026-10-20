@@ -1,13 +1,9 @@
-name: NOTE mandatory seventh independent scientific adviser (reusable)
+name: NOTE reusable NVIDIA seventh scientific audit (PARALLEL)
 on:
   workflow_call:
     inputs:
       series:
-        description: "Validated S8xx series, starts at S802"
-        type: string
-        required: true
-      scientific_run_id:
-        description: "Successful GitHub Action run containing six distinct audit reports"
+        description: "S8xx series being scientifically evaluated"
         type: string
         required: true
     secrets:
@@ -18,64 +14,29 @@ permissions:
   actions: read
 env:
   PYTHONPATH: .:src
-  GH_TOKEN: ${{ github.token }}
   PYTHONUNBUFFERED: '1'
 jobs:
-  verify_six_audits:
-    name: Verify six original scientific auditors before external request
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: {python-version: '3.11'}
-      - name: Original scientific run MUST have succeeded
-        env:
-          SOURCE_RUN: ${{ inputs.scientific_run_id }}
-          SOURCE_SERIES: ${{ inputs.series }}
-        run: |
-          case "$SOURCE_SERIES" in S8[0-9][0-9]) ;; *) echo "invalid series"; exit 1;; esac
-          case "$SOURCE_RUN" in *[!0-9]*|'') echo "invalid trusted run id"; exit 1;; esac
-          conclusion="$(gh run view "$SOURCE_RUN" --repo Andriamarosoa/note \
-            --json conclusion --jq '.conclusion')"
-          test "$conclusion" = "success" || { echo "SOURCE SCIENTIFIC RUN NOT SUCCESS"; exit 1; }
-          mkdir -p /tmp/note/roles
-          for role in data acoustics architecture training metrics live; do
-            gh run download "$SOURCE_RUN" --repo Andriamarosoa/note \
-              --name "${SOURCE_SERIES}_AUDIT_${role}" --dir /tmp/note/roles
-            test -s "/tmp/note/roles/role_${role}.json"
-          done
-          python -m scripts.s787_audit_consensus \
-            --reports-dir /tmp/note/roles --out /tmp/note/verified_consensus.json
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ inputs.series }}_SIX_AUDIT_VERIFIED_FOR_SEVENTH
-          path: /tmp/note/verified_consensus.json
-          if-no-files-found: error
-          retention-days: 45
   external_adviser:
-    name: Seventh adviser via NVIDIA (AFTER six verified PASS roles)
-    needs: verify_six_audits
+    name: NVIDIA seventh reviewer (parallel to six independent audits)
     runs-on: ubuntu-24.04
     timeout-minutes: 7
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: {python-version: '3.11'}
-      - name: Python mocked provider and restricted summary validation
+      - name: Verify client and safety tests locally (no external calls)
         run: |
-          python -m unittest -v test.test_note_seventh_adviser
-          python -m compileall -q scripts/note_seventh_adviser.py
-      - name: Ask independent seventh scientist; no code nor audio shared
+          python -m unittest -v test.test_note_seventh_adviser test.test_note_seventh_consensus
+          python -m compileall -q scripts/note_seventh_adviser.py scripts/note_seventh_consensus.py
+      - name: Call real independent reviewer from GitHub secret
         env:
           NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
           SCIENTIFIC_SERIES: ${{ inputs.series }}
         run: |
-          test -n "$NVIDIA_API_KEY" || { echo "GitHub NVIDIA_API_KEY unavailable"; exit 1; }
-          python -m scripts.note_seventh_adviser \
-            --series "$SCIENTIFIC_SERIES" \
-            --out /tmp/note/seventh/review.json
-      - name: Archive independent advisory-only review
+          test -n "$NVIDIA_API_KEY" || { echo "NVIDIA_API_KEY secret missing"; exit 1; }
+          python -m scripts.note_seventh_adviser             --series "$SCIENTIFIC_SERIES"             --out /tmp/note/seventh/review.json
+      - name: Archive independent, non-promotable seventh review
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.series }}_SEVENTH_NVIDIA_INDEPENDENT_REVIEW
