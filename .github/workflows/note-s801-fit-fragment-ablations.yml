@@ -1,0 +1,137 @@
+name: S801 real FIT80 fragment/head ablations on signed S800 traces
+on:
+  push:
+    branches: [codex/note-s801-fit-fragment-metric-ablations]
+    paths:
+      - scripts/s801_fit_fragment_ablations.py
+      - test/test_s801_fit_fragment_ablations.py
+      - scripts/s801_six_role_audits.py
+      - .github/workflows/note-s801-fit-fragment-ablations.yml
+      - series/S801/resume.md
+      - series/S801/resultat.md
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+  actions: read
+env:
+  PYTHONPATH: .:src
+  GH_TOKEN: ${{ github.token }}
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '2'
+  OMP_NUM_THREADS: '2'
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install frozen acoustic decoder scientific ABI
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Exercise zero-lookahead policies, native MIDI timing and reports
+        run: |
+          python -m compileall -q scripts/s801_fit_fragment_ablations.py test/test_s801_fit_fragment_ablations.py scripts/s801_six_role_audits.py
+          python -m unittest -v test.test_s801_fit_fragment_ablations test.test_s797_fragment_router
+          python -m scripts.verify_series_reports --series S801
+  fit80_ablations:
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && contains(github.event.head_commit.message, '[run-s801-once]'))
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install same frozen S795 decoder dependencies
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Download signed S800 FIT80 OOF traces without retraining
+        run: |
+          mkdir -p /tmp/s801/evidence /tmp/s801/traces
+          gh run download 39352880035 --repo Andriamarosoa/note \
+            --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/s801/evidence
+          gh run download 39352880035 --repo Andriamarosoa/note \
+            --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/s801/traces
+          test -s /tmp/s801/evidence/replay/report.json
+          test -s /tmp/s801/evidence/verification.json
+          test -s "$(find /tmp/s801/traces -name fit_000.npz -type f -print -quit)"
+      - name: Evaluate eight fixed OOF dynamic-head policies on actual MIDI256
+        run: |
+          trace_file="$(find /tmp/s801/traces -name fit_000.npz -type f -print -quit)"
+          trace_dir="$(dirname "$trace_file")"
+          python -m scripts.s801_fit_fragment_ablations \
+            --manifest /tmp/s801/evidence/replay/report.json \
+            --traces "$trace_dir" \
+            --out /tmp/s801/real_fit80.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S801_REAL_FIT80_EIGHT_POLICY_MIDI256
+          path: /tmp/s801/real_fit80.json
+          retention-days: 45
+          if-no-files-found: warn
+  six_audits:
+    if: always()
+    needs: [smoke,fit80_ablations]
+    name: S801 independent ${{ matrix.role }} scientific audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [data, acoustics, architecture, training, metrics, live]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Read signed real S801 FIT80 evidence, fail closed if absent
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: S801_REAL_FIT80_EIGHT_POLICY_MIDI256
+          path: /tmp/s801/input
+      - name: Independent evidence-consuming reviewer
+        run: |
+          python -m scripts.s801_six_role_audits \
+            --role ${{ matrix.role }} \
+            --report /tmp/s801/input/real_fit80.json \
+            --out /tmp/s801/audits/role_${{ matrix.role }}.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S801_AUDIT_${{ matrix.role }}
+          path: /tmp/s801/audits/role_${{ matrix.role }}.json
+          if-no-files-found: warn
+  consensus:
+    if: always()
+    needs: [smoke,fit80_ablations,six_audits]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: S801_AUDIT_*
+          path: /tmp/s801/audits
+          merge-multiple: true
+      - name: Reject absent, failed or incomplete role evidence
+        run: |
+          python -m scripts.s787_audit_consensus \
+            --reports-dir /tmp/s801/audits \
+            --out /tmp/s801/consensus.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S801_SIX_ROLE_CONSENSUS
+          path: /tmp/s801/consensus.json
+          if-no-files-found: warn
