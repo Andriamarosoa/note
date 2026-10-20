@@ -44,6 +44,7 @@ class Adviser(unittest.TestCase):
         with patch.object(a.urllib.request,"build_opener",return_value=Opener()):
             o=a.consult("S802",KEY,"ONLY FAKE SUMMARY")
         self.assertEqual(len(calls),1)
+        self.assertEqual(calls[0]["max_tokens"],1600)
         self.assertEqual(calls[0]["model"],"z-ai/glm-5.3-flash")
         self.assertIn("S802",calls[0]["messages"][1]["content"])
         self.assertFalse(o["official_promotion_allowed"])

@@ -5,6 +5,8 @@ on:
     paths:
       - scripts/s803_causal_frame_replay.py
       - scripts/s803_six_role_audits.py
+      - scripts/note_seventh_adviser.py
+      - test/test_note_seventh_adviser.py
       - test/test_s803_causal_frame_replay.py
       - .github/workflows/note-s803-causal-frame-gates.yml
   workflow_dispatch:
