@@ -1,0 +1,74 @@
+name: S800 independent 6-role re-audit of immutable FIT80 OOF evidence
+# Reads the nested replay/report.json from archived run 39352880035; no FIT retraining.
+on:
+  push:
+    branches: [codex/note-s800-fit-oof-replay-traces]
+    paths:
+      - .github/workflows/note-s800-reaudit-frozen.yml
+      - scripts/s800_six_role_audits.py
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+env:
+  GH_TOKEN: ${{ github.token }}
+  PYTHONPATH: .:src
+  PYTHONUNBUFFERED: '1'
+jobs:
+  six_audits:
+    name: S800 frozen ${{ matrix.role }} independent audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [data, acoustics, architecture, training, metrics, live]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Download unchanged S800 signed manifest & FIT80 verifier
+        run: |
+          mkdir -p /tmp/s800/input
+          gh run download 39352880035 --repo Andriamarosoa/note \
+            --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/s800/input
+          test -s /tmp/s800/input/replay/report.json
+          test -s /tmp/s800/input/verification.json
+      - name: Audit historic FIT source evidence without retraining
+        run: |
+          python -m scripts.s800_six_role_audits \
+            --role ${{ matrix.role }} \
+            --report /tmp/s800/input/replay/report.json \
+            --verification /tmp/s800/input/verification.json \
+            --out /tmp/s800/audits/role_${{ matrix.role }}.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S800_FROZEN_REAUDIT_${{ matrix.role }}
+          path: /tmp/s800/audits/role_${{ matrix.role }}.json
+          if-no-files-found: warn
+  consensus:
+    needs: six_audits
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: S800_FROZEN_REAUDIT_*
+          path: /tmp/s800/audits
+          merge-multiple: true
+      - name: Require exactly six independently successful forensic audits
+        run: |
+          python -m scripts.s787_audit_consensus \
+            --reports-dir /tmp/s800/audits \
+            --out /tmp/s800/consensus.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S800_FROZEN_REAUDIT_CONSENSUS
+          path: /tmp/s800/consensus.json
+          if-no-files-found: warn
