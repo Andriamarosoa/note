@@ -141,9 +141,17 @@ def main() -> None:
         args.out.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n",
                             encoding="utf-8")
         print("S798_KIMI_OPINION_ARCHIVED opinion_only=true promotion=false")
-    except (OSError, ValueError, RuntimeError):
-        # Generic errors avoid accidental key and provider data disclosure.
-        print("S798_KIMI_CONSULTATION_FAILED: check secret and network", file=sys.stderr)
+    except RuntimeError as exc:
+        # Only explicit, allowlisted diagnostics; never provider body or request.
+        detail = str(exc)
+        safe = detail if re.fullmatch(
+            r"NVIDIA returned HTTP [1-5][0-9][0-9]|NVIDIA connection failed",
+            detail
+        ) else "check secret and network"
+        print("S798_KIMI_CONSULTATION_FAILED: " + safe, file=sys.stderr)
+        raise SystemExit(1) from None
+    except (OSError, ValueError):
+        print("S798_KIMI_CONSULTATION_FAILED: invalid input or response", file=sys.stderr)
         raise SystemExit(1) from None
 
 if __name__ == "__main__":
