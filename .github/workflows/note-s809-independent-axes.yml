@@ -1,0 +1,132 @@
+name: S809 six genuinely isolated per-axis head selector decoder pipelines
+# Ordinary pushes: smoke-only. Exactly one explicitly tagged research push
+# may replay 80 signed FIT tracks. No NVIDIA NIM calls.
+on:
+  push:
+    branches: [codex/note-s809-six-isolated-axis-pipelines]
+    paths:
+      - src/causal_note/s809_isolated_axis_pipeline.py
+      - test/test_s809_axis_isolation.py
+      - scripts/s809_fit80_independence_replay.py
+      - scripts/s809_six_role_audits.py
+      - .github/workflows/note-s809-independent-axes.yml
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+  actions: read
+env:
+  PYTHONPATH: .:src
+  GH_TOKEN: ${{ github.token }}
+  PYTHONUNBUFFERED: "1"
+  OMP_NUM_THREADS: "1"
+  MKL_NUM_THREADS: "1"
+  OPENBLAS_NUM_THREADS: "1"
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original dependencies, no new GPU training
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Negative controls on each individual head selector decoder
+        run: |
+          python -m compileall -q src/causal_note/s809_isolated_axis_pipeline.py scripts/s809_fit80_independence_replay.py scripts/s809_six_role_audits.py test/test_s809_axis_isolation.py
+          python -m unittest -v test.test_s763_independent_decoders test.test_s809_axis_isolation
+          python -m scripts.verify_series_reports --series S809
+  fit80_architecture_replay:
+    if: needs.smoke.result == 'success' && (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[run-fit80]'))
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 80
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original MIDI scorer dependencies
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Download original signed S800 GuitarSet FIT80 traces only
+        run: |
+          mkdir -p /tmp/s809/manifest /tmp/s809/traces
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/s809/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/s809/traces
+          test -s /tmp/s809/manifest/replay/report.json
+          test -n "$(find /tmp/s809/traces -name fit_000.npz -print -quit)"
+      - name: Six real independent causal axis replays and 30 mutation invariants
+        run: |
+          tr="$(find /tmp/s809/traces -name fit_000.npz -type f -print -quit)"
+          python -m scripts.s809_fit80_independence_replay \
+            --manifest /tmp/s809/manifest/replay/report.json \
+            --traces "$(dirname "$tr")" \
+            --out /tmp/s809/results/s809_fit80.json
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: S809_REAL_FIT80_SIX_INDEPENDENT_HEAD_SELECTOR_DECODER_PROOF
+          path: /tmp/s809/results/s809_fit80.json
+          if-no-files-found: error
+          retention-days: 45
+  six_audits:
+    if: needs.fit80_architecture_replay.result == 'success'
+    needs: fit80_architecture_replay
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [data, acoustics, architecture, training, metrics, live]
+    name: S809 independent architecture auditor ${{ matrix.role }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          name: S809_REAL_FIT80_SIX_INDEPENDENT_HEAD_SELECTOR_DECODER_PROOF
+          path: /tmp/s809/evidence
+      - name: Fail-closed signed per-axis source/metric/latency check
+        run: |
+          python -m scripts.s809_six_role_audits \
+            --role ${{ matrix.role }} \
+            --report /tmp/s809/evidence/s809_fit80.json \
+            --out /tmp/s809/audits/role_${{ matrix.role }}.json
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: S809_AUDIT_${{ matrix.role }}
+          path: /tmp/s809/audits/role_${{ matrix.role }}.json
+          if-no-files-found: error
+  six_consensus:
+    if: needs.six_audits.result == 'success'
+    needs: six_audits
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: S809_AUDIT_*
+          path: /tmp/s809/audits
+          merge-multiple: true
+      - name: Verify all six complete independent role audits
+        run: |
+          python -m scripts.s787_audit_consensus \
+            --reports-dir /tmp/s809/audits \
+            --out /tmp/s809/consensus/six.json
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: S809_SIX_OF_SIX_SCIENTIFIC_SEPARATION_AUDITS
+          path: /tmp/s809/consensus/six.json
+          if-no-files-found: error
