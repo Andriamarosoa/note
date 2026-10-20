@@ -38,3 +38,7 @@ Six rôles indépendants, avec fail-closed consensus : Données (partitionnement
 ## Septième conseiller automatique
 
 Le workflow S802 scientifique déclenche désormais la consultation NVIDIA **en parallèle** des six rôles d'audit, après la reconstruction des preuves FIT80. Le consensus final doit réussir les six rôles ET vérifier l'artefact de la vraie réponse GLM-5.3-Flash. Aucun `workflow_dispatch` manuel n'est requis pour les exécutions normales. Un échec de NVIDIA ne sera plus enregistré comme septième PASS. La consultation n'est jamais un pouvoir de promotion. Ce dispositif est appelé automatiquement par le workflow S802 ; les nouvelles séries S803+ doivent intégrer le job partagé `.github/workflows/note-reusable-seventh-adviser.yml`.
+
+## Test de bout en bout automatique 7/7 confirmé
+
+Le [run #39359182007](https://github.com/Andriamarosoa/note/actions/runs/39359182007) a validé l'automatisation **sans déclenchement manuel** : six audits S802 PASS et septième relecture NVIDIA GLM-5.3-Flash PASS, lancés en parallèle dès que le job scientifique FIT80 était terminé. Le consensus final `NOTE_SEVEN_OF_SEVEN_PASS S802 z-ai/glm-5.3-flash promotion=false` est PASS ; les artefacts NVIDIA et six rôles sont liés au même run. L'ancien workflow séparé a été supprimé. Les séries S803 et suivantes doivent importer le workflow partagé pour reproduire cette parallélisation sur leurs boucles.
