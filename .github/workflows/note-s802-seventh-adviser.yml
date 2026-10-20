@@ -1,8 +1,0 @@
-name: Legacy S802 separate seventh reviewer (disabled; combined with six audits)
-# This legacy entrypoint intentionally has NO triggering event.
-# The S802 scientific workflow now launches NVIDIA automatically alongside
-# the six local jobs. Do not re-enable this and duplicate external API calls.
-on: {}
-permissions:
-  contents: read
-jobs: {}
