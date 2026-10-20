@@ -1,11 +1,11 @@
 ---
 serie: S807
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s807-blind-activek-three-model-review
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39378681127
+commit_sha: 07aa63dbad13dba4922a16b22da6b2b920a06061
 promotion: false
 ---
 
@@ -38,3 +38,13 @@ Contrôle de parité SHA de la preuve identique entre trois appels ; contrôle d
 ## Statut
 
 Préparation de l'expérience, résultats de modèles inconnus jusqu'à lecture des artefacts réels. S708 strictement conservée. Aucun entraînement ou retiming LIVE.
+
+## Conclusion après deux consultations réelles et contre-audit
+
+Le premier run de modèles [#39377951484](https://github.com/Andriamarosoa/note/actions/runs/39377951484) termine et signale : Gemma texte non suffisamment ancré (1 chemin cité exactement), Nemotron contenu final vide malgré 3300 tokens, Poolside HTTP503. Une unique tentative corrective [#39378681127](https://github.com/Andriamarosoa/note/actions/runs/39378681127) désactive le long raisonnement Nemotron, remplace le fournisseur 503 par `meta/llama-3.3-70b-instruct` et conserve EXACTEMENT le même prompt SHA et le même contexte numérique et source SHA. Nemotron rend 14 847 caractères, trois chemins valides ; Gemma rend un long texte mais zéro chemin exact vérifiable ; Llama répond HTTP410. Triage textuel 1/3, **validation scientifique 0/3** puisque Nemotron présente des fausses références et interprétations. Pas de consensus externe certifié, aucun modèle promu. Les deux runs ont passé leur smoke et leur collecte traçable.
+
+Contre-audit : les hallucinations communes confondent le `ActiveKDecoder` S763 (shadow, non déployé) avec S708, attribuent à S797 (recherche, non promu) une régression de S708 et confondent K posterior `argmax` avec active-K calculé sur les événements MIDI effectivement émis. Le lissage gaussien de S741 n'a pas de biais directionnel intrinsèque sur l'argmax d'une source isolée. Déplacer la vérité ou modifier le dénominateur des frames n'est pas un gain musical ni un test admissible. Les modèles ont néanmoins raison sur la **statistique descriptive** : 80 654 sous-comptages sur 107 198 erreurs actives FIT80.
+
+Analyse causale plus poussée sur vrais événements : le script `scripts/s807_midi_gap_diagnostic.py` analyse chaque trame 256 et chaque hauteur sur les **80 JSON S800 FIT** en reproduisant strictement les compteurs signés S708/S794, sans ouverture de CAL/HELD/TEST. Il partitionne 146 984 trames-pitch manquées : 50 442 notes-positions d'un segment totalement absent, 48 957 débuts non couverts, 29 525 fins non couvertes, 18 060 interruptions au milieu. Ces catégories sont des observations de la timeline, PAS des causes acoustiques déjà prouvées. 835 trames contiennent des unisons/hauteurs annotées en parallèle, dont 758 sous-comptées : à inspecter séparément sans gonfler artificiellement le plafond.
+
+Statut **TERMINÉ comme audit scientifique**, pas comme amélioration. Le contrôle six métriques S708 demeure obligatoire pour toute S808. Aucun entraînement, aucun changement LIVE, aucune mesure de latence CPU/iRig ou gain Onset/ActiveK annoncé.
