@@ -13,7 +13,7 @@ SCHEMA="NOTE_S804_NVIDIA_DEEP_CODE_DATA_REVIEW_V1"
 ROLES={
     "architecture":"google/gemma-4-31b-it",
     "data":"nvidia/nemotron-3.5-lightning-30b-a3b",
-    "redteam":"openai/gpt-oss-20b",
+    "redteam":"poolside/laguna-xs-2.1",
 }
 PROMPTS={
 "architecture":(
@@ -156,8 +156,8 @@ def call(role,key,evidence,timeout=180):
     if isinstance(txt,list):
         txt="\\n".join(str(part.get("text","")) for part in txt
                       if isinstance(part,dict) and part.get("type")=="text")
-    if not isinstance(txt,str) or len(txt.strip())<160:
-        raise ValueError("no sufficiently substantive audit text returned")
+    allowed=re.findall(r"FILE ((?:scripts|src)/[^\\s]+?\\.py) SHA256=",evidence)
+    quality_check(txt,allowed)
     usage=response.get("usage") or {}
     safe=SECRET_RE.sub("[REDACTED]",txt)[:40000]
     return {"schema":SCHEMA,"series":"S804","role":role,"model":ROLES[role],

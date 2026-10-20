@@ -43,7 +43,7 @@ La référence S708 reste inchangée, promotion=false. Ni le pipeline de product
 | Métriques | UNKNOWN | future exécution S804 |
 | LIVE | UNKNOWN | future exécution S804 |
 
-NVIDIA architecture (Gemma 4 31B) : UNKNOWN. NVIDIA données (Nemotron 3.5 Lightning) : UNKNOWN. NVIDIA red-team (GPT-OSS 20B) : UNKNOWN. Consensus neuf audits : UNKNOWN.
+NVIDIA architecture (Gemma 4 31B) : UNKNOWN. NVIDIA données (Nemotron 3.5 Lightning) : UNKNOWN. NVIDIA red-team (Poolside Laguna XS 2.1) : UNKNOWN. Consensus neuf audits : UNKNOWN.
 
 ## Verdict
 

@@ -53,7 +53,7 @@ Le protocole **7/7** ci-dessus reste l'historique valide S802/S803 ; il ne const
 
 - Audit externe d'architecture : Gemma 4 31B ;
 - Audit externe des données : Nemotron 3.5 Lightning ;
-- Contre-audit externe : GPT-OSS 20B.
+- Contre-audit externe : Poolside Laguna XS 2.1.
 
 Les trois jobs externes et six locaux s'exécutent **en parallèle seulement après** production d'un bundle de preuve : scan AST de tous les Python suivis par Git, extraits numérotés des chemins critiques, validation des 80 cartes OOF, statistiques réelles des erreurs par pitch/composition et contrôles SHA256. Le modèle ne lit pas chaque ligne du dépôt ni les fichiers audio entiers : cette limite doit être explicitement déclarée. CAL32, HELD et TEST sont interdits. La réussite de la consultation d'une API ne prouve ni absence de bug, ni F1 musical, ni latence physique.
 
