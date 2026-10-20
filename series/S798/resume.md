@@ -1,11 +1,11 @@
 ---
 serie: S798
-statut: en_cours
+statut: termine
 type: infrastructure
 reference: S708
 branche: codex/note-s798-kimi-independent-adviser
-run_id: pending
-commit_sha: pending
+run_id: 39346121986
+commit_sha: abbe36b335be4770a994292a04b59bd02f956f43
 promotion: false
 ---
 
@@ -33,4 +33,4 @@ Données : confidentialité de l'allowlist et exclusion des secrets. Acoustique 
 
 ## Statut
 
-En cours : infrastructure S798 à valider par CI. La consultation externe n'est pas encore exécutée. La clé incluse dans l'exemple de l'utilisateur est compromise et ne doit pas être réutilisée. Dépôt NOTE toujours public lors de la conception ; le propriétaire doit changer la visibilité dans les paramètres GitHub.
+Terminé : tests unitaires simulés et les six audits GitHub Actions PASS, consensus PASS sur le [run S798 #39346121986](https://github.com/Andriamarosoa/note/actions/runs/39346121986), SHA scientifique `abbe36b335be4770a994292a04b59bd02f956f43`. Le septième job a été SKIPPED sur l'événement push comme prévu : aucun appel Kimi réel, aucune réponse externe, et aucune promotion. La clé NVIDIA d'origine doit être révoquée. Le dépôt NOTE était toujours public à la dernière vérification, car l'intégration GitHub ne dispose pas d'action pour changer la visibilité.

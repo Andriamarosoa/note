@@ -1,11 +1,11 @@
 ---
 serie: S798
-statut: en_cours
+statut: termine
 type: infrastructure
 reference: S708
 branche: codex/note-s798-kimi-independent-adviser
-run_id: pending
-commit_sha: pending
+run_id: 39346121986
+commit_sha: abbe36b335be4770a994292a04b59bd02f956f43
 promotion: false
 ---
 
@@ -13,7 +13,7 @@ promotion: false
 
 ## Exécution
 
-Client et workflow créés, tests unitaires 100 % simulés. Six audits NOTE indépendants dans GitHub Actions. Le septième job Kimi reste manuel et requiert un secret `NVIDIA_API_KEY` renouvelé. Run en attente au stade de création de S798.
+Client et workflow créés, tests unitaires 100 % simulés. Six audits NOTE indépendants dans GitHub Actions. Le septième job Kimi reste manuel et requiert un secret `NVIDIA_API_KEY` renouvelé. [Run S798 #39346121986](https://github.com/Andriamarosoa/note/actions/runs/39346121986) au commit `abbe36b335be4770a994292a04b59bd02f956f43` : tests simulés PASS, six audits indépendants PASS, consensus PASS ; job Kimi SKIPPED (aucun appel réel).
 
 ## Métriques
 
@@ -27,16 +27,16 @@ S798 ne touche pas S708/S707 ni la sortie MIDI256 réelle. Aucune promotion, auc
 
 | Rôle | Statut | Preuve |
 |---|---|---|
-| Données | UNKNOWN | En attente du job indépendant S798 |
-| Acoustique | UNKNOWN | En attente du job indépendant S798 |
-| Architecture | UNKNOWN | En attente du job indépendant S798 |
-| Apprentissage | UNKNOWN | En attente du job indépendant S798 |
-| Métriques | UNKNOWN | En attente du job indépendant S798 |
-| LIVE | UNKNOWN | En attente du job indépendant S798 |
+| Données | PASS | [Run S798 #39346121986](https://github.com/Andriamarosoa/note/actions/runs/39346121986), rapport indépendant |
+| Acoustique | PASS | [Run S798 #39346121986](https://github.com/Andriamarosoa/note/actions/runs/39346121986), rapport indépendant |
+| Architecture | PASS | [Run S798 #39346121986](https://github.com/Andriamarosoa/note/actions/runs/39346121986), rapport indépendant |
+| Apprentissage | PASS | [Run S798 #39346121986](https://github.com/Andriamarosoa/note/actions/runs/39346121986), rapport indépendant |
+| Métriques | PASS | [Run S798 #39346121986](https://github.com/Andriamarosoa/note/actions/runs/39346121986), rapport indépendant |
+| LIVE | PASS | [Run S798 #39346121986](https://github.com/Andriamarosoa/note/actions/runs/39346121986), rapport indépendant |
 
 ## Verdict
 
-Infrastructure en cours d'évaluation. Le client proposé permet une consultation indépendante Kimi, mais aucune consultation effective n'a eu lieu : sans clé renouvelée, le job externe ne sera pas validé. Le passage du dépôt en privé ne peut pas être effectué par les permissions actuellement disponibles de l'intégration GitHub.
+S798 infrastructure terminée et tous les six audits déterministes validés dans le [run #39346121986](https://github.com/Andriamarosoa/note/actions/runs/39346121986). Le septième job de conseiller Kimi a été SKIPPED, volontairement : aucun avis externe n'a été reçu ni évalué, faute de secret renouvelé et de lancement manuel. Les six audits vérifient la sécurité et le protocole de l'intégration, PAS la qualité des modèles musicaux ni le succès de Kimi. Le dépôt est resté public ; la connexion GitHub ne permet pas de modifier sa visibilité.
 
 ## Prochaine action
 
@@ -44,3 +44,5 @@ Infrastructure en cours d'évaluation. Le client proposé permet une consultatio
 2. Rendre `Andriamarosoa/note` privé : GitHub Settings / General / Danger Zone / Change repository visibility / Make private.
 3. Dans Settings / Secrets and variables / Actions, créer le secret `NVIDIA_API_KEY` (jamais de clé dans les commits).
 4. Exécuter manuellement le workflow S798 et lire l'artefact de conseil comme hypothèse de recherche. Ne jamais autoriser sa promotion automatique.
+
+L'action manuelle de workflow GitHub est accessible une fois son fichier disponible sur la branche par défaut (`main`) ; une PR expérimentale non fusionnée n'active pas automatiquement ce déclencheur. Aucun agent Work personnalisé n'a été lancé.
