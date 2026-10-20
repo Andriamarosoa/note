@@ -1,5 +1,6 @@
 """S804 no-network tests: three distinct advisers, 9/9 fail-closed, integrity."""
-import hashlib,json,unittest
+import ast,hashlib,json,unittest
+from pathlib import Path
 from scripts.s804_nvidia_deep_review import ROLES,SCHEMA,context,payload,canonical_digest
 from scripts.s804_nine_consensus import checked
 class DeepAudits(unittest.TestCase):
@@ -15,6 +16,10 @@ class DeepAudits(unittest.TestCase):
         b["evidence_digest"]=hashlib.sha256(json.dumps(
             b,ensure_ascii=False,sort_keys=True).encode()).hexdigest()
         return b
+    def test_legacy_v273_syntax_regression_is_fixed(self):
+        path=Path("scripts/audit_v273_stage2_nested_calibration.py")
+        ast.parse(path.read_text(encoding="utf-8"),filename=str(path))
+
     def test_three_distinct_models_and_code_in_context(self):
         b=self.bundle();canonical_digest(b)
         self.assertEqual(len(set(ROLES.values())),3)
