@@ -48,11 +48,17 @@ Run [#39346769099](https://github.com/Andriamarosoa/note/actions/runs/3934676909
 
 Le run [#39347743466](https://github.com/Andriamarosoa/note/actions/runs/39347743466) termine six audits PASS et consensus PASS, mais le septième job FAIL sur `NVIDIA_API_KEY is missing or malformed`. Dans le run [#39347543851](https://github.com/Andriamarosoa/note/actions/runs/39347543851), la valeur du secret était déjà présente, mais le log masquait ce diagnostic. La vérification confirme : une variable `NVIDIA_API_KEY` non vide existe dans GitHub Actions, mais elle ne commence pas par `nvapi-` ou est trop courte pour le client. Aucune requête externe NVIDIA ni réponse Kimi n'a été produite. Ne pas réutiliser la clé du fichier `test.py` ; créer une nouvelle clé officielle et enregistrer uniquement la valeur réelle, sans préfixe `Bearer`, sans guillemets ou caractères parasites. Aucune évolution des six scores officiels S708 ni du LIVE. Le déclencheur de commit `[run-kimi-once]` est supprimé après diagnostic ; seul `workflow_dispatch` demeure.
 
+## Dernier essai avec secret corrigé — 20 octobre 2026
+
+Le [run GitHub #39348737267](https://github.com/Andriamarosoa/note/actions/runs/39348737267) a exécuté les six audits NOTE indépendants (6/6 PASS), le consensus (PASS), puis le septième conseiller. Contrairement aux essais précédents, le secret a franchi la validation locale et une requête HTTP réelle a été soumise à NVIDIA NIM. La réponse HTTP est **410 Gone**, et le septième job FAIL. Le catalogue NVIDIA indique que l'endpoint gratuit `moonshotai/kimi-k3` est déprécié ; l'accès partenaire éventuel est distinct. Aucun texte de Kimi reçu, aucun score GuitarSet mesuré, aucune décision MIDI LIVE modifiée ni promotion. Il ne s'agit ni d'un avis de Kimi ni d'une régression des modèles NOTE. La clé utilisée reste protégée dans GitHub Secrets et ne figure pas dans les logs.
+
+**Action** : ne pas relancer ce modèle en boucle sur l'endpoint gratuit en dépréciation. Faire choisir explicitement un fournisseur partenaire/clé adaptée, ou un autre modèle NVIDIA accessible, et tester sa compatibilité avant de l'utiliser comme septième avis. Le déclenchement temporaire par commit a été retiré ; seul `workflow_dispatch` reste autorisé.
+
 ## Prochaine action
 
 1. Révoquer la clé visible dans `test.py` et créer une clé NVIDIA neuve.
 2. Dépôt `Andriamarosoa/note` désormais privé : étape de visibilité validée. Ne pas remettre le dépôt en public avec des secrets ou artefacts sensibles.
-3. Dans Settings / Secrets and variables / Actions, créer le secret `NVIDIA_API_KEY` (jamais de clé dans les commits).
-4. Exécuter manuellement le workflow S798 et lire l'artefact de conseil comme hypothèse de recherche. Ne jamais autoriser sa promotion automatique.
+3. Le secret GitHub `NVIDIA_API_KEY` est désormais reconnu par le client : ne pas l'afficher ou le copier dans des fichiers versionnés.
+4. Ne pas réexécuter Kimi K3 sur l'endpoint gratuit NVIDIA retournant HTTP 410 ; sélectionner un endpoint disponible et autorisé avant toute consultation réelle. Ne jamais autoriser une promotion automatique.
 
 L'action manuelle de workflow GitHub est accessible une fois son fichier disponible sur la branche par défaut (`main`) ; une PR expérimentale non fusionnée n'active pas automatiquement ce déclencheur. Aucun agent Work personnalisé n'a été lancé.
