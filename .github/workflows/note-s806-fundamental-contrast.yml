@@ -1,0 +1,203 @@
+name: S806 physical fundamental/octave acoustic contrast OOF (bounded)
+# Only a deliberately tagged [run-fit80] scientific commit starts 80-track replay.
+# Subsequent pushes are smoke-only. Three NVIDIA reviewers are MANUAL-ONLY.
+on:
+  push:
+    branches: [codex/note-s806-physical-fundamental-contrast-oof]
+    paths:
+      - scripts/s806_fundamental_contrast_oof.py
+      - scripts/s806_six_role_audits.py
+      - scripts/s806_three_model_review.py
+      - scripts/s806_nine_consensus.py
+      - test/test_s806_fundamental_contrast_oof.py
+      - .github/workflows/note-s806-fundamental-contrast.yml
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+  actions: read
+env:
+  PYTHONPATH: .:src
+  GH_TOKEN: ${{ github.token }}
+  PYTHONUNBUFFERED: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original MIDI event dependencies
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Native causal negative controls and S806 series reports
+        run: |
+          python -m compileall -q scripts/s806_fundamental_contrast_oof.py scripts/s806_six_role_audits.py scripts/s806_three_model_review.py scripts/s806_nine_consensus.py test/test_s806_fundamental_contrast_oof.py
+          python -m unittest -v test.test_s806_fundamental_contrast_oof test.test_s803_causal_frame_replay
+          python -m scripts.verify_series_reports --series S806
+  real_fit80:
+    if: needs.smoke.result == 'success' && (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[run-fit80]'))
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 80
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install ORIGINAL frozen decoder + six-metric dependencies
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Fetch only signed original FIT OOF and historical forensic evidence
+        run: |
+          mkdir -p /tmp/s806/manifest /tmp/s806/traces /tmp/s806/s803
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/s806/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/s806/traces
+          gh run download 39363062723 --repo Andriamarosoa/note --name S803_REAL_GUITARSET_FIT80_MIDI256_METRICS_AUC --dir /tmp/s806/s803
+          test -s /tmp/s806/manifest/replay/report.json
+          test -s /tmp/s806/s803/s803_fit80.json
+          test -n "$(find /tmp/s806/traces -name fit_000.npz -print -quit)"
+      - name: Full real GuitarSet 80 OOF cross-composition risk experts
+        run: |
+          tr="$(find /tmp/s806/traces -name fit_000.npz -type f -print -quit)"
+          python -m scripts.s806_fundamental_contrast_oof \
+            --manifest /tmp/s806/manifest/replay/report.json \
+            --traces "$(dirname "$tr")" \
+            --prior /tmp/s806/s803/s803_fit80.json \
+            --out /tmp/s806/results/s806_fit80.json
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: S806_REAL_GUITARSET_FIT80_MIDI256_FUNDAMENTAL_METRICS
+          path: /tmp/s806/results/s806_fit80.json
+          if-no-files-found: error
+          retention-days: 45
+  six_audits:
+    if: needs.real_fit80.result == 'success'
+    needs: [smoke,real_fit80]
+    runs-on: ubuntu-24.04
+    name: S806 local independent ${{ matrix.role }}
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [data, acoustics, architecture, training, metrics, live]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          name: S806_REAL_GUITARSET_FIT80_MIDI256_FUNDAMENTAL_METRICS
+          path: /tmp/s806/evidence
+      - name: Inspect signed metrics/training split, fail-closed
+        run: |
+          python -m scripts.s806_six_role_audits \
+            --role ${{ matrix.role }} \
+            --report /tmp/s806/evidence/s806_fit80.json \
+            --out /tmp/s806/audits/role_${{ matrix.role }}.json
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: S806_AUDIT_${{ matrix.role }}
+          path: /tmp/s806/audits/role_${{ matrix.role }}.json
+          if-no-files-found: error
+  six_consensus:
+    needs: [smoke,real_fit80,six_audits]
+    if: needs.six_audits.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: S806_AUDIT_*
+          path: /tmp/s806/audits
+          merge-multiple: true
+      - name: Strict consensus of six deterministic roles
+        run: |
+          python -m scripts.s787_audit_consensus --reports-dir /tmp/s806/audits --out /tmp/s806/consensus/six.json
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: S806_SIX_OF_SIX_LOCAL_SCIENTIFIC_AUDITS
+          path: /tmp/s806/consensus/six.json
+          if-no-files-found: error
+  three_nvidia:
+    if: github.event_name == 'workflow_dispatch' && needs.real_fit80.result == 'success'
+    needs: [smoke,real_fit80]
+    name: S806 manual NVIDIA ${{ matrix.role }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [architecture, data, redteam]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          name: S806_REAL_GUITARSET_FIT80_MIDI256_FUNDAMENTAL_METRICS
+          path: /tmp/s806/evidence
+      - name: Genuine full code/data review, only on manual dispatch
+        env:
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+        run: |
+          test -n "$NVIDIA_API_KEY" || { echo "NVIDIA secret missing"; exit 1; }
+          python -m scripts.s806_three_model_review \
+            --role ${{ matrix.role }} \
+            --report /tmp/s806/evidence/s806_fit80.json \
+            --out /tmp/s806/reviews/review_${{ matrix.role }}.json
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: S806_NVIDIA_${{ matrix.role }}
+          path: /tmp/s806/reviews/review_${{ matrix.role }}.json
+          if-no-files-found: error
+          retention-days: 45
+  nine_consensus:
+    if: always() && github.event_name == 'workflow_dispatch'
+    needs: [real_fit80,six_audits,six_consensus,three_nvidia]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          name: S806_SIX_OF_SIX_LOCAL_SCIENTIFIC_AUDITS
+          path: /tmp/s806/consensus
+      - uses: actions/download-artifact@v4
+        with:
+          name: S806_REAL_GUITARSET_FIT80_MIDI256_FUNDAMENTAL_METRICS
+          path: /tmp/s806/evidence
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: S806_NVIDIA_*
+          path: /tmp/s806/reviews
+          merge-multiple: true
+      - name: Fail-closed 9/9 actual model and source evidence consensus
+        run: |
+          python -m scripts.s806_nine_consensus \
+            --six /tmp/s806/consensus/six.json \
+            --report /tmp/s806/evidence/s806_fit80.json \
+            --reviews-dir /tmp/s806/reviews \
+            --out /tmp/s806/consensus/nine.json
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: S806_MANUAL_NINE_OF_NINE_INDEPENDENT_REVIEW
+          path: /tmp/s806/consensus/nine.json
+          if-no-files-found: error
