@@ -3,8 +3,13 @@ from __future__ import annotations
 import argparse,json,sys
 from pathlib import Path
 from scripts.s787_audit_consensus import ROLES
-from scripts.s795_train_activek_midi256 import COUNT_KEYS
-from causal_note.s795_activek_experts import HEADS
+# Immutable S795 evidence ABI. This forensic audit must remain stdlib-only:
+# importing training modules just to inspect static constant names unnecessarily
+# requires joblib, sklearn and torch, causing false audit failures.
+COUNT_KEYS=("tp","fp","fn","frames","k_correct","active_frames",
+            "active_k_correct","frame_pitch_tp","frame_pitch_fp",
+            "frame_pitch_fn","offset_eligible","offset_correct")
+HEADS=("general","bass","polyphonic","transient","harmonic")
 def check(role,report,verification):
     r=json.loads(Path(report).read_text(encoding="utf-8"))
     v=json.loads(Path(verification).read_text(encoding="utf-8"))
