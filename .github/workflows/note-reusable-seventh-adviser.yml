@@ -42,8 +42,8 @@ jobs:
           mkdir -p /tmp/note/roles
           for role in data acoustics architecture training metrics live; do
             gh run download "$SOURCE_RUN" --repo Andriamarosoa/note \
-              --name "\${SOURCE_SERIES}_AUDIT_\${role}" --dir /tmp/note/roles
-            test -s "/tmp/note/roles/role_\${role}.json"
+              --name "${SOURCE_SERIES}_AUDIT_${role}" --dir /tmp/note/roles
+            test -s "/tmp/note/roles/role_${role}.json"
           done
           python -m scripts.s787_audit_consensus \
             --reports-dir /tmp/note/roles --out /tmp/note/verified_consensus.json
