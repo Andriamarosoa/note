@@ -1,0 +1,20 @@
+name: S802 seventh scientific adviser AFTER verified six-role audit
+on:
+  push:
+    branches: [codex/note-s802-synthetic-native-retrigger-forensics]
+    paths:
+      - scripts/note_seventh_adviser.py
+      - test/test_note_seventh_adviser.py
+      - .github/workflows/note-reusable-seventh-adviser.yml
+      - .github/workflows/note-s802-seventh-adviser.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  seventh_after_six:
+    uses: ./.github/workflows/note-reusable-seventh-adviser.yml
+    with:
+      series: S802
+      scientific_run_id: '39357068590'
+    secrets: inherit
