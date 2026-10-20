@@ -1,11 +1,11 @@
 ---
 serie: S802
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s802-synthetic-native-retrigger-forensics
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39357068590
+commit_sha: 90e73bfc69ddab31588ed20e53137c06a213b007
 promotion: false
 ---
 
@@ -33,4 +33,4 @@ Six rôles indépendants, avec fail-closed consensus : Données (partitionnement
 
 ## Statut
 
-En cours — résultats du job GitHub S802 attendus. Cette série est uniquement forensique et ne peut ni modifier la référence S708 ni annoncer 80 %.
+**Terminée, analyse forensique vérifiée et non promue** au [run #39357068590](https://github.com/Andriamarosoa/note/actions/runs/39357068590) (commit `90e73bfc69ddab31588ed20e53137c06a213b007`). 80/80 traces FIT80 auditées, trois politiques reproduites avec parité de toutes les métriques S801, six audits GitHub indépendants PASS et consensus PASS. Collisions consensus : 95 fermetures par réattaque native dont **64 NoteOn synthétiques correctement appariées** et **31 fausses selon le matching officiel** ; ne pas supposer que toutes les collisions sont des fausses notes. Toutes les métriques CAL32 et la référence S708 sont inchangées. L'avis du septième modèle GLM, exploité comme piste en S799, n'a pas été réinvoqué en S802.
