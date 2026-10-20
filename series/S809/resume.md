@@ -1,11 +1,11 @@
 ---
 serie: S809
-statut: en_cours
+statut: termine
 type: infrastructure
 reference: S708
 branche: codex/note-s809-six-isolated-axis-pipelines
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39384080646
+commit_sha: c3970969558520c7e0941c1d85b8251d2453eae3
 promotion: false
 ---
 # S809 — indépendance effective des six chaînes têtes → sélecteur → décodeur
@@ -41,3 +41,13 @@ Données : 80/80 FIT authentiques et signatures+12 compteurs inchangés. Acousti
 ## Statut
 
 Démarré sur une branche de recherche indépendante, S708 intégralement protégée. Une fois les vrais tests terminés, reporter les preuves de séparation mesurée. Ne jamais annoncer amélioration Onset/Active-K ni promotion à partir de cette séparation structurelle seule.
+
+## Finalisation vérifiée — 80 vraies pistes, 30 invariances
+
+[Exécution scientifique S809 #39384080646](https://github.com/Andriamarosoa/note/actions/runs/39384080646) **SUCCESS** sur le SHA scientifique `c3970969558520c7e0941c1d85b8251d2453eae3`. **23 tests unitaires PASS**, y compris l'ancienne batterie S763. Replay des 80 pistes GuitarSet FIT80 signées, 5 compositions, parité stricte piste par piste avec tous les douze compteurs MIDI S708 et mêmes six scores source FIT80.
+
+À chaque axe ont été substituées les décisions de son **sélecteur privé** avec une alternative causale, puis tous les **cinq autres axes** ont été comparés avec l'architecture témoin. Leurs sorties et choix de sélecteur sont exactement égaux pour les 30 couples distincts. Nombre de décisions effectivement modifiées sur l'axe visé : Exact-K **1 184**, Active Exact-K **1 341**, Onset **477**, Offset **225**, Frame Pitch **235**, Full Note **857** ; **zéro** décision des autres axes affectée. L’expérience a utilisé les 64 premières fenêtres de chacune des 80 pistes pour chaque mutation, tandis que la chaîne témoin complète a traité chaque piste entière. Ces chiffres sont des décisions SHADOW et **ne sont PAS des gains musicaux**.
+
+Les six audits CI autonomes Données, Acoustique, Architecture, Apprentissage, Métriques et LIVE ont tous renvoyé **PASS** et le consensus local 6/6 est **PASS**. Cela confirme le contrat d'architecture et les preuves numériques, pas le niveau de 80 % ni la vitesse iRig. Les trois modèles NVIDIA n'ont pas été consultés et les six agents Work personnalisés ne sont pas des jobs CI.
+
+S809 est donc terminée comme **correction d'infrastructure et séparation** ; six décodeurs individuels sont opérationnels en *shadow*. Aucune tête nouvellement entraînée n'a été promue ; la sortie MIDI LIVE et ses six métriques S708 restent inchangées. Pour un nouveau modèle musical promu, entraîner séparément les véritables têtes et mesurer ensemble les six métriques du MIDI final, avec preuve de non-régression, CAL32 indépendant et latence CPU/micro.
