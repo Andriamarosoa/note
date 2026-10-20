@@ -2,8 +2,13 @@
 from __future__ import annotations
 import argparse,json,sys
 from pathlib import Path
-from scripts.s795_train_activek_midi256 import COUNT_KEYS
-from scripts.s704_joint_metrics import SCORES
+# Audit stays dependency-light: canonical raw-count ABI of S795/S800,
+# and canonical six-ratio ABI of S704. No model/PyTorch import in auditors.
+COUNT_KEYS=("tp","fp","fn","frames","k_correct","active_frames",
+            "active_k_correct","frame_pitch_tp","frame_pitch_fp",
+            "frame_pitch_fn","offset_eligible","offset_correct")
+SCORES=("onset_f1","exact_k","active_exact_k","offset_accuracy",
+        "full_note_f1","frame_pitch_f1")
 ROLES=("data","acoustics","architecture","training","metrics","live")
 def audit(role,r):
     def need(q,why):
