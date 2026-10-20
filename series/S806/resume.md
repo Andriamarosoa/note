@@ -1,11 +1,11 @@
 ---
 serie: S806
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s806-physical-fundamental-contrast-oof
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39373511511
+commit_sha: 42d5e36742c879096aa73ce40aa0cc2829220895
 promotion: false
 ---
 
@@ -38,3 +38,9 @@ Six audits CI indépendants : Données (signatures et 80 pistes), Acoustique (16
 ## Statut
 
 En cours : aucune mesure S806 vérifiée avant le replay réel. S708 demeure référence officielle. Aucune nouvelle tête n'est intégrée en LIVE, latence CPU réelle non testée.
+
+## Bilan vérifié final
+
+[Exécution scientifique FIT80 n°39373511511](https://github.com/Andriamarosoa/note/actions/runs/39373511511), commit scientifique `42d5e36742c879096aa73ce40aa0cc2829220895`, **COMPLETED SUCCESS**. Les 80 traces GuitarSet FIT80 enregistrées dans S800 ont été authentifiées et rejouées. Six audits CI indépendants et consensus local 6/6 PASS. Aucun appel NVIDIA n'a été lancé automatiquement : trois avis externes et consensus 9/9 sont UNKNOWN, pas PASS.
+
+Cinq têtes acoustiques inter-compositions apprises réellement : chaque tête entraînée sur environ 18 249–20 991 cellules d'autres compositions, positives 1 925–2 202, jamais avec les labels de sa cible. Trois politiques `fundamental_consensus`, `fundamental_adaptive`, `fundamental_strict` : **toutes regressent** Onset F1, Exact-K, Active Exact-K, Offset accuracy et Full Note F1 au niveau global. Légers gains Frame Pitch F1, insuffisants. **0 candidat promu**. Aucun changement de production, aucune latence physique mesurée. Prochaine recherche justifiée : extraire les partiels harmoniques réellement indépendants sur WAV originaux, car S800 ne sauvegarde pas leur spectre complet.
