@@ -31,13 +31,13 @@ jobs:
           mkdir -p /tmp/s800/input
           gh run download 39352880035 --repo Andriamarosoa/note \
             --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/s800/input
-          test -s /tmp/s800/input/report.json
+          test -s /tmp/s800/input/replay/report.json
           test -s /tmp/s800/input/verification.json
       - name: Audit historic FIT source evidence without retraining
         run: |
           python -m scripts.s800_six_role_audits \
             --role ${{ matrix.role }} \
-            --report /tmp/s800/input/report.json \
+            --report /tmp/s800/input/replay/report.json \
             --verification /tmp/s800/input/verification.json \
             --out /tmp/s800/audits/role_${{ matrix.role }}.json
       - uses: actions/upload-artifact@v4
