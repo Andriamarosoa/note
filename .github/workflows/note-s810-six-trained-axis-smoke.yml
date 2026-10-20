@@ -1,0 +1,37 @@
+name: S810 independent six trained axis shadow ABI (smoke only)
+# Exact 30 trained FIT80 checkpoints and full training script are packaged in
+# conversation artifact; GitHub CI smoke does NOT pretend to have those bytes.
+# No costly science/GPU/NVIDIA jobs or automatic model promotion.
+on:
+  push:
+    branches: [codex/note-s810-six-trained-axis-oof]
+    paths:
+      - src/causal_note/s810_trained_six_axis_shadow.py
+      - test/test_s810_six_trained_axis_shadow.py
+      - .github/workflows/note-s810-six-trained-axis-smoke.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  PYTHONPATH: .:src
+  OMP_NUM_THREADS: "1"
+  OPENBLAS_NUM_THREADS: "1"
+  MKL_NUM_THREADS: "1"
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install numpy and independent classifier ABI dependencies
+        run: python -m pip install numpy scikit-learn
+      - name: Six axis state and non-interference regression tests
+        run: |
+          python -m compileall -q src/causal_note/s810_trained_six_axis_shadow.py test/test_s810_six_trained_axis_shadow.py
+          python -m unittest -v test.test_s763_independent_decoders test.test_s810_six_trained_axis_shadow
+          python -m scripts.verify_series_reports --series S810
