@@ -1,7 +1,7 @@
 """S804 final 9/9 gate: six real local audits + three independent NVIDIA NIM."""
 from __future__ import annotations
 import argparse,hashlib,json,pathlib,re
-from scripts.s804_nvidia_deep_review import ROLES,SCHEMA
+from scripts.s804_nvidia_deep_review import ROLES,SCHEMA,quality_check
 SIX_SCHEMA="NOTE_SIX_ROLE_CONSENSUS_V1"
 def checked(six,reviews,bundle):
     if six.get("schema")!=SIX_SCHEMA or six.get("passed") is not True or (

@@ -1,7 +1,7 @@
 """S804 no-network tests: three distinct advisers, 9/9 fail-closed, integrity."""
 import ast,hashlib,json,unittest
 from pathlib import Path
-from scripts.s804_nvidia_deep_review import ROLES,SCHEMA,context,payload,canonical_digest
+from scripts.s804_nvidia_deep_review import ROLES,SCHEMA,context,payload,canonical_digest,quality_check
 from scripts.s804_nine_consensus import checked
 class DeepAudits(unittest.TestCase):
     def bundle(self):
@@ -20,6 +20,13 @@ class DeepAudits(unittest.TestCase):
         path=Path("scripts/audit_v273_stage2_nested_calibration.py")
         ast.parse(path.read_text(encoding="utf-8"),filename=str(path))
 
+    def test_shallow_external_review_fails(self):
+        with self.assertRaises(ValueError):
+            quality_check("Lorem ipsum",["scripts/a.py","scripts/b.py"])
+        with self.assertRaises(ValueError):
+            quality_check("A"*1300+" scripts/a.py",["scripts/a.py","scripts/b.py"])
+        txt="scripts/a.py and scripts/b.py: "+("Source-backed audit. "*65)
+        self.assertEqual(len(quality_check(txt,["scripts/a.py","scripts/b.py"])),2)
     def test_three_distinct_models_and_code_in_context(self):
         b=self.bundle();canonical_digest(b)
         self.assertEqual(len(set(ROLES.values())),3)

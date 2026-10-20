@@ -30,7 +30,8 @@ PROMPTS={
     "Contre-audit contradictoire complet des preuves visibles: trouve les failles "
     "de métriques, de causalité, de compatibilité CLI, de discipline des têtes "
     "et de non-régression. Challenge les deux familles de risques données et "
-    "code. Signale clairement toute partie du dépôt non réellement inspectée."),
+    "code. Respond in precise English, cite visible repository file paths and line numbers. "
+    "Signale clairement toute partie du dépôt non réellement inspectée."),
 }
 BASE_PROMPT=(
     "Tu es un RELECTEUR EXTERNE indépendant, en français, mandaté pour chercher "
@@ -118,6 +119,14 @@ def payload(role,evidence):
         req["chat_template_kwargs"]={"enable_thinking":False}
     return req
 
+def quality_check(text, allowed_paths):
+    if not isinstance(text,str) or len(text.strip())<1000:
+        raise ValueError("audit content too short for deep review")
+    grounded={p for p in allowed_paths if p in text}
+    if len(grounded)<2:
+        raise ValueError("report lacks grounded code references")
+    return sorted(grounded)
+
 def call(role,key,evidence,timeout=180):
     if not isinstance(key,str) or not key.startswith("nvapi-") or len(key)<20:
         raise ValueError("missing or malformed NVIDIA secret")
@@ -189,6 +198,7 @@ def main():
                 detail=" "+str(exc)
         elif isinstance(exc,ValueError) and str(exc) in {
             "no model choices","no sufficiently substantive audit text returned",
+            "audit content too short for deep review","report lacks grounded code references",
             "missing or malformed NVIDIA secret"}:
             detail=" reason="+str(exc)
         print("S804_NVIDIA_DEEP_REVIEW_FAIL role="+args.role+
