@@ -76,3 +76,12 @@ Au terme des vérifications : `python -m scripts.verify_series_reports --series 
 Le workflow `.github/workflows/note-series-documentation.yml` contrôle les branches `codex/note-s*` qui héritent de ce workflow.
 Ce validateur vérifie la documentation, pas la véracité scientifique des mesures. Les six audits S787 et la validation finale MIDI à hop 256 restent obligatoires.
 Pour imposer cette règle à toutes les branches existantes / par défaut, intégrer le workflow dans chacune ou activer sa protection requise sur GitHub.
+
+
+## Contrat d'audit approfondi à partir de S804 (nouvelle règle)
+
+À partir des nouvelles séries S804+, demander, en plus des six audits CI indépendants, **trois avis NVIDIA réellement exécutés** sur les **données FIT vérifiées et les extraits précis du code source**, pas seulement `resultat.md`. Les rôles sont : (1) architecture/décodeur causal ; (2) données, GuitarSet, splittings et métriques ; (3) relecteur contradictoire code et données. Les trois modèles doivent être distincts, leurs artefacts identifiés par SHA et leur présence vérifiée dans le **même run**. En cas d'indisponibilité externe, verdict **FAIL/UNKNOWN**, jamais 9/9 PASS par substitution à un appel mocké.
+
+Le pipeline de référence S804 est `.github/workflows/note-s804-deep-nine-audits.yml` et ses scripts `scripts/s804_*.py`. Pour S805+, intégrer explicitement des jobs équivalents ou un futur workflow réutilisable avant de revendiquer la règle ; cette modification d'AGENTS.md n'active **pas automatiquement** les audits sur d'anciennes branches. Les trois modèles reçoivent uniquement du code public audité, des extraits numérotés et des statistiques **FIT80** ; jamais secret, audio brut ni CAL/HELD/TEST. Les six agents Work personnalisés ne sont **pas** identiques à six scripts CI.
+
+Les modèles peuvent exprimer des désaccords et leurs conclusions ne prouvent pas qu'un bug existe sans reproduction. Aucune promotion de S708, des six métriques ni d'un code LIVE/NoteOff n'est permise sur avis LLM seul. Les deux fichiers `resume.md` et `resultat.md` doivent rendre compte de chaque avis, échec fournisseur, profondeur de couverture et preuve de non-régression.
