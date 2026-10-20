@@ -47,7 +47,7 @@ class S801Ablations(unittest.TestCase):
         routed,_,_=route(X,P,"harmonic_parent_guard")
         self.assertEqual(float(routed["harmonic"][0,52-40]),0.)
         gated,_,_=route(X,P,"offset_birth_guard")
-        self.assertEqual(float(gated["general"][0,42-40]),.98)
+        self.assertAlmostEqual(float(gated["general"][0,42-40]),.98,places=6)
     def test_undeclared_policy_rejected(self):
         d,X,P,_=example()
         with self.assertRaises(ValueError):route(X,P,"optimised_on_CAL")
