@@ -1,7 +1,7 @@
 ---
 serie: S805
 statut: en_cours
-type: scientific_fit_exploratory
+type: experience
 reference: S708
 branche: codex/note-s805-fit-crossfold-onset-risk
 run_id: en_attente
@@ -11,9 +11,17 @@ promotion: false
 
 # S805 — têtes de risque OOF inter-compositions pour faux NoteOn
 
-## Objectif et hypothèse
+## Objectif
 
 Réduire les fausses attaques synthétiques en contexte harmonique, surtout sur GuitarSet SS1/Jazz1, sans diminuer les bonnes réattaques ni dégrader les six métriques ou introduire le moindre maintien temporel/latence. Le précédent S802 a observé sur le consensus 136 attaques additionnelles (74 TP, 62 FP) dont sur SS1 13 TP et 33 FP. Le masque analytique `sustain_rise>=.045 OR harmonic_parent>=.30`, simulé seulement sur les 136 observations S802, éliminerait 61 attaques **dont 32 vraies** : son rejet direct serait dangereux.
+
+## Hypothèse
+
+Deux têtes de risque OOF entraînées sur les quatre autres compositions, sans accès aux annotations de la cible, pourraient distinguer les faux NoteOn de SS1/Jazz1 sans supprimer les vrais. Hypothèse à tester, non revendiquée.
+
+## Modifications
+
+Les scripts S805 ajoutent deux spécialistes de risque indépendants et un contrôle acoustique fixe, sans éditer le moteur LIVE ni les événements S708. Les trois modèles NVIDIA sont configurés pour un audit profond manuel, jamais automatique à chaque push.
 
 ## Architecture
 
@@ -21,9 +29,13 @@ S805 préserve les cinq têtes causales indépendantes déjà entraînées (gene
 
 Trois bras S805 sont pré-déclarés : `spectral_balance` (guard actuel on-off/sustain-rise/parent), `risk_acoustic` (consensus + nouveau head), et `risk_joint` (adaptive + head acoustique et avis des cinq experts). Le classifieur simple, standardisé `LogisticRegression(C=.25,class_weight="balanced")`, est entraîné sur les observations S802 positives/négatives de **quatre compositions exclusivement**, séparément pour chaque cinquième. Aucune annotation de la composition évaluée n'est utilisée pour entraîner son head. Les futures raisons de clôture et le matching vérité restent hors features de décodage.
 
-## Validation expérimentale
+## Protocole
 
 Rejouer les 80 pistes authentiques FIT OOF enregistrées S800, leurs 5 têtes, les observations S802 et le témoin six-métriques S803 avec vérification SHA256 par piste. Tous les MIDI sont réellement produits par le décodeur S795 original (hop MIDI256). Pour chaque politique : compter les 12 compteurs natifs, calculer Onset F1, Exact-K, Active Exact-K, Offset Accuracy, Full Note F1 et Frame Pitch F1, puis vérifier les écarts du global **et de chacune des cinq compositions**. Toute diminution même ponctuelle sur l'une des 30 comparaisons locales entraîne un rejet du candidat. Aucun gain ne peut être proclamé en CAL32/HELD/TEST, qui restent fermés ; la référence S708 demeure officielle.
+
+## Audits obligatoires
+
+Six audits déterministes (Données, Acoustique, Architecture, Apprentissage, Métriques, LIVE) accompagnent chaque run scientifique complet. Les trois conseillers NVIDIA et leur consensus neuf voies ne sont consultés qu'en exécution manuelle, afin d'éviter les échecs et doublons S804.
 
 ## Gestion des runs
 
@@ -33,6 +45,6 @@ Pour éviter les coûts et échecs répétés de S804 : workflow `.github/workfl
 
 Aucun code LIVE de production, aucun événement S708, aucun NoteOff, aucune durée ou traitement après attaque n'est déplacé. Les masques ne voient que la trame présente et aucune annotation de vérité de la composition évaluée. Le coût de deux nouvelles inférences logistiques n'est **pas encore mesuré sur iRig/Windows** : même un candidat FIT sans régression restera SHADOW tant que ses coûts CPU et la latence physique stricte ne sont pas prouvés.
 
-## État
+## Statut
 
 S805 démarré, résultat scientifique FIT80 attendu du workflow GitHub. Les deux fichiers `resume.md` et `resultat.md` sont créés et suivis. Aucun résultat ni amélioration inventés.
