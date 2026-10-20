@@ -13,7 +13,7 @@ promotion: false
 
 ## Objectif
 
-Rendre utilisable le modèle \`moonshotai/kimi-k3\` de l'exemple \`test.py\` comme conseiller scientifique indépendant et non-promouvant pendant les audits NOTE. Réunir des avis sur les blocs Onset, Exact-K, Active Exact-K, Offset, Full Note et Frame Pitch, vers 80 %, sans augmenter la latence.
+Rendre utilisable le modèle `moonshotai/kimi-k3` de l'exemple `test.py` comme conseiller scientifique indépendant et non-promouvant pendant les audits NOTE. Réunir des avis sur les blocs Onset, Exact-K, Active Exact-K, Offset, Full Note et Frame Pitch, vers 80 %, sans augmenter la latence.
 
 ## Hypothèse
 
@@ -21,7 +21,7 @@ Une critique de modèle externe peut proposer des pistes de segmentation des tê
 
 ## Modifications
 
-Un client NVIDIA Kimi lit une allowlist de cinq résumés S795-S797, jamais les secrets, les données audio, les labels HELD/TEST ni le code propriétaire complet. Secret via \`NVIDIA_API_KEY\`, aucun jeton dans le dépôt. Tests réseau simulés, contrôles stricts de censure et refus de redirections. Un septième job Kimi n'est exécuté que sur demande manuelle \`workflow_dispatch\` et seulement si la clé *renouvelée* est ajoutée aux secrets GitHub Actions.
+Un client NVIDIA Kimi lit une allowlist de cinq résumés S795-S797, jamais les secrets, les données audio, les labels HELD/TEST ni le code propriétaire complet. Secret via `NVIDIA_API_KEY`, aucun jeton dans le dépôt. Tests réseau simulés, contrôles stricts de censure et refus de redirections. Un septième job Kimi n'est exécuté que sur demande manuelle `workflow_dispatch` et seulement si la clé *renouvelée* est ajoutée aux secrets GitHub Actions.
 
 ## Protocole
 

@@ -13,7 +13,7 @@ promotion: false
 
 ## Exécution
 
-Client et workflow créés, tests unitaires 100 % simulés. Six audits NOTE indépendants dans GitHub Actions. Le septième job Kimi reste manuel et requiert un secret \`NVIDIA_API_KEY\` renouvelé. Run en attente au stade de création de S798.
+Client et workflow créés, tests unitaires 100 % simulés. Six audits NOTE indépendants dans GitHub Actions. Le septième job Kimi reste manuel et requiert un secret `NVIDIA_API_KEY` renouvelé. Run en attente au stade de création de S798.
 
 ## Métriques
 
@@ -40,7 +40,7 @@ Infrastructure en cours d'évaluation. Le client proposé permet une consultatio
 
 ## Prochaine action
 
-1. Révoquer la clé visible dans \`test.py\` et créer une clé NVIDIA neuve.
-2. Rendre \`Andriamarosoa/note\` privé : GitHub Settings / General / Danger Zone / Change repository visibility / Make private.
-3. Dans Settings / Secrets and variables / Actions, créer le secret \`NVIDIA_API_KEY\` (jamais de clé dans les commits).
+1. Révoquer la clé visible dans `test.py` et créer une clé NVIDIA neuve.
+2. Rendre `Andriamarosoa/note` privé : GitHub Settings / General / Danger Zone / Change repository visibility / Make private.
+3. Dans Settings / Secrets and variables / Actions, créer le secret `NVIDIA_API_KEY` (jamais de clé dans les commits).
 4. Exécuter manuellement le workflow S798 et lire l'artefact de conseil comme hypothèse de recherche. Ne jamais autoriser sa promotion automatique.

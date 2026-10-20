@@ -13,7 +13,7 @@ def audit(role, adviser, workflow, tests):
         if not b: raise AssertionError(why)
     require("moonshotai/kimi-k3" in code, "model changed")
     require("NVIDIA_API_KEY" in code, "env secret missing")
-    require("NVIDIA_API_KEY: \${{ secrets.NVIDIA_API_KEY }}" in yml,
+    require("NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}" in yml,
             "no GitHub secret injection")
     require("promotion_authorized\": False" in code, "external authority creep")
     if role == "data":

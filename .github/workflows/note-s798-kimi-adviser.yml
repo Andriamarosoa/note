@@ -11,7 +11,7 @@ on:
       - series/S798/resultat.md
   workflow_dispatch:
 concurrency:
-  group: \${{ github.workflow }}-\${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 permissions:
   contents: read
@@ -34,7 +34,7 @@ jobs:
           python -m scripts.verify_series_reports --series S798
   six_audits:
     needs: safe_unit_tests
-    name: S798 independent \${{ matrix.role }} audit
+    name: S798 independent ${{ matrix.role }} audit
     runs-on: ubuntu-24.04
     timeout-minutes: 8
     strategy:
@@ -48,17 +48,17 @@ jobs:
       - name: Run deterministic independent S798 reviewer-safety audit
         run: |
           python -m scripts.s798_six_role_audits \
-            --role \${{ matrix.role }} \
+            --role ${{ matrix.role }} \
             --adviser scripts/s798_kimi_adviser.py \
             --workflow .github/workflows/note-s798-kimi-adviser.yml \
             --tests test/test_s798_kimi_adviser.py \
-            --out /tmp/s798/audits/role_\${{ matrix.role }}.json
+            --out /tmp/s798/audits/role_${{ matrix.role }}.json
       - name: Archive independent role
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: S798_AUDIT_\${{ matrix.role }}
-          path: /tmp/s798/audits/role_\${{ matrix.role }}.json
+          name: S798_AUDIT_${{ matrix.role }}
+          path: /tmp/s798/audits/role_${{ matrix.role }}.json
           retention-days: 45
           if-no-files-found: warn
   consensus:
@@ -103,7 +103,7 @@ jobs:
         with: {python-version: '3.11'}
       - name: Call Kimi only with rotated GitHub Actions secret
         env:
-          NVIDIA_API_KEY: \${{ secrets.NVIDIA_API_KEY }}
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
         run: |
           test -n "$NVIDIA_API_KEY" || { echo "NVIDIA_API_KEY secret missing; skip consultation, NOT a passing advice audit"; exit 1; }
           python -m scripts.s798_kimi_adviser --out /tmp/s798/external/kimi_review.json
