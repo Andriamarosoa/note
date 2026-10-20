@@ -1,0 +1,59 @@
+name: S813 independent teachers85 native256 tests and evidence verification
+on:
+  push:
+    branches: [codex/note-s813-independent-teachers85-midi256]
+    paths:
+      - src/causal_note/s813_*.py
+      - scripts/s813_*.py
+      - test/test_s813_*.py
+      - requirements-s813.txt
+      - series/S813/evidence/**
+      - .github/workflows/note-s813-teachers85-midi256.yml
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+permissions:
+  contents: read
+  actions: read
+env:
+  PYTHONPATH: .:src
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install lightweight scientific runtime
+        run: python -m pip install -r requirements-s813.txt
+      - name: Test native256 causality, independent teacher and strict85 gate
+        run: |
+          python -m unittest -v test.test_s813_native256 test.test_s813_teacher_contract test.test_s813_framepitch_teacher test.test_s813_evidence test.test_s809_axis_isolation test.test_s812_historical_axis_h0
+          python -m scripts.verify_series_reports --series S813
+      - name: Fetch original signed S800 manifest for independent rescoring
+        if: ${{ hashFiles('series/S813/evidence/bundle.json') != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p /tmp/s813-source
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/s813-source
+      - name: Re-score exact saved decisions, not retrain or promote
+        if: ${{ hashFiles('series/S813/evidence/bundle.json') != '' }}
+        run: |
+          python -m scripts.s813_verify_evidence --evidence series/S813/evidence --manifest /tmp/s813-source/replay/report.json --out /tmp/s813-verification.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S813_TEACHER256_SAVED_DECISIONS_VERIFICATION
+          path: |
+            /tmp/s813-verification.json
+            series/S813/evidence/
+          if-no-files-found: warn
+          retention-days: 60

@@ -1,0 +1,2986 @@
+{
+  "CAL_opened": false,
+  "H0_events_or_posteriors_used_as_features": false,
+  "HELD_opened": false,
+  "TEST_opened": false,
+  "added_lookahead_samples": 0,
+  "audio_archive_sha256": "237cdc58353d25c3c9683f4565a0f1cf2db30a9051abca545a919f8f1296dc28",
+  "complete": true,
+  "decision_hop_samples": 256,
+  "feature_dimension": 222,
+  "feature_dtype": "float16_to_float32",
+  "feature_hop_samples": 256,
+  "fit_historically_explored": true,
+  "generalization_verified": false,
+  "learned_frontend": false,
+  "metric_hop_samples": 256,
+  "promotion": false,
+  "resolution_ms": 5.804988662131519,
+  "sample_rate_hz": 44100,
+  "schema": "S813_FIT80_FRESH_UNSUPERVISED_DSP_MIDI256_V1",
+  "source_manifest_sha256": "c7b0edbf07e891ed5478af1599830f2c0785391b813cd1c77f2c48ad86685a11",
+  "source_run": 39352880035,
+  "total_frames": 306536,
+  "tracks": [
+    {
+      "audio_member": "00_BN1-129-Eb_comp_mic.wav",
+      "audio_member_sha256": "59e1e3c9bebdabd48afe28050a2c031e6cf36e5697268301cdf2e74bc66b71f1",
+      "composition": "BN1",
+      "extraction_mean_ms_per_frame": 0.8954305284785399,
+      "extraction_seconds": 3.442930381999986,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_000_count_target.npy",
+          "sha256": "37e033f5fb69d2050f878d41b53a13004506f7f364d1d5694397804c946f51fd"
+        },
+        "ends": {
+          "file": "fit_000_ends.npy",
+          "sha256": "e479f99d8a507eb3ffc191cbb4c33b5e9609668d987ca06cb7898d580cb111a1"
+        },
+        "features": {
+          "file": "fit_000_features.npy",
+          "sha256": "3ce7609012e79c8d379ed3068fdcb23b00897a682cad4a030fdc68979d9ee124"
+        },
+        "pitch_target": {
+          "file": "fit_000_pitch_target.npy",
+          "sha256": "415bf4fd144c8e7ce911ab7c9d75dd304db0fedcfc83d8869575a3d3a83ee24f"
+        }
+      },
+      "frames": 3845,
+      "index": 0,
+      "name": "00_BN1-129-Eb_comp",
+      "original_json_sha256": "de90d96f2eb37fe9b761628e66c44026ac840686e7fc14508238489526735983",
+      "samples": 984506,
+      "shape": [
+        3845,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "00_BN1-129-Eb_solo_mic.wav",
+      "audio_member_sha256": "2a6057d0485d8ee2f4a04175ee085d610c0f7a13194e083b13ce803bec091d43",
+      "composition": "BN1",
+      "extraction_mean_ms_per_frame": 0.9178088215865072,
+      "extraction_seconds": 3.5289749190001203,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_001_count_target.npy",
+          "sha256": "9de039794f75d6a44b5ed7e3edb847b3b1f311fb0c7ce9e6e7eb0f0f742066d6"
+        },
+        "ends": {
+          "file": "fit_001_ends.npy",
+          "sha256": "e479f99d8a507eb3ffc191cbb4c33b5e9609668d987ca06cb7898d580cb111a1"
+        },
+        "features": {
+          "file": "fit_001_features.npy",
+          "sha256": "39554eed6b2e355411c9f5bf1253592f082a4835249950743b2324b0860eb722"
+        },
+        "pitch_target": {
+          "file": "fit_001_pitch_target.npy",
+          "sha256": "0c7bd7075bd4fa723176bdca871b8cfd0678caee77f536268121e866fc5be509"
+        }
+      },
+      "frames": 3845,
+      "index": 1,
+      "name": "00_BN1-129-Eb_solo",
+      "original_json_sha256": "dcb384d060922a69e1a1a4ce8976feff3461b4747846bec5d1529fb64265babc",
+      "samples": 984506,
+      "shape": [
+        3845,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "00_BN1-147-Gb_comp_mic.wav",
+      "audio_member_sha256": "699b80b22b903b0ed58529fa0d68eb843ad1693430baf10f0c5bd882229b3e9d",
+      "composition": "BN1",
+      "extraction_mean_ms_per_frame": 0.9426182170174537,
+      "extraction_seconds": 3.1794512459998714,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_002_count_target.npy",
+          "sha256": "6f8af4172f3aae61384742c700162199d0f33ff9cbf672ddfff741fc43ed304b"
+        },
+        "ends": {
+          "file": "fit_002_ends.npy",
+          "sha256": "68ecf60927ecc513d37b5b6ac8bd7b8c3bd12aaae0acc5429dc5fc9411955076"
+        },
+        "features": {
+          "file": "fit_002_features.npy",
+          "sha256": "9affc24a3b4a9e34d242eb682df0d04d04f919f4f6c836a6eb2aefc704f1e5ca"
+        },
+        "pitch_target": {
+          "file": "fit_002_pitch_target.npy",
+          "sha256": "53e53e9bb65582d665f31b4f6256975f8c9f7a62586e171e99915158d24ba94f"
+        }
+      },
+      "frames": 3373,
+      "index": 2,
+      "name": "00_BN1-147-Gb_comp",
+      "original_json_sha256": "b92d649eee8c608ba37ff6f31ed6581573a76d6409e4d97c2d294b566b1282dc",
+      "samples": 863725,
+      "shape": [
+        3373,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "00_BN1-147-Gb_solo_mic.wav",
+      "audio_member_sha256": "07bb305f064e77312319aada10b1acf7c326b1ec7506f5a456748f04c8c06e9e",
+      "composition": "BN1",
+      "extraction_mean_ms_per_frame": 0.9133266486806932,
+      "extraction_seconds": 3.0806507859999783,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_003_count_target.npy",
+          "sha256": "4789b54e9266a8bb5e6441c2ebad2496395684ce48dc16a2b69a23db6ecf261a"
+        },
+        "ends": {
+          "file": "fit_003_ends.npy",
+          "sha256": "68ecf60927ecc513d37b5b6ac8bd7b8c3bd12aaae0acc5429dc5fc9411955076"
+        },
+        "features": {
+          "file": "fit_003_features.npy",
+          "sha256": "f231d9e6cc7230d469e4a09b174d2ac08ea643aa470ddbede1498746a6a28378"
+        },
+        "pitch_target": {
+          "file": "fit_003_pitch_target.npy",
+          "sha256": "4fc91562c72ae9c1bf97671d6935e1125face9377352cd91a79ad56a6ec0b30d"
+        }
+      },
+      "frames": 3373,
+      "index": 3,
+      "name": "00_BN1-147-Gb_solo",
+      "original_json_sha256": "9b03a4492108271969fabb05d10dd8930536198575396b841d12b4c0fe7f3d47",
+      "samples": 863725,
+      "shape": [
+        3373,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "01_BN1-129-Eb_comp_mic.wav",
+      "audio_member_sha256": "4f7f2359cc26d32307c8cc6793579d9d5ce602f483194ca079efd719a870b671",
+      "composition": "BN1",
+      "extraction_mean_ms_per_frame": 1.0709094366710128,
+      "extraction_seconds": 4.117646784000044,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_004_count_target.npy",
+          "sha256": "1168261b3a7ed9aaa3b1d7f6297bef44c3c7d41f0c09f95c87d611a13e6b1c57"
+        },
+        "ends": {
+          "file": "fit_004_ends.npy",
+          "sha256": "e479f99d8a507eb3ffc191cbb4c33b5e9609668d987ca06cb7898d580cb111a1"
+        },
+        "features": {
+          "file": "fit_004_features.npy",
+          "sha256": "7d88aa66cb7e539d55c27953bf024eb0761339e6c9a6070c6988ccd5cc6cc404"
+        },
+        "pitch_target": {
+          "file": "fit_004_pitch_target.npy",
+          "sha256": "6e13fb3a07d35e41541fd866de7edee8cb5622c781aef85dc17b9e96605739f4"
+        }
+      },
+      "frames": 3845,
+      "index": 4,
+      "name": "01_BN1-129-Eb_comp",
+      "original_json_sha256": "30889c73861b089cded6d3a7809b9ec74db90ef628531cd495d975f31e7bb7bd",
+      "samples": 984506,
+      "shape": [
+        3845,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "01_BN1-129-Eb_solo_mic.wav",
+      "audio_member_sha256": "76330537c6a88df56c7e338da9dd81d84cbf7f3a5ae7cd1b32a663bded6b76b4",
+      "composition": "BN1",
+      "extraction_mean_ms_per_frame": 1.0361811105331697,
+      "extraction_seconds": 3.984116370000038,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_005_count_target.npy",
+          "sha256": "6195ea6b1c4e303385ec9733616cf78f97320953cd7e8fd7ef5bbc9d64e308f8"
+        },
+        "ends": {
+          "file": "fit_005_ends.npy",
+          "sha256": "e479f99d8a507eb3ffc191cbb4c33b5e9609668d987ca06cb7898d580cb111a1"
+        },
+        "features": {
+          "file": "fit_005_features.npy",
+          "sha256": "8b3407e9fd57dce89aa42d1abe3deec462583b1413840a7616edb5450995079b"
+        },
+        "pitch_target": {
+          "file": "fit_005_pitch_target.npy",
+          "sha256": "59149e13907d83c23b2f8d2aeb2547d48c5036657a3d394c1f9e1177b955792f"
+        }
+      },
+      "frames": 3845,
+      "index": 5,
+      "name": "01_BN1-129-Eb_solo",
+      "original_json_sha256": "f904d8764bcf3d3fcaa388a8560e3d0449403bea783c67fc7afc5584152e5dd9",
+      "samples": 984506,
+      "shape": [
+        3845,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "01_BN1-147-Gb_comp_mic.wav",
+      "audio_member_sha256": "dff0776bdba3e9ed3c7d8fb313f5c775cc66d2f9607a9dc16433722be0ceb89e",
+      "composition": "BN1",
+      "extraction_mean_ms_per_frame": 0.9562233934183745,
+      "extraction_seconds": 3.225341506000177,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_006_count_target.npy",
+          "sha256": "52ed4b62df084cdb38652ca933bc57a3f19fc529c21ced010cbe5803cc3bae71"
+        },
+        "ends": {
+          "file": "fit_006_ends.npy",
+          "sha256": "68ecf60927ecc513d37b5b6ac8bd7b8c3bd12aaae0acc5429dc5fc9411955076"
+        },
+        "features": {
+          "file": "fit_006_features.npy",
+          "sha256": "08a36766faad6f70d1bf9fc26c0fd167775777738c90d63a076ddf5c07a13197"
+        },
+        "pitch_target": {
+          "file": "fit_006_pitch_target.npy",
+          "sha256": "0a184286e4408f8f211fc02d194c82a37237867e52c153e24cfbf5369fe05dce"
+        }
+      },
+      "frames": 3373,
+      "index": 6,
+      "name": "01_BN1-147-Gb_comp",
+      "original_json_sha256": "146104490a297ae6562b61fc7a70e4a50a43b65d95e4574888d8bc6158c9368f",
+      "samples": 863725,
+      "shape": [
+        3373,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "01_BN1-147-Gb_solo_mic.wav",
+      "audio_member_sha256": "781fe30fb282f037cf234a1c04e5e8d735f341cd4899826dfc89d59fd47eb90f",
+      "composition": "BN1",
+      "extraction_mean_ms_per_frame": 0.9901932718648006,
+      "extraction_seconds": 3.3399219059999723,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_007_count_target.npy",
+          "sha256": "6b69205d5c9ebfc03555945169ba9d315f6b2c94ea15c2796c89fce0722e3947"
+        },
+        "ends": {
+          "file": "fit_007_ends.npy",
+          "sha256": "68ecf60927ecc513d37b5b6ac8bd7b8c3bd12aaae0acc5429dc5fc9411955076"
+        },
+        "features": {
+          "file": "fit_007_features.npy",
+          "sha256": "d0cf4d6a085636b0568a959be808b5525e6f73ef32f52494a491361ca7d257e7"
+        },
+        "pitch_target": {
+          "file": "fit_007_pitch_target.npy",
+          "sha256": "e3c84cb40885a3a67f0d58514d34c107bc84db06709705c7429cc6f0b0731e9b"
+        }
+      },
+      "frames": 3373,
+      "index": 7,
+      "name": "01_BN1-147-Gb_solo",
+      "original_json_sha256": "44133c52dc93d7c514471b3ed478c1284ac42cf8872ae76a6a9cda13c0991678",
+      "samples": 863725,
+      "shape": [
+        3373,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "02_BN1-129-Eb_comp_mic.wav",
+      "audio_member_sha256": "54d0b5d30a727ddbf3f9dbe18663063d6c55c979627ab6993fdede63f0a54cc0",
+      "composition": "BN1",
+      "extraction_mean_ms_per_frame": 1.1521634689207059,
+      "extraction_seconds": 4.430068538000114,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_008_count_target.npy",
+          "sha256": "756d7641560fb3ac6802f97b6bdc0a02747ac9ece6e2add5699d7fb0cfdd3af0"
+        },
+        "ends": {
+          "file": "fit_008_ends.npy",
+          "sha256": "e479f99d8a507eb3ffc191cbb4c33b5e9609668d987ca06cb7898d580cb111a1"
+        },
+        "features": {
+          "file": "fit_008_features.npy",
+          "sha256": "274ac0a6595dc5c5254b8d7b098bba00a45bf9c1ca94339c1db8dc2961403cf3"
+        },
+        "pitch_target": {
+          "file": "fit_008_pitch_target.npy",
+          "sha256": "db184068c73634712e3e21f591a8df9c688ea0fac088e1a5d5b0bac024235d54"
+        }
+      },
+      "frames": 3845,
+      "index": 8,
+      "name": "02_BN1-129-Eb_comp",
+      "original_json_sha256": "88b17a686ed811d002c82ad6cd23b347d0dbd00e89f8a627f6fe610bb5107fd2",
+      "samples": 984506,
+      "shape": [
+        3845,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "02_BN1-129-Eb_solo_mic.wav",
+      "audio_member_sha256": "9a99f25ef470da34b6a85189d2895f64b59c20b653114b59b24cf7efa3239f13",
+      "composition": "BN1",
+      "extraction_mean_ms_per_frame": 1.1244395641092577,
+      "extraction_seconds": 4.323470124000096,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_009_count_target.npy",
+          "sha256": "a7e5cbc2546ba5f822f2dda4c3553c1e8c86030ac67558d87862447529cfd38c"
+        },
+        "ends": {
+          "file": "fit_009_ends.npy",
+          "sha256": "e479f99d8a507eb3ffc191cbb4c33b5e9609668d987ca06cb7898d580cb111a1"
+        },
+        "features": {
+          "file": "fit_009_features.npy",
+          "sha256": "f78779e71a14f0eb579c06c41883d96fb42b1e794caa80560d25a12644e4e1a0"
+        },
+        "pitch_target": {
+          "file": "fit_009_pitch_target.npy",
+          "sha256": "f33388667cb0f9b0ca6bce1d5f704a511a3699b1fcc6b2de3dde44b7a1db2b46"
+        }
+      },
+      "frames": 3845,
+      "index": 9,
+      "name": "02_BN1-129-Eb_solo",
+      "original_json_sha256": "ea1d4c80ffc02d34731a690dfe5b40f00316bcbffc758be6cca2d7454e732db1",
+      "samples": 984506,
+      "shape": [
+        3845,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "02_BN1-147-Gb_comp_mic.wav",
+      "audio_member_sha256": "8ec470a71b945327761f7a9001a0195ad32c29ec012c16ec86914f14ba60e05d",
+      "composition": "BN1",
+      "extraction_mean_ms_per_frame": 0.949921455973913,
+      "extraction_seconds": 3.2040850710000086,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_010_count_target.npy",
+          "sha256": "eecefdf5e1729590f57d76b35bbabd8fdfe10de29c60242fddab7c714eb73e18"
+        },
+        "ends": {
+          "file": "fit_010_ends.npy",
+          "sha256": "68ecf60927ecc513d37b5b6ac8bd7b8c3bd12aaae0acc5429dc5fc9411955076"
+        },
+        "features": {
+          "file": "fit_010_features.npy",
+          "sha256": "89cb5c3378f857d0af51e20c373a65e4a3d3cd8a71ed96a12e668d72a1da3b1b"
+        },
+        "pitch_target": {
+          "file": "fit_010_pitch_target.npy",
+          "sha256": "c733fbae8ef74d9041dc280c1037ff093da0e3188a41f76f6a4dfbd485106605"
+        }
+      },
+      "frames": 3373,
+      "index": 10,
+      "name": "02_BN1-147-Gb_comp",
+      "original_json_sha256": "6adae2cf34fd320d78a4bb30fa7510a8debd9c173af48e93cfd6fb82b04a6c1d",
+      "samples": 863725,
+      "shape": [
+        3373,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "02_BN1-147-Gb_solo_mic.wav",
+      "audio_member_sha256": "99c71715b672f4271f4eccb7b6193a6f2947f093ea8191e22feca3f156cf82e4",
+      "composition": "BN1",
+      "extraction_mean_ms_per_frame": 0.9483023827453582,
+      "extraction_seconds": 3.198623937000093,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_011_count_target.npy",
+          "sha256": "882c5f6497be616d0da1ceab3e5dcbc38ceaed936a6b165574847132c98bbe1f"
+        },
+        "ends": {
+          "file": "fit_011_ends.npy",
+          "sha256": "68ecf60927ecc513d37b5b6ac8bd7b8c3bd12aaae0acc5429dc5fc9411955076"
+        },
+        "features": {
+          "file": "fit_011_features.npy",
+          "sha256": "03c1dc6b14149f4abbe113f58532d1683e42320079e3cb6468d11cbda995a0c8"
+        },
+        "pitch_target": {
+          "file": "fit_011_pitch_target.npy",
+          "sha256": "42450191cea1e095874b1030d790d3c9230ab30dd7c8f0abc3368003bc7ac044"
+        }
+      },
+      "frames": 3373,
+      "index": 11,
+      "name": "02_BN1-147-Gb_solo",
+      "original_json_sha256": "93d56cc98291d45e1a4c2a1493b017886cd299608cb8e876104af7924a86117d",
+      "samples": 863725,
+      "shape": [
+        3373,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "03_BN1-129-Eb_comp_mic.wav",
+      "audio_member_sha256": "8fef5aa0807d145e57c5a4befdc729cf3f185cfcc41c64fee7ead7cb1876b629",
+      "composition": "BN1",
+      "extraction_mean_ms_per_frame": 1.0548935053315638,
+      "extraction_seconds": 4.056065527999863,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_012_count_target.npy",
+          "sha256": "408b0efe379bc8c669d56ed4bb3ba47e8d3367464b3d725dfedc23e368e6ea8a"
+        },
+        "ends": {
+          "file": "fit_012_ends.npy",
+          "sha256": "e479f99d8a507eb3ffc191cbb4c33b5e9609668d987ca06cb7898d580cb111a1"
+        },
+        "features": {
+          "file": "fit_012_features.npy",
+          "sha256": "48c6b0f61b3221f64d99fade48d0ff1f42527d8d0f1a995a9668dc453fe7fa01"
+        },
+        "pitch_target": {
+          "file": "fit_012_pitch_target.npy",
+          "sha256": "61b2311d88d8f6ddf3858a53b91bd186579889c61cce6b13a5dab0be5f76ca34"
+        }
+      },
+      "frames": 3845,
+      "index": 12,
+      "name": "03_BN1-129-Eb_comp",
+      "original_json_sha256": "b0f3bca7b8ec7d9514eddd6b0313a83ee0c86e86f58835d4fe9bafc226dfaf15",
+      "samples": 984506,
+      "shape": [
+        3845,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "03_BN1-129-Eb_solo_mic.wav",
+      "audio_member_sha256": "51ec6f1d43b4866a02ca5ff43bb5cfcb7f2b8069fe12b078385e091a8f8d78f4",
+      "composition": "BN1",
+      "extraction_mean_ms_per_frame": 1.1166361425227476,
+      "extraction_seconds": 4.293465967999964,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_013_count_target.npy",
+          "sha256": "8d29424832f670b24d0e711ddcb31e18ed8e2615b7a79a1932548d962b43ebf2"
+        },
+        "ends": {
+          "file": "fit_013_ends.npy",
+          "sha256": "e479f99d8a507eb3ffc191cbb4c33b5e9609668d987ca06cb7898d580cb111a1"
+        },
+        "features": {
+          "file": "fit_013_features.npy",
+          "sha256": "e9fd181ac0eaae8abe21288de01e0871bb401aba22bfc35047a61c042c09df3f"
+        },
+        "pitch_target": {
+          "file": "fit_013_pitch_target.npy",
+          "sha256": "71e629d44072efef9921f3d441c08ee56d706a4843fd0d3284c4a79d684d0ab8"
+        }
+      },
+      "frames": 3845,
+      "index": 13,
+      "name": "03_BN1-129-Eb_solo",
+      "original_json_sha256": "f79772a750173d7c0dd8b6203c2cdf3be690c95a8aebdf33a42419240e8ac681",
+      "samples": 984506,
+      "shape": [
+        3845,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "03_BN1-147-Gb_comp_mic.wav",
+      "audio_member_sha256": "3e5c46c368cd02ba7add7864e4f938e01f757dfea30b7cb6dc4457703a33bafa",
+      "composition": "BN1",
+      "extraction_mean_ms_per_frame": 1.3037876528312868,
+      "extraction_seconds": 4.39767575299993,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_014_count_target.npy",
+          "sha256": "6e7527e98ef6cf43fbd7f861f70554cad13413c9ff974986987579bc596a2091"
+        },
+        "ends": {
+          "file": "fit_014_ends.npy",
+          "sha256": "68ecf60927ecc513d37b5b6ac8bd7b8c3bd12aaae0acc5429dc5fc9411955076"
+        },
+        "features": {
+          "file": "fit_014_features.npy",
+          "sha256": "d112b8201fded70e190703540ebbc32d324b85f392d2f6c082eb89ed643c6b6b"
+        },
+        "pitch_target": {
+          "file": "fit_014_pitch_target.npy",
+          "sha256": "ac0289eac5219c12791cf55f5623e60530b841ccb1c32be5a6248e5650787155"
+        }
+      },
+      "frames": 3373,
+      "index": 14,
+      "name": "03_BN1-147-Gb_comp",
+      "original_json_sha256": "95368aabdec11e4b8931373d4002bdec13bdc0a75123e20f7dcaee3d233e5c80",
+      "samples": 863725,
+      "shape": [
+        3373,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "03_BN1-147-Gb_solo_mic.wav",
+      "audio_member_sha256": "576511de7739a4709b3dccbebab6d9387129ed2b8abf45fd4bd5e5917de4eeee",
+      "composition": "BN1",
+      "extraction_mean_ms_per_frame": 1.2549172982508425,
+      "extraction_seconds": 4.232836047000092,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_015_count_target.npy",
+          "sha256": "1f7663d17cd00230dd41aa90987d27cd1defe4c6b4da564e8b1f48659d819841"
+        },
+        "ends": {
+          "file": "fit_015_ends.npy",
+          "sha256": "68ecf60927ecc513d37b5b6ac8bd7b8c3bd12aaae0acc5429dc5fc9411955076"
+        },
+        "features": {
+          "file": "fit_015_features.npy",
+          "sha256": "b94587587ee9e8368c4d7b8ea6d4e196d920008ee1406b8ca5138ca3abb5a2b4"
+        },
+        "pitch_target": {
+          "file": "fit_015_pitch_target.npy",
+          "sha256": "ed73687622f990eea3f2c92e396b9d3c9dc31efa8ab6a1eae899170e19983365"
+        }
+      },
+      "frames": 3373,
+      "index": 15,
+      "name": "03_BN1-147-Gb_solo",
+      "original_json_sha256": "590397a8b8387269811c2463fca261b5f08b5df9d900199cb7761b5b8f3dac7c",
+      "samples": 863725,
+      "shape": [
+        3373,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "00_Funk2-108-Eb_comp_mic.wav",
+      "audio_member_sha256": "8e6a1c38db071723f91444c597e39adf8ced5e980ecf21bf9f61f2c1464e9010",
+      "composition": "Funk2",
+      "extraction_mean_ms_per_frame": 1.022450731011128,
+      "extraction_seconds": 4.226811322000003,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_016_count_target.npy",
+          "sha256": "581368390d08fff8c178b7af54631f4841e689a88bc4f57d74be0872ab63073f"
+        },
+        "ends": {
+          "file": "fit_016_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_016_features.npy",
+          "sha256": "ea8c280514047b1f23a58d5d033c6ea036788dd4e886fedaedbb03232abcff51"
+        },
+        "pitch_target": {
+          "file": "fit_016_pitch_target.npy",
+          "sha256": "9dba0d0db3123285a7f4173639acc08e0ffedf19478350f8da9c58747f1a6071"
+        }
+      },
+      "frames": 4134,
+      "index": 16,
+      "name": "00_Funk2-108-Eb_comp",
+      "original_json_sha256": "d504e633a38a256809d2c121635d8b67804c10a11d336fa80e31eca76e497d83",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "00_Funk2-108-Eb_solo_mic.wav",
+      "audio_member_sha256": "87bf9ef1a8ba9809cd4831c47ddd34bcca180c7c1226d36c0ae42ee871cc5717",
+      "composition": "Funk2",
+      "extraction_mean_ms_per_frame": 1.1202858234155975,
+      "extraction_seconds": 4.63126159400008,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_017_count_target.npy",
+          "sha256": "737d9268f8047ad468159f50d5222c3d653915970302741e522c1b3e5ea892b3"
+        },
+        "ends": {
+          "file": "fit_017_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_017_features.npy",
+          "sha256": "7e2441eecc370bd18d565bf57eebbbb0d0c0e828732e3066504caad70639e96e"
+        },
+        "pitch_target": {
+          "file": "fit_017_pitch_target.npy",
+          "sha256": "c8cd9ba52d0a50cc00f59f543e249e3df9ecd4bdac21c1d8c0c4b4d01f69ba18"
+        }
+      },
+      "frames": 4134,
+      "index": 17,
+      "name": "00_Funk2-108-Eb_solo",
+      "original_json_sha256": "0a2430658993b5d97fd95a3decb539b4966edbbbbf5d3fd94e090e4e6a3bfec8",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "00_Funk2-119-G_comp_mic.wav",
+      "audio_member_sha256": "94b32bcaeb915add436a971355b4cf467e2d5eeabad05856d0462e24abe6e3e1",
+      "composition": "Funk2",
+      "extraction_mean_ms_per_frame": 0.9627348725205283,
+      "extraction_seconds": 3.9799459629998637,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_018_count_target.npy",
+          "sha256": "63ac7203cedd799e904dc6bad48b96b88157c58963ed6efc4cdae4e877dfbc61"
+        },
+        "ends": {
+          "file": "fit_018_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_018_features.npy",
+          "sha256": "e309bdc6e5c477950d8b7eda1b8ca162b61d015c5e59880a8068b3afcacadb6e"
+        },
+        "pitch_target": {
+          "file": "fit_018_pitch_target.npy",
+          "sha256": "7834359daef0457a2814ad0f3ff5b9d0d7332c79503088302bd9fe50f1785d78"
+        }
+      },
+      "frames": 4134,
+      "index": 18,
+      "name": "00_Funk2-119-G_comp",
+      "original_json_sha256": "620cbe73ef1cf635e9bf2822709fb914e8b548c07589476b7ab2783334ea9be8",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "00_Funk2-119-G_solo_mic.wav",
+      "audio_member_sha256": "4cb571f05512f8f1bf3f655b1ed6f31ea08045fd6c90a5bdf83a79c1a7ce3b67",
+      "composition": "Funk2",
+      "extraction_mean_ms_per_frame": 0.943259958635734,
+      "extraction_seconds": 3.8994366690001243,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_019_count_target.npy",
+          "sha256": "74e45a64936125465cdba068fa315a73d3f952f0c1b020cb5ceeda1f0fc0eb79"
+        },
+        "ends": {
+          "file": "fit_019_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_019_features.npy",
+          "sha256": "8de64f13939db638d0a57d4e243d082cebd37030c935b0f9edf3b6bfe9acfdb2"
+        },
+        "pitch_target": {
+          "file": "fit_019_pitch_target.npy",
+          "sha256": "9914f1b387c38b8aab393d15b74930f86e006b9d9c0a80cb0d0d686c9ac2874c"
+        }
+      },
+      "frames": 4134,
+      "index": 19,
+      "name": "00_Funk2-119-G_solo",
+      "original_json_sha256": "4480c430b713c4df257edf06ff8a94305fada65506f35afd5893e6053ea707b8",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "01_Funk2-108-Eb_comp_mic.wav",
+      "audio_member_sha256": "ed6170345637448e9d75996da516cfe7f7d5286d5a490eb333f576fc905b2918",
+      "composition": "Funk2",
+      "extraction_mean_ms_per_frame": 1.1186677474600863,
+      "extraction_seconds": 4.624572467999997,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_020_count_target.npy",
+          "sha256": "27b203235b61930bdd8718f8af2ae579bf9f8bb09dc1362c8d52b133aae93601"
+        },
+        "ends": {
+          "file": "fit_020_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_020_features.npy",
+          "sha256": "83aa5b84b51b02539f93a5908f09e4c19eb03996b48644f672e8421a811288ab"
+        },
+        "pitch_target": {
+          "file": "fit_020_pitch_target.npy",
+          "sha256": "b249a9d6fc29560397ee0c62a376f56af021d7a36df674bac5d68edcc96ea2d6"
+        }
+      },
+      "frames": 4134,
+      "index": 20,
+      "name": "01_Funk2-108-Eb_comp",
+      "original_json_sha256": "5389d559a3c1ecf550e6094ff20e477b218f3a48c1964c6466be7a76509c3220",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "01_Funk2-108-Eb_solo_mic.wav",
+      "audio_member_sha256": "fb2b6044f99b615c89b4f6b1093c54ac6c7f5e71a89d49fbf0f7e95d4bde5056",
+      "composition": "Funk2",
+      "extraction_mean_ms_per_frame": 1.1338986381229101,
+      "extraction_seconds": 4.68753697000011,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_021_count_target.npy",
+          "sha256": "c59594429d47bcd19e2a2be59187d7e5bbdf982acb36c9379dd8d5baaaaadcdf"
+        },
+        "ends": {
+          "file": "fit_021_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_021_features.npy",
+          "sha256": "cfe7d073e608619f53d72493c083ec36d949e1b3ebf070141a6b1867f734e847"
+        },
+        "pitch_target": {
+          "file": "fit_021_pitch_target.npy",
+          "sha256": "5d9726e94684cfce64df29db84cc579f1106ec38205b2491ab72d58ecebca660"
+        }
+      },
+      "frames": 4134,
+      "index": 21,
+      "name": "01_Funk2-108-Eb_solo",
+      "original_json_sha256": "f9f3ac4adb3f50d5a5fd6b51abfa14f06e1e91e8820d74ed1f21ab9b956215cb",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "01_Funk2-119-G_comp_mic.wav",
+      "audio_member_sha256": "4112ba7fb59f847ee302d49db9bc7c0cc1f246bf98cccbcb7d443c9df61499a6",
+      "composition": "Funk2",
+      "extraction_mean_ms_per_frame": 1.203962859700042,
+      "extraction_seconds": 4.977182461999973,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_022_count_target.npy",
+          "sha256": "8a6d96a5d7822deda99e829a55258f393eaf32e3af7ba591bce5f7abf38e08be"
+        },
+        "ends": {
+          "file": "fit_022_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_022_features.npy",
+          "sha256": "0233525e63a2b85ec6b2d2e29cc44cf441bdaf8d80d8b8d66e38acb870a52591"
+        },
+        "pitch_target": {
+          "file": "fit_022_pitch_target.npy",
+          "sha256": "6c25e507f8fd59b3dd0085949a43ca9bd9b9557c4ec4d3c267302c7690a23aa7"
+        }
+      },
+      "frames": 4134,
+      "index": 22,
+      "name": "01_Funk2-119-G_comp",
+      "original_json_sha256": "95a98a5e062cd773789675b9eaaee6c71d4d22392feefa9228aa63e1fc38eafb",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "01_Funk2-119-G_solo_mic.wav",
+      "audio_member_sha256": "5ab14d6e9d5ab560862fc6f29ccd5aa2194a784e67450cbed6ae31ed28fcfb04",
+      "composition": "Funk2",
+      "extraction_mean_ms_per_frame": 1.2097647919690542,
+      "extraction_seconds": 5.00116765000007,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_023_count_target.npy",
+          "sha256": "c995b32f222fbfa7da602efb815b284906b8719ddd2a2f7ecc35e147c9baa6ff"
+        },
+        "ends": {
+          "file": "fit_023_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_023_features.npy",
+          "sha256": "2d99c9ad69017713d324faf188046d5c28dfdb4addb5f7d4e83d3b6ff81d5e8a"
+        },
+        "pitch_target": {
+          "file": "fit_023_pitch_target.npy",
+          "sha256": "bc750de9aec25de571eca701278b6de2f74a0eabd0d5b6bebffa4d4e4e595a9c"
+        }
+      },
+      "frames": 4134,
+      "index": 23,
+      "name": "01_Funk2-119-G_solo",
+      "original_json_sha256": "b5a4c29555b91c029a554123949a5b5c94197743d8549e69ea5649e4f4a02981",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "02_Funk2-108-Eb_comp_mic.wav",
+      "audio_member_sha256": "18fb8ba717efeaaa5b1c9180cd97801107d2ad6c5677499d1522970a7117b63e",
+      "composition": "Funk2",
+      "extraction_mean_ms_per_frame": 1.2238861497338787,
+      "extraction_seconds": 5.059545342999854,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_024_count_target.npy",
+          "sha256": "dbd6ad644aee1d5181cd3f513f46b69beb78704bdb67249b4d523274dda01b3b"
+        },
+        "ends": {
+          "file": "fit_024_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_024_features.npy",
+          "sha256": "c35641e4850532c2eefa97f75f6baa6370fa559b79e13d6279abd553d3c3ef36"
+        },
+        "pitch_target": {
+          "file": "fit_024_pitch_target.npy",
+          "sha256": "037e935e8147668a1c248b741c77c4fadcc1e3a3af97bd5e8a4c4ce12daf02c6"
+        }
+      },
+      "frames": 4134,
+      "index": 24,
+      "name": "02_Funk2-108-Eb_comp",
+      "original_json_sha256": "a1bf9aa9a3a5c366ab615b8d8c84f6d3cd8927c6cf0969a4ceaa7208deef560b",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "02_Funk2-108-Eb_solo_mic.wav",
+      "audio_member_sha256": "1cede35cfc35f708a64d166342809aee6e545a9833a218d8b51d89db02b0e2c5",
+      "composition": "Funk2",
+      "extraction_mean_ms_per_frame": 1.2349264550072372,
+      "extraction_seconds": 5.105185964999919,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_025_count_target.npy",
+          "sha256": "bea5c27c1cdf54e8adc39fe6b6277a5a648c2afd1020836c68fb4a27731652db"
+        },
+        "ends": {
+          "file": "fit_025_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_025_features.npy",
+          "sha256": "c38075a864afb92a174653ca900ad555551138ff8af30cfc413ff936b873e085"
+        },
+        "pitch_target": {
+          "file": "fit_025_pitch_target.npy",
+          "sha256": "8e232500b05db70463aec24393923e84b38e83a0ebc32913564568700a560bca"
+        }
+      },
+      "frames": 4134,
+      "index": 25,
+      "name": "02_Funk2-108-Eb_solo",
+      "original_json_sha256": "4fb5a3969cf220bd673b9a094bbe75e0f869f68c7f5bd4e2446a01a36f422478",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "02_Funk2-119-G_comp_mic.wav",
+      "audio_member_sha256": "426f9c1e0aeec6a2909aad153c4bc739b9a23f4f24ccf34e2e11fcef4009d037",
+      "composition": "Funk2",
+      "extraction_mean_ms_per_frame": 1.046977191582009,
+      "extraction_seconds": 4.328203710000025,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_026_count_target.npy",
+          "sha256": "f4540ec6ad827dfb91ad6ccb0608252a743988ddcddd833d227147da594a3cc5"
+        },
+        "ends": {
+          "file": "fit_026_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_026_features.npy",
+          "sha256": "3d991af762f7a865632c1af18b7d4493b10fa197cb683eeb17100a8494d6c644"
+        },
+        "pitch_target": {
+          "file": "fit_026_pitch_target.npy",
+          "sha256": "342964d64e80482ca936930051d6332aa47ab5ddbe695ca00b5a177fe85b6a5c"
+        }
+      },
+      "frames": 4134,
+      "index": 26,
+      "name": "02_Funk2-119-G_comp",
+      "original_json_sha256": "b2fa8d2d4d56abeffac9ab9a9bd1d7345743f3f71842bdf6bc37a976e02bfcd3",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "02_Funk2-119-G_solo_mic.wav",
+      "audio_member_sha256": "deb59f119b5b762656ad20fa1a15dbbf87e5d02bf7fbd88e324bc34422ea99d4",
+      "composition": "Funk2",
+      "extraction_mean_ms_per_frame": 0.9558426194968264,
+      "extraction_seconds": 3.95145338899988,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_027_count_target.npy",
+          "sha256": "948381127565d81018d72edc7889525fdd830b32fce46c5a11c153312762f0a4"
+        },
+        "ends": {
+          "file": "fit_027_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_027_features.npy",
+          "sha256": "d9b033f6100f697143c83e61f68e9bf744eb2a09a322bc8b6cee295ff1c6dd5f"
+        },
+        "pitch_target": {
+          "file": "fit_027_pitch_target.npy",
+          "sha256": "3a968a9e40b40971062eeb1970cd972cbdc42d6ad3aa9088f8066a74e73e7620"
+        }
+      },
+      "frames": 4134,
+      "index": 27,
+      "name": "02_Funk2-119-G_solo",
+      "original_json_sha256": "26b58dadf2ea2959b03554bfb81247f339e5e4f7774303dbda8a2e883c2dd805",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "03_Funk2-108-Eb_comp_mic.wav",
+      "audio_member_sha256": "ec620fee25a9a0717488cb8d098e02a87a2ecc38bacd955e918e40658c801b8a",
+      "composition": "Funk2",
+      "extraction_mean_ms_per_frame": 1.3600458526850636,
+      "extraction_seconds": 5.622429555000053,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_028_count_target.npy",
+          "sha256": "cbe271a879d534ca8c230c3bf75746dbe9c7e0ad377c4bae24d92604105d6dbd"
+        },
+        "ends": {
+          "file": "fit_028_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_028_features.npy",
+          "sha256": "35853d7eb9d116147e8e096218ac6fff2268567151655a2af08b33d152ccbb17"
+        },
+        "pitch_target": {
+          "file": "fit_028_pitch_target.npy",
+          "sha256": "938e2ff78ba60fd49f57ae4656da389e7270abf54d301b0ae6262ba5dcb8d99b"
+        }
+      },
+      "frames": 4134,
+      "index": 28,
+      "name": "03_Funk2-108-Eb_comp",
+      "original_json_sha256": "b6500401f862cecbeb0f430c7cd429327dd4c229c155ebc5c86c14f736946518",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "03_Funk2-108-Eb_solo_mic.wav",
+      "audio_member_sha256": "563e2299cffc695c0f5bd7ad29ba405414fb7b449c99e676398c28ac2ef640e5",
+      "composition": "Funk2",
+      "extraction_mean_ms_per_frame": 1.3284815783744652,
+      "extraction_seconds": 5.49194284500004,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_029_count_target.npy",
+          "sha256": "d98ca39ba14347294ab4a8d47b98b4ebf45471c72ecdbfc759da48317f4f5986"
+        },
+        "ends": {
+          "file": "fit_029_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_029_features.npy",
+          "sha256": "78e3bd0b7b243f717f003b363f11560f42d35905d13794382ae91ab4c371a70a"
+        },
+        "pitch_target": {
+          "file": "fit_029_pitch_target.npy",
+          "sha256": "ef42b7147953aa999ffc46c2ea51587ef0a66d032dcc6807a92c8d9815d1b320"
+        }
+      },
+      "frames": 4134,
+      "index": 29,
+      "name": "03_Funk2-108-Eb_solo",
+      "original_json_sha256": "8204d2219691701c91c97b143581410b599f3c4df79de52d7d6fc722efb7d722",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "03_Funk2-119-G_comp_mic.wav",
+      "audio_member_sha256": "4983a9a6ab867425273b9348d301754b96a445f59907cb9c59d6a99dd74410f4",
+      "composition": "Funk2",
+      "extraction_mean_ms_per_frame": 1.23453293613929,
+      "extraction_seconds": 5.103559157999825,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_030_count_target.npy",
+          "sha256": "13b2aa467f4f22308f40b9b2488b48953170a8953c9eb9ca813c8a6a0f0c9549"
+        },
+        "ends": {
+          "file": "fit_030_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_030_features.npy",
+          "sha256": "463388cdcac4add2d015806b5ac6bd12bd9b33544229a15cbc323a877386fe97"
+        },
+        "pitch_target": {
+          "file": "fit_030_pitch_target.npy",
+          "sha256": "192fabb56a78538802347a648b779785b2f575044400d211fe8705461b989ac3"
+        }
+      },
+      "frames": 4134,
+      "index": 30,
+      "name": "03_Funk2-119-G_comp",
+      "original_json_sha256": "11e4d6d44493de37dd35952776440cbc0ff02d02bccbf869847d5853479da17a",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "03_Funk2-119-G_solo_mic.wav",
+      "audio_member_sha256": "08df5e87b8450b2cd49a9cc9111f2b0f572cee5b0871333db38912f2699f91c8",
+      "composition": "Funk2",
+      "extraction_mean_ms_per_frame": 1.2623098812288467,
+      "extraction_seconds": 5.218389049000052,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_031_count_target.npy",
+          "sha256": "7b0329bd50423615e258cf8c21d7e25ac660c8a98c76b83e2b95421e81f17bc6"
+        },
+        "ends": {
+          "file": "fit_031_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_031_features.npy",
+          "sha256": "bee5c1a1065a80760f7cacaa985dc4889bf1084e72e0c55205936b5874e0f9de"
+        },
+        "pitch_target": {
+          "file": "fit_031_pitch_target.npy",
+          "sha256": "d0f5d2bd3020e151d81b0d4123729faaf068cc8138867bb6ab01660a13fa0240"
+        }
+      },
+      "frames": 4134,
+      "index": 31,
+      "name": "03_Funk2-119-G_solo",
+      "original_json_sha256": "972e6b734514e551e89b0a26d37420a5d865c7b89848b890c3a3612ff3f83cd9",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "00_Jazz1-130-D_comp_mic.wav",
+      "audio_member_sha256": "b686a47b0a0a58dbdd818d2ebc9c31da87e4bed1af889dd62b1ffd1d1496f827",
+      "composition": "Jazz1",
+      "extraction_mean_ms_per_frame": 1.1490967892529231,
+      "extraction_seconds": 4.383804250999901,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_032_count_target.npy",
+          "sha256": "4a03c9308c0dd7c939be3bca39bc5d652c90bb8424dbbc0ef07421080e2b17fb"
+        },
+        "ends": {
+          "file": "fit_032_ends.npy",
+          "sha256": "935c4bcabdd1e7409fe66c33617951facde414adc0e4d09d51270eaec9937e9e"
+        },
+        "features": {
+          "file": "fit_032_features.npy",
+          "sha256": "c2f85a74d0ff9482530ed13408e4b6b3ed1608b307570d9cf347074a05e26836"
+        },
+        "pitch_target": {
+          "file": "fit_032_pitch_target.npy",
+          "sha256": "14c0cfacda6863ccbf73d63ce1bb428d1d5098fa95b9716ab032adec1cf820da"
+        }
+      },
+      "frames": 3815,
+      "index": 32,
+      "name": "00_Jazz1-130-D_comp",
+      "original_json_sha256": "3e32aeb19e0693a642eaf22d9cd49bd4a0a4e9640d88763773c3611efad913ed",
+      "samples": 976692,
+      "shape": [
+        3815,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "00_Jazz1-130-D_solo_mic.wav",
+      "audio_member_sha256": "275623936a0f6cf7cb959a7e81ff801c6fcc4d3128a939e1ba7ef89b8dbb413d",
+      "composition": "Jazz1",
+      "extraction_mean_ms_per_frame": 1.1851076899082171,
+      "extraction_seconds": 4.521185836999848,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_033_count_target.npy",
+          "sha256": "57e7552dc61a8b2810339f247393fcc8119bbb035f4dd06a1d01c73cd64b9e2d"
+        },
+        "ends": {
+          "file": "fit_033_ends.npy",
+          "sha256": "935c4bcabdd1e7409fe66c33617951facde414adc0e4d09d51270eaec9937e9e"
+        },
+        "features": {
+          "file": "fit_033_features.npy",
+          "sha256": "20fd75837e7bf2b1e8dc842ac4f3013974a7f0ed13946b0e14cd01d0fd6b0e5f"
+        },
+        "pitch_target": {
+          "file": "fit_033_pitch_target.npy",
+          "sha256": "334a371eb4ecb6fd1fc58bb98002067e7a2a623e0aa500cc6c41bc91e0fbf023"
+        }
+      },
+      "frames": 3815,
+      "index": 33,
+      "name": "00_Jazz1-130-D_solo",
+      "original_json_sha256": "57b1e277743913c9ad5886ce21ceae3dee184d8054b38ced779f254fe10519e2",
+      "samples": 976692,
+      "shape": [
+        3815,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "00_Jazz1-200-B_comp_mic.wav",
+      "audio_member_sha256": "eb4be0b56d1100fc0b168a11c2f4dc6c7e5090a11847b3967e8b21ac2cd05252",
+      "composition": "Jazz1",
+      "extraction_mean_ms_per_frame": 1.172625186693531,
+      "extraction_seconds": 2.9081104629999572,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_034_count_target.npy",
+          "sha256": "17d66d6236a5a7866420b1bec4b31c78ab702013eca4d1e4253802916d835b56"
+        },
+        "ends": {
+          "file": "fit_034_ends.npy",
+          "sha256": "be85381568e3e99fba31bc595d57233e70d589a3a64753ba952b37f05639a801"
+        },
+        "features": {
+          "file": "fit_034_features.npy",
+          "sha256": "93bee9f06b2895b15aa1e324b26e8f569d222ffa2f85d554d6d01e3cb55c699c"
+        },
+        "pitch_target": {
+          "file": "fit_034_pitch_target.npy",
+          "sha256": "2630a96f36d761a811607ab026768d611404153c160114f3d6bd9328a637fbaa"
+        }
+      },
+      "frames": 2480,
+      "index": 34,
+      "name": "00_Jazz1-200-B_comp",
+      "original_json_sha256": "c05421471b5ebc2b572238883fb115b137c2bfa1ecac56adb68edf9d90a1e6e1",
+      "samples": 635040,
+      "shape": [
+        2480,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "00_Jazz1-200-B_solo_mic.wav",
+      "audio_member_sha256": "d8df477ac8d17da5df76bbfafe94449b9f1c398e120db99d5765deeab59fbfb6",
+      "composition": "Jazz1",
+      "extraction_mean_ms_per_frame": 1.0993981060484121,
+      "extraction_seconds": 2.726507303000062,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_035_count_target.npy",
+          "sha256": "04b31c9552d0ed79e4fde656ab71c85d4fad346f9515c4017d5722e8b1e78fd3"
+        },
+        "ends": {
+          "file": "fit_035_ends.npy",
+          "sha256": "be85381568e3e99fba31bc595d57233e70d589a3a64753ba952b37f05639a801"
+        },
+        "features": {
+          "file": "fit_035_features.npy",
+          "sha256": "24844599341348bae851457a0ac45bbcbffe6b29d451dfbc88e159f40131a004"
+        },
+        "pitch_target": {
+          "file": "fit_035_pitch_target.npy",
+          "sha256": "797362f81d9071f3f8ce64b01cec3b59f8488e4fe69e5a8ad5db3ad15dd627b8"
+        }
+      },
+      "frames": 2480,
+      "index": 35,
+      "name": "00_Jazz1-200-B_solo",
+      "original_json_sha256": "76f8e69f6982d6249de0a656de7e771a270032f0d372782ffae1460f60dfa5c7",
+      "samples": 635040,
+      "shape": [
+        2480,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "01_Jazz1-130-D_comp_mic.wav",
+      "audio_member_sha256": "d45184fa42482eefc1d21d5cef3777bf85e772bf9d8ba7508ff441b77a8ee199",
+      "composition": "Jazz1",
+      "extraction_mean_ms_per_frame": 1.1321183633027594,
+      "extraction_seconds": 4.319031556000027,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_036_count_target.npy",
+          "sha256": "edfaebadc3cca4393ae8da87f610c8c35cc70ee6e20e9cd9dfa11b3168325e27"
+        },
+        "ends": {
+          "file": "fit_036_ends.npy",
+          "sha256": "935c4bcabdd1e7409fe66c33617951facde414adc0e4d09d51270eaec9937e9e"
+        },
+        "features": {
+          "file": "fit_036_features.npy",
+          "sha256": "6b06571ab0f993c89f4653a4efb4ac814d283462feb0ac41d9dbcca5145d9556"
+        },
+        "pitch_target": {
+          "file": "fit_036_pitch_target.npy",
+          "sha256": "43735a89e9fb9fbca0050e33cff0e6ac01c78aa61c74a583cbbb49590a80ac9a"
+        }
+      },
+      "frames": 3815,
+      "index": 36,
+      "name": "01_Jazz1-130-D_comp",
+      "original_json_sha256": "96d2bf4294c402029bdddfb223734825f7a737611a2b4e73875996fc671dd679",
+      "samples": 976692,
+      "shape": [
+        3815,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "01_Jazz1-130-D_solo_mic.wav",
+      "audio_member_sha256": "726991869569d7b76fe69b36fbefb3571f030556f020a7e3d599f0728d60f3ef",
+      "composition": "Jazz1",
+      "extraction_mean_ms_per_frame": 1.161532290694621,
+      "extraction_seconds": 4.431245688999979,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_037_count_target.npy",
+          "sha256": "498155be395e3d50cc44e00d7b8551c888539632b1c3a330f70e9ee47911f629"
+        },
+        "ends": {
+          "file": "fit_037_ends.npy",
+          "sha256": "935c4bcabdd1e7409fe66c33617951facde414adc0e4d09d51270eaec9937e9e"
+        },
+        "features": {
+          "file": "fit_037_features.npy",
+          "sha256": "e7ea447818f597493f71ecfda247a77d1a4f48aa1a9921dfc698d35751d43ebb"
+        },
+        "pitch_target": {
+          "file": "fit_037_pitch_target.npy",
+          "sha256": "7fd5845c20082dbb26200281d7277d692e5909d50178278d86f64ecad973bc8e"
+        }
+      },
+      "frames": 3815,
+      "index": 37,
+      "name": "01_Jazz1-130-D_solo",
+      "original_json_sha256": "26482754fd44d9e2ea30dd46c7404fb2ae318d997b96ccae5c5970de17e8f5cf",
+      "samples": 976692,
+      "shape": [
+        3815,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "01_Jazz1-200-B_comp_mic.wav",
+      "audio_member_sha256": "19a0eeb68e488b3cfe320bdba37d166079baaa2e1790f91d7e7864ca64648514",
+      "composition": "Jazz1",
+      "extraction_mean_ms_per_frame": 1.1501192939516247,
+      "extraction_seconds": 2.852295849000029,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_038_count_target.npy",
+          "sha256": "924377a8d7f0ccc7c46d5f5e17538d8d2549c8826c46a299ec970e234f440378"
+        },
+        "ends": {
+          "file": "fit_038_ends.npy",
+          "sha256": "be85381568e3e99fba31bc595d57233e70d589a3a64753ba952b37f05639a801"
+        },
+        "features": {
+          "file": "fit_038_features.npy",
+          "sha256": "48b3180b0f531c7fe1f1b645db012248a159ad7854d0b942e2705e9bc0518b32"
+        },
+        "pitch_target": {
+          "file": "fit_038_pitch_target.npy",
+          "sha256": "0b4b7d560c2bad4fa34521e80fe05f1d65f001e848715c77b07e2ac99bec9c66"
+        }
+      },
+      "frames": 2480,
+      "index": 38,
+      "name": "01_Jazz1-200-B_comp",
+      "original_json_sha256": "cd6ef9984fb925a02bf3530c95e13f010da79666e9199b4709c62b0dafb21f81",
+      "samples": 635040,
+      "shape": [
+        2480,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "01_Jazz1-200-B_solo_mic.wav",
+      "audio_member_sha256": "a738c0a3a2934d40a8e162795c8fc8d5fc59a8ef99aad41bcc96494229ecda54",
+      "composition": "Jazz1",
+      "extraction_mean_ms_per_frame": 1.2778357717741806,
+      "extraction_seconds": 3.169032713999968,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_039_count_target.npy",
+          "sha256": "150ccfe90be93c4bab1980de078b74b22baf43d743abf0bef59fa57bdc26868f"
+        },
+        "ends": {
+          "file": "fit_039_ends.npy",
+          "sha256": "be85381568e3e99fba31bc595d57233e70d589a3a64753ba952b37f05639a801"
+        },
+        "features": {
+          "file": "fit_039_features.npy",
+          "sha256": "93ea2ce153692a9a0f995858efe768d01f2216c19db055380c2d80fedbcb28a1"
+        },
+        "pitch_target": {
+          "file": "fit_039_pitch_target.npy",
+          "sha256": "6831deed16d3fd4c8c05d50d073b7c4091fb46b9c85570132f276a293307b026"
+        }
+      },
+      "frames": 2480,
+      "index": 39,
+      "name": "01_Jazz1-200-B_solo",
+      "original_json_sha256": "b92ca3d32fce9dd489154bc1f8a7abe2e99b138ac3bdbae2932025a4bd3380c4",
+      "samples": 635040,
+      "shape": [
+        2480,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "02_Jazz1-130-D_comp_mic.wav",
+      "audio_member_sha256": "7b769c278bb3d44440420a79cba1e486119f823a33f78465aa9acdcdef277df5",
+      "composition": "Jazz1",
+      "extraction_mean_ms_per_frame": 1.055980795019642,
+      "extraction_seconds": 4.028566732999934,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_040_count_target.npy",
+          "sha256": "84de3b27b6f6a8009c6f466584f54a4776f59f1ec34f447a6d2ac85bf72fff9d"
+        },
+        "ends": {
+          "file": "fit_040_ends.npy",
+          "sha256": "935c4bcabdd1e7409fe66c33617951facde414adc0e4d09d51270eaec9937e9e"
+        },
+        "features": {
+          "file": "fit_040_features.npy",
+          "sha256": "8992a472d2393b62d23bc5a58459f1f713bf7a4ac5dea2a926b4e0dc6d233853"
+        },
+        "pitch_target": {
+          "file": "fit_040_pitch_target.npy",
+          "sha256": "da29ceee8691e5ed58c22bbadfca873b346eeb48649a41f52034fd25b7496cbd"
+        }
+      },
+      "frames": 3815,
+      "index": 40,
+      "name": "02_Jazz1-130-D_comp",
+      "original_json_sha256": "d4568a33e42d369f3361a68a79c9acc4e65c01dfc95c3f0335dd32a4a2201900",
+      "samples": 976692,
+      "shape": [
+        3815,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "02_Jazz1-130-D_solo_mic.wav",
+      "audio_member_sha256": "178728e013d354d2dd8c0818df8dc03cf553d81e6bb43d45a996fc6df5652433",
+      "composition": "Jazz1",
+      "extraction_mean_ms_per_frame": 1.0331719515071935,
+      "extraction_seconds": 3.941550994999943,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_041_count_target.npy",
+          "sha256": "162170a4d2b6b7a0932a58f8b21bfc987e7c8e749f5149f132b4cbc23a815cae"
+        },
+        "ends": {
+          "file": "fit_041_ends.npy",
+          "sha256": "935c4bcabdd1e7409fe66c33617951facde414adc0e4d09d51270eaec9937e9e"
+        },
+        "features": {
+          "file": "fit_041_features.npy",
+          "sha256": "24c6af5e7e9347933cf4b5064d47a74088fa5e8fa4587c65e462d2a856b5b393"
+        },
+        "pitch_target": {
+          "file": "fit_041_pitch_target.npy",
+          "sha256": "efe85dbdfba078417fa2a6d193afcbb0bccd6d6572f05e84a2802400f25cd84a"
+        }
+      },
+      "frames": 3815,
+      "index": 41,
+      "name": "02_Jazz1-130-D_solo",
+      "original_json_sha256": "b32ae2bfc52eef874a0f55645e0fc094ca4919f2a4b2f703bf554cc78f08c2d6",
+      "samples": 976692,
+      "shape": [
+        3815,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "02_Jazz1-200-B_comp_mic.wav",
+      "audio_member_sha256": "429c8a7c7585691285d3699b2036177f1514ff7523dd3d21bfd004ec39e1797a",
+      "composition": "Jazz1",
+      "extraction_mean_ms_per_frame": 1.0601643217741654,
+      "extraction_seconds": 2.62920751799993,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_042_count_target.npy",
+          "sha256": "d61b54495f6de0120566a6a4342c4b58cb8870f4a36487da9c49a5457123e326"
+        },
+        "ends": {
+          "file": "fit_042_ends.npy",
+          "sha256": "be85381568e3e99fba31bc595d57233e70d589a3a64753ba952b37f05639a801"
+        },
+        "features": {
+          "file": "fit_042_features.npy",
+          "sha256": "2f24d83b359f37ca51cf789bfecb40f113bc6834d239cbee36623fb555d23d0c"
+        },
+        "pitch_target": {
+          "file": "fit_042_pitch_target.npy",
+          "sha256": "12932c06beebef47047eee656b11079cd20e3f8ad6981a0b4891002a1463954d"
+        }
+      },
+      "frames": 2480,
+      "index": 42,
+      "name": "02_Jazz1-200-B_comp",
+      "original_json_sha256": "4e5acd68a8d1aaf8df57dc0f8ca67fac4f735e5554191648c6cb0166a682814f",
+      "samples": 635040,
+      "shape": [
+        2480,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "02_Jazz1-200-B_solo_mic.wav",
+      "audio_member_sha256": "f17cdd6926e198487041238f1539d0fd695189ae8b6d28604ab0717c6fcff70e",
+      "composition": "Jazz1",
+      "extraction_mean_ms_per_frame": 1.0430968814516048,
+      "extraction_seconds": 2.58688026599998,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_043_count_target.npy",
+          "sha256": "13b9bc2e2338fcade5c5d758628f99ac526f605e392b0ae59cdb10d8133ade06"
+        },
+        "ends": {
+          "file": "fit_043_ends.npy",
+          "sha256": "be85381568e3e99fba31bc595d57233e70d589a3a64753ba952b37f05639a801"
+        },
+        "features": {
+          "file": "fit_043_features.npy",
+          "sha256": "9010a19a623892815361e854dffe432377347bdf181fb953f46e30130c82c1c4"
+        },
+        "pitch_target": {
+          "file": "fit_043_pitch_target.npy",
+          "sha256": "919a52548ed7f33039c2b038ad444d0bb30fc03e04f526077a15d5159fb76358"
+        }
+      },
+      "frames": 2480,
+      "index": 43,
+      "name": "02_Jazz1-200-B_solo",
+      "original_json_sha256": "87b548a1b83faca6444cc17b1f3f91ea7eaea35e29d287849e0170defcd407e8",
+      "samples": 635040,
+      "shape": [
+        2480,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "03_Jazz1-130-D_comp_mic.wav",
+      "audio_member_sha256": "c02e73454f0cfcc2fb7c1a3eba799627ee3787964385041fb1ccd847c735903c",
+      "composition": "Jazz1",
+      "extraction_mean_ms_per_frame": 1.011457400524227,
+      "extraction_seconds": 3.858709982999926,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_044_count_target.npy",
+          "sha256": "1296302f9415ce07bf03f3a8a1b7c94095fe670a3926fdbd1c3a1349df2544e5"
+        },
+        "ends": {
+          "file": "fit_044_ends.npy",
+          "sha256": "935c4bcabdd1e7409fe66c33617951facde414adc0e4d09d51270eaec9937e9e"
+        },
+        "features": {
+          "file": "fit_044_features.npy",
+          "sha256": "f87d664a7e8f661ea46af548ec7b98e054d05fc19fc1c07cd76ed6e461c9c5fe"
+        },
+        "pitch_target": {
+          "file": "fit_044_pitch_target.npy",
+          "sha256": "acd0b2bf207c260be2443b12464a80fefd888ed04cad87fe4ced2d728bb1a712"
+        }
+      },
+      "frames": 3815,
+      "index": 44,
+      "name": "03_Jazz1-130-D_comp",
+      "original_json_sha256": "c8845ec1da099e910bd4e4d17395ec75022406eb0d34931de763361f1d29717d",
+      "samples": 976692,
+      "shape": [
+        3815,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "03_Jazz1-130-D_solo_mic.wav",
+      "audio_member_sha256": "088c1afa042e7b860228b1a74015cdd7f6bb59c44cc25e8cc70c17047c32a802",
+      "composition": "Jazz1",
+      "extraction_mean_ms_per_frame": 1.009320772214983,
+      "extraction_seconds": 3.8505587460001607,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_045_count_target.npy",
+          "sha256": "abbcdc90ce92977c43227b36945f755847e4e48b5359293793d94dc57f829afe"
+        },
+        "ends": {
+          "file": "fit_045_ends.npy",
+          "sha256": "935c4bcabdd1e7409fe66c33617951facde414adc0e4d09d51270eaec9937e9e"
+        },
+        "features": {
+          "file": "fit_045_features.npy",
+          "sha256": "17240fc4c2537ce1d07875c6402647e9b03c93d43b085df7c44ffd5fbc0a863f"
+        },
+        "pitch_target": {
+          "file": "fit_045_pitch_target.npy",
+          "sha256": "7adcff08dedeb3b900d2bd8de62752021ca62df2bbd91e191276a73586a59c3f"
+        }
+      },
+      "frames": 3815,
+      "index": 45,
+      "name": "03_Jazz1-130-D_solo",
+      "original_json_sha256": "a27830fca7280742283e9e8ac939b18b37681f3979f0375589b823f8f13a3898",
+      "samples": 976692,
+      "shape": [
+        3815,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "03_Jazz1-200-B_comp_mic.wav",
+      "audio_member_sha256": "2bcc479599713e00c934cdfd382e7f217438369cbf36ff6125ef0049a6761373",
+      "composition": "Jazz1",
+      "extraction_mean_ms_per_frame": 0.9225383778226248,
+      "extraction_seconds": 2.2878951770001095,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_046_count_target.npy",
+          "sha256": "757786ea9426cce0d48eea13708a6e03822546a7f5430d7b2d7f90aa46543558"
+        },
+        "ends": {
+          "file": "fit_046_ends.npy",
+          "sha256": "be85381568e3e99fba31bc595d57233e70d589a3a64753ba952b37f05639a801"
+        },
+        "features": {
+          "file": "fit_046_features.npy",
+          "sha256": "9e1d13505d5a46269dd5744155f2e6d4030c64950edf413142426b9cb91843f0"
+        },
+        "pitch_target": {
+          "file": "fit_046_pitch_target.npy",
+          "sha256": "eeadd9227d3e304d52ffe17d59a63f63f7356d47275301c22e1e6eae93ce621a"
+        }
+      },
+      "frames": 2480,
+      "index": 46,
+      "name": "03_Jazz1-200-B_comp",
+      "original_json_sha256": "77b600fcb7975fc0fabce7b32cbcc2d4a503e3aad1dbb63b87bb3a8bfbd1ab64",
+      "samples": 635040,
+      "shape": [
+        2480,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "03_Jazz1-200-B_solo_mic.wav",
+      "audio_member_sha256": "8b217d43c99a8fbb000b8296848b03038d95df5bf8a4140c7f99eb8001c250c3",
+      "composition": "Jazz1",
+      "extraction_mean_ms_per_frame": 0.9403607830645085,
+      "extraction_seconds": 2.332094741999981,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_047_count_target.npy",
+          "sha256": "2c23bae1794fe37cac07917bed23edfef53cf3446ccf0b0362697fa1f0e94fbc"
+        },
+        "ends": {
+          "file": "fit_047_ends.npy",
+          "sha256": "be85381568e3e99fba31bc595d57233e70d589a3a64753ba952b37f05639a801"
+        },
+        "features": {
+          "file": "fit_047_features.npy",
+          "sha256": "de3daf0663a1df9476ddd32cdfc8dcbcb5babaec588f585c6521fb06b89cebf1"
+        },
+        "pitch_target": {
+          "file": "fit_047_pitch_target.npy",
+          "sha256": "a3528a3edfa8491e1f6c8839cc2ed0ba8f916ff2bb4f6dcbe75629cff913c3b7"
+        }
+      },
+      "frames": 2480,
+      "index": 47,
+      "name": "03_Jazz1-200-B_solo",
+      "original_json_sha256": "558c6d71eb83901b4e838c27386303d063c49b4295393fcd897b37a47f7a8648",
+      "samples": 635040,
+      "shape": [
+        2480,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "00_Rock3-117-Bb_comp_mic.wav",
+      "audio_member_sha256": "fd88ab632cc5f7717ca9e500f674886f80e0224c42abebde1b01a604a7affebb",
+      "composition": "Rock3",
+      "extraction_mean_ms_per_frame": 1.1250651843251436,
+      "extraction_seconds": 4.651019472000144,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_048_count_target.npy",
+          "sha256": "370fb7903f37ed93277c2399dd1bd18a35b76d683ffda19b218cf8b33ea1cb37"
+        },
+        "ends": {
+          "file": "fit_048_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_048_features.npy",
+          "sha256": "809114e59c6e7e6f94d6f857b3a84e341c2db6ea3694db4f528c89603904e9d4"
+        },
+        "pitch_target": {
+          "file": "fit_048_pitch_target.npy",
+          "sha256": "00b4dedfaf8c8b1659142b3741fa2dc1b7432b4430a9219ae14fe031ba0fcf05"
+        }
+      },
+      "frames": 4134,
+      "index": 48,
+      "name": "00_Rock3-117-Bb_comp",
+      "original_json_sha256": "c628061878424ed7680beedf78f3eff9db87fa6149bbf65b3382bf8bd8b83f3a",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "00_Rock3-117-Bb_solo_mic.wav",
+      "audio_member_sha256": "ebb841a89a3681e276cc6a1a77d17aca6d7c56f8fae4593bb6b37c025b2450ab",
+      "composition": "Rock3",
+      "extraction_mean_ms_per_frame": 1.1479750459602942,
+      "extraction_seconds": 4.745728839999856,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_049_count_target.npy",
+          "sha256": "38c7d386fcca136c71185a02e5e3da7fc35e106a9f2683be73390f477f0e0f68"
+        },
+        "ends": {
+          "file": "fit_049_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_049_features.npy",
+          "sha256": "385399561e3c8591ba028b7618bf5e037a2231302236df000aef982a877ce5a7"
+        },
+        "pitch_target": {
+          "file": "fit_049_pitch_target.npy",
+          "sha256": "a95d5a746b11b174d01ecabfb90353539c4ad539dea78e72cbdf947e6b01b5e2"
+        }
+      },
+      "frames": 4134,
+      "index": 49,
+      "name": "00_Rock3-117-Bb_solo",
+      "original_json_sha256": "03c574a5806cc7137041415aee73b8c82ceb24234a1a871948bf7610c21bb16f",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "00_Rock3-148-C_comp_mic.wav",
+      "audio_member_sha256": "de26d924d9a1dc9931f9a9ea9b2fa9d71a639b51b25a7e76dcfc9680049685d3",
+      "composition": "Rock3",
+      "extraction_mean_ms_per_frame": 1.1195133795355845,
+      "extraction_seconds": 4.628068311000106,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_050_count_target.npy",
+          "sha256": "11c794d78840d503e96b3a0b2aafecdc67a4b20b5eed3798fd4dd5d85ad62d0b"
+        },
+        "ends": {
+          "file": "fit_050_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_050_features.npy",
+          "sha256": "1f86f6fd98b507868f8eb296328083a1f9b85006e1bd59f23a4e9a9a2bd10ab2"
+        },
+        "pitch_target": {
+          "file": "fit_050_pitch_target.npy",
+          "sha256": "b5d18abe309fc14377a16c9f8f2096340b82e5b87562ab8cee950a5d4f2ac127"
+        }
+      },
+      "frames": 4134,
+      "index": 50,
+      "name": "00_Rock3-148-C_comp",
+      "original_json_sha256": "faf56a0863e0fe77c135797de900e373f2382c6cba91341e5d7c5459596f2b6d",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "00_Rock3-148-C_solo_mic.wav",
+      "audio_member_sha256": "158a42a533aca9d89d6e8999fd747f1f166e795e5efbd2bc7ce1c9be7c0a515a",
+      "composition": "Rock3",
+      "extraction_mean_ms_per_frame": 1.0933824968553287,
+      "extraction_seconds": 4.520043241999929,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_051_count_target.npy",
+          "sha256": "deaf6eeeb0408dbd72dec2213846fd2dde332bb1acdd28a8fd0c3462961301ab"
+        },
+        "ends": {
+          "file": "fit_051_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_051_features.npy",
+          "sha256": "460edf3a810a8e979f4048257627a052ae5cc26c911cdf6931501d14a42cb1f9"
+        },
+        "pitch_target": {
+          "file": "fit_051_pitch_target.npy",
+          "sha256": "96d14e2ec17dfce3c8665073027995889ad1acd3f22eaa439ef02252c6c381b6"
+        }
+      },
+      "frames": 4134,
+      "index": 51,
+      "name": "00_Rock3-148-C_solo",
+      "original_json_sha256": "1b75c9acb9321d6ef442017e05c87454cb3f44089536a7d0285a7d4ba3ec3bc6",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "01_Rock3-117-Bb_comp_mic.wav",
+      "audio_member_sha256": "bf445156f5cfeaa54968c4933ea5d95f62e9d74f0f8bea36c95fe52312ebe320",
+      "composition": "Rock3",
+      "extraction_mean_ms_per_frame": 1.1951039071117484,
+      "extraction_seconds": 4.940559551999968,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_052_count_target.npy",
+          "sha256": "648abc191238534b189c471e88c75526f0483dfe8fa6c65fee224c43e342f0ca"
+        },
+        "ends": {
+          "file": "fit_052_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_052_features.npy",
+          "sha256": "37a7c87d2ca9550537d87a3ccf3c400fd1f05c4f7a33fb4633a730c6c519f683"
+        },
+        "pitch_target": {
+          "file": "fit_052_pitch_target.npy",
+          "sha256": "19bdf95fa211a4a056f4aa733da50f0cf3ec98f856e6cfab9b26b99a5c481762"
+        }
+      },
+      "frames": 4134,
+      "index": 52,
+      "name": "01_Rock3-117-Bb_comp",
+      "original_json_sha256": "b9a7f7d5bc65587c7e20800bd86b2d4061689c504d76c83955677038709db88a",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "01_Rock3-117-Bb_solo_mic.wav",
+      "audio_member_sha256": "40c9a226f326c603970b68ee85c795d91a2bc276f780fa5a0b85f57920492b68",
+      "composition": "Rock3",
+      "extraction_mean_ms_per_frame": 1.1936292839864993,
+      "extraction_seconds": 4.934463460000188,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_053_count_target.npy",
+          "sha256": "329b7c6606527883211d752931d8594c7dc48e1c4c5fc07dabad5cee799024e3"
+        },
+        "ends": {
+          "file": "fit_053_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_053_features.npy",
+          "sha256": "9e37c84cdecdcd7c5fd86a3fbee4903d90b8335038d3354568caaca6fa51509f"
+        },
+        "pitch_target": {
+          "file": "fit_053_pitch_target.npy",
+          "sha256": "36b683929708b3474c69e69a3cfea948df451e421ecf5d53deb9484771a1bcaf"
+        }
+      },
+      "frames": 4134,
+      "index": 53,
+      "name": "01_Rock3-117-Bb_solo",
+      "original_json_sha256": "9949d3defd5867311db458239c0096cc0700c0c3ab70a7d87acee8a2ab935968",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "01_Rock3-148-C_comp_mic.wav",
+      "audio_member_sha256": "4c873326c1cafddb484cc0b25ee36217eeb443ce3ca39b32db008175b19cef4d",
+      "composition": "Rock3",
+      "extraction_mean_ms_per_frame": 1.0764059344460322,
+      "extraction_seconds": 4.449862132999897,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_054_count_target.npy",
+          "sha256": "337724a4c6dade015e577bafaa563d0e57f900324b13ca41f6d52b45d41cbf58"
+        },
+        "ends": {
+          "file": "fit_054_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_054_features.npy",
+          "sha256": "52896bfb80536386bee1159dccd673ad29345cb88620c94fa8b8929d3c891e5f"
+        },
+        "pitch_target": {
+          "file": "fit_054_pitch_target.npy",
+          "sha256": "b9ce98fe451e169c3becb4de74bf0ee0ad75d749639a0ccc29607ce1dd18cb2e"
+        }
+      },
+      "frames": 4134,
+      "index": 54,
+      "name": "01_Rock3-148-C_comp",
+      "original_json_sha256": "9f1a4ddc015f9492691dc61c63f931a289cec51deef1bc16df68a8d5d171aed1",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "01_Rock3-148-C_solo_mic.wav",
+      "audio_member_sha256": "0ba930e658dba87c77c7cd9e5572a4c2010db550532a4fb6e70ad9e3170ed03e",
+      "composition": "Rock3",
+      "extraction_mean_ms_per_frame": 1.1765224167876307,
+      "extraction_seconds": 4.863743671000066,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_055_count_target.npy",
+          "sha256": "e7e6a0296009125b7554ff5977fdea4cc08af9f1afcd38037fa5f6a46a9ae3a7"
+        },
+        "ends": {
+          "file": "fit_055_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_055_features.npy",
+          "sha256": "a60bdd9a6d3a0d2c5618a80505445d623b46e92652bbd6f2d3b74a39e68c126b"
+        },
+        "pitch_target": {
+          "file": "fit_055_pitch_target.npy",
+          "sha256": "ff7819810edb231b3873493bf3251213449f0c40b022d640324025e968a75934"
+        }
+      },
+      "frames": 4134,
+      "index": 55,
+      "name": "01_Rock3-148-C_solo",
+      "original_json_sha256": "475dc50579761e8fa329f70317f795d59cecabc70d817a466301ff5d60ff984d",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "02_Rock3-117-Bb_comp_mic.wav",
+      "audio_member_sha256": "31016348798736b434d542efa0b036daf5b56d9bd7b93a1f69cac0d4157fe52f",
+      "composition": "Rock3",
+      "extraction_mean_ms_per_frame": 1.2382171260280934,
+      "extraction_seconds": 5.118789599000138,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_056_count_target.npy",
+          "sha256": "663d6fff9b4912855479030e1807a89a292395f6f4623f4a1cda0c070a3712bb"
+        },
+        "ends": {
+          "file": "fit_056_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_056_features.npy",
+          "sha256": "14edbd1f9705ce99007743e5084b0786936e111ee20daff3bffbbffe098f0cd2"
+        },
+        "pitch_target": {
+          "file": "fit_056_pitch_target.npy",
+          "sha256": "0bc34311bd7a8881106d8342ae635e7301429924349a988985314acae25032b5"
+        }
+      },
+      "frames": 4134,
+      "index": 56,
+      "name": "02_Rock3-117-Bb_comp",
+      "original_json_sha256": "de9190909c4351e576e3ee937b112eece2de3f1c9653dc450c8ccc09ca5c98c9",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "02_Rock3-117-Bb_solo_mic.wav",
+      "audio_member_sha256": "2401b959b0398d01a560f57649663a0ebb893f9dfbfc334bd815fa7106ccb8c4",
+      "composition": "Rock3",
+      "extraction_mean_ms_per_frame": 1.2406649704886117,
+      "extraction_seconds": 5.128908987999921,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_057_count_target.npy",
+          "sha256": "6b420e13d5c07b27f20f225dd0ddc1c9021f21df38975c748f30a8e012c984dc"
+        },
+        "ends": {
+          "file": "fit_057_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_057_features.npy",
+          "sha256": "fdcd4eaa7ec054a653fff142b0a3226fc2a6818af84904529ee076201ecc5c0b"
+        },
+        "pitch_target": {
+          "file": "fit_057_pitch_target.npy",
+          "sha256": "d110576e3d07228c65b64b890d09aa84a88f57f7d08bfea99dc346d79b852ebe"
+        }
+      },
+      "frames": 4134,
+      "index": 57,
+      "name": "02_Rock3-117-Bb_solo",
+      "original_json_sha256": "c0c1c9e855f6d90f1251a10b7d22be18d48cbcb40179fd171364399dfdf33efd",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "02_Rock3-148-C_comp_mic.wav",
+      "audio_member_sha256": "0ce12b6c42e79f6d02e82577b7128de77c2c02d79f4b6600833df2afdbdfa5ff",
+      "composition": "Rock3",
+      "extraction_mean_ms_per_frame": 1.1611044245283078,
+      "extraction_seconds": 4.800005691000024,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_058_count_target.npy",
+          "sha256": "696488da018ab95a6aa96d9150737417596ce0c6af69ac2f1188ce55e5aa1d06"
+        },
+        "ends": {
+          "file": "fit_058_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_058_features.npy",
+          "sha256": "a9087ccd938ffeb1795687ef0f4a6f5523251d46b35975a2f8ef3014b1e22aff"
+        },
+        "pitch_target": {
+          "file": "fit_058_pitch_target.npy",
+          "sha256": "ed44502e2182db4c84fe53c5b9c888cc584c5b4bbdfab8c8d24f4ed9aa197bb5"
+        }
+      },
+      "frames": 4134,
+      "index": 58,
+      "name": "02_Rock3-148-C_comp",
+      "original_json_sha256": "3f782a425dbcb0b91a0601c1ff1d874a715061e7acaf4fbcf454c71d2925e1a7",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "02_Rock3-148-C_solo_mic.wav",
+      "audio_member_sha256": "fad305d82f5ec985e80ce775e667707ad4a20a97de6c9a5f246af20295dc9ad4",
+      "composition": "Rock3",
+      "extraction_mean_ms_per_frame": 1.1320855890178978,
+      "extraction_seconds": 4.680041824999989,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_059_count_target.npy",
+          "sha256": "4cfb0d09a32a0cf50b368b4ef5269cbdf1d0781cf23ddca914459df317e2c1df"
+        },
+        "ends": {
+          "file": "fit_059_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_059_features.npy",
+          "sha256": "550ad2a354327a77e0ab2a77a68344f9278be72c55a82e7b64738d5147bba0ec"
+        },
+        "pitch_target": {
+          "file": "fit_059_pitch_target.npy",
+          "sha256": "25f87a9bebdcf58e3cd5f74dc302fc68dd2d979fbeb911c5850368a4df99289f"
+        }
+      },
+      "frames": 4134,
+      "index": 59,
+      "name": "02_Rock3-148-C_solo",
+      "original_json_sha256": "435e8431cc33ec3d22b2525635c4fd5d830ef5c1351e0bc36cb73a2e3b911d47",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "03_Rock3-117-Bb_comp_mic.wav",
+      "audio_member_sha256": "75d81c0b546d9dea445f81b448d3956c065f7d9f302780951287b6494a9c9030",
+      "composition": "Rock3",
+      "extraction_mean_ms_per_frame": 1.1013673171262792,
+      "extraction_seconds": 4.553052489000038,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_060_count_target.npy",
+          "sha256": "09cb4392488f179647d7db655c5e3cc4373d557bd35053f59764ed9406c9abe0"
+        },
+        "ends": {
+          "file": "fit_060_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_060_features.npy",
+          "sha256": "c3185dd83b9939f4439579166782f84ad1f0f59a2cdf6347ef1a3e1d690432d5"
+        },
+        "pitch_target": {
+          "file": "fit_060_pitch_target.npy",
+          "sha256": "03746718f428adb448b9e620929a5f678f3e5c91d7132a41ad352a1bd1712cee"
+        }
+      },
+      "frames": 4134,
+      "index": 60,
+      "name": "03_Rock3-117-Bb_comp",
+      "original_json_sha256": "e51dbb62d11a74fb776e287282130dbc1ce9f9297a31f0291720338ae1e042ad",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "03_Rock3-117-Bb_solo_mic.wav",
+      "audio_member_sha256": "8234aca0cd57810a93c684faac40cce4f71c323c98a3fee2e0c1c6a882794a8e",
+      "composition": "Rock3",
+      "extraction_mean_ms_per_frame": 0.9665300043540925,
+      "extraction_seconds": 3.9956350379998185,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_061_count_target.npy",
+          "sha256": "15790ac91ba65138dc5e8d1effa9b0a1852fa2d6b82056e2780f9e80b70d9bed"
+        },
+        "ends": {
+          "file": "fit_061_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_061_features.npy",
+          "sha256": "a3b9d588b162dac2152c06e146df07468938bd29ea7df80de75bb26abecdbe4b"
+        },
+        "pitch_target": {
+          "file": "fit_061_pitch_target.npy",
+          "sha256": "83b008f31d2f0deead336007d570adc53c5fecaa2fa5c7ef16395e83003c399b"
+        }
+      },
+      "frames": 4134,
+      "index": 61,
+      "name": "03_Rock3-117-Bb_solo",
+      "original_json_sha256": "49d5307f335fa1453ed4bf0f5ff088f4a596e3aedde523a3a0aaed779d407171",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "03_Rock3-148-C_comp_mic.wav",
+      "audio_member_sha256": "f427266c83e2cd89bfbe76ba99172457537357bc14e83c1ee7cd556dbd576775",
+      "composition": "Rock3",
+      "extraction_mean_ms_per_frame": 0.9433050832123924,
+      "extraction_seconds": 3.89962321400003,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_062_count_target.npy",
+          "sha256": "710bfdc9c605f2fc4a13bd78f00e05128a423f06e2553fa47af68018f99afd96"
+        },
+        "ends": {
+          "file": "fit_062_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_062_features.npy",
+          "sha256": "7b5dbf08ee864fa58210a4ddd550133a997486ca6b02800bd0e4fe5042b4b0fb"
+        },
+        "pitch_target": {
+          "file": "fit_062_pitch_target.npy",
+          "sha256": "8022b6e7d7292228c5b12f0bb2e4c15ec7fde81e1c8f597d0dd553cb58b626ab"
+        }
+      },
+      "frames": 4134,
+      "index": 62,
+      "name": "03_Rock3-148-C_comp",
+      "original_json_sha256": "412cfaf3446e491800f4f2f5afd1f2e9eb237efca2a3b2397fa701b2133538a2",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "03_Rock3-148-C_solo_mic.wav",
+      "audio_member_sha256": "688898f2eb793127b89e3bf38b90b9af14ad3d2745bf459ed0ec8a9c3524ce6c",
+      "composition": "Rock3",
+      "extraction_mean_ms_per_frame": 0.9343438935655503,
+      "extraction_seconds": 3.862577655999985,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_063_count_target.npy",
+          "sha256": "2e58b3e0ce9e2fcbfc046c4ebb0ae44accf47f488542702e9bfa386b90bb0aa0"
+        },
+        "ends": {
+          "file": "fit_063_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_063_features.npy",
+          "sha256": "81a2d968ebeb59c203accfe5f4c4af109104a1aaa6a830e0d5534147a731542b"
+        },
+        "pitch_target": {
+          "file": "fit_063_pitch_target.npy",
+          "sha256": "b55305f4ffd2d24888c2c9c0e618e7aa654bd4230f275155716477ac9e417703"
+        }
+      },
+      "frames": 4134,
+      "index": 63,
+      "name": "03_Rock3-148-C_solo",
+      "original_json_sha256": "38741ca559466d965c45e64cd10f390bf3ecc30077cd553bd005ee3712ff4611",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "00_SS1-100-C#_comp_mic.wav",
+      "audio_member_sha256": "4180689b2d372b7588253f3bf6782e904af04feef4d80726160965387d443662",
+      "composition": "SS1",
+      "extraction_mean_ms_per_frame": 1.1274389968553629,
+      "extraction_seconds": 4.66083281300007,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_064_count_target.npy",
+          "sha256": "90b41c0ecd99326795868bb9ae18f00246c27ac491ae45914be27289403bed87"
+        },
+        "ends": {
+          "file": "fit_064_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_064_features.npy",
+          "sha256": "916d1a5a854a8376b66b87ffea344773a14980ee7c18c2a1aa896c487653b914"
+        },
+        "pitch_target": {
+          "file": "fit_064_pitch_target.npy",
+          "sha256": "0ddf2074fa1f4365b35af7672008a9fd0942c318df0f0fa991770ac53153d402"
+        }
+      },
+      "frames": 4134,
+      "index": 64,
+      "name": "00_SS1-100-C#_comp",
+      "original_json_sha256": "cbc3ebeddfd3d06bf811627513b43c48f53be65d171b5ed0614dcca13b37129b",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "00_SS1-100-C#_solo_mic.wav",
+      "audio_member_sha256": "41a3bf8c5cacf65a601b1171e5cbc36787170bcae6d0d1d970a31a5d4e231e0d",
+      "composition": "SS1",
+      "extraction_mean_ms_per_frame": 1.1172037728592432,
+      "extraction_seconds": 4.618520397000111,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_065_count_target.npy",
+          "sha256": "ad99111b3b3e8ff2c04ac926216059e1e1f81bfc45f0626bc1a60857499d63e7"
+        },
+        "ends": {
+          "file": "fit_065_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_065_features.npy",
+          "sha256": "e1198de8c05a80c34a35b6a10a3fcc3e6dc151322bc0e2b8de94067285694790"
+        },
+        "pitch_target": {
+          "file": "fit_065_pitch_target.npy",
+          "sha256": "aca95ac63b2ebefe33163023ba450f7c5b54ed84c4e21eedce61e8d6de4f44f2"
+        }
+      },
+      "frames": 4134,
+      "index": 65,
+      "name": "00_SS1-100-C#_solo",
+      "original_json_sha256": "dcd51c7bbce0d1415e1edd60113cb7d6c46f83cb33a0c40eba8c302d24501348",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "00_SS1-68-E_comp_mic.wav",
+      "audio_member_sha256": "f301b36c16e3a4e7646905f1f8da82f539afbacccdbf33928dc77a0a4f55b7b7",
+      "composition": "SS1",
+      "extraction_mean_ms_per_frame": 1.0630044124335174,
+      "extraction_seconds": 4.394460241000161,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_066_count_target.npy",
+          "sha256": "ce1dd5c72e3a9f6435d95a766ade58ca28aa579ebb9c916f64b330ff6b89e40e"
+        },
+        "ends": {
+          "file": "fit_066_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_066_features.npy",
+          "sha256": "977ab34b3c61420c7d10582a6d2ec8277336325512520bef73883b10e95ed74f"
+        },
+        "pitch_target": {
+          "file": "fit_066_pitch_target.npy",
+          "sha256": "82bee9b316c7c1d7caaf3186bf26a22fcf12194cfc67a6b1d1fab4b7b40730f9"
+        }
+      },
+      "frames": 4134,
+      "index": 66,
+      "name": "00_SS1-68-E_comp",
+      "original_json_sha256": "4e8c6112d3da8a161b370ab9ad42a16eaaa2e1eef3725e47cc5ca49e2ab73a64",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "00_SS1-68-E_solo_mic.wav",
+      "audio_member_sha256": "9ed56c43f64845e87fc19796317f46fbe62c1895054868f00fa672aa88aadfe7",
+      "composition": "SS1",
+      "extraction_mean_ms_per_frame": 1.045784722544771,
+      "extraction_seconds": 4.323274043000083,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_067_count_target.npy",
+          "sha256": "49d78b03c3f8ff23f3ae47e803d8aadbf02addb8e998e036fefd73aae72ea5b3"
+        },
+        "ends": {
+          "file": "fit_067_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_067_features.npy",
+          "sha256": "5641e63a72f1d8f9f104b0cdd87b3a92006fff50061aeef55ab1d0c085cd588f"
+        },
+        "pitch_target": {
+          "file": "fit_067_pitch_target.npy",
+          "sha256": "78a692afb5969980962dc182b0c537f206d943338d1b61bea1e989b6041cdd9d"
+        }
+      },
+      "frames": 4134,
+      "index": 67,
+      "name": "00_SS1-68-E_solo",
+      "original_json_sha256": "11c683d5d22ac0654ea1a206bb9d0808d7d05ffa2264e8d182a47382cdbe6f68",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "01_SS1-100-C#_comp_mic.wav",
+      "audio_member_sha256": "c8b3cb71fa42be463da53bc2114f42741366a9b1e5b80a158a38402961a3c5a2",
+      "composition": "SS1",
+      "extraction_mean_ms_per_frame": 1.0243731555393838,
+      "extraction_seconds": 4.234758624999813,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_068_count_target.npy",
+          "sha256": "e3e4c6b0216ebe42504fed80523755276722752629a4823179a7af008bc49cfe"
+        },
+        "ends": {
+          "file": "fit_068_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_068_features.npy",
+          "sha256": "6d93a3bf7bffe477a326a81ea039c7834cc6409faa94894521139099be908fb2"
+        },
+        "pitch_target": {
+          "file": "fit_068_pitch_target.npy",
+          "sha256": "dd9ce9c5d5462d86e44ccd695bc9c074260bbee21c340817bd670f5659aa409c"
+        }
+      },
+      "frames": 4134,
+      "index": 68,
+      "name": "01_SS1-100-C#_comp",
+      "original_json_sha256": "e1030cd3ca2c5332b6fbda0e235a4920a4fc0798881758803cc915a73f2ef3a4",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "01_SS1-100-C#_solo_mic.wav",
+      "audio_member_sha256": "2b9c9eda652c2ebf9dab32d906f757973427c00c3df9f945e357a54156e47069",
+      "composition": "SS1",
+      "extraction_mean_ms_per_frame": 1.1069450732946562,
+      "extraction_seconds": 4.576110933000109,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_069_count_target.npy",
+          "sha256": "599b487d06c616ca221eb244ce137a7fd471c240f6e601d08d2f81bccb4ab7b2"
+        },
+        "ends": {
+          "file": "fit_069_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_069_features.npy",
+          "sha256": "45b37862855e606c23d8c89f49a6cea4f43a0123e03c18b3d0138cf2c657ead2"
+        },
+        "pitch_target": {
+          "file": "fit_069_pitch_target.npy",
+          "sha256": "296dfa14dd291b256b0883db6de7d04b8194c81b406ecec7e2928fe229509541"
+        }
+      },
+      "frames": 4134,
+      "index": 69,
+      "name": "01_SS1-100-C#_solo",
+      "original_json_sha256": "c07a725a405b7acf44f625090764862a8a516246c4b6fdc7df85f02435041ad5",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "01_SS1-68-E_comp_mic.wav",
+      "audio_member_sha256": "278b9058cde0102ad19c58e22415fc73788a85a074b765250fea1370a0ed25d5",
+      "composition": "SS1",
+      "extraction_mean_ms_per_frame": 0.9909691594097799,
+      "extraction_seconds": 4.09666650500003,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_070_count_target.npy",
+          "sha256": "6461abb19be0e43659c69da2a4fb8f3d4e3070e216fb619c4415dac3e90384ba"
+        },
+        "ends": {
+          "file": "fit_070_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_070_features.npy",
+          "sha256": "86aa6b42edc5ed2aef291f7e8a245bd387e0b5ba94cff88ed0d521d73b0b0710"
+        },
+        "pitch_target": {
+          "file": "fit_070_pitch_target.npy",
+          "sha256": "dd6b267f5dc977d02abc2fd57c84ca6942e4606893b09d674d5b2e8826ae4f6a"
+        }
+      },
+      "frames": 4134,
+      "index": 70,
+      "name": "01_SS1-68-E_comp",
+      "original_json_sha256": "c84e9f609a76c005e162501238e23b817b595ef9cb7591e40ce2caaff2436677",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "01_SS1-68-E_solo_mic.wav",
+      "audio_member_sha256": "2ed5d98c2380c3d367f2ee4d782c1255d2532d038a6d663fa3b063c320350e88",
+      "composition": "SS1",
+      "extraction_mean_ms_per_frame": 0.9718907194001248,
+      "extraction_seconds": 4.017796234000116,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_071_count_target.npy",
+          "sha256": "a65ed88a427a96d69205bf9c8106ccb86aa769edb8e0b509a5a3d3fed7d8cb30"
+        },
+        "ends": {
+          "file": "fit_071_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_071_features.npy",
+          "sha256": "cf4feab182797a629455543cdfca6c0313ca7313e983655ae8c2ba6c4af9a01e"
+        },
+        "pitch_target": {
+          "file": "fit_071_pitch_target.npy",
+          "sha256": "2eb2c2b088b7ccaba6d7bc895a8500a9d0806eb9ce65f74871ccd01419a6a1b5"
+        }
+      },
+      "frames": 4134,
+      "index": 71,
+      "name": "01_SS1-68-E_solo",
+      "original_json_sha256": "47c063e1bb5887027d83032edb40686b08f7dc2122ef75dc21048e6796df2dda",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "02_SS1-100-C#_comp_mic.wav",
+      "audio_member_sha256": "2010d893d0ee8c5aa8ed64eb9890f52c2bacb46d74878936002ae6d93a5c082a",
+      "composition": "SS1",
+      "extraction_mean_ms_per_frame": 0.9515519259796663,
+      "extraction_seconds": 3.9337156619999405,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_072_count_target.npy",
+          "sha256": "a529c190d67d69a95f60b2c7ca0b8c10ded2c9504a30faad9e3edd3f429ee674"
+        },
+        "ends": {
+          "file": "fit_072_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_072_features.npy",
+          "sha256": "0f8b66f12df66862380ce4c88cefaacb1d50351be1930f89672285b3bd775b21"
+        },
+        "pitch_target": {
+          "file": "fit_072_pitch_target.npy",
+          "sha256": "ceda69375bc1a97ea5744024f094538cf7b5c3ad60f880047bc84c233892559d"
+        }
+      },
+      "frames": 4134,
+      "index": 72,
+      "name": "02_SS1-100-C#_comp",
+      "original_json_sha256": "b46c37cdcb530c0ce5a641efc5da483b878099eefbb4564f4c01d34aaa2959bc",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "02_SS1-100-C#_solo_mic.wav",
+      "audio_member_sha256": "1866e928ccc36ab697754b30bbfc293e603deb445362372472e5b01f320f9623",
+      "composition": "SS1",
+      "extraction_mean_ms_per_frame": 0.9900713347847161,
+      "extraction_seconds": 4.092954898000016,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_073_count_target.npy",
+          "sha256": "27adb7c72e5a07055e96d9aac7df2ce69d19d62de90cd0843a022d28023407c9"
+        },
+        "ends": {
+          "file": "fit_073_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_073_features.npy",
+          "sha256": "c257f58fda0b87c72950782c85e3dc128ab8599d5a93a0e41463de60ed3821e7"
+        },
+        "pitch_target": {
+          "file": "fit_073_pitch_target.npy",
+          "sha256": "4ec1884eebb3e2909651bc78d9f85685efaf7bbeb4466fcac73b76d60b2eb7d1"
+        }
+      },
+      "frames": 4134,
+      "index": 73,
+      "name": "02_SS1-100-C#_solo",
+      "original_json_sha256": "c36b2e90a972829fd5e6121209ab006b20884bbf4dde05344f956ff15a687599",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "02_SS1-68-E_comp_mic.wav",
+      "audio_member_sha256": "57ea3c4905aeb0dbf2aaac4fb10c57008a4a0e21220718b0d7b0e74c13cf4187",
+      "composition": "SS1",
+      "extraction_mean_ms_per_frame": 1.1180938896951873,
+      "extraction_seconds": 4.622200139999904,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_074_count_target.npy",
+          "sha256": "a4277adbaefe5d3b28a18b810288ae34e2fe3ce4846eb366d01bf9f088ead680"
+        },
+        "ends": {
+          "file": "fit_074_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_074_features.npy",
+          "sha256": "11ed668d4ee7f15d9b8e5f3d2d2e59bdb74b259d73e88bb101e76cf0c8c21f68"
+        },
+        "pitch_target": {
+          "file": "fit_074_pitch_target.npy",
+          "sha256": "d49f0ff372a74c659250cd99d62a1e278760ee57d7c71959e08b087eed44f675"
+        }
+      },
+      "frames": 4134,
+      "index": 74,
+      "name": "02_SS1-68-E_comp",
+      "original_json_sha256": "6bd8a17e599a6098f132e08eb11768a9371de1227326d9c3c6acfa71800ed922",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "02_SS1-68-E_solo_mic.wav",
+      "audio_member_sha256": "ecef11904f658c226b2c46eb5b9bfb8d068f635f2c3f3bb660d9192882ec2dce",
+      "composition": "SS1",
+      "extraction_mean_ms_per_frame": 1.1161920430575583,
+      "extraction_seconds": 4.614337905999946,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_075_count_target.npy",
+          "sha256": "5f23382bbedb748dc1d14486eff55469e6e8be477ffdd49dafaa8534733a3b99"
+        },
+        "ends": {
+          "file": "fit_075_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_075_features.npy",
+          "sha256": "0df2be4da5b85e78546cdb4217f99676785c4285790f8fb95548c3809fa5fb42"
+        },
+        "pitch_target": {
+          "file": "fit_075_pitch_target.npy",
+          "sha256": "f65a4bb25cea2869ed4bdb8768ef1813269fa2cff9f6a46b1e02930f80ced825"
+        }
+      },
+      "frames": 4134,
+      "index": 75,
+      "name": "02_SS1-68-E_solo",
+      "original_json_sha256": "0a3cabce4d8bf466c441ffd0c6165f070c695bf8576b3a8fa593f76f23c35df7",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "03_SS1-100-C#_comp_mic.wav",
+      "audio_member_sha256": "8cfa48ee4515f40d1ac1329b532e4421f56b471d592b5c7d0acc1b173e633876",
+      "composition": "SS1",
+      "extraction_mean_ms_per_frame": 1.032834393323689,
+      "extraction_seconds": 4.26973738200013,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_076_count_target.npy",
+          "sha256": "093286429f0e9d13ca23b757770f1d08d69a1374a931dc6ab07ed5b9bb2a4769"
+        },
+        "ends": {
+          "file": "fit_076_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_076_features.npy",
+          "sha256": "a62beca1066c27b6c10670a5e7474aa91955b95c6047b028cb74b6f5064781be"
+        },
+        "pitch_target": {
+          "file": "fit_076_pitch_target.npy",
+          "sha256": "ae66801ec127346901d0f3494779bf4764a5bac5410fdda5e1e944316fd1e6e1"
+        }
+      },
+      "frames": 4134,
+      "index": 76,
+      "name": "03_SS1-100-C#_comp",
+      "original_json_sha256": "c7ee348a131b5c0fcb118bdbb85d8911dc42bec1b71f927a197cc803a61125a7",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "03_SS1-100-C#_solo_mic.wav",
+      "audio_member_sha256": "26913110e0daa319160ed395eda4fe77ee3cd589c335b0da59449c97114c410d",
+      "composition": "SS1",
+      "extraction_mean_ms_per_frame": 1.0624844109820983,
+      "extraction_seconds": 4.392310554999995,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_077_count_target.npy",
+          "sha256": "41c785dd145f3c61f88a520fccc3abfaafbd953ef6ea2f9df20a4785dd48fe21"
+        },
+        "ends": {
+          "file": "fit_077_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_077_features.npy",
+          "sha256": "446a6ecc76e1b3f7aa4af7757425933bc61a7901dc362bb03f2178852af06125"
+        },
+        "pitch_target": {
+          "file": "fit_077_pitch_target.npy",
+          "sha256": "b0499786b05147a668139fe51d361ffc90857e7951101710305e6579285ddd8d"
+        }
+      },
+      "frames": 4134,
+      "index": 77,
+      "name": "03_SS1-100-C#_solo",
+      "original_json_sha256": "9dce99bceec72c6d5b1dc2911a695819955763ada20b3d5610266da1612d21b2",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "solo"
+    },
+    {
+      "audio_member": "03_SS1-68-E_comp_mic.wav",
+      "audio_member_sha256": "b5bac89b11bc785121bf6a071c3003615646165ffc0c3d81297f091f6763e37b",
+      "composition": "SS1",
+      "extraction_mean_ms_per_frame": 1.2154843543783018,
+      "extraction_seconds": 5.024812320999899,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_078_count_target.npy",
+          "sha256": "61bb9654875b9897e31e06f505e0f5602c1a16c2b5f2d1eeeff8192a7fc7d0b0"
+        },
+        "ends": {
+          "file": "fit_078_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_078_features.npy",
+          "sha256": "1e97fb07eceacd90b86789bbddcb067eadd8ed2da687601484ca175148b1f144"
+        },
+        "pitch_target": {
+          "file": "fit_078_pitch_target.npy",
+          "sha256": "9a41f51756c0703f6755709d58fccb980b8d66a62f4c090e3c7f6a46e1398fb4"
+        }
+      },
+      "frames": 4134,
+      "index": 78,
+      "name": "03_SS1-68-E_comp",
+      "original_json_sha256": "8c38786f661f5bd684bc8e298c10ef00f7c48e00da3b69ef675a7c0ba3e6f8a5",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "comp"
+    },
+    {
+      "audio_member": "03_SS1-68-E_solo_mic.wav",
+      "audio_member_sha256": "7b195fa71448d467ec14d665be30b65b68f7b3e1e6ba753bbd53bab6b7fcd402",
+      "composition": "SS1",
+      "extraction_mean_ms_per_frame": 1.1924695682148252,
+      "extraction_seconds": 4.929669195000088,
+      "extraction_timing_is_not_live_latency": true,
+      "files": {
+        "count_target": {
+          "file": "fit_079_count_target.npy",
+          "sha256": "98b0f2531408a2934995515937266ce38f14ffd2b328bab9f3a0512115d3e792"
+        },
+        "ends": {
+          "file": "fit_079_ends.npy",
+          "sha256": "a0668891e4bab2b3b820330db6a39c0d634defbfe55592f148605bd84dd24f91"
+        },
+        "features": {
+          "file": "fit_079_features.npy",
+          "sha256": "6e1cf6c52dfa6d9a603040c1c74c7c8961b27d8c589ac098ccee6482568296b0"
+        },
+        "pitch_target": {
+          "file": "fit_079_pitch_target.npy",
+          "sha256": "d762ef275a5dd47ce069e3fa970d80921205763ff635f1adacb03d627832cc8d"
+        }
+      },
+      "frames": 4134,
+      "index": 79,
+      "name": "03_SS1-68-E_solo",
+      "original_json_sha256": "e9929e9051ba9f3e37c56581a7347189564efce888821aa814ed2e6e4130a9c6",
+      "samples": 1058400,
+      "shape": [
+        4134,
+        49,
+        222
+      ],
+      "texture": "solo"
+    }
+  ]
+}
