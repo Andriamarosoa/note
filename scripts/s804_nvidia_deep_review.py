@@ -11,9 +11,9 @@ from scripts.s798_kimi_adviser import ENDPOINT, NoRedirect, SECRET_RE
 
 SCHEMA="NOTE_S804_NVIDIA_DEEP_CODE_DATA_REVIEW_V1"
 ROLES={
-    "architecture":"z-ai/glm-5.3-flash",
+    "architecture":"google/gemma-4-31b-it",
     "data":"nvidia/nemotron-3.5-lightning-30b-a3b",
-    "redteam":"deepseek-ai/deepseek-v4.1-flash",
+    "redteam":"openai/gpt-oss-20b",
 }
 PROMPTS={
 "architecture":(
@@ -104,7 +104,13 @@ def payload(role,evidence):
                     {"role":"user","content":evidence}],
         "stream":False,"max_tokens":1800,"temperature":0.35}
     if role=="architecture":
-        req["reasoning_effort"]="low"
+        req["max_tokens"]=1400
+        req["temperature"]=0.5
+        req["top_p"]=1.0
+    if role=="redteam":
+        req["max_tokens"]=2200
+        req["temperature"]=1.0
+        req["top_p"]=1.0
     if role=="data":
         req["max_tokens"]=4200
         req["temperature"]=1.0

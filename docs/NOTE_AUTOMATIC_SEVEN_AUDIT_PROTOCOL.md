@@ -51,9 +51,9 @@ Les six auditeurs GitHub sont six scripts/rôles déterministes ; ils ne sont **
 
 Le protocole **7/7** ci-dessus reste l'historique valide S802/S803 ; il ne constitue pas la nouvelle norme de revue code/données. S804 introduit un protocole **9/9** : les six audits déterministes habituels ET trois modèles NVIDIA indépendants sur les preuves GitHub signées des 80 pistes FIT. Voir `.github/workflows/note-s804-deep-nine-audits.yml`.
 
-- Audit externe d'architecture : GLM-5.3-Flash ;
+- Audit externe d'architecture : Gemma 4 31B ;
 - Audit externe des données : Nemotron 3.5 Lightning ;
-- Contre-audit externe : DeepSeek V4.1 Flash.
+- Contre-audit externe : GPT-OSS 20B.
 
 Les trois jobs externes et six locaux s'exécutent **en parallèle seulement après** production d'un bundle de preuve : scan AST de tous les Python suivis par Git, extraits numérotés des chemins critiques, validation des 80 cartes OOF, statistiques réelles des erreurs par pitch/composition et contrôles SHA256. Le modèle ne lit pas chaque ligne du dépôt ni les fichiers audio entiers : cette limite doit être explicitement déclarée. CAL32, HELD et TEST sont interdits. La réussite de la consultation d'une API ne prouve ni absence de bug, ni F1 musical, ni latence physique.
 
