@@ -36,7 +36,12 @@ S798 ne touche pas S708/S707 ni la sortie MIDI256 réelle. Aucune promotion, auc
 
 ## Verdict
 
-S798 infrastructure terminée et tous les six audits déterministes validés dans le [run #39346121986](https://github.com/Andriamarosoa/note/actions/runs/39346121986). Le septième job de conseiller Kimi a été SKIPPED, volontairement : aucun avis externe n'a été reçu ni évalué, faute de secret renouvelé et de lancement manuel. Les six audits vérifient la sécurité et le protocole de l'intégration, PAS la qualité des modèles musicaux ni le succès de Kimi. Le dépôt NOTE est désormais **privé**, vérifié sur l'API GitHub après le run ; aucune commande de changement de visibilité n'a été exécutée via cette connexion.
+S798 infrastructure terminée et tous les six audits déterministes validés dans le [run #39346121986](https://github.com/Andriamarosoa/note/actions/runs/39346121986). Le septième job de conseiller Kimi a été SKIPPED dans le run initial, puis effectivement démarré dans un essai explicite ci-dessous. Aucun avis externe n'a été reçu, faute de secret renouvelé. Les six audits vérifient la sécurité et le protocole de l'intégration, PAS la qualité des modèles musicaux ni le succès de Kimi. Le dépôt NOTE est désormais **privé**, vérifié sur l'API GitHub après le run ; aucune commande de changement de visibilité n'a été exécutée via cette connexion.
+
+
+## Essai réel du septième conseiller — 20 octobre 2026
+
+Run [#39346769099](https://github.com/Andriamarosoa/note/actions/runs/39346769099), commit `26eba6a86b1cca26d7226779f27e1c06b14d01c1` : les six audits PASS, consensus PASS, et le septième job Kimi a été exécuté mais s'est arrêté sur le garde-fou `NVIDIA_API_KEY secret missing`. Le secret GitHub Actions `NVIDIA_API_KEY` n'est pas disponible pour ce workflow. Aucun appel API au modèle n'a été envoyé, aucun avis de Kimi obtenu, aucune nouvelle valeur des six métriques calculée, aucun modèle LIVE modifié. Le statut global de ce run est FAILURE, **pas** un succès de Kimi. Le branchement one-shot par message de commit a été supprimé ensuite ; retour au déclenchement explicite `workflow_dispatch` uniquement.
 
 ## Prochaine action
 
