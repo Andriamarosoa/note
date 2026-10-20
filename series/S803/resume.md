@@ -1,36 +1,38 @@
 ---
 serie: S803
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s803-causal-current-frame-gates
-run_id: 39361632654
-commit_sha: 1cd2c3d8c6e4795f1c4ce4425cf7211c426e26ac
+run_id: 39363062723
+commit_sha: 68b1685a0e5a386e7273ddfe7f963125a666cdc5
 promotion: false
 ---
 
-# S803 — audit expérimental de trois gates de têtes par frame/pitch
+# S803 — analyse réelle FIT80 et sélecteurs causaux indépendants par fragment
 
 ## Objectif
 
-Continuer NOTE vers **plus de 80 % sur les six mesures** sans régression globale ni composition FIT, en laissant S708 comme référence officielle. Évaluer trois garde-fous acoustiques **strictement causaux** par fragment/hauteur, sur **vraies sorties GuitarSet FIT80**, plutôt que des gains théoriques ou des simulations.
+Contribuer à l'objectif NOTE **plus de 80 % sur six métriques** sans aucune régression, avec S708 comme seule référence officielle. Explorer des garde-fous acoustiques causaux sur les têtes gelées et leur sélection par frame/pitch, et déterminer si les fausses attaques S802 sont séparables sans vérité future, buffering, retiming ni retard NoteOff.
 
 ## Hypothèse
 
-Les collisions S802 incluent de nombreux vrais NoteOn ; leur veto aveugle détruirait le rappel. Des caractéristiques présentes à l'instant de décision (`on`, `on_rise`, `harmonic_parent` et probabilités des têtes) pourraient limiter les faux positifs sans utiliser les attaques natives futures. Cette séparation était une hypothèse, non une certitude. Les trois seuils ont été fixés *avant* la lecture des étiquettes de vérité S802.
+Les collisions native/synthétique de S802 mélangent de vrais et faux NoteOn. Des indicateurs instantanés (`on`, `on_rise`, `harmonic_parent`, probabilités des têtes) pourraient séparer TP/FP et limiter les faux positifs. Une séparation faible devait conduire au rejet des politiques plutôt qu'à une promotion sur de petites améliorations Exact-K.
 
 ## Modifications
 
-Branch `codex/note-s803-causal-current-frame-gates`, issue de S802 HEAD `67a49ed`, [PR #107 DRAFT](https://github.com/Andriamarosoa/note/pull/107). Trois règles shadow indépendantes `rise_attack` (adaptive plus on >=0,20 et rise >=0,12), `parent_conflict` (consensus avec parent <=0,02 ou rise >=0,20), `agreement_attack` (adaptive avec general >=0,96, transient >=0,93, rise >=0,10). Modèles S795 et cinq têtes spécialisées conservés ; sélection variant à chaque frame/pitch, aucun remplacement des architectures par un décodeur externe. Script `scripts/s803_causal_frame_replay.py`, test de causalité `test/test_s803_causal_frame_replay.py`, six audits `scripts/s803_six_role_audits.py`, workflow `.github/workflows/note-s803-causal-frame-gates.yml`. Le premier run a révélé un import PyTorch inutile dans les auditeurs ; correctif commit `1cd2c3d`, **replay scientifique non modifié**.
+À partir du HEAD S802 `67a49ed928f21b1a68e185e815bca9787573d8b4`, création d'une [branche S803](https://github.com/Andriamarosoa/note/tree/codex/note-s803-causal-current-frame-gates) et de la [PR #107 DRAFT](https://github.com/Andriamarosoa/note/pull/107). Nouveaux modules `scripts/s803_causal_frame_replay.py`, `scripts/s803_six_role_audits.py`, `test/test_s803_causal_frame_replay.py` et workflow `.github/workflows/note-s803-causal-frame-gates.yml`. Trois règles prédéclarées : `rise_attack`, `parent_conflict`, `agreement_attack`. Toutes s'appuient sur les cinq têtes existantes (general, bass, polyphonic, transient, harmonic) choisies dynamiquement par fragment/hauteur. **Les six métriques n'ont pas encore six architectures indépendantes complètes** : S803 conserve la spécialisation existante, sans déployer de nouvel ensemble LIVE.
+
+Deux erreurs de CI ont été corrigées : import PyTorch inutile dans les six contrôles légers ; puis erreur de syntaxe d'une journalisation NVIDIA introduite pendant la correction d'un timeout. Un contrôle de compilation et les tests unitaires du client NVIDIA s'exécutent désormais dans le job initial. Le conseiller a une sortie bornée et un délai réseau adapté. Ces corrections n'altèrent pas les prédictions MIDI ni le modèle officiel.
 
 ## Protocole
 
-Vraies archives signées S800 #39352880035 (80 traces OOF à cinq cartes), S801 #39354733640 et S802 #39359182007 ; vérification SHA256, contrôle des 12 compteurs FIT S795, replay complet 256 MIDI et six scores `s704_joint_metrics` sur tous les événements réellement émis. Stratégie strictement **FIT** pour l'exploration : aucun CAL32, HELD ni TEST ; score CAL32 S708 non comparé comme s'il s'agissait du même split. Comparer chaque variante à source native FIT sur les six scores et les cinq compositions. AUC rétrospectif des étiquettes S802 par caractéristique, avec bootstrap par piste, **sans intégrer une vérité future au décodeur**.
+Reproduction des vrais artefacts GuitarSet S800 FIT80 #39352880035, S801 #39354733640 et S802 #39359182007. Vérification SHA256 des **80/80 traces OOF** et stricte parité des 12 compteurs historiques S795 (dont `frames=306536`, `k_correct=189124`). Recalcul des six métriques à partir du flux de NoteOn/NoteOff MIDI256 réellement émis, sur cinq compositions séparées, veto de chaque régression par score ou composition. Analyses d'AUC sur les étiquettes S802 **a posteriori seulement**, avec bootstrap des pistes ; aucun seuil appris, aucune ouverture CAL32/HELD/TEST, aucune vérité ou attaque future utilisée pour décider.
 
 ## Audits obligatoires
 
-Six rôles exécutés comme jobs CI distincts et parallèles : Données, Acoustique, Architecture, Apprentissage, Métriques et LIVE. Ils vérifient en particulier parité, séparation FIT, présence cinq têtes dynamiques et zéro lookahead/hold/source-retiming. Un vrai conseiller NVIDIA NIM `z-ai/glm-5.3-flash` doit s'exécuter en parallèle et un job final vérifier le **7/7** avec les artefacts de la même exécution. L'avis NVIDIA est scientifique et consultatif, jamais la preuve d'un gain F1, ni une autorité de promotion.
+Le [run #39363062723](https://github.com/Andriamarosoa/note/actions/runs/39363062723) a réellement exécuté en parallèle les rôles indépendants Données, Acoustique, Architecture, Apprentissage, Métriques et LIVE, avec **six PASS** et six artefacts de preuves. L'avis externe NVIDIA NIM du modèle `z-ai/glm-5.3-flash` a été reçu et archivé **dans le même run** après test du vrai secret GitHub. Le consensus final `NOTE_SEVEN_OF_SEVEN_PASS S803 z-ai/glm-5.3-flash promotion=false` est PASS ; cette validation certifie l'exécution contrôlée du protocole, **pas** un score musical amélioré ni une latence physique.
 
 ## Statut
 
-Le [run #39361632654](https://github.com/Andriamarosoa/note/actions/runs/39361632654) a reproduit 80/80 vraies pistes avec **six audits locaux PASS**. Les trois variantes montrent des régressions et sont **rejetées**. Aucune promotion, S708 intacte. Le conseiller NVIDIA a échoué à répondre à sa première tentative dans ce run ; ses seuls jobs en échec ont été relancés, et le verdict 7/7 est **encore en attente**. Voir `resultat.md` pour toutes les valeurs et AUC mesurées. Aucun test de latence physique LIVE n'est revendiqué.
+**S803 terminée, audit 7/7 PASS, trois variantes scientifiquement rejetées, promotion=false.** Le replay signé confirme de petites améliorations Exact-K/Frame Pitch pour certaines variantes, mais des pertes Onset, Offset ou Full Note interdisent tout remplacement de S708. Aucun objectif musical 80 % atteint sur les six métriques et aucun test de latence physique microphone réalisé. Résultats, incertitudes et prochaines pistes détaillés dans `resultat.md`.
