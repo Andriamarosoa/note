@@ -1,0 +1,122 @@
+name: S807 blind independent three-model Active-K review
+# One tagged push executes the same neutral FIT-only evidence in three isolated
+# NVIDIA NIM model jobs. Later pushes never silently repeat paid reviews.
+on:
+  push:
+    branches: [codex/note-s807-blind-activek-three-model-review]
+    paths:
+      - scripts/s807_blind_activek_evidence.py
+      - scripts/s807_blind_nvidia_review.py
+      - scripts/s807_blind_critic.py
+      - test/test_s807_blind_activek_review.py
+      - .github/workflows/note-s807-blind-activek-models.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  PYTHONPATH: .:src
+  GH_TOKEN: ${{ github.token }}
+  PYTHONUNBUFFERED: "1"
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Parse scripts, prove adversarial guardrails, validate reports
+        run: |
+          python -m compileall -q scripts/s807_blind_activek_evidence.py scripts/s807_blind_nvidia_review.py scripts/s807_blind_critic.py test/test_s807_blind_activek_review.py
+          python -m unittest -v test.test_s807_blind_activek_review
+          python -m scripts.verify_series_reports --series S807
+  evidence:
+    if: needs.smoke.result == 'success' && (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[audit-activek]'))
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Download real S794 source, filter FIT only (NOT CAL)
+        run: |
+          gh run download 39336923230 --repo Andriamarosoa/note \
+            --name S794_REAL_MIDI_ACTIVEK_ROOTCAUSE_FIT80_CAL32 \
+            --dir /tmp/s807/s794
+          test -s /tmp/s807/s794/experiment/report.json
+          python -m scripts.s807_blind_activek_evidence \
+            --report /tmp/s807/s794/experiment/report.json \
+            --out /tmp/s807/blind/blind_fit_evidence.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: S807_SAME_FIT80_BLIND_INPUT_FOR_THREE_MODELS
+          path: /tmp/s807/blind/blind_fit_evidence.json
+          if-no-files-found: error
+          retention-days: 45
+  independent_review:
+    if: needs.evidence.result == 'success'
+    needs: evidence
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [model_a, model_b, model_c]
+    name: S807 blind model ${{ matrix.role }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          name: S807_SAME_FIT80_BLIND_INPUT_FOR_THREE_MODELS
+          path: /tmp/s807/blind
+      - name: One actual NVIDIA review, same neutral prompt, no peers
+        env:
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+        run: |
+          python -m scripts.s807_blind_nvidia_review \
+            --role ${{ matrix.role }} \
+            --bundle /tmp/s807/blind/blind_fit_evidence.json \
+            --out /tmp/s807/responses/review_${{ matrix.role }}.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S807_REAL_MODEL_${{ matrix.role }}_UNVERIFIED_OPINION
+          path: /tmp/s807/responses/review_${{ matrix.role }}.json
+          if-no-files-found: warn
+          retention-days: 45
+  independent_triage:
+    needs: [evidence,independent_review]
+    if: always() && needs.evidence.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          name: S807_SAME_FIT80_BLIND_INPUT_FOR_THREE_MODELS
+          path: /tmp/s807/blind
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: S807_REAL_MODEL_*_UNVERIFIED_OPINION
+          path: /tmp/s807/responses
+          merge-multiple: true
+      - name: Do not confuse independent opinions with verified improvements
+        run: |
+          python -m scripts.s807_blind_critic \
+            --bundle /tmp/s807/blind/blind_fit_evidence.json \
+            --reviews-dir /tmp/s807/responses \
+            --out /tmp/s807/critique/triage.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: S807_INDEPENDENT_MODEL_TRIAGE_NOT_A_PROMOTION
+          path: /tmp/s807/critique/triage.json
+          if-no-files-found: error
