@@ -22,13 +22,13 @@ class DeepAudits(unittest.TestCase):
         path=Path("scripts/audit_v273_stage2_nested_calibration.py")
         ast.parse(path.read_text(encoding="utf-8"),filename=str(path))
 
-    def test_original_regex_extracted_zero_paths(self):
+    def test_source_path_regex_matches_signed_code_excerpt(self):
         import re
         from pathlib import Path
         source=Path(reviewer_module_path).read_text(encoding="utf-8")
         self.assertIn('r"FILE ((?:scripts|src)/[^\\s]+?\\.py) SHA256="',source)
         actual="FILE scripts/audit.py SHA256=abcd TOTAL_LINES=2"
-        regex=r"FILE ((?:scripts|src)/[^\\s]+?\\.py) SHA256="
+        regex=r"FILE ((?:scripts|src)/[^\s]+?\.py) SHA256="
         self.assertEqual(re.findall(regex,actual),["scripts/audit.py"])
     def test_shallow_external_review_fails(self):
         with self.assertRaises(ValueError):
