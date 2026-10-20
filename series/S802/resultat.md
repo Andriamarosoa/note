@@ -79,6 +79,25 @@ Aucun changement des poids, du décodeur, des notes MIDI réelles, de la latence
 | Métriques | PASS | [Run S802 #39357068590](https://github.com/Andriamarosoa/note/actions/runs/39357068590) |
 | LIVE | PASS | [Run S802 #39357068590](https://github.com/Andriamarosoa/note/actions/runs/39357068590) |
 
+
+## Septième conseiller scientifique — correction de l'omission
+
+Le [run indépendant NVIDIA #39358229144](https://github.com/Andriamarosoa/note/actions/runs/39358229144) est **SUCCESS**, modèle réel `z-ai/glm-5.3-flash`, 5 234 tokens d'entrée et 1 909 tokens de réponse (7 143 au total). Le job amont a **rechargé, validé et recombiné les six rapports S802 originaux** du [run scientifique #39357068590](https://github.com/Andriamarosoa/note/actions/runs/39357068590) : consensus PASS. L'artefact GitHub Actions `S802_SEVENTH_NVIDIA_INDEPENDENT_REVIEW` contient l'avis textuel complet, non contraignant et sans clé API. Aucune sortie audio brute, aucune source et aucune prédiction OOF n'ont été envoyées : trois documents `resultat.md` S800–S802 ont constitué le contexte autorisé.
+
+L'avis externe considère que les collisions `s795_source_retrigger` ne peuvent pas être assimilées directement à des faux positifs : **64 des 95** notes synthétiques fermées par attaque native sont correctement appariées en onset. Il souligne qu'un vrai positif en Onset peut toutefois être **faux en Offset** ; cela doit être mesuré séparément, sans retarder les fins de notes.
+
+Recommandations de recherche du **septième conseiller** (toutes non validées) :
+
+1. **S803a** : quantifier ROC/AUC des caractéristiques accessibles à la frame courante, avec incertitude par composition. Le seuil AUC supérieur à 0,75 est un critère *proposé* par le conseiller, pas un résultat.
+2. **S803b** : tester un veto mono-caractéristique éventuel avec les six métriques FIT80 et veto de toute régression, après avoir établi qu'il existe une séparation réelle.
+3. **S803c** : expliquer pourquoi SS1 accumule 33 FP contre 3 pour Funk2 via caractéristiques acoustiques accessibles causalement, sans jamais injecter l'identifiant de composition au décodeur.
+4. **S803d** : auditer spécifiquement la justesse des NoteOff associés aux **64 TP** de collision, même si leurs attaques sont correctes.
+5. **S803e** : comparer le recouvrement des faux positifs d'une politique à l'autre, sans utiliser de frame future.
+
+**Précision méthodologique importante :** le modèle tiers a suggéré une possible circularité dans l'appariement des Onset. L'implémentation `scripts.s613_train_strict_live.event_score` utilise un appariement optimal hongrois sur **hauteur et différence de temps**, pas les probabilités de confiance des têtes. Cette inquiétude précise n'est donc pas confirmée par le code vérifié. Le modèle tiers n'a pas lu le code : ses autres hypothèses demandent aussi vérification, elles ne constituent pas des résultats.
+
+L'avis ne mesure aucune amélioration CAL32, aucune latence physique ni aucun gain de F1. La référence S708 est maintenue. Ce septième conseiller externe n'est **pas** l'exécution des six agents personnalisés ChatGPT Work, mais un contrôle scientifique LLM complémentaire. Pour les nouvelles séries, le workflow scientifique doit appeler explicitement `.github/workflows/note-reusable-seventh-adviser.yml` après avoir produit six artefacts PASS ; une série n'est pas considérée comme ayant reçu cet avis tant que le run externe et l'artefact n'ont pas réussi.
+
 ## Verdict
 
 **Terminée, non promue.** La relecture reproduit les comptes FIT80 S800 et tous les comptes et métriques des trois politiques S801. Six audits et consensus PASS. Aucune conception ajoutant lookahead, confirmation, buffering ou retard des NoteOff n'est recevable ; aucune amélioration CAL32 n'est mesurée.
