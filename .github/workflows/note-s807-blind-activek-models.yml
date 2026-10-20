@@ -9,6 +9,7 @@ on:
       - scripts/s807_blind_nvidia_review.py
       - scripts/s807_blind_critic.py
       - test/test_s807_blind_activek_review.py
+      - test/test_s807_model_claim_falsification.py
       - .github/workflows/note-s807-blind-activek-models.yml
   workflow_dispatch:
 permissions:
@@ -31,8 +32,8 @@ jobs:
         with: {python-version: '3.11'}
       - name: Parse scripts, prove adversarial guardrails, validate reports
         run: |
-          python -m compileall -q scripts/s807_blind_activek_evidence.py scripts/s807_blind_nvidia_review.py scripts/s807_blind_critic.py test/test_s807_blind_activek_review.py
-          python -m unittest -v test.test_s807_blind_activek_review
+          python -m compileall -q scripts/s807_blind_activek_evidence.py scripts/s807_blind_nvidia_review.py scripts/s807_blind_critic.py test/test_s807_blind_activek_review.py test/test_s807_model_claim_falsification.py
+          python -m unittest -v test.test_s807_blind_activek_review test.test_s807_model_claim_falsification
           python -m scripts.verify_series_reports --series S807
   evidence:
     if: needs.smoke.result == 'success' && (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[audit-activek]'))

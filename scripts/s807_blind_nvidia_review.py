@@ -12,7 +12,7 @@ from scripts.s807_blind_activek_evidence import SCHEMA,digest,SECRET
 MODELS={
  "model_a":"google/gemma-4-31b-it",
  "model_b":"nvidia/nemotron-3.5-lightning-30b-a3b",
- "model_c":"poolside/laguna-xs-2.1",
+ "model_c":"meta/llama-3.3-70b-instruct",
 }
 PROMPT=(
  "You are an independent scientific reviewer. Investigate the factual cause "
@@ -66,11 +66,16 @@ def one(role,evidence,key):
  if not key or not key.startswith("nvapi-"):
   result["errors"]=["missing_provider_secret"]
   return result
+ settings={"model":MODELS[role],
+   "messages":[{"role":"system","content":PROMPT},
+               {"role":"user","content":evidence}],
+   "stream":False,"temperature":0.4,"max_tokens":4200}
+ # A provider-specific API implementation detail, NOT a different prompt or
+ # context. Nemotron otherwise consumes output tokens in non-displayed thinking.
+ if role=="model_b":
+  settings["chat_template_kwargs"]={"enable_thinking":False}
  request=urllib.request.Request(ENDPOINT,
-  data=json.dumps({"model":MODELS[role],
-     "messages":[{"role":"system","content":PROMPT},
-                 {"role":"user","content":evidence}],
-     "stream":False,"temperature":0.4,"max_tokens":3300}).encode("utf-8"),
+  data=json.dumps(settings).encode("utf-8"),
   headers={"Authorization":"Bearer "+key,"Content-Type":"application/json",
            "Accept":"application/json"},method="POST")
  try:
