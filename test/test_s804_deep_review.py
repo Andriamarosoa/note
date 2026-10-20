@@ -1,7 +1,7 @@
 """S804 no-network tests: three distinct advisers, 9/9 fail-closed, integrity."""
 import ast,hashlib,json,unittest
 from pathlib import Path
-from scripts.s804_nvidia_deep_review import ROLES,SCHEMA,context,payload,canonical_digest,quality_check
+from scripts.s804_nvidia_deep_review import ROLES,SCHEMA,context,payload,canonical_digest,quality_check,__file__ as reviewer_module_path
 from scripts.s804_nine_consensus import checked
 class DeepAudits(unittest.TestCase):
     def bundle(self):
@@ -10,7 +10,9 @@ class DeepAudits(unittest.TestCase):
            "review_limitations":{"audio":False},
            "code_audit":{"all_python_files_AST_parsed":True,"python_file_count":200,
               "deep_code_excerpts":[{"path":"src/module.py","sha256":"b"*64,
-                "total_lines":2,"excerpt":"1: def validate():\n2:     return True\n"}]},
+                "total_lines":2,"excerpt":"1: def validate():\n2:     return True\n"},
+                {"path":"scripts/audit.py","sha256":"c"*64,
+                "total_lines":2,"excerpt":"1: def audit():\n2:     return True\n"}]},
            "dataset_audit":{"count_tracks":80,"count_frames":306536,
                "policy_results":{},"per_track_audit":[]}}
         b["evidence_digest"]=hashlib.sha256(json.dumps(
@@ -20,6 +22,14 @@ class DeepAudits(unittest.TestCase):
         path=Path("scripts/audit_v273_stage2_nested_calibration.py")
         ast.parse(path.read_text(encoding="utf-8"),filename=str(path))
 
+    def test_original_regex_extracted_zero_paths(self):
+        import re
+        from pathlib import Path
+        source=Path(reviewer_module_path).read_text(encoding="utf-8")
+        self.assertIn('r"FILE ((?:scripts|src)/[^\\s]+?\\.py) SHA256="',source)
+        actual="FILE scripts/audit.py SHA256=abcd TOTAL_LINES=2"
+        regex=r"FILE ((?:scripts|src)/[^\\s]+?\\.py) SHA256="
+        self.assertEqual(re.findall(regex,actual),["scripts/audit.py"])
     def test_shallow_external_review_fails(self):
         with self.assertRaises(ValueError):
             quality_check("Lorem ipsum",["scripts/a.py","scripts/b.py"])
@@ -45,7 +55,7 @@ class DeepAudits(unittest.TestCase):
                  ("data","acoustics","architecture","training","metrics","live")}}
         reviews={}
         for role,model in ROLES.items():
-            txt="A"*200
+            txt=("src/module.py and scripts/audit.py: "+("Audit with evidence. "*70))
             reviews[role]={"schema":SCHEMA,"role":role,"series":"S804",
                 "model":model,"provider":"NVIDIA NIM",
                 "review_received":True,"evidence_digest":b["evidence_digest"],
@@ -62,4 +72,9 @@ class DeepAudits(unittest.TestCase):
         with self.assertRaises(AssertionError):checked(six,wrong,b)
         with self.assertRaises(AssertionError):
             checked(dict(six,passed=False),reviews,b)
+        shallow=dict(reviews)
+        shallow["data"]=dict(shallow["data"],review_text="A"*200,
+                             response_sha256=hashlib.sha256(("A"*200).encode()).hexdigest())
+        with self.assertRaises(AssertionError):
+            checked(six,shallow,b)
 if __name__=="__main__":unittest.main()

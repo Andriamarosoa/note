@@ -1,4 +1,6 @@
 name: S804 deep code and real GuitarSet data nine-reviewer audit
+# Ordinary pushes only run the dependency-free smoke. 80-track + 3 paid
+# NVIDIA API calls require deliberate workflow_dispatch after local validation.
 on:
   push:
     branches: [codex/note-s804-nvidia-three-model-deep-audit]
@@ -37,6 +39,8 @@ jobs:
           python -m unittest -v test.test_s804_deep_review
           python -m scripts.verify_series_reports --series S804
   real_code_data_bundle:
+    # expensive: never run after ordinary source/documentation pushes
+    if: github.event_name == 'workflow_dispatch' && needs.smoke.result == 'success'
     needs: smoke
     runs-on: ubuntu-24.04
     timeout-minutes: 100
@@ -80,7 +84,7 @@ jobs:
           retention-days: 45
   six_local_audits:
     needs: [smoke,real_code_data_bundle]
-    if: always()
+    if: github.event_name == 'workflow_dispatch' && needs.real_code_data_bundle.result == 'success'
     name: S804 independent ${{ matrix.role }} deterministic deep audit
     runs-on: ubuntu-24.04
     timeout-minutes: 12
@@ -109,6 +113,7 @@ jobs:
           path: /tmp/s804/audits/role_${{ matrix.role }}.json
           if-no-files-found: warn
   three_nvidia_reviewers:
+    if: github.event_name == 'workflow_dispatch' && needs.real_code_data_bundle.result == 'success'
     needs: [smoke,real_code_data_bundle]
     name: S804 NVIDIA ${{ matrix.role }} independent code/data deep audit
     runs-on: ubuntu-24.04
@@ -143,7 +148,7 @@ jobs:
           retention-days: 45
   consensus_nine:
     needs: [smoke,real_code_data_bundle,six_local_audits,three_nvidia_reviewers]
-    if: always()
+    if: always() && github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     timeout-minutes: 12
     steps:

@@ -156,7 +156,9 @@ def call(role,key,evidence,timeout=180):
     if isinstance(txt,list):
         txt="\\n".join(str(part.get("text","")) for part in txt
                       if isinstance(part,dict) and part.get("type")=="text")
-    allowed=re.findall(r"FILE ((?:scripts|src)/[^\\s]+?\\.py) SHA256=",evidence)
+    allowed=re.findall(r"FILE ((?:scripts|src)/[^\s]+?\.py) SHA256=",evidence)
+    if len(set(allowed)) < 2:
+        raise ValueError("audited context has fewer than two named source files")
     quality_check(txt,allowed)
     usage=response.get("usage") or {}
     safe=SECRET_RE.sub("[REDACTED]",txt)[:40000]

@@ -52,3 +52,10 @@ Infrastructure en attente de validation réelle 9/9. Aucune augmentation F1 ni p
 ## Prochaine action
 
 Lire les rapports complets, identifier erreurs exactes avec fichiers et lignes, créer des tests reproductibles, corriger indépendamment chaque blocage dans des séries ultérieures ; rejouer sur GuitarSet réel et revalider les six métriques sans aucune régression. Maintenir toujours `resume.md` et `resultat.md`.
+
+
+## Diagnostic des échecs et contrôle de consommation (2026-10-20)
+
+L'historique de la branche comporte sept exécutions scientifiques S804 (cinq FAIL, deux CANCELLED), déclenchées lors de modifications successives au protocole. Le dernier run scientifique complet examiné : [39368328996](https://github.com/Andriamarosoa/note/actions/runs/39368328996) au SHA `33d2586e6317695d29d67c880a45e6c6ecc45d4e`. Smoke, reconstruction des 80 FIT80 et six audits locaux ont réussi. Les trois jobs externes ont échoué à l'exigence de deux chemins sources cités ; l'analyse du code a mis au jour une **expression régulière incorrectement échappée** dans le test de citation, expliquant un rejet systématique malgré des réponses externes réelles. Consensus 9/9 : **FAIL**. La validation de contenu est maintenant aussi contrôlée côté consensus, avec un test de cette regex.
+
+Décision infrastructure : ne plus exécuter l'audit scientifique lourd à chaque `push`. Seule la validation locale `smoke` est automatique. Les 80 traces et trois modèles externes demandent une action GitHub `workflow_dispatch` explicite ; si aucun run manuel n'est déclenché, le résultat 9/9 est **UNKNOWN**, jamais PASS. Aucune promotion, aucune évolution F1 et aucune affirmation de latence physique mesurée.

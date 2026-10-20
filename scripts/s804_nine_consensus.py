@@ -25,6 +25,11 @@ def checked(six,reviews,bundle):
         text=doc.get("review_text")
         if not isinstance(text,str) or len(text.strip())<160:
             raise AssertionError("empty reviewer "+role)
+        try:
+            quality_check(text,[item["path"] for item in
+                                bundle["code_audit"]["deep_code_excerpts"]])
+        except ValueError as exc:
+            raise AssertionError("ungrounded deep review "+role) from exc
         if hashlib.sha256(text.encode()).hexdigest()!=doc.get("response_sha256"):
             raise AssertionError("review transcript SHA drift "+role)
         if not re.fullmatch("[0-9a-f]{64}",doc.get("context_sha256","")):

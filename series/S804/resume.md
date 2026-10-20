@@ -34,3 +34,10 @@ Six jobs CI de données, acoustique, architecture, entraînement, métriques et 
 ## Statut
 
 En cours : workflow scientifique GitHub S804 à valider. Aucune nouvelle mesure CAL32 ni gain six-métriques annoncé. La sécurité LIVE reste inchangée, latence matérielle non mesurée.
+
+
+## Réduction des exécutions redondantes (2026-10-20)
+
+Audit rétrospectif : sept lancements complets de S804, dont cinq FAIL et deux annulés, après des `push` successifs. Les six audits locaux réussissaient sur les traces réelles ; les avis NVIDIA ont connu des timeouts, réponses trop courtes et faux rejets dus à une expression régulière Python erronée. Cette expression recherchait littéralement des antislashs et non des espaces/points valides, empêchant de reconnaître les chemins source. Corrigée avec test de non-régression, puis contrôle à nouveau dans la porte 9/9.
+
+Nouvelle règle : un `push` exécutera **seulement smoke** (syntaxe, tests unitaires réseau désactivé et documentation). Le run lourd de 80 traces + six audits + trois appels NVIDIA + consensus exige désormais `workflow_dispatch` volontaire sur le SHA à auditer. Aucun nouvel appel fournisseur automatique à chaque commit. Les 9/9 restent obligatoires pour déclarer S804 complète ou promouvoir une expérience ; un run smoke vert ne vaut PAS une réussite 9/9.
