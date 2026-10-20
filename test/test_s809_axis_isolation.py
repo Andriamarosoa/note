@@ -131,6 +131,19 @@ class IndependentAxesTests(unittest.TestCase):
         p["onset"].decoder=BadClockDecoder("onset")
         with self.assertRaises(AssertionError):
             SixIndependentAxes(p).step(demo()[0])
+    def test_changing_only_one_axis_selector_is_not_a_shared_threshold(self):
+        for target in AXES:
+            chains=default_pipelines()
+            baseline=SixIndependentAxes()
+            chains[target].selector.threshold=.00
+            chains[target].selector.mode="causal_contrast"
+            altered=SixIndependentAxes(chains)
+            for f in demo():
+                left,_=baseline.step(f)
+                right,_=altered.step(f)
+                self.assertEqual([left[x] for x in AXES if x!=target],
+                                 [right[x] for x in AXES if x!=target])
+
     def test_official_source_events_preserved_bitwise(self):
         original=[{"type":"note_on","pitch":40,"available_sample":1024,
           "decision_sample":1024,"time":1024/44100,"reason":"S708"},
