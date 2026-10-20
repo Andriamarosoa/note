@@ -1,0 +1,151 @@
+name: S803 real GuitarSet FIT80 causal frame gating and seven audits
+on:
+  push:
+    branches: [codex/note-s803-causal-current-frame-gates]
+    paths:
+      - scripts/s803_causal_frame_replay.py
+      - scripts/s803_six_role_audits.py
+      - scripts/note_seventh_adviser.py
+      - test/test_note_seventh_adviser.py
+      - test/test_s803_causal_frame_replay.py
+      - .github/workflows/note-s803-causal-frame-gates.yml
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+  actions: read
+env:
+  PYTHONPATH: .:src
+  GH_TOKEN: ${{ github.token }}
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '2'
+  OMP_NUM_THREADS: '2'
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install signed MIDI metric and frozen decoder
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Compile and execute causal negative controls
+        run: |
+          python -m compileall -q scripts/s803_causal_frame_replay.py scripts/s803_six_role_audits.py test/test_s803_causal_frame_replay.py scripts/note_seventh_adviser.py
+          python -m unittest -v test.test_s803_causal_frame_replay test.test_s802_retrigger_forensics test.test_note_seventh_adviser test.test_note_seventh_consensus
+          python -m scripts.verify_series_reports --series S803
+  fit80_replay:
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original scientific decoder and metrics
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Download signed S800 S801 S802 genuine GuitarSet FIT80 artifacts
+        run: |
+          mkdir -p /tmp/s803/manifest /tmp/s803/traces /tmp/s803/s801 /tmp/s803/s802
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/s803/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/s803/traces
+          gh run download 39354733640 --repo Andriamarosoa/note --name S801_REAL_FIT80_EIGHT_POLICY_MIDI256 --dir /tmp/s803/s801
+          gh run download 39359182007 --repo Andriamarosoa/note --name S802_REAL_FIT80_TRUTH_MATCHED_COLLISION_CAUSES --dir /tmp/s803/s802
+          test -s /tmp/s803/manifest/replay/report.json
+          test -s /tmp/s803/s801/real_fit80.json
+          test -s /tmp/s803/s802/forensic.json
+          test -n "$(find /tmp/s803/traces -name fit_000.npz -type f -print -quit)"
+      - name: Real FIT OOF frame-only three-gate paired MIDI256 evaluation
+        run: |
+          trace_file="$(find /tmp/s803/traces -name fit_000.npz -type f -print -quit)"
+          python -m scripts.s803_causal_frame_replay \
+            --manifest /tmp/s803/manifest/replay/report.json \
+            --traces "$(dirname "$trace_file")" \
+            --s801 /tmp/s803/s801/real_fit80.json \
+            --s802 /tmp/s803/s802/forensic.json \
+            --out /tmp/s803/results/s803_fit80.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S803_REAL_GUITARSET_FIT80_MIDI256_METRICS_AUC
+          path: /tmp/s803/results/s803_fit80.json
+          retention-days: 45
+          if-no-files-found: warn
+  six_audits:
+    if: always()
+    needs: [smoke,fit80_replay]
+    name: S803 independent ${{ matrix.role }} audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [data, acoustics, architecture, training, metrics, live]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          name: S803_REAL_GUITARSET_FIT80_MIDI256_METRICS_AUC
+          path: /tmp/s803/evidence
+      - name: Audit real fitted metrics and event-time invariants
+        run: |
+          python -m scripts.s803_six_role_audits \
+            --role ${{ matrix.role }} \
+            --report /tmp/s803/evidence/s803_fit80.json \
+            --out /tmp/s803/audits/role_${{ matrix.role }}.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S803_AUDIT_${{ matrix.role }}
+          path: /tmp/s803/audits/role_${{ matrix.role }}.json
+          if-no-files-found: warn
+  nvidia_seventh_adviser:
+    needs: [smoke,fit80_replay]
+    name: S803 independent NVIDIA in parallel with six audits
+    uses: ./.github/workflows/note-reusable-seventh-adviser.yml
+    with:
+      series: S803
+    secrets: inherit
+  consensus:
+    needs: [smoke,fit80_replay,six_audits,nvidia_seventh_adviser]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: S803_AUDIT_*
+          path: /tmp/s803/audits
+          merge-multiple: true
+      - uses: actions/download-artifact@v4
+        with:
+          name: S803_SEVENTH_NVIDIA_INDEPENDENT_REVIEW
+          path: /tmp/s803/nvidia
+      - name: Fail-closed seven-of-seven
+        run: |
+          python -m scripts.s787_audit_consensus --reports-dir /tmp/s803/audits --out /tmp/s803/six_consensus.json
+          python -m scripts.note_seventh_consensus --series S803 \
+            --six-consensus /tmp/s803/six_consensus.json \
+            --seventh-advice /tmp/s803/nvidia/review.json \
+            --out /tmp/s803/seven_consensus.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S803_SEVEN_OF_SEVEN_CONSENSUS
+          path: |
+            /tmp/s803/six_consensus.json
+            /tmp/s803/seven_consensus.json
+          if-no-files-found: warn

@@ -70,7 +70,7 @@ def payload(series,model,context):
             "Analyse notamment les collisions natives/synthétiques si présentes. "
             "Focalise-toi sur les chiffres actuels et refuse de les inventer.\n\n"
             +context)}],
-        stream=False,max_tokens=3200,temperature=.5)
+        stream=False,max_tokens=1600,temperature=.3)
     if model==CANDIDATES[0]:req["reasoning_effort"]="low"
     return req
 
@@ -79,7 +79,7 @@ class HTTPStatus(RuntimeError):
         self.model=model;self.code=code
         super().__init__("NVIDIA HTTP "+str(code)+" for "+model)
 
-def request_one(series,model,key,context,timeout=115):
+def request_one(series,model,key,context,timeout=240):
     req=urllib.request.Request(ENDPOINT,method="POST",
         data=json.dumps(payload(series,model,context),ensure_ascii=False).encode(),
         headers={"Authorization":"Bearer "+key,
@@ -150,8 +150,8 @@ def main():
         print("NOTE_SEVENTH_REVIEW_FAIL HTTP "+str(e.code)+
               " model="+e.model,file=sys.stderr)
         raise SystemExit(1) from None
-    except (ValueError,OSError,RuntimeError):
-        print("NOTE_SEVENTH_REVIEW_FAIL input, provider, or filesystem",
+    except (ValueError,OSError,RuntimeError) as exc:
+        print("NOTE_SEVENTH_REVIEW_FAIL category="+type(exc).__name__ + " (detail redacted); input, provider, or filesystem",
               file=sys.stderr)
         raise SystemExit(1) from None
 if __name__=="__main__":main()
