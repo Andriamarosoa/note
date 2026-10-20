@@ -1,0 +1,206 @@
+name: S805 causal synthetic-onset risk OOF replay (bounded)
+# Only a deliberately tagged [run-fit80] scientific commit starts 80-track replay.
+# Subsequent pushes are smoke-only. Three NVIDIA reviewers are MANUAL-ONLY.
+on:
+  push:
+    branches: [codex/note-s805-fit-crossfold-onset-risk]
+    paths:
+      - scripts/s805_fit_crossfold_onset_risk.py
+      - scripts/s805_six_role_audits.py
+      - scripts/s805_three_model_review.py
+      - scripts/s805_nine_consensus.py
+      - test/test_s805_fit_crossfold_onset_risk.py
+      - .github/workflows/note-s805-crossfold-risk.yml
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+  actions: read
+env:
+  PYTHONPATH: .:src
+  GH_TOKEN: ${{ github.token }}
+  PYTHONUNBUFFERED: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original MIDI event dependencies
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Native causal negative controls and S805 series reports
+        run: |
+          python -m compileall -q scripts/s805_fit_crossfold_onset_risk.py scripts/s805_six_role_audits.py scripts/s805_three_model_review.py scripts/s805_nine_consensus.py test/test_s805_fit_crossfold_onset_risk.py
+          python -m unittest -v test.test_s805_fit_crossfold_onset_risk test.test_s803_causal_frame_replay
+          python -m scripts.verify_series_reports --series S805
+  real_fit80:
+    if: needs.smoke.result == 'success' && (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[run-fit80]'))
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 80
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install ORIGINAL frozen decoder + six-metric dependencies
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Fetch only signed original FIT OOF and historical forensic evidence
+        run: |
+          mkdir -p /tmp/s805/manifest /tmp/s805/traces /tmp/s805/s802 /tmp/s805/s803
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/s805/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/s805/traces
+          gh run download 39359182007 --repo Andriamarosoa/note --name S802_REAL_FIT80_TRUTH_MATCHED_COLLISION_CAUSES --dir /tmp/s805/s802
+          gh run download 39363062723 --repo Andriamarosoa/note --name S803_REAL_GUITARSET_FIT80_MIDI256_METRICS_AUC --dir /tmp/s805/s803
+          test -s /tmp/s805/manifest/replay/report.json
+          test -s /tmp/s805/s802/forensic.json
+          test -s /tmp/s805/s803/s803_fit80.json
+          test -n "$(find /tmp/s805/traces -name fit_000.npz -print -quit)"
+      - name: Full real GuitarSet 80 OOF cross-composition risk experts
+        run: |
+          tr="$(find /tmp/s805/traces -name fit_000.npz -type f -print -quit)"
+          python -m scripts.s805_fit_crossfold_onset_risk \
+            --manifest /tmp/s805/manifest/replay/report.json \
+            --traces "$(dirname "$tr")" \
+            --forensic /tmp/s805/s802/forensic.json \
+            --prior /tmp/s805/s803/s803_fit80.json \
+            --out /tmp/s805/results/s805_fit80.json
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: S805_REAL_GUITARSET_FIT80_MIDI256_RISK_METRICS
+          path: /tmp/s805/results/s805_fit80.json
+          if-no-files-found: error
+          retention-days: 45
+  six_audits:
+    if: needs.real_fit80.result == 'success'
+    needs: [smoke,real_fit80]
+    runs-on: ubuntu-24.04
+    name: S805 local independent ${{ matrix.role }}
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [data, acoustics, architecture, training, metrics, live]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          name: S805_REAL_GUITARSET_FIT80_MIDI256_RISK_METRICS
+          path: /tmp/s805/evidence
+      - name: Inspect signed metrics/training split, fail-closed
+        run: |
+          python -m scripts.s805_six_role_audits \
+            --role ${{ matrix.role }} \
+            --report /tmp/s805/evidence/s805_fit80.json \
+            --out /tmp/s805/audits/role_${{ matrix.role }}.json
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: S805_AUDIT_${{ matrix.role }}
+          path: /tmp/s805/audits/role_${{ matrix.role }}.json
+          if-no-files-found: error
+  six_consensus:
+    needs: [smoke,real_fit80,six_audits]
+    if: needs.six_audits.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: S805_AUDIT_*
+          path: /tmp/s805/audits
+          merge-multiple: true
+      - name: Strict consensus of six deterministic roles
+        run: |
+          python -m scripts.s787_audit_consensus --reports-dir /tmp/s805/audits --out /tmp/s805/consensus/six.json
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: S805_SIX_OF_SIX_LOCAL_SCIENTIFIC_AUDITS
+          path: /tmp/s805/consensus/six.json
+          if-no-files-found: error
+  three_nvidia:
+    if: github.event_name == 'workflow_dispatch' && needs.real_fit80.result == 'success'
+    needs: [smoke,real_fit80]
+    name: S805 manual NVIDIA ${{ matrix.role }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [architecture, data, redteam]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          name: S805_REAL_GUITARSET_FIT80_MIDI256_RISK_METRICS
+          path: /tmp/s805/evidence
+      - name: Genuine full code/data review, only on manual dispatch
+        env:
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+        run: |
+          test -n "$NVIDIA_API_KEY" || { echo "NVIDIA secret missing"; exit 1; }
+          python -m scripts.s805_three_model_review \
+            --role ${{ matrix.role }} \
+            --report /tmp/s805/evidence/s805_fit80.json \
+            --out /tmp/s805/reviews/review_${{ matrix.role }}.json
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: S805_NVIDIA_${{ matrix.role }}
+          path: /tmp/s805/reviews/review_${{ matrix.role }}.json
+          if-no-files-found: error
+          retention-days: 45
+  nine_consensus:
+    if: always() && github.event_name == 'workflow_dispatch'
+    needs: [real_fit80,six_audits,six_consensus,three_nvidia]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          name: S805_SIX_OF_SIX_LOCAL_SCIENTIFIC_AUDITS
+          path: /tmp/s805/consensus
+      - uses: actions/download-artifact@v4
+        with:
+          name: S805_REAL_GUITARSET_FIT80_MIDI256_RISK_METRICS
+          path: /tmp/s805/evidence
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: S805_NVIDIA_*
+          path: /tmp/s805/reviews
+          merge-multiple: true
+      - name: Fail-closed 9/9 actual model and source evidence consensus
+        run: |
+          python -m scripts.s805_nine_consensus \
+            --six /tmp/s805/consensus/six.json \
+            --report /tmp/s805/evidence/s805_fit80.json \
+            --reviews-dir /tmp/s805/reviews \
+            --out /tmp/s805/consensus/nine.json
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: S805_MANUAL_NINE_OF_NINE_INDEPENDENT_REVIEW
+          path: /tmp/s805/consensus/nine.json
+          if-no-files-found: error
