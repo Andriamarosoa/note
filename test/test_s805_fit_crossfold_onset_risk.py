@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 from scripts.s805_fit_crossfold_onset_risk import (
-    train_risk,feature_matrix,FEATURES_ACOUSTIC,FEATURES_JOINT,gate,SCHEMA)
+    train_risk,feature_matrix,FEATURES_ACOUSTIC,FEATURES_JOINT,THRESHOLDS,gate,SCHEMA)
 from scripts.s802_retrigger_forensics import SCHEMA as F_SCHEMA
 from causal_note.s795_activek_experts import HEADS
 
@@ -19,6 +19,11 @@ class CausalOnsetRiskTests(unittest.TestCase):
                 rows.append(x)
         return {"schema":F_SCHEMA,"complete":True,
                 "observations":{"consensus":rows,"adaptive":rows}}
+    def test_risk_thresholds_are_frozen_before_fit80(self):
+        self.assertEqual(THRESHOLDS,{"risk_acoustic":.30,"risk_joint":.30})
+        self.assertEqual(len(FEATURES_ACOUSTIC),7)
+        self.assertEqual(len(FEATURES_JOINT),12)
+
     def test_train_excludes_current_composition(self):
         f=self.fake_forensic()
         for c in ("BN1","Funk2","Jazz1","Rock3","SS1"):
