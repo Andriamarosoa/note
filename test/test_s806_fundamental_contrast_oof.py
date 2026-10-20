@@ -44,6 +44,16 @@ class AcousticTests(unittest.TestCase):
             self.assertEqual(proof["eval_composition"],c)
             self.assertNotIn(c,proof["training_compositions"])
             self.assertEqual(len(proof["training_compositions"]),4)
+    def test_future_truth_cannot_be_encoded_into_acoustic_input(self):
+        X=np.zeros((4,49,23),np.float32)
+        X[:,:,16:21]=.5
+        pristine=acoustic_features(X)
+        # A different label array is never passed to acoustic_features.
+        X2=X.copy()
+        X2[:,:,0]=.99
+        X2[:,:,1]=.99
+        np.testing.assert_allclose(pristine,acoustic_features(X2))
+
     def test_signed_training_rows_must_remain_causal(self):
         X=np.zeros((3,49,23),np.float32)
         X[:,:,0]=.6;X[:,:,1]=.8;X[:,:,2]=.1
