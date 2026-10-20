@@ -36,12 +36,12 @@ S798 ne touche pas S708/S707 ni la sortie MIDI256 réelle. Aucune promotion, auc
 
 ## Verdict
 
-S798 infrastructure terminée et tous les six audits déterministes validés dans le [run #39346121986](https://github.com/Andriamarosoa/note/actions/runs/39346121986). Le septième job de conseiller Kimi a été SKIPPED, volontairement : aucun avis externe n'a été reçu ni évalué, faute de secret renouvelé et de lancement manuel. Les six audits vérifient la sécurité et le protocole de l'intégration, PAS la qualité des modèles musicaux ni le succès de Kimi. Le dépôt est resté public ; la connexion GitHub ne permet pas de modifier sa visibilité.
+S798 infrastructure terminée et tous les six audits déterministes validés dans le [run #39346121986](https://github.com/Andriamarosoa/note/actions/runs/39346121986). Le septième job de conseiller Kimi a été SKIPPED, volontairement : aucun avis externe n'a été reçu ni évalué, faute de secret renouvelé et de lancement manuel. Les six audits vérifient la sécurité et le protocole de l'intégration, PAS la qualité des modèles musicaux ni le succès de Kimi. Le dépôt NOTE est désormais **privé**, vérifié sur l'API GitHub après le run ; aucune commande de changement de visibilité n'a été exécutée via cette connexion.
 
 ## Prochaine action
 
 1. Révoquer la clé visible dans `test.py` et créer une clé NVIDIA neuve.
-2. Rendre `Andriamarosoa/note` privé : GitHub Settings / General / Danger Zone / Change repository visibility / Make private.
+2. Dépôt `Andriamarosoa/note` désormais privé : étape de visibilité validée. Ne pas remettre le dépôt en public avec des secrets ou artefacts sensibles.
 3. Dans Settings / Secrets and variables / Actions, créer le secret `NVIDIA_API_KEY` (jamais de clé dans les commits).
 4. Exécuter manuellement le workflow S798 et lire l'artefact de conseil comme hypothèse de recherche. Ne jamais autoriser sa promotion automatique.
 
