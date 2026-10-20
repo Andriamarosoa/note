@@ -1,18 +1,18 @@
 ---
 serie: S813
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s813-independent-teachers85-midi256
-run_id: pending
-commit_sha: pending
+run_id: 39403986571
+commit_sha: 5421ec2be4ade24ed11c33207026ba4990c64821
 promotion: false
 ---
 # S813 — Premier enseignant indépendant MIDI256
 
 ## Exécution
 
-Entraînement réellement exécuté dans cette session sur CPU, à partir du PCM GuitarSet original, puis vérification locale des décisions sauvegardées. La CI prévue effectue un recalcul indépendant des scores; ce n'est pas une seconde exécution d'entraînement.
+Entraînement réellement exécuté dans cette session sur CPU, à partir du PCM GuitarSet original, puis vérification locale des décisions sauvegardées. La CI réussie [run39403986571](https://github.com/Andriamarosoa/note/actions/runs/39403986571), SHA5421ec2be4ade24ed11c33207026ba4990c64821, effectue un recalcul indépendant des scores; ce n'est pas une seconde exécution d'entraînement.
 
 Base S812 :b71221886292254cb71ca8343d805384be3d46b0. Source S800 :[run39352880035](https://github.com/Andriamarosoa/note/actions/runs/39352880035),80 JSON/NPZ aux SHA vérifiés. Archive audio SHA256 :237cdc58353d25c3c9683f4565a0f1cf2db30a9051abca545a919f8f1296dc28. Nouvelle extraction :80 morceaux,306 536 frames,222 caractéristiques recalculées toutes les 256 samples. L'extraction et les cinq modèles sont identifiés dans evidence/bundle.json, extraction.json et report.json.
 
@@ -51,16 +51,20 @@ Les 12 compteurs historiques sont reproduits exactement. Scores du flux H0 conse
 
 ## Audits
 
-| Rôle indépendant | Verdict et portée | Preuve |
+| Audit | Statut | Preuve et portée |
 |---|---|---|
-| A — architecture/LIVE | PASS causalité logicielle; UNKNOWN matériel | test_s813_native256 :mutation futur et partitions; CPU partiel dans report.json |
-| B — DSP | PASS extraction réelle256; FAIL qualité aiguë |80 PCM vérifiés;222 caractéristiques; aucun H0 dans les entrées |
-| C — apprentissage | PASS modèles privés du seul Frame Pitch; FAIL objectif85 |5 checkpoints;48/16/16; deux modèles distincts par enseignant |
-| D — données/métriques | PASS recalcul; UNKNOWN généralisation finale | annotations SHA; TP/FP/FN exacts et 12compteurs H0; FIT recherche |
-| E — code/CI | PASS 41 tests locaux; CI en attente | test_s813_*, test_s809_axis_isolation, test_s812_historical_axis_h0 |
-| F — contre-revue | PASS après corrections et relecture indépendante | refus folds vides et identité de piste modifiée; cohorte commune obligatoire |
+| Données | PASS | D :80 PCM/annotations vérifiés par SHA; FIT recherche, généralisation finale non certifiée |
+| Acoustique | PASS | B :extraction réelle à256,222 caractéristiques; absence de H0 supervisé dans les entrées; qualité aiguë insuffisante |
+| Architecture | PASS | A/C :deux modèles privés pour le seul Frame Pitch, cinq checkpoints; banque des six enseignants encore incomplète |
+| Apprentissage | FAIL | C :protocole48/16/16 respecté, mais77,7132 % et objectif >85 % non atteint |
+| Métriques | PASS | D :TP/FP/FN re-notés depuis les décisions exactes,12 compteurs H0 reproduits, gate fermé |
+| LIVE | UNKNOWN | A :causalité logicielle testée; CPU partiel, latence physique et tenue Windows/iRig non mesurées |
+| Code et CI | PASS | E :41 tests locaux et CI; recalcul avec manifeste S800 authentique réussi |
+| Contre-revue | PASS | F :deux contournements corrigés,2 contre-tests réexécutés par le relecteur; cohorte commune obligatoire |
 
 Six sous-agents réellement exécutés, sans prétendre utiliser les six configurations Work personnelles. Trois avis NVIDIA architecture/données/contradictoire :UNKNOWN, non exécutés. Aucun9/9 PASS. La vérification CI certifie les décisions sauvegardées et les contrôles exécutés, pas un réentraînement ni une performance LIVE.
+
+Artefact CI :S813_TEACHER256_SAVED_DECISIONS_VERIFICATION, id12256328074, SHA2569c7276530e9015ad10c7c940d07f9e9c0c821a8c39dd86c2c4c251d8be573760. [PR brouillon117](https://github.com/Andriamarosoa/note/pull/117), sans merge.
 
 ## Verdict
 

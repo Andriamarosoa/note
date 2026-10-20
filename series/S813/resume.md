@@ -1,11 +1,11 @@
 ---
 serie: S813
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s813-independent-teachers85-midi256
-run_id: pending
-commit_sha: pending
+run_id: 39403986571
+commit_sha: 5421ec2be4ade24ed11c33207026ba4990c64821
 promotion: false
 ---
 # S813 — Enseignants indépendants >85 %, acoustique MIDI256
@@ -38,4 +38,4 @@ Six sous-agents A–F réellement consultés : architecture/LIVE, DSP, apprentis
 
 ## Statut
 
-Extraction, entraînement et recalcul local terminés. Frame Pitch =77,7132 %, objectif >85 % non atteint. La vérification GitHub des décisions sauvegardées reste à terminer; elle ne réentraîne pas les modèles. Unification et promotion bloquées. Les cinq autres enseignants restent à construire/entraîner dans ce nouveau protocole.
+Extraction, entraînement et recalcul local terminés. Frame Pitch =77,7132 %, objectif >85 % non atteint. La vérification GitHub des décisions sauvegardées a réussi dans le [run39403986571](https://github.com/Andriamarosoa/note/actions/runs/39403986571), SHA5421ec2be4ade24ed11c33207026ba4990c64821; elle ne réentraîne pas les modèles. Unification et promotion bloquées. Les cinq autres enseignants restent à construire/entraîner dans ce nouveau protocole.
