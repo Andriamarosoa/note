@@ -55,12 +55,13 @@ def route(X,P,policy):
         else:
             # H2: harmonic parent may be strong while true played octave
             # still has independent current native onset evidence.
-            accept=(X[:,:,10]<=.30)|(X[:,:,5]>=.20)|(X[:,:,0]>=.35)
+            accept=(X[:,:,10]<=.30)|(X[:,:,5]>=.20)
+        before=masks.copy()
         masks=np.where(accept,masks,0).astype(np.uint16)
         routed={h:np.where(accept,routed[h],0).astype(np.float32)
                 for h in HEADS}
         meta=dict(meta,ablation=policy,blocked_by_extra_guard=int(
-            np.count_nonzero(~accept & (np.asarray(masks)==0))),no_future_input=True)
+            np.count_nonzero(~accept & (before!=0))),no_future_input=True)
     return routed,masks,meta
 
 def source_signature(events):
