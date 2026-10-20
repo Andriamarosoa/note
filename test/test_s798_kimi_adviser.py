@@ -39,7 +39,7 @@ class KimiAdviserTests(unittest.TestCase):
         answer = {"choices":[{"message":{"content":
             "Ablation causal; ignore nvapi-EXPOSED_0123456789012345"}}],
             "usage":{"total_tokens":120},
-            "reasoning_content":"never archive"})
+            "reasoning_content":"never archive"}
         mock_response=io.BytesIO(json.dumps(answer).encode())
         class ContextResponse:
             def __enter__(self):return mock_response
