@@ -13,7 +13,7 @@ promotion: false
 
 ## Exécution
 
-Entraînement local réel sur 80 traces signées FIT80 de [S800 #39352880035](https://github.com/Andriamarosoa/note/actions/runs/39352880035). Toutes les compositions disjointes, cinq modèles par axe (30 checkpoints) sauvegardés et chaque fichier accompagné de sa signature SHA256 dans le rapport JSON. Code Python, 30 modèles joblib, log et rapport disponibles dans `S810_six_trained_independent_models_FIT80.zip` (SHA256 `003de0121fe033d81b82c16dddf7f537e3e21fbe197d0aa5b260e4e86282654e`). Le dépôt GitHub ne dispose PAS encore d'une exécution scientifique CI équivalente : ne pas affirmer un 6/6 PASS de ce seul entraînement.
+Entraînement local réel sur 80 traces signées FIT80 de [S800 #39352880035](https://github.com/Andriamarosoa/note/actions/runs/39352880035). Toutes les compositions disjointes, cinq modèles par axe (30 checkpoints) sauvegardés et chaque fichier accompagné de sa signature SHA256 dans le rapport JSON. Code Python, 30 modèles joblib, log et rapport disponibles dans `S810_six_trained_independent_models_FIT80.zip` (SHA256 `42477cc806caed608944c3733aca76bc9d4a26a82a3b06eb5894dd2a59f9aedc`). Le dépôt GitHub ne dispose PAS encore d'une exécution scientifique CI équivalente : ne pas affirmer un 6/6 PASS de ce seul entraînement.
 
 ## Métriques
 
