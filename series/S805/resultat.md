@@ -1,7 +1,7 @@
 ---
 serie: S805
 statut: en_cours
-type: scientific_fit_exploratory
+type: experience
 reference: S708
 branche: codex/note-s805-fit-crossfold-onset-risk
 run_id: en_attente
@@ -11,11 +11,11 @@ promotion: false
 
 # S805 — résultats FIT80 et audits indépendants
 
-## Provenance et run
+## Exécution
 
 Expérience initiale en attente du run GitHub. Base GitHub S804 `e020a00c0a6ee973e1a3be84ac9a3f205c102aa4`; sources vérifiées S800 [run 39352880035](https://github.com/Andriamarosoa/note/actions/runs/39352880035), S802 [run 39359182007](https://github.com/Andriamarosoa/note/actions/runs/39359182007) et S803 [run 39363062723](https://github.com/Andriamarosoa/note/actions/runs/39363062723). Run S805 : UNKNOWN jusqu'au replay authentique.
 
-## Résultats : six métriques
+## Métriques
 
 | Caractéristique | S708 officiel CAL32 | S805 FIT80 |
 | --- | ---: | --- |
@@ -28,11 +28,11 @@ Expérience initiale en attente du run GitHub. Base GitHub S804 `e020a00c0a6ee97
 
 Témoin FIT80 figé S803 : Onset F1 73,2520 %, Exact-K 61,6972 %, Active Exact-K 57,0195 %, Offset 69,8862 %, Full Note F1 50,6528 %, Frame Pitch F1 78,7278 %. CAL32 et FIT80 ne sont **jamais interchangeables**.
 
-## Politique de promotion
+## Comparaison à S708
 
 Politique `spectral_balance` : UNKNOWN. Politique `risk_acoustic` : UNKNOWN. Politique `risk_joint` : UNKNOWN. Interdiction de promouvoir une variante qui régresse sur une métrique globale ou par composition ; aucune recherche de seuil sur FIT après vision des résultats. Les gains FIT, même significatifs, ne suffisent pas sans CAL32 indépendant et latence matérielle garantie.
 
-## Contrôles indépendants
+## Audits
 
 | Audit | Statut | Preuve |
 | --- | --- | --- |
@@ -52,3 +52,7 @@ Le filtre naïf de S802 rejetait trop de vraies notes (32 vrais contre 29 faux r
 ## Verdict
 
 S708 reste officielle ; aucun déploiement LIVE ni nouveau score annoncé tant que les résultats réels et leurs audits ne sont pas disponibles.
+
+## Prochaine action
+
+Vérifier les 80 pistes S805, comparer les six métriques globales et les cinq compositions, puis documenter tous les échecs et PASS avant toute future discussion de promotion. Aucun ajout de latence LIVE n'est permis.
