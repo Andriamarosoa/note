@@ -37,8 +37,8 @@ jobs:
           python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
       - name: Compile and execute causal negative controls
         run: |
-          python -m compileall -q scripts/s803_causal_frame_replay.py scripts/s803_six_role_audits.py test/test_s803_causal_frame_replay.py
-          python -m unittest -v test.test_s803_causal_frame_replay test.test_s802_retrigger_forensics
+          python -m compileall -q scripts/s803_causal_frame_replay.py scripts/s803_six_role_audits.py test/test_s803_causal_frame_replay.py scripts/note_seventh_adviser.py
+          python -m unittest -v test.test_s803_causal_frame_replay test.test_s802_retrigger_forensics test.test_note_seventh_adviser test.test_note_seventh_consensus
           python -m scripts.verify_series_reports --series S803
   fit80_replay:
     needs: smoke

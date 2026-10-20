@@ -151,7 +151,7 @@ def main():
               " model="+e.model,file=sys.stderr)
         raise SystemExit(1) from None
     except (ValueError,OSError,RuntimeError) as exc:
-        print("NOTE_SEVENTH_REVIEW_FAIL category="+type(exc).__name__+\n              " (detail redacted); input, provider, or filesystem",
+        print("NOTE_SEVENTH_REVIEW_FAIL category="+type(exc).__name__ + " (detail redacted); input, provider, or filesystem",
               file=sys.stderr)
         raise SystemExit(1) from None
 if __name__=="__main__":main()
