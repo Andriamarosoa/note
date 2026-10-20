@@ -93,7 +93,7 @@ jobs:
 
   kimi_external_opinion:
     name: S799 NVIDIA seventh independent opinion (opt-in)
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && contains(github.event.head_commit.message, '[run-nvidia-once]'))
+    if: github.event_name == 'workflow_dispatch'
     needs: [safe_unit_tests, six_audits, consensus]
     runs-on: ubuntu-24.04
     timeout-minutes: 8
@@ -106,12 +106,12 @@ jobs:
           NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
         run: |
           test -n "$NVIDIA_API_KEY" || { echo "NVIDIA_API_KEY secret missing; skip consultation, NOT a passing advice audit"; exit 1; }
-          python -m scripts.s799_nvidia_adviser --out /tmp/s799/external/kimi_review.json
+          python -m scripts.s799_nvidia_adviser --out /tmp/s799/external/nvidia_review.json
       - name: Archive NON-BINDING seventh opinion
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: S799_SEVENTH_OPINION_KIMI_NOT_PROMOTION
-          path: /tmp/s799/external/kimi_review.json
+          name: S799_SEVENTH_OPINION_GLM53_NOT_PROMOTION
+          path: /tmp/s799/external/nvidia_review.json
           retention-days: 30
           if-no-files-found: error
