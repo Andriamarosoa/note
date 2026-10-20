@@ -1,11 +1,11 @@
 ---
 serie: S805
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s805-fit-crossfold-onset-risk
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39371919146
+commit_sha: ee76229413424c8a1d902740077aa492162060ff
 promotion: false
 ---
 
@@ -48,3 +48,9 @@ Aucun code LIVE de production, aucun événement S708, aucun NoteOff, aucune dur
 ## Statut
 
 S805 démarré, résultat scientifique FIT80 attendu du workflow GitHub. Les deux fichiers `resume.md` et `resultat.md` sont créés et suivis. Aucun résultat ni amélioration inventés.
+
+## Rapport scientifique définitif
+
+[Run de référence S805 n°39371919146](https://github.com/Andriamarosoa/note/actions/runs/39371919146) terminé **SUCCESS** sur SHA `ee76229413424c8a1d902740077aa492162060ff`. Les 80 pistes FIT80 d'origine ont été vérifiées par SHA256 et rejouées sur les vrais événements MIDI256. Deux têtes de risque croisées, indépendantes, et une politique acoustique fixe ont été évaluées sans réentraînement des cinq têtes S795. Les six audits locaux (Données, Acoustique, Architecture, Apprentissage, Métriques, LIVE) et le consensus 6/6 sont **PASS**. Les trois modèles NVIDIA ont été **volontairement non lancés** : le 9/9 reste UNKNOWN et ne doit jamais être présenté comme PASS.
+
+Les politiques `spectral_balance`, `risk_acoustic` et `risk_joint` ont **toutes échoué** au veto des six métriques sur le global et les cinq compositions. Aucun candidat FIT recevable ; 0 promotion ; S708 demeure référence officielle. Le test physique iRig/latence et CAL32 du nouveau modèle n'ont pas été effectués. Aucune suppression d'attaques, conservation d'offset ou nouvelle latence n'a été appliquée en production.
