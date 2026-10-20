@@ -1,0 +1,117 @@
+name: S798 six audits plus opt-in Kimi independent adviser
+on:
+  push:
+    branches: [codex/note-s798-kimi-independent-adviser]
+    paths:
+      - scripts/s798_kimi_adviser.py
+      - test/test_s798_kimi_adviser.py
+      - scripts/s798_six_role_audits.py
+      - .github/workflows/note-s798-kimi-adviser.yml
+      - series/S798/resume.md
+      - series/S798/resultat.md
+  workflow_dispatch:
+concurrency:
+  group: \${{ github.workflow }}-\${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+  actions: read
+env:
+  PYTHONPATH: .:src
+  PYTHONUNBUFFERED: '1'
+jobs:
+  safe_unit_tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Compile and run provider tests with a MOCK response
+        run: |
+          python -m compileall -q scripts/s798_kimi_adviser.py scripts/s798_six_role_audits.py test/test_s798_kimi_adviser.py
+          python -m unittest -v test.test_s798_kimi_adviser
+          python -m scripts.verify_series_reports --series S798
+  six_audits:
+    needs: safe_unit_tests
+    name: S798 independent \${{ matrix.role }} audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [data, acoustics, architecture, training, metrics, live]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Run deterministic independent S798 reviewer-safety audit
+        run: |
+          python -m scripts.s798_six_role_audits \
+            --role \${{ matrix.role }} \
+            --adviser scripts/s798_kimi_adviser.py \
+            --workflow .github/workflows/note-s798-kimi-adviser.yml \
+            --tests test/test_s798_kimi_adviser.py \
+            --out /tmp/s798/audits/role_\${{ matrix.role }}.json
+      - name: Archive independent role
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S798_AUDIT_\${{ matrix.role }}
+          path: /tmp/s798/audits/role_\${{ matrix.role }}.json
+          retention-days: 45
+          if-no-files-found: warn
+  consensus:
+    if: always()
+    needs: [safe_unit_tests, six_audits]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: S798_AUDIT_*
+          path: /tmp/s798/audits
+          merge-multiple: true
+      - name: Require six actual PASS role artifacts
+        run: |
+          python -m scripts.s787_audit_consensus \
+            --reports-dir /tmp/s798/audits \
+            --out /tmp/s798/consensus/report.json
+      - name: Archive fail-closed verdict
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S798_SIX_AUDIT_CONSENSUS
+          path: |
+            /tmp/s798/consensus/report.json
+            /tmp/s798/audits/role_*.json
+          retention-days: 45
+          if-no-files-found: warn
+
+  kimi_external_opinion:
+    name: S798 Kimi seventh independent opinion - explicit manual run
+    if: github.event_name == 'workflow_dispatch'
+    needs: [safe_unit_tests, six_audits, consensus]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Call Kimi only with rotated GitHub Actions secret
+        env:
+          NVIDIA_API_KEY: \${{ secrets.NVIDIA_API_KEY }}
+        run: |
+          test -n "$NVIDIA_API_KEY" || { echo "NVIDIA_API_KEY secret missing; skip consultation, NOT a passing advice audit"; exit 1; }
+          python -m scripts.s798_kimi_adviser --out /tmp/s798/external/kimi_review.json
+      - name: Archive NON-BINDING seventh opinion
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S798_SEVENTH_OPINION_KIMI_NOT_PROMOTION
+          path: /tmp/s798/external/kimi_review.json
+          retention-days: 30
+          if-no-files-found: error
