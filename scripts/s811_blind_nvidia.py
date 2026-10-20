@@ -15,7 +15,7 @@ SCHEMA="S811_S810_BLIND_NVIDIA_REVIEW_V1"
 MODELS={
  "model_a":"google/gemma-4-31b-it",
  "model_b":"nvidia/nemotron-3.5-lightning-30b-a3b",
- "model_c":"moonshotai/kimi-k3",
+ "model_c":"z-ai/glm-5.3",
 }
 PROMPT=(
  "You are an independent machine-learning code reviewer. You will receive raw "
@@ -71,13 +71,11 @@ def call_model(role,evidence):
  payload=dict(model=model,messages=[
     {"role":"system","content":PROMPT},
     {"role":"user","content":evidence}],
-    max_tokens=8000 if role=="model_c" else 5500,
-    stream=False,temperature=1.0 if role=="model_c" else .4)
+    max_tokens=6200 if role=="model_c" else 5500,
+    stream=False,temperature=.5 if role=="model_c" else .4)
  if role=="model_b":
   # Only disables provider's non-visible reasoning consumption.
   payload["chat_template_kwargs"]={"enable_thinking":False}
- if role=="model_c":
-  payload["reasoning_effort"]="low"
  request=urllib.request.Request(ENDPOINT,
       data=json.dumps(payload,ensure_ascii=False).encode("utf-8"),
       headers={"Authorization":"Bearer "+key,"Content-Type":"application/json",

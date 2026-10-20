@@ -67,6 +67,32 @@ jobs:
           path: /tmp/s811/reviews/review_${{ matrix.role }}.json
           if-no-files-found: warn
           retention-days: 60
+  fallback_c:
+    # Provider Kimi returned HTTP410; requery ONLY the missing independent
+    # third reviewer, never duplicate Gemma or Nemotron.
+    if: needs.smoke.result == 'success' && contains(github.event.head_commit.message, '[blind-fallback]')
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: One alternative provider with EXACT SAME signed input/prompt
+        env:
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+        run: |
+          python -m scripts.s811_blind_nvidia \
+            --role model_c \
+            --evidence series/S811/fit80_blind_evidence.md \
+            --out /tmp/s811/fallback/review_model_c.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S811_NVIDIA_ZAI_FALLBACK_C_UNVERIFIED_REVIEW
+          path: /tmp/s811/fallback/review_model_c.json
+          if-no-files-found: warn
+          retention-days: 60
   skeptical_triage:
     if: always() && needs.smoke.result == 'success' && needs.blind_nvidia.result == 'success'
     needs: [smoke,blind_nvidia]
