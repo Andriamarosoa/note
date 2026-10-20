@@ -150,8 +150,21 @@ def main() -> None:
         ) else "check secret and network"
         print("S798_KIMI_CONSULTATION_FAILED: " + safe, file=sys.stderr)
         raise SystemExit(1) from None
-    except (OSError, ValueError):
-        print("S798_KIMI_CONSULTATION_FAILED: invalid input or response", file=sys.stderr)
+    except ValueError as exc:
+        # Whitelist only fixed diagnostics; never echo provider text or API key.
+        detail = str(exc)
+        safe = detail if detail in (
+            "NVIDIA_API_KEY is missing or malformed",
+            "No completion returned",
+            "Empty completion"
+        ) else ("allowlisted context blocked" if detail.startswith(
+            "Possible credential in summary: "
+        ) else "invalid JSON or unsupported provider response")
+        print("S798_KIMI_CONSULTATION_FAILED: " + safe, file=sys.stderr)
+        raise SystemExit(1) from None
+    except OSError:
+        print("S798_KIMI_CONSULTATION_FAILED: missing local summary or filesystem error",
+              file=sys.stderr)
         raise SystemExit(1) from None
 
 if __name__ == "__main__":
