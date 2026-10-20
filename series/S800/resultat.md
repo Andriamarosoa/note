@@ -1,11 +1,11 @@
 ---
 serie: S800
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s800-fit-oof-replay-traces
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39354212035
+commit_sha: 37b750a22c7275231ba35a6c1a347be28f09b3ea
 promotion: false
 ---
 
@@ -13,7 +13,7 @@ promotion: false
 
 ## Exécution
 
-Workflow GitHub S800 en cours/en attente : test ABI, reconstruction FIT80 avec le code S795 gelé, 80 partitions trace par piste/hauteur, puis six audits indépendants et consensus. Échantillons CAL32 non utilisés pour choisir une politique. La reconstruction complète peut demander longtemps car elle recalcule les modèles et les caractéristiques sans disposer des banques S795 anciennes.
+Workflow S800 terminé : test ABI PASS, reconstruction FIT80 authentique PASS, 80 traces par piste/hauteur validées, puis six audits indépendants PASS après reprise correcte des archives et consensus PASS. Échantillons CAL32 non utilisés pour choisir une politique. La reconstruction complète peut demander longtemps car elle recalcule les modèles et les caractéristiques sans disposer des banques S795 anciennes.
 
 ## Métriques
 
@@ -36,17 +36,23 @@ Aucun changement aux poids, au processeur causal, aux décisions NOTE, aux voix 
 
 | Rôle | Statut | Preuve |
 |---|---|---|
-| Données | UNKNOWN | Run S800 à vérifier |
-| Acoustique | UNKNOWN | Run S800 à vérifier |
-| Architecture | UNKNOWN | Run S800 à vérifier |
-| Apprentissage | UNKNOWN | Run S800 à vérifier |
-| Métriques | UNKNOWN | Run S800 à vérifier |
-| LIVE | UNKNOWN | Run S800 à vérifier |
+| Données | PASS | [Réeaudit S800 #39354212035](https://github.com/Andriamarosoa/note/actions/runs/39354212035) |
+| Acoustique | PASS | [Réeaudit S800 #39354212035](https://github.com/Andriamarosoa/note/actions/runs/39354212035) |
+| Architecture | PASS | [Réeaudit S800 #39354212035](https://github.com/Andriamarosoa/note/actions/runs/39354212035) |
+| Apprentissage | PASS | [Réeaudit S800 #39354212035](https://github.com/Andriamarosoa/note/actions/runs/39354212035) |
+| Métriques | PASS | [Réeaudit S800 #39354212035](https://github.com/Andriamarosoa/note/actions/runs/39354212035) |
+| LIVE | PASS | [Réeaudit S800 #39354212035](https://github.com/Andriamarosoa/note/actions/runs/39354212035) |
 
 ## Verdict
 
-Pas de promotion. Résultat en attente de la reprise exacte des 80 enregistrements et du consensus des six audits. Tout écart avec les 12 comptes signés S795 est un rejet, jamais une tolérance silencieuse.
+Pas de promotion. **S800 instrumentation terminée, sans promotion.** FIT80 GuitarSet a été reproduit et les douze comptes S795 correspondent exactement ; les six audits sur preuves gelées et leur consensus sont tous PASS. Le run scientifique initial échouait dans les auditeurs pour une dépendance Python `joblib`, pas dans la reconstruction ; le réaudit a été effectué sans répéter l'entraînement. L'artefact réel des cinq têtes est disponible via GitHub Actions.
 
 ## Prochaine action
 
-Après le retour de l'artefact complet : auditer la reproductibilité source par piste, les harmoniques et le routage fragmentaire FIT, puis lancer les ablations indépendantes H4/H3/H2/H5 avec métriques appariées. Le 7e conseiller GLM-5.3-Flash reste une aide consultative sans autorité sur ces mesures. Ne pas utiliser CAL pour sélectionner, et ne jamais ajouter un délai NoteOff.
+Les preuves sont complètes. S801 peut maintenant utiliser les 80 traces OOF FIT80 pour tester réellement les ablations H4/H3/H2/H5 et mesurer les six métriques appariées, sans CAL/HELD/TEST pour la sélection. Le 7e conseiller GLM-5.3-Flash reste une aide consultative sans autorité sur ces mesures. Ne pas utiliser CAL pour sélectionner, et ne jamais ajouter un délai NoteOff.
+
+## Preuves de reproduction
+
+- [Run de reconstruction S800 #39352880035](https://github.com/Andriamarosoa/note/actions/runs/39352880035), commit scientifique `ce678c18c832e259f29386366973c41d8380357d` : `fit80_replay` SUCCESS, 80/80 pistes OOF sauvegardées, cinq plis de composition de 16 pistes chacun, 306536 frames, 189124 Exact-K corrects, tous les douze comptes FIT reproduits. Le job de vérification indépendante des archives (`S800_TRACE_AUDIT_PASS`) est également PASS. Le run global était FAILURE uniquement parce que les jobs d'audit Python ne trouvaient pas `joblib`.
+- [Run de réaudit S800 #39354212035](https://github.com/Andriamarosoa/note/actions/runs/39354212035), commit `37b750a22c7275231ba35a6c1a347be28f09b3ea` : six rôles auditeurs **PASS**, consensus strict **PASS**. Il s'agit d'un examen des preuves gelées déjà calculées, sans refaire l'entraînement GuitarSet.
+- Archive FIT OOF chiffrée par empreintes SHA256, 80 traces avec cinq cartes de probabilités par fragment/hauteur. Aucun accès CAL32/HELD/TEST et aucune promotion.

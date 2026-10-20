@@ -1,11 +1,11 @@
 ---
 serie: S800
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s800-fit-oof-replay-traces
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39354212035
+commit_sha: 37b750a22c7275231ba35a6c1a347be28f09b3ea
 promotion: false
 ---
 
@@ -33,4 +33,10 @@ Données : exclusion stricte des compositions et CAL. Acoustique : cinq cartes c
 
 ## Statut
 
-En cours d'exécution CI S800. Les tests synthétiques d'export et la validation des signatures ne sont pas des scores musicaux ; les 80 traces réelles doivent être reproduites avant que S800 soit considérée terminée.
+**Terminée — instrumentation vérifiée, non promue.** La reconstruction réelle FIT80 et les checksums sont PASS dans le [run #39352880035](https://github.com/Andriamarosoa/note/actions/runs/39352880035). Les six audits indépendants et le consensus sont PASS dans le [run de réaudit #39354212035](https://github.com/Andriamarosoa/note/actions/runs/39354212035). Aucun changement aux six scores CAL32 ni à la chaîne LIVE.
+
+## Preuves de reproduction
+
+- [Run de reconstruction S800 #39352880035](https://github.com/Andriamarosoa/note/actions/runs/39352880035), commit scientifique `ce678c18c832e259f29386366973c41d8380357d` : `fit80_replay` SUCCESS, 80/80 pistes OOF sauvegardées, cinq plis de composition de 16 pistes chacun, 306536 frames, 189124 Exact-K corrects, tous les douze comptes FIT reproduits. Le job de vérification indépendante des archives (`S800_TRACE_AUDIT_PASS`) est également PASS. Le run global était FAILURE uniquement parce que les jobs d'audit Python ne trouvaient pas `joblib`.
+- [Run de réaudit S800 #39354212035](https://github.com/Andriamarosoa/note/actions/runs/39354212035), commit `37b750a22c7275231ba35a6c1a347be28f09b3ea` : six rôles auditeurs **PASS**, consensus strict **PASS**. Il s'agit d'un examen des preuves gelées déjà calculées, sans refaire l'entraînement GuitarSet.
+- Archive FIT OOF chiffrée par empreintes SHA256, 80 traces avec cinq cartes de probabilités par fragment/hauteur. Aucun accès CAL32/HELD/TEST et aucune promotion.
