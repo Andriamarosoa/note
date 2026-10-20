@@ -8,7 +8,7 @@ import sys
 import urllib.error
 import urllib.request
 from scripts.s798_kimi_adviser import ENDPOINT, NoRedirect, SYSTEM, SECRET_RE, safe_context
-CANDIDATES=("moonshotai/kimi-k2.5","meta/llama-3.3-70b-instruct")
+CANDIDATES=("z-ai/glm-5.3-flash","z-ai/glm-5.3")
 FALLBACK_CODES=(404,410)
 def make_payload(model, context):
     if model not in CANDIDATES: raise ValueError("unapproved model")
@@ -16,9 +16,9 @@ def make_payload(model, context):
          "messages":[{"role":"system","content":SYSTEM},
                      {"role":"user","content":"Analyse S795-S797 comme septieme avis independant. Cinq hypotheses ablatables sur les harmoniques, confusions octaves, attaques onset et extinctions offset, anti regression six scores, zero lookahead/latence. Toute hypothese non verifiee doit etre identifiee.\n"+context}],
          "stream":False,"max_tokens":4500,
-         "temperature":0.6 if model==CANDIDATES[0] else 0.4}
+         "temperature":0.5}
     if model==CANDIDATES[0]:
-        req["thinking"]={"type":"disabled"}
+        req["reasoning_effort"]="low"
     return req
 class ProviderUnavailable(RuntimeError):
     def __init__(self,model,code):

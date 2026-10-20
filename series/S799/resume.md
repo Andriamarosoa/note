@@ -34,3 +34,5 @@ Données : seules cinq synthèses autorisées. Acoustique : harmoniques, onsets,
 ## Statut
 
 Expérience S799 en cours. La réussite de Kimi K2.5 ou du modèle de secours reste à confirmer par une réponse non vide du fournisseur. Les six audits NOTE restent obligatoires. La référence officielle S708 CAL32 ne bouge pas.
+
+**Révision après essai #39350745687 :** Kimi K2.5 et Meta Llama 3.3 ont tous deux renvoyé HTTP 410 (fin des endpoints gratuits). Le test continue avec les deux modèles récents affichés « Free Endpoint Available » par NVIDIA Build : `z-ai/glm-5.3-flash` puis `z-ai/glm-5.3` (repli seulement en cas de 404/410). Les paramètres de génération sont adaptés au fournisseur ; les six audits préalables ne changent pas.

@@ -11,7 +11,7 @@ def audit(role, adviser, workflow, tests):
     unit = Path(tests).read_text(encoding="utf-8")
     def require(b, why):
         if not b: raise AssertionError(why)
-    require("moonshotai/kimi-k2.5" in code and "meta/llama-3.3-70b-instruct" in code, "documented models not configured")
+    require("z-ai/glm-5.3-flash" in code and "z-ai/glm-5.3" in code, "documented models not configured")
     require("NVIDIA_API_KEY" in code, "env secret missing")
     require("NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}" in yml,
             "no GitHub secret injection")

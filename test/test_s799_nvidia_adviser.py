@@ -15,10 +15,10 @@ class ProviderTest(unittest.TestCase):
     def test_model_parameters_no_k3_settings(self):
         a=s.make_payload(s.CANDIDATES[0],"synthetic")
         b=s.make_payload(s.CANDIDATES[1],"synthetic")
-        self.assertEqual(a["thinking"],{"type":"disabled"})
-        self.assertNotIn("reasoning_effort",a)
+        self.assertEqual(a["reasoning_effort"],"low")
+        self.assertNotIn("thinking",a)
         self.assertNotIn("thinking",b)
-        self.assertEqual(a["model"],"moonshotai/kimi-k2.5")
+        self.assertEqual(a["model"],"z-ai/glm-5.3-flash")
     def test_success_primary(self):
         calls=[]
         class Opener:
