@@ -5,7 +5,7 @@ and line-numbered source excerpts and numeric GuitarSet statistics; no raw
 audio, credential, reserved split or full JAMS is transferred.
 """
 from __future__ import annotations
-import argparse, hashlib, json, os, re, sys, urllib.error, urllib.request
+import argparse, hashlib, json, os, re, sys, time, http.client, urllib.error, urllib.request
 from pathlib import Path
 from scripts.s798_kimi_adviser import ENDPOINT, NoRedirect, SECRET_RE
 
@@ -50,7 +50,7 @@ BASE_PROMPT=(
     "une section LIMITES DE CET AUDIT. Tu ne peux pas modifier le dépôt ni "
     "promouvoir un modèle. Ne fabrique aucune amélioration F1."
 )
-MAX_CONTEXT=72000
+MAX_CONTEXT=36000
 
 def canonical_digest(bundle):
     obj=dict(bundle)
@@ -102,42 +102,54 @@ def payload(role,evidence):
     req={"model":ROLES[role],
         "messages":[{"role":"system","content":BASE_PROMPT+" "+PROMPTS[role]},
                     {"role":"user","content":evidence}],
-        "stream":False,"max_tokens":4200,"temperature":0.7}
+        "stream":False,"max_tokens":1800,"temperature":0.35}
+    if role=="architecture":
+        req["reasoning_effort"]="low"
     if role=="data":
+        req["max_tokens"]=4200
         req["temperature"]=1.0
         req["top_p"]=0.95
         req["chat_template_kwargs"]={"enable_thinking":False}
     return req
 
-def call(role,key,evidence,timeout=300):
+def call(role,key,evidence,timeout=180):
     if not isinstance(key,str) or not key.startswith("nvapi-") or len(key)<20:
         raise ValueError("missing or malformed NVIDIA secret")
     req=urllib.request.Request(ENDPOINT,method="POST",
         data=json.dumps(payload(role,evidence),ensure_ascii=False).encode(),
         headers={"Authorization":"Bearer "+key,
                  "Content-Type":"application/json","Accept":"application/json"})
-    try:
-        with urllib.request.build_opener(NoRedirect).open(req,timeout=timeout) as r:
-            response=json.loads(r.read(4_000_000).decode("utf-8"))
-    except urllib.error.HTTPError as exc:
-        raise RuntimeError("NVIDIA model "+role+" HTTP "+str(exc.code)) from None
-    except (urllib.error.URLError,TimeoutError) as exc:
-        raise RuntimeError("NVIDIA unavailable: "+type(exc).__name__) from None
+    # One retry for transient TCP disconnects/timeouts only. Never retry 4xx
+    # or claim provider success from mocks/empty content.
+    last_error=None
+    for attempt in range(2):
+        try:
+            with urllib.request.build_opener(NoRedirect).open(req,timeout=timeout) as r:
+                response=json.loads(r.read(4_000_000).decode("utf-8"))
+            break
+        except urllib.error.HTTPError as exc:
+            raise RuntimeError("NVIDIA model "+role+" HTTP "+str(exc.code)) from None
+        except (urllib.error.URLError,TimeoutError,http.client.RemoteDisconnected,
+                ConnectionResetError) as exc:
+            last_error=type(exc).__name__
+            if attempt==1:raise RuntimeError("NVIDIA unavailable "+last_error) from None
+            time.sleep(2)
     choices=response.get("choices") or []
     if not choices:raise ValueError("no model choices")
     m=choices[0].get("message") or {}
     txt=m.get("content") or ""
     if isinstance(txt,list):
-        txt="\n".join(str(part.get("text","")) for part in txt
+        txt="\\n".join(str(part.get("text","")) for part in txt
                       if isinstance(part,dict) and part.get("type")=="text")
     if not isinstance(txt,str) or len(txt.strip())<160:
         raise ValueError("no sufficiently substantive audit text returned")
     usage=response.get("usage") or {}
+    safe=SECRET_RE.sub("[REDACTED]",txt)[:40000]
     return {"schema":SCHEMA,"series":"S804","role":role,"model":ROLES[role],
         "provider":"NVIDIA NIM","review_received":True,
         "context_sha256":hashlib.sha256(evidence.encode()).hexdigest(),
-        "response_sha256":hashlib.sha256(txt.encode()).hexdigest(),
-        "review_text":SECRET_RE.sub("[REDACTED]",txt)[:40000],
+        "response_sha256":hashlib.sha256(safe.encode()).hexdigest(),
+        "review_text":safe,
         "usage":{k:usage[k] for k in ("total_tokens","prompt_tokens",
             "completion_tokens") if isinstance(usage.get(k),int)},
         "scientific_promotion":False,"data_code_audit_only":True,
@@ -162,8 +174,18 @@ def main():
         print("S804_NVIDIA_DEEP_REVIEW_PASS",args.role,result["model"],
               "context_sha256="+result["context_sha256"],flush=True)
     except Exception as exc:
-        # No exception values: never leak token, URL or raw untrusted snippets.
+        # Strictly allowlisted diagnostic; never expose provider response body.
+        detail=""
+        if isinstance(exc,RuntimeError):
+            m=re.fullmatch(r"NVIDIA model (?:architecture|data|redteam) HTTP ([0-9]{3})",str(exc))
+            if m:detail=" HTTP="+m.group(1)
+            elif str(exc).startswith("NVIDIA unavailable "):
+                detail=" "+str(exc)
+        elif isinstance(exc,ValueError) and str(exc) in {
+            "no model choices","no sufficiently substantive audit text returned",
+            "missing or malformed NVIDIA secret"}:
+            detail=" reason="+str(exc)
         print("S804_NVIDIA_DEEP_REVIEW_FAIL role="+args.role+
-              " category="+type(exc).__name__,file=sys.stderr)
+              " category="+type(exc).__name__+detail,file=sys.stderr)
         raise SystemExit(1) from None
 if __name__=="__main__":main()
