@@ -78,7 +78,7 @@ jobs:
           python -m scripts.s813_prepare_native256 --manifest "$(cat /tmp/s825/manifest_path)" --traces "$(cat /tmp/s825/traces_path)" --audio-zip /tmp/s825/GuitarSet_audio.zip --out /tmp/s825/fresh256 --workers 2
       - name: Fit three loops of count learner on genuine pitch-head cross-fitting, strict PCM256
         run: |
-          python -m scripts.s822_retrain_s810_midi256 --cache /tmp/s825/fresh256 --traces "$(cat /tmp/s825/traces_path)" --out /tmp/s825/result
+          python -m scripts.s825_train_crossfit_midi256 --cache /tmp/s825/fresh256 --traces "$(cat /tmp/s825/traces_path)" --out /tmp/s825/result
       - name: Check five fully independent folds same MIDI256 denominators and source H0
         run: |
           python - <<'PY'
