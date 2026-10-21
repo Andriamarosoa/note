@@ -325,8 +325,10 @@ class S830FittedStream:
                 confidence=0.0  # no falsely advertised posterior
             else:
                 domains=("sustain",) if mode=="sustain" else DOMAINS
+                # FIT80 caches this tensor as float16. Requantize LIVE to
+                # preserve the precise fitted model input ABI.
                 post=self.evidence_model.posterior(
-                    frame[None,:,:],domains=domains)[0]
+                    frame[None,:,:].astype(np.float16),domains=domains)[0]
                 self.musical_model_calls+=len(domains)
                 on,sus,off=post.T
                 direct=min(6,int(np.count_nonzero(sus>=thr)))
