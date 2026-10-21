@@ -22,6 +22,17 @@ Workflow GitHub Actions à exécuter sur audio original SHA, 5 folds et 80 piste
 
 Comparer 249411 trames GT K>0 pour chaque colonne : interdit de comparer directement le 76,5656 % S810 à 1024 et 62310 frames à S822.
 
+## Six caractéristiques officielles protégées — S708 CAL32
+
+| Caractéristique | S708 officiel CAL32 | S822 SHADOW MIDI256 |
+|---|---:|---|
+| Onset F1 | 74,2639 % | non modifié, non mesuré sur un nouveau MIDI |
+| Exact-K | 62,0455 % | non modifié, non mesuré sur un nouveau MIDI |
+| Active Exact-K | 56,2762 % | tête expérimentale seule, FIT80 uniquement |
+| Offset accuracy | 77,3292 % | non modifié, non mesuré sur un nouveau MIDI |
+| Full Note F1 | 57,1319 % | non modifié, non mesuré sur un nouveau MIDI |
+| Frame Pitch F1 | 76,4626 % | non modifié, non mesuré sur un nouveau MIDI |
+
 ## Comparaison à S708
 
 S708 officiel CAL32 Active Exact-K 56,2762 %, autres mesures de référence intactes. Aucune unification MIDI, S708 et LIVE inchangés.
