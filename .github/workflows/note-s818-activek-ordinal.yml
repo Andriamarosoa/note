@@ -33,7 +33,7 @@ jobs:
       - run: python -m pip install -r requirements-s813.txt
       - name: Verify causal private history, trained heads, noninterference and reporting
         run: |
-          python -m compileall -q src/causal_note/s818_highpoly_temporal.py scripts/s818_train_highpoly256.py test/test_s818_highpoly_temporal.py
+          python -m compileall -q src/causal_note/s818_activek_ordinal.py scripts/s818_train_ordinal256.py test/test_s818_activek_ordinal.py
           python -m unittest -v test.test_s818_activek_ordinal test.test_s815_activek_teacher test.test_s813_native256 test.test_s813_teacher_contract test.test_s809_axis_isolation
           python -m scripts.verify_series_reports --series S818
   real_fit80:
