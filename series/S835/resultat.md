@@ -1,18 +1,18 @@
 ---
 serie: S835
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s835-best-of-six-axes-preserved
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39667345971
+commit_sha: 5f55afeb5505b5e9bca2adff3be0d75900dd1d0d
 promotion: false
 ---
 
 # S835 — Résultat de conservation des meilleures références par caractéristique
 
 ## Exécution
-Branche de conservation créée sur GitHub `codex/note-s835-best-of-six-axes-preserved`, depuis S834. Vérification automatisée du manifeste et des six sources de code en cours. Aucune validation musicale nouvelle dans cette série.
+Branche de conservation créée sur GitHub `codex/note-s835-best-of-six-axes-preserved`, depuis S834. **TERMINÉ — TESTS RÉUSSIS** : GitHub Actions [#39667345971](https://github.com/Andriamarosoa/note/actions/runs/39667345971) SUCCESS, 7 tests unitaires PASS, validation documentaire PASS et garde-fou Git vérifiant que tous les fichiers originaux S708/S828/S834, les checkpoints et le MIDI de production sont inchangés. Aucune validation musicale nouvelle dans cette série.
 
 ## Métriques
 Les six valeurs sont une **sélection de résultats expérimentaux déjà mesurés, et non le score d'un modèle unique** :
@@ -34,15 +34,15 @@ S708 officiel CAL32 reste inchangé. S834 ne modifie aucun code de référence e
 ## Audits
 | Rôle | Statut | Preuve |
 |---|---|---|
-| Données | EN COURS | Vérification des références et du manifeste |
+| Données | PASS DOCUMENTAIRE | 6 références et 6 rapports vérifiés dans le dépôt |
 | Acoustique | PASS PARTIEL | PCM256 natif attesté pour 4 axes, deux références historiques conservées |
-| Architecture | EN COURS | Gel des sources et tests anti-interférence obligatoires |
+| Architecture | PASS PROTECTION | 7 tests + CI interdit les modifications des sources S708/S828/S834 et protège les cinq autres axes |
 | Apprentissage | PAS D'ENTRAÎNEMENT | Registre sélectionne des sources existantes sans produire de checkpoints |
 | Métriques | PASS DOCUMENTAIRE | Cohortes et unités distinguées ; aucune nouvelle mesure musicale |
 | LIVE | UNKNOWN | Modèles/poids et iRig CPU p99 non validés |
 
 ## Verdict
-**BRANCHE CRÉÉE, NON PROMUE**. Une seule branche pour conserver six meilleures références, sans dissimuler les deux obstacles Onset/Offset, ni s'engager dans une unification régressive.
+**BRANCHE CRÉÉE ET CONTRÔLES TECHNIQUES TERMINÉS, NON PROMUE**. Une seule branche pour conserver six meilleures références, sans dissimuler les deux obstacles Onset/Offset, ni s'engager dans une unification régressive.
 
 ## Prochaine action
 Construire Onset et Offset strict PCM256 qui battent ou égalent leurs scores FIT80 H0 sur la même définition, sérialiser les poids de S828 et mesurer le coût CPU global. Maintenir strictement les cinq autres axes inchangés pendant chaque boucle.
