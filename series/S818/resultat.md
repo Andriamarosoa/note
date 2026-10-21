@@ -1,11 +1,11 @@
 ---
 serie: S818
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s818-activek-six-ordinal-heads
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39546770781
+commit_sha: 50430c40bad0a37b990f5943d3e55a71b15f7b38
 promotion: false
 ---
 # S818 — Résultats de l'architecture ordinale Active-K
@@ -20,7 +20,7 @@ Expérience de recherche en préparation sur sources signées FIT80 de S800 et e
 |---|---:|---|
 | Onset F1 | 74,2639 % | inchangé |
 | Exact-K | 62,0455 % | inchangé |
-| Active Exact-K | 56,2762 % | non mesuré |
+| Active Exact-K | 56,2762 % | **54,40578002 % FIT80 (135694 / 249411)** |
 | Offset accuracy | 77,3292 % | inchangé |
 | Full Note F1 | 57,1319 % | inchangé |
 | Frame Pitch F1 | 76,4626 % | inchangé |
@@ -49,3 +49,15 @@ Aucun score musical S818 encore validé. Promotion et unification interdites ava
 ## Prochaine action
 
 Lancer tests structurels, exécuter les cinq plis réels, vérifier le comptage des sous/sur-détections par K, puis rejeter tout candidat régressif, sans ajouter de délai temporel.
+
+
+## Clôture scientifique vérifiée — S818
+
+Run GitHub Actions #39546770781 : https://github.com/Andriamarosoa/note/actions/runs/39546770781 — SUCCESS, 5 plis × 6 têtes ordinales privées entraînées, extraction MIDI256 de 80 pistes GuitarSet à 44100 Hz. Artefact des 30 checkpoints, décisions et résultats #12322741581 : https://github.com/Andriamarosoa/note/actions/runs/39546770781/artifacts/12322741581.
+
+* Vrai S818 Active-K FIT80 : **135694/249411 = 54,40578002 %**, 73512 sous-comptages et 40205 surcomptages.
+* S815 figé : **141946/249411 = 56,91248582 %** ; delta S818 **−2,50670580 points**.
+* H0 FIT80 historique : **142213/249411 = 57,01953803 %** ; delta S818 **−2,61375801 points**.
+* Par composition : BN1 27669/47770 = 57,9213 % ; Funk2 27246/48827 = 55,8011 % ; Jazz1 22959/40548 = 56,6218 % ; Rock3 28487/54917 = 51,8728 % ; SS1 29333/57349 = 51,1482 %.
+
+**REJET SCIENTIFIQUE :** S818 a régressé malgré des poids réellement indépendants. H0, S708, le MIDI LIVE et les cinq autres caractéristiques ne sont pas modifiés. Promotion=false, unification=false, objectif 85 % non atteint, validation externe et latence matérielle non mesurées. FIT80 est une cohorte historiquement explorée, non un benchmark indépendant certifiant la généralisation. Un second run #39546788233 a été déclenché par un correctif mineur des chemins de compilation, à contrôler séparément.
