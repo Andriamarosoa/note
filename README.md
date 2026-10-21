@@ -27,3 +27,7 @@ See `.github/workflows/exact-k-only-256.yml`. The workflow downloads the origina
 The only runnable model is `src/exact_k/runtime.py`. `src/exact_k/acoustics.py` and `temporal.py` contain **supporting fixed source-feature extraction** needed to preserve the S834 score; there is no second axis detector. Any future training or experiments in this branch must target Exact-K only.
 
 All removed research history remains available on the other Git branches, especially `codex/note-s834-s809-six-axes-native256` and the five distinct `codex/note-best-*` axis branches.
+
+## Verification
+
+The exact-k-only source isolation smoke test passed in GitHub Actions run #39669618268. The signed FIT80 80-track K-only replay is separately triggered and must match the original S834 result before a score is revalidated for this trimmed branch.
