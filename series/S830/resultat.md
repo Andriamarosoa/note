@@ -61,8 +61,8 @@ La référence officielle S708 CAL32 est protégée. S809 84,24 % SHADOW à 1 02
 | Catégorie | Statut | Preuve |
 |---|---|---|
 | Données | PASS | 80 WAV GuitarSet d'origine, SHA provenance, composition-disjoint |
-| Acoustique | PASS limité | Causalité et frontière PCM256 testées sur signal synthétique ; dernier bloc incomplet corrigé |
-| Architecture | PASS limité | Aucun checkpoint/état des cinq autres axes, code des cinq autres axes inchangé |
+| Acoustique | UNKNOWN | Tests synthétiques causalité/PCM256 PASS, mais généralisation acoustique et matériel iRig non validés |
+| Architecture | UNKNOWN | Isolation de code PASS et cinq autres axes inchangés ; audit adversarial de toutes les interactions non réalisé |
 | Apprentissage | PASS | Deux experts K + trois preuves musicales appris sur TRAIN, selector inner-CAL |
 | Métriques | PASS | 306 536 trames K0–K6 et comparaison S829/H0 appariée |
 | LIVE | UNKNOWN | p95/p99/latence matérielle iRig non mesurée |
