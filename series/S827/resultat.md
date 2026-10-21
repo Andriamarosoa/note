@@ -14,7 +14,7 @@ promotion: false
 
 En cours : tests de parité originelle S708 et replay GitHub de GuitarSet original signé. Les cinq autres modèles, décodeurs et scores de référence sont **gelés**. La série S826 complète, avec ses régressions sur d'autres axes, est non promue.
 
-## Six axes officiels conservés — S708 CAL32
+## Métriques
 
 | Axe | Référence CAL32 | Effet S827 |
 |---|---:|---|
@@ -25,7 +25,7 @@ En cours : tests de parité originelle S708 et replay GitHub de GuitarSet origin
 | Full Note F1 | 57,1319 % | Gelé, signatures invariantes à tester |
 | Frame Pitch F1 | 76,4626 % | Gelé, signatures invariantes à tester |
 
-## Benchmark authentique à respecter
+## Comparaison à S708
 
 Sur FIT80, H0 S800 Active-K est **142213/249411 = 57,019538 %**. S826, en modifiant toute la chaîne, obtenait **61,1665 % FIT80** à cadence 256, tout en dégradant trois autres caractéristiques : **cette architecture partagée a été rejetée**. La valeur 76,877523 % de S823 utilise des variables 1024 S795 et de l'état MIDI, pas de nouveaux postérieurs audio S708 à 256.
 
@@ -47,3 +47,7 @@ Non mesurés jusqu'au succès de la CI. **Aucune promotion de la référence**. 
 ## Verdict
 
 Aucun candidat de S827 ne doit être promu sur une simple réussite CI. Seule une tête ActiveK réellement indépendante peut, après preuve musicale et budget de latence, être étudiée pour une intégration séparée.
+
+## Prochaine action
+
+Comparer les comptes privés S708 toutes les 256 aux événements S826 signés **en diagnostic uniquement**, confirmer les 5 autres axes H0 identiques, puis envisager l'entraînement réel de **la même architecture S708** à 256 sans modifier d'autres têtes. Pas de promotion sans score Active-K et latence vérifiés.
