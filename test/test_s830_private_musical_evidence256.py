@@ -71,6 +71,15 @@ class TestS830(unittest.TestCase):
             kept.append(np.stack([r[1] for r in result]))
         np.testing.assert_array_equal(kept[0][:4],kept[1][:4])
 
+    def test_incomplete_tail_generates_no_new_decision(self):
+        stream=S830PCMAcoustics()
+        pcm=np.ones(HOP+41,np.float32)
+        completed=stream.push(pcm[:HOP],start_sample=0)
+        tail=stream.push(pcm[HOP:],start_sample=HOP)
+        self.assertEqual(len(completed),1)
+        self.assertEqual(len(tail),0)
+        self.assertEqual(stream.calls,1)
+
     def test_fitted_online_is_same_as_batch_without_future(self):
         tr=[synthetic("a","c1",21),synthetic("b","c2",22),
             synthetic("c","c3",23)]
