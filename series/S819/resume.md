@@ -1,6 +1,6 @@
 ---
 serie: S819
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s819-independent-model-review
@@ -44,3 +44,13 @@ Constat critique : les avis convergent sur trois familles de tests possibles (pr
 Contre-analyse réelle depuis l'artefact S818 : K4 **43,99%**, K5 **9,64%**, K6 **0,78%** (versus S815 respectivement 36,93%, 29,78%, 17,40%). Bootstrap exploratoire de 20000 réplications depuis compteurs piste et composition en `series/S819/paired_bootstrap_result.md` : S818−H0 intervalle quantile 95% par composition **[−4,014 ; −0,931] points**, avec seulement 5 compositions, donc pas une validation externe. Aucun nouveau modèle S819 entraîné ni nouvelle référence promue.
 
 Hypothèse ablatable prioritaire choisie après **contre-vérification** des vrais avis : expliquer pourquoi les 2 nouveaux experts S817 n'ont changé aucune décision, sans les réentraîner. Relecture des neuf politiques de calibration originales : base choisie sur 4 compositions, `max_high@0.90` sur la cinquième, avec gain interne infime ; `max_high@0.50` et `override@0.50` dégradent le plus souvent la calibration. Un test exhaustif de leur activation sur vrai PCM MIDI256 80 pistes, séparant cal et test extérieur pour éviter toute fuite, a été lancé : [run #39553290558](https://github.com/Andriamarosoa/note/actions/runs/39553290558). Ce diagnostic est **posthoc**, n'a pas le droit de choisir une politique sur les scores d'évaluation et ne peut pas autoriser une promotion. Six scores officiels S708 et LIVE restent inchangés.
+
+
+
+## Clôture S819 : revue NVIDIA + contre-épreuve acoustique vraie
+
+**Réalisée et vérifiée.** Trois modèles NVIDIA **réellement appelés** (Gemma 4 31B, Nemotron 3.5 Lightning 30B, GLM 5.3 Flash), trois retours archivés et six contrôles GitHub locaux PASS [run #39552451395](https://github.com/Andriamarosoa/note/actions/runs/39552451395) ; six agents personnels Work **non invoqués**. Les avis sont de simples hypothèses ; l'audit critique est dans `series/S819/external_reviews_critique.md`.
+
+La contre-épreuve causale S819 a été exécutée en SUCCESS sur 80 pistes GuitarSet originales PCM SHA, 5 folds composition-exclus, 306536 frames audio à MIDI256, 249411 frames actives, sans nouvel entraînement [run #39553290558](https://github.com/Andriamarosoa/note/actions/runs/39553290558), artefact [#12324841883](https://github.com/Andriamarosoa/note/actions/runs/39553290558/artifacts/12324841883). Le score S815/S817 141946/249411 **56,91248582 %** et **0 décision modifiée S817** sont reproduits à l'identique. Les seuils hypothétiques `max_high@0.70` (4867 changements, **141263/249411 = 56,63864064 %**) et `max_high@0.50` (19487 changements, **139085/249411 = 55,76538324 %**) sont **régressifs**, car les surcomptages supplémentaires dépassent les sous-comptages supprimés. `override@0.70` 140924/249411 = 56,50272041 % et `override@0.50` 138705/249411 = 55,61302429 % régressent aussi. Le minuscule +2 bonnes décisions de `override@0.90` est posthoc et non promouvable ; ses 8 changements n'établissent aucune robustesse.
+
+Constat : **oui, le sélecteur neutralisait les nouvelles têtes**, mais ce choix préservait une meilleure précision. L'hypothèse qu'un simple abaissement de seuil suffit est **réfutée** ; nouveaux signaux acoustiques discriminants à proposer/tester dans une série distincte, sans choisir sur les outer résultats FIT80 déjà explorés. Aucun apprentissage S819, aucune augmentation démontrée au-delà de H0 57,01953803 %, aucune certification externe, aucune nouvelle mesure LIVE ; **promotion=false**, unification=false, cible >85 % non atteinte. Voir le tableau complet des neuf politiques dans `series/S819/gate_forensic_result.md`.
