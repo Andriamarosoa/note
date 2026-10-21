@@ -1,11 +1,11 @@
 ---
 serie: S818
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s818-activek-six-ordinal-heads
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39546770781
+commit_sha: 50430c40bad0a37b990f5943d3e55a71b15f7b38
 promotion: false
 ---
 # S818 — Six têtes ordinales indépendantes Active Exact-K
@@ -33,3 +33,15 @@ Indépendance six modèles, absence de poids ou d'entrées Frame Pitch / Onset /
 ## Statut
 
 Nouvelle série de recherche S818 préparée, performances non mesurées à ce stade. Zéro changement LIVE, zéro promotion. La référence H0 et les enseignants précédents restent intacts.
+
+
+## Clôture scientifique vérifiée — S818
+
+Run GitHub Actions #39546770781 : https://github.com/Andriamarosoa/note/actions/runs/39546770781 — SUCCESS, 5 plis × 6 têtes ordinales privées entraînées, extraction MIDI256 de 80 pistes GuitarSet à 44100 Hz. Artefact des 30 checkpoints, décisions et résultats #12322741581 : https://github.com/Andriamarosoa/note/actions/runs/39546770781/artifacts/12322741581.
+
+* Vrai S818 Active-K FIT80 : **135694/249411 = 54,40578002 %**, 73512 sous-comptages et 40205 surcomptages.
+* S815 figé : **141946/249411 = 56,91248582 %** ; delta S818 **−2,50670580 points**.
+* H0 FIT80 historique : **142213/249411 = 57,01953803 %** ; delta S818 **−2,61375801 points**.
+* Par composition : BN1 27669/47770 = 57,9213 % ; Funk2 27246/48827 = 55,8011 % ; Jazz1 22959/40548 = 56,6218 % ; Rock3 28487/54917 = 51,8728 % ; SS1 29333/57349 = 51,1482 %.
+
+**REJET SCIENTIFIQUE :** S818 a régressé malgré des poids réellement indépendants. H0, S708, le MIDI LIVE et les cinq autres caractéristiques ne sont pas modifiés. Promotion=false, unification=false, objectif 85 % non atteint, validation externe et latence matérielle non mesurées. FIT80 est une cohorte historiquement explorée, non un benchmark indépendant certifiant la généralisation. Un second run #39546788233 a été déclenché par un correctif mineur des chemins de compilation, à contrôler séparément.
