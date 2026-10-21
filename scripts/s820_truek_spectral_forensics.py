@@ -34,7 +34,7 @@ def sharp_proxies(X, changed):
     for fundamental-like bins. Here we compare those with +1 offsets and
     pitchwise rank statistics. These are *descriptors*, not proof of f0.
     """
-    x=np.asarray(X,dtype=np.float32)
+    x=np.asarray(X)
     if x.ndim!=3 or x.shape[1:]!=(49,222) or changed.shape!=(len(x),):
         raise ValueError("original fresh PCM256 ABI and aligned changed mask required")
     index=np.flatnonzero(changed)
