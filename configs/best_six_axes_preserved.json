@@ -263,7 +263,6 @@
   },
   "evidence": {
     "source_reports": [
-      "series/S708/resultat.md",
       "series/S790/resultat.md",
       "series/S809/resultat.md",
       "series/S812/resultat.md",
@@ -271,6 +270,7 @@
       "series/S828/resultat.md",
       "series/S834/resultat.md"
     ],
-    "note": "Not all upstream artifacts contain weights ready to load or use the same grid; this branch is a protected selection registry, NOT a trained unified MIDI checkpoint."
+    "note": "Not all upstream artifacts contain weights ready to load or use the same grid; this branch is a protected selection registry, NOT a trained unified MIDI checkpoint.",
+    "official_S708_source": "series/S812/resultat.md reproduces all six original official CAL32 and paired FIT80 H0 counters; original signed S708 checkpoint in GitHub Actions run 39094682419"
   }
 }
