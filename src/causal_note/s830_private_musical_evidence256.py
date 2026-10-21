@@ -19,7 +19,7 @@ from causal_note.s829_exactk_s809_native256 import (
 SCHEMA = "S830_EXACTK_THREE_PRIVATE_MUSICAL_EVIDENCE_HEADS_PCM256_V1"
 DOMAINS = ("onset","sustain","release")
 # 72 PCM-only pitch-specific harmonic/temporal dimensions, plus log pitch.
-FEATURES = 73
+FEATURES = 85
 ARGUMENTS = dict(max_iter=48,max_depth=4,max_leaf_nodes=15,
                  min_samples_leaf=65,learning_rate=.09,
                  l2_regularization=2.0,max_bins=63,early_stopping=False)
@@ -29,14 +29,39 @@ SHIFTS = (-1,0,1)
 
 
 def pitch_features(frames):
-    """Pitch evidence derived from PCM only, never S708/S795 model outputs."""
+    """85 per-pitch features with *own* causal inter-pitch harmonic context.
+
+    The lower notes at -12/-19/-24/-28 semitones may explain partials that
+    otherwise look like independent higher fundamentals. No other axis's
+    probabilities or state are included.
+    """
     f=np.asarray(frames,np.float32)
     if f.ndim!=3 or f.shape[1:]!=(PITCHES,72) or not np.isfinite(f).all():
         raise ValueError("per-pitch PCM [T,49,72] required")
     position=np.broadcast_to(
         (np.arange(40,89,dtype=np.float32)/127.)[None,:,None],
         (*f.shape[:2],1))
-    return np.concatenate((f,position),axis=-1)
+    f0=np.mean(f[:,:,[0,8,16]],axis=-1)
+    def lower(offset):
+        z=np.zeros_like(f0)
+        z[:,offset:]=f0[:,:-offset]
+        return z
+    def upper(offset):
+        z=np.zeros_like(f0)
+        z[:,:-offset]=f0[:,offset:]
+        return z
+    lows=[lower(n) for n in (12,19,24,28)]
+    up12,up19=upper(12),upper(19)
+    strongest=np.maximum.reduce(lows)
+    neigh=np.maximum(lower(1),upper(1))
+    rel=(f0-strongest)
+    context=np.stack((*lows,up12,up19,neigh,strongest,
+         rel,f0/(.10+strongest),f0/(.10+neigh),
+         np.maximum(0.,rel)),axis=-1)
+    assert context.shape==(*f.shape[:2],12)
+    out=np.concatenate((f,position,context),axis=-1)
+    assert out.shape[2]==FEATURES
+    return out
 
 
 def truth_pitches_to_three(pitches):
@@ -105,7 +130,14 @@ def train_evidence(rows,*,seed=830,positive_per_track=160,negative_per_track=240
         positive_total=0
         for row in records:
             features=np.asarray(row["pitch_features"],np.float32)
-            label=truth_pitches_to_three(row["pitch_target"])[domain].reshape(-1)
+            # Prefer annotated note boundaries over occupancy transitions:
+            # repeated same-pitch attacks remain visible without a silence hop.
+            if domain=="onset" and "onset_target" in row:
+                label=np.asarray(row["onset_target"],bool).reshape(-1)
+            elif domain=="release" and "release_target" in row:
+                label=np.asarray(row["release_target"],bool).reshape(-1)
+            else:
+                label=truth_pitches_to_three(row["pitch_target"])[domain].reshape(-1)
             if features.ndim!=3 or features.shape[1:]!=(PITCHES,72) or len(features)!=len(row["pitch_target"]):
                 raise ValueError("S830 training ABI mismatch")
             stable=int.from_bytes(hashlib.sha256((row["name"]+domain).encode()).digest()[:4],"big")
@@ -126,8 +158,7 @@ def train_evidence(rows,*,seed=830,positive_per_track=160,negative_per_track=240
             positive_total+=pos_count
             pitch_idx=ix%PITCHES
             frame_idx=ix//PITCHES
-            rows_x=features[frame_idx,pitch_idx]
-            full_x=np.column_stack((rows_x, (pitch_idx+40)/127.)).astype(np.float32)
+            full_x=pitch_features(features)[frame_idx,pitch_idx]
             xs.append(full_x);ys.append(label[ix].astype(np.uint8));ws.append(w)
         X=np.concatenate(xs);y=np.concatenate(ys);w=np.concatenate(ws)
         if len(np.unique(y))<2:raise ValueError("no positives for "+domain)
@@ -144,6 +175,23 @@ def train_evidence(rows,*,seed=830,positive_per_track=160,negative_per_track=240
              shared_axis_posteriors=False,source_checkpoint=None,
              native_hop_samples=HOP,added_future_samples=0,
              added_hold_samples=0))
+
+
+def positive_note_confidence(posterior):
+    """Only positive musical evidence can select a private K suggestion.
+
+    Mean(max(p,1-p)) treats 49 near-certain absences as high confidence
+    in note presence. Keep that failure impossible by construction.
+    """
+    p=np.asarray(posterior,np.float32)
+    if p.ndim!=3 or p.shape[1:]!=(PITCHES,3):
+        raise ValueError("expected [T,49,3] posteriors")
+    sustain=p[:,:,1]
+    if not np.isfinite(sustain).all() or np.any((sustain<0)|(sustain>1)):
+        raise ValueError("invalid sustain posterior")
+    strongest=np.max(sustain,axis=1)
+    three=np.sort(sustain,axis=1)[:,-3:].mean(axis=1)
+    return np.clip(.65*strongest+.35*three,0,1).astype(np.float32)
 
 
 def counts_from_evidence(posterior,thr):
@@ -215,7 +263,7 @@ def apply(fitted_k,fitted_pitch,x,raw_k,raw_pitch,selector):
     baseline=fitted_k.predict(np.asarray(x,np.float32),np.asarray(raw_k))
     post=fitted_pitch.posterior(raw_pitch)
     direct,state=counts_from_evidence(post,thr)
-    confidence=np.mean(np.maximum(post[:,:,1],1-post[:,:,1]),axis=1)
+    confidence=positive_note_confidence(post)
     pred=selected(baseline,direct,state,confidence,mode,shift)
     return pred,baseline,dict(direct=direct,state=state,post=post)
 
