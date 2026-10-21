@@ -218,3 +218,63 @@ def apply(fitted_k,fitted_pitch,x,raw_k,raw_pitch,selector):
     confidence=np.mean(np.maximum(post[:,:,1],1-post[:,:,1]),axis=1)
     pred=selected(baseline,direct,state,confidence,mode,shift)
     return pred,baseline,dict(direct=direct,state=state,post=post)
+
+
+class S830FittedStream:
+    """True online inference with own state, one result per complete PCM256.
+
+    This class intentionally never calls the other five music task heads.
+    No ring of post-onset future PCM and no output hold is allowed.
+    """
+    def __init__(self,count_fitted,evidence_fitted,selector):
+        from causal_note.s829_exactk_s809_native256 import FittedExactK
+        if not isinstance(count_fitted,FittedExactK) or not isinstance(evidence_fitted,LearnedEvidence):
+            raise TypeError("only own trained K and own three evidence heads")
+        if len(selector)!=3:
+            raise ValueError("selector requires mode threshold shift")
+        self.frontend=S830PCMAcoustics()
+        self.count_model=count_fitted
+        self.evidence_model=evidence_fitted
+        self.selector=tuple(selector)
+        self.held=np.zeros(PITCHES,bool)
+        self.last_decision=0
+        self.calls=0
+        self.last_runtime_ms=0.
+
+    def push(self,pcm,*,start_sample):
+        from causal_note.s829_exactk_s809_native256 import (
+            ExactKDecision,summarize_one
+        )
+        import time
+        out=[]
+        for end,frame,acoustic_k in self.frontend.push(
+                pcm,start_sample=start_sample):
+            started=time.perf_counter()
+            agg=summarize_one(frame,acoustic_k)[None,:]
+            kbase=int(self.count_model.predict(
+                agg,np.array([acoustic_k],dtype=np.uint8))[0])
+            post=self.evidence_model.posterior(frame[None,:,:])[0]
+            on,sus,off=post.T
+            _,thr,shift=self.selector
+            direct=min(6,int(np.count_nonzero(sus>=thr)))
+            start=((on>=.45)&(sus>=.15))|(sus>=min(.95,thr+.10))
+            stop=((off>=.55)&(sus<.55))|(sus<max(.10,thr-.22))
+            self.held=(self.held&~stop)|start
+            joint=min(6,int(self.held.sum()))
+            confidence=float(np.mean(np.maximum(sus,1-sus)))
+            k=int(selected(np.array([kbase]),np.array([direct]),
+                np.array([joint]),np.array([confidence]),
+                self.selector[0],shift)[0])
+            if end!=self.last_decision+HOP:
+                raise AssertionError("S830 fitted model missed PCM256 cadence")
+            self.last_runtime_ms=1000*(time.perf_counter()-started)
+            self.last_decision=end;self.calls+=1
+            out.append(ExactKDecision(end,k,confidence))
+        return tuple(out)
+
+    def diagnostics(self):
+        return dict(schema=SCHEMA,decision_hop_samples=HOP,
+            independent_trained_heads=5,
+            public_midi_modified=False,shared_weights=False,
+            emitted_decisions=self.calls,lookahead_samples=0,
+            added_hold_samples=0,last_inference_runtime_ms=self.last_runtime_ms)
