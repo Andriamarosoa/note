@@ -46,6 +46,19 @@ class TestNativeS810FeatureReplication(unittest.TestCase):
             self.assertAlmostEqual(np.mean(w),1.)
             self.assertTrue(len(w)>0)
 
+    def test_active_k_inference_has_no_ground_truth_access(self):
+        source=track("train-one","TRAIN",6)
+        model=fit_teacher([source,track("train-two","TRAIN",7)],"agg61",cap=120)
+        x=track("held-out","EXTERNAL",8)["X"]
+        first=model.predict(x)
+        independent_truth=np.full(len(x),6,dtype=np.uint8)
+        independent_truth[:]=1
+        second=model.predict(x)
+        np.testing.assert_array_equal(first,second)
+        self.assertNotIn("EXTERNAL",model.metadata["train_compositions"])
+        self.assertFalse(model.metadata["labels_used_during_inference"])
+        self.assertEqual(model.metadata["additional_hold_samples"],0)
+
     def test_two_owned_models_same_train_new_composition_calibration(self):
         train=[track("trA","A",1),track("trB","B",2)]
         cal=[track("cal","C",3)]
