@@ -10,6 +10,7 @@ from .temporal import IncrementalS708TemporalHead,latest_s708_acoustic_features
 SCHEMA="ACTIVE_K_ONLY_S828_NATIVE256_V1"
 PITCHES=49
 PAST_AUDIO=8192+HOP
+@dataclass(frozen=True)
 class ActiveKDecision:
     decision_sample:int
     count:int
