@@ -1,11 +1,11 @@
 ---
 serie: S835
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s835-best-of-six-axes-preserved
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39667345971
+commit_sha: 5f55afeb5505b5e9bca2adff3be0d75900dd1d0d
 promotion: false
 ---
 
@@ -49,4 +49,4 @@ Cette branche **n'évalue pas un nouveau flux MIDI** : aucune concaténation de 
 - Agents externes NVIDIA/Work : non impliqués.
 
 ## Statut
-Branche de référence S835 en cours de test. Aucune promotion ni fusion MIDI autorisée ; la sélection indépendante est consignée, pas assemblée. Prochaine boucle indispensable : valider un Onset PCM256 **au moins aussi bon** que 73,2520 % FIT80 et un Offset accuracy PCM256 apparié au H0 69,8862 %, puis vérifier les six métriques sans régression et le budget temps réel.
+Branche de référence S835 vérifiée : 7 tests PASS et [GitHub Actions #39667345971](https://github.com/Andriamarosoa/note/actions/runs/39667345971) SUCCESS. Aucune promotion ni fusion MIDI autorisée ; la sélection indépendante est consignée, pas assemblée. Prochaine boucle indispensable : valider un Onset PCM256 **au moins aussi bon** que 73,2520 % FIT80 et un Offset accuracy PCM256 apparié au H0 69,8862 %, puis vérifier les six métriques sans régression et le budget temps réel.
