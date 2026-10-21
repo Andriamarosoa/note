@@ -41,7 +41,7 @@ jobs:
   real_signed_guitarset:
     runs-on: ubuntu-24.04
     needs: smoke
-    timeout-minutes: 120
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -82,15 +82,17 @@ jobs:
           assert h.hexdigest()==item["sha256"]
           print("S826_ORIGINAL_GUITARSET_SHA256_OK",h.hexdigest())
           PY
-      - name: Test original full S708 neural+guided NoteOn NoteOff model on 256 and 1024 clocks
+      - name: Test original S708 neural and guided MIDI on all 80 original recordings at 256 vs 1024
         run: |
-          python -m scripts.s826_s708_256_real_guitarset --audio-zip /tmp/s826/GuitarSet_audio.zip --traces "$(cat /tmp/s826/traces_dir)" --manifest-path "$(cat /tmp/s826/manifest_path)" --source-checkpoint "$(cat /tmp/s826/s708_dir)/s708_selected.pt" --source-report "$(cat /tmp/s826/s708_dir)/report.json" --native-model model/live/strict_note/NOTE_strict_live.npz --out /tmp/s826/result
+          python -m scripts.s826_s708_256_real_guitarset --audio-zip /tmp/s826/GuitarSet_audio.zip --traces "$(cat /tmp/s826/traces_dir)" --manifest-path "$(cat /tmp/s826/manifest_path)" --source-checkpoint "$(cat /tmp/s826/s708_dir)/s708_selected.pt" --source-report "$(cat /tmp/s826/s708_dir)/report.json" --native-model model/live/strict_note/NOTE_strict_live.npz --out /tmp/s826/result --tracks-per-composition 16
       - name: Verify true every256 neural calls and six music metrics
         run: |
           python - <<'PY'
           import json
           r=json.load(open("/tmp/s826/result/report.json"))
-          assert r["complete"] and len(r["rows"])==5
+          assert r["complete"] and len(r["rows"])==80
+          assert r["aggregate"]["signed_S800_original"]["active_k_correct"]==142213
+          assert r["aggregate"]["signed_S800_original"]["active_frames"]==249411
           assert (r["feature_hop_samples"],r["decision_hop_samples"],r["metric_hop_samples"])==(256,256,256)
           assert r["weights_trained_at_1024"] and not r["source_neural_architecture_retrained_at_256"]
           assert not r["production_LIVE_modified"] and not r["promotion"]
