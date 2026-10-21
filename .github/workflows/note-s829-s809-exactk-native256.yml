@@ -49,7 +49,7 @@ jobs:
       - name: Locked original scientific dependencies
         run: |
           python -m pip install -r requirements-live-strict.txt
-          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install scikit-learn threadpoolctl
       - name: Native256, K0, causal future and private fit synthetic smoke
         run: |
           python - <<'PY'
@@ -85,18 +85,15 @@ jobs:
       - name: Exact-K independent PCM audio dependencies (no shared checkpoints)
         run: |
           python -m pip install -r requirements-live-strict.txt
-          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
-      - name: Reuse source S708 and S800 FIT80 signed evidence
+          python -m pip install scikit-learn threadpoolctl
+      - name: Only signed S800 FIT80 provenance, no S708/S828 model checkpoint
         run: |
-          mkdir -p /tmp/s829/s708 /tmp/s829/manifest /tmp/s829/traces
-          gh run download 39094682419 --repo Andriamarosoa/note --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s829/s708
+          mkdir -p /tmp/s829/manifest /tmp/s829/traces
           gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/s829/manifest
           gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/s829/traces
-          MODEL="$(find /tmp/s829/s708 -name s708_selected.pt -type f -print -quit)"
           META="$(find /tmp/s829/manifest -name report.json -type f -print -quit)"
           FIT="$(find /tmp/s829/traces -name fit_000.json -type f -print -quit)"
-          test -s "$MODEL" && test -s "$META" && test -s "$FIT"
-          printf '%s\n' "$(dirname "$MODEL")" > /tmp/s829/s708_dir
+          test -s "$META" && test -s "$FIT"
           printf '%s\n' "$META" > /tmp/s829/manifest_path
           printf '%s\n' "$(dirname "$FIT")" > /tmp/s829/traces_dir
       - name: Download authentic original GuitarSet PCM signed SHA256
@@ -122,9 +119,6 @@ jobs:
             --audio-zip /tmp/s829/GuitarSet_audio.zip \
             --traces "$(cat /tmp/s829/traces_dir)" \
             --manifest-path "$(cat /tmp/s829/manifest_path)" \
-            --source-checkpoint "$(cat /tmp/s829/s708_dir)/s708_selected.pt" \
-            --source-report "$(cat /tmp/s829/s708_dir)/report.json" \
-            --native-model model/live/strict_note/NOTE_strict_live.npz \
             --out /tmp/s829/result --tracks-per-composition 16
       - name: Scientific denominator guard, independent AXIS and no MIDI merge
         run: |
