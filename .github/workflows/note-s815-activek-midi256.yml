@@ -1,7 +1,7 @@
 name: S815 private Active Exact-K MIDI256 FIT80 research
 on:
   push:
-    branches: [codex/note-s815-activek-private-midi256]
+    branches: [codex/note-s815-activek-pitch-evidence]
     paths:
       - src/causal_note/s815_activek_teacher.py
       - scripts/s815_train_activek256.py
