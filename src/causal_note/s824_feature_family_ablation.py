@@ -14,7 +14,7 @@ from sklearn.preprocessing import StandardScaler
 from threadpoolctl import threadpool_limits
 
 from causal_note.s823_legacy23_asof_midi256 import (
-    balanced_signed_sample,feature_at
+    balanced_signed_sample,feature_at,fit_teacher as fit_original_s823
 )
 from causal_note.s814_activek_teacher import active_score
 
@@ -89,11 +89,17 @@ def train_all(train,*,seed=SEED,cap=CAP):
     x,y,w,proof=balanced_signed_sample(train,"raw23",cap=cap,seed=seed)
     teachers={}
     for mode in UNIQUE_MODES:
-        z=masked_matrix(x,mode)
-        model=make_pipeline(StandardScaler(),LogisticRegression(
-            C=.5,max_iter=230,solver="lbfgs",class_weight=None,random_state=823))
-        with threadpool_limits(limits=1):
-            model.fit(z,y,logisticregression__sample_weight=w)
+        if mode=="full23":
+            # The scientific control reuses the *exact S823 training routine*,
+            # not a duplicated approximation with subtly different numerics.
+            control=fit_original_s823(train,"raw23",cap=cap,seed=seed)
+            model=control.model
+        else:
+            z=masked_matrix(x,mode)
+            model=make_pipeline(StandardScaler(),LogisticRegression(
+                C=.5,max_iter=230,solver="lbfgs",class_weight=None,random_state=823))
+            with threadpool_limits(limits=1):
+                model.fit(z,y,logisticregression__sample_weight=w)
         meta=dict(schema=SCHEMA,mode=mode,nonzero_columns=list(MASKS[mode]),
             expected_training_rows=len(y),train_compositions=sorted({r["composition"] for r in train}),
             weights_are_owned=True,model_S708_loaded=False,
