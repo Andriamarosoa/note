@@ -14,7 +14,7 @@ promotion: false
 ## Exécution
 **COMPLETED SUCCESS** — [GitHub Actions #39632626042](https://github.com/Andriamarosoa/note/actions/runs/39632626042), commit scientifique `088e28e122bfc1f04c981716bf8db73faa615ca7`. Deux jobs `smoke` et `signed_fit80` ont réussi. L'artefact `S830_FIT80_INDEPENDENT_MUSICAL_HEADS_PCM256` (id `12360813096`) contient `report.json` complet avec 80 pistes, cinq folds et 306 536 trames. Source : S800 FIT80 avec métadonnées et WAV originaux vérifiés. La première exécution a échoué sur la fin PCM partielle, bug corrigé avant la validation finale.
 
-## Métriques Exact-K
+## Métriques
 Le dénominateur Exact-K est constitué de **toutes les trames K0–K6**, y compris K0 et non uniquement des trames actives.
 
 | Source | Correctes / 306 536 | Exact-K | Sous-comptages | Surcomptages |
@@ -74,3 +74,6 @@ Aucun changement de référence S708, S828, MIDI officiel ou des cinq autres axe
 
 ## Verdict
 **Expérience TERMINÉE — NON PROMUE.** L'indépendance est possible mais les preuves musicales nouvelles, dans leur forme actuelle, n'apportent pas de gain Exact-K en sélection CAL. Avant d'étudier une influence entre axes, instrumenter les performances par candidat et par classe K, puis comparer les corrections conditionnelles sur CAL et OUTER sans modifier les producteurs de caractéristiques. La contrainte zéro lookahead/hold reste obligatoire.
+
+## Prochaine action
+Ne pas promouvoir S830. Instrumenter le score des sorties de chaque expert sur CAL et par vrai K, puis étudier une communication en lecture seule et sens unique entre architectures avec ablations et veto de régression, sans fusion des états et sans ajouter de latence.
