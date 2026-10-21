@@ -1,0 +1,116 @@
+name: S826 same S708 neural K and MIDI decoder every 256 samples
+on:
+  push:
+    branches: [codex/note-s826-exact-s708-native256-rebuild]
+    paths:
+      - src/causal_note/s704_joint_heads.py
+      - src/causal_note/s708_cardinality_selection.py
+      - src/causal_note/s712_s708_live.py
+      - src/causal_note/s826_s708_whole_native256.py
+      - scripts/s826_s708_256_real_guitarset.py
+      - test/test_s826_s708_whole_native256.py
+      - .github/workflows/note-s826-exact-s708-native256.yml
+  workflow_dispatch:
+concurrency:
+  group: s826-original-s708-256-${{ github.ref }}
+  cancel-in-progress: true
+permissions: {contents: read, actions: read}
+env:
+  GH_TOKEN: ${{ github.token }}
+  PYTHONPATH: .:src
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Original S708 1024 behavior and S708 full 288D native256 tests
+        run: |
+          python -m compileall -q src/causal_note/s704_joint_heads.py src/causal_note/s708_cardinality_selection.py src/causal_note/s712_s708_live.py src/causal_note/s826_s708_whole_native256.py scripts/s826_s708_256_real_guitarset.py test/test_s826_s708_whole_native256.py
+          python -m unittest -v test.test_s826_s708_whole_native256 test.test_s708_cardinality_selection test.test_s712_s708_live test.test_s705_temporal_heads
+          python -m scripts.verify_series_reports --series S826
+  real_signed_guitarset:
+    runs-on: ubuntu-24.04
+    needs: smoke
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Restore original immutable S708 checkpoint and original 80 S800 FIT traces
+        run: |
+          mkdir -p /tmp/s826/s708 /tmp/s826/manifest /tmp/s826/traces
+          gh run download 39094682419 --repo Andriamarosoa/note --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s826/s708
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/s826/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/s826/traces
+          test -s /tmp/s826/s708/s708_selected.pt
+          test -s /tmp/s826/s708/report.json
+          test -s /tmp/s826/manifest/report.json
+          test -s /tmp/s826/traces/fit_000.json
+      - name: Download SHA256 pinned original GuitarSet audio
+        run: |
+          python - <<'PY'
+          import json,hashlib,urllib.request
+          from pathlib import Path
+          cfg=json.loads(Path("analysis/evidence/v273-s613-strict-live/protocol.json").read_text())
+          item=cfg["guitar_archives"]["GuitarSet_audio"]
+          p=Path("/tmp/s826/GuitarSet_audio.zip")
+          with urllib.request.urlopen(item["url"],timeout=180) as response,p.open("wb") as f:
+              for chunk in iter(lambda:response.read(4*1024*1024),b""):f.write(chunk)
+          assert p.stat().st_size==item["size"]
+          h=hashlib.sha256()
+          with p.open("rb") as f:
+              for chunk in iter(lambda:f.read(4*1024*1024),b""):h.update(chunk)
+          assert h.hexdigest()==item["sha256"]
+          print("S826_ORIGINAL_GUITARSET_SHA256_OK",h.hexdigest())
+          PY
+      - name: Test original full S708 neural+guided NoteOn NoteOff model on 256 and 1024 clocks
+        run: |
+          python -m scripts.s826_s708_256_real_guitarset --audio-zip /tmp/s826/GuitarSet_audio.zip --traces /tmp/s826/traces --manifest-path /tmp/s826/manifest/report.json --source-checkpoint /tmp/s826/s708/s708_selected.pt --source-report /tmp/s826/s708/report.json --native-model model/live/strict_note/NOTE_strict_live.npz --out /tmp/s826/result
+      - name: Verify true every256 neural calls and six music metrics
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open("/tmp/s826/result/report.json"))
+          assert r["complete"] and len(r["rows"])==5
+          assert (r["feature_hop_samples"],r["decision_hop_samples"],r["metric_hop_samples"])==(256,256,256)
+          assert r["weights_trained_at_1024"] and not r["source_neural_architecture_retrained_at_256"]
+          assert not r["production_LIVE_modified"] and not r["promotion"]
+          assert r["added_lookahead_samples"]==r["added_hold_samples"]==0
+          for x in r["rows"]:
+              assert x["strict256"]["torch_inference_calls"]==x["original_pcm_samples"]//256
+              assert x["original1024"]["torch_inference_calls"]==x["original_pcm_samples"]//1024
+              assert x["strict256"]["decision_hop_samples"]==256
+              assert x["original1024"]["decision_hop_samples"]==1024
+              assert x["strict256"]["peak_polyphony"]<=6
+              for name in ("S826_256","S712_1024","signed_S800_original"):
+                  assert x["scores"][name]["frames"]==x["true_metric_ends"]
+          print("S826_SIX_METRICS",json.dumps({
+              name:{axis:round(v[axis],6) for axis in
+                  ("onset_f1","exact_k","active_exact_k","offset_accuracy",
+                   "full_note_f1","frame_pitch_f1")}
+              for name,v in r["aggregate"].items()},sort_keys=True))
+          print("S826_STRICT_NATIVE256_FULL_S708_UNPROMOTED")
+          PY
+      - name: Preserve report and real source MIDI note streams
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S826_S708_FULL_NEURAL_GUIDED_MIDI256_VS_LEGACY1024_SHA
+          path: |
+            /tmp/s826/result/report.json
+            /tmp/s826/result/events/
+          retention-days: 45
+          if-no-files-found: warn
