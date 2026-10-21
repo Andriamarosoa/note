@@ -1,0 +1,123 @@
+name: S820 real SS1 true-K transition and spectral evidence MIDI256
+on:
+  push:
+    branches: [codex/note-s820-ss1-truek-spectral-forensics]
+    paths:
+      - scripts/s820_truek_spectral_forensics.py
+      - test/test_s820_truek_spectral_forensics.py
+      - series/S820/**
+      - .github/workflows/note-s820-ss1-truek.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+env:
+  GH_TOKEN: ${{ github.token }}
+  PYTHONPATH: .:src
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+jobs:
+  forensic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 110
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python -m pip install -r requirements-s813.txt
+      - name: Require actual independent external-model consultations and six checks
+        run: |
+          gh run view 39552451395 --repo Andriamarosoa/note --json status,conclusion
+          test "$(gh run view 39552451395 --repo Andriamarosoa/note --json conclusion --jq .conclusion)" = success
+      - name: Download truly trained frozen 5x S817 high polyphony specialists
+        run: |
+          mkdir -p /tmp/s820/s817
+          gh run download 39543749810 --repo Andriamarosoa/note --name S817_FIVEHEAD_ACTIVEK_TEMPORAL_K4_K6_FIT80_RESULTS --dir /tmp/s820/s817
+          R="$(find /tmp/s820/s817 -path '*/result/report.json' -type f -print -quit)"
+          test -s "$R"
+          test -s "$(dirname "$(dirname "$R")")/fresh256/report.json"
+          printf '%s\n' "$(dirname "$R")" > /tmp/s820/s817_dir
+      - name: Download genuine frozen 5x S815 ActiveK three-head checkpoints
+        run: |
+          mkdir -p /tmp/s820/s815
+          gh run download 39536863317 --repo Andriamarosoa/note --name S815_ACTIVE_K_PRIVATE_MIDI256_FIT80_RESULTS --dir /tmp/s820/s815
+          R="$(find /tmp/s820/s815 -path '*/experiment/report.json' -type f -print -quit)"
+          test -s "$R"
+          printf '%s\n' "$(dirname "$R")" > /tmp/s820/s815_dir
+      - name: Restore original S800 80 signed FIT80 manifests and note annotations
+        run: |
+          mkdir -p /tmp/s820/manifest /tmp/s820/traces
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/s820/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/s820/traces
+          MANIFEST="$(find /tmp/s820/manifest -name report.json -type f -print -quit)"
+          TRACE="$(find /tmp/s820/traces -name fit_000.json -type f -print -quit)"
+          test -s "$MANIFEST"
+          test -s "$TRACE"
+          printf '%s\n' "$MANIFEST" > /tmp/s820/manifest_file
+          printf '%s\n' "$(dirname "$TRACE")" > /tmp/s820/traces_dir
+      - name: Download exactly SHA pinned original GuitarSet audio PCM
+        run: |
+          python - <<'PY'
+          import json,hashlib,urllib.request
+          from pathlib import Path
+          source=json.loads(Path('analysis/evidence/v273-s613-strict-live/protocol.json').read_text())['guitar_archives']['GuitarSet_audio']
+          output=Path('/tmp/s820/guitar_audio.zip')
+          with urllib.request.urlopen(source['url'],timeout=180) as inp,output.open('wb') as dest:
+              while block:=inp.read(4194304):dest.write(block)
+          assert output.stat().st_size==source['size']
+          h=hashlib.sha256()
+          with output.open('rb') as inp:
+              for b in iter(lambda:inp.read(4194304),b''):h.update(b)
+          assert h.hexdigest()==source['sha256']
+          print('S820_AUTHENTIC_ORIGINAL_PCM_SHA',h.hexdigest())
+          PY
+      - name: Extract 80 authentic 44.1kHz recordings at causal 256-sample hop
+        run: |
+          python -m scripts.s813_prepare_native256 --manifest "$(cat /tmp/s820/manifest_file)" --traces "$(cat /tmp/s820/traces_dir)" --audio-zip /tmp/s820/guitar_audio.zip --out /tmp/s820/fresh256 --workers 2
+      - name: Restore finished S819 original fixed-policy report
+        run: |
+          mkdir -p /tmp/s820/previous
+          gh run download 39553290558 --repo Andriamarosoa/note --name S819_S817_TRUE_PCM256_GATE_POLICY_AUDIT_NOT_PROMOTION --dir /tmp/s820/previous
+          R="$(find /tmp/s820/previous -path '*/gate_audit/report.json' -type f -print -quit)"
+          test -s "$R"
+          printf '%s\n' "$R" > /tmp/s820/s819_report
+      - name: Structural tests for GT K0..K6 matrices and DSP coordinates
+        run: |
+          python -m compileall -q scripts/s820_truek_spectral_forensics.py test/test_s820_truek_spectral_forensics.py
+          python -m unittest -v test.test_s820_truek_spectral_forensics
+          python -m scripts.verify_series_reports --series S820
+      - name: Reconstruct and audit 80-track true K0..6 and sharp acoustic descriptors
+        run: |
+          python -m scripts.s820_truek_spectral_forensics --cache /tmp/s820/fresh256 --s817-dir "$(cat /tmp/s820/s817_dir)" --s815-dir "$(cat /tmp/s820/s815_dir)" --s819-report "$(cat /tmp/s820/s819_report)" --out /tmp/s820/experiment
+      - name: Require real counterfactual science and no model promotion
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/s820/experiment/report.json').read_text())
+          assert r['schema']=='S820_TRUE_K_TRANSITION_SPECTRAL_PROXY_FIT80_RESEARCH_V1'
+          assert r['complete'] and len(r['by_recording'])==80
+          assert len(r['by_composition'])==5 and r['whole_by_true_k']
+          assert r['baseline_activeK']['correct']==141946
+          assert r['counterfactual_activeK']['correct']==141263
+          assert r['counterfactual_activeK']['frames']==249411
+          assert r['total_changed_frames']==4867 and r['net_correct_delta']==-683
+          assert all(sum(x['n'] for x in comp['by_true_k'].values())>0 for comp in r['by_composition'].values())
+          assert sum(x['n'] for x in r['whole_by_true_k'].values())==306536
+          assert not any(r[k] for k in ('new_model_training','promotion','LIVE_modified','other_axes_modified','source_labels_used_for_selection','source_labels_used_in_inference','lookahead_samples_added','hold_samples_added'))
+          print('S820_VERIFIED_SS1_TRANSITIONS_K0_K6',json.dumps(r['by_composition']['SS1']['by_true_k']),flush=True)
+          print('S820_FUNDAMENTAL_PROXY_SS1',json.dumps(r['by_composition']['SS1']['by_spectral_proxy']),flush=True)
+          print('S820_NO_MUSIC_PROMOTION',True,flush=True)
+          PY
+      - name: Preserve signed per-track transitions and conditional acoustic audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S820_TRUE_K_SS1_SPECTRAL_PROXY_REAL_PCM256_FORENSIC
+          path: |
+            /tmp/s820/experiment/report.json
+            /tmp/s820/fresh256/report.json
+          retention-days: 45
+          if-no-files-found: warn
