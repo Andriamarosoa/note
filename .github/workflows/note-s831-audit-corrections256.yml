@@ -149,8 +149,18 @@ jobs:
           for outer,fold in r['folds'].items():
               assert outer not in fold['train_compositions'] and outer != fold['calibration']
               assert fold['calibration'] not in fold['train_compositions']
+          assert r['S829_reproduced_exactk']['correct']==176334
+          for outer,fold in r['folds'].items():
+              assert len(fold['candidate_CAL_stats'])>=75
           for t in r['tracks']:
               assert set(t['by_true_K'])==set(map(str,range(7)))
+              assert set(t['alternative_candidates'])==set(('s829','sustain','joint','router','blend','rescue'))
+              for name,c in t['alternative_candidates'].items():
+                  assert c['correct']+c['undercount']+c['overcount']==c['frames']
+                  assert c['corrected']>=0 and c['regressed']>=0
+                  assert set(c['by_true_K'])==set(map(str,range(7)))
+              chosen=t['alternative_candidates'][t['selector']['mode']]
+              assert t['S831']['correct']==chosen['correct']
               assert t['S831']['correct']+t['S831']['undercount']+t['S831']['overcount']==t['S831']['frames']
           print('S831_NATIVE256_EXACTK_K0_K6_SIGNED_FIT80_PASS',r['S831_exactk'])
           PY
