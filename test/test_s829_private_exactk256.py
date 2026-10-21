@@ -1,6 +1,9 @@
 """S829 fully isolated Exact-K: synthetic contracts, not musical FIT80 scores."""
 import unittest
 import numpy as np
+from scripts.s829_train_exactk_s809_native256 import (
+    targets_at_ends, original_count, active_score, totals, signature
+)
 from causal_note.s829_exactk_s809_native256 import (
     HOP, S829AcousticFrontEnd, S829Stream, S829FittedStream, score_exact,
     fit_exact, proposed, SCHEMA
@@ -19,6 +22,28 @@ def fake(name, comp, seed, n=147):
 
 
 class TestS829(unittest.TestCase):
+    def test_private_truth_and_historical_scoring_parity(self):
+        ends = np.array([256, 512, 768], dtype=np.int64)
+        truth = [{"pitch":40,"time":256/44100,"duration":512/44100}]
+        pitches, k = targets_at_ends(truth, ends)
+        np.testing.assert_array_equal(k, [1,1,0])
+        self.assertEqual(np.flatnonzero(pitches[0]).tolist(), [0])
+        events = [
+            dict(type="note_on",pitch=40,decision_sample=256,
+                 available_sample=256,time=256/44100),
+            dict(type="note_off",pitch=40,decision_sample=768,
+                 available_sample=768,time=768/44100),
+        ]
+        original_events = signature(events)
+        baseline = original_count(events, ends)
+        np.testing.assert_array_equal(baseline, [1,1,0])
+        self.assertEqual(signature(events), original_events)
+        self.assertEqual(score_exact(baseline, k)["correct"], 3)
+        self.assertEqual(active_score(baseline,k)["frames"], 2)
+        self.assertEqual(totals([score_exact(baseline,k)])["accuracy"], 1.)
+        with self.assertRaisesRegex(AssertionError,"orphan"):
+            original_count([events[-1]], ends)
+
     def test_exactk_includes_k0(self):
         s = score_exact([0, 1, 2, 0, 3], [0, 0, 2, 1, 3])
         self.assertEqual((s["correct"], s["frames"], s["undercount"],
