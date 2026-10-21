@@ -1,4 +1,4 @@
-name: S828 train only private ActiveK S708-origin readout on original PCM256
+name: S828 full FIT80 original PCM256 train private S708 ActiveK only
 on:
   push:
     branches: [codex/note-s828-activek-s708-private-readout-256]
@@ -57,7 +57,7 @@ jobs:
   signed_real_five:
     runs-on: ubuntu-24.04
     needs: strict_isolation
-    timeout-minutes: 90
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -102,13 +102,15 @@ jobs:
           PY
       - name: Train only private S708 Active-K readout with real audio and disjoint composition
         run: |
-          python -m scripts.s828_train_s708_private_activek_midi256 --audio-zip /tmp/s828/GuitarSet_audio.zip --traces "$(cat /tmp/s828/traces_dir)" --manifest-path "$(cat /tmp/s828/manifest_path)" --source-checkpoint "$(cat /tmp/s828/s708_dir)/s708_selected.pt" --source-report "$(cat /tmp/s828/s708_dir)/report.json" --native-model model/live/strict_note/NOTE_strict_live.npz --out /tmp/s828/result --tracks-per-composition 1
-      - name: Scientific contract — five true PCM256 tracks, five composition-disjoint TRAIN/CAL/TEST, only Active-K altered
+          python -m scripts.s828_train_s708_private_activek_midi256 --audio-zip /tmp/s828/GuitarSet_audio.zip --traces "$(cat /tmp/s828/traces_dir)" --manifest-path "$(cat /tmp/s828/manifest_path)" --source-checkpoint "$(cat /tmp/s828/s708_dir)/s708_selected.pt" --source-report "$(cat /tmp/s828/s708_dir)/report.json" --native-model model/live/strict_note/NOTE_strict_live.npz --out /tmp/s828/result --tracks-per-composition 16
+      - name: Scientific contract — 80 true PCM256 tracks, five composition-disjoint TRAIN/CAL/TEST, only Active-K altered
         run: |
           python - <<'PY'
           import json
           r=json.load(open('/tmp/s828/result/report.json'))
-          assert r['complete'] and len(r['tracks'])==5 and len(r['folds'])==5
+          assert r['complete'] and len(r['tracks'])==80 and len(r['folds'])==5
+          assert r['H0_original_activek']['correct']==142213
+          assert r['H0_original_activek']['frames']==249411
           assert r['decision_hop_samples']==r['feature_hop_samples']==256
           assert r['only_active_exact_k_trained'] and r['original_s708_nn_frozen']
           assert not r['other_five_axes_modified'] and not r['public_midi_modified']
@@ -129,7 +131,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: S828_REAL_PRIVATE_S708_256_COMPOSITION_CALIBRATED_ACTIVEK_ONLY
+          name: S828_FULL_FIT80_PRIVATE_S708_256_COMPOSITION_CALIBRATED_ACTIVEK_ONLY
           path: /tmp/s828/result/report.json
           if-no-files-found: warn
           retention-days: 45
