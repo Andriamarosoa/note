@@ -1,0 +1,51 @@
+name: S817 archived real-fold recovery audit
+on:
+  push:
+    branches: [codex/note-s817-activek-temporal-highpoly]
+    paths:
+      - scripts/s817_recover_archived_folds.py
+      - .github/workflows/note-s817-recover-folds.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+env:
+  GH_TOKEN: ${{ github.token }}
+  PYTHONPATH: .:src
+jobs:
+  recover:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python -m pip install numpy==2.3.5
+      - name: Restore 80 real completed S817 track decisions and 5 checkpoints
+        run: |
+          mkdir -p /tmp/s817-recovery/source
+          gh run download 39540692270 --repo Andriamarosoa/note --name S817_FIVEHEAD_ACTIVEK_TEMPORAL_K4_K6_FIT80_RESULTS --dir /tmp/s817-recovery/source
+          find /tmp/s817-recovery/source -name report.json -type f -print
+          test -s "$(find /tmp/s817-recovery/source -path '*/result/report.json' -type f -print -quit)"
+      - name: Validate 80/80 SHA decisions, 5/5 checkpoints, MIDI256 and true K breakdown
+        run: |
+          python -m scripts.s817_recover_archived_folds --artifact-root /tmp/s817-recovery/source --out /tmp/s817-recovery/summary.json
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/s817-recovery/summary.json'))
+          assert r['recovery_verified'] and r['original_report_complete'] is False
+          assert r['original_run_status']=='failure'
+          assert r['tracks']==80 and r['total_acoustic_frames']==306536
+          assert r['historical_fit_active_k']['correct']==142213
+          assert r['frozen_s815_fit_active_k']['correct']==141946
+          assert r['recovered_s817_fit_active_k']['frames']==249411
+          assert not r['promotion'] and not r['unification_allowed'] and not r['live_changed']
+          print('S817_RECOVERY_PROOF_PASS',r['recovered_s817_fit_active_k'],
+                'changed_decisions',r['decision_differences_from_frozen_s815'])
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S817_VERIFIED_SIGNED_FOLD_RECOVERY
+          path: /tmp/s817-recovery/summary.json
+          retention-days: 45
