@@ -1,11 +1,11 @@
 ---
 serie: S815
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s815-activek-pitch-evidence
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39536863317
+commit_sha: dafb9eba0e587ae48156c46859bcfad034bfbaad
 promotion: false
 ---
 # S815 — Trois têtes indépendantes pour Active Exact-K
@@ -33,3 +33,8 @@ Validation structurelle, causalité mutation de suffixe, découpage invariant, a
 ## Statut
 
 Implémentation expérimentale et tests écrits dans branche S815, aucun score musical vérifié à ce stade. L'intégration MIDI et le LIVE restent désactivés, la référence S708 préservée.
+
+
+## Clôture scientifique S815 (mesure réellement obtenue)
+
+GitHub [run #39536863317](https://github.com/Andriamarosoa/note/actions/runs/39536863317) SUCCESS : extraction acoustique native à 256, 80/80 pistes, cinq plis, trois têtes entraînées par pli et checkpoints archivés (S815_ACTIVE_K_PRIVATE_MIDI256_FIT80_RESULTS, ID 12317827253). Score Active Exact-K FIT80 = **56,91248582 %**, soit 141946/249411 ; H0 FIT80 = **57,01953803 %**, soit 142213/249411 (−0,10705222 point). Par rapport à S814 (54,67280914 %), gain +2,23967668 points, mais aucune promotion. Surcomptages S815 41935 vs H0 26544 ; sous-comptages S815 65530 vs H0 80654. L'objectif >85 % n'est pas atteint. Pas de mesure LIVE physique ou validation externe.
