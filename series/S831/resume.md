@@ -37,3 +37,6 @@ Comparer sur exactement les 80 pistes GuitarSet FIT80 signées S800, cinq folds 
 
 ## Statut
 En cours, aucune promotion. Un succès d'architecture ou de test unitaire n'autorise pas à annoncer une amélioration des scores sur GuitarSet ou de la latence matérielle.
+
+## Rejeu scientifique FIT80
+Run demandé après succès des tests techniques S831 : 80 pistes, cinq folds, candidats CAL et OUTER, métriques par K et veto contre S829. Les labels OUTER ne seront employés que pour l'audit post-prédiction.
