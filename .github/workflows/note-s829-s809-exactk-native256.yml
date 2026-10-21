@@ -1,0 +1,161 @@
+name: 'S829 genuinely independent ExactK PCM256: private DSP plus two private trained K heads'
+on:
+  push:
+    branches: [codex/note-s829-s809-exactk-native256]
+    paths:
+      - src/causal_note/s829_exactk_s809_native256.py
+      - scripts/s829_train_exactk_s809_native256.py
+      - test/test_s829_private_exactk256.py
+      - series/S829/resume.md
+      - series/S829/resultat.md
+      - .github/workflows/note-s829-s809-exactk-native256.yml
+  workflow_dispatch:
+concurrency:
+  group: s829-native256-EXACTK-${{ github.ref }}
+  cancel-in-progress: true
+permissions: {contents: read, actions: read}
+env:
+  PYTHONPATH: .:src
+  PYTHONUNBUFFERED: '1'
+  GH_TOKEN: ${{ github.token }}
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Frozen S828 base and protected other five axes
+        run: |
+          git fetch origin reference/active-exact-k-s828-midi256 --depth=1
+          git diff --name-only FETCH_HEAD HEAD | tee /tmp/s829_changed_paths.txt
+          python - <<'PY'
+          from pathlib import Path
+          changed=set(Path('/tmp/s829_changed_paths.txt').read_text().splitlines())
+          expected={
+            'src/causal_note/s829_exactk_s809_native256.py',
+            'scripts/s829_train_exactk_s809_native256.py',
+            'test/test_s829_private_exactk256.py',
+            'series/S829/resume.md','series/S829/resultat.md',
+            '.github/workflows/note-s829-s809-exactk-native256.yml'}
+          assert changed and changed <= expected,changed-expected
+          print('S829_PROTECTED_FIVE_AXES_UNTOUCHED')
+          PY
+      - name: Independent S829 scientific dependencies
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install scikit-learn threadpoolctl
+      - name: Native256, K0, causal future and private fit synthetic smoke
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          p=Path('src/causal_note/s829_exactk_s809_native256.py')
+          root=ast.parse(p.read_text())
+          all_imports=[]
+          for node in ast.walk(root):
+              if isinstance(node,ast.Import):
+                  all_imports.extend(alias.name for alias in node.names)
+              elif isinstance(node,ast.ImportFrom):
+                  all_imports.append(node.module or '')
+          banned=('s708','s809_isolated_axis_pipeline','s810',
+                  's812','s827','s828','s795','live_strict_notes',
+                  's763_independent_decoders')
+          assert not any(any(word in n for word in banned) for n in all_imports),all_imports
+          print('S829_NO_OTHER_AXIS_CODE_OR_CHECKPOINT_IMPORTED')
+          p=Path('scripts/s829_train_exactk_s809_native256.py')
+          root=ast.parse(p.read_text())
+          for node in ast.walk(root):
+              if isinstance(node,ast.Import):
+                  all_imports.extend(alias.name for alias in node.names)
+              elif isinstance(node,ast.ImportFrom):
+                  all_imports.append(node.module or '')
+          forbidden=banned+('s814','s815','s813_prepare_native256')
+          assert not any(any(word in n for word in forbidden) for n in all_imports),all_imports
+          print('S829_EVALUATION_SCORERS_ALSO_INDEPENDENT')
+          PY
+          python -m compileall -q src/causal_note/s829_exactk_s809_native256.py scripts/s829_train_exactk_s809_native256.py test/test_s829_private_exactk256.py
+          python -m unittest -v test.test_s829_private_exactk256
+          python -m scripts.verify_series_reports --series S829
+
+  signed_fit80:
+    if: "github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[run-fit80]')"
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Exact-K independent PCM audio dependencies (no shared checkpoints)
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install scikit-learn threadpoolctl
+      - name: Only signed S800 FIT80 provenance, no S708/S828 model checkpoint
+        run: |
+          mkdir -p /tmp/s829/manifest /tmp/s829/traces
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/s829/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/s829/traces
+          META="$(find /tmp/s829/manifest -name report.json -type f -print -quit)"
+          FIT="$(find /tmp/s829/traces -name fit_000.json -type f -print -quit)"
+          test -s "$META" && test -s "$FIT"
+          printf '%s\n' "$META" > /tmp/s829/manifest_path
+          printf '%s\n' "$(dirname "$FIT")" > /tmp/s829/traces_dir
+      - name: Download authentic original GuitarSet PCM signed SHA256
+        run: |
+          python - <<'PY'
+          import json,hashlib,urllib.request
+          from pathlib import Path
+          cfg=json.loads(Path('analysis/evidence/v273-s613-strict-live/protocol.json').read_text())
+          item=cfg['guitar_archives']['GuitarSet_audio']
+          dst=Path('/tmp/s829/GuitarSet_audio.zip')
+          with urllib.request.urlopen(item['url'],timeout=180) as src,dst.open('wb') as w:
+              for block in iter(lambda:src.read(4*1024*1024),b''):w.write(block)
+          assert dst.stat().st_size==item['size']
+          h=hashlib.sha256()
+          with dst.open('rb') as f:
+              for block in iter(lambda:f.read(4*1024*1024),b''):h.update(block)
+          assert h.hexdigest()==item['sha256']
+          print('S829_GUITARSET_AUDIO_SHA256_PASS')
+          PY
+      - name: Own PCM spectral decoder, two independently trained K heads and CAL-only selection, 80 FIT tracks
+        run: |
+          python -m scripts.s829_train_exactk_s809_native256 \
+            --audio-zip /tmp/s829/GuitarSet_audio.zip \
+            --traces "$(cat /tmp/s829/traces_dir)" \
+            --manifest-path "$(cat /tmp/s829/manifest_path)" \
+            --out /tmp/s829/result --tracks-per-composition 16
+      - name: Scientific denominator guard, independent AXIS and no MIDI merge
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/s829/result/report.json').read_text())
+          assert r['complete'] and len(r['tracks'])==80 and len(r['folds'])==5
+          assert r['feature_hop_samples']==r['decision_hop_samples']==256
+          assert r['H0_original_exactk']['frames']==r['S829_exactk']['frames']==306536
+          assert r['only_exact_k_trained'] and r['private_acoustic_frontend']
+          assert r['private_head_count']==2 and not r['shared_neural_encoder_used']
+          assert r['independent_neural_checkpoints_sha256']==[]
+          assert not r['public_midi_modified'] and not r['other_five_axes_modified']
+          assert not r['promoted'] and not r['external_generalization_verified']
+          assert not any(r[x] for x in ('CAL_opened','HELD_opened','TEST_opened'))
+          for outer,fold in r['folds'].items():
+              assert outer not in fold['train_compositions'] and outer not in fold['calibration']
+              assert not (set(fold['train_compositions']) & set(fold['calibration']))
+          for t in r['tracks']:
+              assert set(t['by_true_K'])==set(map(str,range(7)))
+              assert t['S829']['correct']+t['S829']['undercount']+t['S829']['overcount']==t['S829']['frames']
+          print('S829_NATIVE256_EXACTK_K0_K6_SIGNED_FIT80_PASS',r['S829_exactk'])
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S829_FULL_FIT80_S809_EXACTK_ONLY_PCM256_SHA
+          path: /tmp/s829/result/report.json
+          if-no-files-found: warn
+          retention-days: 45
