@@ -36,7 +36,7 @@ Aucune modification des modèles ou sorties S708/S707 et LIVE. Cette analyse est
 | Domaine | Statut | Limite |
 |---|---|---|
 | Données | PASS | 80 sources SHA originales, 5 plis, 306536 trames MIDI256 |
-| Acoustique | PARTIEL | Proxy FFT fondamental/H2 mesuré, aucune identité de note ou attribution physique validée |
+| Acoustique | UNKNOWN | Proxy DSP fondamental/H2 calculé, mais attribution à des fondamentales et harmoniques physiquement non établie |
 | Architecture | PASS | Aucun poids ni architecture de production modifiés |
 | Apprentissage | PASS | Aucun entraînement ni sélection de politique |
 | Métriques | PASS | 80 matrices vraie K/avant K/après K, S815/S819 reproduits |
