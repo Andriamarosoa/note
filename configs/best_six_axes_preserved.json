@@ -1,0 +1,276 @@
+{
+  "schema": "S835_BEST_VERIFIED_INDEPENDENT_AXIS_REFERENCES_V1",
+  "profile": "BEST_PER_CHARACTERISTIC_WITHOUT_CROSS_AXIS_PROMOTION",
+  "reference_date": "2026-10-21",
+  "branch": "codex/note-best-of-six-axes-preserved",
+  "policy": {
+    "public_midi_modified": false,
+    "merged_midi_enabled": false,
+    "source_code_only": true,
+    "runtime_native256_complete": false,
+    "quality_rule": "For every axis, keep the highest supported *comparable* score. Never replace official protected H0 if the candidate regresses, has a different metric or is missing hardware/OOF validation.",
+    "independence_rule": "Each private head, selector, decoder, checkpoint and temporal state must be proven independent. No candidate may read another axis output as input.",
+    "sampling_hz": 44100,
+    "hop_samples": 256,
+    "added_lookahead_samples": 0,
+    "added_hold_samples": 0,
+    "deployment_requirements": [
+      "six axes on same benchmark",
+      "paired no-regression for all six",
+      "independent private checkpoints and states",
+      "actual end-to-end iRig p95/p99 CPU latency",
+      "new external HELD validation",
+      "serialized weights present"
+    ]
+  },
+  "cohorts": {
+    "FIT80": {
+      "tracks": 80,
+      "compositions": [
+        "BN1",
+        "Funk2",
+        "Jazz1",
+        "Rock3",
+        "SS1"
+      ],
+      "native_frames": 306536,
+      "active_frames": 249411,
+      "source_run": 39352880035
+    },
+    "CAL32": {
+      "tracks": 32,
+      "native_samples_per_decision": "original 1024",
+      "note": "Official S708 reference; not comparable to FIT80 or true PCM256"
+    }
+  },
+  "axes": {
+    "exact_k": {
+      "chosen": {
+        "series": "S834",
+        "mode": "strict_256_shadow_candidate",
+        "metric": "exact_k_accuracy_all_frames",
+        "cohort": "FIT80",
+        "score": 0.7578065871545268,
+        "correct": 232295,
+        "denominator": 306536,
+        "run_id": 39658093988,
+        "artifact_id": 12376305671,
+        "hop_samples": 256,
+        "code_paths": [
+          "src/causal_note/s834_native256_decoders.py",
+          "src/causal_note/s834_s809_six_axis_pcm256.py",
+          "src/causal_note/s834_s809_native256_audio.py"
+        ],
+        "model_origin": "S708 pre-trained at 1024, newly evaluated at PCM256",
+        "ready_for_live": false
+      },
+      "same_cohort_h0": {
+        "series": "S708/H0",
+        "score": 0.6169715791946133,
+        "metric": "exact_k_accuracy_all_frames",
+        "cohort": "FIT80"
+      },
+      "historical_record_other_grid": {
+        "series": "S809",
+        "score": 0.8424,
+        "metric": "exact_k_accuracy_shadow",
+        "hop_samples": 1024,
+        "cohort": "FIT80",
+        "note": "Not a fair same-protocol PCM256 comparator; argmax onehot K proxy"
+      },
+      "official_cal32": {
+        "series": "S708",
+        "score": 0.620455,
+        "metric": "exact_k_accuracy_all_frames",
+        "cohort": "CAL32"
+      }
+    },
+    "active_exact_k": {
+      "chosen": {
+        "series": "S828",
+        "mode": "strict_256_shadow_candidate",
+        "metric": "active_exact_k_accuracy_given_activity",
+        "cohort": "FIT80",
+        "score": 0.73831146,
+        "correct": 184143,
+        "denominator": 249411,
+        "run_id": 39604850899,
+        "artifact_id": 12349523181,
+        "hop_samples": 256,
+        "code_paths": [
+          "src/causal_note/s828_activek_s708_private_readout.py",
+          "src/causal_note/s827_s708_activek_only.py",
+          "scripts/s828_train_s708_private_activek_midi256.py"
+        ],
+        "model_origin": "S708 frozen backbone + private readout fit at PCM256 in five folds; trained readout weights must be serialized before deployment",
+        "ready_for_live": false
+      },
+      "same_cohort_h0": {
+        "series": "S708/H0",
+        "score": 0.5701953803160246,
+        "metric": "active_exact_k_accuracy_given_activity",
+        "cohort": "FIT80"
+      },
+      "historical_record_other_grid": {
+        "series": "S823",
+        "score": 0.76877523,
+        "metric": "active_exact_k_accuracy_given_activity",
+        "cohort": "FIT80",
+        "hop_samples": 1024,
+        "note": "MIDI/as-of1024 dependencies, NOT truly isolated PCM256"
+      },
+      "official_cal32": {
+        "series": "S708",
+        "score": 0.562762,
+        "metric": "active_exact_k_accuracy_given_activity",
+        "cohort": "CAL32"
+      }
+    },
+    "onset": {
+      "chosen": {
+        "series": "S708/H0",
+        "mode": "protected_legacy_keep",
+        "metric": "onset_event_f1",
+        "cohort": "FIT80",
+        "score": 0.7325201855351314,
+        "run_id": 39384080646,
+        "hop_samples": 1024,
+        "code_paths": [
+          "src/causal_note/s812_historical_axis_h0.py",
+          "src/causal_note/s712_s708_live.py"
+        ],
+        "ready_for_live": false,
+        "note": "Do NOT replace H0 Onset with the lower S834 SHADOW F1; no equivalent 256-only isolated better head is proven."
+      },
+      "strict256_trial": {
+        "series": "S834",
+        "score": 0.7138228487271198,
+        "metric": "onset_event_f1",
+        "cohort": "FIT80",
+        "hop_samples": 256,
+        "run_id": 39658093988,
+        "rejected_reason": "−1.87 percentage points against FIT80 H0"
+      },
+      "official_cal32": {
+        "series": "S708",
+        "score": 0.742639,
+        "metric": "onset_event_f1",
+        "cohort": "CAL32"
+      }
+    },
+    "offset": {
+      "chosen": {
+        "series": "S708/H0",
+        "mode": "protected_legacy_keep",
+        "metric": "offset_accuracy_eligible",
+        "cohort": "FIT80",
+        "score": 0.6988622896420953,
+        "run_id": 39384080646,
+        "hop_samples": 1024,
+        "code_paths": [
+          "src/causal_note/s812_historical_axis_h0.py",
+          "src/causal_note/s712_s708_live.py"
+        ],
+        "ready_for_live": false,
+        "note": "Keep official offset until the SAME eligible-offset-accuracy metric is recomputed for a native PCM256 head."
+      },
+      "strict256_trial": {
+        "series": "S834",
+        "score": 0.3867743702081051,
+        "metric": "offset_event_f1",
+        "cohort": "FIT80",
+        "hop_samples": 256,
+        "run_id": 39658093988,
+        "rejected_reason": "Offset F1 is NOT directly comparable to H0 eligible-offset accuracy"
+      },
+      "official_cal32": {
+        "series": "S708",
+        "score": 0.773292,
+        "metric": "offset_accuracy_eligible",
+        "cohort": "CAL32"
+      }
+    },
+    "frame_pitch": {
+      "chosen": {
+        "series": "S834",
+        "mode": "strict_256_shadow_candidate",
+        "metric": "frame_pitch_f1",
+        "cohort": "FIT80",
+        "score": 0.8499885011394326,
+        "run_id": 39658093988,
+        "artifact_id": 12376305671,
+        "hop_samples": 256,
+        "code_paths": [
+          "src/causal_note/s834_native256_decoders.py",
+          "src/causal_note/s834_s809_six_axis_pcm256.py",
+          "src/causal_note/s834_s809_native256_audio.py"
+        ],
+        "model_origin": "S708 frozen pretrained at 1024; PCM256 inference",
+        "ready_for_live": false
+      },
+      "same_cohort_h0": {
+        "series": "S708/H0",
+        "score": 0.7872775892898732,
+        "metric": "frame_pitch_f1",
+        "cohort": "FIT80"
+      },
+      "historical_record_other_grid": {
+        "series": "S790",
+        "score": 0.867532,
+        "metric": "frame_pitch_f1_shadow",
+        "cohort": "FIT80",
+        "hop_samples": 1024,
+        "note": "Best historical S790 SHADOW FIT80, not 256; S790 CAL32 85.1177 %"
+      },
+      "official_cal32": {
+        "series": "S708",
+        "score": 0.764626,
+        "metric": "frame_pitch_f1",
+        "cohort": "CAL32"
+      }
+    },
+    "full_note": {
+      "chosen": {
+        "series": "S834",
+        "mode": "strict_256_shadow_candidate",
+        "metric": "full_note_event_f1",
+        "cohort": "FIT80",
+        "score": 0.7110803683368639,
+        "run_id": 39658093988,
+        "artifact_id": 12376305671,
+        "hop_samples": 256,
+        "code_paths": [
+          "src/causal_note/s834_native256_decoders.py",
+          "src/causal_note/s834_s809_six_axis_pcm256.py",
+          "src/causal_note/s834_s809_native256_audio.py"
+        ],
+        "model_origin": "Private S809 full-note decoder fed S708 frozen pretrained1024, fresh PCM256",
+        "ready_for_live": false
+      },
+      "same_cohort_h0": {
+        "series": "S708/H0",
+        "score": 0.5065280879573957,
+        "metric": "full_note_event_f1",
+        "cohort": "FIT80"
+      },
+      "official_cal32": {
+        "series": "S708",
+        "score": 0.571319,
+        "metric": "full_note_event_f1",
+        "cohort": "CAL32"
+      }
+    }
+  },
+  "evidence": {
+    "source_reports": [
+      "series/S708/resultat.md",
+      "series/S790/resultat.md",
+      "series/S809/resultat.md",
+      "series/S812/resultat.md",
+      "series/S823/resultat.md",
+      "series/S828/resultat.md",
+      "series/S834/resultat.md"
+    ],
+    "note": "Not all upstream artifacts contain weights ready to load or use the same grid; this branch is a protected selection registry, NOT a trained unified MIDI checkpoint."
+  }
+}
