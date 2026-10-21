@@ -1,46 +1,64 @@
 ---
 serie: S832
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s832-guarded-local256
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39644879595
+commit_sha: 97c9348fa641da2c3daa56ed921f157924f2c1e1
 promotion: false
 ---
 
-# S832 — Résultat du veto local indépendant Exact-K
+# S832 — Résultats scientifiques exacts sur FIT80
 
 ## Exécution
-En attente de la validation S832. Branche isolée après S831 ; tests unitaires, workflow scientifique et replay S800 FIT80 à exécuter sur Github. Ne pas confondre une validation technique et un gain musical.
+GitHub Actions [#39644879595](https://github.com/Andriamarosoa/note/actions/runs/39644879595), commit scientifique `97c9348fa641da2c3daa56ed921f157924f2c1e1`, `smoke` SUCCESS et `signed_fit80` SUCCESS. Artefact `S832_FIT80_GUARDED_LOCAL_PCM256` id `12367129426` (rapport signé 80 pistes, 306 536 décisions).
 
 ## Métriques
+| Modèle / protocole apparié | Exact-K K0–K6 | Correct / 306 536 | Sous | Sur |
+|---|---:|---:|---:|---:|
+| H0 historique | 61,6972 % | 189 124 | 80 654 | 36 758 |
+| S829 référence SHADOW PCM256 | 57,5247 % | 176 334 | 83 523 | 46 679 |
+| S831 candidat précédent | 56,9943 % | 174 708 | 82 480 | 49 348 |
+| **S832 veto local** | **57,5247 %** | **176 334** | **83 523** | **46 679** |
+
+**Bilan S832 : +0,0000 point / zéro régression vs S829.** Les cinq sélecteurs ont choisi zéro règle et retour intégral aux prédictions S829.
+
+| Composition OUTER | Exact-K correct S832 | Règles acceptées | CAL sous-validation — meilleur gain observé |
+|---|---:|---:|---:|
+| BN1 | 35 401 / 57 744 | 0 | −53 |
+| Funk2 | 40 420 / 66 144 | 0 | +44 |
+| Jazz1 | 28 945 / 50 360 | 0 | −127 |
+| Rock3 | 36 267 / 66 144 | 0 | +939 |
+| SS1 | 35 301 / 66 144 | 0 | −5 |
+
+Les gains de sous-validation CAL ne sont **pas** des améliorations OUTER. Les règles positives étaient refusées par le veto des régressions individuelles par piste ; ce résultat ne prouve pas que ces mêmes règles auraient généralisé.
+
+### Couverture de l'audit
 | Caractéristique | Résultat |
 |---|---|
-| Exact-K FIT80 PCM256 S832 | NON MESURÉ |
-| Exact-K FIT80 PCM256 S829 témoin | 57,5247 % sur 306 536 trames |
-| Exact-K FIT80 S831 précédent | 56,9943 % sur 306 536 trames |
-| Onset F1 officiel | NON MESURÉ / inchangé |
-| Active Exact-K officiel | NON MESURÉ / inchangé |
-| Offset officiel | NON MESURÉ / inchangé |
-| Full Note F1 officiel | NON MESURÉ / inchangé |
-| Frame Pitch F1 officiel | NON MESURÉ / inchangé |
+| Exact-K | 57,5247 % SHADOW FIT80 toutes trames 256 |
+| Active Exact-K | NON MESURÉ, S828 officiel développement inchangé |
+| Onset F1 | NON MESURÉ, architecture officielle inchangée |
+| Offset | NON MESURÉ, architecture officielle inchangée |
+| Frame Pitch F1 | NON MESURÉ, architecture officielle inchangée |
+| Full Note F1 | NON MESURÉ, architecture officielle inchangée |
 
 ## Comparaison à S708
-S708 CAL32 officielle inchangée, S828 Active-K256 conservée. 84,24 % S809 SHADOW1024 non comparable avec Exact-K FIT80 256. Toute la sélection S832 est SHADOW, pas un changement MIDI public.
+S708 officielle CAL32 non modifiée ; S809 SHADOW1024 84,24 % et S828 Active-K256 73,83 % non comparables directement au présent Exact-K FIT80/256. Les cinq autres axes et le MIDI public restent inchangés.
 
 ## Audits
 | Rôle | Statut | Preuve |
 |---|---|---|
-| Données | UNKNOWN | Provenance S800 et 80 WAV à vérifier dans CI |
-| Acoustique | UNKNOWN | Tests stricts 256 et aucune anticipation future |
-| Architecture | UNKNOWN | CI contrôle anti-import et aucun changement des cinq autres axes |
-| Apprentissage | UNKNOWN | Sous-splits CAL par piste avec veto et modèles privés |
-| Métriques | UNKNOWN | Doit publier les gains et régressions K0–K6 par composition |
-| LIVE | UNKNOWN | p95/p99 matériel iRig et checkpoints non testés |
+| Données | PASS | 80 WAV FIT80 S800, SHA original, cinq compositions |
+| Acoustique | PASS | Tests synthétiques causalité PCM256 ; matériel non testé |
+| Architecture | PASS | Absence de dépendances aux axes voisins et fichiers protégés |
+| Apprentissage | PASS | 5 modèles privés par fold, règles sur 12 CAL et veto 4 CAL |
+| Métriques | PASS | 306 536 trames, S829 strictement reproduit, 0 règle |
+| LIVE | UNKNOWN | Aucun p95/p99 global mesuré sur iRig, ni checkpoint déployable |
 
 ## Verdict
-EN COURS, NON PROMU. Aucun score nouveau sans run scientifique signé.
+**TERMINÉ, NON PROMU.** S832 réalise le fallback de non-régression mais n'améliore pas Exact-K. Aucune information inter-axes ni anticipation audio ajoutée.
 
 ## Prochaine action
-Exécuter le smoke S832 puis les cinq folds sur les 80 pistes avec le veto CAL. Auditer toute proposition acceptée, refuser une dégradation significative et ne pas autoriser la communication entre axes pour l'instant.
+Nouvelle expérience isolée S833 : apprentissage/calibration plus robuste des propositions polyphoniques sur les seules pistes TRAIN/inner-CAL, en préservant un contrôle de généralisation par piste. Évaluer S833 séparément et ne modifier aucun score de référence tant que tous les folds ne sont pas vérifiés.
