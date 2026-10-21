@@ -84,10 +84,29 @@ def run(cache,source_dir,previous_dir,out):
         raise ValueError("S813 authentic PCM256 cache mandatory")
     if (previous.get("schema")!="S815_ACTIVE_EXACT_K_REAL_FRESH256_FIT80_V1"
        or not previous.get("complete") or len(previous.get("tracks",[]))!=80
-       or previous.get("source_cache_sha256")!=digest_file(cache/"report.json")
        or any(previous.get(k) for k in ("CAL_opened","HELD_opened","TEST_opened",
                                         "production_LIVE_modified","promotion"))):
         raise ValueError("frozen authentic S815 result/cache identity mismatch")
+    # An extraction report contains wall-clock extraction timings, so its raw
+    # JSON SHA changes on a legitimate fresh run. Instead authenticate the
+    # old report as saved, then compare immutable source IDs and source audio
+    # checksums across the two independently extracted caches.
+    prior_cache_path=previous_dir.parent/"fresh256"/"report.json"
+    if not prior_cache_path.is_file():
+        raise ValueError("S815 original acoustic source manifest must accompany checkpoints")
+    if digest_file(prior_cache_path)!=previous["source_cache_sha256"]:
+        raise AssertionError("S815 original saved cache provenance mismatch")
+    prior_cache=json.loads(prior_cache_path.read_text())
+    for key in ("schema","source_manifest_sha256","audio_archive_sha256",
+                "total_frames","feature_dimension","sample_rate_hz",
+                "feature_hop_samples","decision_hop_samples","metric_hop_samples"):
+        if fresh[key]!=prior_cache[key]:
+            raise AssertionError("immutable prior/new extraction source contract changed: "+key)
+    source_identity=lambda rows: sorted((
+        int(r["index"]),r["name"],r["composition"],int(r["frames"]),
+        r["original_json_sha256"],r["audio_member_sha256"]) for r in rows)
+    if source_identity(fresh["tracks"])!=source_identity(prior_cache["tracks"]):
+        raise AssertionError("original signed PCM and annotations differ from S815")
     if (int(previous["teacher_active_exact_k"]["correct"])!=141946
         or int(previous["original_fit80_active_k"]["correct"])!=142213
         or int(previous["original_fit80_active_k"]["frames"])!=249411):
