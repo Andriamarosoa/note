@@ -3,7 +3,7 @@ serie: S835
 statut: en_cours
 type: experience
 reference: S708
-branche: codex/note-best-of-six-axes-preserved
+branche: codex/note-s835-best-of-six-axes-preserved
 run_id: en_attente
 commit_sha: en_attente
 promotion: false
@@ -18,7 +18,7 @@ Constituer un point de départ GitHub **contenant simultanément les implémenta
 Réutiliser les implémentations conservées de S834 et de ses ancêtres S708/S790/S809/S823/S828 permet de versionner les architectures favorables sans modifier des fichiers de production. Une déclaration structurée, vérifiée automatiquement, empêche qu'un score à 1024 ou une F1 d'événements soit déclaré score MIDI256 ou accuracy Offset.
 
 ## Modifications
-- Branche `codex/note-best-of-six-axes-preserved` créée depuis `codex/note-s834-s809-six-axes-native256` : toutes les sources existantes restent présentes (S828 pour Active-K, S834 pour Exact-K/Frame Pitch/Full Note, S812/S708 pour les axes historiques Onset/Offset).
+- Branche `codex/note-s835-best-of-six-axes-preserved` créée depuis `codex/note-s834-s809-six-axes-native256` : toutes les sources existantes restent présentes (S828 pour Active-K, S834 pour Exact-K/Frame Pitch/Full Note, S812/S708 pour les axes historiques Onset/Offset).
 - `configs/best_six_axes_preserved.json` : six références choisies, pistes FIT80, preuves GitHub, bonnes décisions et dénominateurs, variantes historiques à cadence différente, distinction SHADOW / official / PCM256.
 - `src/causal_note/s835_best_six_registry.py` : verrouille les six choix, refuse toute régression d'exactitude sur protocole apparié, interdit de mélanger les cohortes/métriques, exige identité de toutes les cinq autres sorties en cas de changement isolé, empêche toute promotion par défaut.
 - `test/test_s835_best_six_registry.py` : protections anti-régression, anti-ambiguïté des scores Offset et des performances héritées à 1024, blocage d'une unification non testée.
