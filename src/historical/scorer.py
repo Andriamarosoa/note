@@ -19,10 +19,6 @@ def signed_onsets(events,notes,tolerance=.080):
         pairs.extend((pi[i],ti[j]) for i,j in zip(ii,jj) if delta[i,j]<=tolerance)
     return predict,pairs
 
-def onset_score(events,notes):
-    predicted,pairs=signed_onsets(events,notes)
-    tp=len(pairs)
-    return dict(tp=tp,fp=len(predicted)-tp,fn=len(notes)-tp)
 
 def offset_score(events,notes,ends):
     """S704: correct offset conditional on matched onset, |delta|<=50ms."""
