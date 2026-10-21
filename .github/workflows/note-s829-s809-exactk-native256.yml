@@ -67,6 +67,16 @@ jobs:
                   's763_independent_decoders')
           assert not any(any(word in n for word in banned) for n in all_imports),all_imports
           print('S829_NO_OTHER_AXIS_CODE_OR_CHECKPOINT_IMPORTED')
+          p=Path('scripts/s829_train_exactk_s809_native256.py')
+          root=ast.parse(p.read_text())
+          for node in ast.walk(root):
+              if isinstance(node,ast.Import):
+                  all_imports.extend(alias.name for alias in node.names)
+              elif isinstance(node,ast.ImportFrom):
+                  all_imports.append(node.module or '')
+          forbidden=banned+('s814','s815','s813_prepare_native256')
+          assert not any(any(word in n for word in forbidden) for n in all_imports),all_imports
+          print('S829_EVALUATION_SCORERS_ALSO_INDEPENDENT')
           PY
           python -m compileall -q src/causal_note/s829_exactk_s809_native256.py scripts/s829_train_exactk_s809_native256.py test/test_s829_private_exactk256.py
           python -m unittest -v test.test_s829_private_exactk256
