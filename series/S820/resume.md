@@ -1,11 +1,11 @@
 ---
 serie: S820
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s820-ss1-truek-spectral-forensics
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39559635752
+commit_sha: 677dc6f486d0a347cde8d6d155b3aa07301ae822
 promotion: false
 ---
 # S820 — Audit vrai K1–K6 et indices spectraux de la régression SS1
@@ -38,3 +38,16 @@ Restaurer 80 traces S800 originales signées, archive mono PCM GuitarSet à SHA 
 ## Statut
 
 Expérience read-only, score et matrices S820 non encore mesurés. L'exécution GitHub validera ou rejettera les vérifications ; les tableaux précédents sont des chiffres S819, pas des résultats S820.
+
+
+## Clôture : résultat mesuré sur 80 enregistrements GuitarSet (21 octobre 2026)
+
+Exécution réelle [GitHub Actions S820 #39559635752](https://github.com/Andriamarosoa/note/actions/runs/39559635752) **SUCCESS**. L'artefact [#12326639460](https://github.com/Andriamarosoa/note/actions/runs/39559635752/artifacts/12326639460) contient 80 matrices exactes (GT K0–K6, S815 K0–K6, politique S819 max_high@0.70 K0–K6), métadonnées SHA PCM MIDI256 et proxies acoustiques. La politique n'est pas promouvable : elle avait été examinée auparavant sur FIT80. Aucune nouvelle tête entraînée, aucun changement S708/LIVE.
+
+Parité confirmée : S815 141946/249411 = **56,9125 %**, max_high@0.70 141263/249411 = **56,6386 %**. Sur SS1, 1783 frames modifiées : 355 corrections contre 913 décisions correctes détruites, perte nette **−558**. Répartition des variations de décisions exactes par vérité : K1 −1, K2 −8, K3 −163, **K4 −555**, K5 +152, K6 +17. Sur les vrais K4, le sélecteur transforme **597 K4 correctement prédits en K5** et **68 autres en K6** : **665 faux ajouts** alors que 5 et 6 notes restent trop peu détectées.
+
+L'analyse des moyennes spectrales DSP donne un écart faible pour le proxy fondamental−harmonique2 entre les frames corrigées (**0,280527**, 355 frames) et les frames détériorées (**0,278595**, 913 frames), soit **+0,001932**. Ce simple indicateur agrégé n'attribue pas les erreurs à un timbre, une harmonique ou une octave : aucune note ajoutée précise n'est identifiée par ce décodeur de cardinalité K.
+
+Autres compositions, corrections / décisions détériorées : BN1 248/269, Funk2 354/346, Jazz1 99/233, Rock3 222/200. Les différences par composition restent posthoc et ne peuvent servir à sélectionner des portes sur les outer folds.
+
+**S820 TERMINÉ EN AUDIT, AUCUN GAIN MUSICAL NI PROMOTION.** Cause décisionnelle immédiate identifiée : confusion du vrai K4 avec K5/K6 dans SS1, surtout les passages 4→5. Prochaine investigation : preuves fondamentales par hauteur et confusion harmonique réelle sur les transitions individuelles, puis protocole de validation externe pour toute correction.
