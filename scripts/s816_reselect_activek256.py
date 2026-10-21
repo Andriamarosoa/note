@@ -126,7 +126,7 @@ def run(cache,source_dir,previous_dir,out):
                 outer in model.metadata["train_compositions"] or
                 outer in model.metadata["calibration_compositions"]):
             raise AssertionError("composition independence or private-head contract violated")
-        selection=choose_policy(modelfold_calibration:=oldfold["heads"]["calibration_results"])
+        selection=choose_policy(oldfold["heads"]["calibration_results"])
         report["folds"][outer]=dict(
             original_selector=model.selector,original_shift=model.shift,
             selected_selector=selection["selector"],selected_shift=selection["shift"],
@@ -196,7 +196,7 @@ def run(cache,source_dir,previous_dir,out):
         changed_selector_folds=sum(r["selection_changed"] for r in report["folds"].values()),
         delta_vs_h0_pp=100*(new_score["accuracy"]-source_score["accuracy"]),
         delta_vs_s815_pp=100*(new_score["accuracy"]-old_score["accuracy"]),
-        85_percent_FIT_only=new_score["accuracy"]>.85)
+        fit85_threshold_exceeded=new_score["accuracy"]>.85)
     ev=TeacherEvidence(axis="active_exact_k",score=new_score["accuracy"],
         metric_name=REQUIRED_METRICS["active_exact_k"],source_id=report["source_cache_sha256"],
         evaluation_id=hashlib.sha256(f"{SCHEMA}:risk05:guard02".encode()).hexdigest(),
