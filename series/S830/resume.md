@@ -14,7 +14,10 @@ promotion: false
 ## Objectif
 Tester si des experts **Onset / Sustain / Release** entièrement privés à la caractéristique Exact-K améliorent le S829 57,5247 % sur FIT80 sans fusion ni interdépendance des six axes. Rester à 256 échantillons par décision (44,1 kHz, cadence 5,80 ms), sans lookahead ni attente ajoutée.
 
-## Code et architecture
+## Hypothèse
+L'étude teste si des probabilités privées d'attaque, de maintien et de relâchement apportent une information complémentaire au compteur K ; seule une amélioration appariée en sélection CAL pourrait valider cette hypothèse. Le résultat 0 point la laisse non confirmée.
+
+## Modifications
 Les fichiers ajoutés dans S830 sont `src/causal_note/s830_private_musical_evidence256.py`, `scripts/s830_train_private_musical_evidence256.py`, `test/test_s830_private_musical_evidence256.py`, le workflow, et ces rapports. Le code existant des cinq autres caractéristiques et le MIDI officiel n'ont pas été modifiés.
 
 Chaîne isolée Exact-K : PCM → DSP privé S829 causal [49,72] par hauteur → deux modèles de cardinalité S829 réentraînés + trois classifieurs privés estimant Onset, Sustain et Release → sélection sur inner-CAL de propositions `s829`, `sustain`, `joint`, `router`, `blend` pour des seuils et décalages candidats. Les trois nouvelles têtes n'empruntent ni poids ni postérieurs aux véritables axes Onset/Offset.
@@ -32,7 +35,7 @@ GitHub Actions [#39632626042](https://github.com/Andriamarosoa/note/actions/runs
 - **Sur les cinq folds, le mode retenu est toujours `s829`, seuil indicatif 0,30, shift 0.** Le choix empêche un mauvais expert privé de faire baisser le score, mais la nouvelle représentation musicale ne montre aucune amélioration mesurée.
 - Les faiblesses persistantes concernent les vraies classes K2, K3, K5 et K6.
 
-## Audits et limites
+## Audits obligatoires
 - Données : PASS, 80 pistes, groupes disjoints, sources/denominators signés.
 - Acoustique : tests synthétiques de causalité PCM256, de fin de bloc incomplète PASS ; pas de test matériel iRig.
 - Architecture : contrôles CI anti-import et fichiers protégés PASS ; aucun effet sur les cinq autres chemins puisque ceux-ci sont inchangés.
@@ -41,5 +44,5 @@ GitHub Actions [#39632626042](https://github.com/Andriamarosoa/note/actions/runs
 - LIVE : UNKNOWN, aucune preuve de p95/p99 CPU ni résultat matériel ; le calcul FIT80 est un replay hors ligne sur trames causales.
 - Six agents Work et trois avis NVIDIA distincts : NON EXÉCUTÉS ; aucun consensus revendiqué.
 
-## Verdict
+## Statut
 **TERMINÉ, NON PROMU.** Les trois nouvelles têtes ne sont pas adoptées par le sélecteur sur les données CAL ; conserver la référence S828 pour Active Exact-K, S708 officielle et les cinq autres axes intacts. Ne pas considérer ce test comme preuve qu'une influence entre axes apporterait un gain : commencer par tester une transmission de *suggestions unidirectionnelles en lecture seule*, avec sélection calibrée, ablation et veto de régression, après constitution des candidats et métriques comparables.
