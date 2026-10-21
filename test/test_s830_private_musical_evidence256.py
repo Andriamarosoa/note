@@ -33,7 +33,7 @@ class TestS830(unittest.TestCase):
         self.assertEqual(y["onset"][:,0].astype(int).tolist(),[0,1,0,0])
         self.assertEqual(y["sustain"][:,0].astype(int).tolist(),[0,1,1,0])
         self.assertEqual(y["release"][:,0].astype(int).tolist(),[0,0,0,1])
-        self.assertEqual(pitch_features(np.zeros((1,49,72),np.float32)).shape,(1,49,73))
+        self.assertEqual(pitch_features(np.zeros((1,49,72),np.float32)).shape,(1,49,85))
 
     def test_independent_3_models_and_per_fragment_selector(self):
         train=[synthetic("a","trainA",1),synthetic("b","trainB",2)]
@@ -95,7 +95,7 @@ class TestS830(unittest.TestCase):
             features.append(p);raw.append(guess);x.append(summarize_one(p,guess))
         selector=("joint",.5,0)
         batch,baseline,_=apply(kfit,musical,np.stack(x),np.asarray(raw),
-                               np.stack(features),selector)
+                               np.stack(features).astype(np.float16),selector)
         live=S830FittedStream(kfit,musical,selector)
         emitted=[]
         for idx in range(0,len(sound),HOP):
