@@ -1,6 +1,0 @@
-# Development/export only, in addition to requirements-live-strict.txt.
--r requirements-live-strict.txt
-onnx==1.17.0
-skl2onnx==1.18.0
-protobuf==4.25.3
-# Training the neural heads also requires torch==2.5.1 (CPU wheel).
