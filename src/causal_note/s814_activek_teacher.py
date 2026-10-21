@@ -80,10 +80,11 @@ def sample_frames(rows, *, cap=1400, seed=814):
         indices = np.concatenate(chosen)
         weight = np.concatenate(weights)
         order = np.argsort(indices)
+        indices, weight = indices[order], weight[order]
         selected = np.asarray(row["X"][indices])
         xs.append(summarize(selected))
         ys.append(truth[indices])
-        ws.append(weight[order])
+        ws.append(weight)
         # Individual class reweighting reproduces the K distribution.
         observed = np.bincount(truth, minlength=7)
         restored = np.bincount(truth[indices], weights=weight, minlength=7)
@@ -197,7 +198,7 @@ def fit_teacher(train_rows, cal_rows, *, cap=1400, seed=814):
                  calibration_results=[
                      dict(selector=s, shift=b, correct=c[0], frames=c[1])
                      for (s,b),c in choices.items()],
-                 supervised_inference_inputs=False, features_per_frame=200,
+                 supervised_inference_inputs=False, features_per_frame=220,
                  learned_previous_axes=False, post_onset_hold_samples=0,
                  added_lookahead_samples=0)
     return ActiveKTeacher(direct, regression, best[0], best[1], proof)
