@@ -1,0 +1,55 @@
+name: S835 Preserve best verified six independent axis references
+on:
+  push:
+    branches: [codex/note-best-of-six-axes-preserved]
+    paths:
+      - configs/best_six_axes_preserved.json
+      - src/causal_note/s835_best_six_registry.py
+      - test/test_s835_best_six_registry.py
+      - series/S835/resume.md
+      - series/S835/resultat.md
+      - .github/workflows/note-s835-best-six-reference.yml
+  workflow_dispatch:
+concurrency:
+  group: s835-best-six-${{ github.ref }}
+  cancel-in-progress: true
+permissions: {contents: read}
+env:
+  PYTHONPATH: .:src
+jobs:
+  reference_integrity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: No change to any original six-axis code, weights, or protected MIDI
+        run: |
+          git fetch origin codex/note-s834-s809-six-axes-native256 --depth=1
+          git diff --name-only FETCH_HEAD HEAD | tee /tmp/s835_allowed_paths.txt
+          python - <<'PY'
+          from pathlib import Path
+          changed=set(Path('/tmp/s835_allowed_paths.txt').read_text().splitlines())
+          allowed={
+            'configs/best_six_axes_preserved.json',
+            'src/causal_note/s835_best_six_registry.py',
+            'test/test_s835_best_six_registry.py',
+            'series/S835/resume.md','series/S835/resultat.md',
+            '.github/workflows/note-s835-best-six-reference.yml'}
+          assert changed and changed<=allowed,(changed-allowed)
+          print('S835_SIX_AXIS_SOURCE_AND_MIDI_CODE_UNCHANGED')
+          PY
+      - name: Verify pinned sources, six distinct scoring contracts and hard vetoes
+        run: |
+          python -m compileall -q src/causal_note/s835_best_six_registry.py test/test_s835_best_six_registry.py
+          python -m unittest -v test.test_s835_best_six_registry
+          python -m scripts.verify_series_reports --series S835
+          python - <<'PY'
+          from causal_note.s835_best_six_registry import load_registry,six_native256_ready,AXES
+          p=load_registry()
+          assert not six_native256_ready(p)
+          assert sum(p['axes'][k]['chosen']['mode']=='strict_256_shadow_candidate' for k in AXES)==4
+          assert set(k for k in AXES if p['axes'][k]['chosen']['mode']=='protected_legacy_keep')=={'onset','offset'}
+          print('S835_BEST_SIX_SOURCE_REGISTRY_PASS_NO_PROMOTION')
+          PY
