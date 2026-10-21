@@ -1,0 +1,40 @@
+name: S815 forensic read-only audit of S814 overcount
+on:
+  push:
+    branches: [codex/note-s815-activek-pitch-evidence]
+    paths:
+      - scripts/s815_audit_s814.py
+      - .github/workflows/note-s815-s814-forensics.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+env:
+  GH_TOKEN: \${{ github.token }}
+  PYTHONPATH: .:src
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch complete signed S814 5-fold report
+        run: |
+          mkdir -p /tmp/s815forensic
+          gh run download 39535784658 --repo Andriamarosoa/note --name S814_ACTIVE_K_PRIVATE_MIDI256_FIT80_RESULTS --dir /tmp/s815forensic
+          find /tmp/s815forensic -name report.json -print
+          REPORT="$(find /tmp/s815forensic -path '*/experiment/report.json' -type f -print -quit)"
+          if [ -z "$REPORT" ]; then
+            REPORT="$(find /tmp/s815forensic -name report.json -type f -print -quit)"
+          fi
+          test -s "$REPORT"
+          echo "S814_REPORT=$REPORT" >> "$GITHUB_ENV"
+      - name: Audit K1-K6 undercount and overcount with zero retuning
+        run: |
+          python -m scripts.s815_audit_s814 --report "$S814_REPORT" --out /tmp/s815forensic/audit.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S815_S814_FORENSIC_TRUE_K_OVERCNT
+          path: /tmp/s815forensic/audit.json
+          retention-days: 45
