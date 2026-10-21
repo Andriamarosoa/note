@@ -55,9 +55,15 @@ jobs:
           test -s "$FIT"
           printf '%s\n' "$(dirname "$META")" > /tmp/s824/manifest_dir
           printf '%s\n' "$(dirname "$FIT")" > /tmp/s824/traces_dir
+      - name: Restore original S823 frozen trained RAW23 checkpoints with SHA evidence
+        run: |
+          mkdir -p /tmp/s824/frozen
+          gh run download 39578183788 --repo Andriamarosoa/note --name S823_SIGNED_S795_TRUE_23_61_ASOF1024_TO_MIDI256_NOT_PROMOTABLE --dir /tmp/s824/frozen
+          test -s /tmp/s824/frozen/report.json
+          test -s /tmp/s824/frozen/models/BN1_raw23.joblib
       - name: Train 9 private S795 feature-family heads x 5 folds, compare 11 declared modes on MIDI256
         run: |
-          python -m scripts.s824_retrain_feature_families --manifest-dir "$(cat /tmp/s824/manifest_dir)" --traces "$(cat /tmp/s824/traces_dir)" --out /tmp/s824/result
+          python -m scripts.s824_retrain_feature_families --manifest-dir "$(cat /tmp/s824/manifest_dir)" --traces "$(cat /tmp/s824/traces_dir)" --frozen-dir /tmp/s824/frozen --out /tmp/s824/result
       - name: Fail closed if any true MIDI256 or S800 signature differs; block promotion
         run: |
           python - <<'PY'
@@ -77,10 +83,13 @@ jobs:
           expected=["full23","without_midi","without_s708","acoustic_only",
               "without_acoustic","s708_only","midi_only","s708_plus_acoustic",
               "midi_plus_acoustic","without_native_post","without_primary_post"]
-          assert sorted(r['by_mode'])==sorted(expected)
+          assert sorted(r['by_mode'])==sorted(expected+['frozen_s823'])
+          assert r['frozen_s823_checkpoint_sha256_verified']
+          assert r['by_mode']['frozen_s823']['correct']==190705
+          assert r['by_mode']['frozen_s823']['frames']==249411
           assert sorted(r['predeclared_feature_masks'])==sorted(expected)
           assert r['ablation_s823_exact_parity_per_composition']
-          assert r['by_mode']['full23']['correct']==190705
+          assert r['by_mode']['full23']['frames']==249411
           for mode in expected:
               x=r['by_mode'][mode]
               assert x['frames']==249411
