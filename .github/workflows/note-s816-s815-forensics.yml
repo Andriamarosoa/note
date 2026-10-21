@@ -1,0 +1,36 @@
+name: S816 read-only forensic K breakdown for S815
+on:
+  push:
+    branches: [codex/note-s816-activek-risk-selector]
+    paths:
+      - scripts/s816_audit_s815.py
+      - .github/workflows/note-s816-s815-forensics.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+env:
+  GH_TOKEN: ${{ github.token }}
+  PYTHONPATH: .:src
+jobs:
+  report:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download signed complete S815 research report
+        run: |
+          mkdir -p /tmp/s816audit
+          gh run download 39536863317 --repo Andriamarosoa/note --name S815_ACTIVE_K_PRIVATE_MIDI256_FIT80_RESULTS --dir /tmp/s816audit
+          REPORT="$(find /tmp/s816audit -path '*/experiment/report.json' -type f -print -quit)"
+          test -s "$REPORT"
+          echo "S815_REPORT=$REPORT" >> "$GITHUB_ENV"
+      - name: Audit S815 K0-K6 genuine measurements
+        run: |
+          python -m scripts.s816_audit_s815 --report "$S815_REPORT" --out /tmp/s816audit/forensic.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S816_READONLY_S815_TRUE_K_FORENSIC
+          path: /tmp/s816audit/forensic.json
+          retention-days: 45
