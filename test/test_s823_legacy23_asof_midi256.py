@@ -65,7 +65,7 @@ class TestLegacy23AsOf256(unittest.TestCase):
             self.assertFalse(prediction.flags.writeable)
             self.assertTrue(np.isin(prediction,np.arange(7)).all())
         with self.assertRaisesRegex(ValueError,"CAL overlaps TRAIN"):
-            calibrate(tr,models)
+            calibrate([tr[0]],models)
 
 if __name__=="__main__":
     unittest.main()
