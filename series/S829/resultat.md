@@ -47,6 +47,17 @@ Le sélecteur a choisi `fusion, shift=0` sur les **cinq folds** : les modes alte
 | K5 | 16 323 | 2 098 | 12,85 % | 13 722 | 503 |
 | K6 | 5 391 | 451 | 8,37 % | 4 940 | 0 |
 
+### Déclaration des six métriques obligatoires
+
+| Axe officiel NOTE | Résultat S829 du MIDI final |
+|---|---|
+| Onset F1 | NON MESURÉ : MIDI final inchangé |
+| Exact-K | 57,5247 % : uniquement tête SHADOW K0–K6 ; **pas** score MIDI final |
+| Active Exact-K | NON MESURÉ sur nouveau MIDI, S828 conservé comme référence séparée |
+| Offset | NON MESURÉ : MIDI final inchangé |
+| Full Note F1 | NON MESURÉ : aucun assemblage des têtes indépendantes |
+| Frame Pitch F1 | NON MESURÉ : MIDI final inchangé |
+
 ## Comparaison à S708
 La référence officielle S708 (CAL32) et sa branche restent inchangées. H0 sur FIT80 est un **témoin apparié**, pas la même mesure que S708 CAL32. L'axe expérimental S829 conserve le code indépendant mais **régresse** en performance face à H0. Les cinq autres caractéristiques Onset, Active Exact-K, Offset, Frame Pitch et Full Note n'ont pas été remplacées, et leurs scores MIDI unifiés ne sont **pas mesurés sur S829**. Aucune prétention d'amélioration des six axes.
 
