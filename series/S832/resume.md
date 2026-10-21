@@ -1,42 +1,38 @@
 ---
 serie: S832
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s832-guarded-local256
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39644879595
+commit_sha: 97c9348fa641da2c3daa56ed921f157924f2c1e1
 promotion: false
 ---
 
-# S832 — Veto local causal des corrections polyphoniques (256 échantillons)
+# S832 — Veto local conservateur Exact-K PCM256 : test terminé
 
 ## Objectif
-Conserver sans partage inter-axes la capacité des experts internes à Exact-K à corriger K2, K3, K5, mais réduire leurs nombreuses régressions K0/K1/K4. Restaurer au minimum la stabilité du témoin S829 57,5247 % sur GuitarSet FIT80, mesurer séparément les gains, et ne promouvoir que sur preuve externe.
+Tester si les trois preuves musicales privées S831 (attaque, maintien, relâchement) peuvent proposer des corrections polyphoniques à la référence S829 sur des fragments PCM256 sans modifier aucun des cinq autres axes ni le MIDI officiel, et sans nouvelle attente ou lookahead.
 
 ## Hypothèse
-S831 `blend` corrige 39 215 erreurs et dégrade 51 094 cas, mais progresse sur K2/K3/K5. Des règles de risque spécifiques aux décisions du modèle et à sa confiance peuvent permettre de n'accepter que les changements dont l'avantage est suffisamment soutenu par les exemples CAL disjoints ; des veto par piste CAL limitent le risque de généralisation.
+Une sélection locale des propositions selon K initial, K proposé, niveau de preuve musicale et risque empirique sur pistes de calibration peut récupérer les bons changements K2–K6 sans sacrifier massivement K0/K1. Des seuils élevés de risque (Wilson, nombre minimal de corrections, majorité par piste, validation sur pistes CAL distinctes) doivent bloquer les règles non reproductibles.
 
 ## Modifications
-- `src/causal_note/s832_guarded_private_selector256.py` : candidat K à chaque trame à partir des propres trois têtes Onset/Sustain/Release S831 et des deux têtes K S829. Vingt propositions (= quatre modes × cinq seuils) ; seuils de confiance positive. Construction de cellules conditionnelles (mode, seuil, K avant, K proposé, bande de confiance), avec corrections/régressions sur la seule calibration. Minimum de preuves, majorités par piste et borne inférieure binomiale (Wilson) contre faux succès. Choix local via `choose` sans aucun accès GT à l'inférence.
-- Validation CAL : 12 pistes de calibration pour apprendre des règles, 4 pistes CAL distinctes pour évaluer ; si aucune variante stable ne s'améliore, les règles restent vides et la sortie est strictement S829. Refit après choix seulement sur les 16 pistes CAL (aucun label OUTER).
-- `scripts/s832_fit80_guarded_local256.py` : même PCM causal, cinq folds FIT80, audit par K/track/mode ; aucune modification des cinq autres caractéristiques.
-- `test/test_s832_guarded_local256.py` : construction, seuils, fallback, anti-fuite GT, cardinalité sur 20 propositions.
+`src/causal_note/s832_guarded_private_selector256.py` : 20 candidats propres à Exact-K (= 4 modes × 5 seuils), segmentation des risques en cellules (mode, seuil, K source, K proposé, bande de confiance positive), apprentissage par sous-CAL (12 pistes) puis sélection/veto sur 4 pistes CAL, avec repli strict S829. `scripts/s832_fit80_guarded_local256.py` rejoue les 80 pistes et audite 306 536 frontières, K0–K6. `test/test_s832_guarded_local256.py` vérifie fallback, signaux GT absents de `choose()`, vraisemblance et candidat shape.
 
 ## Protocole
-80 GuitarSet S800 FIT signés, 306 536 fenêtres MIDI256, TRAIN 3 compositions, CAL 1, OUTER 1 ; 5 folds. Reproduire H0 et S829 en parallèle. Choix des règles sur CAL, évaluation des décisions OUTER **seulement ensuite**. Ne jamais tuner a posteriori sur les erreurs OUTER du run.
+S800 FIT80 authentique, 80 WAV GuitarSet et checksum validés, cinq folds disjoints 48 TRAIN/16 inner-CAL/16 OUTER, 306 536 décisions PCM256. Trois têtes musicales S831 et deux têtes K S829 propres à l'axe réentraînées. Aucun entraînement sur les pistes OUTER ; scores appariés S832/S829/H0.
 
 ## Audits obligatoires
-- Données : source S800, GT partitions FIT seulement, SHA original et 80 pistes.
-- Acoustique : PCM44,1kHz, fenêtre causale 256, aucune attente future ajoutée.
-- Architecture : aucune dépendance aux états/postérieurs des cinq autres caractéristiques.
-- Apprentissage : vrais cinq modèles privés par fold, veto conditionnel appris exclusivement sur inner-CAL avec sous-validation par piste.
-- Métriques : tous K0–K6 y compris K0, scores S832/S829/H0 même dénominateur ; corrections/régressions du veto.
-- LIVE : grilles strictes 256, coût p95/p99 iRig non encore audité ; aucun claim de latency live.
-- Avis NVIDIA/Work : aucun agent externe réellement consulté.
+- Données : PASS, 80 WAV S800 signés.
+- Acoustique : PASS synthétique, test causal PCM256 ; aucune mesure matérielle iRig.
+- Architecture : PASS import/fichiers des cinq autres axes inchangés ; aucun partage.
+- Apprentissage : PASS, apprentissage des cellules CAL puis veto sur pistes CAL distinctes.
+- Métriques : PASS, 80 pistes, 306 536 fenêtres, comparaison exacte S829.
+- LIVE : UNKNOWN, pas de p95/p99 physique ni sérialisation déployable.
+- Agents NVIDIA/Work : non sollicités.
 
 ## Statut
-En cours — aucune amélioration S832 revendiquée et `promotion:false`. La comparaison S831 56,9943 % vs S829 57,5247 % reste la seule mesure scientifique préalable.
+**TERMINÉ, NON PROMU.** Run [#39644879595](https://github.com/Andriamarosoa/note/actions/runs/39644879595) PASS ; artefact `S832_FIT80_GUARDED_LOCAL_PCM256` id `12367129426`. S832 **57,5247279 % = 176 334/306 536**, identique au S829 apparié, sans régression ni gain. H0 : 61,6971579 %.
 
-## Exécution du replay complet
-Tests de syntaxe, indépendance et veto local validés sur GitHub #39644723984. Commande scientifique explicite [run-fit80] : 80 pistes GuitarSet FIT80 signées, 5 folds et 306 536 trames PCM256. Refuser toute mesure non appariée.
+Les **cinq folds choisissent zéro règle** (`validation_veto`). La sous-validation CAL gagne parfois malgré une instabilité sur certaines pistes : Funk2 max +44 décisions (16 536 fenêtres), Rock3 max +939 ; BN1, Jazz1 et SS1 ont des scores négatifs pour toutes les règles testées. Cela prouve le fonctionnement du veto, pas un progrès de précision. Prochaine piste : contrôle de risque plus local/généralisable, sans régler les paramètres à partir des étiquettes OUTER déjà consultées ni attribuer un score validé au futur candidat.
