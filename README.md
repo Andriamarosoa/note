@@ -31,3 +31,13 @@ All removed research history remains available on the other Git branches, especi
 ## Verification
 
 The exact-k-only source isolation smoke test passed in GitHub Actions run #39669618268. The signed FIT80 80-track K-only replay is separately triggered and must match the original S834 result before a score is revalidated for this trimmed branch.
+
+## Signed FIT80 isolation replay audit (2026-10-21)
+
+- Workflow: [39673135663](https://github.com/Andriamarosoa/note/actions/runs/39673135663). Smoke tests PASS; signed 80-track replay completed all tracks, scientific parity assertion FAILED.
+- **Isolated branch measured:** 232332/306536 = 75.79273 %.
+- **Original source reference:** 232295/306536 = 75.78066 %.
+- **Paired difference:** +37 correct (+0.01207 pp).
+- **Verdict:** NOT BIT-EXACT: source reference differs. Improves accuracy slightly, but scientific identity not demonstrated. GitHub workflow failed strict parity assertion.
+
+These are genuine observed measurements on the matched signed 80-track FIT80 cohort, not a new HELD evaluation. Maintain source references; do not overwrite or promote any other axis or public MIDI. A scientifically correct next audit must localize the mismatch in copied acoustic frontend, frozen network outputs and per-axis HEAD->SELECTOR->DECODER behavior on identical PCM frames before relaxing the source-parity requirement.
