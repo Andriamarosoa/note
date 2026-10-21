@@ -24,25 +24,3 @@ def onset_score(events,notes):
     tp=len(pairs)
     return dict(tp=tp,fp=len(predicted)-tp,fn=len(notes)-tp)
 
-def offset_score(events,notes,ends):
-    """S704: correct offset conditional on matched onset, |delta|<=50ms."""
-    predicted,pairs=signed_onsets(events,notes)
-    intervals=[];held={}
-    for event in events:
-        pitch=event["pitch"]
-        if event["type"]=="note_on":
-            if pitch in held:raise AssertionError("duplicate source NoteOn")
-            held[pitch]=len(intervals);intervals.append(dict(on=event))
-        elif pitch in held:
-            intervals[held.pop(pitch)]["off"]=event
-    eligible=correct=0
-    for i,j in pairs:
-        note=notes[j];stop=note["time"]+note["duration"]
-        if stop>=ends[-1]/SR:continue
-        eligible+=1
-        off=intervals[i].get("off")
-        if off and off["reason"] not in ("stream_end","shutdown","stream_error") and abs(off["time"]-stop)<=.050:
-            correct+=1
-    return dict(offset_eligible=eligible,offset_correct=correct)
-
-# Only onset is exported by the public package __init__.
