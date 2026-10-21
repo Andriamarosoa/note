@@ -1,0 +1,99 @@
+name: S821 three actual NVIDIA blind K4 vs K5-K6 diagnosis
+on:
+  push:
+    branches: [codex/note-s821-nvidia-ss1-k4-guard]
+    paths:
+      - scripts/s821_blind_nvidia.py
+      - series/S821/model_brief.md
+      - .github/workflows/note-s821-nvidia-review.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+env:
+  PYTHONPATH: .:src
+  PYTHONUNBUFFERED: '1'
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Inspect neutral evidence and code integrity without network
+        run: |
+          python -m compileall -q scripts/s821_blind_nvidia.py
+          python -m scripts.verify_series_reports --series S821
+          python - <<'PY'
+          from pathlib import Path
+          from scripts.s821_blind_nvidia import evidence_text,hash_text,MODELS,SYSTEM,payload
+          e=evidence_text(Path('series/S821/model_brief.md'))
+          assert len(MODELS)==3 and len(set(MODELS.values()))==3
+          for k in MODELS:
+              assert payload(k,e)['messages'][1]['content']==e
+          print('S821_IDENTICAL_EVIDENCE',hash_text(e))
+          print('S821_IDENTICAL_PROMPT',hash_text(SYSTEM))
+          PY
+  nvidia:
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [model_a, model_b, model_c]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Independently ask the actual NVIDIA external adviser
+        env:
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+        run: |
+          python -m scripts.s821_blind_nvidia --role ${{ matrix.role }} --evidence series/S821/model_brief.md --out /tmp/s821/reviews/review_${{ matrix.role }}.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S821_NVIDIA_${{ matrix.role }}_REAL_RESPONSE
+          path: /tmp/s821/reviews/review_${{ matrix.role }}.json
+          retention-days: 45
+          if-no-files-found: warn
+  review_receipt:
+    needs: [smoke, nvidia]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: S821_NVIDIA_*_REAL_RESPONSE
+          path: /tmp/s821/reviews
+          merge-multiple: true
+      - name: Prove 3 independent provider replies, never count any failure
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          from scripts.s821_blind_nvidia import MODELS,evidence_text,hash_text,SYSTEM
+          root=Path('/tmp/s821/reviews')
+          evidence=evidence_text(Path('series/S821/model_brief.md'))
+          for role,model in MODELS.items():
+              r=json.loads((root/('review_'+role+'.json')).read_text())
+              assert r['model']==model and r['role']==role
+              assert r['status']=='received' and r['response_received'] and r['advice_substantive']
+              assert not r['provider_errors'] and r['no_peer_context']
+              assert r['evidence_sha256']==hash_text(evidence)
+              assert r['system_prompt_sha256']==hash_text(SYSTEM)
+              print('S821_REAL_NVIDIA_REVIEW_OK',role,model,'bytes',len(r['response']))
+              print('S821_UNVERIFIED_OPINION',r['response'][:14500])
+          print('S821_3_PROVIDERS_RESPONDED_NO_MUSIC_PROMOTION')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S821_THREE_NVIDIA_BLIND_REVIEWS_REAL
+          path: /tmp/s821/reviews/review_*.json
+          retention-days: 45
