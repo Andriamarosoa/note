@@ -38,3 +38,6 @@ S800 GuitarSet FIT80 de 80 WAV, cinq compositions. Par fold 3 compositions TRAIN
 
 ## Statut
 En cours, expérimentation seulement. S829 57,5247 % et S832 57,5247 % sur FIT80 restent les témoins. S831 56,9943 %. Aucun gain S833 annoncé avant replay signé ; pas de promotion.
+
+## Exécution scientifique
+Tests S833 initiaux PASS [#39648826719](https://github.com/Andriamarosoa/note/actions/runs/39648826719). Lancement explicite [run-fit80] des 80 pistes GuitarSet S800 et des cinq folds signés ; aucune promotion autorisée sans publication de tous les scores appariés.
