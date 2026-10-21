@@ -1,4 +1,4 @@
-name: S829 S809 isolated ExactK on fresh S828 native PCM256
+name: S829 genuinely independent ExactK PCM256: private DSP plus two private trained K heads
 on:
   push:
     branches: [codex/note-s829-s809-exactk-native256]
@@ -46,7 +46,7 @@ jobs:
           assert changed and changed <= expected,changed-expected
           print('S829_PROTECTED_FIVE_AXES_UNTOUCHED')
           PY
-      - name: Locked original scientific dependencies
+      - name: Independent S829 scientific dependencies
         run: |
           python -m pip install -r requirements-live-strict.txt
           python -m pip install scikit-learn threadpoolctl
@@ -70,7 +70,7 @@ jobs:
           print('S829_NO_OTHER_AXIS_CODE_OR_CHECKPOINT_IMPORTED')
           PY
           python -m compileall -q src/causal_note/s829_exactk_s809_native256.py scripts/s829_train_exactk_s809_native256.py test/test_s829_private_exactk256.py
-          python -m unittest -v test.test_s829_private_exactk256 test.test_s828_activek_s708_private_readout test.test_s809_axis_isolation
+          python -m unittest -v test.test_s829_private_exactk256
           python -m scripts.verify_series_reports --series S829
 
   signed_fit80:
