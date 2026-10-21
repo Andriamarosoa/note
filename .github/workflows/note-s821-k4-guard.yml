@@ -1,0 +1,137 @@
+name: S821 private harmonic-aware K4->K5/K6 guard ActiveK real experiment
+on:
+  push:
+    branches: [codex/note-s821-nvidia-ss1-k4-guard]
+    paths:
+      - src/causal_note/s821_k4_guard.py
+      - scripts/s821_train_k4guard256.py
+      - test/test_s821_k4_guard.py
+      - .github/workflows/note-s821-k4-guard.yml
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+permissions:
+  contents: read
+  actions: read
+env:
+  GH_TOKEN: ${{ github.token }}
+  PYTHONPATH: .:src
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python -m pip install -r requirements-s813.txt
+      - name: Verify private harmonic K4 guard and no future lookahead
+        run: |
+          python -m compileall -q src/causal_note/s821_k4_guard.py scripts/s821_train_k4guard256.py test/test_s821_k4_guard.py
+          python -m unittest -v test.test_s821_k4_guard test.test_s815_activek_teacher test.test_s813_native256 test.test_s813_teacher_contract test.test_s809_axis_isolation
+          python -m scripts.verify_series_reports --series S821
+  real_fit80:
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python -m pip install -r requirements-s813.txt
+      - name: Verify three actual NVIDIA reviewer receipts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test "$(gh run view 39561989215 --repo Andriamarosoa/note --json conclusion --jq .conclusion)" = success
+      - name: Download SHA verified frozen S815 private triple head models
+        run: |
+          mkdir -p /tmp/s821/previous
+          gh run download 39536863317 --repo Andriamarosoa/note --name S815_ACTIVE_K_PRIVATE_MIDI256_FIT80_RESULTS --dir /tmp/s821/previous
+          OLD="$(find /tmp/s821/previous -path '*/experiment/report.json' -type f -print -quit)"
+          test -s "$OLD"
+          PREVIOUS="$(dirname "$OLD")"
+          test -s "$(dirname "$PREVIOUS")/fresh256/report.json"
+          test -s "$PREVIOUS/models/BN1_active_k.joblib"
+          printf '%s\n' "$PREVIOUS" > /tmp/s821/previous_path
+      - name: Restore completed S817 private high polyphony checkpoints, SHA pinned
+        run: |
+          mkdir -p /tmp/s821/s817saved
+          gh run download 39543749810 --repo Andriamarosoa/note --name S817_FIVEHEAD_ACTIVEK_TEMPORAL_K4_K6_FIT80_RESULTS --dir /tmp/s821/s817saved
+          OLD="$(find /tmp/s821/s817saved -path '*/result/report.json' -type f -print -quit)"
+          test -s "$OLD"
+          OLD_DIR="$(dirname "$OLD")"
+          test -s "$(dirname "$OLD_DIR")/fresh256/report.json"
+          printf '%s\n' "$OLD_DIR" > /tmp/s821/s817_path
+      - name: Restore signed S800 original FIT80 real MIDI256 traces and annotations
+        run: |
+          mkdir -p /tmp/s821/manifest /tmp/s821/traces
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/s821/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/s821/traces
+          SOURCE="$(find /tmp/s821/manifest -name report.json -type f -print -quit)"
+          TRACE="$(find /tmp/s821/traces -name fit_000.json -type f -print -quit)"
+          test -s "$SOURCE"
+          test -s "$TRACE"
+          printf '%s\n' "$SOURCE" > /tmp/s821/manifest_path
+          printf '%s\n' "$(dirname "$TRACE")" > /tmp/s821/traces_path
+      - name: Fetch SHA pinned 44100 Hz original microphone PCM GuitarSet
+        run: |
+          python - <<'PY'
+          import hashlib,json,urllib.request
+          from pathlib import Path
+          src=json.loads(Path('analysis/evidence/v273-s613-strict-live/protocol.json').read_text())['guitar_archives']['GuitarSet_audio']
+          dest=Path('/tmp/s821/GuitarSet_audio.zip')
+          with urllib.request.urlopen(src['url'],timeout=180) as inp,dest.open('wb') as out:
+              while piece:=inp.read(4*1024*1024):
+                  out.write(piece)
+          assert dest.stat().st_size==src['size']
+          h=hashlib.sha256()
+          with dest.open('rb') as inp:
+              for blob in iter(lambda:inp.read(4*1024*1024),b''):
+                  h.update(blob)
+          assert h.hexdigest()==src['sha256']
+          print('S821_AUTHENTIC_AUDIO_SHA',h.hexdigest())
+          PY
+      - name: Extract fresh genuinely causal PCM256 features for all 80 recordings
+        run: |
+          python -m scripts.s813_prepare_native256 --manifest "$(cat /tmp/s821/manifest_path)" --traces "$(cat /tmp/s821/traces_path)" --audio-zip /tmp/s821/GuitarSet_audio.zip --out /tmp/s821/fresh256 --workers 2
+      - name: Train K4-to-K5/6 acoustic verifier only on 48 TRAIN tracks; 16 inner CAL, 16 outer TEST
+        run: |
+          python -m scripts.s821_train_k4guard256 --cache /tmp/s821/fresh256 --traces "$(cat /tmp/s821/traces_path)" --previous-dir "$(cat /tmp/s821/previous_path)" --s817-dir "$(cat /tmp/s821/s817_path)" --out /tmp/s821/result
+      - name: Verify original H0 and frozen S815 bit-exact score, then no promotion
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/s821/result/report.json'))
+          assert r['schema']=='S821_REAL_FIT80_PRIVATE_HARMONIC_K4_GUARD_MIDI256_V1' and r['complete']
+          assert len(r['tracks'])==80 and len(r['folds'])==5
+          assert (r['feature_hop_samples'],r['decision_hop_samples'],r['metric_hop_samples'])==(256,256,256)
+          assert r['historical_fit_active_k']['correct']==142213
+          assert r['original_s815_fit_active_k']['correct']==141946
+          assert r['new_s821_fit_active_k']['frames']==249411
+          assert r['two_new_heads_private_k5_k6'] and r['original_s815_and_s817_frozen']
+          assert not any(r[k] for k in ('source_MIDI_modified','other_characteristics_modified','CAL_opened','HELD_opened','TEST_opened','promotion','production_LIVE_modified','unified_MIDI_measured'))
+          assert not r['unification_gate']['allow_unification']
+          print('S821_REAL_ACTIVE_K',r['new_s821_fit_active_k'])
+          print('S821_COMPARE_S815',r['original_s815_fit_active_k'])
+          print('S821_COMPARE_H0',r['historical_fit_active_k'])
+          print('S821_DELTAS',r['delta_vs_s815_pp'],r['delta_vs_h0_pp'])
+          print('S821_RESEARCH_ONLY_NOT_PROMOTED')
+          PY
+      - name: Retain signed result and private specialist models/decisions
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S821_PRIVATE_K4_GUARD_GUITARSET_REAL_MIDI256
+          path: |
+            /tmp/s821/result/report.json
+            /tmp/s821/result/models/
+            /tmp/s821/result/predictions/
+            /tmp/s821/fresh256/report.json
+          retention-days: 45
+          if-no-files-found: warn
