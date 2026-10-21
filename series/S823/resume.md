@@ -1,11 +1,11 @@
 ---
 serie: S823
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s823-legacy-s795-features-causal256
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39578183788
+commit_sha: 56094b6f8353a26b998faa29e3b3f043b081b611
 promotion: false
 ---
 # S823 — Test des 23 véritables variables S795 sur une horloge MIDI256
@@ -32,4 +32,4 @@ Signatures des 80 sources S800 et des comptes H0, monotonie des temps, absence d
 
 ## Statut
 
-Expérience de diagnostic préparée; score S823 non mesuré avant exécution CI. Aucun gain revendiqué.
+**Terminé** avec run CI [#39578183788](https://github.com/Andriamarosoa/note/actions/runs/39578183788) SUCCESS : 80/80 traces S795/S800 et H0 142213/249411 authentifiés. RAW23 = **76,4621 %** ; AGG61 = **75,6129 %** ; sélection inner-CAL = **76,8775 %** sur les mêmes 249411 trames MIDI256. 76600 observations réellement émises tous les 1024 samples, 240 premiers pas sans observation. Pas de promotion pour violation des axes indépendants. Voir resultat.md.
