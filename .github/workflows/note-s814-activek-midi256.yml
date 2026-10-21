@@ -55,8 +55,16 @@ jobs:
           mkdir -p /tmp/s814/manifest /tmp/s814/traces
           gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/s814/manifest
           gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/s814/traces
-          test -s /tmp/s814/manifest/report.json
-          TRACES_DIR="$(dirname "$(find /tmp/s814/traces -name fit_000.json -type f -print -quit)")"
+          echo S814_RESTORED_STRUCTURE
+          find /tmp/s814/manifest -maxdepth 4 -type f | head -20
+          find /tmp/s814/traces -maxdepth 5 -name 'fit_000*' -type f | head -20
+          MANIFEST="$(find /tmp/s814/manifest -name report.json -type f -print -quit)"
+          test -n "$MANIFEST"
+          test -s "$MANIFEST"
+          printf '%s\n' "$MANIFEST" > /tmp/s814/manifest_path
+          TRACES_FILE="$(find /tmp/s814/traces -name fit_000.json -type f -print -quit)"
+          test -n "$TRACES_FILE"
+          TRACES_DIR="$(dirname "$TRACES_FILE")"
           test -f "$TRACES_DIR/fit_079.json"
           printf '%s\n' "$TRACES_DIR" > /tmp/s814/traces_path
       - name: Fetch SHA-pinned original mono microphone PCM
@@ -85,7 +93,7 @@ jobs:
       - name: Extract fresh causal PCM at every real MIDI256 boundary
         run: |
           TRACES_DIR="$(cat /tmp/s814/traces_path)"
-          python -m scripts.s813_prepare_native256 --manifest /tmp/s814/manifest/report.json --traces "$TRACES_DIR" --audio-zip /tmp/s814/GuitarSet_audio.zip --out /tmp/s814/fresh256 --workers 2
+          python -m scripts.s813_prepare_native256 --manifest "$(cat /tmp/s814/manifest_path)" --traces "$TRACES_DIR" --audio-zip /tmp/s814/GuitarSet_audio.zip --out /tmp/s814/fresh256 --workers 2
       - name: Train independent Active-K heads, freeze calibration, test 5 composition folds
         run: |
           TRACES_DIR="$(cat /tmp/s814/traces_path)"
