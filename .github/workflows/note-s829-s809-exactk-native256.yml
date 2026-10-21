@@ -1,4 +1,4 @@
-name: S829 genuinely independent ExactK PCM256: private DSP plus two private trained K heads
+name: 'S829 genuinely independent ExactK PCM256: private DSP plus two private trained K heads'
 on:
   push:
     branches: [codex/note-s829-s809-exactk-native256]
@@ -21,7 +21,6 @@ env:
   OMP_NUM_THREADS: '1'
   OPENBLAS_NUM_THREADS: '1'
   MKL_NUM_THREADS: '1'
-  OPENBLAS_NUM_THREADS: '1'
 jobs:
   smoke:
     runs-on: ubuntu-24.04
