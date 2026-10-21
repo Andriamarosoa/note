@@ -34,3 +34,5 @@ Même 80 pistes GuitarSet FIT80, cinq compositions, grille 256 et 306 536 trames
 
 ## Statut
 En cours. Aucun pourcentage S830 annoncé avant rapport FIT80 vérifié. S829 57,5247 % et S708 H0 61,6972 % historiques demeurent inchangés. PR S830 DRAFT / `promotion:false`.
+
+Demande scientifique explicite après smoke PASS GitHub #39632139950 : [run-fit80]. Ce déclencheur exécute les 80 pistes, les cinq folds et la mesure appariée S830/S829/H0. Les scores restent non mesurés jusqu'au rapport final.
