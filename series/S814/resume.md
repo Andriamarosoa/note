@@ -1,11 +1,11 @@
 ---
 serie: S814
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s814-activek-private-midi256
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39535784658
+commit_sha: 36a9011618af40e16593462c99be2a0757671d87
 promotion: false
 ---
 # S814 — Enseignant Active Exact-K indépendant MIDI256
@@ -33,3 +33,8 @@ Tests de causalité, changements du futur, découpage d'entrée, isolation de l'
 ## Statut
 
 Architecture, entraîneur et tests préparés sur branche S814. Mesures GuitarSet réelles et preuve de latence physique non encore obtenues au moment de ce rapport initial. Unification et promotion interdites.
+
+
+## Résultat réel et clôture scientifique
+
+Workflow [#39535784658](https://github.com/Andriamarosoa/note/actions/runs/39535784658) : SUCCESS pour restauration SHA, extraction MIDI256 des 80 enregistrements et entraînement des cinq plis. Score Active Exact-K réel de l'enseignant indépendant **54,67280914 %** (136360/249411), contre H0 FIT80 **57,01953803 %** (142213/249411), différence **−2,34672889 points**. Sous-comptages S814 74291 vs H0 80654, surcomptages S814 38760 vs H0 26544. Candidat NON promu, l'objectif >85 % non atteint. Aucune modification LIVE, zéro validation de latence physique. Cette série se termine comme expérience négative documentée.
