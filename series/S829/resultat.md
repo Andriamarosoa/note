@@ -12,7 +12,7 @@ promotion: false
 # S829 — résultats Exact-K natif256, SHADOW seulement
 
 ## Exécution
-Branche de recherche créée depuis reference/active-exact-k-s828-midi256. CI smoke exécutée avec succès : [GitHub Actions #39623511765](https://github.com/Andriamarosoa/note/actions/runs/39623511765), tests synthétiques et contrôle des chemins réussis. Exécution scientifique FIT80 : NON MESURÉE. Aucun ID de run complet, de modèle entraîné audité, ni de mesure physique LIVE disponible à la rédaction. Aucun checkpoint S708/S810/S828 n'est chargé : seul le PCM alimente un DSP possédé par Exact-K, puis deux modèles K0..K6 indépendamment entraînés et un sélecteur privé. Un chemin S829FittedStream réalise l'inférence entraînée à chaque PCM256 sans accès aux futurs échantillons. Aucun score ni mesure CPU ne découle automatiquement de cette architecture.
+Branche de recherche créée depuis reference/active-exact-k-s828-midi256. CI smoke indépendant complet exécuté avec succès : [GitHub Actions #39624721573](https://github.com/Andriamarosoa/note/actions/runs/39624721573) (y compris code d'évaluation autonome, causalité synthétique et contrôle des fichiers) ; ancien smoke #39623511765 également PASS. Exécution scientifique FIT80 : NON MESURÉE. Aucun ID de run complet, de modèle entraîné audité, ni de mesure physique LIVE disponible à la rédaction. Aucun checkpoint S708/S810/S828 n'est chargé : seul le PCM alimente un DSP possédé par Exact-K, puis deux modèles K0..K6 indépendamment entraînés et un sélecteur privé. Un chemin S829FittedStream réalise l'inférence entraînée à chaque PCM256 sans accès aux futurs échantillons. Aucun score ni mesure CPU ne découle automatiquement de cette architecture.
 
 ## Métriques
 L'axe ciblé est Exact-K K0..K6 sur toutes les trames et non Active Exact-K (seulement trames actives). Le score candidat S829, la comparaison au proxy acoustique privé et aux comptes H0 MIDI sur les mêmes 80 pistes seront renseignés uniquement par le rapport JSON vérifié. Vérifier les 306 536 trames complètes et les comptes exacts par K.
@@ -48,3 +48,5 @@ EN COURS — NON PROMU. Aucun nouveau score revendiqué. Une expérience Exact-K
 
 ## Prochaine action
 Exécuter la CI smoke et le replay signé FIT80 80/80 à 256. Contrôler K0, sous-comptages K2..K6, provenance S708, six audits, trois avis NVIDIA authentiques, et comparaisons sans fusion MIDI. Rejeter tout lookahead et hold.
+
+Nouvelle requête FIT80 sur version au protocole de scoring complètement isolé : score toujours non mesuré jusqu'à artefact confirmé.
