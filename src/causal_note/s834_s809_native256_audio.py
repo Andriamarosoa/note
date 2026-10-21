@@ -73,7 +73,7 @@ class S834S809Native256(S827S708ActiveKOnly):
         self.source_post.append(post)
         self.decisions=end,decisions
         self.selection=end,selections
-        return end,decisions,selections
+        return end,decisions,selections,snapshot
 
     def push(self,samples,*,start_sample):
         before=time.perf_counter()
