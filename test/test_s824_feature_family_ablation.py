@@ -60,8 +60,11 @@ class S824FeatureFamiliesTests(unittest.TestCase):
             self.assertEqual(teacher.metadata["added_lookahead_samples"],0)
             self.assertFalse(teacher.metadata["production_LIVE_unchanged"] is False)
             self.assertEqual(teacher.metadata["train_compositions"],["A","B","C"])
+        models["frozen_s823"]=models["full23"]
         decision,results=choose_on_cal(cal,models)
         self.assertIn(decision,UNIQUE_MODES)
+        self.assertEqual(set(results),set(MODES))
+        self.assertNotIn("frozen_s823",results)
         self.assertTrue(all(r["frames"]>0 for r in results.values()))
         with self.assertRaisesRegex(ValueError,"CAL composition touched TRAIN"):
             choose_on_cal(train[:16],models)
