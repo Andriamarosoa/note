@@ -70,7 +70,7 @@ class Teacher:
     model:object
     mode:str
     metadata:dict
-    def predict(self,row,*,batch=3072):
+    def predict(self,row,*,batch=2048):
         predictions=[]
         for start in range(0,len(row["asof"]),batch):
             full=feature_at(row["X"],row["asof"][start:start+batch],"raw23")
