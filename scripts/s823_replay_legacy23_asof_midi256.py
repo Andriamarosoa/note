@@ -15,7 +15,10 @@ from causal_note.s814_activek_teacher import active_score
 from causal_note.s813_teacher_contract import TeacherEvidence,REQUIRED_METRICS,unification_gate
 from scripts.s813_prepare_native256 import targets_at_ends,save_json,digest_file
 from scripts.s815_train_activek256 import original_count,totals
-from scripts.s800_oof_trace import SCHEMA as SOURCE_SCHEMA, HEADS
+SOURCE_SCHEMA="S800_FIT80_OOF_PER_FRAGMENT_MIDI256_V1"
+HEADS=("general","bass","polyphonic","transient","harmonic")
+# Frozen S800 schema/HEADS constants; importing its writer would transitively
+# require torch despite this being a read-only sklearn replay.
 
 SCHEMA="S823_S795_LEGACY_TRUE23_ASOF1024_AT_256_FIT80_V1"
 COMPS=("BN1","Funk2","Jazz1","Rock3","SS1")
