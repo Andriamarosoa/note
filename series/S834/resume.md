@@ -38,3 +38,6 @@ Test préalable de non-interférence sur des signaux synthétiques, puis replay 
 
 ## Statut
 En cours, zéro promotion. Les scores S708 officiels et la référence de développement S828 restent protégés ; une amélioration ne pourra être revendiquée que sur métriques strictement comparables, pas uniquement sur le fait que l'architecture existe.
+
+## Validation technique et déclenchement scientifique
+Le premier CI S834 #39657847123 est **SUCCESS** : 41 tests de l'ancien S809, du nouveau S834 et du modèle temporel original. Les six fichiers de production restent inchangés. [run-fit80] lancement des 80 WAV GuitarSet sur S834 original S708 actualisé à chaque 256, incluant les 153 600 vérifications directionnelles des autres axes, un score SHADOW distinct par axe et le témoin MIDI original inchangé. Aucun gain non confirmé n'est déclaré.
