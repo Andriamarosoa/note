@@ -1,4 +1,4 @@
-"""S829 independent Exact-K K0..K6 from S809 architecture on native S828 PCM256 native256, five composition-disjoint folds.
+"""S829 independent Exact-K K0..K6 from S809 isolation on S828 native PCM256, five composition-disjoint folds.
 
 This is a FIT research evaluation, not independent external generalization.
 S708's original neural weights and native heads are frozen, a PRIVATE K-only
@@ -12,9 +12,9 @@ from scipy.io import wavfile
 from causal_note.strict_live import SR,HOP,load_heads
 from causal_note.s712_s708_live import load_s708_checkpoint
 from causal_note.s829_exactk_s809_native256 import S829Stream,fit_exact,score_exact,SCHEMA
-from causal_note.s814_exactk_teacher import active_score
+from causal_note.s814_activek_teacher import active_score
 from causal_note.s812_historical_axis_h0 import signature
-from scripts.s815_train_exactk256 import original_count,totals
+from scripts.s815_train_activek256 import original_count,totals
 from scripts.s813_prepare_native256 import digest_file,save_json,targets_at_ends
 
 SOURCE_SCHEMA="S800_FIT80_OOF_PER_FRAGMENT_MIDI256_V1"
@@ -113,7 +113,7 @@ def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,
                    len(cal)==len(te)==tracks_per_composition):
                 raise AssertionError("invalid disjoint TRAIN/CAL/TEST fold sizes")
         now=time.perf_counter()
-        fitted=fit_private(tr,cal,seed=828+i)
+        fitted=fit_exact(tr,cal,seed=829+i)
         if (outer in fitted.metadata["train_compositions"] or
             outer in fitted.metadata["calibration"] or
             inner in fitted.metadata["train_compositions"]):
@@ -151,10 +151,10 @@ def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,
     report["total_elapsed_seconds"]=time.perf_counter()-start
     report["complete"]=True
     save_json(out/"report.json",report)
-    print("S829_TRUE256_PRIVATE_ACTIVEK_FINAL",json.dumps({
+    print("S829_TRUE256_PRIVATE_EXACTK_FINAL",json.dumps({
         "n_tracks":len(report["tracks"]),
         "S829":report["S829_exactk"],
-        "S827":report["S708_private_raw_k_exactk"],
+        "raw_s708":report["S708_private_raw_k_exactk"],
         "H0":report["H0_original_exactk"],
         "only_exact_k_changed":True,
         "no_other_axis_changed":True,"public_midi_not_modified":True
