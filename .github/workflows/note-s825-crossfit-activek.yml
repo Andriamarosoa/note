@@ -1,0 +1,127 @@
+name: S825 native MIDI256 independent cross-fitted private pitch 3-loop ActiveK
+on:
+  push:
+    branches: [codex/note-s825-private-crossfit-pitch-midi256]
+    paths:
+      - src/causal_note/s825_crossfit_activek.py
+      - scripts/s825_train_crossfit_midi256.py
+      - test/test_s825_crossfit_activek.py
+      - .github/workflows/note-s825-crossfit-activek.yml
+  workflow_dispatch:
+concurrency:
+  group: s825-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+  actions: read
+env:
+  GH_TOKEN: ${{ github.token }}
+  PYTHONPATH: .:src
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+jobs:
+  smoke:
+    name: S825 independent 3-way pitch OOF and causal native256 checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python -m pip install -r requirements-s813.txt
+      - name: Validate 3-loop OOF, causal pitch features, independent private weights and reporting
+        run: |
+          python -m compileall -q src/causal_note/s825_crossfit_activek.py scripts/s825_train_crossfit_midi256.py test/test_s825_crossfit_activek.py
+          python -m unittest -v test.test_s825_crossfit_activek test.test_s815_activek_teacher test.test_s813_native256 test.test_s809_axis_isolation
+          python -m scripts.verify_series_reports --series S825
+  real_fit80:
+    name: Genuine 80 original GuitarSet recordings native 256
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python -m pip install -r requirements-s813.txt
+      - name: Recover source S800 real MIDI256 events and 80 annotations by SHA
+        run: |
+          mkdir -p /tmp/s825/manifest /tmp/s825/traces
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/s825/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/s825/traces
+          SOURCE="$(find /tmp/s825/manifest -name report.json -type f -print -quit)"
+          TRACE="$(find /tmp/s825/traces -name fit_000.json -type f -print -quit)"
+          test -s "$SOURCE"
+          test -s "$TRACE"
+          printf '%s\n' "$SOURCE" > /tmp/s825/manifest_path
+          printf '%s\n' "$(dirname "$TRACE")" > /tmp/s825/traces_path
+      - name: Download original SHA-pinned real mono PCM GuitarSet 44.1kHz
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json,urllib.request
+          src=json.loads(Path('analysis/evidence/v273-s613-strict-live/protocol.json').read_text())['guitar_archives']['GuitarSet_audio']
+          dest=Path('/tmp/s825/GuitarSet_audio.zip')
+          with urllib.request.urlopen(src['url'],timeout=180) as request,dest.open('wb') as output:
+              while packet:=request.read(4*1024*1024):output.write(packet)
+          assert dest.stat().st_size==src['size']
+          digest=hashlib.sha256()
+          with dest.open('rb') as inp:
+              for chunk in iter(lambda:inp.read(4*1024*1024),b''):digest.update(chunk)
+          assert digest.hexdigest()==src['sha256']
+          print('S825_ORIGINAL_AUDIO_SHA256',digest.hexdigest(),flush=True)
+          PY
+      - name: Extract fresh 256-sample actual PCM features and 249411 active labels
+        run: |
+          python -m scripts.s813_prepare_native256 --manifest "$(cat /tmp/s825/manifest_path)" --traces "$(cat /tmp/s825/traces_path)" --audio-zip /tmp/s825/GuitarSet_audio.zip --out /tmp/s825/fresh256 --workers 2
+      - name: Fit three loops of count learner on genuine pitch-head cross-fitting, strict PCM256
+        run: |
+          python -m scripts.s825_train_crossfit_midi256 --cache /tmp/s825/fresh256 --traces "$(cat /tmp/s825/traces_path)" --out /tmp/s825/result
+      - name: Check five fully independent folds same MIDI256 denominators and source H0
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/s825/result/report.json'))
+          assert r['complete'] and r['schema']=='S825_OOF_PRIVATE_PITCH_3_LOOP_NATIVE_MIDI256_FIT80_V1'
+          assert len(r['folds'])==5 and len(r['tracks'])==80
+          assert (r['feature_hop_samples'],r['decision_hop_samples'],r['metric_hop_samples'])==(256,256,256)
+          assert r['original_fit80_active_k']['correct']==142213
+          assert r['strict_training_oof_pitch']
+          assert not r['S708_posteriors_or_MIDI_features_used']
+          for outer,fold in r['folds'].items():
+              proof=fold['crossfit']
+              assert len(proof)==3
+              assert outer not in fold['train_compositions']
+              assert outer!=fold['inner_calibration']
+              for withheld,v in proof.items():
+                  assert withheld not in v['trained_compositions']
+                  assert len(v['trained_compositions'])==2
+                  assert len(v['withheld_names'])==16
+          for mode in ('pitch_stats','pitch_harmonic','pitch_temporal'):
+              x=r['by_mode'][mode]
+              assert x['frames']==249411
+              assert x['correct']+x['undercount']+x['overcount']==249411
+          assert r['cal_chosen_active_k']['frames']==249411
+          assert not r['unification_gate']['allow_unification']
+          assert not any(r[k] for k in ('promotion','CAL_opened','HELD_opened','TEST_opened',
+             'production_LIVE_modified','other_five_axes_modified','unified_midi_measured',
+             'added_lookahead_samples','added_hold_samples'))
+          print('S825_TRUE_NATIVE_PCM256_THREE_LOOP',json.dumps({
+             'by_mode':r['by_mode'],'cal_selected':r['cal_chosen_active_k'],
+             'H0':r['original_fit80_active_k']},sort_keys=True),flush=True)
+          print('S825_NO_PROMOTION_NO_LIVE_CHANGE',flush=True)
+          PY
+      - name: Archive all true models predictions and signatures; keep baseline
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S825_PRIVATE_OOF_PITCH_THREE_K_HEADS_TRUE_MIDI256
+          path: |
+            /tmp/s825/result/report.json
+            /tmp/s825/result/models/
+            /tmp/s825/result/predictions/
+            /tmp/s825/fresh256/report.json
+          retention-days: 45
+          if-no-files-found: warn
