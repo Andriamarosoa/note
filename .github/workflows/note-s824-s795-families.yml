@@ -8,6 +8,9 @@ on:
       - test/test_s824_feature_family_ablation.py
       - .github/workflows/note-s824-s795-families.yml
   workflow_dispatch:
+concurrency:
+  group: s824-feature-family-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
   actions: read
