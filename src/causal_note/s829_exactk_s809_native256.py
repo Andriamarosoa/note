@@ -276,6 +276,42 @@ class FittedExactK:
         return out
 
 
+class S829FittedStream:
+    """Online fitted Exact-K; outputs one decision as soon as PCM256 arrives.
+
+    Strictly bounded PCM/DSP state, no whole-track feature accumulation, no
+    other task's output and no lookahead/hold. One prediction per 256 boundary.
+    """
+
+    def __init__(self, fitted):
+        if not isinstance(fitted, FittedExactK):
+            raise TypeError("S829 private fitted pair required")
+        self.model = fitted
+        self.frontend = S829AcousticFrontEnd()
+        self.last_sample = 0
+        self.model_calls = 0
+
+    def push(self, samples, *, start_sample):
+        out = []
+        for end, frame, acoustic_count in self.frontend.push(
+                samples, start_sample=start_sample):
+            if end != self.last_sample + HOP:
+                raise AssertionError("independent 256 temporal grid drift")
+            row = summarize_one(frame, acoustic_count)[None, :]
+            k = int(self.model.predict(row, np.array([acoustic_count]))[0])
+            out.append(ExactKDecision(int(end), k, 1.))
+            self.model_calls += 1
+            self.last_sample = end
+        return tuple(out)
+
+    def diagnostics(self):
+        return dict(schema=SCHEMA, decision_hop_samples=HOP,
+                    fitted_inference_online=True, model_calls=self.model_calls,
+                    private_pcm_state=True, independent_trained_heads=2,
+                    no_shared_encoder=True, additional_hold_samples=0,
+                    additional_lookahead_samples=0, public_midi_modified=False)
+
+
 def fit_exact(train, cal, *, seed=829):
     tr, ca = validate(train, "TRAIN"), validate(cal, "CAL")
     tc = {r["composition"] for r in tr}
