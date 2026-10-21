@@ -77,7 +77,7 @@ class K4GuardTest(unittest.TestCase):
     def test_binary_weights_preserve_true_training_prior(self):
         a=record("a","TRAIN",3)
         for level in (5,6):
-            X,y,w,proof=sample_binary([a],level,cap=4,seed=821)
+            X,y,w,proof=sample_binary([a],level,cap=20,seed=821)
             self.assertEqual(len(proof),1)
             actual=np.mean(a["k"][a["k"] >= (3 if level==5 else 4)]>=level)
             self.assertAlmostEqual(float(np.dot(y,w)/w.sum()),float(actual),places=10)
