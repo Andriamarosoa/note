@@ -11,13 +11,87 @@ import numpy as np
 from scipy.io import wavfile
 from causal_note.s829_exactk_s809_native256 import SR,HOP
 from causal_note.s829_exactk_s809_native256 import S829Stream,fit_exact,score_exact,SCHEMA
-from causal_note.s814_activek_teacher import active_score
-from causal_note.s812_historical_axis_h0 import signature
-from scripts.s815_train_activek256 import original_count,totals
-from scripts.s813_prepare_native256 import digest_file,save_json,targets_at_ends
 
 SOURCE_SCHEMA="S800_FIT80_OOF_PER_FRAGMENT_MIDI256_V1"
 COMPS=("BN1","Funk2","Jazz1","Rock3","SS1")
+
+
+# These reference/scoring helpers are PRIVATE to this Exact-K experiment.
+# They receive labels or historical MIDI only AFTER all PCM-only prediction
+# rows are frozen, and never enter S829Stream/FittedExactK.
+def digest_file(path):
+    h=hashlib.sha256()
+    with Path(path).open("rb") as stream:
+        for block in iter(lambda:stream.read(1024*1024),b""):
+            h.update(block)
+    return h.hexdigest()
+
+
+def save_json(path,obj):
+    Path(path).write_text(
+        json.dumps(obj,indent=2,sort_keys=True,allow_nan=False)+"\n",
+        encoding="utf-8")
+
+
+def targets_at_ends(truth,ends):
+    pitch=np.zeros((len(ends),49),bool)
+    count=np.zeros(len(ends),np.int16)
+    times=np.asarray(ends)/SR
+    for note in truth:
+        k=int(note["pitch"])-40
+        if not 0<=k<49:
+            raise ValueError("FIT truth outside MIDI40..88")
+        mask=(times>=float(note["time"])) & (
+            times<float(note["time"])+float(note["duration"]))
+        pitch[mask,k]=True
+        count+=mask
+    return pitch,np.minimum(count,6).astype(np.uint8)
+
+
+def signature(events):
+    return [(e["type"],int(e["pitch"]),int(e["available_sample"]),
+             int(e["decision_sample"]),float(e["time"]),e.get("reason",""))
+            for e in events]
+
+
+def original_count(events,ends):
+    """Original signed MIDI occupancy for reference scoring ONLY."""
+    occupancy=np.zeros((len(ends),49),np.uint8)
+    held={}
+    for e in events:
+        k=int(e["pitch"])-40
+        if not 0<=k<49:raise ValueError("historical MIDI pitch outside scope")
+        boundary=int(np.searchsorted(ends,int(e["available_sample"])))
+        if e["type"]=="note_on":
+            if k in held:raise AssertionError("duplicate NoteOn")
+            held[k]=boundary
+        elif e["type"]=="note_off":
+            if k not in held:raise AssertionError("orphan NoteOff")
+            occupancy[held.pop(k):boundary,k]=1
+        else:raise ValueError("invalid MIDI type")
+    for k,beg in held.items():
+        occupancy[beg:,k]=1
+    return np.minimum(occupancy.sum(axis=1),6).astype(np.uint8)
+
+
+def active_score(pred,truth):
+    """Historical H0 checksum uses GT-active frames, never a training input."""
+    p,y=np.asarray(pred),np.asarray(truth)
+    if p.ndim!=1 or p.shape!=y.shape:raise ValueError("misaligned K")
+    mask=y>0
+    return dict(correct=int(np.count_nonzero((p==y)&mask)),
+        frames=int(mask.sum()),undercount=int(np.count_nonzero((p<y)&mask)),
+        overcount=int(np.count_nonzero((p>y)&mask)))
+
+
+def totals(rows):
+    out={k:sum(int(r[k]) for r in rows) for k in (
+        "correct","frames","undercount","overcount")}
+    if out["correct"]+out["undercount"]+out["overcount"]!=out["frames"]:
+        raise AssertionError("invalid K denominator")
+    out["accuracy"]=out["correct"]/max(1,out["frames"])
+    return out
+
 
 def run(audio_zip,traces,manifest_path,out,tracks_per_composition):
     if out.exists():raise FileExistsError("S829 evidence is immutable")
