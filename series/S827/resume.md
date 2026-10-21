@@ -1,11 +1,11 @@
 ---
 serie: S827
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s827-isolated-s708-activek-midi256
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39601164866
+commit_sha: 6c57840deaa56d561628440354302b3b3fecce54
 promotion: false
 ---
 # S827 — restauration des cinq axes et réintégration S708 **uniquement Active Exact-K**, strict MIDI256
@@ -32,4 +32,6 @@ Aucun merge ni promotion avant parité de sécurité ; on ne prétend pas avoir 
 
 ## Statut
 
-S827 en cours, Active Exact-K isolé en SHADOW; S826 non promu; aucune modification des cinq autres caractéristiques, ni de la production.
+**Expérience S827 terminée et NON PROMUE.** Le [run GitHub Actions #39601164866](https://github.com/Andriamarosoa/note/actions/runs/39601164866) a réussi : parité exacte du sélecteur original, reconstruction [49,288] chaque 256, invariance de cinq axes H0 à travers une intégration S827 protégée, et épreuve audio WAV signée sur **5** pistes GuitarSet (une par composition). Active-K S827 : **7606/19210 = 39,593961 %**, H0 signé mêmes pistes **6425/19210 = 33,446122 %**. Ce pilote est une preuve d'isolation/parité, **pas** un modèle entraîné à 256, pas une validation FIT80 80 pistes, pas un gain certifié sur CAL32.
+
+Le point d'intégration **S827ProtectedSixAxisIntegration** consomme le PCM256 et les événements MIDI H0 signés, mais superpose **uniquement la vue SHADOW Active Exact-K** ; cinq résultats des autres axes restent strictement égaux à S812 H0 à chaque trame. Les autres architectures, poids, sélecteurs, décodeurs et flux MIDI productif n'ont jamais été modifiés. La PR expérimentale S826 [#130](https://github.com/Andriamarosoa/note/pull/130) a été **fermée, jamais fusionnée**. PR S827 : [#131](https://github.com/Andriamarosoa/note/pull/131) DRAFT et non promue.
