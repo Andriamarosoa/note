@@ -1,11 +1,11 @@
 ---
 serie: S816
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s816-activek-risk-selector
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39539306030
+commit_sha: a86bb13b68c986672e58900021f4b825f36c0baa
 promotion: false
 ---
 # S816 — Sélection Active-K avec risque de surcomptage
@@ -33,3 +33,8 @@ Tests de validité des 15 décisions, règle anti-surcomptage fixée, absence d'
 ## Statut
 
 Protocole et script préparés, score S816 non encore connu. Aucun modèle musical promu ni unification permise. Comparaison rigoureuse S815/H0 requise.
+
+
+## Clôture expérimentale signée
+
+[GitHub Actions S816 #39539306030](https://github.com/Andriamarosoa/note/actions/runs/39539306030) SUCCESS : 80 pistes, métrique MIDI256, vrai flux H0 142213/249411 répliqué et S815 141946/249411 reconstruit à l'identique depuis les checkpoints immuables. La nouvelle règle anti-surcomptage obtient 140728/249411, soit **56,42413526 %** (contre S815 56,91248582 % et H0 57,01953803 %). Baisse de 0,48835055 point vs S815 et 0,59540277 point vs H0. Seul le pli Rock3 a changé de politique, confidence_direct_pitch→median ; écart Rock3 de 58,10040607 % à 55,88251361 %. Pas d'amélioration ni promotion, aucun changement du LIVE. Les données FIT80 restant exploratoires, aucune généralisation indépendante n'est revendiquée.
