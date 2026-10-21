@@ -1,34 +1,36 @@
 ---
 serie: S829
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s829-s809-exactk-native256
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39624926356
+commit_sha: 655d14bba15c028b257f6c01a701e086f715b2c3
 promotion: false
 ---
 
-# S829 — Exact-K indépendant sur PCM256, héritage S809/S828
+# S829 — Exact-K 256 échantillons, architecture indépendante
 
 ## Objectif
-Transposer la logique de têtes, sélecteurs et décodeurs privés S809 sur l'entrée acoustique native256 validée par S828 ; dépasser d'abord le témoin sans prétendre préserver les 84,24 % SHADOW S809 à 1024. Déterminer la précision Exact-K sur toutes les trames K0..K6, y compris le silence, à cadence 256 échantillons.
+Tester une chaîne d'Exact-K indépendante de bout en bout : PCM 44,1 kHz → DSP causal possédé par l'axe → deux classifieurs propres à l'axe (harmonique et temporel) → sélection privée calibrée → décision K0–K6 toutes les 256 valeurs PCM (5,80 ms de cadence). Conserver les cinq autres axes et le MIDI officiel strictement intacts.
 
 ## Hypothèse
-Deux têtes K0..K6 réentraînées séparément à 256 à partir de DSP strictement privé et non supervisé par les autres tâches, avec choix du sélecteur sur inner-CAL exclusivement, peuvent apprendre la cardinalité à partir du PCM sans aucune sortie d'un autre axe. Aucun encodeur indépendant gelé, aucun checkpoint S810/S828, aucune représentation neuronale partagée, aucun état d'un autre décodeur.
+Une architecture sans checkpoint S708/S810/S828 ni états/postérieurs provenant d'un autre axe peut apprendre Exact-K avec des signaux acoustiques multirésolutions privés. S809 à 1 024 et S828 Active-K natif256 restent des témoins historiques avec métriques ou protocoles différents, non interchangeables.
 
 ## Modifications
-Ajout isolé du module S829, du replay FIT80, des tests, d'une CI indépendante, et de ces rapports. Aucune modification de S708, S809, S810, S828, LIVE, ni du flux MIDI officiel. La nouvelle classe S829AcousticFrontEnd calcule elle-même des FFT causales multirésolutions (2048/4096/8192 derniers échantillons PCM) ; elle possède ses tampons et ses états. Deux modèles HGB K sont entraînés de zéro sur les vues harmonique et temporelle de ces caractéristiques. Le sélecteur choisit exclusivement à partir de leurs prédictions ou du contrôle acoustique privé, sans état étranger. S829FittedStream émet une prédiction du modèle par PCM256, sans tampon de piste entière et sans attente ajoutée. Le coût CPU réel reste à mesurer.
+Création d'un frontal PCM/FFT propre, de deux modèles HGB propres, d'un sélecteur calibré, et d'un chemin d'inférence en ligne. Élimination des imports et utilitaires de notation provenant des autres caractéristiques. Aucun fichier du détecteur LIVE de production, ni des six modèles historiques, n'a été modifié ; PR #133 reste DRAFT. La seule ressource commune est le PCM brut et les bibliothèques mathématiques génériques.
 
 ## Protocole
-Corpus FIT80 GuitarSet original SHA256 issu de S800, cinq compositions et 80 pistes, sans ouvrir CAL32/HELD/TEST. Pour chaque composition OUTER : trois TRAIN, une inner-CAL, une OUTER ; 48/16/16 pistes au complet. Réévaluer un DSP privé [49,72] puis son résumé [369] à chaque PCM256. Entraîner les deux têtes sur TRAIN, choisir sélecteur et shift sur inner-CAL uniquement ; comparer sur OUTER au comptage heuristique audio privé et au H0 MIDI issu de la même vérité annotée. Les événements H0 et labels sont autorisés seulement pour la notation et jamais comme entrée d'inférence. Reporter par composition, K0..K6, sous-comptages et surcomptages. S809 84,24 % / 1024 : historique non comparable ; S828 73,83 % : Active Exact-K, une autre métrique.
+80 pistes GuitarSet authentiques et vérifiées SHA dans FIT80 S800 ; cinq groupes de composition. Pour chaque groupe OUTER, entraîner sur trois compositions, choisir le sélecteur avec la quatrième, évaluer sur la cinquième : 48/16/16 pistes. Métrique Exact-K calculée sur **toutes** les 306 536 décisions y compris K0, sans filtrer les silences. Comparaison paire avec H0 historique sur les mêmes trames. Les événements historiques et annotations ne sont pas des entrées d'inférence. Ces FIT80 historiquement explorés ne suffisent pas comme généralisation externe HELD.
 
 ## Audits obligatoires
-Six audits requis : Données (SHA, dénominateurs), Acoustique (extraction réellement 256, causalité), Architecture (sélecteur et mémoire privés, perturbations), Apprentissage (TRAIN/CAL/OUTER disjoints, encodage source gelé), Métriques (K0–K6 toutes trames, comparateurs identiques), LIVE (coût CPU, iRig, aucune attente supplémentaire). Trois avis NVIDIA réels requis par AGENTS.md pour validation complète, jamais simulés ; en l'absence de preuve, UNKNOWN.
+- Données : SHA audio/manifeste, 80 pistes, cinq groupes de composition disjoints — PASS sur GitHub.
+- Acoustique : causalité et invariance au découpage sur signaux synthétiques — PASS limité ; coût matériel non mesuré.
+- Architecture : imports et chemins isolés — PASS en CI ; perturbations adverses multi-axes non réalisées.
+- Apprentissage : entraînement FIT et calibration disjoints — PASS sur les groupes et l'exécution.
+- Métriques : résultats vérifiés K0–K6, comparateurs au même dénominateur — PASS.
+- LIVE : pas de preuve p95/p99 sur iRig, ni de déploiement/métriques six-axes — UNKNOWN.
+- Trois avis NVIDIA authentiques et agents Work : non exécutés, aucun consensus 9/9 déclaré.
 
 ## Statut
-En cours. Aucun score FIT80 S829 mesuré à ce stade et aucune promotion. Référence S708 inchangée et branche S828 conservée comme témoin Active-K natif256.
-
-Déclencheur du protocole scientifique GitHub FIT80: commit balisé [run-fit80] ; tous les scores restent NON MESURÉS jusqu'à publication du rapport scientifique vérifié.
-
-Dernière révision du protocole : chaîne complète indépendante PCM→DSP→deux têtes entraînées→sélecteur→inférence online toutes les 256 valeurs ; lancement demandé sur cette version par [run-fit80]. Aucun score accepté sans rapport signé.
+**Terminé, non promu.** Run [#39624926356](https://github.com/Andriamarosoa/note/actions/runs/39624926356), commit de code `655d14bba15c028b257f6c01a701e086f715b2c3`. Exact-K 57,5247 % (176 334 / 306 536), H0 61,6972 % sur les mêmes trames ; régression −4,1724 points. Sous-comptages 83 523, surcomptages 46 679. La priorité est de corriger les K2–K6 sans mutualiser aucune composante. Pas de changement des références officielles.
