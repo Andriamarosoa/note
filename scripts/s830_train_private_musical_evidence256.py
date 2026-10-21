@@ -31,9 +31,14 @@ def extract_audio(pcm):
     stream=S830PCMAcoustics()
     pitch=[];agg=[];raw=[];ends=[]
     for start in range(0,len(pcm),HOP):
-        results=stream.push(pcm[start:start+HOP],start_sample=start)
+        chunk=pcm[start:start+HOP]
+        results=stream.push(chunk,start_sample=start)
+        if len(chunk)<HOP:
+            if results:
+                raise AssertionError("incomplete final PCM block cannot yield a future decision")
+            continue
         if len(results)!=1:
-            raise AssertionError("no dropped/duplicated PCM256 boundary")
+            raise AssertionError("one fresh acoustic decision per complete PCM256")
         end,features,k=results[0]
         ends.append(end);pitch.append(features.astype(np.float16))
         agg.append(summarize_one(features,k));raw.append(k)
