@@ -217,3 +217,48 @@ class S827S708ActiveKOnly:
             output_only="active_exact_k",own_private_decoder=True,
             public_midi_emission=False,other_five_axes_mutated=False,
             source_model_retrained_to_256=False)
+
+
+class S827ProtectedSixAxisIntegration:
+    """Opt-in orchestration: override ONLY the Active-K SHADOW view.
+
+    H0 original MIDI is replayed through six S812 independent projections.
+    All five other results are bit-for-bit H0 at EVERY hop.
+    No candidate result is routed to public MIDI; source events stay sealed.
+    The original Active-K H0 remains available separately.
+    """
+    def __init__(self,private_s708_activek):
+        from causal_note.s812_historical_axis_h0 import SixHistoricalH0
+        if not isinstance(private_s708_activek,S827S708ActiveKOnly):
+            raise TypeError("only private S708 Active-K is accepted")
+        self.private=private_s708_activek
+        self.h0=SixHistoricalH0()
+        self.original_h0=[]
+        self.last_sample=0
+
+    def step(self,pcm256,*,start_sample,signed_midi_events=()):
+        from causal_note.s812_historical_axis_h0 import (
+            AXES,AxisResult,checked_h1_view,signature
+        )
+        x=np.asarray(pcm256)
+        if (x.shape!=(HOP,) or x.dtype.kind!="f" or
+            start_sample!=self.last_sample or not np.isfinite(x).all()):
+            raise ValueError("S827 integration requires fresh contiguous float PCM256")
+        before=signature(signed_midi_events)
+        decisions=self.private.push(x,start_sample=int(start_sample))
+        if len(decisions)!=1:
+            raise AssertionError("one S708 private ActiveK model call every PCM256")
+        decision=decisions[0]
+        end=start_sample+HOP
+        if decision.decision_sample!=end:
+            raise AssertionError("Active-K response not current PCM256")
+        original=self.h0.step(end,signed_midi_events)
+        candidate=AxisResult("active_exact_k",end,count=decision.count)
+        protected=checked_h1_view(original,candidate,"active_exact_k")
+        if (signature(signed_midi_events)!=before or
+            any(protected[axis]!=original[axis]
+                for axis in AXES if axis!="active_exact_k")):
+            raise AssertionError("original signed MIDI or other axes changed")
+        self.original_h0.append(original["active_exact_k"])
+        self.last_sample=end
+        return protected
