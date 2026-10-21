@@ -1,43 +1,40 @@
 ---
 serie: S834
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s834-s809-six-axes-native256
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39658093988
+commit_sha: 4d5c445c6f44d1c956f781f85764fe12bfba4983
 promotion: false
 ---
 
-# S834 — Portage fidèle S809, six architectures isolées vers PCM256 strict
+# S834 — Portage fidèle S809 six axes natif256, analyse scientifique terminée
 
 ## Objectif
-Construire **une version de S809 à 256 échantillons**, et non un dérivé Exact-K S829–S833. Préserver intégralement les six chaînes originales HEAD → SELECTOR → DECODER, chacune avec son sélecteur, son état et ses hypothèses MIDI privées. Aucun correctif dans un axe ne peut changer une décision ou une sélection des cinq autres. Appliquer la cadence **256 échantillons à 44 100 Hz = 5,805 ms par décision**, sans attendre quatre blocs ni observer des échantillons futurs.
+Porter fidèlement les six architectures S809 HEAD→SELECTOR→DECODER à une nouvelle décision toutes les 256 valeurs PCM44,1 kHz, sans attendre quatre hops, sans partager les états/sorties des têtes ni modifier le MIDI officiel. Exiger non-régression des cinq autres caractéristiques avant toute promotion.
 
 ## Hypothèse
-Les six axes S809 ne sont pas essentiellement incompatibles avec PCM256 : c'est `s763_independent_decoders.DECISION_SAMPLES=4*256` et l'usage de `S800` postérieurs historiques espacés de 1024 qui imposaient l'ancienne grille. Une copie indépendante avec `DECISION_SAMPLES=256`, alimentée par **S708 recalculé sur les vrais PCM256**, conserve le chemin S809 de prédictions déjà élaborées, notamment son modèle d'harmoniques et ses informations temporelles. En conservant une unique source **immuable** et six copies privés, les 30 non-interférences directionnelles restent vérifiables.
+Les têtes/arbres de décision indépendants de S809 peuvent recevoir des postérieurs harmoniques S708 **fraîchement recalculés** à chaque nouvelle frontière PCM256 et reconstruire les bonnes caractéristiques de S809 à 1024 sans réutiliser les snapshots S800 as-of-1024. La séparation des six axes se vérifie par mutation adversariale de chaque sélecteur.
 
 ## Modifications
-- `src/causal_note/s834_native256_decoders.py` : copie à horloge 256 de `s763_independent_decoders.py` sans modifier l'ancien fichier ni les poids. Tous les six décodeurs strictement isolés ; `FullNoteDecoder.min_age_samples=0` interdit tout hold supplémentaire de 2 anciennes fenêtres, ouverture/fermeture à la frontière actuelle ; onset refractory n'introduit pas d'attente sur une attaque acceptée.
-- `src/causal_note/s834_s809_six_axis_pcm256.py` : copie du code S809, les 6 banques de 2 propositions, leurs 6 sélecteurs et décodeurs, avec vérification du même timestamp à chaque 256, sans changement des interfaces de production.
-- `src/causal_note/s834_s809_native256_audio.py` : adaptation à l'acoustique **S827/S708 authentique** : PCM44.1k → frontend natif → 288D S708 recalculées → S708 temporel causal original gelé une fois par 256 → `Fragment(post=[49,3], k=[7])` entièrement immuable → six chaînes S809 ; ni sortie ni état d'une autre chaîne en entrée.
-- `scripts/s834_s809_native256_fit80_replay.py` : vérifie SHA sources, 80 WAV, 306 536 nouveaux postérieurs S708, six métriques SHADOW sur GT, témoin historique H0 inchangé, **6×5 comparaisons de non-interférence sur 64 premières frontières par piste**. Sauvegarde diagnostics et six scores isolés, sans fausse revendication sur un seul MIDI final.
-- `test/test_s834_s809_native256_axes.py` : 11+ tests adversariaux S809 originaux recalculés sur 256, y compris attaques d'une tête, d'un sélecteur ou d'un décodeur sur chaque axe.
+- `src/causal_note/s834_native256_decoders.py` : port isolé S763 1024→256 sans mutation de l'original. Suppression du hold additionnel Full Note ; pas de nouveau lookahead.
+- `src/causal_note/s834_s809_six_axis_pcm256.py` : copie fidèle de la famille de six HEAD/SELECTOR/DECODER S809 avec copies immuables et identités d'axes.
+- `src/causal_note/s834_s809_native256_audio.py` : vraie acoustique S708 288D, origine audio PCM et poids gelés, chaque hop actuel 256 produit un nouveau postérieur `[49,3]` et une distribution K `[7]` disponibles aux six axes seulement en lecture.
+- `scripts/s834_s809_native256_fit80_replay.py` : vérification des sources signées et du MIDI H0, six diagnostics SHADOW comparés sur 80 pistes, six contre-exemples par fenêtre (5 axes étrangers), 64 premières fenêtres de chaque piste.
+- `test/test_s834_s809_native256_axes.py` : tests adversariaux S809 portés à PCM256.
 
 ## Protocole
-Test préalable de non-interférence sur des signaux synthétiques, puis replay des cinq compositions FIT80 signées d'origine (16 × 5 pistes) avec véritables PCM. Exactement une décision par bloc complet de 256, y compris K0. Vérification des 30 relations non-interférentes sur 80 pistes × 64 frames = **153 600 contre-exemples**. Pour tout axe modifié, les cinq autres restent strictement identiques aux autres propositions sans modification et tous les événements MIDI publics S708 restent à l'identique. Compare les six diagnostics SHADOW aux valeurs H0 **sur la même cohorte**, mais les 84,24 % S809 à 1024 proviennent d'un protocole différent ; ne pas fabriquer un score natif de 84,24 %.
+80 originaux GuitarSet FIT80 S800 signés, 5 compositions ×16 pistes, **306 536 frontières PCM256** à 44,1 kHz, aucune entrée de vérité lors de l'inférence, et 80×64×6×5 = **153 600 invariances inter-axes**. Même MIDI H0 historisé en témoin. Toutes les mesures des six axes SHADOW sont DISTINCTES des métriques officielles CAL32 et d'un MIDI final fusionné.
 
 ## Audits obligatoires
-- Données : SHA checkpoint S708 et 80 audios GuitarSet + provenance S800 intacte.
-- Acoustique : frontal temporel recalculé sur PCM256, S708 288D, pas d'as-of1024, causalité future et cadence stricte.
-- Architecture : six propriétaires distincts, 30/30 relations protégées, aucune mutation S708/S828/MIDI.
-- Apprentissage : source S708 gelée, entraînée historiquement à 1024 ; **aucun entraînement S834 nouveau** revendiqué.
-- Métriques : séparées par axe, dénominateurs exacts K0–K6, métriques source signées non modifiées.
-- LIVE : pas d'augmentation algorithmique du lookahead/hold mais **p95/p99 physique iRig à mesurer** ; 5,805 ms est une période de décision et non une latence mesurée.
-- Agents NVIDIA / Work : non exécutés, preuves CI seulement.
+- Données : PASS, 80 WAV authentiques, checkpoint S708 identifié SHA.
+- Acoustique : PASS pour le recalcul par hop et l'absence de futur, MAIS modèle S708 appris historiquement à 1024 et repris gelé à 256.
+- Architecture : PASS, 41 tests initiaux, 153 600/153 600 interactions sans influence sur les cinq autres.
+- Apprentissage : PASS limité — **pas de réentraînement** 256 des poids S708 et pas de split OOF garanti de son apprentissage initial.
+- Métriques : PASS pour calcul exact des six scores SHADOW, mais Onset baisse de **73,2520 % H0 FIT80 à 71,3823 % S834** ; Offset F1 n'est pas comparable à Offset accuracy H0.
+- LIVE : FAIL comme **preuve du budget strict**, pas comme algorithme nécessairement non causal : sur Linux GitHub, les 80 p95 CPU de traitement bloc sont entre 6,61 et 7,75 ms, tous supérieurs à la période 5,805 ms ; p99 entre 6,81 et 9,50 ms. Ce ne sont ni p95 physiques iRig ni tests de production, la latence matérielle reste UNKNOWN.
+- Aucun agent NVIDIA / Work réellement appelé.
 
 ## Statut
-En cours, zéro promotion. Les scores S708 officiels et la référence de développement S828 restent protégés ; une amélioration ne pourra être revendiquée que sur métriques strictement comparables, pas uniquement sur le fait que l'architecture existe.
-
-## Validation technique et déclenchement scientifique
-Le premier CI S834 #39657847123 est **SUCCESS** : 41 tests de l'ancien S809, du nouveau S834 et du modèle temporel original. Les six fichiers de production restent inchangés. [run-fit80] lancement des 80 WAV GuitarSet sur S834 original S708 actualisé à chaque 256, incluant les 153 600 vérifications directionnelles des autres axes, un score SHADOW distinct par axe et le témoin MIDI original inchangé. Aucun gain non confirmé n'est déclaré.
+**TERMINÉ, NON PROMU.** [GitHub Actions #39658093988](https://github.com/Andriamarosoa/note/actions/runs/39658093988) SUCCESS, code scientifique `4d5c445c6f44d1c956f781f85764fe12bfba4983`, artifact GitHub `S834_REAL_S809_SIX_AXES_PCM256_FIT80` id `12376305671`. Six scores S834 : Exact-K 75,7807 %, Active Exact-K 65,1936 %, Onset F1 71,3823 %, Offset F1 38,6774 %, Frame Pitch F1 84,9989 %, Full Note F1 71,1080 %. Exact-K améliore S829 57,5247 % de 18,2566 points sur les 306 536 mêmes fenêtres. **Aucune régression d'interférence technique** entre architectures ; cela NE garantit PAS la non-régression musicale de chaque caractéristique. Onset est en régression sur le H0 signé, et coût CPU >5,805 ms. Le témoin S708 officiel CAL32 et S828 sont intacts. S834 doit rester research SHADOW.
