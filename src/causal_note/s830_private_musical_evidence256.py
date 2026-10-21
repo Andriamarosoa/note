@@ -23,7 +23,7 @@ FEATURES = 85
 ARGUMENTS = dict(max_iter=48,max_depth=4,max_leaf_nodes=15,
                  min_samples_leaf=65,learning_rate=.09,
                  l2_regularization=2.0,max_bins=63,early_stopping=False)
-MODES = ("s829", "sustain", "joint", "router", "blend")
+MODES = ("s829", "sustain", "joint", "router", "blend", "rescue")
 THRESHOLDS = (.30,.40,.50,.60,.70)
 SHIFTS = (-1,0,1)
 
@@ -102,15 +102,18 @@ class LearnedEvidence:
     release:HistGradientBoostingClassifier
     meta:dict
 
-    def posterior(self,frames,batch_frames=256):
+    def posterior(self,frames,batch_frames=256,domains=DOMAINS):
         f=np.asarray(frames)
         if f.ndim!=3 or f.shape[1:]!=(PITCHES,72):
             raise ValueError("S830 expects raw private [T,49,72] evidence")
+        if not domains or not set(domains)<=set(DOMAINS):
+            raise ValueError('unknown private evidence domain')
         pred=np.zeros((*f.shape[:2],3),np.float32)
         for first in range(0,len(f),batch_frames):
             part=pitch_features(np.asarray(f[first:first+batch_frames],np.float32))
             flat=part.reshape(-1,FEATURES)
             for c,domain in enumerate(DOMAINS):
+                if domain not in domains:continue
                 model=getattr(self,domain)
                 if not np.array_equal(model.classes_,[0,1]):
                     raise AssertionError("head must learn both classes")
@@ -226,8 +229,14 @@ def selected(base,pitch,held,confidence,mode,shift=0):
     elif mode=="joint":v=c
     elif mode=="blend":v=np.rint((a+b+c)/3.).astype(np.int16)
     elif mode=="router":
-        # Local fragment choice, never other axis or GT.
+        # Local fragment choice, based on *positive* acoustic note evidence.
         v=np.where(confidence>=.75,b,np.where(confidence>=.55,c,a))
+    elif mode=="rescue":
+        # Conservative local one-step changes, only when source has
+        # strong positive evidence and its private K proposal disagrees.
+        candidate=np.where(np.abs(b-a)<=1,b,c)
+        v=np.where((confidence>=.68)&(candidate!=a)&
+                   (np.abs(candidate-a)<=1),candidate,a)
     else:raise ValueError("unknown private selector")
     return np.clip(v+int(shift),0,6).astype(np.uint8)
 
@@ -269,17 +278,18 @@ def apply(fitted_k,fitted_pitch,x,raw_k,raw_pitch,selector):
 
 
 class S830FittedStream:
-    """True online inference with own state, one result per complete PCM256.
+    """Live causal stream: evaluates only the heads required by the selector.
 
-    This class intentionally never calls the other five music task heads.
-    No ring of post-onset future PCM and no output hold is allowed.
+    Processing and timing cover the private PCM frontend and actual model
+    inference; OS audio-device/I/O latency is separate and not yet measured.
     """
     def __init__(self,count_fitted,evidence_fitted,selector):
         from causal_note.s829_exactk_s809_native256 import FittedExactK
+        from collections import deque
         if not isinstance(count_fitted,FittedExactK) or not isinstance(evidence_fitted,LearnedEvidence):
             raise TypeError("only own trained K and own three evidence heads")
-        if len(selector)!=3:
-            raise ValueError("selector requires mode threshold shift")
+        if len(selector)!=3 or selector[0] not in MODES:
+            raise ValueError("unknown selector mode or arity")
         self.frontend=S830PCMAcoustics()
         self.count_model=count_fitted
         self.evidence_model=evidence_fitted
@@ -287,42 +297,65 @@ class S830FittedStream:
         self.held=np.zeros(PITCHES,bool)
         self.last_decision=0
         self.calls=0
+        self.musical_model_calls=0
         self.last_runtime_ms=0.
+        self.cpu_hop_ms=deque(maxlen=2048)
 
     def push(self,pcm,*,start_sample):
         from causal_note.s829_exactk_s809_native256 import (
             ExactKDecision,summarize_one
         )
         import time
+        started=time.perf_counter()
         out=[]
         for end,frame,acoustic_k in self.frontend.push(
                 pcm,start_sample=start_sample):
-            started=time.perf_counter()
-            agg=summarize_one(frame,acoustic_k)[None,:]
-            kbase=int(self.count_model.predict(
-                agg,np.array([acoustic_k],dtype=np.uint8))[0])
-            post=self.evidence_model.posterior(frame[None,:,:])[0]
-            on,sus,off=post.T
-            _,thr,shift=self.selector
-            direct=min(6,int(np.count_nonzero(sus>=thr)))
-            start=((on>=.45)&(sus>=.15))|(sus>=min(.95,thr+.10))
-            stop=((off>=.55)&(sus<.55))|(sus<max(.10,thr-.22))
-            self.held=(self.held&~stop)|start
-            joint=min(6,int(self.held.sum()))
-            confidence=float(np.mean(np.maximum(sus,1-sus)))
-            k=int(selected(np.array([kbase]),np.array([direct]),
-                np.array([joint]),np.array([confidence]),
-                self.selector[0],shift)[0])
+            begin=time.perf_counter()
+            mode,thr,shift=self.selector
+            # Pure S829 selection needs NO new musical model inference.
+            need_base=mode in ("s829","router","blend","rescue")
+            if need_base:
+                agg=summarize_one(frame,acoustic_k)[None,:]
+                kbase=int(self.count_model.predict(
+                    agg,np.array([acoustic_k],dtype=np.uint8))[0])
+            else:
+                kbase=0
+            if mode=="s829":
+                k=int(np.clip(kbase+shift,0,6))
+                confidence=0.0  # no falsely advertised posterior
+            else:
+                domains=("sustain",) if mode=="sustain" else DOMAINS
+                post=self.evidence_model.posterior(
+                    frame[None,:,:],domains=domains)[0]
+                self.musical_model_calls+=len(domains)
+                on,sus,off=post.T
+                direct=min(6,int(np.count_nonzero(sus>=thr)))
+                if mode in ("joint","router","blend","rescue"):
+                    rise=((on>=.45)&(sus>=.15))|(sus>=min(.95,thr+.10))
+                    stop=((off>=.55)&(sus<.55))|(sus<max(.10,thr-.22))
+                    self.held=(self.held&~stop)|rise
+                joint=min(6,int(self.held.sum()))
+                confidence=float(positive_note_confidence(post[None,:,:])[0])
+                k=int(selected(np.array([kbase]),np.array([direct]),
+                    np.array([joint]),np.array([confidence]),mode,shift)[0])
             if end!=self.last_decision+HOP:
-                raise AssertionError("S830 fitted model missed PCM256 cadence")
-            self.last_runtime_ms=1000*(time.perf_counter()-started)
+                raise AssertionError("S831 fitted model missed PCM256 cadence")
             self.last_decision=end;self.calls+=1
             out.append(ExactKDecision(end,k,confidence))
+            self.cpu_hop_ms.append(1000*(time.perf_counter()-begin))
+        total=1000*(time.perf_counter()-started)
+        self.last_runtime_ms=total
+        # Include frontend time in the total call; instrumentation avoids
+        # the historic bug of starting after FFT.
         return tuple(out)
 
     def diagnostics(self):
+        durations=np.asarray(self.cpu_hop_ms,np.float64)
         return dict(schema=SCHEMA,decision_hop_samples=HOP,
             independent_trained_heads=5,
             public_midi_modified=False,shared_weights=False,
             emitted_decisions=self.calls,lookahead_samples=0,
-            added_hold_samples=0,last_inference_runtime_ms=self.last_runtime_ms)
+            added_hold_samples=0,last_call_total_cpu_ms=self.last_runtime_ms,
+            per_hop_model_cpu_p95_ms=float(np.percentile(durations,95)) if len(durations) else None,
+            musical_model_calls=self.musical_model_calls,
+            mic_io_latency_verified=False)
