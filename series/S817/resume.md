@@ -1,11 +1,11 @@
 ---
 serie: S817
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s817-activek-temporal-highpoly
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39543749810
+commit_sha: 817e57edec3b57421f61e3f4ab74580280ab3926
 promotion: false
 ---
 # S817 — Spécialistes temporels privés Active Exact-K K4 à K6
@@ -33,3 +33,8 @@ Causalité par mutation du futur, streaming découpé invariant, absence de poid
 ## Statut
 
 Conception et scripts créés sur branche S817, résultats sur vraies pistes non encore obtenus. S816 56,4241 % est rejeté, S815 56,9125 % reste comparaison SHADOW, S708 CAL32 officiel préservé.
+
+
+## Clôture scientifique vérifiée — 21 octobre 2026
+
+Run complet corrigé [#39543749810](https://github.com/Andriamarosoa/note/actions/runs/39543749810) SUCCESS, après premier run [#39540692270](https://github.com/Andriamarosoa/note/actions/runs/39540692270) FAILED par simple NameError `asdict` en clôture. Audit autonome de l'archive initiale [#39543864931](https://github.com/Andriamarosoa/note/actions/runs/39543864931) SUCCESS : 5 checkpoints SHA, 80 décisions SHA, 306536 trames MIDI256. S817 exactement 141946/249411 = **56,91248582 %** Active-K FIT80, identique à S815, et sous H0 142213/249411 = 57,01953803 % (−0,10705222 point). **0 décision changée**. Les spécialistes K4–K6 n'ont pas été retenus de façon à changer la prédiction. Hypothèse non confirmée ; **rejet scientifique S817**. Aucun modèle LIVE ou historique promu ou modifié. Priorité : diversifier les preuves et les familles d'apprentissage plutôt qu'ajouter des têtes dont les sélecteurs font zéro changement.
