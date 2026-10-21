@@ -1,0 +1,130 @@
+name: S814 private Active Exact-K MIDI256 FIT80 research
+on:
+  push:
+    branches: [codex/note-s814-activek-private-midi256]
+    paths:
+      - src/causal_note/s814_activek_teacher.py
+      - scripts/s814_train_activek256.py
+      - test/test_s814_activek_teacher.py
+      - series/S814/**
+      - .github/workflows/note-s814-activek-midi256.yml
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+permissions:
+  contents: read
+  actions: read
+env:
+  PYTHONPATH: .:src
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  GH_TOKEN: ${{ github.token }}
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install native MIDI256 scientific dependencies
+        run: python -m pip install -r requirements-s813.txt
+      - name: Verify independence, causality, K0-6 accounting, and provenance contracts
+        run: |
+          python -m compileall -q src/causal_note/s814_activek_teacher.py scripts/s814_train_activek256.py test/test_s814_activek_teacher.py
+          python -m unittest -v test.test_s814_activek_teacher test.test_s813_native256 test.test_s813_teacher_contract test.test_s809_axis_isolation
+          python -m scripts.verify_series_reports --series S814
+
+  fit80:
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install scientific dependencies
+        run: python -m pip install -r requirements-s813.txt
+      - name: Restore original signed S800 GuitarSet FIT80 manifest and annotations
+        run: |
+          mkdir -p /tmp/s814/manifest /tmp/s814/traces
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/s814/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/s814/traces
+          echo S814_RESTORED_STRUCTURE
+          find /tmp/s814/manifest -maxdepth 4 -type f | head -20
+          find /tmp/s814/traces -maxdepth 5 -name 'fit_000*' -type f | head -20
+          MANIFEST="$(find /tmp/s814/manifest -name report.json -type f -print -quit)"
+          test -n "$MANIFEST"
+          test -s "$MANIFEST"
+          printf '%s\n' "$MANIFEST" > /tmp/s814/manifest_path
+          TRACES_FILE="$(find /tmp/s814/traces -name fit_000.json -type f -print -quit)"
+          test -n "$TRACES_FILE"
+          TRACES_DIR="$(dirname "$TRACES_FILE")"
+          test -f "$TRACES_DIR/fit_079.json"
+          printf '%s\n' "$TRACES_DIR" > /tmp/s814/traces_path
+      - name: Fetch SHA-pinned original mono microphone PCM
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib, json, urllib.request
+          protocol=json.loads(Path('analysis/evidence/v273-s613-strict-live/protocol.json').read_text())
+          source=protocol['guitar_archives']['GuitarSet_audio']
+          output=Path('/tmp/s814/GuitarSet_audio.zip')
+          with urllib.request.urlopen(source['url'],timeout=180) as request, output.open('wb') as target:
+              while True:
+                  blob=request.read(4*1024*1024)
+                  if not blob: break
+                  target.write(blob)
+          if output.stat().st_size!=source['size']:
+              raise AssertionError('GuitarSet PCM archive byte-length mismatch')
+          h=hashlib.sha256()
+          with output.open('rb') as f:
+              for chunk in iter(lambda:f.read(4*1024*1024),b''):
+                  h.update(chunk)
+          if h.hexdigest()!=source['sha256']:
+              raise AssertionError('GuitarSet PCM archive signature mismatch')
+          print('S814_AUDIO_SHA_OK',h.hexdigest())
+          PY
+      - name: Extract fresh causal PCM at every real MIDI256 boundary
+        run: |
+          TRACES_DIR="$(cat /tmp/s814/traces_path)"
+          python -m scripts.s813_prepare_native256 --manifest "$(cat /tmp/s814/manifest_path)" --traces "$TRACES_DIR" --audio-zip /tmp/s814/GuitarSet_audio.zip --out /tmp/s814/fresh256 --workers 2
+      - name: Train independent Active-K heads, freeze calibration, test 5 composition folds
+        run: |
+          TRACES_DIR="$(cat /tmp/s814/traces_path)"
+          python -m scripts.s814_train_activek256 --cache /tmp/s814/fresh256 --traces "$TRACES_DIR" --out /tmp/s814/experiment
+      - name: Fail closed on original S708 counts or unification provenance
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/s814/experiment/report.json'))
+          assert r['complete'] and r['schema']=='S814_ACTIVE_EXACT_K_REAL_FRESH256_FIT80_V1'
+          assert len(r['tracks'])==80 and len(r['folds'])==5
+          assert (r['feature_hop_samples'],r['decision_hop_samples'],r['metric_hop_samples'])==(256,256,256)
+          assert r['original_fit80_active_k']['correct']==142213
+          assert r['original_fit80_active_k']['frames']==249411
+          assert r['teacher_active_exact_k']['frames']==249411
+          assert not any(r[k] for k in ('CAL_opened','HELD_opened','TEST_opened','production_LIVE_modified','promotion','unified_midi_evaluated'))
+          assert not r['unification_gate']['allow_unification']
+          print('S814_REAL_ACTIVE_K',json.dumps(r['teacher_active_exact_k']))
+          print('S814_H0',json.dumps(r['original_fit80_active_k']))
+          print('S814_DELTA_PPOINTS',r['delta_against_h0_fit80_pp'])
+          print('S814_NOT_PROMOTED_FIT80_RESEARCH_ONLY')
+          PY
+      - name: Preserve actual experiment and checkpoints, not large transient cache
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S814_ACTIVE_K_PRIVATE_MIDI256_FIT80_RESULTS
+          path: |
+            /tmp/s814/experiment/report.json
+            /tmp/s814/experiment/models/
+            /tmp/s814/experiment/predictions/
+            /tmp/s814/fresh256/report.json
+          retention-days: 45
+          if-no-files-found: warn
