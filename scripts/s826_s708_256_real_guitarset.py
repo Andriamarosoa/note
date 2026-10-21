@@ -61,7 +61,9 @@ def replay(audio,heads,model,policy,*,strict256):
        diagnostic_only_not_real_mic_latency=True,
        no_future_samples=True)
 
-def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,native_model,out):
+def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,native_model,out,*,tracks_per_composition=1):
+    if not 1<=tracks_per_composition<=16:
+        raise ValueError('original 1..16 signed tracks per GuitarSet composition only')
     if out.exists():raise FileExistsError("S826 output must remain immutable")
     manifest=json.loads(manifest_path.read_text())
     if len(manifest.get("fit_files",[]))!=80 or not manifest.get("complete"):
@@ -71,9 +73,9 @@ def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,native_mo
     if (heads.metadata.get("selection") is None or
         not set(COMPS).issubset({x["composition"] for x in manifest["fit_files"]})):
         raise AssertionError("S708 source or original composition missing")
-    selected={comp:sorted((x for x in manifest["fit_files"]
-         if x["composition"]==comp),key=lambda z:z["index"])[0]
-         for comp in COMPS}
+    selected=[(comp,spec) for comp in COMPS
+        for spec in sorted((x for x in manifest["fit_files"]
+            if x["composition"]==comp),key=lambda z:z["index"])[:tracks_per_composition]]
     out.mkdir(parents=True);(out/"events").mkdir()
     report=dict(schema=SCHEMA,complete=False,promotion=False,
         source_S708_sha256=model_sha,source_native_sha256=digest_file(native_model),
@@ -81,7 +83,7 @@ def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,native_mo
         source_neural_architecture_retrained_at_256=False,
         source_dataset="GuitarSet FIT80 original S800 signed subset 5",
         source_manifest_sha256=digest_file(manifest_path),
-        selected_fit_compositions=list(COMPS),selected_fit_recordings=5,
+        selected_fit_compositions=list(COMPS),selected_fit_recordings=len(selected),
         independent_external_generalization_verified=False,
         note_count_six_metrics_in_single_MIDI_stream=True,
         original_1024_stream_unchanged=True,
@@ -89,8 +91,7 @@ def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,native_mo
         decision_hop_samples=256,feature_hop_samples=256,metric_hop_samples=256,
         added_lookahead_samples=0,added_hold_samples=0,rows=[])
     with zipfile.ZipFile(audio_zip) as audio_archive:
-        for comp in COMPS:
-            spec=selected[comp]
+        for comp,spec in selected:
             stem=f"fit_{spec['index']:03d}"
             meta_file=traces/(stem+".json")
             if digest_file(meta_file)!=spec["json_sha256"]:
@@ -147,6 +148,8 @@ if __name__=="__main__":
     for arg in ("audio-zip","traces","manifest-path","source-checkpoint",
                 "source-report","native-model","out"):
         ap.add_argument("--"+arg,type=Path,required=True)
+    ap.add_argument("--tracks-per-composition",type=int,default=1)
     a=ap.parse_args()
     run(a.audio_zip,a.traces,a.manifest_path,a.source_checkpoint,
-        a.source_report,a.native_model,a.out)
+        a.source_report,a.native_model,a.out,
+        tracks_per_composition=a.tracks_per_composition)
