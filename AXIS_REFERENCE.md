@@ -1,16 +1,15 @@
-# Branche de référence — Exact-K
+# EXACT-K ONLY — branch contract
 
-**SEUL AXE À AMÉLIORER DANS CETTE BRANCHE : Exact-K.**
+**Branch:** `codex/note-best-exact-k-s834-256`
 
-- Origine immuable : `codex/note-s834-s809-six-axes-native256`, série scientifique **S834**.
-- Meilleur score retenu selon la métrique décrite : **75,780659 %**.
-- Métrique : **Exact-K accuracy K0-K6 toutes trames** ; cohorte : FIT80 80 pistes 306 536 frontières.
-- Cadence : 256 échantillons @ 44,1 kHz.
-- Chemins d'implémentation source à préserver :
-  - `src/causal_note/s834_s809_native256_audio.py`
-  - `src/causal_note/s834_s809_six_axis_pcm256.py`
-  - `src/causal_note/s834_native256_decoders.py`
-- Limites : SHADOW, S708 backbone entraîné historiquement à 1024, inférence recalculée à 256.
+**Single mutable characteristic:** Exact-K (cardinality K0–K6).
 
-## Contrat de non-régression
-Cette branche est indépendante des cinq autres branches de référence : entraîner ou corriger **uniquement Exact-K**. Ne modifier aucune tête, aucun sélecteur, décodeur, état, checkpoint ni métrique des cinq autres caractéristiques. Toute future proposition doit préserver la même cohorte, la même définition de métrique et la provenance de source. Aucun résultat d'une grille 1024 ne doit être attribué à une inférence native 256. Refuser une correction si une des cinq autres sorties change. Avant une fusion MIDI éventuelle, réaliser des tests appariés des six métriques sur les mêmes pistes, prouver l'absence de régression et mesurer la latence physique iRig. Aucun MIDI public modifié et aucune promotion dans cette branche.
+**Reference:** S834 shadow FIT80 original fresh PCM256 source, 232295 correct out of 306536, 75.780659%; S708 frozen pretrained source from 1024-trained model. The score is a reference to reproduce before subsequent model improvement, not a claim about a newly evaluated combined MIDI.
+
+**Output:** `ExactKDecision(sample,count,confidence)` only.
+
+**Removed from this branch's Git tree:** the other five axis heads/decoders/decisions, scripts, unit tests, workflows and old series folders. They remain in their own Git branches; do not change them or their scores.
+
+**Constraints:** 44100 Hz, exact hop=256 PCM (5.805 ms), strictly causal current/past input, zero extra buffering/hold, candidate selectors and data-driven branch decisions must not use held-out GT, no public MIDI rewrite, strict non-regression against 232295/306536 on FIT80 paired evaluation, physical p95/p99 still unknown.
+
+**Allowed future work:** optimize and train Exact-K subheads, audit harmonic over/under-count K0..K6, test fold-disjoint CAL/OUTER, profile CPU under physical iRig setup, without modifying any other characteristic.

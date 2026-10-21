@@ -1,0 +1,98 @@
+name: Exact-K S834 true PCM256 ONLY
+on:
+  push:
+    branches: [codex/note-best-exact-k-s834-256]
+  workflow_dispatch:
+concurrency:
+  group: exact-k-only-256-${{ github.ref }}
+  cancel-in-progress: true
+permissions: {contents: read, actions: read}
+env:
+  PYTHONPATH: src
+  GH_TOKEN: ${{ github.token }}
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  exact_k_smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install fixed acoustic/CPU prerequisites
+        run: |
+          python -m pip install numpy scipy
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Verify physically isolated tree and run causal Exact-K tests
+        run: |
+          python - <<'PY'
+          import pathlib
+          root=pathlib.Path(".")
+          assert {x.name for x in (root/"src").iterdir()}=={"exact_k"}
+          assert {x.name for x in (root/"tests").iterdir()}=={"test_exact_k.py"}
+          assert not any(root.rglob("s834_s809_six_axis_pcm256.py"))
+          assert not any(root.rglob("s827_s708_activek_only.py"))
+          assert not any(root.rglob("s763_independent_decoders.py"))
+          print("EXACT_K_ONLY_NO_OTHER_AXIS_MODULES")
+          PY
+          python -m compileall -q src/exact_k tests scripts
+          python -m unittest discover -s tests -v
+  signed_fit80:
+    runs-on: ubuntu-24.04
+    needs: exact_k_smoke
+    if: contains(github.event.head_commit.message, '[run-fit80]') || github.event_name == 'workflow_dispatch'
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: |
+          python -m pip install numpy scipy
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Fetch immutable 80-track PCM evidence + S708 original checkpoint
+        run: |
+          mkdir -p /tmp/exactk/s708 /tmp/exactk/manifest /tmp/exactk/traces
+          gh run download 39094682419 --repo Andriamarosoa/note --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/exactk/s708
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/exactk/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/exactk/traces
+          MODEL="$(find /tmp/exactk/s708 -name s708_selected.pt -type f -print -quit)"
+          META="$(find /tmp/exactk/manifest -name report.json -type f -print -quit)"
+          FIT="$(find /tmp/exactk/traces -name fit_000.json -type f -print -quit)"
+          test -s "$MODEL"; test -s "$(dirname "$MODEL")/report.json"; test -s "$META"; test -s "$FIT"
+          printf '%s\n' "$(dirname "$MODEL")" > /tmp/exactk/s708_dir
+          printf '%s\n' "$META" > /tmp/exactk/manifest_path
+          printf '%s\n' "$(dirname "$FIT")" > /tmp/exactk/traces_dir
+      - name: Download SHA-pinned original GuitarSet WAV ZIP
+        run: |
+          python - <<'PY'
+          import json,hashlib,urllib.request
+          from pathlib import Path
+          cfg=json.loads(Path("analysis/evidence/v273-s613-strict-live/protocol.json").read_text())
+          item=cfg["guitar_archives"]["GuitarSet_audio"]
+          dst=Path("/tmp/exactk/GuitarSet_audio.zip")
+          with urllib.request.urlopen(item["url"],timeout=180) as response, dst.open("wb") as output:
+              for block in iter(lambda:response.read(4*1024*1024),b""):output.write(block)
+          assert dst.stat().st_size==item["size"]
+          d=hashlib.sha256(dst.read_bytes()).hexdigest()
+          assert d==item["sha256"]
+          print("EXACT_K_GUITARSET_SHA256_PASS")
+          PY
+      - name: Reproduce S834 Exact-K 75.780659% on 306536 native decisions
+        run: |
+          python -m scripts.replay_fit80 --audio-zip /tmp/exactk/GuitarSet_audio.zip \
+            --traces "$(cat /tmp/exactk/traces_dir)" \
+            --manifest "$(cat /tmp/exactk/manifest_path)" \
+            --checkpoint "$(cat /tmp/exactk/s708_dir)/s708_selected.pt" \
+            --source-report "$(cat /tmp/exactk/s708_dir)/report.json" \
+            --native-model model/live/strict_note/NOTE_strict_live.npz \
+            --out /tmp/exactk/results --tracks-per-composition 16
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: EXACT_K_ONLY_256_FIT80_REPRODUCTION
+          path: /tmp/exactk/results/report.json
+          if-no-files-found: warn
+          retention-days: 45
