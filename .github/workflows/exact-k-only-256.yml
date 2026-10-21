@@ -24,7 +24,7 @@ jobs:
         with: {python-version: '3.11'}
       - name: Install fixed acoustic/CPU prerequisites
         run: |
-          python -m pip install numpy scipy
+          python -m pip install numpy==1.26.4 scipy==1.14.1
           python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
       - name: Verify physically isolated tree and run causal Exact-K tests
         run: |
@@ -50,7 +50,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: '3.11'}
       - run: |
-          python -m pip install numpy scipy
+          python -m pip install numpy==1.26.4 scipy==1.14.1
           python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
       - name: Fetch immutable 80-track PCM evidence + S708 original checkpoint
         run: |
