@@ -30,3 +30,5 @@ Six audits requis : Données (SHA, dénominateurs), Acoustique (extraction réel
 En cours. Aucun score FIT80 S829 mesuré à ce stade et aucune promotion. Référence S708 inchangée et branche S828 conservée comme témoin Active-K natif256.
 
 Déclencheur du protocole scientifique GitHub FIT80: commit balisé [run-fit80] ; tous les scores restent NON MESURÉS jusqu'à publication du rapport scientifique vérifié.
+
+Dernière révision du protocole : chaîne complète indépendante PCM→DSP→deux têtes entraînées→sélecteur→inférence online toutes les 256 valeurs ; lancement demandé sur cette version par [run-fit80]. Aucun score accepté sans rapport signé.
