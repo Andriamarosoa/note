@@ -1,0 +1,110 @@
+name: S824 S795 true feature family 11-mask ablations genuine MIDI256
+on:
+  push:
+    branches: [codex/note-s824-s795-feature-family-ablation]
+    paths:
+      - src/causal_note/s824_feature_family_ablation.py
+      - scripts/s824_retrain_feature_families.py
+      - test/test_s824_feature_family_ablation.py
+      - .github/workflows/note-s824-s795-families.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+env:
+  GH_TOKEN: ${{ github.token }}
+  PYTHONPATH: .:src
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python -m pip install -r requirements-s813.txt
+      - name: Prove S795 23D ABI, current-only S810 61D math and no hidden future
+        run: |
+          python -m compileall -q src/causal_note/s824_feature_family_ablation.py scripts/s824_retrain_feature_families.py test/test_s824_feature_family_ablation.py
+          python -m unittest -v test.test_s824_feature_family_ablation test.test_s815_activek_teacher test.test_s813_native256
+          python -m scripts.verify_series_reports --series S824
+  real_fit80:
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python -m pip install -r requirements-s813.txt
+      - name: Restore 80 exact S795 snapshot inputs and per-256 MIDI timelines from S800 run
+        run: |
+          mkdir -p /tmp/s824/manifest /tmp/s824/traces
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/s824/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/s824/traces
+          META="$(find /tmp/s824/manifest -name report.json -type f -print -quit)"
+          FIT="$(find /tmp/s824/traces -name fit_000.json -type f -print -quit)"
+          test -s "$META"
+          test -s "$FIT"
+          printf '%s\n' "$(dirname "$META")" > /tmp/s824/manifest_dir
+          printf '%s\n' "$(dirname "$FIT")" > /tmp/s824/traces_dir
+      - name: Train 9 private S795 feature-family heads x 5 folds, compare 11 declared modes on MIDI256
+        run: |
+          python -m scripts.s824_retrain_feature_families --manifest-dir "$(cat /tmp/s824/manifest_dir)" --traces "$(cat /tmp/s824/traces_dir)" --out /tmp/s824/result
+      - name: Fail closed if any true MIDI256 or S800 signature differs; block promotion
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/s824/result/report.json'))
+          assert r['schema']=='S824_S795_PREDECLARED_FAMILY_CAUSAL_256_FIT80_V1' and r['complete']
+          assert len(r['folds'])==5 and len(r['tracks'])==80
+          assert r['original_H0_activeK']['correct']==142213
+          assert r['original_H0_activeK']['frames']==249411
+          assert r['metric_hop_samples']==r['decision_hop_samples']==256
+          assert r['observed_legacy_source_clock_samples']==1024
+          assert r['S795_23_genuine_original_channels']
+          assert r['S795_depends_on_S708_posteriors_K_and_source_MIDI']
+          assert not r['native_PCM256_audio_reextracted']
+          assert not r['six_axis_independence_verified']
+          assert not r['independent_teacher_eligible']
+          expected=["full23","without_midi","without_s708","acoustic_only",
+              "without_acoustic","s708_only","midi_only","s708_plus_acoustic",
+              "midi_plus_acoustic","without_native_post","without_primary_post"]
+          assert sorted(r['by_mode'])==sorted(expected)
+          assert sorted(r['predeclared_feature_masks'])==sorted(expected)
+          assert r['ablation_s823_exact_parity_per_composition']
+          assert r['by_mode']['full23']['correct']==190705
+          for mode in expected:
+              x=r['by_mode'][mode]
+              assert x['frames']==249411
+              assert x['correct']+x['undercount']+x['overcount']==249411
+          assert r['by_mode']['without_midi']==r['by_mode']['s708_plus_acoustic']
+          assert r['by_mode']['without_s708']==r['by_mode']['midi_plus_acoustic']
+          assert r['cal_selection_only_in_inner_composition']
+          assert r['no_retraining_of_S708'] and r['all_models_shadow_only']
+          assert r['cal_selected']['frames']==249411
+          assert r['observations_without_snapshot']>0
+          assert r['source_observations']>0
+          assert not r['unification_gate']['allow_unification']
+          assert not any(r[k] for k in ('promotion','CAL_opened','HELD_opened',
+             'TEST_opened','source_MIDI_modified','production_LIVE_modified',
+             'added_lookahead_samples','added_hold_samples'))
+          print('S824_REAL_MASK_ABLATION',json.dumps({
+              'by_mode':r['by_mode'],'deltas_pp':r['delta_vs_full_pp'],
+              'cal_selected':r['cal_selected'],
+              'H0':r['original_H0_activeK']},sort_keys=True),flush=True)
+          print('S824_NO_NATIVE256_DSP_OR_PEER_AXIS_INDEPENDENCE_NO_PROMOTION',flush=True)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: S824_GENUINE_S795_11_FEATURE_FAMILY_ABLATIONS_MIDI256
+          path: |
+            /tmp/s824/result/report.json
+            /tmp/s824/result/models/
+          retention-days: 45
+          if-no-files-found: warn
