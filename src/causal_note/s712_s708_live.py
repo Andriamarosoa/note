@@ -129,7 +129,10 @@ def latest_s708_acoustic_features(feat, post, count):
 
 class S708StrictLiveStream:
     """Four-hop S708 stream with source-only past data and fail-fast continuity."""
-    def __init__(self, heads, model, policy, *, temporal_engine="incremental", release_adapter=None):
+    def __init__(self, heads, model, policy, *, temporal_engine="incremental", release_adapter=None, batch_hops=BATCH):
+        if batch_hops not in (1,BATCH):
+            raise ValueError("S708 decision interval must be 1 or 4 original MIDI256 hops")
+        self.batch_hops = batch_hops
         self.heads = heads
         self.frontend = CausalPitchFeatures(hop=HOP)
         if temporal_engine not in ("incremental", "reference"):
@@ -208,7 +211,7 @@ class S708StrictLiveStream:
                 self.native_post.append(np.asarray(p, np.float32))
                 self.native_k.append(np.asarray(k, np.float32))
                 self.frames += 1
-                if self.frames % BATCH == 0:
+                if self.frames % self.batch_hops == 0:
                     emitted.extend(self._decide(end, available))
         self.timings_ms.append((time.perf_counter()-begin)*1000)
         return emitted
@@ -228,7 +231,7 @@ class S708StrictLiveStream:
 
     def diagnostics(self):
         return dict(s708=True, frames=self.frames,
-                    decision_hop=DECISION, model_calls=self.model_calls,
+                    decision_hop=self.batch_hops*HOP, model_calls=self.model_calls,
                     source_past_only=True, torch_cpu_inference=True,
                     temporal_engine=self.temporal_engine,
                     offset_source=("S716_online_S707_causal_hazard"
