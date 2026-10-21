@@ -34,11 +34,11 @@ S708 officiel CAL32 reste inchangé. S834 ne modifie aucun code de référence e
 ## Audits
 | Rôle | Statut | Preuve |
 |---|---|---|
-| Données | PASS DOCUMENTAIRE | 6 références et 6 rapports vérifiés dans le dépôt |
-| Acoustique | PASS PARTIEL | PCM256 natif attesté pour 4 axes, deux références historiques conservées |
-| Architecture | PASS PROTECTION | 7 tests + CI interdit les modifications des sources S708/S828/S834 et protège les cinq autres axes |
-| Apprentissage | PAS D'ENTRAÎNEMENT | Registre sélectionne des sources existantes sans produire de checkpoints |
-| Métriques | PASS DOCUMENTAIRE | Cohortes et unités distinguées ; aucune nouvelle mesure musicale |
+| Données | PASS | 6 références et 6 rapports vérifiés dans le dépôt |
+| Acoustique | UNKNOWN | PCM256 natif attesté pour 4 axes, deux références historiques conservées |
+| Architecture | PASS | 7 tests + CI interdit les modifications des sources S708/S828/S834 et protège les cinq autres axes |
+| Apprentissage | UNKNOWN | Registre sélectionne des sources existantes sans produire de checkpoints |
+| Métriques | PASS | Cohortes et unités distinguées ; aucune nouvelle mesure musicale |
 | LIVE | UNKNOWN | Modèles/poids et iRig CPU p99 non validés |
 
 ## Verdict
