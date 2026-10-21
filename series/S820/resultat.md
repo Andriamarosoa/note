@@ -45,3 +45,7 @@ Aucune modification des modèles ou sorties S708/S707 et LIVE. Cette analyse est
 ## Verdict
 
 Aucune promotion, aucune unification, aucune affirmation que le timbre ou l'harmonique est la cause avant résultats vérifiés. Les seuils issus des données externes doivent être fixés dans un protocole distinct pour toute nouvelle architecture.
+
+## Prochaine action
+
+Reproduire les matrices K0–K6 authentiques et mesurer les distributions de preuves spectrales, puis documenter les limites physiques avant toute expérimentation de correction.
