@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 from causal_note.s829_exactk_s809_native256 import (
-    HOP, S829AcousticFrontEnd, S829Stream, score_exact,
+    HOP, S829AcousticFrontEnd, S829Stream, S829FittedStream, score_exact,
     fit_exact, proposed, SCHEMA
 )
 
@@ -73,6 +73,30 @@ class TestS829(unittest.TestCase):
         self.assertFalse(out.flags.writeable)
         with self.assertRaisesRegex(ValueError, "composition-disjoint"):
             fit_exact(tr+cal, cal)
+
+    def test_trained_fitted_online_is_causal_at_256(self):
+        tr = [fake("tr1", "C1", 11), fake("tr2", "C2", 12),
+              fake("tr3", "C3", 13)]
+        fit = fit_exact(tr, [fake("cal", "C4", 14)])
+        rng = np.random.default_rng(28)
+        audio = rng.normal(0, .05, HOP*6).astype(np.float32)
+        future = audio.copy()
+        future[3*HOP:] = 0
+        all_outputs = []
+        for wave in (audio, future):
+            stream = S829FittedStream(fit)
+            decisions = []
+            for i in range(0, len(wave), HOP):
+                produced = stream.push(wave[i:i+HOP], start_sample=i)
+                self.assertEqual(len(produced), 1)
+                decisions.extend(produced)
+            self.assertEqual(stream.model_calls, 6)
+            self.assertTrue(stream.diagnostics()["fitted_inference_online"])
+            self.assertTrue(stream.diagnostics()["no_shared_encoder"])
+            self.assertEqual([z.decision_sample for z in decisions],
+                             list(range(HOP, 7*HOP, HOP)))
+            all_outputs.append([z.count for z in decisions])
+        self.assertEqual(all_outputs[0][:3], all_outputs[1][:3])
 
     def test_selector_uses_only_owned_heads_and_pcm_baseline(self):
         h = np.zeros((2, 7), dtype=np.float32)
