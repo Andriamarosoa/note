@@ -7,7 +7,7 @@ on:
       - scripts/s819_six_checks.py
       - scripts/s819_review_consensus.py
       - test/test_s819_blind_nvidia.py
-      - series/S819/**
+      - series/S819/model_brief.md
       - .github/workflows/note-s819-blind-nvidia.yml
   workflow_dispatch:
 permissions:
