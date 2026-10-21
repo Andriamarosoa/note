@@ -14,8 +14,8 @@ from causal_note.s829_exactk_s809_native256 import (
     S829AcousticFrontEnd, fit_exact, score_exact, summarize_one, SR,HOP
 )
 from causal_note.s830_private_musical_evidence256 import (
-    S831PCMAcoustics,train_evidence,choose_selector,
-    counts_from_evidence,selected,SCHEMA,DOMAINS
+    S830PCMAcoustics,train_evidence,choose_selector,
+    counts_from_evidence,selected,positive_note_confidence,SCHEMA,DOMAINS
 )
 from scripts.s829_train_exactk_s809_native256 import (
     digest_file,save_json,targets_at_ends,original_count,signature,totals,
@@ -28,7 +28,7 @@ COMPS=("BN1","Funk2","Jazz1","Rock3","SS1")
 
 def extract_audio(pcm):
     """Offline replay of exactly the SAME private causal 256 streaming frontend."""
-    stream=S831PCMAcoustics()
+    stream=S830PCMAcoustics()
     pitch=[];agg=[];raw=[];ends=[]
     for start in range(0,len(pcm),HOP):
         chunk=pcm[start:start+HOP]
