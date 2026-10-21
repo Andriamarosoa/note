@@ -42,7 +42,10 @@ class JointPolicy:
 
 class JointSelector:
     """Single state determines onsets, offsets and decoded Exact-K."""
-    def __init__(self, policy):
+    def __init__(self, policy, *, decision_hop_samples=BATCH*HOP):
+        if decision_hop_samples not in (HOP, BATCH*HOP):
+            raise ValueError("only original 1024 or strict256 decision grid allowed")
+        self.decision_hop_samples = int(decision_hop_samples)
         self.policy = policy
         self.active = np.zeros(49, bool)
         self.armed = np.ones(49, bool)
@@ -51,7 +54,7 @@ class JointSelector:
         self.last_end = 0
 
     def step(self, post, count, end):
-        if end != self.last_end + BATCH*HOP:
+        if end != self.last_end + self.decision_hop_samples:
             raise ValueError('Non-contiguous decision blocks')
         self.last_end = int(end)
         c = self.policy
