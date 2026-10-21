@@ -20,8 +20,8 @@ class GuidedPolicy(JointPolicy):
 
 
 class GuidedSelector(JointSelector):
-    def __init__(self,policy):
-        super().__init__(policy)
+    def __init__(self,policy, *, decision_hop_samples=4*256):
+        super().__init__(policy, decision_hop_samples=decision_hop_samples)
         self.past=deque(maxlen=2)
         self.lower_count_steps=0
 
