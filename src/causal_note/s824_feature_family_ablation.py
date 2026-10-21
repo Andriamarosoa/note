@@ -131,8 +131,11 @@ def choose_on_cal(cal,teachers):
         raise ValueError("CAL composition touched TRAIN")
     counts={k:dict(correct=0,frames=0,undercount=0,overcount=0)
             for k in MODES}
+    if not set(MODES).issubset(teachers):
+        raise ValueError("all preregistered family models missing")
     for row in cal:
-        for mode,teacher in teachers.items():
+        for mode in MODES:
+            teacher=teachers[mode]
             result=active_score(teacher.predict(row),row["k"])
             for key in counts[mode]:counts[mode][key]+=result[key]
     choice=max(UNIQUE_MODES,key=lambda mode:(counts[mode]["correct"]/
