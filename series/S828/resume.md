@@ -1,40 +1,39 @@
 ---
 serie: S828
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s828-activek-s708-private-readout-256
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39604850899
+commit_sha: bec403685379a581554f4d6d2d1e6629370e477f
 promotion: false
 ---
-# S828 — entraîner une tête privée Active Exact-K sur l'original S708 exécuté à 256
+# S828 — S708 original natif256, apprentissage privé Active Exact-K (80 pistes)
 
 ## Objectif
 
-Conserver et certifier la vraie architecture de reconnaissance S708 portée à **une inférence par 256 échantillons @44,1kHz**, tout en entraînant **seulement** une tête Active Exact-K (K0–K6) dédiée sur des représentations authentiques de ce moteur S708. Les cinq autres caractéristiques Exact-K, Onset, Offset, Frame Pitch, Full Note sont strictement gelées, donc pas de modification de leur architecture, état, sélecteur, poids, ni flux MIDI signé. Le moteur historique reste l'unique source du MIDI de production.
+Reproduire des informations S708 neuves toutes les **256 valeurs @44,1 kHz (5,805 ms)** et entraîner **uniquement** une tête de cardinalité Active Exact-K K0..K6. Ne modifier aucune tête, aucun sélecteur, aucun décodeur, aucune sortie ni état des cinq autres axes (**Exact-K, Onset, Offset, Frame Pitch, Full Note**). Conserver la production MIDI S708 originale intouchée. Mesurer sur les **mêmes 80 pistes FIT80** que S823; interdire tout bilan de performance fondé sur seulement 5 pistes.
 
 ## Hypothèse
 
-S827 a démontré que le moteur S708 originel fournit réellement ses 288D et ses sorties à 256, mais qu'un modèle initialement appris à 1024 échoue encore au niveau de précision souhaité. Une tête entraînée et calibrée à 256 exclusivement pour Active-K peut éviter ce décalage temporel sans réentraîner ni partager les paramètres des cinq autres axes. **Il ne s'agit pas d'un réentraînement de toutes les couches neuronales S708**, dont le checkpoint original reste gelé. Le score ne sera accepté que si confirmé par de vraies données, pas par les tests synthétiques.
+Le réemploi direct à 256 d'un réseau S708 entraîné à 1024 peut produire des scores Active-K dégradés même si les 288D sont recalculées. Un nouveau readout de cardinalité, entraîné sur les observations S708 authentiques à 256, doit corriger ce décalage sans modifier les paramètres ni les outputs de cinq autres axes. Les couches temporelles/harmoniques d'origine restent gelées. Le score doit être jugé **sur 80 pistes et 249 411 trames GT actives**, pas sur le pilote.
 
 ## Modifications
 
-`src/causal_note/s828_activek_s708_private_readout.py` contient un nouveau lecteur de vecteurs natifs `S828Stream` qui dérive de S827: frontend original [49,126], `latest_s708_acoustic_features` [49,192], `sharp_track` [49,96], réseau original 288D TemporalHeads S708 inféré au nouveau hop 256, extraction de statistiques causales [trame actuelle + 4 dernières décisions] et classifieur **privé** `HistGradientBoostingClassifier` K0–K6. Le sélecteur ne lit que ces prédictions, la sortie Active-K S708 privé et sa CAL interne ; il peut choisir le S708 natif, le readout privé ou le routeur basé sur la confiance, et des décalages K prédéfinis. Aucun patch des classes d'origine.
+Nouvelle classe `S828Stream` dans `src/causal_note/s828_activek_s708_private_readout.py`: extraction native S708 288D (192D contexte + 96D sharp), inférence originale S708 à chaque 256, nouveaux vecteurs causaux de trame courante et historique ActiveK **privé**, tête `HistGradientBoostingClassifier` K0..K6 entraînée et sélecteur réservé à Active-K (S708 privé / candidat appris / routeur). **Aucune mise à jour de poids neuronaux S708**; nouvelle tête seule apprise, aucun input MIDI H0 ni sortie d'une autre caractéristique à l'inférence.
 
-`scripts/s828_train_s708_private_activek_midi256.py` vérifie les SHA historiques, rejoue de vrais WAV GuitarSet chaque 256 et effectue cinq splits disjoints par composition (3 TRAIN, 1 CAL, 1 TEST, 16 morceaux par composition en FIT80 complet). Comparaison sur EXACTEMENT les mêmes trames GT-actives du S704 signé, audit K1–K6 et fuite train/test/cal. Refus absolu de CAL32/HELD/TEST et de tout apprentissage sur le fold TEST. `test/test_s828_activek_s708_private_readout.py` teste les contrats.
+Nouveau script `scripts/s828_train_s708_private_activek_midi256.py` et tests `test/test_s828_activek_s708_private_readout.py`. Seuls des fichiers S828 ont été ajoutés dans une branche dédiée au-dessus de S827 ; contrôle automatisé du Git diff contre la base S827, sans patch d'un seul composant commun ni du LIVE.
 
 ## Protocole
 
-1. Contrôle Git diff : seuls fichiers propres à S828, workflow et rapports ajoutés. S708/S827 et cinq autres architectures inchangés.
-2. Tests unitaires synthétiques, causalité par suffixe modifié et invariance S708 à 256.
-3. Relecture de 5 pistes originales signées SHA de GuitarSet (1 par composition) avec 5 splits TRAIN/CAL/TEST. Mesurer les comptes private-S828, private-S827, H0 et diagnostiquer les décisions par vraie classe. Pilote seulement, non recevable comme performance généralisée.
-4. Si pilote confirme les contrats, répéter la même procédure sur les 80 pistes FIT et 249411 trames GT-actives avec cinq splits composition-disjoints et choix de sélecteur depuis CAL uniquement ; ne jamais promouvoir automatiquement. Validation externe indépendante et contraintes iRig requises pour production.
+Le [run GitHub #39604850899](https://github.com/Andriamarosoa/note/actions/runs/39604850899), commit de calcul `bec403685379a581554f4d6d2d1e6629370e477f`, a réussi. Audio et métadonnées signés SHA, exactement **80** enregistrements des cinq compositions. Cinq plis composition-disjoints : **48 TRAIN / 16 inner-CAL / 16 OUTER-TEST** ; choix du sélecteur depuis CAL seulement, sans labels OUTER. 249 411 trames actives sur grille PCM256 à 44,1 kHz, **identiques à S823**. Prouver la reproduction du témoin historique H0 `142213/249411` avant de publier les scores. L'entraînement du readout uniquement est composition-disjoint ; le checkpoint S708 préentraîné n'est pas prouvé end-to-end OOF sur ce corpus : pas de revendication de généralisation nouvelle externe.
+
+**Scores FINALS (sur 80 pistes identiques)** : S823 ancien S795 1024 as-of **191741/249411 = 76,877523 %** ; S828 nouveau readout natif256 **184143/249411 = 73,831146 %** ; S827 original gelé natif256 **152555/249411 = 61,166107 %** ; H0 original **142213/249411 = 57,019538 %**. Écart S828 vs S823 : **−7 598 bons comptages, −3,046377 points**. S828 sous-comptages **41 647** (S823 **34 611**), surcomptages **23 621** (S823 **23 059**). Les écarts les plus lourds sont SS1 −2 821, BN1 −2 061, Funk2 −1 696. Le **44,414368 % sur cinq pistes** était un smoke pilote **non recevable** comme score de référence FIT80, à ne plus afficher comme bilan principal.
 
 ## Audits obligatoires
 
-Données: audio GuitarSet SHA, annotations S800 signées et vérité uniquement au scoring/entraînement. Acoustique: 288D S708 réellement calculées à chaque nouvel hop 256. Architecture: tous les fichiers des autres axes inchangés et pas de MIDI émis par ActiveK. Apprentissage: seule tête privée K entraînée à 256; S708 original reste gelé. Métriques: score ActiveK sur GT>0, comptes par classe, calibration TRAIN/CAL/TEST distincte. LIVE: zéro lookahead nouveau, pas de latence matérielle certifiée, pas de déploiement.
+Données PASS (80 WAV SHA + H0 signé), acoustique PASS (288D fraîche PCM256), architecture PASS (5 axes et MIDI productif inchangés), apprentissage PASS (readout privé entraîné à 256, sélection inner-CAL mais upstream S708 pas certifié OOF), métriques PASS (ActiveK GT>0, 249411, scores par composition, K1..K6 dans l'artefact), LIVE UNKNOWN (aucun passage production, ni CPU p99 ni iRig prouvés). Aucun ajout de délai d'observation future; le décodeur privé S708 conserve ses anciennes règles de garde temporelle, donc aucune affirmation de latence absolue 5,80 ms.
 
 ## Statut
 
-En cours, non promu. S827 validé et protégé comme base. Aucune prétention >85 %, aucun résultat GuitarSet S828 avant un run scientifique réussi. Une évaluation sur FIT80 ne constitue pas une généralisation externe indépendante.
+**S828 TERMINÉ, NON PROMU**, objectif 85 % non atteint et score à −3,05 points de S823 sur FIT80 comparable. [PR #132](https://github.com/Andriamarosoa/note/pull/132) reste expérimentale et DRAFT. **Les 5 autres architectures et le LIVE officiel sont intacts**. Le succès d'un run n'autorise pas la promotion. Pour S829 : audits profonds des sous-comptages par classe et composition, tests isolés ActiveK seulement, sélection CAL uniquement, 80 pistes obligatoires avant conclusion.
