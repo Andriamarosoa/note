@@ -3,7 +3,7 @@ serie: S835
 statut: en_cours
 type: experience
 reference: S708
-branche: codex/note-best-of-six-axes-preserved
+branche: codex/note-s835-best-of-six-axes-preserved
 run_id: en_attente
 commit_sha: en_attente
 promotion: false
@@ -12,7 +12,7 @@ promotion: false
 # S835 — Résultat de conservation des meilleures références par caractéristique
 
 ## Exécution
-Branche de conservation créée sur GitHub `codex/note-best-of-six-axes-preserved`, depuis S834. Vérification automatisée du manifeste et des six sources de code en cours. Aucune validation musicale nouvelle dans cette série.
+Branche de conservation créée sur GitHub `codex/note-s835-best-of-six-axes-preserved`, depuis S834. Vérification automatisée du manifeste et des six sources de code en cours. Aucune validation musicale nouvelle dans cette série.
 
 ## Métriques
 Les six valeurs sont une **sélection de résultats expérimentaux déjà mesurés, et non le score d'un modèle unique** :
