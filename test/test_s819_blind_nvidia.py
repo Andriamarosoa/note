@@ -11,7 +11,8 @@ class TestS819BlindNvidia(unittest.TestCase):
     def setUpClass(cls):
         cls.brief=evidence_text(Path("series/S819/model_brief.md"))
     def test_three_distinct_models_same_inputs(self):
-        self.assertEqual(len(MODELS),len(set(MODELS.values()))==3)
+        self.assertEqual(len(MODELS),3)
+        self.assertEqual(len(set(MODELS.values())),3)
         for role in MODELS:
             x=payload(role,self.brief)
             self.assertEqual(x["messages"][0]["content"],SYSTEM)
