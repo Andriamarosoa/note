@@ -35,11 +35,12 @@ class S826S708Native256Stream(S708StrictLiveStream):
     No S795 features, no replacement K head and no S708 peer to be distilled.
     Replay is opt-in, not installed in production LIVE.
     """
-    def __init__(self,heads,model,policy,*,temporal_engine="incremental"):
+    def __init__(self,heads,model,policy,*,temporal_engine="incremental",capture_features=False):
         super().__init__(heads,model,policy,temporal_engine=temporal_engine,
                          release_adapter=None,batch_hops=1)
         self.selector=GuidedSelector(policy,decision_hop_samples=HOP)
         self.original_weights_fit_hop_samples=4*HOP
+        self.capture_features=bool(capture_features)
         self.s826_source_288d=[]
         self.s826_decision_ends=[]
 
@@ -66,7 +67,8 @@ class S826S708Native256Stream(S708StrictLiveStream):
         trial=self.selector.policy.blend*p+(1.-self.selector.policy.blend)*self.native_post[-1]
         emitted=self.selector.step(trial,k,int(end))
         self.model_calls+=1
-        self.s826_source_288d.append(features.copy())
+        if self.capture_features:
+            self.s826_source_288d.append(features.copy())
         self.s826_decision_ends.append(int(end))
         for e in emitted:
             e["available_sample"]=int(available)
