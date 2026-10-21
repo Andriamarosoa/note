@@ -5,7 +5,7 @@ from causal_note.s824_feature_family_ablation import (
     PRED,MIDI,ACOUSTIC,MASKS,MODES,UNIQUE_MODES,ALIASES,
     masked_matrix,train_all,choose_on_cal
 )
-from causal_note.s823_legacy23_asof_midi256 import asof_indices
+from causal_note.s823_legacy23_asof_midi256 import asof_indices, fit_teacher as fit_s823
 
 def piece(name,comp,seed):
     rng=np.random.default_rng(seed)
@@ -49,6 +49,9 @@ class S824FeatureFamiliesTests(unittest.TestCase):
         models=train_all(train,cap=84)
         self.assertEqual(set(models),set(MODES))
         self.assertEqual(len({id(models[x].model) for x in UNIQUE_MODES}),9)
+        original=fit_s823(train,"raw23",cap=84,seed=823)
+        for row in cal:
+            np.testing.assert_array_equal(models["full23"].predict(row), original.predict(row))
         for mode,teacher in models.items():
             self.assertEqual(teacher.metadata["decision_hop"],256)
             self.assertEqual(teacher.metadata["source_observation_hop"],1024)
