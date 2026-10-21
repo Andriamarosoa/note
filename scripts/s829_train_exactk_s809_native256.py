@@ -1,16 +1,15 @@
 """S829 independent Exact-K K0..K6 from S809 isolation on S828 native PCM256, five composition-disjoint folds.
 
 This is a FIT research evaluation, not independent external generalization.
-S708's original neural weights and native heads are frozen, a PRIVATE K-only
-readout is newly fit at 256, and no other characteristic or public MIDI changes.
+The 2 neural-free gradient boosting count heads are trained exclusively on independent
+PCM-derived DSP, with private CAL selector. Nothing from any other task is loaded.
 """
 from __future__ import annotations
 import argparse,io,json,zipfile,hashlib,time
 from pathlib import Path
 import numpy as np
 from scipy.io import wavfile
-from causal_note.strict_live import SR,HOP,load_heads
-from causal_note.s712_s708_live import load_s708_checkpoint
+from causal_note.s829_exactk_s809_native256 import SR,HOP
 from causal_note.s829_exactk_s809_native256 import S829Stream,fit_exact,score_exact,SCHEMA
 from causal_note.s814_activek_teacher import active_score
 from causal_note.s812_historical_axis_h0 import signature
@@ -20,8 +19,7 @@ from scripts.s813_prepare_native256 import digest_file,save_json,targets_at_ends
 SOURCE_SCHEMA="S800_FIT80_OOF_PER_FRAGMENT_MIDI256_V1"
 COMPS=("BN1","Funk2","Jazz1","Rock3","SS1")
 
-def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,
-        native_model,out,tracks_per_composition):
+def run(audio_zip,traces,manifest_path,out,tracks_per_composition):
     if out.exists():raise FileExistsError("S829 evidence is immutable")
     if not 1<=tracks_per_composition<=16:raise ValueError("1..16 tracks/composition only")
     source=json.loads(manifest_path.read_text())
@@ -29,8 +27,6 @@ def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,
         or len(source.get("fit_files",[]))!=80 or
         any(source.get(f) for f in ("CAL_opened","HELD_opened","TEST_opened"))):
         raise ValueError("S829 authentic FIT80-only S800 provenance required")
-    nn,policy,model_sha=load_s708_checkpoint(source_checkpoint,source_report)
-    native=load_heads(native_model)
     out.mkdir(parents=True)
     chosen=[(comp,e) for comp in COMPS for e in
         sorted((r for r in source["fit_files"] if r["composition"]==comp),
@@ -38,11 +34,11 @@ def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,
     if len(chosen)!=5*tracks_per_composition:
         raise ValueError("wrong GuitarSet source composition split")
     report=dict(schema=SCHEMA,series="S829",complete=False,promoted=False,
-        protocol="S708 original frozen, one PRIVATE Exact-K HGB per outer composition; 48/16/16 for full FIT80",
-        source_checkpoint_sha256=model_sha,
-        native_heads_sha256=digest_file(native_model),
+        protocol="Own PCM->DSP->two trained K heads->private CAL selector, 48/16/16 FIT80",
+        independent_neural_checkpoints_sha256=[],
+        shared_neural_encoder_used=False,
         source_manifest_sha256=digest_file(manifest_path),
-        original_s708_nn_frozen=True,
+        private_acoustic_frontend=True,private_head_count=2,
         only_exact_k_trained=True,other_five_axes_modified=False,
         public_midi_modified=False,fit_source_explored=True,
         external_generalization_verified=False,hardware_latency_verified=False,
@@ -67,14 +63,14 @@ def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,
                 raise ValueError("S829 must receive signed original mono PCM44.1kHz")
             audio=pcm[:meta["samples"]].astype(np.float32)/32768.
             ends=np.arange(HOP,len(audio)+1,HOP,dtype=np.int64)
-            teacher=S829Stream(native,nn,policy)
+            teacher=S829Stream()
             decisions=[]
             for pos in range(0,len(audio),HOP):
                 decisions.extend(teacher.push(audio[pos:pos+HOP],start_sample=pos))
             features,baseline=teacher.collected()
             if (len(features)!=len(ends) or
                 [d.decision_sample for d in decisions]!=ends.tolist()):
-                raise AssertionError("native S708 true MIDI256 neural/readout replay drift")
+                raise AssertionError("independent raw PCM256 K replay drift")
             # GT and historical output opened only after all source-PCM
             # inference features and private S708 predictions have been fixed.
             _,truth=targets_at_ends(meta["fit_truth"],ends)
@@ -93,7 +89,7 @@ def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,
                 composition=comp,texture=meta["texture"],X=features,
                 baseline=baseline,k=truth,source=old,native=native_score)
             cache[spec["index"]]=record
-            print("S829_FRESH_S708_256",spec["index"],comp,len(ends),
+            print("S829_INDEPENDENT_PCM256",spec["index"],comp,len(ends),
                   round(native_score["correct"]/max(1,native_score["frames"]),6),
                   flush=True)
     if len(cache)!=5*tracks_per_composition:
@@ -137,24 +133,24 @@ def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,
             report["tracks"].append(dict(index=r["index"],name=r["name"],
                 composition=outer,selected_mode=fitted.mode,
                 selected_shift=fitted.shift,S829=sc,
-                S708_private_raw_k=r["native"],H0_original=r["source"],
+                S829_raw_acoustic_k=r["native"],H0_original=r["source"],
                 by_true_K=by_k,other_axes_h0_untouched=True))
         save_json(out/"report.json",report)
         print("S829_CAL_AND_OUTER",outer,fitted.mode,fitted.shift,
               totals([r["S829"] for r in report["tracks"]
                      if r["composition"]==outer]),flush=True)
     report["S829_exactk"]=totals(predicted)
-    report["S708_private_raw_k_exactk"]=totals(
-        [r["S708_private_raw_k"] for r in report["tracks"]])
+    report["S829_raw_acoustic_k_exactk"]=totals(
+        [r["S829_raw_acoustic_k"] for r in report["tracks"]])
     report["H0_original_exactk"]=totals(
         [r["H0_original"] for r in report["tracks"]])
     report["total_elapsed_seconds"]=time.perf_counter()-start
     report["complete"]=True
     save_json(out/"report.json",report)
-    print("S829_TRUE256_PRIVATE_EXACTK_FINAL",json.dumps({
+    print("S829_TWO_PRIVATE_HEADS_NATIVE256_EXACTK_FINAL",json.dumps({
         "n_tracks":len(report["tracks"]),
         "S829":report["S829_exactk"],
-        "raw_s708":report["S708_private_raw_k_exactk"],
+        "raw_acoustic_k":report["S829_raw_acoustic_k_exactk"],
         "H0":report["H0_original_exactk"],
         "only_exact_k_changed":True,
         "no_other_axis_changed":True,"public_midi_not_modified":True
@@ -162,10 +158,8 @@ def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,
 
 if __name__=="__main__":
     p=argparse.ArgumentParser()
-    for a in ("audio-zip","traces","manifest-path","source-checkpoint",
-              "source-report","native-model","out"):
+    for a in ("audio-zip","traces","manifest-path","out"):
         p.add_argument("--"+a,type=Path,required=True)
     p.add_argument("--tracks-per-composition",type=int,default=1)
     x=p.parse_args()
-    run(x.audio_zip,x.traces,x.manifest_path,x.source_checkpoint,x.source_report,
-        x.native_model,x.out,x.tracks_per_composition)
+    run(x.audio_zip,x.traces,x.manifest_path,x.out,x.tracks_per_composition)
