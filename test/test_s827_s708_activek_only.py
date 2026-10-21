@@ -13,7 +13,7 @@ from causal_note.s812_historical_axis_h0 import (
     SixHistoricalH0,checked_h1_view,AXES,signature
 )
 from causal_note.s827_s708_activek_only import (
-    PrivateS708GuidedActiveK,S827S708ActiveKOnly
+    PrivateS708GuidedActiveK,S827S708ActiveKOnly,S827ProtectedSixAxisIntegration
 )
 
 
@@ -146,6 +146,41 @@ class TestS827OnlyActiveK(unittest.TestCase):
             self.assertEqual(signature(bank.lanes[axis].events),reference)
         self.assertTrue(all(self.make().diagnostics()[k] is False for k in
            ("public_midi_emission","other_five_axes_mutated","source_model_retrained_to_256")))
+
+    def test_actual_six_axis_integration_only_activek_changes(self):
+        audio=wave(8)
+        source=[dict(type="note_on",pitch=40,decision_sample=256,
+             available_sample=256,time=256/SR,reason="source"),
+                dict(type="note_on",pitch=52,decision_sample=512,
+             available_sample=512,time=512/SR,reason="source"),
+                dict(type="note_off",pitch=40,decision_sample=1536,
+             available_sample=1536,time=1536/SR,reason="source"),
+                dict(type="note_off",pitch=52,decision_sample=2048,
+             available_sample=2048,time=2048/SR,reason="source")]
+        original=signature(source)
+        h0=SixHistoricalH0()
+        integration=S827ProtectedSixAxisIntegration(self.make())
+        for begin in range(0,len(audio),HOP):
+            t=begin+HOP
+            arrived=[x for x in source if x["available_sample"]==t]
+            expected=h0.step(t,arrived)
+            got=integration.step(audio[begin:t],start_sample=begin,
+                                 signed_midi_events=arrived)
+            for axis in AXES:
+                if axis!="active_exact_k":
+                    self.assertEqual(got[axis],expected[axis])
+            self.assertEqual(integration.original_h0[-1],
+                             expected["active_exact_k"])
+            self.assertEqual(got["active_exact_k"].sample,t)
+            self.assertEqual(got["active_exact_k"].axis,"active_exact_k")
+        self.assertEqual(integration.private.model_calls,8)
+        self.assertEqual(signature(source),original)
+        for axis in AXES:
+            self.assertEqual(signature(integration.h0.lanes[axis].events),
+                             original)
+        with self.assertRaisesRegex(ValueError,"fresh contiguous"):
+            integration.step(audio[:255],start_sample=len(audio),
+                             signed_midi_events=[])
 
     def test_reject_nonfinite_discontinuity_and_non256_decoding(self):
         a=self.make()
