@@ -1,14 +1,14 @@
 name: S828 train only private ActiveK S708-origin readout on original PCM256
 on:
   push:
-    branches: [codex/note-s828-isolated-s708-activek-midi256]
+    branches: [codex/note-s828-activek-s708-private-readout-256]
     paths:
       - src/causal_note/s828_activek_s708_private_readout.py
       - scripts/s828_train_s708_private_activek_midi256.py
       - test/test_s828_activek_s708_private_readout.py
       - series/S828/resume.md
       - series/S828/resultat.md
-      - .github/workflows/note-s828-isolated-s708-activek-midi256.yml
+      - .github/workflows/note-s828-activek-s708-private-readout-256.yml
   workflow_dispatch:
 concurrency:
   group: s828-only-activek-${{ github.ref }}
@@ -44,7 +44,7 @@ jobs:
                       'scripts/s828_train_s708_private_activek_midi256.py',
                       'test/test_s828_activek_s708_private_readout.py',
                       'series/S828/resume.md','series/S828/resultat.md',
-                      '.github/workflows/note-s828-isolated-s708-activek-midi256.yml'}
+                      '.github/workflows/note-s828-activek-s708-private-readout-256.yml'}
           assert set(names)<=authorized,(set(names)-authorized)
           assert len(names)>0
           print('S828_PUBLIC_FIVE_AXIS_CODE_FROZEN_AND_IDENTICAL')
