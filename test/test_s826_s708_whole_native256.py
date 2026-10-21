@@ -39,7 +39,7 @@ def wave(hops=12):
 
 class S826OriginalS708Strict256Tests(unittest.TestCase):
     def make(self):
-        return S826S708Native256Stream(StubHeads(),StubTemporal(),POLICY)
+        return S826S708Native256Stream(StubHeads(),StubTemporal(),POLICY,capture_features=True)
 
     def test_same_288_channel_full_s708_features_each256(self):
         pcm=wave(10)
