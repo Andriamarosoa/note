@@ -202,7 +202,7 @@ def fit_guard(cal_rows):
         rules,summary=learn_rules(train,params=params)
         score=calibration_score(check,rules)
         change=score["correct"]-baseline
-        changed=sum(x["corrected"]+x["regressed"] for x in rules.values())
+        changed=sum(x.corrected+x.regressed for x in rules.values())
         attempts.append(dict(params=list(params),rules=len(rules),
              changed_CAL_cases=changed,validation_delta=change,
              validation_frames=score["frames"]))
