@@ -2,7 +2,7 @@
 import argparse,hashlib,json
 from pathlib import Path
 import numpy as np
-from .scorer import SR,onset_score,offset_score
+from historical.scorer import SR,onset_score,offset_score
 def digest(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 def run(manifest,traces,out,axis):
     if out.exists():raise FileExistsError("immutable reference record")
