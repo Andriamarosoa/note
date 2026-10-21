@@ -187,16 +187,21 @@ def selected(base,pitch,held,confidence,mode,shift=0):
 def choose_selector(cal,*,modes=MODES,thresholds=THRESHOLDS):
     """CAL-only choice over all private head combinations."""
     totals={}
+    prepared={}
+    for thr in thresholds:
+        prepared[thr]=[]
+        for row in cal:
+            direct,state=counts_from_evidence(row["evidence"],thr)
+            prepared[thr].append((row,direct,state))
     for mode in modes:
         for thr in thresholds:
             for shift in SHIFTS:
                 correct=under=over=frames=0
-                for row in cal:
-                    direct,state=counts_from_evidence(row["evidence"],thr)
+                for row,direct,state in prepared[thr]:
                     pred=selected(row["base"],direct,state,row["confidence"],mode,shift)
-                    s=score_exact(pred,row["k"])
-                    correct+=s["correct"];under+=s["undercount"]
-                    over+=s["overcount"];frames+=s["frames"]
+                    metric=score_exact(pred,row["k"])
+                    correct+=metric["correct"];under+=metric["undercount"]
+                    over+=metric["overcount"];frames+=metric["frames"]
                 totals[(mode,thr,shift)]=(correct,frames,under,over)
     return max(totals,key=lambda key:(
         totals[key][0]/max(1,totals[key][1]),
