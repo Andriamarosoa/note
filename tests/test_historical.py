@@ -1,5 +1,5 @@
 import unittest
-from historical.scorer import onset_score,offset_score
+from historical.scorer import offset_score
 import numpy as np
 class HistoricalH0(unittest.TestCase):
     def test_independent_offset_score(self):
