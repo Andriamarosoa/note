@@ -37,3 +37,6 @@ S831 `blend` corrige 39 215 erreurs et dégrade 51 094 cas, mais progresse sur K
 
 ## Statut
 En cours — aucune amélioration S832 revendiquée et `promotion:false`. La comparaison S831 56,9943 % vs S829 57,5247 % reste la seule mesure scientifique préalable.
+
+## Exécution du replay complet
+Tests de syntaxe, indépendance et veto local validés sur GitHub #39644723984. Commande scientifique explicite [run-fit80] : 80 pistes GuitarSet FIT80 signées, 5 folds et 306 536 trames PCM256. Refuser toute mesure non appariée.
