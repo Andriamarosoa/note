@@ -1,0 +1,137 @@
+name: S828 full FIT80 original PCM256 train private S708 ActiveK only
+on:
+  push:
+    branches: [codex/note-s828-activek-s708-private-readout-256]
+    paths:
+      - src/causal_note/s828_activek_s708_private_readout.py
+      - scripts/s828_train_s708_private_activek_midi256.py
+      - test/test_s828_activek_s708_private_readout.py
+      - series/S828/resume.md
+      - series/S828/resultat.md
+      - .github/workflows/note-s828-activek-s708-private-readout-256.yml
+  workflow_dispatch:
+concurrency:
+  group: s828-only-activek-${{ github.ref }}
+  cancel-in-progress: true
+permissions: {contents: read, actions: read}
+env:
+  GH_TOKEN: ${{ github.token }}
+  PYTHONPATH: .:src
+  PYTHONUNBUFFERED: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+jobs:
+  strict_isolation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Same locked dependencies as original S708
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Prove no modification to S708/S712/Joint or any of the other five axis paths
+        run: |
+          git fetch origin codex/note-s827-isolated-s708-activek-midi256 --depth=1
+          git diff --name-only FETCH_HEAD HEAD | tee /tmp/s828_changed_paths.txt
+          python - <<'PY'
+          from pathlib import Path
+          names=Path('/tmp/s828_changed_paths.txt').read_text().splitlines()
+          authorized={'src/causal_note/s828_activek_s708_private_readout.py',
+                      'scripts/s828_train_s708_private_activek_midi256.py',
+                      'test/test_s828_activek_s708_private_readout.py',
+                      'series/S828/resume.md','series/S828/resultat.md',
+                      '.github/workflows/note-s828-activek-s708-private-readout-256.yml'}
+          assert set(names)<=authorized,(set(names)-authorized)
+          assert len(names)>0
+          print('S828_PUBLIC_FIVE_AXIS_CODE_FROZEN_AND_IDENTICAL')
+          PY
+      - name: Original S708 protected, private native256 HGB readout fit/test and no future leaks
+        run: |
+          python -m compileall -q src/causal_note/s828_activek_s708_private_readout.py scripts/s828_train_s708_private_activek_midi256.py test/test_s828_activek_s708_private_readout.py
+          python -m unittest -v test.test_s828_activek_s708_private_readout test.test_s812_historical_axis_h0 test.test_s708_cardinality_selection test.test_s712_s708_live test.test_s705_temporal_heads
+          python -m scripts.verify_series_reports --series S828
+  signed_real_five:
+    runs-on: ubuntu-24.04
+    needs: strict_isolation
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Requirements and CPU S708 torch checkpoint
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Download signed S708 checkpoint and S800 authentic GuitarSet provenance
+        run: |
+          mkdir -p /tmp/s828/s708 /tmp/s828/manifest /tmp/s828/traces
+          gh run download 39094682419 --repo Andriamarosoa/note --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s828/s708
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/s828/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/s828/traces
+          MODEL="$(find /tmp/s828/s708 -name s708_selected.pt -type f -print -quit)"
+          META="$(find /tmp/s828/manifest -name report.json -type f -print -quit)"
+          FIT="$(find /tmp/s828/traces -name fit_000.json -type f -print -quit)"
+          test -s "$MODEL"
+          test -s "$(dirname "$MODEL")/report.json"
+          test -s "$META"
+          test -s "$FIT"
+          printf '%s\n' "$(dirname "$MODEL")" > /tmp/s828/s708_dir
+          printf '%s\n' "$META" > /tmp/s828/manifest_path
+          printf '%s\n' "$(dirname "$FIT")" > /tmp/s828/traces_dir
+      - name: SHA-256 pinned authentic original GuitarSet 44.1kHz acoustic mic WAV
+        run: |
+          python - <<'PY'
+          import json,hashlib,urllib.request
+          from pathlib import Path
+          cfg=json.loads(Path('analysis/evidence/v273-s613-strict-live/protocol.json').read_text())
+          item=cfg['guitar_archives']['GuitarSet_audio']
+          dst=Path('/tmp/s828/GuitarSet_audio.zip')
+          with urllib.request.urlopen(item['url'],timeout=180) as src,dst.open('wb') as dst_file:
+              for chunk in iter(lambda:src.read(4*1024*1024),b''):
+                  dst_file.write(chunk)
+          assert dst.stat().st_size==item['size']
+          h=hashlib.sha256()
+          with dst.open('rb') as f:
+              for block in iter(lambda:f.read(4*1024*1024),b''):h.update(block)
+          assert h.hexdigest()==item['sha256']
+          print('S828_SOURCE_GUITARSET_SHA_256_VALIDATED')
+          PY
+      - name: Train only private S708 Active-K readout with real audio and disjoint composition
+        run: |
+          python -m scripts.s828_train_s708_private_activek_midi256 --audio-zip /tmp/s828/GuitarSet_audio.zip --traces "$(cat /tmp/s828/traces_dir)" --manifest-path "$(cat /tmp/s828/manifest_path)" --source-checkpoint "$(cat /tmp/s828/s708_dir)/s708_selected.pt" --source-report "$(cat /tmp/s828/s708_dir)/report.json" --native-model model/live/strict_note/NOTE_strict_live.npz --out /tmp/s828/result --tracks-per-composition 16
+      - name: Scientific contract — 80 true PCM256 tracks, five composition-disjoint TRAIN/CAL/TEST, only Active-K altered
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/s828/result/report.json'))
+          assert r['complete'] and len(r['tracks'])==80 and len(r['folds'])==5
+          assert r['H0_original_activek']['correct']==142213
+          assert r['H0_original_activek']['frames']==249411
+          assert r['decision_hop_samples']==r['feature_hop_samples']==256
+          assert r['only_active_exact_k_trained'] and r['original_s708_nn_frozen']
+          assert not r['other_five_axes_modified'] and not r['public_midi_modified']
+          assert not r['promoted'] and not r['external_generalization_verified']
+          assert not any(r[k] for k in ('CAL_opened','HELD_opened','TEST_opened'))
+          for held,fold in r['folds'].items():
+              assert held not in fold['train_compositions']
+              assert held not in fold['calibration']
+              assert not (set(fold['train_compositions']) & set(fold['calibration']))
+              assert fold['private_model_head_only']
+          print('S828_5_AXES_FROZEN_PRIVATE_ONLY')
+          print('S828_NATIVE256_CALIBRATED_PILOT',json.dumps({
+                'S828':r['S828_activek'],
+                'S827':r['S827_frozen_s708_activek'],
+                'H0':r['H0_original_activek']},sort_keys=True))
+          PY
+      - name: Upload actual signed proof, do not promote experiment
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S828_FULL_FIT80_PRIVATE_S708_256_COMPOSITION_CALIBRATED_ACTIVEK_ONLY
+          path: /tmp/s828/result/report.json
+          if-no-files-found: warn
+          retention-days: 45
