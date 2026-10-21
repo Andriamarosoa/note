@@ -6,6 +6,7 @@ strict MIDI256, no S708 output changes, no promotion.
 """
 from __future__ import annotations
 import argparse,hashlib,json
+from dataclasses import asdict
 from pathlib import Path
 import joblib
 import numpy as np
