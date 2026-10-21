@@ -1,18 +1,18 @@
 ---
 serie: S814
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s814-activek-private-midi256
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39535784658
+commit_sha: 36a9011618af40e16593462c99be2a0757671d87
 promotion: false
 ---
 # S814 — Résultats provisoires Active Exact-K indépendant
 
 ## Exécution
 
-Branche S814 créée depuis S813 en conservant les fichiers et modèles historiques sans changement. Entraînement scientifique sur le PCM GuitarSet prévu dans le workflow propre à S814; aucun score nouveau revendiqué avant une exécution vérifiée et un rapport signé.
+**Exécution scientifique réelle achevée** : [GitHub Actions #39535784658](https://github.com/Andriamarosoa/note/actions/runs/39535784658) SUCCESS. PCM original SHA vérifié, 80/80 pistes, 306536 grilles à 256 échantillons, cinq splits composition-disjoints et checkpoints privés. GitHub conserve report.json et tous les modèles sous l'artefact S814_ACTIVE_K_PRIVATE_MIDI256_FIT80_RESULTS (ID 12317845554). GitHub SUCCESS signifie preuve d'exécution, pas succès scientifique.
 
 ## Métriques
 
@@ -20,12 +20,12 @@ Branche S814 créée depuis S813 en conservant les fichiers et modèles historiq
 |---|---:|---|
 | Onset F1 | 74,2639 % | non modifié / non mesuré |
 | Exact-K | 62,0455 % | non modifié / non mesuré |
-| Active Exact-K | 56,2762 % | en attente de la vraie expérience MIDI256 |
+| Active Exact-K | 56,2762 % | **54,67280914 %** FIT80, en baisse vs H0 FIT80 57,01953803 % |
 | Offset accuracy | 77,3292 % | non modifié / non mesuré |
 | Full Note F1 | 57,1319 % | non modifié / non mesuré |
 | Frame Pitch F1 | 76,4626 % | S813 expérimental 77,7132 % FIT80, non promu |
 
-Le H0 FIT80 à reproduire avant toute analyse Active-K est 57,01953803 % (S812 / S800, 142213 sur 249411 trames actives). Ne pas confondre le score S810 shadow à 1024 avec la métrique finale MIDI256.
+H0 FIT80 : 142213/249411 trames correctes (57,01953803 %) ; nouveau modèle 136360/249411 (54,67280914 %), soit **−2,34672889 points**. Sous-comptages 80654 → 74291 (−6363), surcomptages 26544 → 38760 (+12216). Folds : BN1 57,3142 %, Funk2 56,2230 %, Jazz1 55,5712 %, Rock3 53,5790 %, SS1 51,5650 %. Le score S810 shadow à 1024 n'est pas comparable à MIDI256.
 
 ## Comparaison à S708
 
@@ -35,17 +35,17 @@ Aucun événement MIDI S708/S707 modifié, pas de refonte du décodeur ni d'unif
 
 | Axe | Statut | Limite |
 |---|---|---|
-| Données | UNKNOWN | Checksum de 80 fichiers et de toutes les annotations à vérifier à l'exécution |
+| Données | PASS | Audio / manifeste / trames S800 SHA vérifiés dans #39535784658, FIT80 historiquement exploré |
 | Acoustique | PASS | Entrée acoustique native 256 imposée par contrat de forme et de causalité |
 | Architecture | PASS | Deux poids distincts et sélecteur privé, aucune entrée d'un enseignant voisin |
-| Apprentissage | UNKNOWN | Cinq vrais plis à entraîner et enregistrer avant conclusion |
-| Métriques | UNKNOWN | Comparaison bit à bit avec le dénominateur S704 historique obligatoire |
+| Apprentissage | FAIL | Cinq plis réellement entraînés, précision 54,67 % en régression et objectif >85 % manqué |
+| Métriques | PASS | Parité S704 historique 142213 / 249411 sur les vraies trames actives, audit comptages par classe sauvegardé |
 | LIVE | UNKNOWN | Pas d'essai microphone, latence matérielle et CPU total inconnus |
 
 ## Verdict
 
-S814 est une nouvelle expérience indépendante sans promotion. L'objectif >85 % est non vérifié, et aucun score fictif ou de données synthétiques ne sera utilisé comme mesure GuitarSet.
+**REJET SCIENTIFIQUE** du candidat S814 : 54,67 % < 57,02 % référence FIT80. Objectif >85 % non atteint, référence S708 intacte. Le run GitHub #39535784658 a PASS techniquement, sans promotion.
 
 ## Prochaine action
 
-Exécuter l'entraînement complet sur les 80 sources signées avec les cinq compositions, contrôler les scores par vrai K, sous/surcomptages et registres, produire les checkpoints et conserver le veto de non-régression lors de toute éventuelle intégration MIDI.
+Tester une nouvelle architecture de sélection causalement indépendante pénalisant les surcomptages sur composition de calibration UNIQUEMENT, et conserver l'évaluation composition-exclue intacte. Examiner les décisions K2–K6, sans toucher au flux MIDI historique.
