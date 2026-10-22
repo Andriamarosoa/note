@@ -1,0 +1,106 @@
+name: Onset MLP69 residual false-positive forensic evidence PCM256
+on:
+  push:
+    branches: [codex/note-onset-fp-residual-audit256]
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: onset-fp-residual-forensics256-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  GH_TOKEN: ${{ github.token }}
+  PYTHONPATH: src
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  technical:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Pin ABI and run all existing Onset native256 plus FP audit tests
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0 joblib==1.4.2 onnxruntime==1.20.1
+          python -m compileall -q scripts/audit_onset_fp_residual256.py tests
+          python -m unittest discover -s tests -v
+          python - <<'PY'
+          from onset256.acoustics import HOP,SR
+          from scripts.audit_onset_fp_residual256 import INTERVALS,MAX_PAST_SAMPLES
+          assert HOP==256 and SR==44100
+          assert INTERVALS==(12,19,24,28) and MAX_PAST_SAMPLES==3528
+          print("ONSET_FP_FORENSIC_256_CAUSAL_PARENT_FEATURE_ABI_OK")
+          PY
+  reconstruct_frozen_fp:
+    needs: technical
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Exact ABI pinned for original 69D trained neural checkpoints
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0 joblib==1.4.2 onnxruntime==1.20.1
+      - name: Load original immutable real-WAV-signed evidence, not regenerated labels
+        run: |
+          mkdir -p /tmp/onset_fp_residual/source
+          gh run download 39741883968 --repo Andriamarosoa/note --name ONSET_HARDNEGATIVE_HARMONIC_RESTRIKE_MLP69_NATIVE256_REAL_REPLAY --dir /tmp/onset_fp_residual/source
+          test -s /tmp/onset_fp_residual/source/candidates/events.jsonl
+          test -s /tmp/onset_fp_residual/source/trained/report.json
+          test -s /tmp/onset_fp_residual/source/trained/checkpoints/onset_error_outer_BN1.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path("/tmp/onset_fp_residual/source/replayed/report.json").read_text())
+          assert r["native"]=={"tp":8099,"fp":4600,"fn":3168,
+                "f1":0.6758741550529918,
+                "precision":0.6377667532876604,
+                "recall":0.7188248868376675}
+          assert r["neural_predecision"]["tp"]==8089 and r["neural_predecision"]["fp"]==4675
+          print("ONSET_FP_AUDIT_SIGNED_ORIGINAL_80_REAL_WAV_SHA_CHECKED_LINEAGE")
+          PY
+      - name: Reconstruct exact accepted FP/TP from 69D MLP weights and sample-causal harmonic parents
+        run: |
+          python -m scripts.audit_onset_fp_residual256 \
+            --events /tmp/onset_fp_residual/source/candidates/events.jsonl \
+            --models /tmp/onset_fp_residual/source/trained \
+            --out /tmp/onset_fp_residual/audit
+      - name: Enforce reproducibility; NEVER promote event-only counterfactual as real WAV F1
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("/tmp/onset_fp_residual/audit/report.json")
+          if p.exists():
+              r=json.loads(p.read_text())
+              assert r["complete"] and r["source_native_events"]==12699
+              assert r["frozen_error69_accepted"]["tp"]==8054
+              assert r["frozen_error69_accepted"]["fp"]==4411
+              assert r["by_texture"]["comp"]["fp"]==3548
+              assert r["by_texture"]["solo"]["fp"]==863
+              assert r["by_register"]["E2_B2"]["fp"]==624
+              assert r["by_register"]["C3_B3"]["fp"]==2145
+              assert r["by_register"]["C4_E6"]["fp"]==1642
+              assert r["causal_intervention_confirmed"] is False
+              assert r["hypotheses_not_proven"] and r["GT_not_in_training_vector"]
+              assert r["this_is_NOT_a_new_live_replay"] and r["this_is_NOT_a_model_improvement"]
+              assert not r["promoted"] and r["official_midi_unchanged"] and r["other_axes_unchanged"]
+              print("ONSET_FP_RESIDUAL_CAUSAL_PARENT_DESCRIPTIVE_FINAL",json.dumps({
+                  k:r[k] for k in ("frozen_error69_accepted","by_texture",
+                   "by_register","parent_neighbor_80ms",
+                   "naive_parent_veto_counterfactual_ONLY")}))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ONSET_MLP69_RESIDUAL_FP_80_GUITARSET_NATIVE256_FORENSICS
+          path: |
+            /tmp/onset_fp_residual/audit/report.json
+            /tmp/onset_fp_residual/audit/fp_signals74.jsonl
+          if-no-files-found: warn
+          retention-days: 45
