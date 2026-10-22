@@ -17,7 +17,7 @@ from exact_k.temporal import load_frozen_source
 from exact_k.runtime import ExactKOnly1024,SCHEMA
 
 COMPOSITIONS=("BN1","Funk2","Jazz1","Rock3","SS1")
-SOURCE_SCHEMA="S800_FIT80_OOF_PER_FRAGMENT_MIDI1024_V1"
+SOURCE_SCHEMA="S800_FIT80_OOF_PER_FRAGMENT_MIDI256_V1"
 
 
 def digest(path):
