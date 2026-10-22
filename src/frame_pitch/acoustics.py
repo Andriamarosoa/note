@@ -149,10 +149,53 @@ class NativeLiveHeads:
         p = 1. / (1. + np.exp(-np.clip(logits, -30, 30)))
         return (p, k) if batched else (p[0], k[0])
 
-def load_native_heads(path, *,expected_sha256=None):
-    if Path(path).suffix!='.npz':
-        raise ValueError("This Exact-K reference pins native NumPy .npz heads only")
-    return NativeLiveHeads(path,expected_sha256=expected_sha256)
+class NativeONNXLiveHeads(NativeLiveHeads):
+    """Exact native trained trees in a compiled CPU inference runtime."""
+
+    def __init__(self, path, *, expected_sha256=None):
+        super().__init__(path, expected_sha256=expected_sha256)
+        import onnxruntime as ort
+        options = ort.SessionOptions()
+        options.intra_op_num_threads = 1
+        options.inter_op_num_threads = 1
+        self.sessions = [ort.InferenceSession(self.arrays.pop(f"tree{i}").tobytes(),
+                         sess_options=options, providers=["CPUExecutionProvider"]) for i in range(3)]
+
+    def predict(self, features):
+        x = np.asarray(features, np.float32)
+        batched = x.ndim == 3
+        if not batched:
+            x = x[None]
+        k = self._net("count", count_features(x))
+        k = np.exp(k - k.max(-1, keepdims=True)); k /= k.sum(-1, keepdims=True)
+        joint = np.concatenate((x, np.broadcast_to(k[:, None], (*x.shape[:2], 7))), -1)
+        flat = np.ascontiguousarray(joint.reshape(-1, joint.shape[-1]), dtype=np.float32)
+        probabilities = [session.run([session.get_outputs()[1].name], {session.get_inputs()[0].name: flat})[0][:, 1]
+                         for session in self.sessions]
+        p = np.stack(probabilities, -1).reshape(*x.shape[:2], 3)
+        return (p, k) if batched else (p[0], k[0])
+
+
+class NativeHybridLiveHeads(NativeONNXLiveHeads):
+    """Native neural/tree consensus, with a development-frozen mixing weight."""
+
+    def predict(self, features):
+        tree, k = NativeONNXLiveHeads.predict(self, features)
+        neural, _ = NativeLiveHeads.predict(self, features)
+        alpha = self.metadata["tree_weight"]
+        combined = np.power(np.clip(neural, 1e-8, 1), 1 - alpha) * np.power(np.clip(tree, 1e-8, 1), alpha)
+        return combined, k
+
+
+def load_native_heads(path, *, expected_sha256=None):
+    if Path(path).suffix != ".npz":
+        raise ValueError("Pinned S834/S828 acoustic source must be the original .npz")
+    with np.load(path, allow_pickle=False) as z:
+        metadata = json.loads(str(z["metadata"]))
+    kind = {"native_causal_tree_heads_onnx": NativeONNXLiveHeads,
+            "native_causal_hybrid": NativeHybridLiveHeads}.get(metadata.get("architecture"), NativeLiveHeads)
+    return kind(path, expected_sha256=expected_sha256)
+
 
 def sharp_track(audio, ends):
     ends=np.asarray(ends,np.int64)
