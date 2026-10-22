@@ -70,16 +70,27 @@ class Stream:
 
         # The MLP's P(error) is an independent learned Onset head opinion,
         # computed BEFORE any selection. Main decisions are NEVER overwritten.
+        # Critical fix: do not zero onset *posteriors* inside a stateful
+        # selector. That artificial zero re-arms the pitch and creates
+        # new NoteOn events in later 256-sample hops (S69D run 39741883968).
+        # Each selector always receives the untouched main probabilities.
+        a=self.base.step(p,k,end,end)
+        b=self.shadow.step(candidate,k,end,end)
         risk_intents=()
         if self.onset_heads.error is not None:
             self.risk_calls=self.onset_heads.error.calls
-            gated=self.head_selector.challenged_candidate(
-                p,opinion.correctness_probability)
-            proposal=self.risk_selector.step(gated,k,end,end)
+            mirror=self.risk_selector.step(p,k,end,end)
+            if mirror!=a:
+                raise AssertionError("ErrorPrediction changed Main Onset internal state")
+            accepted=self.head_selector.challenge_emitted_onsets(
+                mirror,opinion.correctness_probability)
             risk_intents=self._intents(
-                proposal,gated,"onset_error_head_challenged256")
-        a=self.base.step(p,k,end,end)
-        b=self.shadow.step(candidate,k,end,end)
+                accepted,p,"onset_error_head_no_feedback256")
+            main_keys={(int(e["pitch"]),int(e["decision_sample"]))
+                       for e in a if e["type"]=="note_on"}
+            risk_keys={(int(e.pitch),int(e.sample)) for e in risk_intents}
+            if not risk_keys.issubset(main_keys):
+                raise AssertionError("error head cannot create new NoteOns")
         native_intents=self._intents(a,p,"s613_trained256")
         shadow_intents=self._intents(b,candidate,"s701_trained256_shadow")
         # A native NoteOn can be contested WITHOUT suppressing it.

@@ -1,0 +1,143 @@
+name: Onset 69D frozen weights without selector feedback PCM256
+on:
+  push:
+    branches: [codex/note-onset-error-head-no-feedback-256]
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: onset-69d-no-feedback-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  GH_TOKEN: ${{ github.token }}
+  PYTHONPATH: src
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Check 256 PCM, no-feedback causal risk selector and all research tests
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0 joblib==1.4.2 onnxruntime==1.20.1
+          python -m compileall -q src/onset256 scripts tests
+          python -m unittest discover -s tests -v
+          python - <<'PY'
+          from pathlib import Path
+          from onset256.acoustics import HOP,SR
+          from onset256.error_evidence69 import DIM
+          from onset256.heads import HEAD_NAMES
+          s=Path("src/onset256/runtime.py").read_text()
+          assert HOP==256 and SR==44100 and DIM==69
+          assert HEAD_NAMES==("main_attack","rescue_attack","error_prediction")
+          assert "mirror=self.risk_selector.step(p,k,end,end)" in s
+          assert "if mirror!=a:" in s
+          assert "challenge_emitted_onsets" in s
+          assert "self.risk_selector.step(gated,k,end,end)" not in s
+          assert "IncrementalS708TemporalHead" not in s
+          assert "load_frozen_source" not in s
+          assert s.index("opinion=self.onset_heads.predict(")<s.index("a=self.base.step(p,k,end,end)")
+          print("ONSET_69D_NO_FEEDBACK_PREDECISION_PCM256_PASS")
+          PY
+  signed_real_causal_replay:
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Pin genuine 256 native acoustic + neural inference libraries
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0 joblib==1.4.2 onnxruntime==1.20.1
+      - name: Reuse immutable SHA-signed 69D models from failed scientific run (NO retraining)
+        run: |
+          mkdir -p /tmp/onset_nofb/source /tmp/onset_nofb/s701
+          gh run download 39741883968 --repo Andriamarosoa/note --name ONSET_HARDNEGATIVE_HARMONIC_RESTRIKE_MLP69_NATIVE256_REAL_REPLAY --dir /tmp/onset_nofb/source
+          test -s /tmp/onset_nofb/source/trained/report.json
+          gh run download 39085408073 --repo Andriamarosoa/note --name S701_CAUSAL_ONSET_LEARNED_TRAIN_HELD_COMPOSITION --dir /tmp/onset_nofb/s701
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          from onset256.error_evidence69 import load_hard_model
+          from onset256.model import load
+          from scripts.train_onset_hardnegative69 import COMPOSITIONS
+          a,b=load("model/live/strict_note/NOTE_strict_live.npz",
+                   "/tmp/onset_nofb/s701/s701_onset_shadow.joblib")
+          models=Path("/tmp/onset_nofb/source/trained/checkpoints")
+          for c in COMPOSITIONS:
+              meta=models/f"onset_error_outer_{c}.json"
+              info=json.loads(meta.read_text())
+              assert info["outer_composition"]==c
+              assert c not in info["train_compositions"] and c!=info["cal_composition"]
+              obj=load_hard_model(models/f"onset_error_outer_{c}.joblib",meta,
+                    expected_sha256=info["checkpoint_sha256"])
+              print("ONSET69_SAME_TRAINED_FROZEN_MODEL",c,obj.cut,info["selected_expert"],info["checkpoint_sha256"])
+          PY
+      - name: Fetch unchanged SHA256-signed source corpus and 80 traces
+        run: |
+          mkdir -p /tmp/onset_nofb/manifest /tmp/onset_nofb/traces
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/onset_nofb/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/onset_nofb/traces
+          META="$(find /tmp/onset_nofb/manifest -name report.json -type f -print -quit)"
+          FIT="$(find /tmp/onset_nofb/traces -name fit_000.json -type f -print -quit)"
+          test -s "$META"; test -s "$FIT"
+          printf '%s\n' "$META" > /tmp/onset_nofb/manifest_path
+          printf '%s\n' "$(dirname "$FIT")" > /tmp/onset_nofb/traces_path
+          python - <<'PY'
+          from pathlib import Path
+          import json,urllib.request,hashlib
+          record=json.loads(Path("analysis/evidence/v273-s613-strict-live/protocol.json").read_text())["guitar_archives"]["GuitarSet_audio"]
+          path=Path("/tmp/onset_nofb/GuitarSet_audio.zip")
+          with urllib.request.urlopen(record["url"],timeout=180) as src,path.open("wb") as dst:
+              for chunk in iter(lambda:src.read(4*1024*1024),b""):dst.write(chunk)
+          assert path.stat().st_size==record["size"]
+          h=hashlib.sha256()
+          with path.open("rb") as fd:
+              for chunk in iter(lambda:fd.read(1048576),b""):h.update(chunk)
+          assert h.hexdigest()==record["sha256"]
+          print("ONSET_NO_FEEDBACK_80_ORIGINAL_WAV_SHA_VERIFIED")
+          PY
+      - name: Replay every genuine PCM256 with independent ErrorPredictionHead and no state feedback
+        run: |
+          python -m scripts.replay_hardnegative69 \
+            --audio-zip /tmp/onset_nofb/GuitarSet_audio.zip \
+            --traces "$(cat /tmp/onset_nofb/traces_path)" \
+            --manifest "$(cat /tmp/onset_nofb/manifest_path)" \
+            --native-model model/live/strict_note/NOTE_strict_live.npz \
+            --s701-model /tmp/onset_nofb/s701/s701_onset_shadow.joblib \
+            --trained-models /tmp/onset_nofb/source/trained \
+            --out /tmp/onset_nofb/replayed
+      - name: Scientific check versus both previous 63D and original native Onset
+        if: always()
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          p=Path("/tmp/onset_nofb/replayed/report.json")
+          if p.exists():
+              r=json.loads(p.read_text())
+              assert r["complete"] and r["tracks"]==80 and r["frames"]==306536
+              assert r["native"]["tp"]==8099 and r["native"]["fp"]==4600 and r["native"]["fn"]==3168
+              assert r["source_inference_hop"]==256 and r["model_training_hop"]==256
+              assert r["learned_head_doubt_totals"]["challenged_tp"]==45
+              assert r["learned_head_doubt_totals"]["challenged_fp"]==189
+              assert r["risk_is_onset_architecture_head"]
+              assert not r["promoted"] and not r["public_midi_modified"] and not r["other_axes_modified"]
+              assert r["neural_predecision"]["fp"] <= r["native"]["fp"]
+              assert r["neural_predecision"]["f1"] >= r["native"]["f1"]
+              print("ONSET_69D_FROZEN_NO_FEEDBACK_REAL_CAUSAL",r["neural_predecision"])
+              print("ONSET_69D_COMPARE_PREVIOUS_63D",r["neural_predecision"]["f1"]-0.6767043078209954)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ONSET69_NO_FEEDBACK_SAME_WEIGHTS_REAL_CAUSAL_80_WAV
+          path: /tmp/onset_nofb/replayed/report.json
+          if-no-files-found: warn
+          retention-days: 45

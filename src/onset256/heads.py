@@ -187,6 +187,33 @@ class OnsetHeadSelector:
             raise AssertionError("risk head changed sustain/release posteriors")
         return alternate
 
+    def challenge_emitted_onsets(self,events,correctness):
+        """Select native 256 NoteOn candidates with a PRE-computed risk opinion.
+
+        This is an Onset-owned FINAL OUTPUT SELECTOR, not an external filter.
+        Crucially the risk head never modifies the posterior stream driving
+        the re-arm / refractory / active-note state machine. The risk
+        opinion was predicted before step(), and both pending Main and risk
+        selections evolved under IDENTICAL original PCM256 posteriors.
+
+        The return is Onset ONLY. It cannot be used directly to emit MIDI
+        NoteOff events; the production MIDI route is intentionally untouched.
+        """
+        c=np.asarray(correctness,np.float32)
+        if (c.shape!=(49,) or not np.isfinite(c).all()
+            or np.any(c<0.) or np.any(c>1.)):
+            raise ValueError("invalid learned correctness probability")
+        accepted=[]
+        for e in events:
+            if e["type"]!="note_on":
+                continue
+            idx=int(e["pitch"])-40
+            if not 0 <= idx < 49:
+                raise ValueError("out-of-range 256-trained Onset attack")
+            if float(c[idx])>=self.correctness_cut:
+                accepted.append(e)
+        return tuple(accepted)
+
     def doubts(self,events,opinion):
         if opinion.error_probability is None:return ()
         out=[]
