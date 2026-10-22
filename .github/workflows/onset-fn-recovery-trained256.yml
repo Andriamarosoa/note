@@ -62,11 +62,25 @@ jobs:
           gh run download 39754613388 --repo Andriamarosoa/note --name ONSET_FN_80_WAV_REAL256_CAUSAL_AUDIT_AND_RESUE_CANDIDATES --dir /tmp/onset_fn4/evidence
           gh run download 39741883968 --repo Andriamarosoa/note --name ONSET_HARDNEGATIVE_HARMONIC_RESTRIKE_MLP69_NATIVE256_REAL_REPLAY --dir /tmp/onset_fn4/risk
           gh run download 39085408073 --repo Andriamarosoa/note --name S701_CAUSAL_ONSET_LEARNED_TRAIN_HELD_COMPOSITION --dir /tmp/onset_fn4/s701
-          test -s /tmp/onset_fn4/evidence/audit/report.json
-          test -s /tmp/onset_fn4/evidence/audit/candidate_proposals.jsonl
-          test -s /tmp/onset_fn4/evidence/audit/main_events.jsonl
-          test -s /tmp/onset_fn4/risk/candidates/events.jsonl
-          test -s /tmp/onset_fn4/risk/trained/report.json
+          AUDIT="$(find /tmp/onset_fn4/evidence -name report.json -type f -print -quit)"
+          CAND="$(find /tmp/onset_fn4/evidence -name candidate_proposals.jsonl -type f -print -quit)"
+          MAIN="$(find /tmp/onset_fn4/evidence -name main_events.jsonl -type f -print -quit)"
+          PREV="$(find /tmp/onset_fn4/risk -name events.jsonl -type f -print -quit)"
+          OLD_META="$(find /tmp/onset_fn4/risk -path '*/trained/report.json' -type f -print -quit)"
+          for path in "$AUDIT" "$CAND" "$MAIN" "$PREV" "$OLD_META"; do
+            if [ ! -s "$path" ]; then
+              echo "Required signed audit evidence not found. Available artifact files:"
+              find /tmp/onset_fn4/evidence /tmp/onset_fn4/risk -maxdepth 5 -type f
+              exit 1
+            fi
+          done
+          printf '%s\n' "$AUDIT" > /tmp/onset_fn4/evidence_report_path
+          printf '%s\n' "$CAND" > /tmp/onset_fn4/candidates_path
+          printf '%s\n' "$MAIN" > /tmp/onset_fn4/main_events_path
+          printf '%s\n' "$PREV" > /tmp/onset_fn4/old_risk_events_path
+          printf '%s\n' "$(dirname "$(dirname "$OLD_META")")" > /tmp/onset_fn4/old_models_path
+          echo "Signed FN candidates: $CAND"
+          echo "Frozen MLP69 events: $PREV"
           python - <<'PY'
           import json
           from pathlib import Path
@@ -75,13 +89,13 @@ jobs:
           from scripts.train_onset_predecision256 import COMPOSITIONS
           a,b=load("model/live/strict_note/NOTE_strict_live.npz",
                    "/tmp/onset_fn4/s701/s701_onset_shadow.joblib")
-          d=json.loads(Path("/tmp/onset_fn4/evidence/audit/report.json").read_text())
+          d=json.loads(Path(Path("/tmp/onset_fn4/evidence_report_path").read_text().strip()).read_text())
           assert d["native"]=={"tp":8099,"fp":4600,"fn":3168}
           assert d["pcm256_frames"]==306536
           assert d["hypothesis_low_onset_gt_50pct"]
           assert d["candidate_oracle_captured"]=={"sensitive":1923,"moderate":1668,"cautious":1367}
           for outer in COMPOSITIONS:
-              root=Path("/tmp/onset_fn4/risk/trained/checkpoints")
+              root=Path(Path("/tmp/onset_fn4/old_models_path").read_text().strip())/"checkpoints"
               meta=root/f"onset_error_outer_{outer}.json"
               doc=json.loads(meta.read_text())
               assert doc["outer_composition"]==outer
@@ -102,10 +116,10 @@ jobs:
       - name: Actually TRAIN 15 independent 69D FN neural networks and freeze five CAL choices
         run: |
           python -m scripts.train_onset_fn_recovery256 \
-            --candidates /tmp/onset_fn4/evidence/audit/candidate_proposals.jsonl \
-            --main-events /tmp/onset_fn4/evidence/audit/main_events.jsonl \
-            --old-risk-events /tmp/onset_fn4/risk/candidates/events.jsonl \
-            --old-models /tmp/onset_fn4/risk/trained \
+            --candidates "$(cat /tmp/onset_fn4/candidates_path)" \
+            --main-events "$(cat /tmp/onset_fn4/main_events_path)" \
+            --old-risk-events "$(cat /tmp/onset_fn4/old_risk_events_path)" \
+            --old-models "$(cat /tmp/onset_fn4/old_models_path)" \
             --traces "$(cat /tmp/onset_fn4/traces_path)" \
             --manifest "$(cat /tmp/onset_fn4/manifest_path)" \
             --out /tmp/onset_fn4/trained
@@ -133,7 +147,7 @@ jobs:
             --manifest "$(cat /tmp/onset_fn4/manifest_path)" \
             --native-model model/live/strict_note/NOTE_strict_live.npz \
             --s701-model /tmp/onset_fn4/s701/s701_onset_shadow.joblib \
-            --risk-models /tmp/onset_fn4/risk/trained \
+            --risk-models "$(cat /tmp/onset_fn4/old_models_path)" \
             --fn-models /tmp/onset_fn4/trained \
             --out /tmp/onset_fn4/replayed
       - name: Scientific gate — compare true FN recovery with exact frozen 3-head baseline
