@@ -199,7 +199,7 @@ def run(signals,reference,out):
             print("ONSET_FP_69_70_74_MLP_TRAINED",json.dumps(dict(
                 outer=outer,cal=cal,train=train,variant=variant,
                 train_count=len(train_indices),cut=cut,
-                cal=choice["score"],
+                cal_proxy=choice["score"],
                 outer_EVENT_PROXY_NOT_REAL_F1=proxy)),flush=True)
         folds.append(dict(outer=outer,cal=cal,train=train,
                           compared_same_train_and_seed=True,
