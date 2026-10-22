@@ -19,10 +19,12 @@ class Decision:
     sample:int
     intents:tuple=()
     candidate_intents:tuple=()
+    evidence:tuple=()
+    candidate_evidence:tuple=()
 
 class Stream:
     """S613 + S701 both called exactly once per received PCM256 decision."""
-    def __init__(self,native,s701):
+    def __init__(self,native,s701,*,audit_events=False):
         policy=Selection(**native.metadata.get("selection",{}))
         self.native=native;self.s701=s701
         self.frontend=CausalPitchFeatures(hop=HOP)
@@ -31,6 +33,7 @@ class Stream:
         self.shadow=CausalSelection(policy,hop=HOP)
         self.received=0;self.last_decision=0;self.calls=0;self.s701_calls=0
         self.closed=False
+        self.audit_events=bool(audit_events)
     def _intents(self,events,post,reason):
         return tuple(Intent("note_on",int(e["pitch"]),int(e["decision_sample"]),
                      float(post[e["pitch"]-40,0]),reason)
@@ -52,8 +55,17 @@ class Stream:
         self.last_decision=end;self.calls+=1
         a=self.base.step(p,k,end,end)
         b=self.shadow.step(candidate,k,end,end)
-        return Decision(end,self._intents(a,p,"s613_trained256"),
-                        self._intents(b,candidate,"s701_trained256_shadow"))
+        native_intents=self._intents(a,p,"s613_trained256")
+        shadow_intents=self._intents(b,candidate,"s701_trained256_shadow")
+        if self.audit_events:
+            from .harmonic_evidence import onset_event_evidence
+            audit_native=tuple(onset_event_evidence(feat,p,k,score,intent.pitch,intent.sample)
+                               for intent in native_intents)
+            audit_shadow=tuple(onset_event_evidence(feat,p,k,score,intent.pitch,intent.sample)
+                               for intent in shadow_intents)
+        else:
+            audit_native=audit_shadow=()
+        return Decision(end,native_intents,shadow_intents,audit_native,audit_shadow)
     def push(self,samples,*,start_sample):
         if self.closed or type(start_sample)is not int or start_sample!=self.received:
             raise ValueError("Onset PCM discontinuity or closed")

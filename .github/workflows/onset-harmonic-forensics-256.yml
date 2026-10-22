@@ -1,0 +1,116 @@
+name: Onset native256 causal harmonic TP-FP forensics
+on:
+  push:
+    branches: [codex/note-onset-harmonic-forensics-256]
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: onset-harmonic-forensics256-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  GH_TOKEN: ${{ github.token }}
+  PYTHONPATH: src
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Pin dependencies, test read-only harmonic evidence at hop 256
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0 joblib==1.4.2 onnxruntime==1.20.1
+          python -m compileall -q src/onset256 scripts/onset_harmonic_forensics256.py tests
+          python -m unittest discover -s tests -v
+          python - <<'PY'
+          from pathlib import Path
+          r=Path("src/onset256/runtime.py").read_text()
+          assert "IncrementalS708TemporalHead" not in r
+          assert "load_frozen_source" not in r
+          from onset256.acoustics import HOP
+          assert HOP==256
+          print("ONSET_HARMONIC_CAUSAL_SMOKE_PCM256_PASS")
+          PY
+  signed_fit80_forensics:
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Pin model runtime dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0 joblib==1.4.2 onnxruntime==1.20.1
+      - name: Authenticate native-256 pretrained weights
+        run: |
+          mkdir -p /tmp/onset256_harmonic/model
+          gh run download 39085408073 --repo Andriamarosoa/note --name S701_CAUSAL_ONSET_LEARNED_TRAIN_HELD_COMPOSITION --dir /tmp/onset256_harmonic/model
+          python - <<'PY'
+          from onset256.model import load
+          n,s=load("model/live/strict_note/NOTE_strict_live.npz",
+                   "/tmp/onset256_harmonic/model/s701_onset_shadow.joblib")
+          print("S613_S701_GENUINE_256_WEIGHTS_SHA_VERIFIED",s.n_features_in_)
+          PY
+      - name: Verify original immutable FIT80 signed traces
+        run: |
+          mkdir -p /tmp/onset256_harmonic/manifest /tmp/onset256_harmonic/traces
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/onset256_harmonic/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/onset256_harmonic/traces
+          META="$(find /tmp/onset256_harmonic/manifest -name report.json -type f -print -quit)"
+          FIT="$(find /tmp/onset256_harmonic/traces -name fit_000.json -type f -print -quit)"
+          test -s "$META"; test -s "$FIT"
+          printf '%s\n' "$META" > /tmp/onset256_harmonic/manifest_path
+          printf '%s\n' "$(dirname "$FIT")" > /tmp/onset256_harmonic/traces_dir
+      - name: Download and SHA-verify original GuitarSet 80-track WAV archive
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,urllib.request,hashlib
+          record=json.loads(Path("analysis/evidence/v273-s613-strict-live/protocol.json").read_text())["guitar_archives"]["GuitarSet_audio"]
+          path=Path("/tmp/onset256_harmonic/GuitarSet_audio.zip")
+          with urllib.request.urlopen(record["url"],timeout=180) as src,path.open("wb") as dst:
+              for chunk in iter(lambda:src.read(4*1024*1024),b""):dst.write(chunk)
+          assert path.stat().st_size==record["size"]
+          h=hashlib.sha256()
+          with path.open("rb") as fd:
+              for chunk in iter(lambda:fd.read(1048576),b""):h.update(chunk)
+          assert h.hexdigest()==record["sha256"]
+          print("ONSET_HARMONIC_FIT80_WAV_SHA_VERIFIED")
+          PY
+      - name: Replay 80 tracks with *read-only* event harmonic context and matched TP FP FN
+        run: |
+          python -m scripts.onset_harmonic_forensics256 \
+            --audio-zip /tmp/onset256_harmonic/GuitarSet_audio.zip \
+            --traces "$(cat /tmp/onset256_harmonic/traces_dir)" \
+            --manifest "$(cat /tmp/onset256_harmonic/manifest_path)" \
+            --native-model model/live/strict_note/NOTE_strict_live.npz \
+            --s701-model /tmp/onset256_harmonic/model/s701_onset_shadow.joblib \
+            --out /tmp/onset256_harmonic/result
+      - name: Enforce diagnostic-only scientific status
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          j=json.loads(Path("/tmp/onset256_harmonic/result/report.json").read_text())
+          assert j["complete"] and j["tracks"]==80 and j["frames"]==306536
+          assert j["native"]["tp"]==8099 and j["native"]["fp"]==4600
+          assert j["s701_shadow"]["tp"]==8113 and j["s701_shadow"]["fp"]==4603
+          assert not j["promoted"] and not j["independent_outer_validation"]
+          assert not j["public_midi_modified"] and not j["other_axes_modified"]
+          print("ONSET_HARMONIC_DIAGNOSTIC_ONLY_NO_PROMOTION")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ONSET_PCM256_S613_S701_PER_EVENT_HARMONIC_TP_FP
+          path: |
+            /tmp/onset256_harmonic/result/report.json
+            /tmp/onset256_harmonic/result/events.jsonl
+          if-no-files-found: warn
+          retention-days: 45
