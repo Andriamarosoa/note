@@ -20,16 +20,15 @@ class ActiveKDecision:
 
 
 class PrivateS708GuidedActiveK:
-    """Original S708 JointSelector+GuidedSelector copied into private state.
+    """S708-derived private selector; native decision cadence strictly 256 samples.
 
-    Original behavior is verifiable against GuidedSelector on the 1024
-    source grid. Only the strict frame-cadence assertion is parametrized.
-    Public S708 classes and their global 4x256 constant are UNCHANGED.
+    Historic S708 provenance remains in reference artifacts, not an
+    executable 1024-sample compatibility mode for this independent branch.
     """
 
     def __init__(self,policy,*,decision_hop=HOP):
-        if decision_hop not in (HOP,4*HOP):
-            raise ValueError("only exact MIDI256 or S708 source1024 supported")
+        if type(decision_hop) is not int or decision_hop != HOP:
+            raise ValueError("Active Exact-K requires strictly 256-sample decisions")
         self.policy=policy
         self.decision_hop=decision_hop
         self.active=np.zeros(PITCHES,bool)
@@ -53,7 +52,7 @@ class PrivateS708GuidedActiveK:
         c=self.policy
         on,sustain,release=p.T
 
-        # JointSelector's original 1024-code path, isolated as Active-K state.
+        # Private selector state runs strictly once on each PCM256 decision.
         self.armed|=on<c.onset*.4
         self.low=np.where((sustain<c.sustain_off)|(release>=c.release),
                           self.low+1,0)
