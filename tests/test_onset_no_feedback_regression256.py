@@ -73,8 +73,9 @@ class NoFeedbackSelectorTests(unittest.TestCase):
         native=Stream(PersistentMain(),Specialist())
         checked=Stream(PersistentMain(),Specialist(),risk_model=risk)
         pcm=np.zeros(15*HOP,np.float32)
-        baseline=native.push(pcm[:4096],start_sample=0)+native.push(pcm[4096:],start_sample=4096)
-        gated=checked.push(pcm[:4096],start_sample=0)+checked.push(pcm[4096:],start_sample=4096)
+        split=8*HOP
+        baseline=native.push(pcm[:split],start_sample=0)+native.push(pcm[split:],start_sample=split)
+        gated=checked.push(pcm[:split],start_sample=0)+checked.push(pcm[split:],start_sample=split)
         self.assertEqual(notes(baseline,"intents"),notes(gated,"intents"))
         self.assertEqual(notes(gated,"intents"),[(40,256)])
         self.assertEqual(notes(gated,"predecision_intents"),[(40,256)])
