@@ -39,6 +39,26 @@ jobs:
           assert len(S613_SHA256)==len(S701_SHA256)==64
           print('ONSET_TRAINED_NATIVE256_ONLY')
           PY
+      - name: Re-audit signed Onset 80-track report for exact train-eval overlap
+        run: |
+          mkdir -p /tmp/onset_lineage
+          gh run download 39716211840 --repo Andriamarosoa/note --name ONSET_S613_S701_GENUINE_TRAINED256_FIT80 --dir /tmp/onset_lineage
+          python -m onset256.lineage_audit --report /tmp/onset_lineage/report.json --ledger series/ONSET_S701_256/training_ledger.json --out /tmp/onset_lineage/lineage_audit.json
+          python - <<'PY'
+          import json
+          r=json.load(open("/tmp/onset_lineage/lineage_audit.json"))
+          assert r["counts"]["s701_train"]["count"]==48
+          assert r["counts"]["s701_held"]["count"]==32
+          assert r["counts"]["s613_train"]["count"]==20
+          assert not r["independent_outer_test"]
+          assert not r["promotion_allowed"]
+          print("ONSET_256_FIT80_NOT_INDEPENDENT_NO_PROMOTION")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ONSET_S701_256_AUDITED_TRAIN_FIT80_LINEAGE
+          path: /tmp/onset_lineage/lineage_audit.json
+          if-no-files-found: error
   signed_fit80:
     needs: smoke
     if: contains(github.event.head_commit.message, '[run-fit80]') || github.event_name == 'workflow_dispatch'
