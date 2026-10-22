@@ -11,10 +11,11 @@ class OnlyFullNote(unittest.TestCase):
         torch.set_num_threads(1)
         cls.native=load_native_heads(Path(__file__).resolve().parents[1]/"model/live/strict_note/NOTE_strict_live.npz")
         cls.model=TemporalHeads(np.zeros(288,np.float32),np.ones(288,np.float32),width=8).eval()
-    def test_pcm256(self):
+    def test_pcm1024(self):
+        self.assertEqual(HOP,1024)
         s=Stream(self.native,self.model,.5)
         v=s.push(np.zeros(4*HOP,np.float32),start_sample=0)
-        self.assertEqual([x.sample for x in v],[256,512,768,1024])
+        self.assertEqual([x.sample for x in v],[HOP,2*HOP,3*HOP,4*HOP])
         self.assertEqual(s.calls,4)
         with self.assertRaises(ValueError):s.push(np.zeros(HOP,np.float32),start_sample=0)
     def test_no_other_axis_decoder(self):

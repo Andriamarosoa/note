@@ -1,0 +1,4 @@
+# Full Note experimental PCM1024
+One fresh, strictly causal 44.1 kHz mono PCM acoustic and temporal inference per 1024 samples (23.21995465 ms). Emits NoteOn and NoteOff events on the 1024 sample grid, using only past/current PCM. This fork does not modify the reference PCM256 branch or official MIDI.
+The original frozen S708 temporal neural weights were trained on the historical 1024 hop; acoustic frontend weights were originally frozen with their own training provenance. Neither is retrained in this code-only conversion.
+The 80 signed FIT80 tracks yield native-1024 Full Note F1 and distinct onset F1; S834 historic PCM256 full-note F1 35.389737% must not be confused with onset F1 71.108037%. The signed manifest has historical name MIDI256 but is used only for immutable evidence, not as runtime clock. Scores are descriptive and not comparable framewise; do not promote until independently reviewed.

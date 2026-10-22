@@ -1,11 +1,11 @@
-name: full_note ONLY exact source-score revalidation
+name: full_note ONLY experimental PCM1024 FIT80
 on:
   push:
-    branches: [codex/note-best-full-note-s834-256]
+    branches: [codex/note-full-note-native-1024]
   workflow_dispatch:
 permissions: {contents: read, actions: read}
 concurrency:
-  group: full_note-only-${{ github.ref }}
+  group: full_note-1024-only-${{ github.ref }}
   cancel-in-progress: true
 env:
   PYTHONPATH: src
@@ -74,7 +74,7 @@ jobs:
           assert h.hexdigest()==item['sha256']
           print('FULL_NOTE_SOURCE_WAV_PINNED')
           PY
-      - name: Revalidate the ONLY preserved full_note raw metric on 80 tracks
+      - name: Revalidate the ONLY preserved PCM1024 full_note raw metric on 80 tracks
         run: |
           python -m scripts.replay_fit80 --audio-zip /tmp/only_full_note/GuitarSet_audio.zip --traces "$(cat /tmp/only_full_note/traces_dir)" --manifest "$(cat /tmp/only_full_note/manifest_path)" --checkpoint "$(cat /tmp/only_full_note/s708_dir)/s708_selected.pt" --source-report "$(cat /tmp/only_full_note/s708_dir)/report.json" --native-model model/live/strict_note/NOTE_strict_live.npz --out /tmp/only_full_note/result 
       - uses: actions/upload-artifact@v4

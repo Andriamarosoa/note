@@ -1,4 +1,4 @@
-"""S834 isolated full_note ONLY. True PCM256, no five foreign decoders."""
+"""S834 isolated full_note ONLY. True PCM1024, no five foreign decoders."""
 from __future__ import annotations
 from collections import deque
 from dataclasses import dataclass
@@ -6,7 +6,7 @@ import time
 import numpy as np
 from .acoustics import CausalPitchFeatures,HOP,SR,sharp_track
 from .temporal import IncrementalS708TemporalHead,latest_s708_acoustic_features
-SCHEMA="FULL_NOTE_ONLY_S834_TRUE_PCM256_V1"
+SCHEMA="FULL_NOTE_ONLY_EXPERIMENTAL_PCM1024_V1"
 PAST_AUDIO=8192+HOP
 @dataclass(frozen=True)
 class Decision:
@@ -84,7 +84,7 @@ class Stream:
         p,k=self.temporal.step(X)
         post=np.clip(self.blend*p+(1-self.blend)*self.native_post[-1],0,1)
         self.calls+=1
-        if end!=self.last_decision+HOP:raise AssertionError("native256 clock")
+        if end!=self.last_decision+HOP:raise AssertionError("native1024 clock")
         self.last_decision=end
         return self.decoder.step(post,end)
     def push(self,samples,*,start_sample):
