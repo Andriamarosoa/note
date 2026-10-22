@@ -1,0 +1,143 @@
+name: Onset FN mechanism and candidate coverage PCM256 pre-registered audit
+on:
+  push:
+    branches: [codex/note-fn-causal-diagnosis-256]
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: onset-fn-falsifiable-audit256-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  PYTHONPATH: src
+  GH_TOKEN: ${{ github.token }}
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Pin genuine 256-trained models dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0 joblib==1.4.2 onnxruntime==1.20.1
+          python -m compileall -q scripts/audit_onset_fn_candidates256.py tests/test_audit_onset_fn_candidates256.py src/onset256
+          python -m unittest discover -s tests -v
+      - name: Scientific hypothesis must be predeclared and no labels go to LIVE
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from onset256.acoustics import HOP,SR
+          from scripts.audit_onset_fn_candidates256 import (
+              HYPOTHESIS_LOW_ONSET_FRACTION, PROPOSAL_CONFIGS,FNExplorer)
+          s=Path("scripts/audit_onset_fn_candidates256.py").read_text()
+          assert HOP==256 and SR==44100
+          assert HYPOTHESIS_LOW_ONSET_FRACTION==.5
+          assert set(PROPOSAL_CONFIGS)=={"sensitive","moderate","cautious"}
+          assert s.index("explorer.close_proposals()")<s.index("categorize(",
+                s.index("def run("))
+          assert s.index("explorer.close_proposals()")<s.index('truth=metadata["fit_truth"]') if 'truth=metadata["fit_truth"]' in s else True
+          assert 'from onset256.model import load' in s
+          assert "load_frozen_source" not in s and "IncrementalS708TemporalHead" not in s
+          print("ONSET_FN_AUDIT_256_PRE_REGISTERED_HYPOTHESIS_AND_LABEL_ISOLATION_OK")
+          PY
+  replay_and_audit_80:
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install native256 verified numerical dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0 joblib==1.4.2 onnxruntime==1.20.1
+      - name: Fetch original S701 SHA-pinned learned-256 weights
+        run: |
+          mkdir -p /tmp/onset_fn_audit256/models_s701
+          gh run download 39085408073 --repo Andriamarosoa/note --name S701_CAUSAL_ONSET_LEARNED_TRAIN_HELD_COMPOSITION --dir /tmp/onset_fn_audit256/models_s701
+          python - <<'PY'
+          from onset256.model import load
+          n,m=load("model/live/strict_note/NOTE_strict_live.npz",
+                   "/tmp/onset_fn_audit256/models_s701/s701_onset_shadow.joblib")
+          print("ONSET_FN_AUDIT_PINNED_TRUE256_S613_S701",m.n_features_in_)
+          PY
+      - name: Fetch all 80 SHA-signed original GuitarSet annotations
+        run: |
+          mkdir -p /tmp/onset_fn_audit256/manifest /tmp/onset_fn_audit256/traces
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/onset_fn_audit256/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/onset_fn_audit256/traces
+          META="$(find /tmp/onset_fn_audit256/manifest -name report.json -type f -print -quit)"
+          FIT="$(find /tmp/onset_fn_audit256/traces -name fit_000.json -type f -print -quit)"
+          test -s "$META"; test -s "$FIT"
+          printf '%s\n' "$META" > /tmp/onset_fn_audit256/manifest_path
+          printf '%s\n' "$(dirname "$FIT")" > /tmp/onset_fn_audit256/traces_path
+      - name: Verify and download original GuitarSet audio SHA256
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,urllib.request,hashlib
+          rec=json.loads(Path("analysis/evidence/v273-s613-strict-live/protocol.json").read_text())["guitar_archives"]["GuitarSet_audio"]
+          file=Path("/tmp/onset_fn_audit256/GuitarSet_audio.zip")
+          with urllib.request.urlopen(rec["url"],timeout=180) as src,file.open("wb") as dst:
+              for block in iter(lambda:src.read(2*1024*1024),b""):
+                  dst.write(block)
+          assert file.stat().st_size==rec["size"]
+          h=hashlib.sha256()
+          with file.open("rb") as f:
+              for block in iter(lambda:f.read(2*1024*1024),b""):
+                  h.update(block)
+          assert h.hexdigest()==rec["sha256"]
+          print("ONSET_FN_AUDIT_ORIGINAL_WAV_SHA256_VERIFIED")
+          PY
+      - name: Reproduce 3168 false negatives and test candidate oracle coverage PCM256
+        run: |
+          python -m scripts.audit_onset_fn_candidates256 \
+            --audio-zip /tmp/onset_fn_audit256/GuitarSet_audio.zip \
+            --traces "$(cat /tmp/onset_fn_audit256/traces_path)" \
+            --manifest "$(cat /tmp/onset_fn_audit256/manifest_path)" \
+            --native-model model/live/strict_note/NOTE_strict_live.npz \
+            --s701-model /tmp/onset_fn_audit256/models_s701/s701_onset_shadow.joblib \
+            --out /tmp/onset_fn_audit256/audit
+      - name: Verify pre-registered 50pct low-main-onset hypothesis and honest oracle
+        if: always()
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          r=Path("/tmp/onset_fn_audit256/audit/report.json")
+          if not r.exists():
+              print("ONSET_FN_AUDIT_NO_REPORT: source evidence missing")
+          else:
+              j=json.loads(r.read_text())
+              assert j["complete"] and j["tracks"]==80 and j["pcm256_frames"]==306536
+              assert j["native"]=={"tp":8099,"fp":4600,"fn":3168}
+              assert j["labels_only_after_complete_pcm_inference"]
+              assert j["audit_is_descriptive_not_causal_confirmation"]
+              assert not j["not_a_real_live_f1_improvement"]==False
+              assert j["other_axes_unchanged"] and j["official_midi_unchanged"]
+              assert j["fit80_teacher_train_overlap"]
+              print("ONSET_FN_AUDIT_EVIDENCE_REAL",json.dumps({
+                  k:j[k] for k in ("native","low_onset_fraction",
+                      "hypothesis_low_onset_gt_50pct",
+                      "fn_failure_classifications",
+                      "candidate_oracle_captured")}))
+              print("ONSET_FN_AUDIT_HYPOTHESIS_STATUS",
+                    "SUPPORTED_AS_DESCRIPTIVE_ASSOCIATION" if j["hypothesis_low_onset_gt_50pct"]
+                    else "REFUTED_OR_INCOMPLETE")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ONSET_FN_80_WAV_REAL256_CAUSAL_AUDIT_AND_RESUE_CANDIDATES
+          path: |
+            /tmp/onset_fn_audit256/audit/report.json
+            /tmp/onset_fn_audit256/audit/false_negatives.jsonl
+            /tmp/onset_fn_audit256/audit/candidate_proposals.jsonl
+            /tmp/onset_fn_audit256/audit/main_events.jsonl
+          if-no-files-found: warn
+          retention-days: 45
