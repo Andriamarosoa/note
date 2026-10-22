@@ -78,7 +78,7 @@ jobs:
           printf '%s\n' "$CAND" > /tmp/onset_fn4/candidates_path
           printf '%s\n' "$MAIN" > /tmp/onset_fn4/main_events_path
           printf '%s\n' "$PREV" > /tmp/onset_fn4/old_risk_events_path
-          printf '%s\n' "$(dirname "$(dirname "$OLD_META")")" > /tmp/onset_fn4/old_models_path
+          printf '%s\n' "$(dirname "$OLD_META")" > /tmp/onset_fn4/old_models_path
           echo "Signed FN candidates: $CAND"
           echo "Frozen MLP69 events: $PREV"
           python - <<'PY'
