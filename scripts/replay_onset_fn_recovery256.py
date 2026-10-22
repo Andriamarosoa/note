@@ -21,6 +21,12 @@ from scripts.train_onset_predecision256 import COMPOSITIONS
 
 EXPECTED_MAIN=dict(tp=8099,fp=4600,fn=3168)
 EXPECTED_MLP69=dict(tp=8054,fp=4411,fn=3213)
+REFERENCE_FOUR_HEAD_F1=0.6790945406125166
+REFERENCE_FOUR_HEAD_FP=4605
+REFERENCE_FOUR_HEAD_TP=8160
+# Prospective issue #141: add unique TRAIN negatives while preserving ~1:3
+# learning class ratio; reject promotion unless real audio improves all
+# predeclared primary criteria, irrespective of offline candidate proxy.
 def sha256(path):
     h=hashlib.sha256()
     with Path(path).open("rb") as f:
@@ -168,7 +174,9 @@ def run(audio_zip,traces,manifest,native_model,s701_model,risk_models,
               combined=stats(*[sum(r["combined"][k] for r in subset)
                                for k in ("tp","fp","fn")]),
               recovered_proposals=sum(x["recovered_proposals"] for x in subset))
-    win=combo["f1"]>third["f1"]+1e-4
+    win=(combo["f1"]>REFERENCE_FOUR_HEAD_F1+1e-12 and
+         combo["fp"]<REFERENCE_FOUR_HEAD_FP and
+         combo["tp"]>third["tp"])
     regressions=[dict(track=row["name"],composition=row["composition"],
                       delta_tp=row["tp_delta"],delta_fp=row["fp_delta"],
                       delta_fn=row["fn_delta"])
@@ -186,7 +194,17 @@ def run(audio_zip,traces,manifest,native_model,s701_model,risk_models,
         oracle_candidate_counts_are_not_F1=True,
         historical_train_overlap_s613_s701=True,
         independently_validated_on_unseen_corpus=False,
-        strict_improvement_vs_three_head=win,
+        strict_improvement_vs_three_head=combo["f1"]>third["f1"],
+        preregistered_negative_coverage_ablation_issue=141,
+        previous_four_head_f1=REFERENCE_FOUR_HEAD_F1,
+        previous_four_head_tp=REFERENCE_FOUR_HEAD_TP,
+        previous_four_head_fp=REFERENCE_FOUR_HEAD_FP,
+        new_fp_from_recovery=int(combo["fp"]-third["fp"]),
+        new_tp_from_recovery=int(combo["tp"]-third["tp"]),
+        scientific_gate_f1_beats_previous_four_head=combo["f1"]>REFERENCE_FOUR_HEAD_F1,
+        scientific_gate_fp_decreases_vs_previous_four_head=combo["fp"]<REFERENCE_FOUR_HEAD_FP,
+        scientific_gate_tp_above_three_head=combo["tp"]>third["tp"],
+        strict_preregistered_improvement=win,
         external_latency_p95_unmeasured=True,
         production_midi_unchanged=True,other_five_axes_unchanged=True,
         promoted=False)
@@ -195,9 +213,11 @@ def run(audio_zip,traces,manifest,native_model,s701_model,risk_models,
           json.dumps({k:result[k] for k in (
               "main","frozen_three_head_MLP69","four_head_unified",
               "candidate_added_total","recovered_gt_matches_in_final",
-              "strict_improvement_vs_three_head","folds")}),flush=True)
+              "strict_improvement_vs_three_head","strict_preregistered_improvement",
+              "scientific_gate_fp_decreases_vs_previous_four_head",
+              "new_fp_from_recovery","new_tp_from_recovery","folds")}),flush=True)
     if not win:
-        raise AssertionError("fourth independently trained FNRecovery head failed scientific promotion gate")
+        raise AssertionError("H_FN_NEGCOVERAGE_01 predeclared real-WAV F1/FP gate failed: audit hypothesis refuted or incomplete; DO NOT promote")
     return result
 
 def main():

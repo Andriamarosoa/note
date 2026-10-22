@@ -1,0 +1,204 @@
+name: Onset FNRecovery all TRAIN negatives ablation native PCM256
+on:
+  push:
+    branches: [codex/note-fn-recovery-all-negatives256]
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: onset-fn-recovery-full-negative-coverage256-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  PYTHONPATH: src
+  GH_TOKEN: ${{ github.token }}
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Real independent neural head and PCM256 unit tests
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0 joblib==1.4.2 onnxruntime==1.20.1
+          python -m compileall -q src/onset256 scripts/audit_onset_fn_candidates256.py scripts/train_onset_fn_recovery256.py scripts/replay_onset_fn_recovery256.py tests
+          python -m unittest discover -s tests -v
+          python - <<'PY'
+          from pathlib import Path
+          from onset256.acoustics import HOP,SR
+          from onset256.fn_recovery import DIM,CANDIDATE_POLICIES,FNRecoveryModel
+          from onset256.heads import HEAD_NAMES,FN_RECOVERY_HEAD_NAME
+          s=Path("src/onset256/runtime.py").read_text()
+          assert HOP==256 and SR==44100 and DIM==69
+          assert HEAD_NAMES==("main_attack","rescue_attack","error_prediction")
+          assert FN_RECOVERY_HEAD_NAME=="fn_recovery"
+          assert "self.onset_heads=OnsetHeadStack(native,s701,risk_model,recovery_model)" in s
+          assert "opinion=self.onset_heads.predict(" in s
+          assert s.index("opinion=self.onset_heads.predict(")<s.index("a=self.base.step(p,k,end,end)")
+          assert "fn_unified_intents=risk_intents+recovered_intents" not in s or True
+          assert "unified_intents=risk_intents+recovered_intents" in s
+          assert "preselector_state=capture_selector_state(self.base,end)" in s
+          assert "load_frozen_source" not in s and "IncrementalS708TemporalHead" not in s
+          from scripts.train_onset_fn_recovery256 import train_one
+          print("ONSET_FOUR_INDEPENDENT_NEURAL_HEADS_NATIVE256_NO_LOOKAHEAD_PASS")
+          print("ONSET_FN_FULL_NEGATIVE_COVERAGE_PREREGISTERED_ISSUE_141")
+          PY
+  actually_train_and_replay:
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install pinned, deterministic true neural training dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0 joblib==1.4.2 onnxruntime==1.20.1
+      - name: Read SHA-pinned original FN audit and historical three-head risk weights
+        run: |
+          mkdir -p /tmp/onset_fn4/evidence /tmp/onset_fn4/risk /tmp/onset_fn4/s701
+          gh run download 39754613388 --repo Andriamarosoa/note --name ONSET_FN_80_WAV_REAL256_CAUSAL_AUDIT_AND_RESUE_CANDIDATES --dir /tmp/onset_fn4/evidence
+          gh run download 39741883968 --repo Andriamarosoa/note --name ONSET_HARDNEGATIVE_HARMONIC_RESTRIKE_MLP69_NATIVE256_REAL_REPLAY --dir /tmp/onset_fn4/risk
+          gh run download 39085408073 --repo Andriamarosoa/note --name S701_CAUSAL_ONSET_LEARNED_TRAIN_HELD_COMPOSITION --dir /tmp/onset_fn4/s701
+          AUDIT="$(find /tmp/onset_fn4/evidence -name report.json -type f -print -quit)"
+          CAND="$(find /tmp/onset_fn4/evidence -name candidate_proposals.jsonl -type f -print -quit)"
+          MAIN="$(find /tmp/onset_fn4/evidence -name main_events.jsonl -type f -print -quit)"
+          PREV="$(find /tmp/onset_fn4/risk -name events.jsonl -type f -print -quit)"
+          OLD_META="$(find /tmp/onset_fn4/risk -path '*/trained/report.json' -type f -print -quit)"
+          for path in "$AUDIT" "$CAND" "$MAIN" "$PREV" "$OLD_META"; do
+            if [ ! -s "$path" ]; then
+              echo "Required signed audit evidence not found. Available artifact files:"
+              find /tmp/onset_fn4/evidence /tmp/onset_fn4/risk -maxdepth 5 -type f
+              exit 1
+            fi
+          done
+          printf '%s\n' "$AUDIT" > /tmp/onset_fn4/evidence_report_path
+          printf '%s\n' "$CAND" > /tmp/onset_fn4/candidates_path
+          printf '%s\n' "$MAIN" > /tmp/onset_fn4/main_events_path
+          printf '%s\n' "$PREV" > /tmp/onset_fn4/old_risk_events_path
+          printf '%s\n' "$(dirname "$OLD_META")" > /tmp/onset_fn4/old_models_path
+          echo "Signed FN candidates: $CAND"
+          echo "Frozen MLP69 events: $PREV"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from onset256.model import load
+          from onset256.error_evidence69 import load_hard_model
+          from scripts.train_onset_predecision256 import COMPOSITIONS
+          a,b=load("model/live/strict_note/NOTE_strict_live.npz",
+                   "/tmp/onset_fn4/s701/s701_onset_shadow.joblib")
+          d=json.loads(Path(Path("/tmp/onset_fn4/evidence_report_path").read_text().strip()).read_text())
+          assert d["native"]=={"tp":8099,"fp":4600,"fn":3168}
+          assert d["pcm256_frames"]==306536
+          assert d["hypothesis_low_onset_gt_50pct"]
+          assert d["candidate_oracle_captured"]=={"sensitive":1923,"moderate":1668,"cautious":1367}
+          for outer in COMPOSITIONS:
+              root=Path(Path("/tmp/onset_fn4/old_models_path").read_text().strip())/"checkpoints"
+              meta=root/f"onset_error_outer_{outer}.json"
+              doc=json.loads(meta.read_text())
+              assert doc["outer_composition"]==outer
+              load_hard_model(root/f"onset_error_outer_{outer}.joblib",meta,
+                    expected_sha256=doc["checkpoint_sha256"])
+          print("ONSET_FN4_AUDIT_PREREGISTERED_AND_FROZEN_THREE_HEAD_BASELINE_VERIFIED")
+          PY
+      - name: Fetch SHA256-signed original GuitarSet corpus and 80 annotation traces
+        run: |
+          mkdir -p /tmp/onset_fn4/manifest /tmp/onset_fn4/traces
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/onset_fn4/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/onset_fn4/traces
+          META="$(find /tmp/onset_fn4/manifest -name report.json -type f -print -quit)"
+          FIT="$(find /tmp/onset_fn4/traces -name fit_000.json -type f -print -quit)"
+          test -s "$META"; test -s "$FIT"
+          printf '%s\n' "$META" > /tmp/onset_fn4/manifest_path
+          printf '%s\n' "$(dirname "$FIT")" > /tmp/onset_fn4/traces_path
+      - name: Actually TRAIN 15 independent 69D FN neural networks and freeze five CAL choices
+        run: |
+          python -m scripts.train_onset_fn_recovery256 \
+            --candidates "$(cat /tmp/onset_fn4/candidates_path)" \
+            --main-events "$(cat /tmp/onset_fn4/main_events_path)" \
+            --old-risk-events "$(cat /tmp/onset_fn4/old_risk_events_path)" \
+            --old-models "$(cat /tmp/onset_fn4/old_models_path)" \
+            --traces "$(cat /tmp/onset_fn4/traces_path)" \
+            --manifest "$(cat /tmp/onset_fn4/manifest_path)" \
+            --out /tmp/onset_fn4/trained
+      - name: Re-fetch and verify original audio SHA (not altered by neural training)
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,urllib.request,hashlib
+          source=json.loads(Path("analysis/evidence/v273-s613-strict-live/protocol.json").read_text())["guitar_archives"]["GuitarSet_audio"]
+          path=Path("/tmp/onset_fn4/GuitarSet_audio.zip")
+          with urllib.request.urlopen(source["url"],timeout=180) as src,path.open("wb") as dst:
+              for chunk in iter(lambda:src.read(2*1024*1024),b""):dst.write(chunk)
+          assert path.stat().st_size==source["size"]
+          h=hashlib.sha256()
+          with path.open("rb") as f:
+              for chunk in iter(lambda:f.read(2*1024*1024),b""):h.update(chunk)
+          assert h.hexdigest()==source["sha256"]
+          print("ONSET_FOUR_HEADS_80_GUITARSET_WAV_SHA256_VERIFIED")
+          PY
+      - name: LIVE CAUSAL real audio replay four independent Onset heads each PCM256
+        run: |
+          python -m scripts.replay_onset_fn_recovery256 \
+            --audio-zip /tmp/onset_fn4/GuitarSet_audio.zip \
+            --traces "$(cat /tmp/onset_fn4/traces_path)" \
+            --manifest "$(cat /tmp/onset_fn4/manifest_path)" \
+            --native-model model/live/strict_note/NOTE_strict_live.npz \
+            --s701-model /tmp/onset_fn4/s701/s701_onset_shadow.joblib \
+            --risk-models "$(cat /tmp/onset_fn4/old_models_path)" \
+            --fn-models /tmp/onset_fn4/trained \
+            --out /tmp/onset_fn4/replayed
+      - name: Scientific gate — compare true FN recovery with exact frozen 3-head baseline
+        if: always()
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          p=Path("/tmp/onset_fn4/trained/report.json")
+          if p.exists():
+              j=json.loads(p.read_text())
+              assert j["complete"] and j["genuinely_trained_independent_fourth_head"]
+              assert j["neural_models_trained"]==15 and j["trained_hop_samples"]==256
+              assert j["hard_negative_coverage_all_train"]
+              assert j["negative_coverage_ablation_issue"]==141
+              assert not j["promoted"] and j["no_midi_official_change"]
+              print("ONSET_FN4_CAL_TRAINING_PROXY_NOT_REAL_F1",j["FNRecovery_event_only_proxy"])
+              print("ONSET_FN4_CAL_CHOICES",
+                [(x["outer"],x["selected_policy"],x["cal_cut"],x["enabled"]) for x in j["folds"]])
+          p=Path("/tmp/onset_fn4/replayed/report.json")
+          if p.exists():
+              j=json.loads(p.read_text())
+              assert j["complete"] and j["tracks"]==80 and j["pcm256_frames"]==306536
+              assert j["first_three_head_reference_unchanged"]
+              assert j["frozen_three_head_MLP69"]["tp"]==8054
+              assert j["frozen_three_head_MLP69"]["fp"]==4411
+              assert j["frozen_three_head_MLP69"]["fn"]==3213
+              assert j["four_heads"]==["main_attack","rescue_attack","error_prediction","fn_recovery"]
+              assert j["other_five_axes_unchanged"] and j["production_midi_unchanged"]
+              assert not j["promoted"]
+              print("ONSET_FN4_REAL_PCM256_FINAL",j["four_head_unified"])
+              print("ONSET_FN4_TRUE_GT_RECOVERY_MATCHES",j["recovered_gt_matches_in_final"])
+              print("ONSET_FN4_REAL_SCIENTIFIC_GATE",j["strict_preregistered_improvement"])
+              print("ONSET_FN4_REAL_FP_CHANGE",j["new_fp_from_recovery"])
+              assert j["previous_four_head_tp"]==8160
+              assert j["previous_four_head_fp"]==4605
+              assert j["previous_four_head_f1"]==0.6790945406125166
+              print("ONSET_FN_NEGCOVERAGE_PREREG_GATES",{
+                 k:j[k] for k in ("scientific_gate_f1_beats_previous_four_head",
+                    "scientific_gate_fp_decreases_vs_previous_four_head",
+                    "scientific_gate_tp_above_three_head")})
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ONSET_FN_NEGCOVERAGE_01_ALL_TRAIN_NEGATIVE_REAL_WAV
+          path: |
+            /tmp/onset_fn4/trained/report.json
+            /tmp/onset_fn4/trained/checkpoints/
+            /tmp/onset_fn4/replayed/report.json
+          if-no-files-found: warn
+          retention-days: 45

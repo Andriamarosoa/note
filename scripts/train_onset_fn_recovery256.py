@@ -145,11 +145,18 @@ def train_one(rows,train_indices,seed):
     neg=[i for i in train_indices if rows[i]["y"]==0]
     if len(pos)<30 or len(neg)<30:
         raise ValueError("insufficient real signed FN candidate evidence")
-    negatives=rng.choice(neg,size=min(len(neg),3*len(pos)),replace=False).tolist()
-    selected=pos+negatives
+    # Preregistered scientific ablation H_FN_NEGCOVERAGE_01 (#141):
+    # use EVERY available negative TRAIN candidate, rather than throwing
+    # away >=80% of the different errors. Repeat only TRAIN positives,
+    # maintaining ~1:3 class ratio of the ORIGINAL fitted MLP. This isolates
+    # diversity of seen hard negatives without adding CAL/OUTER GT.
+    repeats=max(1,int(np.ceil(len(neg)/(3.*len(pos)))))
+    selected=neg+pos*repeats
     rng.shuffle(selected)
     x=np.stack([rows[i]["X"] for i in selected])
     y=np.asarray([rows[i]["y"] for i in selected],np.int8)
+    if int(np.count_nonzero(y==0))!=len(neg):
+        raise AssertionError("negative sample coverage not exhaustive")
     net=MLPClassifier(hidden_layer_sizes=(64,32),activation="relu",
         solver="adam",alpha=.012,batch_size=256,learning_rate_init=.001,
         max_iter=65,tol=.0001,n_iter_no_change=12,early_stopping=True,
@@ -159,7 +166,10 @@ def train_one(rows,train_indices,seed):
     if pipe.n_features_in_!=DIM:
         raise ValueError("neural FNRecovery head trained on wrong ABI")
     return pipe,dict(tp_candidates=len(pos),negative_candidates=len(neg),
-                     training_rows=len(selected))
+                     training_rows=len(selected),negative_coverage=1.0,
+                     used_unique_negative_candidates=len(neg),
+                     repeated_positives=int(repeats),
+                     original_3_to_1_sampling_ablation=True)
 
 def score_selected(tracks,truth,main_raw,main_accepted,
                    candidate_rows,confidence,cut,enabled):
@@ -303,6 +313,9 @@ def run(candidate_file,main_file,old_event_file,old_models,traces,manifest,out):
     report=dict(schema=SCHEMA,complete=True,
         genuinely_trained_independent_fourth_head=True,
         neural_models_trained=15,
+        hard_negative_coverage_all_train=True,
+        negative_coverage_ablation_issue=141,
+        same_69D_neural_architecture=True,
         frozen_calibration_compositions=True,
         trained_hop_samples=256,decision_hop_samples=256,
         candidate_oracle_coverage=stat,
@@ -313,7 +326,7 @@ def run(candidate_file,main_file,old_event_file,old_models,traces,manifest,out):
         full_external_generalization=False,
         no_midi_official_change=True,other_axes_unchanged=True,promoted=False)
     (out/"report.json").write_text(json.dumps(report,indent=2)+"\n")
-    print("ONSET_FN_RECOVERY_4TH_HEAD_5FOLD_PROXY_FINAL",
+    print("ONSET_FN_RECOVERY_ALL_NEGATIVES_TRAIN_CAL_ONLY_PROXY_FINAL",
           json.dumps(dict(baseline=baseline,proxy=oof,
                  selections=[dict(outer=f["outer"],policy=f["selected_policy"],
                         cut=f["cal_cut"],enabled=f["enabled"]) for f in folds])),
