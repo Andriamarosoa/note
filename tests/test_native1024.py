@@ -20,7 +20,7 @@ class Native1024(unittest.TestCase):
             decisions=[]
             for i in range(4):
                 decisions.extend(s.push(np.zeros(1024,np.float32),start_sample=i*1024))
-            self.assertEqual([d.sample for d in decisions],[1024,512,768,1024])
+            self.assertEqual([d.sample for d in decisions],[HOP,2*HOP,3*HOP,4*HOP])
             self.assertEqual(s.calls,4)
             self.assertEqual(s.temporal.calls,4)
             with self.assertRaises(ValueError):
@@ -32,10 +32,10 @@ class Native1024(unittest.TestCase):
         a=d.step(attack,1024)
         release=np.zeros((49,3),np.float32)
         release[0]=[.05,.1,.95]
-        b=d.step(release,512)
+        b=d.step(release,2*HOP)
         self.assertEqual(a.intents,())
         self.assertEqual([(e.kind,e.pitch,e.sample) for e in a.onsets],[("diagnostic_onset",40,1024)])
-        self.assertEqual([(e.kind,e.pitch,e.sample) for e in b.intents],[("note_off",40,512)])
+        self.assertEqual([(e.kind,e.pitch,e.sample) for e in b.intents],[("note_off",40,2*HOP)])
 
     def test_cadence(self):
         self.assertEqual(HOP,1024)
