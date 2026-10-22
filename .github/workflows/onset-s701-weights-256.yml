@@ -1,0 +1,99 @@
+name: Onset S613 S701 genuine pretrained hop256 FIT80
+on:
+  push:
+    branches: [codex/note-onset-s701-trained-256]
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: onset-s701-real256-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  PYTHONPATH: src
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  GH_TOKEN: ${{ github.token }}
+  PYTHONUNBUFFERED: '1'
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install native trained weights dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0 joblib==1.4.2 onnxruntime==1.20.1
+          python -m compileall -q src/onset256 scripts/replay_native256.py tests
+          python -m unittest discover -s tests -v
+      - name: Check 1024-trained S708 is not loaded
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          source=Path('src/onset256/runtime.py').read_text()
+          assert 'IncrementalS708TemporalHead' not in source
+          assert 'load_frozen_source' not in source
+          assert 'CausalPitchFeatures' in source
+          from onset256.model import S613_SHA256,S701_SHA256
+          assert len(S613_SHA256)==len(S701_SHA256)==64
+          print('ONSET_TRAINED_NATIVE256_ONLY')
+          PY
+  signed_fit80:
+    needs: smoke
+    if: contains(github.event.head_commit.message, '[run-fit80]') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Pin runtime inference and score dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0 joblib==1.4.2 onnxruntime==1.20.1
+      - name: Obtain SHA-pinned S701 genuinely trained hop256 checkpoint
+        run: |
+          mkdir -p /tmp/onset701/model
+          gh run download 39085408073 --repo Andriamarosoa/note --name S701_CAUSAL_ONSET_LEARNED_TRAIN_HELD_COMPOSITION --dir /tmp/onset701/model
+          python - <<'PY'
+          from onset256.model import load
+          n,s=load("model/live/strict_note/NOTE_strict_live.npz",
+                   "/tmp/onset701/model/s701_onset_shadow.joblib")
+          print("S613 S701 VERIFIED 256 TRAINING MODEL",s.n_features_in_)
+          PY
+      - name: Download signed FIT80 tracks without original S708 checkpoint
+        run: |
+          mkdir -p /tmp/onset701/manifest /tmp/onset701/traces
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/onset701/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/onset701/traces
+          META="$(find /tmp/onset701/manifest -name report.json -type f -print -quit)"
+          FIT="$(find /tmp/onset701/traces -name fit_000.json -type f -print -quit)"
+          test -s "$META"; test -s "$FIT"
+          printf '%s\n' "$META" > /tmp/onset701/manifest_path
+          printf '%s\n' "$(dirname "$FIT")" > /tmp/onset701/traces_dir
+      - name: Fetch and SHA-verify 80 original GuitarSet PCM WAV source
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,urllib.request,hashlib
+          record=json.loads(Path("analysis/evidence/v273-s613-strict-live/protocol.json").read_text())["guitar_archives"]["GuitarSet_audio"]
+          path=Path("/tmp/onset701/GuitarSet_audio.zip")
+          with urllib.request.urlopen(record["url"],timeout=180) as src,path.open("wb") as out:
+              for block in iter(lambda:src.read(4*1024*1024),b""):out.write(block)
+          assert path.stat().st_size==record["size"]
+          h=hashlib.sha256()
+          with path.open("rb") as fd:
+              for block in iter(lambda:fd.read(1048576),b""):h.update(block)
+          assert h.hexdigest()==record["sha256"]
+          print("ONSET_S701_ORIGINAL_PCM_SHA_VERIFIED")
+          PY
+      - name: Run original signed 80-track PCM256 Onset onsetF1
+        run: |
+          python -m scripts.replay_native256 --audio-zip /tmp/onset701/GuitarSet_audio.zip --traces "$(cat /tmp/onset701/traces_dir)" --manifest "$(cat /tmp/onset701/manifest_path)" --native-model model/live/strict_note/NOTE_strict_live.npz --s701-model /tmp/onset701/model/s701_onset_shadow.joblib --out /tmp/onset701/result
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ONSET_S613_S701_GENUINE_TRAINED256_FIT80
+          path: /tmp/onset701/result/report.json
+          if-no-files-found: warn
+          retention-days: 45
