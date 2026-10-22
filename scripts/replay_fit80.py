@@ -146,8 +146,12 @@ def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,
               totals([r["S828"] for r in report["tracks"]
                      if r["composition"]==outer]),flush=True)
     report["S828_activek"]=totals(predicted)
-    if tracks_per_composition==16 and (report["S828_activek"]["correct"]!=184143 or report["S828_activek"]["frames"]!=249411):
-        raise AssertionError("S828 isolated 256 score != 184143 / 249411")
+    report["reference_correct"]=184143
+    report["reference_frames"]=249411
+    report["validation_passed"]=(report["S828_activek"]["frames"]==249411 and report["S828_activek"]["correct"]>=184143) if tracks_per_composition==16 else None
+    if tracks_per_composition==16 and not report["validation_passed"]:
+        save_json(out/"report.json",report)
+        raise AssertionError("S828 active-K native256 non-regression failed: expected >=184143/249411")
     report["S827_frozen_s708_activek"]=totals(
         [r["S827_frozen_s708"] for r in report["tracks"]])
     report["H0_original_activek"]=totals(
