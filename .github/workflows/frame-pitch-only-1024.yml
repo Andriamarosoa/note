@@ -1,11 +1,11 @@
-name: frame_pitch ONLY exact source-score revalidation
+name: frame_pitch ONLY experimental PCM1024 FIT80
 on:
   push:
-    branches: [codex/note-best-frame-pitch-s834-256]
+    branches: [codex/note-frame-pitch-native-1024]
   workflow_dispatch:
 permissions: {contents: read, actions: read}
 concurrency:
-  group: frame_pitch-only-${{ github.ref }}
+  group: frame_pitch-1024-only-${{ github.ref }}
   cancel-in-progress: true
 env:
   PYTHONPATH: src
@@ -74,7 +74,7 @@ jobs:
           assert h.hexdigest()==item['sha256']
           print('FRAME_PITCH_SOURCE_WAV_PINNED')
           PY
-      - name: Revalidate the ONLY preserved frame_pitch raw metric on 80 tracks
+      - name: Revalidate the ONLY preserved PCM1024 frame_pitch raw metric on 80 tracks
         run: |
           python -m scripts.replay_fit80 --audio-zip /tmp/only_frame_pitch/GuitarSet_audio.zip --traces "$(cat /tmp/only_frame_pitch/traces_dir)" --manifest "$(cat /tmp/only_frame_pitch/manifest_path)" --checkpoint "$(cat /tmp/only_frame_pitch/s708_dir)/s708_selected.pt" --source-report "$(cat /tmp/only_frame_pitch/s708_dir)/report.json" --native-model model/live/strict_note/NOTE_strict_live.npz --out /tmp/only_frame_pitch/result 
       - uses: actions/upload-artifact@v4

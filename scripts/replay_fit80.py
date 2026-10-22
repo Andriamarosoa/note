@@ -46,30 +46,26 @@ def run(audio_zip,traces,manifest,checkpoint,source_report,native_model,out):
                 s=Stream(native,model,blend);decisions=[]
                 for pos in range(0,len(x),HOP):
                     obs=s.push(x[pos:pos+HOP],start_sample=pos)
-                    if len(obs)!=(1 if pos+HOP<=len(x) else 0):raise AssertionError("256 boundary drift")
+                    if len(obs)!=(1 if pos+HOP<=len(x) else 0):raise AssertionError("1024 boundary drift")
                     decisions.extend(obs)
-                if len(decisions)!=len(ends) or s.calls!=len(ends):raise AssertionError("not every 256")
+                if len(decisions)!=len(ends) or s.calls!=len(ends):raise AssertionError("not every 1024")
                 tail=s.finish(meta["samples"])
                 counts=score(decisions,meta["fit_truth"],ends,tail)
                 records.append(dict(index=item["index"],name=item["name"],composition=comp,frames=len(ends),counts=counts))
                 (out/"report.json").write_text(json.dumps(dict(complete=False,records=records),indent=2))
-                print("FRAME_PITCH_256_TRACK",item["index"],comp,flush=True)
+                print("FRAME_PITCH_1024_TRACK",item["index"],comp,flush=True)
     total={k:sum(x["counts"][k] for x in records) for k in records[0]["counts"]}
     total["frames"]=sum(x["frames"] for x in records)
-    expected={'tp':467540,'fp':71501,'fn':93528,'frames':306536}
+    original_pcm256={'tp':467540,'fp':71501,'fn':93528,'frames':306536}
     denom=2*total["tp"]+total["fp"]+total["fn"]
-    total["frame_pitch_f1"]=2*total["tp"]/denom
-    reference_denom=2*expected["tp"]+expected["fp"]+expected["fn"]
-    validation_passed=(total["frames"]==expected["frames"] and
-                       total["tp"]*reference_denom>=expected["tp"]*denom)
-    if not validation_passed:
-        (out/"report.json").write_text(json.dumps(dict(complete=False,records=records,totals=total,validation_passed=False),indent=2))
-        raise AssertionError(f"S834 frame_pitch F1 regression: {total['frame_pitch_f1']:.8f} < {2*expected['tp']/reference_denom:.8f}")
+    total["frame_pitch_f1"]=2*total["tp"]/denom if denom else 0.0
+    if len(records)!=80:raise AssertionError("incomplete 80-track PCM1024 replay")
     report=dict(complete=True,axis="frame_pitch",tracks=records,totals=total,
-       model_sha256=sha,source_training_hop=1024,decision_hop=256,
-       public_midi_modified=False,promoted=False,validation_passed=validation_passed)
+       model_sha256=sha,source_training_hop=1024,decision_hop=HOP,
+       historical_pcm256_reference=original_pcm256,reference_comparable=False,
+       validation_passed=None,public_midi_modified=False,promoted=False)
     (out/"report.json").write_text(json.dumps(report,indent=2))
-    print("FRAME_PITCH_256_FINAL",json.dumps(total),flush=True)
+    print("FRAME_PITCH_1024_FINAL",json.dumps(total),flush=True)
 if __name__=="__main__":
     p=argparse.ArgumentParser()
     for name in ("audio-zip","traces","manifest","checkpoint","source-report","native-model","out"):
