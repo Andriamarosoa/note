@@ -4,7 +4,7 @@ import numpy as np
 from pathlib import Path
 from exact_k.acoustics import CausalPitchFeatures,HOP,SR,load_native_heads
 from exact_k.temporal import TemporalHeads
-from exact_k.runtime import ExactKOnly256
+from exact_k.runtime import ExactKOnly1024
 
 
 class ExactKOnlyTests(unittest.TestCase):
@@ -23,10 +23,11 @@ class ExactKOnlyTests(unittest.TestCase):
         self.assertFalse(any(hasattr(runtime,a) for a in
             ("OnsetDecoder","OffsetDecoder","ActiveKDecoder",
              "FramePitchDecoder","FullNoteDecoder","SixIndependentAxes")))
-        self.assertEqual(runtime.SCHEMA,"EXACT_K_ONLY_S834_TRUE_PCM256_V1")
+        self.assertEqual(runtime.SCHEMA,"EXACT_K_ONLY_EXPERIMENTAL_PCM1024_V1")
+        self.assertEqual(HOP,1024)
 
-    def test_native256_from_pcm_and_no_hold(self):
-        stream=ExactKOnly256(self.native,self.model)
+    def test_native1024_from_pcm_and_no_hold(self):
+        stream=ExactKOnly1024(self.native,self.model)
         rng=np.random.default_rng(123)
         samples=rng.normal(0,.1,5*HOP+17).astype(np.float32)
         output=stream.push(samples[:4*HOP],start_sample=0)
@@ -40,7 +41,7 @@ class ExactKOnlyTests(unittest.TestCase):
         self.assertEqual(output[0].sample,5*HOP)
 
     def test_audio_discontinuity_is_rejected(self):
-        stream=ExactKOnly256(self.native,self.model)
+        stream=ExactKOnly1024(self.native,self.model)
         with self.assertRaises(ValueError):
             stream.push(np.zeros(HOP,np.float32),start_sample=1)
         stream.push(np.zeros(HOP,np.float32),start_sample=0)
@@ -50,8 +51,8 @@ class ExactKOnlyTests(unittest.TestCase):
     def test_segmented_audio_identical_counts(self):
         rng=np.random.default_rng(234)
         x=rng.normal(0,.07,8*HOP).astype(np.float32)
-        first=ExactKOnly256(self.native,self.model)
-        second=ExactKOnly256(self.native,self.model)
+        first=ExactKOnly1024(self.native,self.model)
+        second=ExactKOnly1024(self.native,self.model)
         a=sum((list(first.push(x[j:j+HOP],start_sample=j))
             for j in range(0,len(x),HOP)),[])
         b=sum((list(second.push(x[j:j+2*HOP],start_sample=j))

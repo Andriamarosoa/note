@@ -1,9 +1,9 @@
-"""Exact-K ONLY — S834's proven K0..K6 signal at a true PCM256 cadence.
+"""Exact-K ONLY — S834's proven K0..K6 signal at a true PCM1024 cadence.
 
 All five other musical characteristics have NO detector, selector, decoder,
 state, output or tests in this branch. The S708 pretrained acoustic backbone
 is retained only because the 75.780659% Exact-K result depends on it.
-Its original training clock was 1024; all current decisions are fresh PCM256.
+Its original training clock was 1024; all current decisions are fresh PCM1024.
 """
 from __future__ import annotations
 from collections import deque
@@ -15,7 +15,7 @@ from .acoustics import CausalPitchFeatures,HOP,SR,sharp_track
 from .temporal import IncrementalS708TemporalHead,latest_s708_acoustic_features
 
 PAST_AUDIO=8192+HOP
-SCHEMA="EXACT_K_ONLY_S834_TRUE_PCM256_V1"
+SCHEMA="EXACT_K_ONLY_EXPERIMENTAL_PCM1024_V1"
 
 @dataclass(frozen=True)
 class ExactKDecision:
@@ -28,8 +28,8 @@ class ExactKDecision:
         if not 0 <= self.confidence <= 1:
             raise ValueError("Invalid confidence")
 
-class ExactKOnly256:
-    """One S708 K posterior per completed 256 PCM samples; no foreign axes."""
+class ExactKOnly1024:
+    """One S708 K posterior per completed 1024 PCM samples; no foreign axes."""
     def __init__(self,native_heads,frozen_model):
         self.native_heads=native_heads
         self.frontend=CausalPitchFeatures(hop=HOP)
@@ -62,7 +62,7 @@ class ExactKOnly256:
         if k.shape!=(7,) or not np.isfinite(k).all() or abs(float(k.sum())-1)>1e-3:
             raise AssertionError("S708 K posterior ABI changed")
         if end!=self.last_decision+HOP:
-            raise AssertionError("Exact-K did not emit at next native256 decision")
+            raise AssertionError("Exact-K did not emit at next native1024 decision")
         self.last_decision=end
         index=int(np.argmax(k))
         return ExactKDecision(end,index,float(k[index]))

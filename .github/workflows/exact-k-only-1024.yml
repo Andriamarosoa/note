@@ -1,10 +1,10 @@
-name: Exact-K S834 true PCM256 ONLY
+name: Exact-K S834 true PCM1024 ONLY
 on:
   push:
-    branches: [codex/note-best-exact-k-s834-256]
+    branches: [codex/note-exact-k-native-1024]
   workflow_dispatch:
 concurrency:
-  group: exact-k-only-256-${{ github.ref }}
+  group: exact-k-only-1024-${{ github.ref }}
   cancel-in-progress: true
 permissions: {contents: read, actions: read}
 env:
@@ -82,7 +82,7 @@ jobs:
           assert d==item["sha256"]
           print("EXACT_K_GUITARSET_SHA256_PASS")
           PY
-      - name: Reproduce S834 Exact-K 75.780659% on 306536 native decisions
+      - name: Evaluate new Exact-K PCM1024 on signed 80-track FIT80 without reusing 256 denominators
         run: |
           python -m scripts.replay_fit80 --audio-zip /tmp/exactk/GuitarSet_audio.zip \
             --traces "$(cat /tmp/exactk/traces_dir)" \

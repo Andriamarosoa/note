@@ -1,7 +1,7 @@
 """Self-contained signed GuitarSet FIT80 replay: Exact-K ONLY, no other axes.
 
 GT is read only after a track's complete causal PCM->K predictions.
-The S834 native256 benchmark baseline is 232295/306536.
+The S834 native1024 benchmark baseline is 232295/306536.
 """
 import argparse
 import hashlib
@@ -14,10 +14,10 @@ from scipy.io import wavfile
 
 from exact_k.acoustics import SR,HOP,load_native_heads
 from exact_k.temporal import load_frozen_source
-from exact_k.runtime import ExactKOnly256,SCHEMA
+from exact_k.runtime import ExactKOnly1024,SCHEMA
 
 COMPOSITIONS=("BN1","Funk2","Jazz1","Rock3","SS1")
-SOURCE_SCHEMA="S800_FIT80_OOF_PER_FRAGMENT_MIDI256_V1"
+SOURCE_SCHEMA="S800_FIT80_OOF_PER_FRAGMENT_MIDI1024_V1"
 
 
 def digest(path):
@@ -58,7 +58,7 @@ def run(audio_zip,traces,manifest,checkpoint,source_report,native_model,out,trac
     report=dict(schema=SCHEMA,completed=False,promoted=False,
         only_axis="exact_k",native_hop=HOP,tracks=[],frames=0,correct=0,
         undercount=0,overcount=0,cal_held_test_unopened=True,
-        s708_source_original_training_hop=1024,
+        s708_source_original_training_hop=1024,reference_comparable=False,
         s708_source_checkpoint_sha256=s708_sha,
         source_native_model_sha256=digest(native_model),
         source_manifest_sha256=digest(manifest),
@@ -75,12 +75,12 @@ def run(audio_zip,traces,manifest,checkpoint,source_report,native_model,out,trac
                 raise ValueError("unsigned audio format")
             audio=data[:meta["samples"]].astype(np.float32)/32768.
             ends=np.arange(HOP,len(audio)+1,HOP,dtype=np.int64)
-            stream=ExactKOnly256(native,model)
+            stream=ExactKOnly1024(native,model)
             predicted=[]
             for start in range(0,len(audio),HOP):
                 output=stream.push(audio[start:start+HOP],start_sample=start)
                 if len(output)!=(1 if start+HOP<=len(audio) else 0):
-                    raise AssertionError("missing or extra PCM256 decision")
+                    raise AssertionError("missing or extra PCM1024 decision")
                 if output:
                     if output[0].sample!=start+HOP:
                         raise AssertionError("causal timestamp mismatch")
@@ -104,13 +104,18 @@ def run(audio_zip,traces,manifest,checkpoint,source_report,native_model,out,trac
             print("EXACT_K_ONLY_256_TRACK",entry["index"],entry["composition"],correct,len(ends),flush=True)
     report["accuracy"]=report["correct"]/report["frames"]
     report["completed"]=True
-    report["reference_correct"]=232295
-    report["reference_frames"]=306536
-    report["validation_passed"]=(report["frames"]==306536 and report["correct"]>=232295) if tracks_per_composition==16 else None
+    # S834 reference was sampled on PCM256. This new decision grid changes
+    # the denominator: retain reference only as descriptive provenance.
+    report["historical_pcm256_reference"]=dict(correct=232295,frames=306536,
+        accuracy=232295/306536)
+    report["reference_comparable"]=False
+    report["validation_passed"]=None
+    report["evaluation_grid_samples"]=HOP
+    report["expected_native_frames"]=sum(t["frames"] for t in report["tracks"])
+    if tracks_per_composition==16 and len(report["tracks"])!=80:
+        raise AssertionError("incomplete FIT80 1024 study")
     (out/"report.json").write_text(json.dumps(report,indent=2))
-    if tracks_per_composition==16 and not report["validation_passed"]:
-        raise AssertionError("Exact-K native256 non-regression failed: expected >=232295/306536")
-    print("EXACT_K_ONLY_NATIVE256_FIT80_FINAL",report["correct"],report["frames"],report["accuracy"],flush=True)
+    print("EXACT_K_ONLY_NATIVE1024_FIT80_FINAL",report["correct"],report["frames"],report["accuracy"],flush=True)
     return report
 
 

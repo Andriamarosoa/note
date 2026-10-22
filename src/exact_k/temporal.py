@@ -192,7 +192,7 @@ def latest_s708_acoustic_features(feat, post, count):
     return out
 
 def load_frozen_source(checkpoint,report):
-    """Pin frozen original 1024-trained S708 weights; evaluate at 256."""
+    """Pin frozen original 1024-hop S708 weights; evaluate at 1024."""
     cp, rp=Path(checkpoint),Path(report)
     data=json.loads(rp.read_text(encoding="utf-8"))
     if data.get("schema")!="S708_K_GUIDED_S706_CAL_LOOPS" or data.get("source_family")!=706 or data.get("promoted") is not False:
