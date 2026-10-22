@@ -14,7 +14,7 @@ from onset256.acoustics import HOP,SR
 from onset256.model import load
 from onset256.predecision_risk import load_frozen,SCHEMA
 from onset256.runtime import Stream
-from scripts.replay_native256 import score
+from scripts.replay_native256 import score,match_onsets
 
 COMPOSITIONS=("BN1","Funk2","Jazz1","Rock3","SS1")
 EXPECTED_NATIVE=dict(tp=8099,fp=4600,fn=3168)
@@ -77,17 +77,46 @@ def run(audio_zip,traces,manifest,native_model,s701_model,trained_models,out):
                     decisions.extend(obs)
                 if (len(decisions)!=len(ends) or stream.calls!=len(ends)
                     or stream.risk_calls!=len(ends) or stream.s701_calls!=len(ends)
-                    or model.calls-count_start!=len(ends)):
-                    raise AssertionError("neural risk did not run BEFORE EVERY Onset decision")
+                    or model.calls-count_start!=len(ends)
+                    or stream.onset_heads.calls!=len(ends)
+                    or stream.onset_heads.main.calls!=len(ends)
+                    or stream.onset_heads.rescue.calls!=len(ends)
+                    or stream.onset_heads.error.calls!=len(ends)):
+                    raise AssertionError("independent neural Onset heads missed 256 decisions")
                 if any(v.sample!=int(t) for v,t in zip(decisions,ends)):
                     raise AssertionError("not strict causal PCM256")
                 stream.finish(meta["samples"])
                 # Never allow the GT to affect the model's selected event stream.
                 baseline=score(decisions,meta["fit_truth"],ends)
                 risk=score(decisions,meta["fit_truth"],ends,axis="predecision_intents")
+                # The error-prediction HEAD has spoken before decisions;
+                # only now, post-inference, identify which doubts were correct.
+                main_events=[e for d in decisions for e in d.intents]
+                main_doubts=[a for d in decisions for a in d.head_doubts]
+                if len(main_events)!=len(main_doubts):
+                    raise AssertionError("every native NoteOn needs its risk-head opinion")
+                for e,a in zip(main_events,main_doubts):
+                    if (e.pitch!=a.pitch or e.sample!=a.sample or
+                        a.origin!="learned_error_prediction_head"):
+                        raise AssertionError("error head opinion not attached to main Onset")
+                true_matches={i for i,_ in match_onsets(main_events,meta["fit_truth"])}
+                challenged_tp=sum(i in true_matches and a.contested
+                                  for i,a in enumerate(main_doubts))
+                challenged_fp=sum(i not in true_matches and a.contested
+                                  for i,a in enumerate(main_doubts))
+                doubt=dict(challenged_tp=int(challenged_tp),
+                           challenged_fp=int(challenged_fp),
+                           retained_tp=int(baseline["tp"]-challenged_tp),
+                           retained_fp=int(baseline["fp"]-challenged_fp),
+                           main_proposals=len(main_doubts),
+                           head_name="error_prediction")
+                if (doubt["challenged_tp"]+doubt["retained_tp"]!=baseline["tp"]
+                    or doubt["challenged_fp"]+doubt["retained_fp"]!=baseline["fp"]):
+                    raise AssertionError("risk doubt lost genuine Onset candidates")
                 rows.append(dict(index=item["index"],name=meta["name"],
                                  composition=comp,frames=len(ends),
                                  native=baseline,neural_predecision=risk,
+                                 learned_head_doubt=doubt,
                                  calibrated_cut=float(model.cut)))
                 if len(rows)%8==0:
                     print("ONSET_PREDECISION256_REPLAY_PROGRESS",len(rows),flush=True)
@@ -100,6 +129,14 @@ def run(audio_zip,traces,manifest,native_model,s701_model,trained_models,out):
         raise AssertionError("original S613 frozen decisions mutated by risk head")
     if len(rows)!=80 or sum(row["frames"] for row in rows)!=306536:
         raise AssertionError("bad FIT80 native hop256 denominator")
+    doubt_totals={key:sum(r["learned_head_doubt"][key] for r in rows)
+                  for key in ("challenged_tp","challenged_fp",
+                              "retained_tp","retained_fp","main_proposals")}
+    doubt_totals["precision_for_fp"]=(
+        doubt_totals["challenged_fp"] /
+        (doubt_totals["challenged_fp"]+doubt_totals["challenged_tp"])
+        if (doubt_totals["challenged_fp"]+doubt_totals["challenged_tp"])
+        else 0.)
     changes=[dict(name=r["name"],composition=r["composition"],
                   delta_f1=metrics(**r["neural_predecision"])["f1"]-
                            metrics(**r["native"])["f1"],
@@ -112,6 +149,9 @@ def run(audio_zip,traces,manifest,native_model,s701_model,trained_models,out):
         model_training_hop=256,risk_model_invoked_before_selector=True,
         source_no_s708_temporal_weight=True,
         native=baseline,neural_predecision=neural,
+        embedded_heads=("main_attack","rescue_attack","error_prediction"),
+        risk_is_onset_architecture_head=True,
+        learned_head_doubt_totals=doubt_totals,
         paired_changes=changes,changed_tracks=len(changes),
         folds={c:dict(cut=experts[c].cut) for c in COMPOSITIONS},
         historical_H0_f1=2*8528/(2*8528+3489+2739),
@@ -125,7 +165,8 @@ def run(audio_zip,traces,manifest,native_model,s701_model,trained_models,out):
     (out/"report.json").write_text(json.dumps(report,indent=2)+"\n")
     print("ONSET_PREDECISION_MLP256_CAUSAL_FIT80_FINAL",
           json.dumps({k:report[k] for k in ("native","neural_predecision",
-              "changed_tracks","scientific_non_regression_vs_S613",
+              "embedded_heads","learned_head_doubt_totals","changed_tracks",
+              "scientific_non_regression_vs_S613",
               "scientific_non_regression_vs_S708")}),flush=True)
     # The run can be scientifically red; retaining report is mandatory.
     if not winner:

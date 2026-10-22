@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 import numpy as np
 from .acoustics import CausalPitchFeatures,HOP,SR
-from .s701_features import LiveS701Features
 from .selector import CausalSelection,Selection
+from .heads import OnsetHeadStack, OnsetHeadSelector
 
 SCHEMA="ONSET_S613_S701_REAL_256_TRAINING_V1"
 @dataclass(frozen=True)
@@ -22,6 +22,7 @@ class Decision:
     evidence:tuple=()
     candidate_evidence:tuple=()
     predecision_intents:tuple=()
+    head_doubts:tuple=()
 
 class Stream:
     """S613 + S701 both called exactly once per received PCM256 decision."""
@@ -29,7 +30,13 @@ class Stream:
         policy=Selection(**native.metadata.get("selection",{}))
         self.native=native;self.s701=s701
         self.frontend=CausalPitchFeatures(hop=HOP)
-        self.s701_features=LiveS701Features()
+        # Independent learned heads now form one named Onset architecture.
+        # Risk is an Onset HEAD; only the private selector may use its doubt.
+        self.onset_heads=OnsetHeadStack(native,s701,risk_model)
+        self.s701_features=self.onset_heads.rescue.cache
+        self.head_selector=OnsetHeadSelector(
+            calibrated_correctness_cut=(
+                risk_model.cut if risk_model is not None else 0.5))
         self.base=CausalSelection(policy,hop=HOP)
         self.shadow=CausalSelection(policy,hop=HOP)
         self.received=0;self.last_decision=0;self.calls=0;self.s701_calls=0
@@ -44,40 +51,36 @@ class Stream:
                      float(post[e["pitch"]-40,0]),reason)
                      for e in events if e["type"]=="note_on")
     def _step(self,end,feat):
-        post,k=self.native.predict(feat)
-        p,k=np.asarray(post,np.float32),np.asarray(k,np.float32)
-        x=self.s701_features.step(feat,p,k)
-        score=np.asarray(self.s701.predict_proba(x)[:,1],np.float32)
-        self.s701_calls+=1
-        if score.shape!=(49,) or not np.isfinite(score).all():
-            raise ValueError("S701 specialist invalid")
-        candidate=p.copy()
-        selected=(p[:,0]>=.20)&(p[:,0]<self.base.config.onset)&(p[:,1]>=self.base.config.active_on)&(score>=.75)
-        candidate[selected,0]=min(.999,self.base.config.onset+.025)
+        # Every head computes its opinion from current/past PCM first.
+        opinion=self.onset_heads.predict(feat,end_sample=end)
+        p,k=opinion.main_posterior,opinion.native_k
+        score,x=opinion.rescue_probability,opinion.rescue_history
+        self.s701_calls=self.onset_heads.rescue.calls
+        candidate=self.head_selector.rescue_candidate(
+            p,score,onset=self.base.config.onset,
+            active_on=self.base.config.active_on)
         if not np.array_equal(candidate[:,1:],p[:,1:]):
-            raise AssertionError("Onset cannot change sustain/release")
+            raise AssertionError("Rescue Onset head changed sustain/release")
         if end!=self.last_decision+HOP:raise AssertionError("Onset non-contiguous PCM256")
         self.last_decision=end;self.calls+=1
 
-        # A learned P(error) is computed BEFORE either Onset selector emits
-        # a note. Only current and past PCM256 features are supplied.
+        # The MLP's P(error) is an independent learned Onset head opinion,
+        # computed BEFORE any selection. Main decisions are NEVER overwritten.
         risk_intents=()
-        if self.risk_model is not None:
-            from .predecision_risk import predecision_matrix
-            predicted_correct=np.asarray(
-                self.risk_model.predict_correct_probability(feat,p,k,score,x),
-                np.float32)
-            self.risk_calls+=1
-            if predicted_correct.shape!=(49,) or not np.isfinite(predicted_correct).all():
-                raise ValueError("invalid before-decision neural risk")
-            gated=p.copy()
-            gated[predicted_correct<self.risk_model.cut,0]=0.
+        if self.onset_heads.error is not None:
+            self.risk_calls=self.onset_heads.error.calls
+            gated=self.head_selector.challenged_candidate(
+                p,opinion.correctness_probability)
             proposal=self.risk_selector.step(gated,k,end,end)
-            risk_intents=self._intents(proposal,gated,"neural_predecision_256")
+            risk_intents=self._intents(
+                proposal,gated,"onset_error_head_challenged256")
         a=self.base.step(p,k,end,end)
         b=self.shadow.step(candidate,k,end,end)
         native_intents=self._intents(a,p,"s613_trained256")
         shadow_intents=self._intents(b,candidate,"s701_trained256_shadow")
+        # A native NoteOn can be contested WITHOUT suppressing it.
+        # Challenge decisions are explicitly owned by the Onset selector.
+        head_doubts=self.head_selector.doubts(a,opinion)
         if self.audit_events:
             from .harmonic_evidence import onset_event_evidence
             from .predecision_risk import predecision_matrix
@@ -96,7 +99,7 @@ class Stream:
             audit_shadow=tuple(audit_shadow)
         else:
             audit_native=audit_shadow=()
-        return Decision(end,native_intents,shadow_intents,audit_native,audit_shadow,risk_intents)
+        return Decision(end,native_intents,shadow_intents,audit_native,audit_shadow,risk_intents,head_doubts)
     def push(self,samples,*,start_sample):
         if self.closed or type(start_sample)is not int or start_sample!=self.received:
             raise ValueError("Onset PCM discontinuity or closed")

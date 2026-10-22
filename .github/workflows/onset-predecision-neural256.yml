@@ -1,11 +1,11 @@
-name: Onset BEFORE decision real MLP weights trained PCM256
+name: Onset three integrated heads with learned error prediction PCM256
 on:
   push:
-    branches: [codex/note-onset-predecision-neural256]
+    branches: [codex/note-onset-integrated-error-head-256]
   workflow_dispatch:
 permissions: {contents: read, actions: read}
 concurrency:
-  group: onset-predecision-trained-neural256-${{ github.ref }}
+  group: onset-embedded-error-head256-${{ github.ref }}
   cancel-in-progress: true
 env:
   PYTHONPATH: src
@@ -35,11 +35,15 @@ jobs:
           from onset256.acoustics import HOP, SR
           from onset256.predecision_risk import DIM,SCHEMA
           assert HOP==256 and DIM==63
-          assert "self.risk_model.predict_correct_probability" in s
-          assert s.index("self.risk_model.predict_correct_probability") < s.index("a=self.base.step(p,k,end,end)")
+          assert "self.onset_heads=OnsetHeadStack(native,s701,risk_model)" in s
+          assert "opinion=self.onset_heads.predict(feat,end_sample=end)" in s
+          assert s.index("opinion=self.onset_heads.predict(feat,end_sample=end)") < s.index("a=self.base.step(p,k,end,end)")
+          assert "head_doubts=self.head_selector.doubts(a,opinion)" in s
+          from onset256.heads import HEAD_NAMES
+          assert HEAD_NAMES==("main_attack","rescue_attack","error_prediction")
           assert "IncrementalS708TemporalHead" not in s
           assert "load_frozen_source" not in s
-          print("ONSET_REAL_NEURAL_PREDICTS_ERROR_BEFORE_SELECTOR_PCM256")
+          print("ONSET_EMBEDDED_ERROR_PREDICTION_HEAD_BEFORE_SELECTOR_PCM256")
           PY
   scientific_train_and_live_replay:
     needs: smoke
@@ -143,12 +147,17 @@ jobs:
               assert j["tracks"]==80 and j["frames"]==306536
               assert j["source_inference_hop"]==256
               assert not j["public_midi_modified"] and not j["other_axes_modified"]
-              print("ONSET_NEURAL256_CAUSAL_BEFORE_DECISION",j["neural_predecision"])
+              assert j["risk_is_onset_architecture_head"]
+              assert j["embedded_heads"]==["main_attack","rescue_attack","error_prediction"]
+              assert j["learned_head_doubt_totals"]["challenged_tp"]+j["learned_head_doubt_totals"]["retained_tp"]==8099
+              assert j["learned_head_doubt_totals"]["challenged_fp"]+j["learned_head_doubt_totals"]["retained_fp"]==4600
+              print("ONSET_EMBEDDED_ERROR_HEAD_CAUSAL_BEFORE_DECISION",j["neural_predecision"])
+              print("ONSET_ERROR_HEAD_LEARNED_DOUBTS",j["learned_head_doubt_totals"])
           PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ONSET_PREDECISION_NEURAL256_5FOLD_TRAINED_MODELS_AND_REAL_REPLAY
+          name: ONSET_EMBEDDED_ERROR_HEAD256_5FOLD_TRAINING_AND_REAL_REPLAY
           path: |
             /tmp/onset_predecision256/trained/report.json
             /tmp/onset_predecision256/trained/checkpoints/
