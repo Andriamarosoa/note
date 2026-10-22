@@ -16,9 +16,11 @@ from typing import Optional
 import numpy as np
 from .acoustics import HOP, PITCHES
 from .s701_features import LiveS701Features
+from .fn_recovery import FNRecoverySelector
 
 SCHEMA = "ONSET_EMBEDDED_INDEPENDENT_HEADS_PCM256_V1"
 HEAD_NAMES = ("main_attack", "rescue_attack", "error_prediction")
+FN_RECOVERY_HEAD_NAME = "fn_recovery"
 
 @dataclass(frozen=True)
 class HeadOpinions:
@@ -30,6 +32,7 @@ class HeadOpinions:
     rescue_history: np.ndarray
     error_probability: Optional[np.ndarray]
     correctness_probability: Optional[np.ndarray]
+    fn_recovery_probability: Optional[np.ndarray]=None
 
 class MainAttackHead:
     name="main_attack"
@@ -105,19 +108,46 @@ class ErrorPredictionHead:
             raise ValueError("Invalid pretrained error prediction head")
         return (1.-correct).astype(np.float32),correct.copy()
 
+class FNRecoveryHead:
+    """Independent fourth trainable Onset head for missed attacks.
+
+    Scores 49 pitches BEFORE the Onset selection. It has own supervised
+    neural weights and emits NO notes by itself; an Onset-owned final
+    arbiter only accepts its proposals causally.
+    """
+    name="fn_recovery"
+    trained_hop_samples=256
+    def __init__(self,model):
+        if not hasattr(model,"predict_recovery_probability"):
+            raise ValueError("FNRecovery requires a trained native256 model")
+        if getattr(model,"trained_hop_samples",None)!=256:
+            raise ValueError("FNRecovery learned checkpoint must be trained256")
+        self.model=model
+        self.calls=0
+    def predict(self,feat,p,k,rescue,history,selector_state):
+        probabilities=np.asarray(self.model.predict_recovery_probability(
+            feat,p,k,rescue,history,selector_state),np.float32)
+        self.calls+=1
+        if (probabilities.shape!=(49,) or not np.isfinite(probabilities).all()
+            or np.any(probabilities<0.) or np.any(probabilities>1.)):
+            raise ValueError("FNRecovery trained head did not produce valid probabilities")
+        return probabilities.copy()
+
 class OnsetHeadStack:
     """All three private Onset heads evaluated before the private selector."""
 
-    def __init__(self,native,s701,risk_model=None):
+    def __init__(self,native,s701,risk_model=None,recovery_model=None):
         self.main=MainAttackHead(native)
         self.rescue=RescueAttackHead(s701)
         self.error=(ErrorPredictionHead(risk_model) if risk_model is not None else None)
+        self.recovery=(FNRecoveryHead(recovery_model) if recovery_model is not None else None)
         self.last_end=0
         self.calls=0
 
     @property
     def names(self):
-        return HEAD_NAMES if self.error is not None else HEAD_NAMES[:2]
+        return (HEAD_NAMES+(FN_RECOVERY_HEAD_NAME,) if self.recovery is not None
+                else HEAD_NAMES if self.error is not None else HEAD_NAMES[:2])
 
     def predict(self,feat,*,end_sample,selector_state=None):
         if (HOP!=256 or type(end_sample) is not int or
@@ -128,15 +158,21 @@ class OnsetHeadStack:
         error=correct=None
         if self.error is not None:
             error,correct=self.error.predict(feat,p,k,rescue,history,selector_state)
+        recovery=None
+        if self.recovery is not None:
+            recovery=self.recovery.predict(
+                feat,p,k,rescue,history,selector_state)
         self.last_end=end_sample
         self.calls+=1
         if (self.main.calls!=self.calls or self.rescue.calls!=self.calls or
-            (self.error is not None and self.error.calls!=self.calls)):
+            (self.error is not None and self.error.calls!=self.calls) or
+            (self.recovery is not None and self.recovery.calls!=self.calls)):
             raise AssertionError("Onset head stack missed 256-sample inference")
         return HeadOpinions(sample=end_sample,main_posterior=p,native_k=k,
                             rescue_probability=rescue,rescue_history=history,
                             error_probability=error,
-                            correctness_probability=correct)
+                            correctness_probability=correct,
+                            fn_recovery_probability=recovery)
 
 @dataclass(frozen=True)
 class Doubt:

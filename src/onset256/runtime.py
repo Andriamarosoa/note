@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import numpy as np
 from .acoustics import CausalPitchFeatures,HOP,SR
 from .selector import CausalSelection,Selection
+from .fn_recovery import CANDIDATE_POLICIES,FNRecoverySelector
 from .heads import OnsetHeadStack, OnsetHeadSelector
 
 SCHEMA="ONSET_S613_S701_REAL_256_TRAINING_V1"
@@ -23,16 +24,20 @@ class Decision:
     candidate_evidence:tuple=()
     predecision_intents:tuple=()
     head_doubts:tuple=()
+    fn_recovery_intents:tuple=()
+    fn_unified_intents:tuple=()
 
 class Stream:
     """S613 + S701 both called exactly once per received PCM256 decision."""
-    def __init__(self,native,s701,*,audit_events=False,risk_model=None):
+    def __init__(self,native,s701,*,audit_events=False,risk_model=None,recovery_model=None):
         policy=Selection(**native.metadata.get("selection",{}))
         self.native=native;self.s701=s701
         self.frontend=CausalPitchFeatures(hop=HOP)
         # Independent learned heads now form one named Onset architecture.
         # Risk is an Onset HEAD; only the private selector may use its doubt.
-        self.onset_heads=OnsetHeadStack(native,s701,risk_model)
+        if recovery_model is not None and risk_model is None:
+            raise ValueError("FNRecovery is compared against the frozen three-head Onset reference")
+        self.onset_heads=OnsetHeadStack(native,s701,risk_model,recovery_model)
         self.s701_features=self.onset_heads.rescue.cache
         self.head_selector=OnsetHeadSelector(
             calibrated_correctness_cut=(
@@ -46,6 +51,22 @@ class Stream:
         self.risk_calls=0
         self.risk_selector=(CausalSelection(policy,hop=HOP)
                             if risk_model is not None else None)
+        self.fn_recovery_selector=None
+        self.fn_recovery_arbiter=None
+        if recovery_model is not None:
+            spec=CANDIDATE_POLICIES[recovery_model.candidate_policy]
+            self.fn_recovery_selector=CausalSelection(Selection(
+                onset=spec["onset"],active_on=spec["active_on"],
+                onset_reset=spec["onset_reset"],
+                active_off=policy.active_off,release_frames=policy.release_frames,
+                refractory_frames=policy.refractory_frames,
+                max_notes=policy.max_notes,
+                count_confidence=policy.count_confidence,
+                confirmation_frames=1,
+                restrike_onset=policy.restrike_onset),hop=HOP)
+            self.fn_recovery_arbiter=FNRecoverySelector(
+                recovery_model.calibrated_cut,recovery_model.enabled)
+        self.fn_recovery_calls=0
     def _intents(self,events,post,reason):
         return tuple(Intent("note_on",int(e["pitch"]),int(e["decision_sample"]),
                      float(post[e["pitch"]-40,0]),reason)
@@ -93,6 +114,26 @@ class Stream:
                 raise AssertionError("error head cannot create new NoteOns")
         native_intents=self._intents(a,p,"s613_trained256")
         shadow_intents=self._intents(b,candidate,"s701_trained256_shadow")
+        recovered_intents=()
+        unified_intents=()
+        if self.onset_heads.recovery is not None:
+            self.fn_recovery_calls=self.onset_heads.recovery.calls
+            proposals=self.fn_recovery_selector.step(p,k,end,end)
+            # FNRecovery is an Onset head; it proposes only attack events,
+            # without overwriting any existing main/rescue/error-head state.
+            chosen=self.fn_recovery_arbiter.select(
+                end_sample=end,main_raw=native_intents,
+                main_accepted=risk_intents,
+                proposals=proposals,
+                recovery_probability=opinion.fn_recovery_probability)
+            recovered_intents=self._intents(
+                chosen,p,"fn_recovery_trained_neural256")
+            unified_intents=risk_intents+recovered_intents
+            main_keys={(e.pitch,e.sample) for e in native_intents}
+            if any((e.pitch,e.sample) in main_keys for e in recovered_intents):
+                raise AssertionError("FNRecovery duplicated current Main Onset")
+            if len(unified_intents)!=len(risk_intents)+len(recovered_intents):
+                raise AssertionError("FNRecovery main stream was overwritten")
         # A native NoteOn can be contested WITHOUT suppressing it.
         # Challenge decisions are explicitly owned by the Onset selector.
         head_doubts=self.head_selector.doubts(a,opinion)
@@ -119,7 +160,7 @@ class Stream:
             audit_shadow=tuple(audit_shadow)
         else:
             audit_native=audit_shadow=()
-        return Decision(end,native_intents,shadow_intents,audit_native,audit_shadow,risk_intents,head_doubts)
+        return Decision(end,native_intents,shadow_intents,audit_native,audit_shadow,risk_intents,head_doubts,recovered_intents,unified_intents)
     def push(self,samples,*,start_sample):
         if self.closed or type(start_sample)is not int or start_sample!=self.received:
             raise ValueError("Onset PCM discontinuity or closed")
@@ -142,4 +183,6 @@ class Stream:
         self.shadow.panic(self.received)
         if self.risk_selector is not None:
             self.risk_selector.panic(self.received)
+        if self.fn_recovery_selector is not None:
+            self.fn_recovery_selector.panic(self.received)
         return ()
