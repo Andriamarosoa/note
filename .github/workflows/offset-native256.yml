@@ -1,0 +1,86 @@
+name: offset ONLY native PCM256 fresh inference
+on:
+  push:
+    branches: [codex/note-best-offset-native-256]
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: offset256-only-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  PYTHONPATH: src
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  GH_TOKEN: ${{ github.token }}
+  PYTHONUNBUFFERED: '1'
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Dependencies and single-axis tests
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0 joblib==1.4.2
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install onnxruntime==1.20.1
+          python -m compileall -q src scripts tests
+          python -m unittest discover -s tests -v
+  signed_fit80:
+    needs: smoke
+    if: contains(github.event.head_commit.message, '[run-fit80]') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Pin scoring dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0 joblib==1.4.2
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install onnxruntime==1.20.1
+      - name: Read sealed S800 manifest and signed FIT80 tracks
+        run: |
+          mkdir -p /tmp/only_offset256/manifest /tmp/only_offset256/traces /tmp/only_offset256/s708
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/only_offset256/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/only_offset256/traces
+          META="$(find /tmp/only_offset256/manifest -name report.json -type f -print -quit)"
+          FIT="$(find /tmp/only_offset256/traces -name fit_000.json -type f -print -quit)"
+          test -s "$META"; test -s "$FIT"
+          printf '%s\n' "$META" > /tmp/only_offset256/manifest_path
+          printf '%s\n' "$(dirname "$FIT")" > /tmp/only_offset256/traces_dir
+          gh run download 39094682419 --repo Andriamarosoa/note --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/only_offset256/s708
+          MODEL="$(find /tmp/only_offset256/s708 -name s708_selected.pt -type f -print -quit)"
+          test -s "$MODEL"; test -s "$(dirname "$MODEL")/report.json"
+          printf '%s\n' "$(dirname "$MODEL")" > /tmp/only_offset256/s708_dir
+
+      - name: Download exact GuitarSet audio archive with SHA256 check
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,urllib.request,hashlib
+          item=json.loads(Path('analysis/evidence/v273-s613-strict-live/protocol.json').read_text())['guitar_archives']['GuitarSet_audio']
+          dst=Path('/tmp/only_offset256/GuitarSet_audio.zip')
+          with urllib.request.urlopen(item['url'],timeout=180) as src, dst.open('wb') as f:
+              for x in iter(lambda:src.read(4*1024*1024),b''):f.write(x)
+          assert dst.stat().st_size==item['size']
+          h=hashlib.sha256()
+          with dst.open('rb') as f:
+              for x in iter(lambda:f.read(1048576),b''):h.update(x)
+          assert h.hexdigest()==item['sha256']
+          print('OFFSET_NATIVE256_SOURCE_WAV_PINNED')
+          PY
+      - name: Revalidate the ONLY preserved offset256 raw metric on 80 tracks
+        run: |
+          python -m scripts.replay_native256 --audio-zip /tmp/only_offset256/GuitarSet_audio.zip --traces "$(cat /tmp/only_offset256/traces_dir)" --manifest "$(cat /tmp/only_offset256/manifest_path)" --checkpoint "$(cat /tmp/only_offset256/s708_dir)/s708_selected.pt" --source-report "$(cat /tmp/only_offset256/s708_dir)/report.json" --native-model model/live/strict_note/NOTE_strict_live.npz --out /tmp/only_offset256/result 
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: OFFSET_NATIVE256_ONLY_FIT80
+          path: /tmp/only_offset256/result/report.json
+          if-no-files-found: warn
+          retention-days: 45
