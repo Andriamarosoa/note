@@ -26,6 +26,7 @@ jobs:
         run: |
           python -m pip install numpy==1.26.4 scipy==1.14.1
           python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install onnxruntime==1.20.1
       - name: Verify physically isolated tree and run causal Exact-K tests
         run: |
           python - <<'PY'
@@ -52,6 +53,7 @@ jobs:
       - run: |
           python -m pip install numpy==1.26.4 scipy==1.14.1
           python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install onnxruntime==1.20.1
       - name: Fetch immutable 80-track PCM evidence + S708 original checkpoint
         run: |
           mkdir -p /tmp/exactk/s708 /tmp/exactk/manifest /tmp/exactk/traces
