@@ -42,7 +42,7 @@ class PrivateS708GuidedActiveK:
 
     def step(self,post,count,end):
         if end!=self.last_end+self.decision_hop:
-            raise ValueError("non-contiguous Active-K 256 decision grid")
+            raise ValueError("non-contiguous Active-K 256-sample decision grid")
         p=np.asarray(post)
         k=np.asarray(count)
         if (p.shape!=(PITCHES,3) or k.shape!=(7,) or not
