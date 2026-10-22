@@ -51,8 +51,12 @@ class Stream:
                      float(post[e["pitch"]-40,0]),reason)
                      for e in events if e["type"]=="note_on")
     def _step(self,end,feat):
-        # Every head computes its opinion from current/past PCM first.
-        opinion=self.onset_heads.predict(feat,end_sample=end)
+        # Capture private Onset state *before* Main/Rescue/Error selection.
+        # The snapshot is read-only and never extends the decision horizon.
+        from .error_evidence69 import capture_selector_state
+        preselector_state=capture_selector_state(self.base,end)
+        opinion=self.onset_heads.predict(
+            feat,end_sample=end,selector_state=preselector_state)
         p,k=opinion.main_posterior,opinion.native_k
         score,x=opinion.rescue_probability,opinion.rescue_history
         self.s701_calls=self.onset_heads.rescue.calls
@@ -84,16 +88,21 @@ class Stream:
         if self.audit_events:
             from .harmonic_evidence import onset_event_evidence
             from .predecision_risk import predecision_matrix
+            from .error_evidence69 import hard_matrix
             before_selection=predecision_matrix(feat,p,k,score,x)
+            hard_before_selection=hard_matrix(
+                feat,p,k,score,x,preselector_state)
             audit_native=[]
             audit_shadow=[]
             for intent in native_intents:
                 evidence=onset_event_evidence(feat,p,k,score,intent.pitch,intent.sample)
                 evidence["predecision_vector"]=before_selection[intent.pitch-40].astype(float).tolist()
+                evidence["hard_predecision_vector"]=hard_before_selection[intent.pitch-40].astype(float).tolist()
                 audit_native.append(evidence)
             for intent in shadow_intents:
                 evidence=onset_event_evidence(feat,p,k,score,intent.pitch,intent.sample)
                 evidence["predecision_vector"]=before_selection[intent.pitch-40].astype(float).tolist()
+                evidence["hard_predecision_vector"]=hard_before_selection[intent.pitch-40].astype(float).tolist()
                 audit_shadow.append(evidence)
             audit_native=tuple(audit_native)
             audit_shadow=tuple(audit_shadow)

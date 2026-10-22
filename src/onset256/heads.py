@@ -89,11 +89,16 @@ class ErrorPredictionHead:
     def calibrated_correctness_cut(self):
         return float(self.model.cut)
 
-    def predict(self,feat,p,k,rescue_probability,rescue_history):
-        # The trained MLP validates/builds the 63D ABI internally exactly once.
-        # Do not double-extract 49x63 features on the 5.805 ms decision path.
-        correct=np.asarray(self.model.predict_correct_probability(
-            feat,p,k,rescue_probability,rescue_history),np.float32)
+    def predict(self,feat,p,k,rescue_probability,rescue_history,selector_state=None):
+        # Hard-negative error models use six causal PRE-SELECTION Onset state
+        # features. Legacy trained 63D risk models remain ABI compatible.
+        if getattr(self.model,"requires_selector_state",False):
+            correct=self.model.predict_correct_probability(
+                feat,p,k,rescue_probability,rescue_history,selector_state)
+        else:
+            correct=self.model.predict_correct_probability(
+                feat,p,k,rescue_probability,rescue_history)
+        correct=np.asarray(correct,np.float32)
         self.calls+=1
         if (correct.shape!=(49,) or not np.isfinite(correct).all() or
             np.any(correct < 0.) or np.any(correct > 1.)):
@@ -114,7 +119,7 @@ class OnsetHeadStack:
     def names(self):
         return HEAD_NAMES if self.error is not None else HEAD_NAMES[:2]
 
-    def predict(self,feat,*,end_sample):
+    def predict(self,feat,*,end_sample,selector_state=None):
         if (HOP!=256 or type(end_sample) is not int or
             end_sample!=self.last_end+256):
             raise AssertionError("each Onset head must run each fresh PCM256")
@@ -122,7 +127,7 @@ class OnsetHeadStack:
         rescue,history=self.rescue.predict(feat,p,k)
         error=correct=None
         if self.error is not None:
-            error,correct=self.error.predict(feat,p,k,rescue,history)
+            error,correct=self.error.predict(feat,p,k,rescue,history,selector_state)
         self.last_end=end_sample
         self.calls+=1
         if (self.main.calls!=self.calls or self.rescue.calls!=self.calls or
