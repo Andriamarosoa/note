@@ -1,8 +1,8 @@
-"""S828 scientific private S708 Active-K native256, five composition-disjoint folds.
+"""S828-derived scientific private S708 Active-K native1024, five composition-disjoint folds.
 
 This is a FIT research evaluation, not independent external generalization.
 S708's original neural weights and native heads are frozen, a PRIVATE K-only
-readout is newly fit at 256, and no other characteristic or public MIDI changes.
+readout is freshly refit at 1024, and no other characteristic or public MIDI changes.
 """
 from __future__ import annotations
 import argparse,io,json,zipfile,hashlib,time
@@ -48,7 +48,7 @@ def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,
         only_active_exact_k_trained=True,other_five_axes_modified=False,
         public_midi_modified=False,fit_source_explored=True,
         external_generalization_verified=False,hardware_latency_verified=False,
-        feature_hop_samples=256,decision_hop_samples=256,
+        feature_hop_samples=HOP,decision_hop_samples=HOP,
         annotation_inferred_at_runtime=False,CAL_opened=False,
         HELD_opened=False,TEST_opened=False,
         source_audio_sha256=None,tracks=[],folds={})
@@ -76,7 +76,7 @@ def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,
             features,baseline=teacher.collected()
             if (len(features)!=len(ends) or
                 [d.decision_sample for d in decisions]!=ends.tolist()):
-                raise AssertionError("native S708 true MIDI256 neural/readout replay drift")
+                raise AssertionError("native S708 true MIDI1024 neural/readout replay drift")
             # GT and historical output opened only after all source-PCM
             # inference features and private S708 predictions have been fixed.
             truth=targets_at_ends(meta["fit_truth"],ends)
@@ -85,24 +85,25 @@ def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,
             original=original_count(source_midi,ends)
             old=active_score(original,truth)
             sig=meta["source_counts"]
-            if (old["correct"]!=sig["active_k_correct"] or
-                old["frames"]!=sig["active_frames"] or
-                hashlib.sha256(json.dumps(source_midi,sort_keys=True).encode()).hexdigest()!=protected_sig):
-                raise AssertionError("original H0 five-axis MIDI not protected")
+            # Signed H0 source counts were computed on historical PCM256.
+            # Their per-frame denominators do not apply at a 1024-hop grid.
+            # Only the immutable source-event hash and signed track are checked.
+            if hashlib.sha256(json.dumps(source_midi,sort_keys=True).encode()).hexdigest()!=protected_sig:
+                raise AssertionError("original H0 source MIDI changed")
             native_score=active_score(baseline,truth)
             record=dict(index=spec["index"],name=meta["name"],
                 composition=comp,texture=meta["texture"],X=features,
                 baseline=baseline,k=truth,source=old,native=native_score)
             cache[spec["index"]]=record
-            print("S828_FRESH_S708_256",spec["index"],comp,len(ends),
+            print("S828_FRESH_S708_1024",spec["index"],comp,len(ends),
                   round(native_score["correct"]/max(1,native_score["frames"]),6),
                   flush=True)
     if len(cache)!=5*tracks_per_composition:
         raise AssertionError("source recording count changed")
     expected_H0=totals([r["source"] for r in cache.values()])
-    if tracks_per_composition==16 and (expected_H0["correct"]!=142213 or
-            expected_H0["frames"]!=249411):
-        raise AssertionError("full FIT80 source H0 not bit-exact")
+    # Old H0 142213/249411 is a PCM256-protocol count, not PCM1024 truth.
+    if tracks_per_composition==16 and len(cache)!=80:
+        raise AssertionError("incomplete signed FIT80 corpus at hop1024")
     predicted=[]
     for i,outer in enumerate(COMPS):
         inner=COMPS[(i+1)%5]
@@ -146,12 +147,11 @@ def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,
               totals([r["S828"] for r in report["tracks"]
                      if r["composition"]==outer]),flush=True)
     report["S828_activek"]=totals(predicted)
-    report["reference_correct"]=184143
-    report["reference_frames"]=249411
-    report["validation_passed"]=(report["S828_activek"]["frames"]==249411 and report["S828_activek"]["correct"]>=184143) if tracks_per_composition==16 else None
-    if tracks_per_composition==16 and not report["validation_passed"]:
-        save_json(out/"report.json",report)
-        raise AssertionError("S828 active-K native256 non-regression failed: expected >=184143/249411")
+    report["historical_pcm256_reference"]=dict(correct=184143,frames=249411,accuracy=184143/249411)
+    report["source_H0_original_pcm256_reference"]=dict(correct=142213,frames=249411)
+    report["reference_comparable"]=False
+    report["validation_passed"]=None
+    report["decision_hop_samples"]=HOP
     report["S827_frozen_s708_activek"]=totals(
         [r["S827_frozen_s708"] for r in report["tracks"]])
     report["H0_original_activek"]=totals(
@@ -159,7 +159,7 @@ def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,
     report["total_elapsed_seconds"]=time.perf_counter()-start
     report["complete"]=True
     save_json(out/"report.json",report)
-    print("S828_TRUE256_PRIVATE_ACTIVEK_FINAL",json.dumps({
+    print("S828_TRUE1024_PRIVATE_ACTIVEK_FINAL",json.dumps({
         "n_tracks":len(report["tracks"]),
         "S828":report["S828_activek"],
         "S827":report["S827_frozen_s708_activek"],

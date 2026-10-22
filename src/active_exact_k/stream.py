@@ -7,7 +7,7 @@ import time
 import numpy as np
 from .acoustics import CausalPitchFeatures,HOP,SR,sharp_track
 from .temporal import IncrementalS708TemporalHead,latest_s708_acoustic_features
-SCHEMA="ACTIVE_K_ONLY_S828_NATIVE256_V1"
+SCHEMA="ACTIVE_K_ONLY_EXPERIMENTAL_PCM1024_V1"
 PITCHES=49
 PAST_AUDIO=8192+HOP
 @dataclass(frozen=True)
@@ -28,8 +28,8 @@ class PrivateS708GuidedActiveK:
     """
 
     def __init__(self,policy,*,decision_hop=HOP):
-        if decision_hop not in (HOP,4*HOP):
-            raise ValueError("only exact MIDI256 or S708 source1024 supported")
+        if type(decision_hop) is not int or decision_hop != HOP:
+            raise ValueError("This experimental Active-K decoder supports only 1024-sample decisions")
         self.policy=policy
         self.decision_hop=decision_hop
         self.active=np.zeros(PITCHES,bool)
@@ -43,7 +43,7 @@ class PrivateS708GuidedActiveK:
 
     def step(self,post,count,end):
         if end!=self.last_end+self.decision_hop:
-            raise ValueError("non-contiguous Active-K 256 decision grid")
+            raise ValueError("non-contiguous Active-K 1024 decision grid")
         p=np.asarray(post)
         k=np.asarray(count)
         if (p.shape!=(PITCHES,3) or k.shape!=(7,) or not
@@ -109,7 +109,7 @@ class PrivateS708GuidedActiveK:
 
 
 class S827S708ActiveKOnly:
-    """Read-only private S708 model; 1 acoustic/neural/count decision per 256.
+    """Read-only private S708 model; 1 acoustic/neural/count decision per 1024.
 
     Never emits a NoteOn/Off event to the public MIDI or any other axis.
     Nothing in this module imports or changes S826 or its altered shared code.
@@ -174,7 +174,7 @@ class S827S708ActiveKOnly:
             at+=chunk_size
             for end,f in features:
                 if end!=self.received or end%HOP:
-                    raise AssertionError("feature derived after decision or not at 256")
+                    raise AssertionError("feature derived after decision or not at 1024")
                 results.append(self._step(end,f))
         self.timings_ms.append((time.perf_counter()-begin)*1000)
         return tuple(results)
@@ -188,7 +188,7 @@ class S827S708ActiveKOnly:
             acoustic_feature_hop_samples=HOP,
             acoustic_S708_feature_dim=288,model_calls=self.model_calls,
             added_future_samples=0,added_hold_samples=0,
-            teacher_original_training_decision_hop_samples=4*HOP,
+            teacher_original_training_decision_hop_samples=1024,
             output_only="active_exact_k",own_private_decoder=True,
             public_midi_emission=False,other_five_axes_mutated=False,
             source_model_retrained_to_256=False)

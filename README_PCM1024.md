@@ -1,0 +1,3 @@
+# Active Exact-K experimental PCM1024
+One fresh 44.1kHz PCM acoustic/neural/private count-head decision per 1024 samples (23.21995465 ms). Uses original frozen S708 temporal weights, plus a private HGB readout refitted and CAL-selected composition-disjoint on the 1024 grid. Does not modify the protected PCM256 reference or public MIDI.
+The historical signed metadata uses the original 256 grid and therefore its 184143/249411 Active-K and 142213/249411 H0 counts cannot be used as exact framewise threshold for the new grid. The 80 signed FIT80 tracks are rescored at 1024, with GT protected from inference and five composition-disjoint TRAIN/CAL/OUTER folds. No comparable external generalization or hardware latency claim.

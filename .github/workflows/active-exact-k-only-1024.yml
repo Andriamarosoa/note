@@ -1,11 +1,11 @@
-name: active_exact_k ONLY exact source-score revalidation
+name: active_exact_k ONLY experimental PCM1024 FIT80
 on:
   push:
-    branches: [codex/note-best-active-exact-k-s828-256]
+    branches: [codex/note-active-exact-k-native-1024]
   workflow_dispatch:
 permissions: {contents: read, actions: read}
 concurrency:
-  group: active_exact_k-only-${{ github.ref }}
+  group: active_exact_k-1024-only-${{ github.ref }}
   cancel-in-progress: true
 env:
   PYTHONPATH: src
@@ -74,7 +74,7 @@ jobs:
           assert h.hexdigest()==item['sha256']
           print('ACTIVE_EXACT_K_SOURCE_WAV_PINNED')
           PY
-      - name: Revalidate the ONLY preserved active_exact_k raw metric on 80 tracks
+      - name: Revalidate the ONLY preserved PCM1024 active_exact_k raw metric on 80 tracks
         run: |
           python -m scripts.replay_fit80 --audio-zip /tmp/only_active_exact_k/GuitarSet_audio.zip --traces "$(cat /tmp/only_active_exact_k/traces_dir)" --manifest-path "$(cat /tmp/only_active_exact_k/manifest_path)" --source-checkpoint "$(cat /tmp/only_active_exact_k/s708_dir)/s708_selected.pt" --source-report "$(cat /tmp/only_active_exact_k/s708_dir)/report.json" --native-model model/live/strict_note/NOTE_strict_live.npz --out /tmp/only_active_exact_k/result --tracks-per-composition 16
       - uses: actions/upload-artifact@v4

@@ -1,4 +1,4 @@
-"""S828: *private Active Exact-K* fitted readout atop ORIGINAL frozen S708 at 256.
+"""S828: *private Active Exact-K* fitted readout atop ORIGINAL frozen S708 at 1024.
 
 This does NOT fine-tune the shared S708 network. The unmodified original
 S708 temporal/harmonic model runs freshly at each incoming PCM256, as proven
@@ -17,7 +17,7 @@ from threadpoolctl import threadpool_limits
 from .stream import S827S708ActiveKOnly
 from .score import active_score
 
-SCHEMA="S828_S708_FROZEN_288D_PRIVATE_COUNT_READOUT_MIDI256_V1"
+SCHEMA="S828_S708_FROZEN_288D_PRIVATE_COUNT_READOUT_MIDI1024_V1"
 # Source S708 feature positions: 192D S704 temporal acoustics +96D S706 sharp.
 # All sampled at CURRENT frame, each computed from current and past PCM only.
 DIM_SELECT=tuple([*range(0,12),*range(48,60),*range(126,141),
@@ -32,7 +32,7 @@ MODEL_ARGS=dict(max_iter=115,max_depth=5,max_leaf_nodes=25,
 def summarize_one(x,history,source_count,source_model_count,confidence):
     arr=np.asarray(x)
     if arr.shape!=(49,288) or not np.isfinite(arr).all():
-        raise ValueError("required freshly recalculated S708 [49,288] at 256")
+        raise ValueError("required freshly recalculated S708 [49,288] at 1024")
     sel=arr[:,DIM_SELECT]
     # Identical feature dimensions and rule each time; no access to future.
     vals=np.concatenate([
@@ -47,7 +47,7 @@ def summarize_one(x,history,source_count,source_model_count,confidence):
 
 
 class S828Stream(S827S708ActiveKOnly):
-    """Private S708 stream: no ON/OFF events emitted, own native256 vectors."""
+    """Private S708 stream: no ON/OFF events emitted, own native1024 vectors."""
     def __init__(self,native_heads,original_s708_model,frozen_policy):
         super().__init__(native_heads,original_s708_model,frozen_policy,
                          capture_features=True)
@@ -69,7 +69,7 @@ class S828Stream(S827S708ActiveKOnly):
         x=np.stack(self.readout_rows)
         baseline=np.asarray(self.s708_baselines,dtype=np.uint8)
         if len(x)!=self.model_calls or len(baseline)!=len(x):
-            raise AssertionError("S708 private model calls not at every 256")
+            raise AssertionError("S708 private model calls not at every 1024")
         return x,baseline
 
 
@@ -84,9 +84,9 @@ def validate(rows,kind):
             len(k)!=len(b) or not np.isfinite(x).all() or
             not np.isin(k,range(7)).all() or not np.isin(b,range(7)).all() or
             not isinstance(r["composition"],str) or not r["composition"]):
-            raise ValueError("bad native256 readout inputs")
+            raise ValueError("bad native1024 readout inputs")
         size=x.shape[1] if size is None else size
-        if x.shape[1]!=size:raise ValueError("inconsistent 256 feature ABI")
+        if x.shape[1]!=size:raise ValueError("inconsistent 1024 feature ABI")
     return rows
 
 
@@ -144,7 +144,7 @@ class FittedActiveKOnly:
         features=np.asarray(x)
         old=np.asarray(baseline)
         if features.ndim!=2 or old.shape!=(len(features),):
-            raise ValueError("private readout requires aligned MIDI256 features")
+            raise ValueError("private readout requires aligned MIDI1024 features")
         with threadpool_limits(limits=1):
             partial=self.model.predict_proba(features)
         scores=np.zeros((len(features),7),np.float32)
@@ -179,7 +179,7 @@ def fit_private(train,cal,*,seed=828):
         -MODES.index(mode[0]),-SHIFTS.index(mode[1])))
     proof=dict(schema=SCHEMA,calibration=sorted(cc),train=sorted(tc),
         frozen_s708_original_weights=True,only_private_readout_fit=True,
-        training_hop_samples=256,decision_hop_samples=256,
+        training_hop_samples=1024,decision_hop_samples=1024,
         added_lookahead_samples=0,added_hold_samples=0,
         selected_calibration_mode=best[0],selected_shift=best[1],
         calibration_scores={str(k):v for k,v in score.items()},
