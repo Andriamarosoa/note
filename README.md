@@ -1,7 +1,4 @@
-# OFFSET only — preserve original S708/H0 score
-
-This Git branch contains **only the offset historical scorer and signed replay**. All five other axis implementations and experiments have been removed from the Git tree, not from their own reference branches.
-
-Reference on 80 signed FIT80 GuitarSet tracks: **69.8862289642% conditional offset accuracy**. Original S708 neural inference historically ran on 1024-sample decisions. This branch only revalidates the exact original signed H0 events against the original ground truth, checking event-level raw counters for **80/80** tracks and matching the S704 evaluation protocol. It is **NOT** a stand-alone PCM256 neural detector or evidence that Onset/Offset now run every 256 samples. No GT labels are used to change original events.
-
-Only score output and validation; no public MIDI, no model edits, no added hold/lookahead, no false promotional claims.
+# Offset — native 1024-sample research candidate
+Fresh, strictly causal 44.1kHz mono PCM acoustic and S708 temporal network inference exactly once per 1024 samples (23.21995465 ms cadence), with independent OffsetDecoder. The decoder exposes NoteOff decisions only, using internal diagnostic onsets for matched-note conditional evaluation, NOT exposed as MIDI NoteOn. No production MIDI modification.
+This experimental branch replaces active 256 code; original S708 H0 references remain safely on codex/note-best-offset-s708-protected. Frozen S708 network weights were originally trained at hop1024; this change does not retrain them.
+One signed 80-track FIT80 evaluation computes conditional offset accuracy with 50ms tolerance and retains reference S708/H0 69.88622896% with 5897/8438 eligible. The benchmark must report eligible count so it cannot improve by dropping hard cases. GT is only read after track PCM-only inference; no lookahead or artificial hold. The source manifest contains historic MIDI256 in its schema ID only, not decision clock. No claims about unseen datasets or measured hardware latency.

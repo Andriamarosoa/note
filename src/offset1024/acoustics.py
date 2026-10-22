@@ -7,7 +7,7 @@ from pathlib import Path
 import hashlib, json
 import numpy as np
 
-SR, HOP = 44100, 256
+SR, HOP = 44100, 1024
 PITCHES = np.arange(40, 89)
 WINDOWS = (2048, 4096, 8192)
 SCHEMA = "S613_native_causal_harmonic_heads_v1"
@@ -22,8 +22,8 @@ class CausalPitchFeatures:
     """
 
     def __init__(self, *, hop=HOP):
-        if hop not in (128, 256, 512):
-            raise ValueError("Experimental NOTE decision hop must be 128/256/512 samples")
+        if hop != 1024:
+            raise ValueError("Experimental offset branch must use exactly 1024-sample inference hop")
         self.hop = int(hop)
         # Preserve the TRAINING-time physical interval of native S613 lags.
         # This is an approximation, not an independently trained checkpoint.
