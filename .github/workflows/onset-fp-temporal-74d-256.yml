@@ -96,7 +96,7 @@ jobs:
           test -s "$META"; test -s "$TRACE"
           printf '%s\n' "$META" > /tmp/onset_fp74/manifest_path
           printf '%s\n' "$(dirname "$TRACE")" > /tmp/onset_fp74/traces_path
-      - name: TRAIN fifteen genuine PCM256 FP models: 69D vs 70D vs 74D, freeze CAL cuts
+      - name: "TRAIN fifteen genuine PCM256 FP models: 69D vs 70D vs 74D, freeze CAL cuts"
         run: |
           python -m scripts.train_onset_fp_discriminator256 \
             --signals "$(cat /tmp/onset_fp74/signals_path)" \
