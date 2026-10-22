@@ -1,22 +1,11 @@
-# ONSET — independent native PCM256 research candidate
+# Onset — modèle à poids réellement entraînés à 256
 
-This branch is derived from codex/note-best-onset-s708-protected without changing that protected S708/H0 reference.
-The production MIDI is NOT modified. Only this axis has a live decoder in src/onset256.
-The historical scorer and reference replay are retained for provenance, not for native inference.
+Cette branche est indépendante des cinq autres caractéristiques et n'écrit pas le MIDI officiel.
 
-- Audio: 44,100 Hz, mono PCM; strict input sample clock, no future audio.
-- Native acoustic and S708 temporal neural inference: **one fresh call every 256 samples** (5.80498866 ms decision cadence).
-- Frozen S708 network was **trained on 1024-hop data** and is *not* a newly trained PCM256 network.
-- The neural/tree hybrid is restored with ONNX Runtime; no other musical branch's decoder or selection is called.
-- Onset: emits only new attacks, using private active state solely for rearming.
-- Offset: emits only releases, with diagnostic attack events used solely to define matched-onset eligibility in the evaluator.
-- Original FIT80 GuitarSet sources and frozen S708 checkpoint are SHA-pinned; GT labels are read only after completing track inference. No ground-truth-conditioned inference or same-fold threshold selection.
-- No artificial 1024-frame repetition, hold, future context, or lookahead.
-- Historical S708/H0 reference: **73.2520185535% F1** on 80 explored FIT80 tracks; the new native256 score remains unverified until CI completes successfully. No external generalization claim.
-- Decision cadence is not measured hardware latency; inference runtime must still be benchmarked on the actual machine.
-- No promotion if regressions, leaks, skipped scoring, or CI failures occur.
+**Poids :** S613 natif entraîné à 256 (SHA256 `7ccf046e3a1870eaca3a108e6f9565298aeeadf43732a2f83559542c03f5f17f`), et S701 spécifique Onset entraîné à 256 (SHA256 `cc72cf81f477c6b734e253df5fb04d1789ab707dc160f06bdc5cf9ffdff2fb0f`). S701 est un HistGradientBoosting de 39 variables, **pas** un réseau neuronal. Le checkpoint S701 est récupéré du [run #39085408073](https://github.com/Andriamarosoa/note/actions/runs/39085408073) et vérifié avant tout chargement.
 
-Scientific workflow: `.github/workflows/onset-native256.yml` and `scripts/replay_native256.py`.
-Tests: `tests/test_native256.py`. All older S708/H0 files remain historical only.
+L'architecture Onset exécute à chaque hop 256 (5,805 ms) une nouvelle analyse PCM, un modèle S613 et la tête S701, avec deux sélecteurs privés isolés. Elle **ne charge pas** le réseau temporel S708 historiquement entraîné à 1024.
 
-Initial reproducibility run requested on the isolated onset native256 branch; historical S708 remains unchanged.
+L'expérience conserve le mode `native` sélectionné précédemment par la calibration S701. Le `head_0.75_floor_0.20` est testé comme ombre sans promotion ni sélection après lecture des résultats. L'évaluation SIGNÉE est fondée sur les 80 pistes GuitarSet (306536 frontières 256), tolérance d'attaque 80 ms, avec seuil Onset historique S708/H0 **73,25201855% F1**. Aucun score ne sera inventé avant exécution complète; les résultats FIT80 déjà explorés ne sont pas une preuve de généralisation externe. Le coût CPU et la latence physique du matériel restent inconnus.
+
+Code : `src/onset256/`, `scripts/replay_native256.py`, `.github/workflows/onset-s701-weights-256.yml`. Aucune autre caractéristique modifiée.
