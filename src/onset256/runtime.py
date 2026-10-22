@@ -1,18 +1,12 @@
-"""Native PCM256 isolated onset ONLY. True PCM256, no five foreign decoders."""
+"""Onset-specific S613+S701 trained-hop256 causal inference, no shared axis."""
 from __future__ import annotations
-from collections import deque
 from dataclasses import dataclass
-import time
 import numpy as np
-from .acoustics import CausalPitchFeatures,HOP,SR,sharp_track
-from .temporal import IncrementalS708TemporalHead,latest_s708_acoustic_features
-SCHEMA="ONSET_ONLY_NATIVE_PCM256_V1"
-PAST_AUDIO=8192+HOP
-@dataclass(frozen=True)
-class Decision:
-    sample:int
-    pitches:tuple[int,...]=()
-    intents:tuple=()
+from .acoustics import CausalPitchFeatures,HOP,SR
+from .s701_features import LiveS701Features
+from .selector import CausalSelection,Selection
+
+SCHEMA="ONSET_S613_S701_REAL_256_TRAINING_V1"
 @dataclass(frozen=True)
 class Intent:
     kind:str
@@ -20,84 +14,64 @@ class Intent:
     sample:int
     confidence:float
     reason:str
-
-class OnsetDecoder:
-    """Independent causal onset state; release is internal rearming, never another branch."""
-    def __init__(self,attack=.75,sustain=.5,release=.8,low=.30):
-        self.attack,self.sustain,self.release,self.low=attack,sustain,release,low
-        self.held={}
-        self.armed=np.ones(49,bool)
-    def step(self,post,sample):
-        attack,sustain,release=post.T
-        self.armed|=attack<self.attack*.4
-        for pitch in sorted(self.held):
-            i=pitch-40
-            if release[i]>=self.release or sustain[i]<self.low:
-                del self.held[pitch]
-        ready=sorted((int(i) for i in np.flatnonzero(
-            (attack>=self.attack)&(sustain>=self.sustain)&self.armed)),
-            key=lambda i:(-float(attack[i]*sustain[i]),i))
-        onsets=[]
-        for i in ready:
-            pitch=40+i
-            if pitch in self.held or len(self.held)>=6:continue
-            onsets.append(Intent("note_on",pitch,sample,float(attack[i]*sustain[i]),"native256_onset"))
-            self.held[pitch]=sample
-            self.armed[i]=False
-        return Decision(sample,tuple(sorted(self.held)),tuple(onsets))
-    def finish(self,sample):
-        self.held.clear()
-        return ()
+@dataclass(frozen=True)
+class Decision:
+    sample:int
+    intents:tuple=()
+    candidate_intents:tuple=()
 
 class Stream:
-    def __init__(self,native,model,blend):
-        self.native=native
-        self.temporal=IncrementalS708TemporalHead(model)
+    """S613 + S701 both called exactly once per received PCM256 decision."""
+    def __init__(self,native,s701):
+        policy=Selection(**native.metadata.get("selection",{}))
+        self.native=native;self.s701=s701
         self.frontend=CausalPitchFeatures(hop=HOP)
-        self.blend=float(blend)
-        self.decoder=OnsetDecoder()
-        self.native_feat=deque(maxlen=65);self.native_post=deque(maxlen=65)
-        self.native_k=deque(maxlen=65)
-        self.audio=np.empty(0,np.float32)
-        self.received=0;self.last_decision=0;self.calls=0;self.closed=False
-        self.times=[]
+        self.s701_features=LiveS701Features()
+        self.base=CausalSelection(policy,hop=HOP)
+        self.shadow=CausalSelection(policy,hop=HOP)
+        self.received=0;self.last_decision=0;self.calls=0;self.s701_calls=0
+        self.closed=False
+    def _intents(self,events,post,reason):
+        return tuple(Intent("note_on",int(e["pitch"]),int(e["decision_sample"]),
+                     float(post[e["pitch"]-40,0]),reason)
+                     for e in events if e["type"]=="note_on")
     def _step(self,end,feat):
-        native_post,native_k=self.native.predict(feat)
-        self.native_feat.append(np.asarray(feat,np.float32))
-        self.native_post.append(np.asarray(native_post,np.float32))
-        self.native_k.append(np.asarray(native_k,np.float32))
-        acoustic=latest_s708_acoustic_features(
-           self.native_feat,self.native_post,self.native_k)
-        n=len(self.audio)
-        sharp_ends=(np.array([n],np.int64) if end==HOP else
-                    np.array([n-HOP,n],np.int64))
-        spectral=sharp_track(self.audio,sharp_ends)[-1]
-        X=np.concatenate((acoustic,spectral),axis=1)
-        assert X.shape==(49,288)
-        p,k=self.temporal.step(X)
-        post=np.clip(self.blend*p+(1-self.blend)*self.native_post[-1],0,1)
-        self.calls+=1
-        if end!=self.last_decision+HOP:raise AssertionError("native256 clock")
-        self.last_decision=end
-        return self.decoder.step(post,end)
+        post,k=self.native.predict(feat)
+        p,k=np.asarray(post,np.float32),np.asarray(k,np.float32)
+        x=self.s701_features.step(feat,p,k)
+        score=np.asarray(self.s701.predict_proba(x)[:,1],np.float32)
+        self.s701_calls+=1
+        if score.shape!=(49,) or not np.isfinite(score).all():
+            raise ValueError("S701 specialist invalid")
+        candidate=p.copy()
+        selected=(p[:,0]>=.20)&(p[:,0]<self.base.config.onset)&(p[:,1]>=self.base.config.active_on)&(score>=.75)
+        candidate[selected,0]=min(.999,self.base.config.onset+.025)
+        if not np.array_equal(candidate[:,1:],p[:,1:]):
+            raise AssertionError("Onset cannot change sustain/release")
+        if end!=self.last_decision+HOP:raise AssertionError("Onset non-contiguous PCM256")
+        self.last_decision=end;self.calls+=1
+        a=self.base.step(p,k,end,end)
+        b=self.shadow.step(candidate,k,end,end)
+        return Decision(end,self._intents(a,p,"s613_trained256"),
+                        self._intents(b,candidate,"s701_trained256_shadow"))
     def push(self,samples,*,start_sample):
         if self.closed or type(start_sample)is not int or start_sample!=self.received:
-            raise ValueError("invalid/discontinuous PCM")
+            raise ValueError("Onset PCM discontinuity or closed")
         x=np.asarray(samples)
         if x.ndim!=1 or x.dtype.kind!="f" or not np.isfinite(x).all() or len(x)>4096:
-            raise ValueError("finite float mono <=4096")
-        t=time.perf_counter();out=[];at=0
-        while at<len(x):
-            take=min(len(x)-at,HOP-self.frontend.received%HOP)
-            block=np.asarray(x[at:at+take],np.float32)
-            self.audio=np.concatenate((self.audio,block))[-PAST_AUDIO:]
-            rows=self.frontend.push(block,start_sample=self.received)
-            self.received+=take;at+=take
-            for end,f in rows:
-                assert end==self.received and end%HOP==0
-                out.append(self._step(end,f))
-        self.times.append(1000*(time.perf_counter()-t))
+            raise ValueError("finite mono PCM float block <=4096 required")
+        out=[];off=0
+        while off<len(x):
+            take=min(len(x)-off,HOP-self.received%HOP)
+            block=np.asarray(x[off:off+take],np.float32)
+            frames=self.frontend.push(block,start_sample=self.received)
+            self.received+=take;off+=take
+            for end,features in frames:
+                if end!=self.received:raise AssertionError("Onset future read")
+                out.append(self._step(end,features))
         return tuple(out)
     def finish(self,sample=None):
         self.closed=True
-        return self.decoder.finish(self.received if sample is None else sample)
+        self.base.panic(self.received)
+        self.shadow.panic(self.received)
+        return ()
