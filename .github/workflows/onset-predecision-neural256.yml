@@ -1,0 +1,158 @@
+name: Onset BEFORE decision real MLP weights trained PCM256
+on:
+  push:
+    branches: [codex/note-onset-predecision-neural256]
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: onset-predecision-trained-neural256-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  PYTHONPATH: src
+  GH_TOKEN: ${{ github.token }}
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Pin true neural+acoustic dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0 joblib==1.4.2 onnxruntime==1.20.1
+          python -m compileall -q src/onset256 scripts/onset_harmonic_forensics256.py scripts/train_onset_predecision256.py scripts/replay_predecision256.py tests
+          python -m unittest discover -s tests -v
+      - name: Guard genuine pre-selection inference at 256 without S708
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path("src/onset256/runtime.py").read_text()
+          from onset256.acoustics import HOP, SR
+          from onset256.predecision_risk import DIM,SCHEMA
+          assert HOP==256 and DIM==63
+          assert "self.risk_model.predict_correct_probability" in s
+          assert s.index("self.risk_model.predict_correct_probability") < s.index("a=self.base.step(p,k,end,end)")
+          assert "IncrementalS708TemporalHead" not in s
+          assert "load_frozen_source" not in s
+          print("ONSET_REAL_NEURAL_PREDICTS_ERROR_BEFORE_SELECTOR_PCM256")
+          PY
+  scientific_train_and_live_replay:
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install pinned CPU neural training dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0 joblib==1.4.2 onnxruntime==1.20.1
+      - name: Validate only genuine 256-trained acoustic weights
+        run: |
+          mkdir -p /tmp/onset_predecision256/models_s701
+          gh run download 39085408073 --repo Andriamarosoa/note --name S701_CAUSAL_ONSET_LEARNED_TRAIN_HELD_COMPOSITION --dir /tmp/onset_predecision256/models_s701
+          python - <<'PY'
+          from onset256.model import load
+          n,m=load("model/live/strict_note/NOTE_strict_live.npz",
+              "/tmp/onset_predecision256/models_s701/s701_onset_shadow.joblib")
+          print("ONSET_REALLY_TRAINED_HOP256_S613_S701",m.n_features_in_)
+          PY
+      - name: Download SHA-signed 80 original GuitarSet truth traces
+        run: |
+          mkdir -p /tmp/onset_predecision256/manifest /tmp/onset_predecision256/traces
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/onset_predecision256/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/onset_predecision256/traces
+          META="$(find /tmp/onset_predecision256/manifest -name report.json -type f -print -quit)"
+          FIT="$(find /tmp/onset_predecision256/traces -name fit_000.json -type f -print -quit)"
+          test -s "$META"; test -s "$FIT"
+          printf '%s\n' "$META" > /tmp/onset_predecision256/manifest_path
+          printf '%s\n' "$(dirname "$FIT")" > /tmp/onset_predecision256/traces_path
+      - name: Verify 80 source WAVs cryptographically
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,urllib.request,hashlib
+          record=json.loads(Path("analysis/evidence/v273-s613-strict-live/protocol.json").read_text())["guitar_archives"]["GuitarSet_audio"]
+          path=Path("/tmp/onset_predecision256/GuitarSet_audio.zip")
+          with urllib.request.urlopen(record["url"],timeout=180) as src,path.open("wb") as dst:
+              for chunk in iter(lambda:src.read(4*1024*1024),b""):dst.write(chunk)
+          assert path.stat().st_size==record["size"]
+          h=hashlib.sha256()
+          with path.open("rb") as fd:
+              for chunk in iter(lambda:fd.read(1048576),b""):h.update(chunk)
+          assert h.hexdigest()==record["sha256"]
+          print("ONSET_REAL_TRAINED256_WAV_SHA_VERIFIED")
+          PY
+      - name: Replay strictly causal original Onset and collect true PRE-decision neural inputs
+        run: |
+          python -m scripts.onset_harmonic_forensics256 \
+            --audio-zip /tmp/onset_predecision256/GuitarSet_audio.zip \
+            --traces "$(cat /tmp/onset_predecision256/traces_path)" \
+            --manifest "$(cat /tmp/onset_predecision256/manifest_path)" \
+            --native-model model/live/strict_note/NOTE_strict_live.npz \
+            --s701-model /tmp/onset_predecision256/models_s701/s701_onset_shadow.joblib \
+            --out /tmp/onset_predecision256/candidates
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          report=json.loads(Path("/tmp/onset_predecision256/candidates/report.json").read_text())
+          assert report["native"]["tp"]==8099 and report["native"]["fp"]==4600
+          first=json.loads(next(x for x in Path("/tmp/onset_predecision256/candidates/events.jsonl").open()
+                                if '"policy": "native"' in x and '"label": "TP"' in x))
+          assert len(first["predecision_vector"])==63
+          print("ONSET_REAL_PCM256_ALL_NATIVE_CANDIDATES_AND_PREDECISION_FEATURES_VERIFIED")
+          PY
+      - name: Actually TRAIN five independent OOF neural pre-decision risk models at 256
+        run: |
+          python -m scripts.train_onset_predecision256 \
+            --events /tmp/onset_predecision256/candidates/events.jsonl \
+            --traces "$(cat /tmp/onset_predecision256/traces_path)" \
+            --manifest "$(cat /tmp/onset_predecision256/manifest_path)" \
+            --out /tmp/onset_predecision256/trained
+      - name: Replay each 256-sample WAV with learned P(error) BEFORE Onset selection
+        run: |
+          python -m scripts.replay_predecision256 \
+            --audio-zip /tmp/onset_predecision256/GuitarSet_audio.zip \
+            --traces "$(cat /tmp/onset_predecision256/traces_path)" \
+            --manifest "$(cat /tmp/onset_predecision256/manifest_path)" \
+            --native-model model/live/strict_note/NOTE_strict_live.npz \
+            --s701-model /tmp/onset_predecision256/models_s701/s701_onset_shadow.joblib \
+            --trained-models /tmp/onset_predecision256/trained \
+            --out /tmp/onset_predecision256/replayed
+      - name: Verify 256-trained risk model provenance and actual live policy
+        if: always()
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          p=Path("/tmp/onset_predecision256/trained/report.json")
+          if p.exists():
+              j=json.loads(p.read_text())
+              assert j["complete"] and j["five_fold_composition_oof_risk_head"]
+              assert j["weights_are_actually_trained"] and j["training_hop_samples"]==256
+              assert not j["promoted"] and j["no_midi_production_change"]
+              print("ONSET_NEURAL256_TRUE_WEIGHTS_OOF",j["predecision_risk_oof_shadow"])
+          p=Path("/tmp/onset_predecision256/replayed/report.json")
+          if p.exists():
+              j=json.loads(p.read_text())
+              assert j["tracks"]==80 and j["frames"]==306536
+              assert j["source_inference_hop"]==256
+              assert not j["public_midi_modified"] and not j["other_axes_modified"]
+              print("ONSET_NEURAL256_CAUSAL_BEFORE_DECISION",j["neural_predecision"])
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ONSET_PREDECISION_NEURAL256_5FOLD_TRAINED_MODELS_AND_REAL_REPLAY
+          path: |
+            /tmp/onset_predecision256/trained/report.json
+            /tmp/onset_predecision256/trained/checkpoints/
+            /tmp/onset_predecision256/replayed/report.json
+            /tmp/onset_predecision256/candidates/report.json
+          if-no-files-found: warn
+          retention-days: 45

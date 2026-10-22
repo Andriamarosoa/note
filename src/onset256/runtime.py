@@ -21,10 +21,11 @@ class Decision:
     candidate_intents:tuple=()
     evidence:tuple=()
     candidate_evidence:tuple=()
+    predecision_intents:tuple=()
 
 class Stream:
     """S613 + S701 both called exactly once per received PCM256 decision."""
-    def __init__(self,native,s701,*,audit_events=False):
+    def __init__(self,native,s701,*,audit_events=False,risk_model=None):
         policy=Selection(**native.metadata.get("selection",{}))
         self.native=native;self.s701=s701
         self.frontend=CausalPitchFeatures(hop=HOP)
@@ -34,6 +35,10 @@ class Stream:
         self.received=0;self.last_decision=0;self.calls=0;self.s701_calls=0
         self.closed=False
         self.audit_events=bool(audit_events)
+        self.risk_model=risk_model
+        self.risk_calls=0
+        self.risk_selector=(CausalSelection(policy,hop=HOP)
+                            if risk_model is not None else None)
     def _intents(self,events,post,reason):
         return tuple(Intent("note_on",int(e["pitch"]),int(e["decision_sample"]),
                      float(post[e["pitch"]-40,0]),reason)
@@ -53,19 +58,45 @@ class Stream:
             raise AssertionError("Onset cannot change sustain/release")
         if end!=self.last_decision+HOP:raise AssertionError("Onset non-contiguous PCM256")
         self.last_decision=end;self.calls+=1
+
+        # A learned P(error) is computed BEFORE either Onset selector emits
+        # a note. Only current and past PCM256 features are supplied.
+        risk_intents=()
+        if self.risk_model is not None:
+            from .predecision_risk import predecision_matrix
+            predicted_correct=np.asarray(
+                self.risk_model.predict_correct_probability(feat,p,k,score,x),
+                np.float32)
+            self.risk_calls+=1
+            if predicted_correct.shape!=(49,) or not np.isfinite(predicted_correct).all():
+                raise ValueError("invalid before-decision neural risk")
+            gated=p.copy()
+            gated[predicted_correct<self.risk_model.cut,0]=0.
+            proposal=self.risk_selector.step(gated,k,end,end)
+            risk_intents=self._intents(proposal,gated,"neural_predecision_256")
         a=self.base.step(p,k,end,end)
         b=self.shadow.step(candidate,k,end,end)
         native_intents=self._intents(a,p,"s613_trained256")
         shadow_intents=self._intents(b,candidate,"s701_trained256_shadow")
         if self.audit_events:
             from .harmonic_evidence import onset_event_evidence
-            audit_native=tuple(onset_event_evidence(feat,p,k,score,intent.pitch,intent.sample)
-                               for intent in native_intents)
-            audit_shadow=tuple(onset_event_evidence(feat,p,k,score,intent.pitch,intent.sample)
-                               for intent in shadow_intents)
+            from .predecision_risk import predecision_matrix
+            before_selection=predecision_matrix(feat,p,k,score,x)
+            audit_native=[]
+            audit_shadow=[]
+            for intent in native_intents:
+                evidence=onset_event_evidence(feat,p,k,score,intent.pitch,intent.sample)
+                evidence["predecision_vector"]=before_selection[intent.pitch-40].astype(float).tolist()
+                audit_native.append(evidence)
+            for intent in shadow_intents:
+                evidence=onset_event_evidence(feat,p,k,score,intent.pitch,intent.sample)
+                evidence["predecision_vector"]=before_selection[intent.pitch-40].astype(float).tolist()
+                audit_shadow.append(evidence)
+            audit_native=tuple(audit_native)
+            audit_shadow=tuple(audit_shadow)
         else:
             audit_native=audit_shadow=()
-        return Decision(end,native_intents,shadow_intents,audit_native,audit_shadow)
+        return Decision(end,native_intents,shadow_intents,audit_native,audit_shadow,risk_intents)
     def push(self,samples,*,start_sample):
         if self.closed or type(start_sample)is not int or start_sample!=self.received:
             raise ValueError("Onset PCM discontinuity or closed")
@@ -86,4 +117,6 @@ class Stream:
         self.closed=True
         self.base.panic(self.received)
         self.shadow.panic(self.received)
+        if self.risk_selector is not None:
+            self.risk_selector.panic(self.received)
         return ()
