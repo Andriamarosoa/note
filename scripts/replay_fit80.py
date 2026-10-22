@@ -104,10 +104,12 @@ def run(audio_zip,traces,manifest,checkpoint,source_report,native_model,out,trac
             print("EXACT_K_ONLY_256_TRACK",entry["index"],entry["composition"],correct,len(ends),flush=True)
     report["accuracy"]=report["correct"]/report["frames"]
     report["completed"]=True
-    if tracks_per_composition==16 and (
-         report["frames"]!=306536 or report["correct"]!=232295):
-        raise AssertionError("Exact-K separation regressed from S834 232295/306536")
+    report["reference_correct"]=232295
+    report["reference_frames"]=306536
+    report["validation_passed"]=(report["frames"]==306536 and report["correct"]>=232295) if tracks_per_composition==16 else None
     (out/"report.json").write_text(json.dumps(report,indent=2))
+    if tracks_per_composition==16 and not report["validation_passed"]:
+        raise AssertionError("Exact-K native256 non-regression failed: expected >=232295/306536")
     print("EXACT_K_ONLY_NATIVE256_FIT80_FINAL",report["correct"],report["frames"],report["accuracy"],flush=True)
     return report
 
