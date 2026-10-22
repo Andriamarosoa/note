@@ -1,12 +1,12 @@
-"""True causal PCM256 onset-only FIT80 evaluation; no production MIDI edits."""
+"""True causal PCM1024 onset-only FIT80 evaluation; no production MIDI edits."""
 import argparse,hashlib,io,json,zipfile
 from pathlib import Path
 import numpy as np
 from scipy.io import wavfile
 from scipy.optimize import linear_sum_assignment
-from onset256.acoustics import SR,HOP,load_native_heads
-from onset256.temporal import load_frozen_source
-from onset256.runtime import Stream
+from onset1024.acoustics import SR,HOP,load_native_heads
+from onset1024.temporal import load_frozen_source
+from onset1024.runtime import Stream
 def digest(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 
 def match_onsets(predicted,gt,tolerance=.080):
@@ -57,10 +57,10 @@ def run(audio_zip,traces,manifest,checkpoint,source_report,native_model,out):
                 for pos in range(0,len(x),HOP):
                     obs=stream.push(x[pos:pos+HOP],start_sample=pos)
                     if len(obs)!=(1 if pos+HOP<=len(x) else 0):
-                        raise AssertionError("not one decision per 256 PCM samples")
+                        raise AssertionError("not one decision per 1024 PCM samples")
                     decisions.extend(obs)
                 if len(decisions)!=len(ends) or stream.calls!=len(ends):
-                    raise AssertionError("not one fresh acoustic+temporal model call every 256")
+                    raise AssertionError("not one fresh acoustic+temporal model call every 1024")
                 if any(d.sample!=int(end) for d,end in zip(decisions,ends)):
                     raise AssertionError("causal time-grid drift")
                 tail=stream.finish(meta["samples"])
@@ -69,24 +69,24 @@ def run(audio_zip,traces,manifest,checkpoint,source_report,native_model,out):
                 records.append(dict(index=item["index"],name=meta["name"],
                    composition=comp,frames=len(ends),counts=counts))
                 (out/"report.json").write_text(json.dumps(dict(complete=False,records=records),indent=2))
-                print("ONSET_NATIVE256_TRACK",item["index"],comp,flush=True)
+                print("ONSET_NATIVE1024_TRACK",item["index"],comp,flush=True)
     total={k:sum(rec["counts"][k] for rec in records) for k in records[0]["counts"]}
     total["frames"]=sum(rec["frames"] for rec in records)
-    if total["frames"]!=306536:raise AssertionError("signed FIT80 256-frame count drift")
+    if len(records)!=80:raise AssertionError("incomplete signed FIT80 1024-hop evaluation")
     total["onset_f1"]=2*total["tp"]/(2*total["tp"]+total["fp"]+total["fn"])
     reference_f1=2*8528/(2*8528+3489+2739)
     validation_passed=total["onset_f1"]>=reference_f1
 
     report=dict(complete=True,axis="onset",tracks=records,totals=total,
        reference_metric=reference_f1,validation_passed=validation_passed,
-       model_sha256=sha,source_training_hop=1024,decision_hop=256,
-       native_pcm256_inference_proven=True,hardware_latency_measured=False,
+       model_sha256=sha,source_training_hop=1024,decision_hop=HOP,
+       native_pcm1024_inference_proven=True,hardware_latency_measured=False,
        gt_inference_leakage=False,fit_source_explored=True,
        public_midi_modified=False,promoted=False)
     (out/"report.json").write_text(json.dumps(report,indent=2))
-    print("ONSET_NATIVE256_FIT80_FINAL",json.dumps(total),flush=True)
+    print("ONSET_NATIVE1024_FIT80_FINAL",json.dumps(total),flush=True)
     if not validation_passed:
-        raise AssertionError("onset native PCM256 below preserved S708/H0 reference; research candidate only")
+        raise AssertionError("onset native PCM1024 below preserved S708/H0 reference; research candidate only")
     return report
 
 if __name__=="__main__":

@@ -1,7 +1,4 @@
-# ONSET only — preserve original S708/H0 score
-
-This Git branch contains **only the onset historical scorer and signed replay**. All five other axis implementations and experiments have been removed from the Git tree, not from their own reference branches.
-
-Reference on 80 signed FIT80 GuitarSet tracks: **73.2520185535% onset F1**. Original S708 neural inference historically ran on 1024-sample decisions. This branch only revalidates the exact original signed H0 events against the original ground truth, checking event-level raw counters for **80/80** tracks and matching the S704 evaluation protocol. It is **NOT** a stand-alone PCM256 neural detector or evidence that Onset/Offset now run every 256 samples. No GT labels are used to change original events.
-
-Only score output and validation; no public MIDI, no model edits, no added hold/lookahead, no false promotional claims.
+# Onset — native 1024-sample research candidate
+Fresh, strictly causal 44.1kHz mono PCM acoustic and S708 temporal network inference exactly once per 1024 samples (23.21995465 ms cadence), with independent OnsetDecoder. No NoteOff output exposed and no production MIDI modification.
+This experimental branch replaces active 256 code; S708 historic H0 references stay safely on codex/note-best-onset-s708-protected. The frozen temporal S708 weights were originally trained at 1024 hop; this change does not retrain the network or its other acoustic heads.
+One signed 80-track FIT80 evaluation computes note-event Onset F1 with 80ms tolerance and compares descriptively to historical S708/H0 73.25201855%. Ground truth read only AFTER full PCM-only inference; no future windows or artificial hold. Historical source manifest name contains MIDI256 but is used only as immutable provenance, NOT as runtime decision cadence. No claims about measured hardware latency or unseen-dataset generalization.

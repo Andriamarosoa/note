@@ -1,11 +1,11 @@
-name: onset ONLY native PCM256 fresh inference
+name: onset ONLY experimental PCM1024 FIT80
 on:
   push:
-    branches: [codex/note-best-onset-native-256]
+    branches: [codex/note-onset-native-1024]
   workflow_dispatch:
 permissions: {contents: read, actions: read}
 concurrency:
-  group: onset256-only-${{ github.ref }}
+  group: onset1024-only-${{ github.ref }}
   cancel-in-progress: true
 env:
   PYTHONPATH: src
@@ -45,18 +45,18 @@ jobs:
           python -m pip install onnxruntime==1.20.1
       - name: Read sealed S800 manifest and signed FIT80 tracks
         run: |
-          mkdir -p /tmp/only_onset256/manifest /tmp/only_onset256/traces /tmp/only_onset256/s708
-          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/only_onset256/manifest
-          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/only_onset256/traces
-          META="$(find /tmp/only_onset256/manifest -name report.json -type f -print -quit)"
-          FIT="$(find /tmp/only_onset256/traces -name fit_000.json -type f -print -quit)"
+          mkdir -p /tmp/only_onset1024/manifest /tmp/only_onset1024/traces /tmp/only_onset1024/s708
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/only_onset1024/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/only_onset1024/traces
+          META="$(find /tmp/only_onset1024/manifest -name report.json -type f -print -quit)"
+          FIT="$(find /tmp/only_onset1024/traces -name fit_000.json -type f -print -quit)"
           test -s "$META"; test -s "$FIT"
-          printf '%s\n' "$META" > /tmp/only_onset256/manifest_path
-          printf '%s\n' "$(dirname "$FIT")" > /tmp/only_onset256/traces_dir
-          gh run download 39094682419 --repo Andriamarosoa/note --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/only_onset256/s708
-          MODEL="$(find /tmp/only_onset256/s708 -name s708_selected.pt -type f -print -quit)"
+          printf '%s\n' "$META" > /tmp/only_onset1024/manifest_path
+          printf '%s\n' "$(dirname "$FIT")" > /tmp/only_onset1024/traces_dir
+          gh run download 39094682419 --repo Andriamarosoa/note --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/only_onset1024/s708
+          MODEL="$(find /tmp/only_onset1024/s708 -name s708_selected.pt -type f -print -quit)"
           test -s "$MODEL"; test -s "$(dirname "$MODEL")/report.json"
-          printf '%s\n' "$(dirname "$MODEL")" > /tmp/only_onset256/s708_dir
+          printf '%s\n' "$(dirname "$MODEL")" > /tmp/only_onset1024/s708_dir
 
       - name: Download exact GuitarSet audio archive with SHA256 check
         run: |
@@ -64,7 +64,7 @@ jobs:
           from pathlib import Path
           import json,urllib.request,hashlib
           item=json.loads(Path('analysis/evidence/v273-s613-strict-live/protocol.json').read_text())['guitar_archives']['GuitarSet_audio']
-          dst=Path('/tmp/only_onset256/GuitarSet_audio.zip')
+          dst=Path('/tmp/only_onset1024/GuitarSet_audio.zip')
           with urllib.request.urlopen(item['url'],timeout=180) as src, dst.open('wb') as f:
               for x in iter(lambda:src.read(4*1024*1024),b''):f.write(x)
           assert dst.stat().st_size==item['size']
@@ -72,15 +72,15 @@ jobs:
           with dst.open('rb') as f:
               for x in iter(lambda:f.read(1048576),b''):h.update(x)
           assert h.hexdigest()==item['sha256']
-          print('ONSET_NATIVE256_SOURCE_WAV_PINNED')
+          print('ONSET_NATIVE1024_SOURCE_WAV_PINNED')
           PY
-      - name: Revalidate the ONLY preserved onset256 raw metric on 80 tracks
+      - name: Revalidate the ONLY preserved onset1024 raw metric on 80 tracks
         run: |
-          python -m scripts.replay_native256 --audio-zip /tmp/only_onset256/GuitarSet_audio.zip --traces "$(cat /tmp/only_onset256/traces_dir)" --manifest "$(cat /tmp/only_onset256/manifest_path)" --checkpoint "$(cat /tmp/only_onset256/s708_dir)/s708_selected.pt" --source-report "$(cat /tmp/only_onset256/s708_dir)/report.json" --native-model model/live/strict_note/NOTE_strict_live.npz --out /tmp/only_onset256/result 
+          python -m scripts.replay_native1024 --audio-zip /tmp/only_onset1024/GuitarSet_audio.zip --traces "$(cat /tmp/only_onset1024/traces_dir)" --manifest "$(cat /tmp/only_onset1024/manifest_path)" --checkpoint "$(cat /tmp/only_onset1024/s708_dir)/s708_selected.pt" --source-report "$(cat /tmp/only_onset1024/s708_dir)/report.json" --native-model model/live/strict_note/NOTE_strict_live.npz --out /tmp/only_onset1024/result 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ONSET_NATIVE256_ONLY_FIT80
-          path: /tmp/only_onset256/result/report.json
+          name: ONSET_NATIVE1024_ONLY_FIT80
+          path: /tmp/only_onset1024/result/report.json
           if-no-files-found: warn
           retention-days: 45
