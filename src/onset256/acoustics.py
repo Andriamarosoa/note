@@ -1,4 +1,4 @@
-"""Exact-K ONLY: frozen S708 input pipeline; no MIDI output or other axis decoder.
+"""Onset ONLY: genuinely 256-trained S613 acoustic + S701 private head.
 Copies audited PCM preprocessing from S613/S706 to maintain ABI.
 """
 from __future__ import annotations
@@ -22,8 +22,8 @@ class CausalPitchFeatures:
     """
 
     def __init__(self, *, hop=HOP):
-        if hop not in (128, 256, 512):
-            raise ValueError("Experimental NOTE decision hop must be 128/256/512 samples")
+        if hop != HOP:
+            raise ValueError("Onset PCM native frontend accepts only exactly 256-sample hop")
         self.hop = int(hop)
         # Preserve the TRAINING-time physical interval of native S613 lags.
         # This is an approximation, not an independently trained checkpoint.
