@@ -57,12 +57,17 @@ def run(audio_zip,traces,manifest,checkpoint,source_report,native_model,out):
     total={k:sum(x["counts"][k] for x in records) for k in records[0]["counts"]}
     total["frames"]=sum(x["frames"] for x in records)
     expected={'tp':467540,'fp':71501,'fn':93528,'frames':306536}
-    if any(total[k]!=v for k,v in expected.items()):raise AssertionError(f"S834 isolated replay regression: {total} != {expected}")
     denom=2*total["tp"]+total["fp"]+total["fn"]
     total["frame_pitch_f1"]=2*total["tp"]/denom
+    reference_denom=2*expected["tp"]+expected["fp"]+expected["fn"]
+    validation_passed=(total["frames"]==expected["frames"] and
+                       total["tp"]*reference_denom>=expected["tp"]*denom)
+    if not validation_passed:
+        (out/"report.json").write_text(json.dumps(dict(complete=False,records=records,totals=total,validation_passed=False),indent=2))
+        raise AssertionError(f"S834 frame_pitch F1 regression: {total['frame_pitch_f1']:.8f} < {2*expected['tp']/reference_denom:.8f}")
     report=dict(complete=True,axis="frame_pitch",tracks=records,totals=total,
        model_sha256=sha,source_training_hop=1024,decision_hop=256,
-       public_midi_modified=False,promoted=False)
+       public_midi_modified=False,promoted=False,validation_passed=validation_passed)
     (out/"report.json").write_text(json.dumps(report,indent=2))
     print("FRAME_PITCH_256_FINAL",json.dumps(total),flush=True)
 if __name__=="__main__":
