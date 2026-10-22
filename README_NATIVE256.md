@@ -18,3 +18,5 @@ The historical scorer and reference replay are retained for provenance, not for 
 
 Scientific workflow: `.github/workflows/onset-native256.yml` and `scripts/replay_native256.py`.
 Tests: `tests/test_native256.py`. All older S708/H0 files remain historical only.
+
+Initial reproducibility run requested on the isolated onset native256 branch; historical S708 remains unchanged.
