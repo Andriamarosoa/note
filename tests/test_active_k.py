@@ -13,6 +13,14 @@ class PrivateActiveK(unittest.TestCase):
         self.assertEqual(HOP,256)
         import active_exact_k.stream as x
         self.assertFalse(any(hasattr(x,k) for k in ("OnsetDecoder","FullNoteDecoder","ExactKDecoder","OffsetDecoder","FramePitchDecoder")))
+    def test_decoder_rejects_legacy_1024_grid(self):
+        from active_exact_k.stream import PrivateS708GuidedActiveK
+        with self.assertRaisesRegex(ValueError, "256-sample"):
+            PrivateS708GuidedActiveK(object(),decision_hop=1024)
+        decoder=PrivateS708GuidedActiveK(object(),decision_hop=256)
+        self.assertEqual(decoder.decision_hop,256)
+        with self.assertRaisesRegex(ValueError, "256-sample"):
+            decoder.step(np.zeros((49,3),np.float32),np.ones(7,np.float32)/7,1024)
     def test_private_proposals(self):
         probs=np.full((6,7),.01,np.float32);probs[:,2]=.94
         old=np.ones(6,np.uint8)
