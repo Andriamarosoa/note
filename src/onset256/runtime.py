@@ -5,6 +5,7 @@ import numpy as np
 from .acoustics import CausalPitchFeatures,HOP,SR
 from .selector import CausalSelection,Selection
 from .fn_recovery import CANDIDATE_POLICIES,FNRecoverySelector
+from .fp_discriminator import causal_parent_matrix,select_known_onsets,VARIANTS
 from .heads import OnsetHeadStack, OnsetHeadSelector
 
 SCHEMA="ONSET_S613_S701_REAL_256_TRAINING_V1"
@@ -26,10 +27,12 @@ class Decision:
     head_doubts:tuple=()
     fn_recovery_intents:tuple=()
     fn_unified_intents:tuple=()
+    fp_discriminator_intents:dict=None
+    fp_discriminator_unified:dict=None
 
 class Stream:
     """S613 + S701 both called exactly once per received PCM256 decision."""
-    def __init__(self,native,s701,*,audit_events=False,risk_model=None,recovery_model=None):
+    def __init__(self,native,s701,*,audit_events=False,risk_model=None,recovery_model=None,fp_models=None):
         policy=Selection(**native.metadata.get("selection",{}))
         self.native=native;self.s701=s701
         self.frontend=CausalPitchFeatures(hop=HOP)
@@ -37,7 +40,9 @@ class Stream:
         # Risk is an Onset HEAD; only the private selector may use its doubt.
         if recovery_model is not None and risk_model is None:
             raise ValueError("FNRecovery is compared against the frozen three-head Onset reference")
-        self.onset_heads=OnsetHeadStack(native,s701,risk_model,recovery_model)
+        self.onset_heads=OnsetHeadStack(native,s701,risk_model,recovery_model,fp_models)
+        self.fp_last_native_on=np.full(49,-10**12,np.int64)
+        self.fp_calls=0
         self.s701_features=self.onset_heads.rescue.cache
         self.head_selector=OnsetHeadSelector(
             calibrated_correctness_cut=(
@@ -76,8 +81,13 @@ class Stream:
         # The snapshot is read-only and never extends the decision horizon.
         from .error_evidence69 import capture_selector_state
         preselector_state=capture_selector_state(self.base,end)
+        # 74D parent attack chronology is strictly from native NoteOns on
+        # PREVIOUS 256 boundaries. Current hop's Main decision is not known.
+        parent_ages=(causal_parent_matrix(self.fp_last_native_on,end)
+                     if self.onset_heads.fp_heads else None)
         opinion=self.onset_heads.predict(
-            feat,end_sample=end,selector_state=preselector_state)
+            feat,end_sample=end,selector_state=preselector_state,
+            parent_ages=parent_ages)
         p,k=opinion.main_posterior,opinion.native_k
         score,x=opinion.rescue_probability,opinion.rescue_history
         self.s701_calls=self.onset_heads.rescue.calls
@@ -134,6 +144,34 @@ class Stream:
                 raise AssertionError("FNRecovery duplicated current Main Onset")
             if len(unified_intents)!=len(risk_intents)+len(recovered_intents):
                 raise AssertionError("FNRecovery main stream was overwritten")
+        # Falsifiable control69/control70/temporal74 learned independent
+        # Onset head arbitration. All probability forecasts were computed
+        # BEFORE any Onset selector and are only allowed to remove ALREADY
+        # accepted error-head NoteOns. They never touch selector state.
+        fp_intents=None
+        fp_unified=None
+        if self.onset_heads.fp_heads:
+            fp_intents={}
+            fp_unified={}
+            for name,head in self.onset_heads.fp_heads.items():
+                picked=select_known_onsets(
+                    risk_intents,
+                    opinion.fp_discriminator_correctness[name],
+                    head.model.cut)
+                fp_intents[name]=picked
+                fp_unified[name]=picked+recovered_intents
+                if not {(e.pitch,e.sample) for e in picked}.issubset(
+                       {(e.pitch,e.sample) for e in risk_intents}):
+                    raise AssertionError("FP head invented NoteOn")
+            self.fp_calls+=1
+            if (self.fp_calls!=self.calls or
+                any(head.calls!=self.calls
+                    for head in self.onset_heads.fp_heads.values())):
+                raise AssertionError("one fresh 69/70/74D neural prediction per PCM256")
+            # Update parent history only AFTER this complete hop has been
+            # evaluated, never before, never with GT or FNRecovery decisions.
+            for event in native_intents:
+                self.fp_last_native_on[event.pitch-40]=end
         # A native NoteOn can be contested WITHOUT suppressing it.
         # Challenge decisions are explicitly owned by the Onset selector.
         head_doubts=self.head_selector.doubts(a,opinion)
@@ -160,7 +198,9 @@ class Stream:
             audit_shadow=tuple(audit_shadow)
         else:
             audit_native=audit_shadow=()
-        return Decision(end,native_intents,shadow_intents,audit_native,audit_shadow,risk_intents,head_doubts,recovered_intents,unified_intents)
+        return Decision(end,native_intents,shadow_intents,audit_native,
+                        audit_shadow,risk_intents,head_doubts,recovered_intents,
+                        unified_intents,fp_intents,fp_unified)
     def push(self,samples,*,start_sample):
         if self.closed or type(start_sample)is not int or start_sample!=self.received:
             raise ValueError("Onset PCM discontinuity or closed")

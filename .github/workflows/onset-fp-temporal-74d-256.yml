@@ -1,0 +1,173 @@
+name: Onset FP causal 74D temporal vs 69D and 70D neural controls PCM256
+on:
+  push:
+    branches: [codex/note-fp-temporal-discriminator-74d-256]
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: onset-fp-temporal-74d-vs-controls-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  GH_TOKEN: ${{ github.token }}
+  PYTHONPATH: src
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Verify native256 ABI, all four frozen heads and neural 69/70/74D controls
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0 joblib==1.4.2 onnxruntime==1.20.1
+          python -m compileall -q src/onset256 scripts tests
+          python -m unittest discover -s tests -v
+          python - <<'PY'
+          from pathlib import Path
+          from onset256.acoustics import HOP,SR
+          from onset256.fp_discriminator import VARIANTS,PARENT_INTERVALS
+          src=Path("src/onset256/runtime.py").read_text()
+          assert HOP==256 and SR==44100
+          assert VARIANTS=={"control69":69,"control70":70,"temporal74":74}
+          assert PARENT_INTERVALS==(12,19,24,28)
+          assert "parent_ages=(causal_parent_matrix(self.fp_last_native_on,end)" in src
+          assert src.index("parent_ages=(causal_parent_matrix")<src.index("a=self.base.step(p,k,end,end)")
+          assert "self.fp_last_native_on[event.pitch-40]=end" in src
+          assert src.index("self.fp_last_native_on[event.pitch-40]=end")>src.index("a=self.base.step(p,k,end,end)")
+          assert "select_known_onsets(" in src
+          assert "self.risk_selector.step(gated,k,end,end)" not in src
+          print("ONSET_FP_TEMPORAL_69_70_74_TRUE256_ALL_UNIT_TESTS_AND_PRESELECTION_OK")
+          PY
+  train_three_ablations_and_replay_80_original_wavs:
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Pin genuine native256 training/inference numerical libraries
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0 joblib==1.4.2 onnxruntime==1.20.1
+      - name: Fetch SHA-pinned immutable FP audit + four-head baseline + older MLP69/S701
+        run: |
+          mkdir -p /tmp/onset_fp74/audit /tmp/onset_fp74/four /tmp/onset_fp74/risk /tmp/onset_fp74/s701
+          gh run download 39772165153 --repo Andriamarosoa/note --name ONSET_MLP69_RESIDUAL_FP_80_GUITARSET_NATIVE256_FORENSICS --dir /tmp/onset_fp74/audit
+          gh run download 39759373185 --repo Andriamarosoa/note --name ONSET_FN_RECOVERY_FOUR_NEURAL_HEADS_TRAINED256_AND_REAL_WAV --dir /tmp/onset_fp74/four
+          gh run download 39741883968 --repo Andriamarosoa/note --name ONSET_HARDNEGATIVE_HARMONIC_RESTRIKE_MLP69_NATIVE256_REAL_REPLAY --dir /tmp/onset_fp74/risk
+          gh run download 39085408073 --repo Andriamarosoa/note --name S701_CAUSAL_ONSET_LEARNED_TRAIN_HELD_COMPOSITION --dir /tmp/onset_fp74/s701
+          SIG="$(find /tmp/onset_fp74/audit -name fp_signals74.jsonl -type f -print -quit)"
+          FP_META="$(find /tmp/onset_fp74/audit -name report.json -type f -print -quit)"
+          FOUR_REPLAY="$(find /tmp/onset_fp74/four -path '*/replayed/report.json' -type f -print -quit)"
+          FOUR_TRAIN="$(find /tmp/onset_fp74/four -path '*/trained/report.json' -type f -print -quit)"
+          RISK_TRAIN="$(find /tmp/onset_fp74/risk -path '*/trained/report.json' -type f -print -quit)"
+          RISK_REPLAY="$(find /tmp/onset_fp74/risk -path '*/replayed/report.json' -type f -print -quit)"
+          S701="$(find /tmp/onset_fp74/s701 -name s701_onset_shadow.joblib -type f -print -quit)"
+          for f in "$SIG" "$FP_META" "$FOUR_REPLAY" "$FOUR_TRAIN" "$RISK_TRAIN" "$RISK_REPLAY" "$S701"; do
+            if test ! -s "$f"; then find /tmp/onset_fp74/{audit,four,risk,s701} -type f | head -60; exit 1; fi
+          done
+          printf '%s\n' "$SIG" > /tmp/onset_fp74/signals_path
+          printf '%s\n' "$FOUR_REPLAY" > /tmp/onset_fp74/four_replay_path
+          printf '%s\n' "$(dirname "$FOUR_TRAIN")" > /tmp/onset_fp74/four_model_path
+          printf '%s\n' "$(dirname "$RISK_TRAIN")" > /tmp/onset_fp74/risk_model_path
+          printf '%s\n' "$S701" > /tmp/onset_fp74/s701_path
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          j=json.loads(next(Path("/tmp/onset_fp74/audit").rglob("report.json")).read_text())
+          assert j["complete"] and j["source_native_events"]==12699
+          assert j["frozen_error69_accepted"]["tp"]==8054
+          assert j["frozen_error69_accepted"]["fp"]==4411
+          assert not j["this_is_NOT_a_model_improvement"]==False
+          print("ONSET_FP_HARMONIC_FROZEN_ORIGINAL_80_WAV_EVIDENCE_VERIFIED")
+          PY
+      - name: Read SHA-signed original real PCM256 GuitarSet FIT80 manifest/annotations
+        run: |
+          mkdir -p /tmp/onset_fp74/manifest /tmp/onset_fp74/traces
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/onset_fp74/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/onset_fp74/traces
+          META="$(find /tmp/onset_fp74/manifest -name report.json -type f -print -quit)"
+          TRACE="$(find /tmp/onset_fp74/traces -name fit_000.json -type f -print -quit)"
+          test -s "$META"; test -s "$TRACE"
+          printf '%s\n' "$META" > /tmp/onset_fp74/manifest_path
+          printf '%s\n' "$(dirname "$TRACE")" > /tmp/onset_fp74/traces_path
+      - name: TRAIN fifteen genuine PCM256 FP models: 69D vs 70D vs 74D, freeze CAL cuts
+        run: |
+          python -m scripts.train_onset_fp_discriminator256 \
+            --signals "$(cat /tmp/onset_fp74/signals_path)" \
+            --reference "$(cat /tmp/onset_fp74/four_replay_path)" \
+            --out /tmp/onset_fp74/trained
+      - name: Verify the EXACT archived original 44.1kHz mono GuitarSet audio SHA256
+        run: |
+          python - <<'PY'
+          import json,urllib.request,hashlib
+          from pathlib import Path
+          rec=json.loads(Path("analysis/evidence/v273-s613-strict-live/protocol.json").read_text())["guitar_archives"]["GuitarSet_audio"]
+          target=Path("/tmp/onset_fp74/GuitarSet_audio.zip")
+          with urllib.request.urlopen(rec["url"],timeout=180) as input,target.open("wb") as output:
+              for chunk in iter(lambda:input.read(2*1024*1024),b""):output.write(chunk)
+          assert target.stat().st_size==rec["size"]
+          sha=hashlib.sha256()
+          with target.open("rb") as f:
+              for block in iter(lambda:f.read(2*1024*1024),b""):
+                  sha.update(block)
+          assert sha.hexdigest()==rec["sha256"]
+          print("ONSET_FP_74D_TRAINED256_REAL_AUDIO_GUITARSET_SHA_PINNED")
+          PY
+      - name: REPLAY 80 WAV audio 306536 fresh PCM256 boundaries, five heads, three FP comparators
+        run: |
+          python -m scripts.replay_onset_fp_discriminator256 \
+            --audio-zip /tmp/onset_fp74/GuitarSet_audio.zip \
+            --traces "$(cat /tmp/onset_fp74/traces_path)" \
+            --manifest "$(cat /tmp/onset_fp74/manifest_path)" \
+            --native-model model/live/strict_note/NOTE_strict_live.npz \
+            --s701-model "$(cat /tmp/onset_fp74/s701_path)" \
+            --old-risk-models "$(cat /tmp/onset_fp74/risk_model_path)" \
+            --old-fn-models "$(cat /tmp/onset_fp74/four_model_path)" \
+            --fp-models /tmp/onset_fp74/trained \
+            --out /tmp/onset_fp74/replayed
+      - name: SCIENTIFIC GATE — FP temporal74 vs both controls and previous F1
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("/tmp/onset_fp74/trained/report.json")
+          if p.is_file():
+              r=json.loads(p.read_text())
+              assert r["complete"] and r["models_really_trained"]==15
+              assert r["training_hop_samples"]==256
+              assert r["same_train_cal_outer_seeds"]
+              assert not r["promoted"]
+              print("ONSET_FP_69_70_74_PROXY_ONLY_NOT_REAL_F1",r["event_only_proxy_NOT_REAL_WAV_F1"])
+              print("ONSET_FP_69_70_74_CAL_CHOICES",[
+                 (f["outer"],{k:v["cut"] for k,v in f["variants"].items()})
+                 for f in r["folds"]])
+          p=Path("/tmp/onset_fp74/replayed/report.json")
+          if p.is_file():
+              r=json.loads(p.read_text())
+              assert r["complete"] and r["tracks"]==80 and r["frames"]==306536
+              assert r["neural_models_trained"]==15
+              assert r["old_four_head"]["tp"]==8160
+              assert r["old_four_head"]["fp"]==4605
+              assert r["old_four_head"]["fn"]==3107
+              assert not r["production_midi_untouched"]==False
+              assert not r["promoted"] and r["original_five_other_axes_unchanged"]
+              print("ONSET_FP_TEMPORAL_69_70_74_REAL_F1_AND_FP",r["fifth_head_three_ablations"])
+              print("ONSET_FP_TEMPORAL_ISSUE142_HYPOTHESIS_SUPPORTED",r["scientific_hypothesis_142_supported"])
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ONSET_FP_69_70_74_SAME_TRAIN_NEURAL_PCM256_REAL_80WAV_ABLATION
+          path: |
+            /tmp/onset_fp74/trained/report.json
+            /tmp/onset_fp74/trained/checkpoints/
+            /tmp/onset_fp74/replayed/report.json
+          if-no-files-found: warn
+          retention-days: 45

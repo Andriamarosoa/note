@@ -17,6 +17,7 @@ import numpy as np
 from .acoustics import HOP, PITCHES
 from .s701_features import LiveS701Features
 from .fn_recovery import FNRecoverySelector
+from .fp_discriminator import FPDiscriminatorModel,discriminator_matrix,VARIANTS
 
 SCHEMA = "ONSET_EMBEDDED_INDEPENDENT_HEADS_PCM256_V1"
 HEAD_NAMES = ("main_attack", "rescue_attack", "error_prediction")
@@ -33,6 +34,7 @@ class HeadOpinions:
     error_probability: Optional[np.ndarray]
     correctness_probability: Optional[np.ndarray]
     fn_recovery_probability: Optional[np.ndarray]=None
+    fp_discriminator_correctness: Optional[dict]=None
 
 class MainAttackHead:
     name="main_attack"
@@ -133,23 +135,46 @@ class FNRecoveryHead:
             raise ValueError("FNRecovery trained head did not produce valid probabilities")
         return probabilities.copy()
 
+class FPDiscriminatorHead:
+    """Fifth independent Onset specialist: learned FP discrimination before selector."""
+    trained_hop_samples=256
+    def __init__(self,trained):
+        if not isinstance(trained,FPDiscriminatorModel):
+            raise ValueError("FP control or timeline head requires fitted native256 weights")
+        self.model=trained
+        self.name="fp_discriminator_"+trained.variant
+        self.calls=0
+        self.initial_model_calls=trained.calls
+    def predict(self,matrix74):
+        value=self.model.predict_correct(matrix74)
+        self.calls+=1
+        if self.calls!=self.model.calls-self.initial_model_calls:
+            raise AssertionError("FP specialist cadence mismatch")
+        return value
+
 class OnsetHeadStack:
     """All three private Onset heads evaluated before the private selector."""
 
-    def __init__(self,native,s701,risk_model=None,recovery_model=None):
+    def __init__(self,native,s701,risk_model=None,recovery_model=None,fp_models=None):
         self.main=MainAttackHead(native)
         self.rescue=RescueAttackHead(s701)
         self.error=(ErrorPredictionHead(risk_model) if risk_model is not None else None)
         self.recovery=(FNRecoveryHead(recovery_model) if recovery_model is not None else None)
+        if fp_models and (self.error is None or self.recovery is None):
+            raise ValueError("FP head evaluates the FROZEN four-head Onset reference only")
+        if fp_models and set(fp_models)!=set(VARIANTS):
+            raise ValueError("FP ablation needs 69/70/74 comparators simultaneously")
+        self.fp_heads={name:FPDiscriminatorHead(fp_models[name]) for name in VARIANTS} if fp_models else {}
         self.last_end=0
         self.calls=0
 
     @property
     def names(self):
-        return (HEAD_NAMES+(FN_RECOVERY_HEAD_NAME,) if self.recovery is not None
-                else HEAD_NAMES if self.error is not None else HEAD_NAMES[:2])
+        baseline=(HEAD_NAMES+(FN_RECOVERY_HEAD_NAME,) if self.recovery is not None
+                  else HEAD_NAMES if self.error is not None else HEAD_NAMES[:2])
+        return baseline+tuple("fp_discriminator_"+n for n in self.fp_heads)
 
-    def predict(self,feat,*,end_sample,selector_state=None):
+    def predict(self,feat,*,end_sample,selector_state=None,parent_ages=None):
         if (HOP!=256 or type(end_sample) is not int or
             end_sample!=self.last_end+256):
             raise AssertionError("each Onset head must run each fresh PCM256")
@@ -162,17 +187,27 @@ class OnsetHeadStack:
         if self.recovery is not None:
             recovery=self.recovery.predict(
                 feat,p,k,rescue,history,selector_state)
+        fp_probability=None
+        if self.fp_heads:
+            full74=discriminator_matrix(
+                feat,p,k,rescue,history,selector_state,parent_ages,correct)
+            fp_probability={
+                name:head.predict(full74)
+                for name,head in self.fp_heads.items()
+            }
         self.last_end=end_sample
         self.calls+=1
         if (self.main.calls!=self.calls or self.rescue.calls!=self.calls or
             (self.error is not None and self.error.calls!=self.calls) or
-            (self.recovery is not None and self.recovery.calls!=self.calls)):
+            (self.recovery is not None and self.recovery.calls!=self.calls) or
+            any(h.calls!=self.calls for h in self.fp_heads.values())):
             raise AssertionError("Onset head stack missed 256-sample inference")
         return HeadOpinions(sample=end_sample,main_posterior=p,native_k=k,
                             rescue_probability=rescue,rescue_history=history,
                             error_probability=error,
                             correctness_probability=correct,
-                            fn_recovery_probability=recovery)
+                            fn_recovery_probability=recovery,
+                            fp_discriminator_correctness=fp_probability)
 
 @dataclass(frozen=True)
 class Doubt:
