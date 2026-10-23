@@ -48,6 +48,7 @@ jobs:
             'scripts/s836_sharp_cpu_benchmark.py',
             'test/test_s836_incremental_sharp256.py',
             'series/S836/resume.md','series/S836/resultat.md',
+            'series/S836/audit_ci_failure.md',
             '.github/workflows/note-s836-live-sharp-cache256.yml'}
           assert touched and touched<=allowed,touched-allowed
           print('S836_FIVE_OTHER_AXIS_HEADS_AND_MIDI_FROZEN')
