@@ -84,6 +84,26 @@ jobs:
           assert dest.stat().st_size==info["size"] and h.hexdigest()==info["sha256"]
           print("SIGNED_GUITARSET_80_WAV_VERIFIED")
           PY
+          # Preserve signed artifact bytes while normalizing nested archive layouts.
+          # The upstream verifier accepts recursive paths, but acoustic collection
+          # requires report.json and fit_*.json directly under their directories.
+          python - <<'PY'
+          from pathlib import Path
+          from scripts.onset_event_integrity256 import one
+          root = Path("/tmp/gate_data")
+          manifest = one(root / "manifest", "report.json")
+          target = root / "manifest" / "report.json"
+          if manifest != target:
+              manifest.replace(target)
+          traces = one(root / "traces", "fit_000.json").parent
+          files = sorted(traces.glob("fit_*.json"))
+          assert len(files) == 80, f"expected 80 signed traces, found {len(files)}"
+          if traces != root / "traces":
+              for src in files:
+                  src.replace(root / "traces" / src.name)
+          assert len(list((root / "traces").glob("fit_*.json"))) == 80
+          print("SIGNED_ARTIFACT_LAYOUT_NORMALIZED")
+          PY
           python - <<'PY'
           from scripts.onset_event_integrity256 import verify_inputs
           from pathlib import Path
