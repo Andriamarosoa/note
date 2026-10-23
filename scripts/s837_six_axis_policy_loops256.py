@@ -331,7 +331,8 @@ def original_for_axis(axis, src):
     if axis in ("onset","offset"):
         # S834 canonical shadow_diagnostics uses lowercase tp/fp/fn while
         # S613 event_score returns uppercase TP/FP/FN. Same counts and metric.
-        return {key.upper():int(b[axis][key]) for key in ("tp","fp","fn")}
+        return {key:int(b[axis][key] if key in b[axis] else b[axis][key.lower()])
+                for key in ("TP","FP","FN")}
     return dict(b[axis])
 
 
