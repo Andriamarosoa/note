@@ -1,0 +1,39 @@
+{
+  "verified_at_utc": "2026-10-23T08:23:21.323061+00:00",
+  "implementation_commit": "6aebb36baa893a2f0c6f2c6e6e21c638d6d2a01c",
+  "prior": {
+    "tp": 8012,
+    "fp": 4264,
+    "fn": 3255,
+    "f1": 0.6806269379433377,
+    "precision": 0.6526555881394591,
+    "recall": 0.7111032217981716
+  },
+  "current": {
+    "tp": 8050,
+    "fp": 4231,
+    "fn": 3217,
+    "f1": 0.6837098692033293,
+    "precision": 0.6554840811008875,
+    "recall": 0.7144759030797906
+  },
+  "delta": {
+    "tp": 38,
+    "fp": -33,
+    "fn": -38,
+    "f1": 0.003082931259991595,
+    "precision": 0.002828492961428397,
+    "recall": 0.003372681281618939
+  },
+  "verified_audio_tracks": 80,
+  "verified_pcm256_blocks": 306536,
+  "exact_event_parity": true,
+  "hop_samples": 256,
+  "added_hold_samples": 0,
+  "future_audio_samples": 0,
+  "tests_passed": 81,
+  "full_audio_execution": "local",
+  "ci_tests": "https://github.com/Andriamarosoa/note/actions/runs/39923540639",
+  "historical_upstream_overlap": true,
+  "external_generalization_proven": false
+}
