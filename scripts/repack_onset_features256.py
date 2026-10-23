@@ -16,6 +16,8 @@ def repack(directory):
         row=json.loads(metadata.read_text())
         path=directory/f"features_{row['index']:03d}.npz"
         if not path.exists():continue
+        if digest(path)!=row['feature_sha256']:
+            raise ValueError('completed cache differs from its recorded SHA256')
         with np.load(path,allow_pickle=False) as stored:
             original=decode_features(stored)
             encoded=encode_features(original) if 'features' in stored else None

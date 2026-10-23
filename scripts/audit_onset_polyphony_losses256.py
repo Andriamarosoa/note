@@ -7,6 +7,7 @@ Counterfactuals replay complete causal streams and are not promoted policies.
 from __future__ import annotations
 
 import argparse
+import csv
 from collections import Counter, defaultdict
 from dataclasses import replace
 import json
@@ -221,6 +222,16 @@ def audit(args):
                 native_onset_score_at_first_boundary=float(feature[f,p,138]))
             if cohort == 'lost':
                 record.update(loss_mechanism(note, reference[name][old[j]], q, base, trace, policy))
+                same_pitch=[s/SR-float(note['time']) for s,pitch in events if pitch==note['pitch']]
+                crossings=np.flatnonzero(q[:,p].astype(np.float64)>=policy.cut)
+                offsets=(crossings+1)*HOP/SR-float(note['time'])
+                old_frame=reference[name][old[j]][0]//HOP-1
+                window=np.flatnonzero(np.abs((np.arange(len(q))+1)*HOP/SR-float(note['time']))<=TOLERANCE)
+                record.update(
+                    nearest_same_pitch_event_offset_ms=1000*min(same_pitch,key=abs) if same_pitch else None,
+                    nearest_direct_cut_crossing_offset_ms=1000*float(offsets[np.argmin(np.abs(offsets))]) if len(offsets) else None,
+                    native_onset_score_at_original_boundary=float(feature[old_frame,p,138]),
+                    native_onset_max_in_matching_window=float(np.max(feature[window,p,138])) if len(window) else None)
             track_notes.append(record)
         del feature
         # Fixed before this audit; no grid search or OUTER-based policy selection.
@@ -284,6 +295,14 @@ def audit(args):
     with (args.out/'notes.jsonl').open('w') as fd:
         for note in all_notes:
             fd.write(json.dumps(note,sort_keys=True)+'\n')
+    columns=['track','composition','texture','truth_index','time','pitch','polyphony',
+        'decoder_mechanism','rejection_at_original_boundary','cut',
+        'q_max_in_matching_window','q_at_original_boundary',
+        'native_onset_max_in_matching_window','nearest_same_pitch_event_offset_ms']
+    with (args.out/'lost_attacks.csv').open('w',newline='') as fd:
+        writer=csv.DictWriter(fd,fieldnames=columns,extrasaction='ignore')
+        writer.writeheader()
+        writer.writerows(note for note in all_notes if note['cohort']=='lost')
     print(json.dumps({k: report[k] for k in ('before','after','cohorts','lost_truth',
         'recovered_truth','net_fn_increase','lost_decoder_mechanisms','counterfactuals')},indent=2))
     return report
