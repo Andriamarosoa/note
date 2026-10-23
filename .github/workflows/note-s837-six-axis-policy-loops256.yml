@@ -1,0 +1,134 @@
+name: S837 NOTE six independent heads toward 80 percent PCM256
+on:
+  push:
+    branches: [codex/note-s837-six-axis-80pct-independent-loops256]
+    paths:
+      - 'scripts/s837_six_axis_policy_loops256.py'
+      - 'test/test_s837_six_axis_policy_loops256.py'
+      - 'series/S837/**'
+      - '.github/workflows/note-s837-six-axis-policy-loops256.yml'
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: s837-axes
+  cancel-in-progress: true
+env:
+  PYTHONPATH: .:src
+  GH_TOKEN: ${{ github.token }}
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  strict_six_independent:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Locked NOTE runtime and CPU Torch
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Verify S836 source MIDI acoustic network and protected heads unchanged
+        run: |
+          git fetch origin codex/note-s836-live-sharp-cache256 --depth=1
+          git diff --name-only FETCH_HEAD HEAD >/tmp/s837_changed_files.txt
+          python - <<'PY'
+          from pathlib import Path
+          touched=set(Path('/tmp/s837_changed_files.txt').read_text().splitlines())
+          allowed={'scripts/s837_six_axis_policy_loops256.py',
+                   'test/test_s837_six_axis_policy_loops256.py',
+                   'series/S837/resume.md','series/S837/resultat.md',
+                   '.github/workflows/note-s837-six-axis-policy-loops256.yml'}
+          assert touched and touched<=allowed,touched-allowed
+          print('S837_SIX_PROTECTED_MIDI_AND_SOURCE_MODELS_UNCHANGED')
+          PY
+      - name: Test six independent research heads and cross-composition exclusion
+        run: |
+          python -m compileall -q scripts/s837_six_axis_policy_loops256.py
+          python -m unittest -v test.test_s837_six_axis_policy_loops256 test.test_s836_incremental_sharp256 test.test_s834_s809_native256_axes test.test_s835_best_six_registry
+          python -m scripts.verify_series_reports --series S837
+  real_five:
+    runs-on: ubuntu-24.04
+    needs: strict_six_independent
+    if: contains(github.event.head_commit.message, '[real5]') || github.event_name == 'workflow_dispatch'
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Same pinned NOTE inference environment
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Restore signed S708 and authentic S800 FIT80 provenance
+        run: |
+          mkdir -p /tmp/s837/s708 /tmp/s837/manifest /tmp/s837/traces
+          gh run download 39094682419 --repo Andriamarosoa/note --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s837/s708
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/s837/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/s837/traces
+          echo "$(dirname "$(find /tmp/s837/s708 -name s708_selected.pt -type f -print -quit)")" > /tmp/s837/s708_dir
+          find /tmp/s837/manifest -name report.json -type f -print -quit > /tmp/s837/manifest_path
+          echo "$(dirname "$(find /tmp/s837/traces -name fit_000.json -type f -print -quit)")" > /tmp/s837/traces_dir
+          test -s "$(cat /tmp/s837/s708_dir)/s708_selected.pt"
+          test -s "$(cat /tmp/s837/s708_dir)/report.json"
+          test -s "$(cat /tmp/s837/manifest_path)"
+      - name: Check original GuitarSet WAV SHA256
+        run: |
+          python - <<'PY'
+          import json,hashlib,urllib.request
+          from pathlib import Path
+          cfg=json.loads(Path('analysis/evidence/v273-s613-strict-live/protocol.json').read_text())
+          item=cfg['guitar_archives']['GuitarSet_audio']
+          dst=Path('/tmp/s837/GuitarSet_audio.zip')
+          with urllib.request.urlopen(item['url'],timeout=180) as src,dst.open('wb') as target:
+              for chunk in iter(lambda:src.read(4*1024*1024),b''):
+                  target.write(chunk)
+          assert dst.stat().st_size==item['size']
+          h=hashlib.sha256()
+          with dst.open('rb') as f:
+              for chunk in iter(lambda:f.read(4*1024*1024),b''):
+                  h.update(chunk)
+          assert h.hexdigest()==item['sha256']
+          print('S837_ORIGINAL_SHA256_PASS')
+          PY
+      - name: Execute all six private axes policies over five real signed WAV
+        run: |
+          python -m scripts.s837_six_axis_policy_loops256 \
+            --audio-zip /tmp/s837/GuitarSet_audio.zip \
+            --traces "$(cat /tmp/s837/traces_dir)" \
+            --manifest-path "$(cat /tmp/s837/manifest_path)" \
+            --source-checkpoint "$(cat /tmp/s837/s708_dir)/s708_selected.pt" \
+            --source-report "$(cat /tmp/s837/s708_dir)/report.json" \
+            --native-model model/live/strict_note/NOTE_strict_live.npz \
+            --out /tmp/s837/real5 --tracks-per-composition 1
+      - name: Confirm real six-axis scores and veto any blind promotion
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/s837/real5/report.json').read_text())
+          assert r['complete'] and r['tracks_count']==5 and r['frames']==20062
+          assert r['decision_hop_samples']==256 and r['added_wait_samples']==0
+          assert r['added_future_samples']==0 and not r['public_midi_modified']
+          assert not r['promoted'] and not r['safe_to_promote']
+          assert set(r['axes'])=={'exact_k','active_exact_k','onset',
+                                 'offset','frame_pitch','full_note'}
+          assert all(len(v['outer'])==5 and v['candidate_count']>1
+                     for v in r['axes'].values())
+          print('S837_REAL5_SIX_CROSS_COMPOSITION_VERIFIED',
+                json.dumps({k:dict(before=v['reference_score'],
+                                   after=v['candidate_score'],
+                                   diff=v['delta'],above80=v['reaches_80_percent'])
+                            for k,v in r['axes'].items()},sort_keys=True))
+          PY
+      - name: Publish scientific six-axis outcome without promotion
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S837_REAL5_SIX_AXIS_CV_POLICY_GRID_AND_ERROR_AUDIT
+          path: /tmp/s837/real5/report.json
+          if-no-files-found: warn
+          retention-days: 45
