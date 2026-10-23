@@ -19,6 +19,7 @@ from threadpoolctl import threadpool_limits
 from onset256.acoustic_attack import AcousticEvidenceStream, AttackPolicy, DIM, SCHEMA
 from onset256.acoustic_calibration import decode_cache, count_cache, truth_arrays
 from onset256.model import load
+from onset256.feature_cache import load_features, compress_features
 from scripts.onset_event_integrity256 import COMPS, digest, dump, one, verify_inputs, metric, counts, sum_scores
 from scripts.replay_native256 import match_onsets
 
@@ -42,7 +43,9 @@ PREREGISTRATION = dict(
 
 
 def collect_fold(task):
-    root, out, comp = task
+    root, out, comp, *storage = task
+    compressed = bool(storage and storage[0] == 'npz')
+    resume = bool(len(storage) > 1 and storage[1])
     root, out = Path(root), Path(out)
     with threadpool_limits(limits=1):
         manifest = json.loads((root/'manifest/report.json').read_text())
@@ -52,6 +55,16 @@ def collect_fold(task):
         with zipfile.ZipFile(root/'GuitarSet_audio.zip') as z:
             for item in manifest['fit_files']:
                 if item['composition'] != comp: continue
+                row_path = out/f"track_{item['index']:03d}.json"
+                if resume and row_path.exists():
+                    row=json.loads(row_path.read_text())
+                    cached=out/f"features_{item['index']:03d}.npz"
+                    if not cached.exists():cached=cached.with_suffix('.npy')
+                    if (row['annotation_sha256'] != item['json_sha256']
+                            or row['track'] != item['name'] or digest(cached) != row['feature_sha256']):
+                        raise ValueError('completed cache changed; refusing resume')
+                    records.append(row)
+                    continue
                 annotation = root/'traces'/f"fit_{item['index']:03d}.json"
                 if digest(annotation) != item['json_sha256']:
                     raise ValueError('signed annotation changed')
@@ -62,6 +75,10 @@ def collect_fold(task):
                 audio = pcm[:meta['samples']].astype(np.float32)/32768.
                 n = len(audio)//256
                 path = out/f"features_{item['index']:03d}.npy"
+                if resume:
+                    # Only incomplete, regenerable caches without track metadata.
+                    for partial in (path,path.with_suffix('.npz')):
+                        if partial.exists():partial.unlink()
                 if path.exists(): raise FileExistsError('immutable feature cache')
                 x = np.lib.format.open_memmap(path, mode='w+', dtype=np.float32,
                                               shape=(n,49,DIM))
@@ -71,6 +88,8 @@ def collect_fold(task):
                     start = frame*256
                     x[frame] = stream.push(audio[start:start+256], start_sample=start)
                 x.flush(); del x
+                if compressed:
+                    path = compress_features(path)
                 # Annotation labels only enter training metadata after PCM ingestion.
                 row = dict(index=item['index'],track=meta['name'],composition=comp,
                            frames=n,truth=meta['fit_truth'],
@@ -87,11 +106,13 @@ def collect(args):
     verify_inputs(args.root)
     args.out.mkdir(parents=True,exist_ok=True)
     dest=args.out/'features'
-    if dest.exists(): raise FileExistsError('immutable collection')
-    dest.mkdir()
+    if dest.exists() and not getattr(args,'resume_collection',False):
+        raise FileExistsError('immutable collection')
+    dest.mkdir(exist_ok=True)
     dump(args.out/'preregistration.json',PREREGISTRATION)
     with ProcessPoolExecutor(max_workers=args.workers) as pool:
-        groups=list(pool.map(collect_fold,[(str(args.root),str(dest),c) for c in COMPS]))
+        groups=list(pool.map(collect_fold,[(str(args.root),str(dest),c,
+            getattr(args,'cache_format','npy'),getattr(args,'resume_collection',False)) for c in COMPS]))
     rows=[r for group in groups for r in group]
     if len(rows)!=80 or sum(r['frames'] for r in rows)!=306536:
         raise AssertionError('incomplete original audio')
@@ -133,7 +154,7 @@ def make_samples(args):
             xx=[];yy=[]
             for r in rows:
                 if r['composition']!=comp:continue
-                x=np.load(args.out/'features'/f"features_{r['index']:03d}.npy",mmap_mode='r')
+                x=load_features(args.out/'features',r['index'])
                 y=frame_targets(r['frames'],r['truth'],width)
                 rng=np.random.default_rng(SEED+r['index'])
                 # Index 126+12 is native P(onset) in the signed 69D ABI.
@@ -164,7 +185,7 @@ def mask_events(mask):
 
 
 def probabilities(model, row, directory):
-    x=np.load(directory/'features'/f"features_{row['index']:03d}.npy",mmap_mode='r')
+    x=load_features(directory/'features',row['index'])
     flat=x.reshape(-1,DIM)
     q=np.empty(len(flat),np.float32)
     for start in range(0,len(flat),8192):
@@ -310,7 +331,7 @@ def replay_fold(task):
                 recovery_bundle='model/onset256_recovery_20261023',
                 native_path='model/live/strict_note/NOTE_strict_live.npz')
             events=[];old=[]
-            cached=np.load(directory/'features'/f"features_{item['index']:03d}.npy",mmap_mode='r')
+            cached=load_features(directory/'features',item['index'])
             for frame,start in enumerate(range(0,len(wav)-255,256)):
                 decision=stream.push(wav[start:start+256],start_sample=start)
                 if decision.sample!=start+256:raise AssertionError('delayed output')
@@ -416,6 +437,10 @@ def main():
     p.add_argument('--root',type=Path,required=True)
     p.add_argument('--out',type=Path,required=True)
     p.add_argument('--workers',type=int,default=4)
+    p.add_argument('--cache-format',choices=['npy','npz'],default='npy',
+                   help='lossless research-cache storage only; no model/decoder change')
+    p.add_argument('--resume-collection',action='store_true',
+                   help='reuse SHA-verified completed caches in this reproduction only')
     p.add_argument('--phase',choices=['collect','samples','train','replay','audit'],default='collect')
     args=p.parse_args()
     {'collect':collect,'samples':make_samples,'train':train,'replay':replay,'audit':audit}[args.phase](args)
