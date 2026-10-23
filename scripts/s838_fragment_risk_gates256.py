@@ -22,7 +22,7 @@ from scripts.s809_fit80_independence_replay import ground_truth
 from scripts.s813_prepare_native256 import save_json, digest_file
 from scripts.s837_six_axis_policy_loops256 import (
     COMPS, SOURCE_SCHEMA, source_from_real_audio,
-    choices, original_for_axis,
+    choices,
 )
 import zipfile
 
@@ -76,7 +76,7 @@ def expert_predictions(src,axis):
     else:
         raise ValueError(axis)
     all_pred=np.stack(candidates)
-    expected=original_for_axis(axis,src)
+    expected=src.baseline[axis]  # Only unchanged correct count is needed for exact parity.
     _,k=ground_truth(src.truth,src.frame_ends)
     valid=k>0 if axis=="active_exact_k" else np.ones(len(k),bool)
     if int((all_pred[0,valid]==k[valid]).sum())!=int(expected["correct"]):
