@@ -29,3 +29,11 @@ Les nouveaux scores restent non mesurés. Le FIT80 a un overlap historique ; ce 
     python -m scripts.onset_learned_hgb_arbiter256 --experiment "$ONSET_EXPERIMENT_DIR" --out "$GATE_DIR" --phase prepare
     python -m scripts.onset_learned_hgb_arbiter256 --experiment "$ONSET_EXPERIMENT_DIR" --out "$GATE_DIR" --phase train
     python -m scripts.onset_learned_hgb_arbiter256 --experiment "$ONSET_EXPERIMENT_DIR" --out "$GATE_DIR" --root "$ONSET_DATA_DIR" --phase replay
+
+## Reprise sans confusion entre les modèles
+
+Le run 39950605428 a obtenu 69,2584331 % lors du réentraînement direct, au lieu du 69,206204 % attendu. Il a une parité intégrale de ses propres événements avec les 80 WAV, mais ne reproduit pas le checkpoint original. Les deux témoins restent distingués.
+
+La vérification préparatoire exige désormais la parité audio et les SHA pour chaque modèle ; elle identifie explicitement toute variante réentraînée comme distincte. Le calcul HGB est évalué contre son propre témoin réellement reproduit ET le témoin archivé, sans transférer à tort les 825 pertes historiques.
+
+Le workflow protège les exécutions concurrentes par branche et ne modifie pas les autres axes.

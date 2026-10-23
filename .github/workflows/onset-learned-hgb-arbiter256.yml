@@ -9,6 +9,9 @@ on:
       - 'series/ONSET_LEARNED_HGB_ARBITER256/**'
       - '.github/workflows/onset-learned-hgb-arbiter256.yml'
   workflow_dispatch:
+concurrency:
+  group: onset-hgb-learner-${{ github.ref }}
+  cancel-in-progress: true
 permissions: {contents: read, actions: read}
 env:
   GH_TOKEN: ${{ github.token }}
@@ -143,7 +146,13 @@ jobs:
           from pathlib import Path
           r=json.loads(Path("/tmp/gate/replayed/report.json").read_text())
           print("CANDIDATE_FULL_WAV",r["candidate"])
-          if r["candidate"]["f1"] <= .6920620437956204:
-              raise SystemExit("REFUTED_OR_INCOMPLETE: no F1 gain; leave baseline untouched")
+          control=json.loads(Path("/tmp/gate/trained/report.json").read_text())["control"]
+          gain=r["candidate"]["f1"]-control["f1"]
+          print("CONTROLS",dict(archived_f1=.6920620437956204,
+                                reproduced_control=control,
+                                gate_candidate=r["candidate"],
+                                gain_vs_current=gain))
+          if gain <= 0 or r["candidate"]["f1"] <= .6920620437956204:
+              raise SystemExit("REFUTED_OR_INCOMPLETE: no verified improvement; no promotion")
           print("FIT80_GAIN_ONLY_EXTERNAL_GENERALIZATION_UNPROVEN")
           PY
