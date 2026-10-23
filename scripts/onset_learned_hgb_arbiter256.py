@@ -262,16 +262,109 @@ def fit(experiment, out):
     print("HGB_GATE_TOTAL", json.dumps(total), flush=True)
 
 
+
+def replay_audio(root, experiment, out):
+    """Revalidate the gate from signed 80 original WAVs, not just cached scores."""
+    import io
+    import zipfile
+    from scipy.io import wavfile
+    from onset256.learned_hgb_live import load_arbitrated_stream
+
+    from scripts.onset_event_integrity256 import verify_inputs
+    verify_inputs(root)
+    rows, reference = inputs(experiment)
+    expected = json.loads((out / "trained" / "report.json").read_text())
+    manifest = json.loads((root / "manifest/report.json").read_text())
+    signed = {x["name"]: x for x in manifest["fit_files"]}
+    recs = []
+    with zipfile.ZipFile(root / "GuitarSet_audio.zip") as audio:
+        for row in rows:
+            item = signed[row["track"]]
+            signed_truth = root / "traces" / ("fit_%03d.json" % row["index"])
+            if sha(signed_truth) != item["json_sha256"]:
+                raise AssertionError("signed annotations changed")
+            annotation = json.loads(signed_truth.read_text())
+            sr, pcm = wavfile.read(io.BytesIO(
+                audio.read(annotation["name"] + "_mic.wav")))
+            if sr != 44100 or pcm.dtype != np.int16 or pcm.ndim != 1:
+                raise AssertionError("signed WAV ABI changed")
+            wav = pcm[:annotation["samples"]].astype(np.float32) / 32768.
+            comp = row["composition"]
+            fold_meta = json.loads(
+                (out / "trained" / comp / "frozen_gate.json").read_text())
+            gate_model = (joblib.load(out / "trained" / comp / "hgb_arbiter.joblib")
+                if fold_meta["selected"]["enabled"] else None)
+            gate_policy = (GatePolicy(**fold_meta["selected"]["policy"])
+                if gate_model is not None else None)
+            with np.load(out / "candidates" /
+                         ("track_%03d.npz" % row["index"]),
+                         allow_pickle=False) as candidate:
+                scores = (np.asarray(gate_model.predict_proba(
+                          candidate["X"])[:,1], np.float32)
+                          if gate_model is not None else None)
+            q, baseline, direct, cached = track_inputs(
+                experiment, row, reference, need_features=True)
+            expected_mask = (replay_precomputed(direct, baseline, scores, gate_policy)
+                             if gate_model is not None else direct)
+            expected_events = sorted(
+                (e["sample"],e["pitch"]) for e in mask_events(expected_mask))
+            stream = load_arbitrated_stream(
+                experiment, out / "trained" / comp, fold=comp,
+                base_bundle="model/onset256_research_39915038301",
+                recovery_bundle="model/onset256_recovery_20261023",
+                native_path="model/live/strict_note/NOTE_strict_live.npz")
+            emitted = []; original = []
+            for frame in range(row["frames"]):
+                start = frame * 256
+                got = stream.push(wav[start:start+256], start_sample=start)
+                if got.sample != start+256:
+                    raise AssertionError("Onset output delayed")
+                if not np.array_equal(
+                    cached[frame], stream.acoustic.reference.risk.acoustic_evidence):
+                    raise AssertionError("acoustic features differ from signed cache")
+                emitted.extend((e.sample,e.pitch) for e in got.intents)
+                original.extend((e.sample,e.pitch)
+                                for e in stream.last_reference.intents)
+            if stream.finish() or stream.calls != row["frames"]:
+                raise AssertionError("stream buffered a decision")
+            if sorted(original) != [tuple(e) for e in reference[row["track"]]]:
+                raise AssertionError("HGB reference stream differs")
+            if sorted(emitted) != expected_events:
+                raise AssertionError("LIVE and cached gated events differ")
+            recs.append(dict(track=row["track"], composition=comp,
+                        frames=row["frames"], score=counts(
+                            mask_events(expected_mask), row["truth"]),
+                        exact_gate_parity=True, exact_feature_parity=True,
+                        exact_hgb_parity=True, no_added_holds=True))
+            print("HGB_GATE_FRESH_WAV", comp, len(recs), flush=True)
+    actual = sum_scores([r["score"] for r in recs])
+    if (len(recs) != 80 or sum(r["frames"] for r in recs) != 306536 or
+            any(actual[k] != expected["candidate"][k]
+                for k in ("tp", "fp", "fn"))):
+        raise AssertionError("full audio does not reproduce selected gate")
+    dump(out / "replayed" / "report.json",
+         dict(complete=True, tracks=80, frames=306536, hop_samples=256,
+              candidate=actual, per_track=recs, exact_gate_parity=True,
+              exact_feature_parity=True, exact_hgb_parity=True,
+              future_audio_samples=0, added_hold_samples=0,
+              external_generalization_proven=False, promoted=False))
+    print("HGB_GATE_FRESH_AUDIO_TOTAL", json.dumps(actual), flush=True)
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--experiment", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
-    parser.add_argument("--phase", choices=("prepare", "train"), required=True)
+    parser.add_argument("--phase", choices=("prepare", "train", "replay"), required=True)
+    parser.add_argument("--root", type=Path)
     args = parser.parse_args()
     if args.phase == "prepare":
         prepare(args.experiment, args.out)
-    else:
+    elif args.phase == "train":
         fit(args.experiment, args.out)
+    else:
+        if args.root is None:
+            parser.error("--root required for full WAV replay")
+        replay_audio(args.root, args.experiment, args.out)
 
 
 if __name__ == "__main__":
