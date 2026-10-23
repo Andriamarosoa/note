@@ -139,6 +139,17 @@ jobs:
             --native-model model/live/strict_note/NOTE_strict_live.npz \
             --sharp-engine incremental \
             --out /tmp/s836/candidate --tracks-per-composition 1
+      - name: Controlled same-audio S836 replay with per-frame SHA audit disabled
+        run: |
+          python -m scripts.s834_s809_native256_fit80_replay \
+            --audio-zip /tmp/s836/GuitarSet_audio.zip \
+            --traces "$(cat /tmp/s836/traces_dir)" \
+            --manifest-path "$(cat /tmp/s836/manifest_path)" \
+            --source-checkpoint "$(cat /tmp/s836/s708_dir)/s708_selected.pt" \
+            --source-report "$(cat /tmp/s836/s708_dir)/report.json" \
+            --native-model model/live/strict_note/NOTE_strict_live.npz \
+            --sharp-engine incremental --no-audit-digests \
+            --out /tmp/s836/candidate_clean --tracks-per-composition 1
       - name: Paired six-axis exact scores AND individual track event counters; report CPU regressions
         run: |
           python - <<'PY'
@@ -146,6 +157,9 @@ jobs:
           from pathlib import Path
           original=json.loads(Path('/tmp/s836/baseline/report.json').read_text())
           candidate=json.loads(Path('/tmp/s836/candidate/report.json').read_text())
+          clean=json.loads(Path('/tmp/s836/candidate_clean/report.json').read_text())
+          assert original['s836_audit_digests'] and candidate['s836_audit_digests']
+          assert clean['s836_audit_digests'] is False
           for r,mode in ((original,'reference'),(candidate,'incremental')):
               assert r['s836_sharp_engine']==mode and r['complete'] and len(r['tracks'])==5
               assert r['decision_hop_samples']==256 and r['acoustic_feature_hop_samples']==256
@@ -155,19 +169,28 @@ jobs:
           for key in ('frames','source_counts','source_scores','axis_metrics',
                       'six_axis_shadow_scores','counterfactual_pairs_passed','counterfactual_pairs_tested'):
               assert original[key]==candidate[key], 'S836 changed '+key
+          for key in ('frames','source_counts','source_scores','axis_metrics','six_axis_shadow_scores'):
+              assert clean[key]==candidate[key], 'S836 instrumentation changed '+key
           cost=[]
-          for a,b in zip(original['tracks'],candidate['tracks']):
+          for a,b,c in zip(original['tracks'],candidate['tracks'],clean['tracks']):
               assert a['name']==b['name'] and a['composition']==b['composition']
               for key in ('frames','six_axis_standalone','source_counts','real_pcm_sha256',
                           's836_input_288_sha256','s836_spectral_96_sha256',
                           's836_axis_decision_sha256'):
                   assert a[key]==b[key],a['name']+' differs: '+key
+              for key in ('name','composition','frames','six_axis_standalone','source_counts','real_pcm_sha256'):
+                  assert b[key]==c[key],'S836 digest-free changed '+key
+              assert c['s836_input_288_sha256'] is None
+              assert c['s836_axis_decision_sha256'] is None
               p0=a['runtime_cpu_diagnostics'];p1=b['runtime_cpu_diagnostics']
+              pclean=c['runtime_cpu_diagnostics']
               old=p0['p95_full_chunk_cpu_ms'];new=p1['p95_full_chunk_cpu_ms']
               cost.append(dict(track=a['name'],baseline_p95_ms=old,cache_p95_ms=new,
                                delta_p95_ms=new-old,
                                baseline_p99_ms=p0['p99_full_chunk_cpu_ms'],
-                               cache_p99_ms=p1['p99_full_chunk_cpu_ms']))
+                               cache_p99_ms=p1['p99_full_chunk_cpu_ms'],
+                               clean_cache_p95_ms=pclean['p95_full_chunk_cpu_ms'],
+                               clean_cache_p99_ms=pclean['p99_full_chunk_cpu_ms']))
           proof=dict(provenance='signed real GuitarSet 5 compositions x 1 recording',
                      strict_six_axis_metric_and_per_track_count_parity=True,
                      every_sample_source_288d_sha_identical=True,
@@ -175,6 +198,9 @@ jobs:
                      every_sample_six_axis_decision_sha_identical=True,
                      cache_p95_all_below_5805us=all(x['cache_p95_ms']<5.805 for x in cost),
                      cache_p99_all_below_5805us=all(x['cache_p99_ms']<5.805 for x in cost),
+                     clean_cache_p99_all_below_5805us=all(x['clean_cache_p99_ms']<5.805 for x in cost),
+                     digest_free_same_music_scores=True,
+                     note='A/B ordered tests cannot isolate thermal or machine drift; compare only as association',
                      official_midi_untouched=True,promoted=False,cpu_per_track=cost,
                      hardware_p99_windows_verified=False,
                      full_fit80_80_tracks_not_yet_executed=True)
@@ -189,6 +215,7 @@ jobs:
           path: |
             /tmp/s836/baseline/report.json
             /tmp/s836/candidate/report.json
+            /tmp/s836/candidate_clean/report.json
             /tmp/s836/paired_real5_verdict.json
           retention-days: 45
           if-no-files-found: warn
