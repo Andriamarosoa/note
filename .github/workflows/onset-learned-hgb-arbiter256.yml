@@ -50,6 +50,26 @@ jobs:
           gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/gate_data/manifest
           gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/gate_data/traces
           python - <<'PY'
+          # Artifact extraction may add one enclosing directory. The baseline
+          # collector uses canonical flat paths; normalization moves files,
+          # rather than duplicating them (the signature verifier expects one).
+          from pathlib import Path
+          import shutil
+          root=Path("/tmp/gate_data")
+          manifest=list((root/"manifest").rglob("report.json"))
+          traces=list((root/"traces").rglob("fit_000.json"))
+          assert len(manifest)==1 and len(traces)==1, (manifest,traces)
+          if manifest[0] != root/"manifest/report.json":
+              shutil.move(str(manifest[0]), str(root/"manifest/report.json"))
+          src=traces[0].parent
+          if src != root/"traces":
+              for item in sorted(src.glob("fit_*.json")):
+                  shutil.move(str(item), str(root/"traces"/item.name))
+          assert (root/"manifest/report.json").is_file()
+          assert len(list((root/"traces").glob("fit_*.json")))==80
+          print("CANONICAL_SIGNED_FIT80_PATHS_VERIFIED")
+          PY
+          python - <<'PY'
           from pathlib import Path
           import json, hashlib, urllib.request
           info=json.loads(Path("analysis/evidence/v273-s613-strict-live/protocol.json").read_text())["guitar_archives"]["GuitarSet_audio"]
