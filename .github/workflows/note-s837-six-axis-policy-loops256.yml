@@ -41,6 +41,7 @@ jobs:
           allowed={'scripts/s837_six_axis_policy_loops256.py',
                    'test/test_s837_six_axis_policy_loops256.py',
                    'series/S837/resume.md','series/S837/resultat.md',
+                   'series/S837/audit_loop1.md',
                    '.github/workflows/note-s837-six-axis-policy-loops256.yml'}
           assert touched and touched<=allowed,touched-allowed
           print('S837_SIX_PROTECTED_MIDI_AND_SOURCE_MODELS_UNCHANGED')
