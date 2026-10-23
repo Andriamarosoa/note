@@ -1,0 +1,109 @@
+name: Onset learned HGB arbitration PCM256
+on:
+  push:
+    branches: [codex/note-onset-learned-hgb-arbiter256]
+    paths:
+      - 'src/onset256/learned_hgb_*.py'
+      - 'scripts/onset_learned_hgb_arbiter256.py'
+      - 'tests/test_onset_learned_hgb_arbiter256.py'
+      - 'series/ONSET_LEARNED_HGB_ARBITER256/**'
+      - '.github/workflows/onset-learned-hgb-arbiter256.yml'
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+env:
+  GH_TOKEN: ${{ github.token }}
+  PYTHONPATH: src
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: python -m pip install -r requirements-onset256-cache.txt
+      - name: Existing and new PCM256 regression tests
+        run: |
+          python -m compileall -q src/onset256 scripts/onset_learned_hgb_arbiter256.py tests
+          python -m unittest discover -s tests -v
+          python - <<'PY'
+          from onset256.learned_hgb_arbiter import DIM,HOP
+          assert DIM==207 and HOP==256
+          print("ISOLATED_HGB_PCM256_TESTED")
+          PY
+  full_80_wav:
+    needs: tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: python -m pip install -r requirements-onset256-cache.txt
+      - name: Fetch signed manifest, traces, and original 80 WAVs
+        run: |
+          mkdir -p /tmp/gate_data/manifest /tmp/gate_data/traces /tmp/gate
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/gate_data/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/gate_data/traces
+          python - <<'PY'
+          from pathlib import Path
+          import json, hashlib, urllib.request
+          info=json.loads(Path("analysis/evidence/v273-s613-strict-live/protocol.json").read_text())["guitar_archives"]["GuitarSet_audio"]
+          dest=Path("/tmp/gate_data/GuitarSet_audio.zip")
+          with urllib.request.urlopen(info["url"], timeout=180) as src, dest.open("wb") as fd:
+              for buf in iter(lambda: src.read(2**20), b""):
+                  fd.write(buf)
+          h=hashlib.sha256()
+          with dest.open("rb") as fd:
+              for buf in iter(lambda: fd.read(2**20), b""):
+                  h.update(buf)
+          assert dest.stat().st_size==info["size"] and h.hexdigest()==info["sha256"]
+          print("SIGNED_GUITARSET_80_WAV_VERIFIED")
+          PY
+          python - <<'PY'
+          from scripts.onset_event_integrity256 import verify_inputs
+          from pathlib import Path
+          report=verify_inputs(Path("/tmp/gate_data"))
+          print("FIT80_SIGNED_TRACKS",len(report["fit_files"]))
+          PY
+      - name: Reproduce immutable acoustic 69.206% baseline
+        run: |
+          python -m scripts.onset_acoustic_direct256 --root /tmp/gate_data --out /tmp/acoustic256 --phase collect --cache-format npz --workers 2
+          python -m scripts.onset_acoustic_direct256 --root /tmp/gate_data --out /tmp/acoustic256 --phase samples
+          python -m scripts.onset_acoustic_direct256 --root /tmp/gate_data --out /tmp/acoustic256 --phase train --sparse-calibration --workers 2
+          python -m scripts.onset_acoustic_direct256 --root /tmp/gate_data --out /tmp/acoustic256 --phase replay --workers 2
+      - name: Train HGB gate on TRAIN, freeze CAL selection before OUTER
+        run: |
+          python -m scripts.onset_learned_hgb_arbiter256 --experiment /tmp/acoustic256 --out /tmp/gate --phase prepare
+          python -m scripts.onset_learned_hgb_arbiter256 --experiment /tmp/acoustic256 --out /tmp/gate --phase train
+      - name: Replay 80 WAVs PCM256, compare Live and cached events exactly
+        run: |
+          python -m scripts.onset_learned_hgb_arbiter256 --experiment /tmp/acoustic256 --out /tmp/gate --root /tmp/gate_data --phase replay
+      - name: Preserve models, CAL and OUTER evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ONSET_LEARNED_HGB_ARBITER_80_WAV_PCM256
+          path: |
+            /tmp/gate/prepared.json
+            /tmp/gate/candidates/*.npz
+            /tmp/gate/trained/
+            /tmp/gate/replayed/
+            /tmp/acoustic256/replayed/report.json
+          if-no-files-found: warn
+          retention-days: 60
+      - name: Scientific non-regression guard; no automatic promotion
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path("/tmp/gate/replayed/report.json").read_text())
+          print("CANDIDATE_FULL_WAV",r["candidate"])
+          if r["candidate"]["f1"] <= .6920620437956204:
+              raise SystemExit("REFUTED_OR_INCOMPLETE: no F1 gain; leave baseline untouched")
+          print("FIT80_GAIN_ONLY_EXTERNAL_GENERALIZATION_UNPROVEN")
+          PY
