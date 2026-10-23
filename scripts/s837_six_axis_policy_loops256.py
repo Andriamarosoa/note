@@ -276,6 +276,10 @@ def original_for_axis(axis, src):
                     total=int(item["frames"] if axis=="exact_k" else item["active_frames"]))
     if axis=="full_note":
         return {key:int(b[axis][key]) for key in ("tp","fp","fn")}
+    if axis in ("onset","offset"):
+        # S834 canonical shadow_diagnostics uses lowercase tp/fp/fn while
+        # S613 event_score returns uppercase TP/FP/FN. Same counts and metric.
+        return {key.upper():int(b[axis][key]) for key in ("tp","fp","fn")}
     return dict(b[axis])
 
 
