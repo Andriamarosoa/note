@@ -157,14 +157,23 @@ jobs:
           cost=[]
           for a,b in zip(original['tracks'],candidate['tracks']):
               assert a['name']==b['name'] and a['composition']==b['composition']
-              for key in ('frames','six_axis_standalone','source_counts','real_pcm_sha256'):
+              for key in ('frames','six_axis_standalone','source_counts','real_pcm_sha256',
+                          's836_input_288_sha256','s836_spectral_96_sha256',
+                          's836_axis_decision_sha256'):
                   assert a[key]==b[key],a['name']+' differs: '+key
-              old=a['runtime_cpu_diagnostics']['p95_full_chunk_cpu_ms']
-              new=b['runtime_cpu_diagnostics']['p95_full_chunk_cpu_ms']
+              p0=a['runtime_cpu_diagnostics'];p1=b['runtime_cpu_diagnostics']
+              old=p0['p95_full_chunk_cpu_ms'];new=p1['p95_full_chunk_cpu_ms']
               cost.append(dict(track=a['name'],baseline_p95_ms=old,cache_p95_ms=new,
-                               delta_p95_ms=new-old))
+                               delta_p95_ms=new-old,
+                               baseline_p99_ms=p0['p99_full_chunk_cpu_ms'],
+                               cache_p99_ms=p1['p99_full_chunk_cpu_ms']))
           proof=dict(provenance='signed real GuitarSet 5 compositions x 1 recording',
                      strict_six_axis_metric_and_per_track_count_parity=True,
+                     every_sample_source_288d_sha_identical=True,
+                     every_sample_spectral_96d_sha_identical=True,
+                     every_sample_six_axis_decision_sha_identical=True,
+                     cache_p95_all_below_5805us=all(x['cache_p95_ms']<5.805 for x in cost),
+                     cache_p99_all_below_5805us=all(x['cache_p99_ms']<5.805 for x in cost),
                      official_midi_untouched=True,promoted=False,cpu_per_track=cost,
                      hardware_p99_windows_verified=False,
                      full_fit80_80_tracks_not_yet_executed=True)
