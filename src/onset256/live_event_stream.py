@@ -23,8 +23,9 @@ class LowLatencyOnsetStream:
     added_hold_samples = 0
     hop_samples = 256
 
-    def __init__(self, native, s701, risk, recovery, event_head):
-        self.risk = SharedEvidenceRisk(risk)
+    def __init__(self, native, s701, risk, recovery, event_head, *,
+                 evidence_risk_class=SharedEvidenceRisk):
+        self.risk = evidence_risk_class(risk)
         self.recovery = SharedEvidenceRecovery(recovery, self.risk)
         self.stream = Stream(native, accelerated(s701), risk_model=self.risk,
                              recovery_model=self.recovery)
