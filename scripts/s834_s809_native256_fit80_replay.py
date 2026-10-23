@@ -45,7 +45,8 @@ def summarize_scores(summed):
     }
 
 def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,
-        native_model,out,tracks_per_composition,*,sharp_engine="reference"):
+        native_model,out,tracks_per_composition,*,sharp_engine="reference",
+        audit_digests=True):
     if sharp_engine not in ("reference","incremental"):
         raise ValueError("S836 sharp mode must be reference or incremental")
     if out.exists():raise FileExistsError("S834 immutable evidence cannot be replaced")
@@ -65,6 +66,7 @@ def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,
     out.mkdir(parents=True)
     report=dict(schema=SCHEMA,series="S834",complete=False,
         s836_sharp_engine=sharp_engine,
+        s836_audit_digests=bool(audit_digests),
         branch_native_audio=True,private_s708_256=True,
         original_teacher_training_hop=1024,
         decision_hop_samples=256,acoustic_feature_hop_samples=256,
@@ -122,14 +124,15 @@ def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,
                     if end!=pos+HOP or end!=int(ends[i]):
                         raise AssertionError("wrong decision time")
                     track_decisions.append(decision)
-                    last_abi=shadow.s836_last_input_288d
-                    if last_abi.shape!=(49,288):
-                        raise AssertionError("S836 strict current 288D ABI")
-                    abi_288_hash.update(last_abi.tobytes())
-                    sharp_96_hash.update(last_abi[:,192:].tobytes())
-                    for axis in AXES:
-                        axis_decision_hash[axis].update(
-                            repr((end,decision[axis],selections[axis])).encode('utf-8')+b'\n')
+                    if audit_digests:
+                        last_abi=shadow.s836_last_input_288d
+                        if last_abi.shape!=(49,288):
+                            raise AssertionError("S836 strict current 288D ABI")
+                        abi_288_hash.update(last_abi.tobytes())
+                        sharp_96_hash.update(last_abi[:,192:].tobytes())
+                        for axis in AXES:
+                            axis_decision_hash[axis].update(
+                                repr((end,decision[axis],selections[axis])).encode('utf-8')+bytes([10]))
                     if i<AUDIT_PREFIX_FRAMES:
                         for axis,counterfactual in variants.items():
                             outdec,outsel=counterfactual.step(snapshot)
@@ -169,9 +172,10 @@ def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,
                 six_axis_standalone=single,source_counts={k:int(h0[k]) for k in COUNT_KEYS},
                 causal_s708_model_calls=shadow.model_calls,
                 protected_h0=True,other_five_axes_identical_all_counterfactuals=True,
-                s836_input_288_sha256=abi_288_hash.hexdigest(),
-                s836_spectral_96_sha256=sharp_96_hash.hexdigest(),
-                s836_axis_decision_sha256={axis:d.hexdigest() for axis,d in axis_decision_hash.items()},
+                s836_input_288_sha256=abi_288_hash.hexdigest() if audit_digests else None,
+                s836_spectral_96_sha256=sharp_96_hash.hexdigest() if audit_digests else None,
+                s836_axis_decision_sha256=({axis:d.hexdigest() for axis,d in axis_decision_hash.items()}
+                                          if audit_digests else None),
                 runtime_cpu_diagnostics=shadow.diagnostics()))
             report["longest_256_track"]=max(report["longest_256_track"],len(ends))
             print("S834_REAL_PCM256_S809_PORT",idx,comp,len(ends),flush=True)
@@ -207,7 +211,9 @@ if __name__=="__main__":
     p.add_argument("--tracks-per-composition",type=int,default=1)
     p.add_argument("--sharp-engine",choices=("reference","incremental"),
                    default="reference",help="S836 opt-in CPU cache; old path is default")
+    p.add_argument("--no-audit-digests",action="store_true",
+                   help="S836 repeatability control: disable per-frame SHA work")
     z=p.parse_args()
     run(z.audio_zip,z.traces,z.manifest_path,z.source_checkpoint,
         z.source_report,z.native_model,z.out,z.tracks_per_composition,
-        sharp_engine=z.sharp_engine)
+        sharp_engine=z.sharp_engine,audit_digests=not z.no_audit_digests)
