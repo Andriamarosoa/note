@@ -110,6 +110,10 @@ def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,
                 pipelines[axis].selector=AxisSelector(axis,"causal_contrast",threshold=.12)
                 variants[axis]=SixIndependentAxes(pipelines)
             track_decisions=[]
+            # Audits run AFTER timed push(): no scientific score or CPU timing change.
+            abi_288_hash=hashlib.sha256()
+            sharp_96_hash=hashlib.sha256()
+            axis_decision_hash={axis:hashlib.sha256() for axis in AXES}
             for i,pos in enumerate(range(0,len(audio),HOP)):
                 results=shadow.push(audio[pos:pos+HOP],start_sample=pos)
                 if pos+HOP<=len(audio):
@@ -118,6 +122,14 @@ def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,
                     if end!=pos+HOP or end!=int(ends[i]):
                         raise AssertionError("wrong decision time")
                     track_decisions.append(decision)
+                    last_abi=shadow.s836_last_input_288d
+                    if last_abi.shape!=(49,288):
+                        raise AssertionError("S836 strict current 288D ABI")
+                    abi_288_hash.update(last_abi.tobytes())
+                    sharp_96_hash.update(last_abi[:,192:].tobytes())
+                    for axis in AXES:
+                        axis_decision_hash[axis].update(
+                            repr((end,decision[axis],selections[axis])).encode('utf-8')+b'\n')
                     if i<AUDIT_PREFIX_FRAMES:
                         for axis,counterfactual in variants.items():
                             outdec,outsel=counterfactual.step(snapshot)
@@ -157,6 +169,9 @@ def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,
                 six_axis_standalone=single,source_counts={k:int(h0[k]) for k in COUNT_KEYS},
                 causal_s708_model_calls=shadow.model_calls,
                 protected_h0=True,other_five_axes_identical_all_counterfactuals=True,
+                s836_input_288_sha256=abi_288_hash.hexdigest(),
+                s836_spectral_96_sha256=sharp_96_hash.hexdigest(),
+                s836_axis_decision_sha256={axis:d.hexdigest() for axis,d in axis_decision_hash.items()},
                 runtime_cpu_diagnostics=shadow.diagnostics()))
             report["longest_256_track"]=max(report["longest_256_track"],len(ends))
             print("S834_REAL_PCM256_S809_PORT",idx,comp,len(ends),flush=True)
