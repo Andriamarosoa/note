@@ -173,6 +173,70 @@ def evaluate(axis, name, params, src):
     return score_axis(axis,decisions,src)
 
 
+def audit_event_change(axis, src, baseline_label, candidate_label, candidate_params):
+    """Hungarian matched GT identity and FP identity postmortem, not just F1."""
+    if axis not in ("onset","offset"):
+        raise ValueError("event identity only for Onset/Offset")
+
+    def sample(name, params):
+        d=new_decoder(axis,name,params)
+        intent=[event(e) for f in src.snapshots for e in d.step(f).intents]
+        if axis=="onset":
+            truth=list(src.truth)
+            predictions=intent
+            tol=.080
+        else:
+            truth=[dict(time=t["time"]+t["duration"],pitch=t["pitch"])
+                   for t in src.truth
+                   if t["time"]+t["duration"]<src.frame_ends[-1]/SR]
+            predictions=[dict(type="note_on",time=e["time"],pitch=e["pitch"])
+                         for e in intent]
+            tol=.050
+        measured,pairs=event_score(predictions,truth,tolerance=tol)
+        matched_pred={i for i,j in pairs}
+        matched_truth={j for i,j in pairs}
+        false=[predictions[i] for i in range(len(predictions))
+               if i not in matched_pred]
+        return measured,matched_truth,truth,false
+
+    old,old_gt,truth,old_fp=sample(baseline_label,{})
+    new,new_gt,truth,new_fp=sample(candidate_label,candidate_params)
+    def ident(x):
+        return (int(x["pitch"]),round(float(x["time"]),9))
+    old_false=Counter(map(ident,old_fp))
+    new_false=Counter(map(ident,new_fp))
+    created=list((new_false-old_false).elements())
+    removed=list((old_false-new_false).elements())
+    recovered=sorted(new_gt-old_gt)
+    lost=sorted(old_gt-new_gt)
+    def register(p):
+        return "grave" if p<52 else ("medium" if p<69 else "aigu")
+    def explain_fp(item):
+        p,t=item
+        candidates=[n for n in src.truth
+                    if int(n["pitch"]) in (p-12,p-19) and
+                    n["time"]<=t<n["time"]+n["duration"]]
+        return dict(pitch=p,time_s=t,register=register(p),
+                    coincident_lower_harmonic_gt=bool(candidates),
+                    harmonic_cause_proven=False)
+    return dict(
+        source=src.name,composition=src.composition,
+        old_TP=int(old["TP"]),new_TP=int(new["TP"]),
+        old_FP=int(old["FP"]),new_FP=int(new["FP"]),
+        recovered_gt=int(len(recovered)),lost_gt=int(len(lost)),
+        retained_gt=int(len(new_gt&old_gt)),
+        new_fp_events=int(len(created)),removed_fp_events=int(len(removed)),
+        new_fp_by_register=dict(Counter(register(x[0]) for x in created)),
+        new_fp_harmonic_association=sum(explain_fp(e)["coincident_lower_harmonic_gt"]
+                                        for e in created),
+        examples_recovered=[dict(pitch=int(truth[i]["pitch"]),
+                                 time_s=float(truth[i]["time"])) for i in recovered[:20]],
+        examples_lost=[dict(pitch=int(truth[i]["pitch"]),
+                            time_s=float(truth[i]["time"])) for i in lost[:20]],
+        examples_new_fp=[explain_fp(x) for x in created[:20]],
+        examples_removed_fp=[explain_fp(x) for x in removed[:20]],
+        instrumentation_only=True)
+
 def aggregate(axis, counts):
     result=Counter()
     for item in counts:
@@ -237,7 +301,12 @@ def select_across_compositions(axis, src, all_results):
                               if s.composition==outer])
         total_base.append(base)
         total_trial.append(trial)
+        event_audits=(
+            [audit_event_change(axis,s,"reference",name,param_map[name])
+             for s in src if s.composition==outer]
+            if axis in ("onset","offset") else [])
         per_outer[outer]=dict(
+            event_identity_postmortems=event_audits,
             selected_on_other_four=name,
             candidate_parameters=param_map[name],
             reference_counts=base,candidate_counts=trial,
