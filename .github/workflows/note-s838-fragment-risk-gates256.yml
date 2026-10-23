@@ -1,0 +1,132 @@
+name: S838 NOTE learned fragment risk gates PCM256
+on:
+  push:
+    branches: [codex/note-s838-fragment-risk-gates256]
+    paths:
+      - 'scripts/s838_fragment_risk_gates256.py'
+      - 'test/test_s838_fragment_risk_gates256.py'
+      - 'series/S838/**'
+      - '.github/workflows/note-s838-fragment-risk-gates256.yml'
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: s838-fragment-gates
+  cancel-in-progress: true
+env:
+  PYTHONPATH: .:src
+  GH_TOKEN: ${{ github.token }}
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  strict_six_independent:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Locked NOTE runtime and CPU Torch
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Verify S836 source MIDI acoustic network and protected heads unchanged
+        run: |
+          git fetch origin codex/note-s837-six-axis-80pct-independent-loops256 --depth=1
+          git diff --name-only FETCH_HEAD HEAD >/tmp/s838_changed_files.txt
+          python - <<'PY'
+          from pathlib import Path
+          touched=set(Path('/tmp/s838_changed_files.txt').read_text().splitlines())
+          allowed={'scripts/s838_fragment_risk_gates256.py',
+                   'test/test_s838_fragment_risk_gates256.py',
+                   'series/S838/resume.md','series/S838/resultat.md',
+                   
+                   '.github/workflows/note-s838-fragment-risk-gates256.yml'}
+          assert touched and touched<=allowed,touched-allowed
+          print('S838_SIX_PROTECTED_MIDI_AND_SOURCE_MODELS_UNCHANGED')
+          PY
+      - name: Test six independent research heads and cross-composition exclusion
+        run: |
+          python -m compileall -q scripts/s838_fragment_risk_gates256.py
+          python -m unittest -v test.test_s838_fragment_risk_gates256 test.test_s837_six_axis_policy_loops256 test.test_s836_incremental_sharp256 test.test_s834_s809_native256_axes test.test_s835_best_six_registry
+          python -m scripts.verify_series_reports --series S837
+  real_five:
+    runs-on: ubuntu-24.04
+    needs: strict_six_independent
+    if: contains(github.event.head_commit.message, '[real5]') || github.event_name == 'workflow_dispatch'
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Same pinned NOTE inference environment
+        run: |
+          python -m pip install -r requirements-live-strict.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Restore signed S708 and authentic S800 FIT80 provenance
+        run: |
+          mkdir -p /tmp/s838/s708 /tmp/s838/manifest /tmp/s838/traces
+          gh run download 39094682419 --repo Andriamarosoa/note --name S708_K_GUIDED_S706_JOINT_CAUSAL_LOOPS --dir /tmp/s838/s708
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/s838/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/s838/traces
+          echo "$(dirname "$(find /tmp/s838/s708 -name s708_selected.pt -type f -print -quit)")" > /tmp/s838/s708_dir
+          find /tmp/s838/manifest -name report.json -type f -print -quit > /tmp/s838/manifest_path
+          echo "$(dirname "$(find /tmp/s838/traces -name fit_000.json -type f -print -quit)")" > /tmp/s838/traces_dir
+          test -s "$(cat /tmp/s838/s708_dir)/s708_selected.pt"
+          test -s "$(cat /tmp/s838/s708_dir)/report.json"
+          test -s "$(cat /tmp/s838/manifest_path)"
+      - name: Check original GuitarSet WAV SHA256
+        run: |
+          python - <<'PY'
+          import json,hashlib,urllib.request
+          from pathlib import Path
+          cfg=json.loads(Path('analysis/evidence/v273-s613-strict-live/protocol.json').read_text())
+          item=cfg['guitar_archives']['GuitarSet_audio']
+          dst=Path('/tmp/s838/GuitarSet_audio.zip')
+          with urllib.request.urlopen(item['url'],timeout=180) as src,dst.open('wb') as target:
+              for chunk in iter(lambda:src.read(4*1024*1024),b''):
+                  target.write(chunk)
+          assert dst.stat().st_size==item['size']
+          h=hashlib.sha256()
+          with dst.open('rb') as f:
+              for chunk in iter(lambda:f.read(4*1024*1024),b''):
+                  h.update(chunk)
+          assert h.hexdigest()==item['sha256']
+          print('S838_ORIGINAL_SHA256_PASS')
+          PY
+      - name: Execute all six private axes policies over five real signed WAV
+        run: |
+          python -m scripts.s838_fragment_risk_gates256 \
+            --audio-zip /tmp/s838/GuitarSet_audio.zip \
+            --traces "$(cat /tmp/s838/traces_dir)" \
+            --manifest-path "$(cat /tmp/s838/manifest_path)" \
+            --source-checkpoint "$(cat /tmp/s838/s708_dir)/s708_selected.pt" \
+            --source-report "$(cat /tmp/s838/s708_dir)/report.json" \
+            --native-model model/live/strict_note/NOTE_strict_live.npz \
+            --out /tmp/s838/real5 --tracks-per-composition 1
+      - name: Confirm real six-axis scores and veto any blind promotion
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/s838/real5/report.json').read_text())
+          assert r['complete'] and r['tracks_count']==5 and r['frames']==20062
+          assert r['decision_hop_samples']==256 and r['added_wait_samples']==0
+          assert r['future_audio_samples']==0 and r['protected_midi_untouched']
+          assert r['safe_to_promote'] is False
+          assert set(r['axes'])=={'exact_k','active_exact_k'}
+          assert all(len(v['folds'])==5 and v['total_frames']>0 for v in r['axes'].values())
+          print('S838_REAL5_FRAGMENT_GATE_VERIFIED',json.dumps({
+              k:dict(before=v['reference_score'],after=v['candidate_score'],
+                     improves=v['improves_global'],reaches80=v['reaches_80_percent'])
+              for k,v in r['axes'].items()},sort_keys=True))
+          PY
+      - name: Publish scientific six-axis outcome without promotion
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S838_REAL5_PRIVATE_K_FRAGMENT_GATES_TRAIN_CAL_OUTER
+          path: /tmp/s838/real5/report.json
+          if-no-files-found: warn
+          retention-days: 45
