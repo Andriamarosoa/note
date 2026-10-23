@@ -126,6 +126,9 @@ jobs:
       - name: Replay 80 WAVs PCM256, compare Live and cached events exactly
         run: |
           python -m scripts.onset_learned_hgb_arbiter256 --experiment /tmp/acoustic256 --out /tmp/gate --root /tmp/gate_data --phase replay
+      - name: Explain candidate regressions or limited gains per matched event
+        run: |
+          python -m scripts.audit_onset_solution_effect256 --experiment /tmp/acoustic256 --gate /tmp/gate --out /tmp/gate_postmortem
       - name: Preserve models, CAL and OUTER evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -136,6 +139,7 @@ jobs:
             /tmp/gate/candidates/*.npz
             /tmp/gate/trained/
             /tmp/gate/replayed/
+            /tmp/gate_postmortem/
             /tmp/acoustic256/replayed/report.json
           if-no-files-found: warn
           retention-days: 60
