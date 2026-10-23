@@ -11,9 +11,9 @@
 | HGB de référence | 8050 | 4231 | 3217 | 68,3710 % | 65,5484 % | 71,4476 % |
 | Acoustique directe 195D | 7585 | 3068 | 3682 | 69,2062 % | 71,2006 % | 67,3205 % |
 
-**Comptabilité des annotations.** 7225 attaques sont conservées, 825 anciennes attaques sont perdues, 360 attaques sont nouvellement récupérées et 2857 restent manquees dans les deux versions. Ainsi `825 - 360 = 465` FN nets supplémentaires. Les comptes portent sur des identifiants de vérité terrain stables apres appariement même hauteur / un-à-un / ±80 ms. Parmi les pertes, 27 concernent un evenement present dans la tolérance mais attribue à une autre annotation ; elles ne prouvent pas une absence acoustique.
+**Comptabilité des annotations.** 7225 attaques sont conservées, 825 anciennes attaques sont perdues, 360 attaques sont nouvellement récupérées et 2857 restent manquees dans les deux versions. Ainsi `825 - 360 = 465` FN nets supplémentaires. Les comptes portent sur des identifiants de vérité terrain stables après appariement même hauteur / un-à-un / ±80 ms. Parmi les pertes, 27 concernent un evenement present dans la tolérance mais attribue à une autre annotation ; elles ne prouvent pas une absence acoustique.
 
-| Texture | F1 avant | F1 apres | Rappel avant | Rappel apres | Anciens TP perdus | Nouvelles récupérations |
+| Texture | F1 avant | F1 après | Rappel avant | Rappel après | Anciens TP perdus | Nouvelles récupérations |
 |---|---:|---:|---:|---:|---:|---:|
 | Accompagnement | 64,8918 % | 65,3420 % | 67,6971 % | 61,5505 % | 802 | 293 |
 | Solo | 77,9585 % | 78,7466 % | 81,8486 % | 83,3222 % | 23 | 67 |
@@ -29,7 +29,7 @@
 
 **Concentration par composition.**
 
-| Composition | Anciens TP perdus | Nouvelles récupérations | Delta TP net | F1 avant | F1 apres |
+| Composition | Anciens TP perdus | Nouvelles récupérations | Delta TP net | F1 avant | F1 après |
 |---|---:|---:|---:|---:|---:|
 | BN1 | 0 | 30 | +30 | 68,9205 % | 69,8511 % |
 | Funk2 | 4 | 34 | +30 | 72,1603 % | 73,0074 % |
@@ -41,7 +41,7 @@ Sur Rock3, la calibration SS1 choisit `direct_only`, seuil 0,90, reset 0,50 et e
 
 Le contre-factuel qui rétablit le passage HGB sur Rock3 récupère 629 des anciennes pertes ; il perd aussi 18 TP du candidat. Son résultat est TP 2576 / FP 1559 / FN 743 / F1 69,1173 %, contre TP 1962 / FP 648 / FN 1357 / F1 66,1832 % pour le candidat Rock3. Le coût est +911 FP. Ce test prouve l'effet du routage ; il ne constitue pas une politique sélectionnée indépendamment pour déploiement.
 
-**Contre-experiences fixes, sur toutes les compositions.** Toutes rejouent causalement les mêmes probabilités scellées, déjà vérifiées contre l'audio, sans nouvel apprentissage ni recherche de seuil OUTER.
+**Contre-expériences fixes, sur toutes les compositions.** Toutes rejouent causalement les mêmes probabilités scellées, déjà vérifiées contre l'audio, sans nouvel apprentissage ni recherche de seuil OUTER.
 
 | Modification diagnostique | TP | FP | FN | F1 | Anciennes pertes récupérées | TP du candidat perdus |
 |---|---:|---:|---:|---:|---:|---:|
@@ -51,6 +51,8 @@ Le contre-factuel qui rétablit le passage HGB sur Rock3 récupère 629 des anci
 | Union exacte de tous les événements HGB | 8478 | 9156 | 2789 | 58,6693 % | 825 | 0 |
 
 Le passage HGB rétabli partout récupère 809 anciennes pertes, mais ajoute 1510 FP nets et donne 69,163123 %, légèrement sous le candidat. Retirer les protections de réarmement ou de doublons dégrade davantage le F1. Aucune de ces quatre politiques n'est promue.
+
+**Statut de la correction globale : `REFUTED_OR_INCOMPLETE`.** Le mécanisme de rejet d'anciens TP est démontré ; il est insuffisant pour déduire un correctif global améliorant le F1. L'hypothèse « rétablir partout la référence HGB » échoue au critère F1. La suite devra expliquer et sélectionner les cas qui ajoutent les 1510 FP, en plus de conserver les TP récupérables.
 
 **La texture et le nombre de notes doivent rester separes dans l'audit.** Dans la référence, le rappel à K1 annote est de 65,56 % en accompagnement (634/967), contre 82,43 % en solo (1773/2151). Sur les accompagnements K3+, il est de 67,60 % (3849/5694). Le nombre de hauteurs actives seul ne suffit donc pas à expliquer l'ecart de texture. Ces associations ne prouvent ni masquage, ni fondamentale absente, ni erreur d'annotation.
 
