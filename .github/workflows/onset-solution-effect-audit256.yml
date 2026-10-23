@@ -1,0 +1,33 @@
+name: Onset solution effect audit unit tests PCM256
+on:
+  push:
+    branches: [codex/note-onset-solution-effect-audit256]
+    paths:
+      - 'scripts/audit_onset_solution_effect256.py'
+      - 'tests/test_onset_solution_effect_audit256.py'
+      - 'series/ONSET_SOLUTION_EFFECT_POSTMORTEM256/**'
+      - '.github/workflows/onset-solution-effect-audit256.yml'
+  workflow_dispatch:
+concurrency:
+  group: onset-solution-audit-tests-${{ github.ref }}
+  cancel-in-progress: true
+permissions: {contents: read}
+env:
+  PYTHONPATH: src
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+jobs:
+  unit_tests_only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: python -m pip install -r requirements-onset256-cache.txt
+      - name: Validate post-solution effect audit without running training
+        run: |
+          python -m compileall -q scripts/audit_onset_solution_effect256.py tests/test_onset_solution_effect_audit256.py
+          python -m unittest discover -s tests -v
+          echo "UNIT_TESTS_ONLY_NO_FULL_AUDIO_RUN"
