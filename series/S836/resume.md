@@ -4,8 +4,8 @@ statut: en_cours
 type: experience
 reference: S708
 branche: codex/note-s836-live-sharp-cache256
-run_id: en_attente
-commit_sha: en_attente
+run_id: 39989523624
+commit_sha: dad2ac7ff454014a8a2896d5fac7a4b407e7a9f7
 promotion: false
 ---
 
@@ -46,3 +46,14 @@ La voie S834 calcule à chaque nouveau 256 des données `sharp_track(audio,[n-25
 
 ## Statut
 En cours. Aucune amélioration musicale ni vitesse du chemin complet revendiquée ; six axes unifiés non validés et aucune promotion. Aucun agent NVIDIA/Work externe n'a été appelé dans cette série.
+
+## Résultats contrôlés et protocole des boucles
+Boucle CPU initiale [#39986203235](https://github.com/Andriamarosoa/note/actions/runs/39986203235) : 22 tests PASS, FFT S706 médiane 0,811 → 0,258 ms sur signal identique; 5 vrais enregistrements (1 accompagnement dans chacune des 5 compositions), 20 062 hops; scores égaux, 9 600 invariances. S836 p95 5,288–5,459 ms et p99 5,500–5,792 ms sur ce runner Linux uniquement.
+
+Boucle de contrôle SHA [#39988295532](https://github.com/Andriamarosoa/note/actions/runs/39988295532) : 23 tests PASS ; empreintes source 288D, spectre 96D et chaque décision/sélection de six axes identiques **sur chacun des 20 062 hops**. Ce runner trouve p95 S836 5,692–5,760 ms (<5,805), mais p99 S836 5,849–6,079 ms (>5,805). **Veto LIVE p99 effectif**, ne pas sélectionner seulement le meilleur run.
+
+Boucle d'audit de reproductibilité [#39989523624](https://github.com/Andriamarosoa/note/actions/runs/39989523624) : 23 tests PASS, triple replay signé de mêmes cinq vrais WAV avec même S708 gelé et même H0 : référence S834 SHA, cache S836 SHA, cache S836 sans SHA. Les métriques restent identiques ; S836 p95 3,288–3,670 ms, p99 3,800–4,710 ms avec SHA, et p99 3,757–4,346 ms sans SHA. Le témoin S834 lui-même varie de 3,845–4,166 ms p95 sur ce runner, contre 6,4–6,9 ms sur les autres. Ainsi la **plateforme CI/mesure** est un facteur confondant considérable, et le coût SHA n'explique pas systématiquement chaque variation. Par exemple le p99 du cache sans SHA est plus grand que celui du cache avec SHA sur Jazz1. L'explication thermique/ordonnanceur reste hypothétique.
+
+Le [rapport d'échec intermédiaire](audit_ci_failure.md) explique aussi le défaut d'instrumentation réel `NameError nn_post` de la boucle #39987476143, corrigé avec test d'appel réel au modèle. Ce n'était ni une régression musicale du cache, ni une amélioration scientifique.
+
+**Blocage de promotion non levé** : pas de contrôle FIT80 intégral 80 WAV pour cette optimisation ; les cinq morceaux testés sont les premiers accompagnements `_comp` et ne couvrent pas les 75 autres pistes ; aucune donnée de vraie performance microphone/FluidSynth Windows/iRig, aucune garantie p99 sur une autre machine et aucune tête S708 véritablement entraînée sur une décision native 256. Il faut mesurer p95/p99 robuste sur la machine cible, protéger chaque tête, puis aborder séparément la régression Onset S834 et la faiblesse Offset.
