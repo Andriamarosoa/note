@@ -1,26 +1,37 @@
-# Résultat — H_FP_EXPERT_GATE_02, Onset PCM256
+# Résultat scientifique vérifié — H_FP_EXPERT_GATE_02 PCM256
 
-**Nouvelle tête d'arbitrage d'experts 69D ↔ 74D : PRÉENREGISTRÉE mais pas encore évaluée en replay au moment de la création de cette série.**
+**VERDICT : REFUTED_OR_INCOMPLETE — pas de promotion.** Hypothèse enregistrée **avant expérimentation** : [issue #143](https://github.com/Andriamarosoa/note/issues/143), règle générale de réfutation [#140](https://github.com/Andriamarosoa/note/issues/140).
 
-### Référence signée historique
+Le [workflow GitHub #39900140856](https://github.com/Andriamarosoa/note/actions/runs/39900140856) a terminé :
+- Smoke : **SUCCESS** ; invariant des quatre anciennes têtes, 69/70/74 neurones, PCM256 et pas d'information future.
+- Entraînement : 5 véritables petites têtes apprenantes MLP(16,8), input 11D, séparées entre CAL-TRAIN (8 pistes) et CAL-VAL (8 pistes), OUTER jamais consultée ; 4 activées, 1 désactivée avec fallback contrôle69.
+- Replay causal : **80 WAV GuitarSet, 306536 frontières PCM256**, sans modification de S613, S701, MLP69 ErrorPrediction, FNRecovery, contrôle69/70/74. GT seulement après fin de l'audio. Vrai `replayed/report.json` complet ; échec de job **SCIENTIFIQUE attendu**, faute d'atteindre simultanément les deux critères.
+- [Artefact #12479667666](https://github.com/Andriamarosoa/note/actions/runs/39900140856/artifacts/12479667666), contenant `trained/report.json`, 5 checkpoints/metadata SHA256 et `replayed/report.json`.
 
-- S613 256 GuitarSet FIT80 : TP8099 FP4600 FN3168 F1 67.5874155%.
-- Trois têtes ErrorPrediction69 : TP8054 FP4411 FN3213 F1 67.8745997%.
-- Quatre têtes avec FNRecovery : TP8160 FP4605 FN3107 F1 67.9094541%.
-- Contrôle FP69 (meilleur F1 expérimental non promu) : **TP8127 FP4519 FN3140 F1 67.9713963%**.
-- Contrôle FP70 : TP8137 FP4549 FN3130 F1 67.9413852%.
-- Temporal FP74 : TP7948 FP4290 FN3319 F1 67.6281642%, **hypothèse #142 non validée**.
+## Résultats du VRAI replay, pas le proxy CAL
 
-### Audit de la cause présumée
+| Branche expérimentale | TP | FP | FN | F1 réel |
+|---|---:|---:|---:|---:|
+| Quatre têtes gelées | 8160 | 4605 | 3107 | 67.9094541% |
+| **Meilleur contrôle FP69 gelé** | **8127** | 4519 | **3140** | **67.9713963%** |
+| Gate expert neuronal 11D (nouveau) | 7978 | **4284** | 3289 | 67.8141867% |
 
-La tête 74D refuse Rock3 **128 TP et 131 FP** dans les annotations des événements d'origine. Seules 27 des 128 vraies attaques perdues avaient un parent harmonique native Main attaqué moins de 80ms avant. Les 101 autres TP ont été refusés alors que le motif harmonique étudié est ABSENT. Contre-exemples montrant que la tête 74D apprenait des erreurs plus générales que l'hypothèse.
+L'arbitre diminue FP de **235** contre 69D mais sacrifie **149 TP** ; FN +149, F1 **−0.1572096 point**. Rejet, conformément à la prédiction avant test exigeant F1 >67.9713963% ET FP <4519.
 
-### Nouvelle intervention TESTABLE
+### Régressions par composition
 
-- La nouvelle tête `FPExpertGate`, vraiment entraînée sur 11D causaux, arbitre seulement les désaccords des 69D/74D, sans autre modification.
-- Même original 69/70/74 weights SHA. Entraînement gate sur 8 pistes CAL, validation/choix de cut uniquement sur les 8 autres CAL, OUTER composition jamais utilisée avant gel.
-- Si insuffisance d'exemples contradictoires dans CAL, gate désactivé et 69D inchangé pour ce pli.
-- Critère écrit AVANT test : **vrai F1 >67.9713963% ET vrais FP <4519** sur les 80 WAV PCM256 ; anciennes références exactement reproduites.
-- Si le gate échoue, `REFUTED_OR_INCOMPLETE`, ne pas promouvoir. Le proxy d'événements calibré sur CAL n'est PAS le F1 Live.
+| Composition | TP contrôle 69D | FP contrôle 69D | TP gate | FP gate | Δ TP | Δ FP |
+|---|---:|---:|---:|---:|---:|---:|
+| BN1 | 1197 | 646 | 1175 | 613 | −22 | −33 |
+| Funk2 | 1757 | 663 | 1752 | 649 | −5 | −14 |
+| Jazz1 | 1198 | 484 | 1198 | 484 | 0 | 0 |
+| **Rock3** | 2437 | 1366 | 2349 | 1252 | **−88** | −114 |
+| SS1 | 1538 | 1360 | 1504 | 1286 | −34 | −74 |
 
-**Statut à ce stade : résultat nouveau non encore vérifié, aucune promotion, aucun changement des cinq autres caractéristiques ni du MIDI officiel.**
+**Rock3** représente 88/149 = 59,1% des TP sacrifiés. La piste `00_Rock3-148-C_comp` perd 39 TP pour 28 FP supprimés ; `02_Rock3-148-C_comp` perd 24 TP et supprime 40 FP. **22 pistes présentent une régression de F1**. Les 8 pistes CAL d'entraînement de gate et 8 pistes CAL de sélection de seuil étaient disjointes, pourtant le mécanisme ne généralise pas entre textures/compositions. La problématique FP n'est pas « tous les parents harmoniques = veto », comme l'ont réfuté les expériences #142 et #143.
+
+### Statut et prochaine preuve requise
+
+Ne PAS ajuster opportunistement le seuil gate après avoir observé les résultats OUTER. **H_FP_EXPERT_GATE_02 insuffisante** ; auditer les cas Rock3 supprimés, leurs spectres réellement causaux et la variation des compositions. Deux nouvelles boucles indépendantes préenregistrées [#144](https://github.com/Andriamarosoa/note/issues/144) testent la couverture des pistes TRAIN du modèle 69D (`track_uniform` / `track_class`) sans modifier les anciennes têtes ni les autres axes.
+
+**Pas de poids entraînés 1024 ; pas de futur audio/lookahead/hold ; MIDI de production inchangé et cinq autres caractéristiques intouchées.** Le corpus FIT80 a un historique de recouvrement training sur S613/S701 ; résultats non généralisables sans test complet indépendant. La cadence 5.805ms est une frontière audio, pas une mesure de latence matérielle p95/p99.
