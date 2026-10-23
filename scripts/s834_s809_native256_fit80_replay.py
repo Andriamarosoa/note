@@ -45,7 +45,9 @@ def summarize_scores(summed):
     }
 
 def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,
-        native_model,out,tracks_per_composition):
+        native_model,out,tracks_per_composition,*,sharp_engine="reference"):
+    if sharp_engine not in ("reference","incremental"):
+        raise ValueError("S836 sharp mode must be reference or incremental")
     if out.exists():raise FileExistsError("S834 immutable evidence cannot be replaced")
     if not 1<=tracks_per_composition<=16:
         raise ValueError("tracks per composition 1..16")
@@ -62,6 +64,7 @@ def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,
     if len(chosen)!=5*tracks_per_composition:raise AssertionError("wrong track split")
     out.mkdir(parents=True)
     report=dict(schema=SCHEMA,series="S834",complete=False,
+        s836_sharp_engine=sharp_engine,
         branch_native_audio=True,private_s708_256=True,
         original_teacher_training_hop=1024,
         decision_hop_samples=256,acoustic_feature_hop_samples=256,
@@ -100,7 +103,7 @@ def run(audio_zip,traces,manifest_path,source_checkpoint,source_report,
                 raise ValueError("must use original mono 44.1kHz int16 guitar audio")
             audio=pcm[:meta["samples"]].astype(np.float32)/32768
             ends=np.arange(HOP,len(audio)+1,HOP,dtype=np.int64)
-            shadow=S834S809Native256(native,nn,policy)
+            shadow=S834S809Native256(native,nn,policy,sharp_engine=sharp_engine)
             variants={}
             for axis in AXES:
                 pipelines=default_pipelines()
@@ -187,6 +190,9 @@ if __name__=="__main__":
               "source-report","native-model","out"):
         p.add_argument("--"+k,required=True,type=Path)
     p.add_argument("--tracks-per-composition",type=int,default=1)
+    p.add_argument("--sharp-engine",choices=("reference","incremental"),
+                   default="reference",help="S836 opt-in CPU cache; old path is default")
     z=p.parse_args()
     run(z.audio_zip,z.traces,z.manifest_path,z.source_checkpoint,
-        z.source_report,z.native_model,z.out,z.tracks_per_composition)
+        z.source_report,z.native_model,z.out,z.tracks_per_composition,
+        sharp_engine=z.sharp_engine)
