@@ -63,7 +63,7 @@ class S834S809Native256(S827S708ActiveKOnly):
         X=np.concatenate((acoustic,spectral),axis=1)
         if X.shape!=(49,288) or not np.isfinite(X).all():
             raise AssertionError("S834 must have fresh 288D S708 PCM256 acoustics")
-        nn_post,nn_count=self.temporal.step(X)
+        # Audit-only pointer for the replay process to hash genuine 288D ABI\n        # after push() returns, outside the measured model CPU interval.\n        self.s836_last_input_288d=X\n        nn_post,nn_count=self.temporal.step(X)
         self.model_calls+=1
         self.model_call_ms.append(1000*(time.perf_counter()-before))
         blend=float(self.decoder.policy.blend)
