@@ -17,7 +17,7 @@ from onset256.acoustic_attack import AttackPolicy
 from onset256.acoustic_calibration import decode_cache
 from onset256.feature_cache import load_features
 from onset256.learned_hgb_arbiter import (
-    DIM, SCHEMA, GatePolicy, candidate_rows, replay_gate)
+    DIM, SCHEMA, GatePolicy, candidate_rows, replay_precomputed)
 from scripts.onset_acoustic_direct256 import baseline_mask, mask_events
 from scripts.onset_event_integrity256 import COMPS, counts, sum_scores
 from scripts.replay_native256 import match_onsets
@@ -126,14 +126,20 @@ def prepare(experiment, out):
              "series/ONSET_SCORE_RECOVERY_HGB256/evidence/sealed_predictions.json"))))
 
 
-def score_gate(experiment, rows, reference, model, policy):
+def score_gate(experiment, rows, reference, model, policy, *, gate_scores=None):
     scores = []
     records = []
     for row in rows:
-        q, baseline, direct, x = track_inputs(experiment, row, reference,
-                                               need_features=model is not None)
-        merged = (replay_gate(q, x, baseline, direct, model, policy)
-                  if model is not None else direct)
+        q, baseline, direct, _ = track_inputs(
+            experiment, row, reference, need_features=False)
+        if model is not None:
+            if gate_scores is not None:
+                probability = gate_scores[row["track"]]
+            else:
+                raise ValueError("model probabilities must be frozen before scoring")
+            merged = replay_precomputed(direct, baseline, probability, policy)
+        else:
+            merged = direct
         score = counts(mask_events(merged), row["truth"])
         old_truth = truth_ids(direct, row["truth"])
         new_truth = truth_ids(merged, row["truth"])
@@ -144,6 +150,17 @@ def score_gate(experiment, rows, reference, model, policy):
                             extra_emissions=int(merged.sum()-direct.sum())))
         scores.append(score)
     return sum_scores(scores), records
+
+
+def fold_candidate_scores(out, rows, model):
+    result = {}
+    for row in rows:
+        with np.load(out / "candidates" /
+                     ("track_%03d.npz" % row["index"]),
+                     allow_pickle=False) as data:
+            result[row["track"]] = np.asarray(
+                model.predict_proba(data["X"])[:, 1], np.float32)
+    return result
 
 
 def fit(experiment, out):
@@ -179,6 +196,7 @@ def fit(experiment, out):
         joblib.dump(model, checkpoint, compress=3)
         del X, y, xx, yy
         cal_rows = [r for r in rows if r["composition"] == cal]
+        cal_scores = fold_candidate_scores(out, cal_rows, model)
         control, _ = score_gate(experiment, cal_rows, reference, None, None)
         selected = dict(enabled=False, policy=None, score=control)
         policies = []
@@ -188,7 +206,7 @@ def fit(experiment, out):
             for cut in CUTS:
                 policy = GatePolicy(cut=cut, gap_hops=gap)
                 metric, _ = score_gate(experiment, cal_rows, reference,
-                                       model, policy)
+                                       model, policy, gate_scores=cal_scores)
                 policies.append(dict(policy=dict(cut=cut, gap_hops=gap),
                                      score=metric))
                 if (metric["f1"], metric["tp"], -metric["fp"]) > (
@@ -216,8 +234,11 @@ def fit(experiment, out):
         chosen_model = model if selected["enabled"] else None
         chosen_policy = (GatePolicy(**selected["policy"])
                          if selected["enabled"] else None)
+        outer_scores = (fold_candidate_scores(out, outer_rows, chosen_model)
+                        if chosen_model is not None else None)
         actual, per_track = score_gate(experiment, outer_rows, reference,
-                                       chosen_model, chosen_policy)
+                                       chosen_model, chosen_policy,
+                                       gate_scores=outer_scores)
         record = dict(outer=outer, train=train, cal=cal,
                       selected=selected, actual=actual, per_track=per_track)
         dump(frozen / "outer_result.json", record)
