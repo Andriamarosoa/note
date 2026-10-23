@@ -9,6 +9,7 @@ from pathlib import Path
 import time
 import zipfile
 from dataclasses import asdict
+from types import SimpleNamespace
 
 import joblib
 import numpy as np
@@ -19,6 +20,7 @@ from onset256.acoustic_attack import AcousticEvidenceStream, AttackPolicy, DIM, 
 from onset256.acoustic_calibration import decode_cache, count_cache, truth_arrays
 from onset256.model import load
 from scripts.onset_event_integrity256 import COMPS, digest, dump, one, verify_inputs, metric, counts, sum_scores
+from scripts.replay_native256 import match_onsets
 
 SEED = 2026102304
 PREREGISTRATION = dict(
@@ -291,7 +293,7 @@ def replay_fold(task):
     from onset256.acoustic_live import load_acoustic_stream
     root,directory,comp=Path(task[0]),Path(task[1]),task[2]
     manifest=json.loads((root/'manifest/report.json').read_text())
-    expected=json.loads((directory/'trained/sealed_predictions.json').read_text())
+    expected=json.loads((directory/'trained'/comp/'predictions.json').read_text())
     reference=json.loads(Path('series/ONSET_SCORE_RECOVERY_HGB256/evidence/sealed_predictions.json').read_text())
     result=[]
     with threadpool_limits(limits=1),zipfile.ZipFile(root/'GuitarSet_audio.zip') as audio:
@@ -338,7 +340,12 @@ def replay(args):
     destination.mkdir()
     with ProcessPoolExecutor(max_workers=args.workers) as pool:
         groups=list(pool.map(replay_fold,[(str(args.root),str(args.out),c) for c in COMPS]))
-    rows=[r for g in groups for r in g];score=sum_scores([r['score'] for r in rows])
+    finish_replay(args,[r for g in groups for r in g])
+
+
+def finish_replay(args,rows):
+    destination=args.out/'replayed'
+    score=sum_scores([r['score'] for r in rows])
     previous=json.loads((args.out/'trained/report.json').read_text())['totals']
     if len(rows)!=80 or sum(r['frames'] for r in rows)!=306536:
         raise AssertionError('incomplete fresh audio')
@@ -352,14 +359,66 @@ def replay(args):
     print('ACOUSTIC_FRESH_TOTAL',json.dumps(score),flush=True)
 
 
+def audit(args):
+    fresh=json.loads((args.out/'replayed/report.json').read_text())
+    rows=json.loads((args.out/'collection_report.json').read_text())['per_track']
+    old=json.loads(Path('series/ONSET_SCORE_RECOVERY_HGB256/evidence/sealed_predictions.json').read_text())
+    new=json.loads((args.out/'trained/sealed_predictions.json').read_text())
+    records=[]
+    for row in rows:
+        name=row['track'];truth=row['truth']
+        a=[SimpleNamespace(sample=s,pitch=p) for s,p in old[name]]
+        b=[SimpleNamespace(sample=s,pitch=p) for s,p in new[name]]
+        ma=match_onsets(a,truth);mb=match_onsets(b,truth)
+        ta={j for _,j in ma};tb={j for _,j in mb}
+        sa=metric(len(ma),len(a)-len(ma),len(truth)-len(ma))
+        sb=metric(len(mb),len(b)-len(mb),len(truth)-len(mb))
+        aset={tuple(e) for e in old[name]};bset={tuple(e) for e in new[name]}
+        gained=sorted(tb-ta);lost=sorted(ta-tb)
+        records.append(dict(track=name,composition=row['composition'],
+            texture='solo' if name.endswith('_solo') else 'comp',before=sa,after=sb,
+            delta_f1_points=100*(sb['f1']-sa['f1']),
+            new_truth_matches=len(gained),lost_truth_matches=len(lost),
+            recovered_truth=[dict(index=i,**truth[i]) for i in gained],
+            lost_truth=[dict(index=i,**truth[i]) for i in lost],
+            added_events=sorted(bset-aset),removed_events=sorted(aset-bset)))
+    groups={}
+    for key in ('composition','texture'):
+        groups[key]={}
+        for value in sorted({r[key] for r in records}):
+            selected=[r for r in records if r[key]==value]
+            before=sum_scores([r['before'] for r in selected])
+            after=sum_scores([r['after'] for r in selected])
+            groups[key][value]=dict(before=before,after=after,
+                                   delta_f1_points=100*(after['f1']-before['f1']))
+    before=sum_scores([r['before'] for r in records])
+    after=sum_scores([r['after'] for r in records])
+    if (before['tp'],before['fp'],before['fn'])!=(8050,4231,3217):
+        raise AssertionError('audit reference mismatch')
+    if any(after[k]!=fresh['totals'][k] for k in ('tp','fp','fn')):
+        raise AssertionError('audit replay mismatch')
+    report=dict(complete=True,before=before,after=after,
+        delta_f1_points=100*(after['f1']-before['f1']),
+        delta={k:after[k]-before[k] for k in ('tp','fp','fn')},
+        recovered_truth=sum(r['new_truth_matches'] for r in records),
+        lost_truth=sum(r['lost_truth_matches'] for r in records),
+        tracks_improved=sum(r['delta_f1_points']>1e-10 for r in records),
+        tracks_regressed=sum(r['delta_f1_points']< -1e-10 for r in records),
+        tracks_unchanged=sum(abs(r['delta_f1_points'])<=1e-10 for r in records),
+        groups=groups,per_track=records)
+    dump(args.out/'comparison.json',report)
+    print('ACOUSTIC_PAIRED_AUDIT',json.dumps({k:v for k,v in report.items()
+        if k not in ('groups','per_track')}),flush=True)
+
+
 def main():
     p=argparse.ArgumentParser()
     p.add_argument('--root',type=Path,required=True)
     p.add_argument('--out',type=Path,required=True)
     p.add_argument('--workers',type=int,default=4)
-    p.add_argument('--phase',choices=['collect','samples','train','replay'],default='collect')
+    p.add_argument('--phase',choices=['collect','samples','train','replay','audit'],default='collect')
     args=p.parse_args()
-    {'collect':collect,'samples':make_samples,'train':train,'replay':replay}[args.phase](args)
+    {'collect':collect,'samples':make_samples,'train':train,'replay':replay,'audit':audit}[args.phase](args)
 
 
 if __name__=='__main__': main()

@@ -57,3 +57,35 @@ rapports ne sont jamais écrasés par une nouvelle exécution.
 
 Cette série concerne uniquement Onset, sans promotion du MIDI ni modification
 des autres caractéristiques.
+
+## Seconde boucle : calibration sur quatre compositions
+
+La première calibration choisit la détection directe seule pour le pli Rock3,
+à partir de SS1. Le score réservé Rock3 régresse de 68,344519 à 66,183167 % :
+482 vraies attaques perdues, 741 faux positifs retirés. Ce choix n'est pas
+remplacé après consultation de Rock3 ; l'expérience entière reste archivée.
+
+Une seconde expérience apprend et sélectionne avec quatre compositions internes
+par OUTER. Les dix paires de compositions exclues couvrent vingt séparations
+TRAIN3/CAL1. Les cinq modèles à fenêtre de supervision 12 blocs déjà appris
+sont réutilisables pour cinq paires ; cinq autres modèles sont appris. Chaque
+composition de CAL est exclue du modèle qui prédit ses probabilités.
+
+Le seuil, le réarmement et le mode sont choisis sur le F1 micro des quatre
+compositions internes réunies. La grille comporte .75/.80/.85/.90/.95/.975/.99,
+deux réarmements et deux exclusions des doublons. La référence reste candidate.
+Les poids choisis sont ensuite réappris sur les quatre compositions internes
+et figés avant OUTER. Seule la supervision à 12 blocs est utilisée : elle avait
+gagné les comparaisons CAL disponibles de la première boucle. Aucune attente
+de 12 blocs n'est introduite à l'inférence.
+
+```bash
+python -m scripts.onset_acoustic_grouped256 --previous "$ONSET_EXPERIMENT_DIR" --out "$ONSET_GROUPED_DIR" --workers 5
+python -m scripts.onset_acoustic_direct256 --root "$ONSET_DATA_DIR" --out "$ONSET_GROUPED_DIR" --phase replay --workers 3
+python -m scripts.onset_acoustic_direct256 --root "$ONSET_DATA_DIR" --out "$ONSET_GROUPED_DIR" --phase audit
+```
+
+Le second dossier référence les mêmes caractéristiques audio par liens locaux.
+Les rapports identifient les modèles réutilisés, chaque composition exclue et
+les SHA des probabilités. FIT80 est un corpus de recherche déjà exposé, y
+compris par la première boucle ; cette reprise n'est pas un nouveau test aveugle.
