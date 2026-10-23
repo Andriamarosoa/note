@@ -1,0 +1,181 @@
+name: Onset FP native256 causal learned gate vs 69D and 74D frozen controls
+on:
+  push:
+    branches: [codex/note-onset-fp-learned-expert-gate256]
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: onset-fp-cal-split-gate256-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  GH_TOKEN: ${{ github.token }}
+  PYTHONPATH: src
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Tests 256-causal same-outputs learned gate and independent baselines
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0 joblib==1.4.2 onnxruntime==1.20.1
+          python -m compileall -q src/onset256 scripts tests
+          python -m unittest discover -s tests -v
+          python - <<'PY'
+          from pathlib import Path
+          from onset256.acoustics import HOP,SR
+          from onset256.fp_expert_gate import GATE_FEATURES,SCHEMA
+          s=Path("src/onset256/runtime.py").read_text()
+          assert HOP==256 and SR==44100 and GATE_FEATURES==11
+          assert s.index("opinion=self.onset_heads.predict(") < s.index("a=self.base.step(p,k,end,end)")
+          assert "self.fp_last_native_on[event.pitch-40]=end" in s
+          assert "gated_unified=gated_intents+recovered_intents" in s
+          assert "select_gate_onsets(risk_intents,keep)" in s
+          assert "self.risk_selector.step(gated,k,end,end)" not in s
+          assert "IncrementalS708TemporalHead" not in s
+          print("ONSET_FP_LEARNED_11D_GATE_CAL_SPLIT_NO_FEEDBACK_NO_LOOKAHEAD_PCM256_OK")
+          PY
+  scientific_CAL_train_and_real80:
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 210
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Pinned numerical training and inference libraries
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0 joblib==1.4.2 onnxruntime==1.20.1
+      - name: Obtain immutable signed 74D event evidence and fifteen original frozen expert checkpoints
+        run: |
+          mkdir -p /tmp/onset_gate/evidence /tmp/onset_gate/fpsource /tmp/onset_gate/risk /tmp/onset_gate/four /tmp/onset_gate/s701
+          gh run download 39772165153 --repo Andriamarosoa/note --name ONSET_MLP69_RESIDUAL_FP_80_GUITARSET_NATIVE256_FORENSICS --dir /tmp/onset_gate/evidence
+          gh run download 39775357133 --repo Andriamarosoa/note --name ONSET_FP_69_70_74_SAME_TRAIN_NEURAL_PCM256_REAL_80WAV_ABLATION --dir /tmp/onset_gate/fpsource
+          gh run download 39759373185 --repo Andriamarosoa/note --name ONSET_FN_RECOVERY_FOUR_NEURAL_HEADS_TRAINED256_AND_REAL_WAV --dir /tmp/onset_gate/four
+          gh run download 39741883968 --repo Andriamarosoa/note --name ONSET_HARDNEGATIVE_HARMONIC_RESTRIKE_MLP69_NATIVE256_REAL_REPLAY --dir /tmp/onset_gate/risk
+          gh run download 39085408073 --repo Andriamarosoa/note --name S701_CAUSAL_ONSET_LEARNED_TRAIN_HELD_COMPOSITION --dir /tmp/onset_gate/s701
+          EVIDENCE="$(find /tmp/onset_gate/evidence -name fp_signals74.jsonl -type f -print -quit)"
+          SOURCE="$(find /tmp/onset_gate/fpsource -path '*/trained/report.json' -type f -print -quit)"
+          PREVIOUS="$(find /tmp/onset_gate/fpsource -path '*/replayed/report.json' -type f -print -quit)"
+          RISK="$(find /tmp/onset_gate/risk -path '*/trained/report.json' -type f -print -quit)"
+          FOUR="$(find /tmp/onset_gate/four -path '*/trained/report.json' -type f -print -quit)"
+          S701="$(find /tmp/onset_gate/s701 -name s701_onset_shadow.joblib -type f -print -quit)"
+          for file in "$EVIDENCE" "$SOURCE" "$PREVIOUS" "$RISK" "$FOUR" "$S701"; do
+            if test ! -s "$file"; then
+              find /tmp/onset_gate -maxdepth 5 -type f | head -100
+              echo "Required SIGNED original real WAV evidence is missing"
+              exit 1
+            fi
+          done
+          printf '%s\n' "$EVIDENCE" > /tmp/onset_gate/evidence_path
+          printf '%s\n' "$PREVIOUS" > /tmp/onset_gate/previous_path
+          printf '%s\n' "$(dirname "$SOURCE")" > /tmp/onset_gate/source_model_path
+          printf '%s\n' "$(dirname "$RISK")" > /tmp/onset_gate/risk_model_path
+          printf '%s\n' "$(dirname "$FOUR")" > /tmp/onset_gate/four_model_path
+          printf '%s\n' "$S701" > /tmp/onset_gate/s701_path
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          r=json.loads(Path(Path("/tmp/onset_gate/previous_path").read_text().strip()).read_text())
+          assert r["complete"] and r["tracks"]==80 and r["frames"]==306536
+          assert r["fifth_head_three_ablations"]["control69"]["tp"]==8127
+          assert r["fifth_head_three_ablations"]["control69"]["fp"]==4519
+          assert r["fifth_head_three_ablations"]["control69"]["fn"]==3140
+          assert r["old_four_head"]["tp"]==8160 and r["old_four_head"]["fp"]==4605
+          print("ONSET_GATE_PRE_REGISTERED_ISSUE_143_CONTROL69_REAL_80WAV_VERIFIED")
+          PY
+      - name: Load immutable signed GuitarSet original 80 traces
+        run: |
+          mkdir -p /tmp/onset_gate/manifest /tmp/onset_gate/traces
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/onset_gate/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/onset_gate/traces
+          META="$(find /tmp/onset_gate/manifest -name report.json -type f -print -quit)"
+          TRACE="$(find /tmp/onset_gate/traces -name fit_000.json -type f -print -quit)"
+          test -s "$META";test -s "$TRACE"
+          printf '%s\n' "$META" > /tmp/onset_gate/manifest_path
+          printf '%s\n' "$(dirname "$TRACE")" > /tmp/onset_gate/traces_path
+      - name: TRAIN five independent neural CAL split gates, freeze before any OUTER
+        run: |
+          python -m scripts.train_onset_fp_expert_gate256 \
+            --signals "$(cat /tmp/onset_gate/evidence_path)" \
+            --source-fp-models "$(cat /tmp/onset_gate/source_model_path)" \
+            --reference "$(cat /tmp/onset_gate/previous_path)" \
+            --out /tmp/onset_gate/trained
+      - name: Download original 80 WAV GuitarSet archive and SHA256-check all bytes
+        run: |
+          python - <<'PY'
+          import hashlib,json,urllib.request
+          from pathlib import Path
+          record=json.loads(Path("analysis/evidence/v273-s613-strict-live/protocol.json").read_text())["guitar_archives"]["GuitarSet_audio"]
+          file=Path("/tmp/onset_gate/GuitarSet_audio.zip")
+          with urllib.request.urlopen(record["url"],timeout=180) as src,file.open("wb") as dst:
+              for block in iter(lambda:src.read(2*1024*1024),b""):
+                  dst.write(block)
+          assert file.stat().st_size==record["size"]
+          h=hashlib.sha256()
+          with file.open("rb") as fd:
+              for block in iter(lambda:fd.read(2*1024*1024),b""):
+                  h.update(block)
+          assert h.hexdigest()==record["sha256"]
+          print("ONSET_FP_GATE_REAL_WAV_ORIGINAL_SHA256_VERIFIED")
+          PY
+      - name: TRUE 80 WAV causal PCM256 replay of learned expert gate and original frozen heads
+        run: |
+          python -m scripts.replay_onset_fp_expert_gate256 \
+            --audio-zip /tmp/onset_gate/GuitarSet_audio.zip \
+            --traces "$(cat /tmp/onset_gate/traces_path)" \
+            --manifest "$(cat /tmp/onset_gate/manifest_path)" \
+            --native-model model/live/strict_note/NOTE_strict_live.npz \
+            --s701-model "$(cat /tmp/onset_gate/s701_path)" \
+            --old-risk-models "$(cat /tmp/onset_gate/risk_model_path)" \
+            --old-fn-models "$(cat /tmp/onset_gate/four_model_path)" \
+            --fp-models "$(cat /tmp/onset_gate/source_model_path)" \
+            --gate-models /tmp/onset_gate/trained \
+            --out /tmp/onset_gate/replayed
+      - name: Preregistered no-promotion-on-failure quality guard versus 69D F1 FP
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("/tmp/onset_gate/trained/report.json")
+          if p.is_file():
+              t=json.loads(p.read_text())
+              assert t["complete"] and t["CAL_never_OUTER_for_gate_training"]
+              assert len(t["folds"])==5
+              assert all(set(f["gate_train_tracks"]).isdisjoint(f["gate_validation_tracks"]) for f in t["folds"])
+              assert all(f["never_tuned_on_OUTER"] for f in t["folds"])
+              print("ONSET_FP_GATE_CAL_SPLITS",[(f["outer_composition"],
+                f["enabled"],f["gate_train_disagreement_count"],
+                f["calibrated_cut"]) for f in t["folds"]])
+          p=Path("/tmp/onset_gate/replayed/report.json")
+          if p.is_file():
+              r=json.loads(p.read_text())
+              assert r["complete"] and r["tracks"]==80 and r["frames"]==306536
+              assert r["old_four_head"]["tp"]==8160
+              assert r["old_four_head"]["fp"]==4605
+              assert r["fifth_head_three_ablations"]["control69"]["tp"]==8127
+              assert r["fifth_head_three_ablations"]["control69"]["fp"]==4519
+              assert r["fifth_head_three_ablations"]["control69"]["fn"]==3140
+              assert r["original_five_other_axes_unchanged"] and r["production_midi_untouched"]
+              assert not r["promoted"]
+              print("ONSET_FP_GATE_GENUINE_CAUSAL_PCM256_REAL_FINAL",r["learned_gate_real"])
+              print("ONSET_FP_GATE_ISSUE143_FALSIFICATION",r["hypothesis_gate_beats_control69_f1"],
+                    r["hypothesis_gate_reduces_fp"])
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ONSET_FP_LEARNED_GATE_CAL_SPLIT_REAL_80WAV_PCM256_V1
+          path: |
+            /tmp/onset_gate/trained/report.json
+            /tmp/onset_gate/trained/checkpoints/
+            /tmp/onset_gate/replayed/report.json
+          if-no-files-found: warn
+          retention-days: 45

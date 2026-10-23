@@ -6,6 +6,7 @@ from .acoustics import CausalPitchFeatures,HOP,SR
 from .selector import CausalSelection,Selection
 from .fn_recovery import CANDIDATE_POLICIES,FNRecoverySelector
 from .fp_discriminator import causal_parent_matrix,select_known_onsets,VARIANTS
+from .fp_expert_gate import select_gate_onsets
 from .heads import OnsetHeadStack, OnsetHeadSelector
 
 SCHEMA="ONSET_S613_S701_REAL_256_TRAINING_V1"
@@ -29,10 +30,12 @@ class Decision:
     fn_unified_intents:tuple=()
     fp_discriminator_intents:dict=None
     fp_discriminator_unified:dict=None
+    fp_gated_intents:tuple=()
+    fp_gated_unified:tuple=()
 
 class Stream:
     """S613 + S701 both called exactly once per received PCM256 decision."""
-    def __init__(self,native,s701,*,audit_events=False,risk_model=None,recovery_model=None,fp_models=None):
+    def __init__(self,native,s701,*,audit_events=False,risk_model=None,recovery_model=None,fp_models=None,gate_model=None):
         policy=Selection(**native.metadata.get("selection",{}))
         self.native=native;self.s701=s701
         self.frontend=CausalPitchFeatures(hop=HOP)
@@ -40,9 +43,10 @@ class Stream:
         # Risk is an Onset HEAD; only the private selector may use its doubt.
         if recovery_model is not None and risk_model is None:
             raise ValueError("FNRecovery is compared against the frozen three-head Onset reference")
-        self.onset_heads=OnsetHeadStack(native,s701,risk_model,recovery_model,fp_models)
+        self.onset_heads=OnsetHeadStack(native,s701,risk_model,recovery_model,fp_models,gate_model)
         self.fp_last_native_on=np.full(49,-10**12,np.int64)
         self.fp_calls=0
+        self.fp_gate_calls=0
         self.s701_features=self.onset_heads.rescue.cache
         self.head_selector=OnsetHeadSelector(
             calibrated_correctness_cut=(
@@ -150,6 +154,8 @@ class Stream:
         # accepted error-head NoteOns. They never touch selector state.
         fp_intents=None
         fp_unified=None
+        gated_intents=()
+        gated_unified=()
         if self.onset_heads.fp_heads:
             fp_intents={}
             fp_unified={}
@@ -163,6 +169,20 @@ class Stream:
                 if not {(e.pitch,e.sample) for e in picked}.issubset(
                        {(e.pitch,e.sample) for e in risk_intents}):
                     raise AssertionError("FP head invented NoteOn")
+            if self.onset_heads.fp_gate is not None:
+                gate_model=self.onset_heads.fp_gate.model
+                keep=gate_model.accepted_mask(
+                    opinion.fp_discriminator_correctness["control69"],
+                    opinion.fp_discriminator_correctness["temporal74"],
+                    opinion.fp_gate_probability)
+                gated_intents=select_gate_onsets(risk_intents,keep)
+                gated_unified=gated_intents+recovered_intents
+                self.fp_gate_calls+=1
+                if self.fp_gate_calls!=self.calls:
+                    raise AssertionError("FP supervised gate failed causal 256 cadence")
+                if not {(e.pitch,e.sample) for e in gated_intents}.issubset(
+                    {(e.pitch,e.sample) for e in risk_intents}):
+                    raise AssertionError("FP expert gate invented new NoteOn")
             self.fp_calls+=1
             if (self.fp_calls!=self.calls or
                 any(head.calls!=self.calls
@@ -200,7 +220,8 @@ class Stream:
             audit_native=audit_shadow=()
         return Decision(end,native_intents,shadow_intents,audit_native,
                         audit_shadow,risk_intents,head_doubts,recovered_intents,
-                        unified_intents,fp_intents,fp_unified)
+                        unified_intents,fp_intents,fp_unified,
+                        gated_intents,gated_unified)
     def push(self,samples,*,start_sample):
         if self.closed or type(start_sample)is not int or start_sample!=self.received:
             raise ValueError("Onset PCM discontinuity or closed")

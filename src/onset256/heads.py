@@ -18,6 +18,7 @@ from .acoustics import HOP, PITCHES
 from .s701_features import LiveS701Features
 from .fn_recovery import FNRecoverySelector
 from .fp_discriminator import FPDiscriminatorModel,discriminator_matrix,VARIANTS
+from .fp_expert_gate import FPExpertGateModel
 
 SCHEMA = "ONSET_EMBEDDED_INDEPENDENT_HEADS_PCM256_V1"
 HEAD_NAMES = ("main_attack", "rescue_attack", "error_prediction")
@@ -35,6 +36,7 @@ class HeadOpinions:
     correctness_probability: Optional[np.ndarray]
     fn_recovery_probability: Optional[np.ndarray]=None
     fp_discriminator_correctness: Optional[dict]=None
+    fp_gate_probability: Optional[np.ndarray]=None
 
 class MainAttackHead:
     name="main_attack"
@@ -152,10 +154,33 @@ class FPDiscriminatorHead:
             raise AssertionError("FP specialist cadence mismatch")
         return value
 
+class FPExpertGateHead:
+    """Independent learned Onset head operating only where 69D/74D disagree."""
+    name="fp_expert_gate"
+    trained_hop_samples=256
+    def __init__(self,model):
+        if not isinstance(model,FPExpertGateModel):
+            raise ValueError("expert gate needs own 11D CAL-trained weights")
+        self.model=model
+        self.initial_model_calls=model.calls
+        self.calls=0
+    def predict(self,fp_probabilities,correct,parent_ages):
+        if set(fp_probabilities)!=set(VARIANTS):
+            raise ValueError("gate requires all three original frozen experts")
+        value=self.model.predict(
+            fp_probabilities["control69"],
+            fp_probabilities["control70"],
+            fp_probabilities["temporal74"],
+            correct,parent_ages)
+        self.calls+=1
+        if self.calls!=self.model.calls-self.initial_model_calls:
+            raise AssertionError("FP gate neural cadence drift")
+        return value
+
 class OnsetHeadStack:
     """All three private Onset heads evaluated before the private selector."""
 
-    def __init__(self,native,s701,risk_model=None,recovery_model=None,fp_models=None):
+    def __init__(self,native,s701,risk_model=None,recovery_model=None,fp_models=None,gate_model=None):
         self.main=MainAttackHead(native)
         self.rescue=RescueAttackHead(s701)
         self.error=(ErrorPredictionHead(risk_model) if risk_model is not None else None)
@@ -165,6 +190,9 @@ class OnsetHeadStack:
         if fp_models and set(fp_models)!=set(VARIANTS):
             raise ValueError("FP ablation needs 69/70/74 comparators simultaneously")
         self.fp_heads={name:FPDiscriminatorHead(fp_models[name]) for name in VARIANTS} if fp_models else {}
+        if gate_model is not None and not self.fp_heads:
+            raise ValueError("neural gate cannot evaluate without frozen 69D/74D controls")
+        self.fp_gate=(FPExpertGateHead(gate_model) if gate_model is not None else None)
         self.last_end=0
         self.calls=0
 
@@ -172,7 +200,8 @@ class OnsetHeadStack:
     def names(self):
         baseline=(HEAD_NAMES+(FN_RECOVERY_HEAD_NAME,) if self.recovery is not None
                   else HEAD_NAMES if self.error is not None else HEAD_NAMES[:2])
-        return baseline+tuple("fp_discriminator_"+n for n in self.fp_heads)
+        return (baseline+tuple("fp_discriminator_"+n for n in self.fp_heads)
+                +(("fp_expert_gate",) if self.fp_gate is not None else ()))
 
     def predict(self,feat,*,end_sample,selector_state=None,parent_ages=None):
         if (HOP!=256 or type(end_sample) is not int or
@@ -195,19 +224,24 @@ class OnsetHeadStack:
                 name:head.predict(full74)
                 for name,head in self.fp_heads.items()
             }
+        gate_probability=None
+        if self.fp_gate is not None:
+            gate_probability=self.fp_gate.predict(fp_probability,correct,parent_ages)
         self.last_end=end_sample
         self.calls+=1
         if (self.main.calls!=self.calls or self.rescue.calls!=self.calls or
             (self.error is not None and self.error.calls!=self.calls) or
             (self.recovery is not None and self.recovery.calls!=self.calls) or
-            any(h.calls!=self.calls for h in self.fp_heads.values())):
+            any(h.calls!=self.calls for h in self.fp_heads.values()) or
+            (self.fp_gate is not None and self.fp_gate.calls!=self.calls)):
             raise AssertionError("Onset head stack missed 256-sample inference")
         return HeadOpinions(sample=end_sample,main_posterior=p,native_k=k,
                             rescue_probability=rescue,rescue_history=history,
                             error_probability=error,
                             correctness_probability=correct,
                             fn_recovery_probability=recovery,
-                            fp_discriminator_correctness=fp_probability)
+                            fp_discriminator_correctness=fp_probability,
+                            fp_gate_probability=gate_probability)
 
 @dataclass(frozen=True)
 class Doubt:
