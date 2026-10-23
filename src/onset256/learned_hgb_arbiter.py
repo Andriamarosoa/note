@@ -152,3 +152,33 @@ def candidate_rows(q, evidence, baseline, direct):
             locations.extend((f, int(p)) for p in h)
     return (np.concatenate(out) if out else np.zeros((0, DIM), np.float32),
             locations)
+
+
+def replay_precomputed(direct, baseline, candidate_scores, policy):
+    """Fast calibration with scores frozen BEFORE exploring CAL policies.
+
+    Exactly the same decision order/refractory state as LearnedHGBArbiter.step.
+    Does not use annotation, future q, or future audio.
+    """
+    direct = np.asarray(direct, bool)
+    baseline = np.asarray(baseline, bool)
+    locations = list(zip(*np.nonzero(baseline)))
+    scores = np.asarray(candidate_scores, np.float32)
+    if (direct.shape != baseline.shape or direct.ndim != 2 or
+            direct.shape[1] != PITCHES or len(scores) != len(locations) or
+            not np.isfinite(scores).all()):
+        raise ValueError("invalid precomputed gate inputs")
+    accepted = direct.copy()
+    last_gate = np.full(PITCHES, -10**12, np.int64)
+    direct_frames = [np.flatnonzero(direct[:,p]) for p in range(PITCHES)]
+    for (frame, pitch), score in zip(locations, scores):
+        if direct[frame, pitch] or float(score) < policy.cut:
+            continue
+        previous = direct_frames[pitch]
+        j = np.searchsorted(previous, frame, side="right") - 1
+        last_direct = int(previous[j]) if j >= 0 else -10**12
+        if (frame - last_direct >= policy.gap_hops and
+                frame - last_gate[pitch] >= policy.gap_hops):
+            accepted[frame, pitch] = True
+            last_gate[pitch] = frame
+    return accepted
