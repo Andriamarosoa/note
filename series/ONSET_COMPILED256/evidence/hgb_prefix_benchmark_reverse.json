@@ -1,0 +1,38 @@
+{
+  "track": "00_BN1-129-Eb_comp",
+  "hops": 1000,
+  "warmup": 100,
+  "measured_hops": 900,
+  "events": 26,
+  "event_parity": true,
+  "selected_model": "hgb69_leaves7",
+  "selected_cut": 0.36,
+  "results": {
+    "compiled": {
+      "ms_p50": 7.2040785,
+      "ms_p95": 15.334571399999994,
+      "ms_p99": 21.871668739999986,
+      "ms_max": 30.699787,
+      "process_cpu_ms_p50": 7.193766999999999,
+      "process_cpu_ms_p95": 15.306421499999994,
+      "over_hop_count": 609
+    },
+    "reference": {
+      "ms_p50": 13.645273,
+      "ms_p95": 24.23587089999999,
+      "ms_p99": 30.39728259,
+      "ms_max": 32.350362,
+      "process_cpu_ms_p50": 13.643688999999998,
+      "process_cpu_ms_p95": 24.23435829999999,
+      "over_hop_count": 900
+    }
+  },
+  "execution_order": [
+    "compiled",
+    "reference"
+  ],
+  "hop_samples": 256,
+  "added_hold_samples": 0,
+  "hardware_latency_measured": false,
+  "scope": "local CPU prefix; excludes model loading and audio I/O"
+}

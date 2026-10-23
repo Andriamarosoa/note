@@ -41,6 +41,8 @@ l'arbitrage sur événements et le flux audio réel.
 ## Protocole
 
 - Mêmes 80 WAV signés, 306536 frontières PCM256, vérité terrain originale.
+- Appariement un-à-un avec hauteur identique et tolérance de 80 ms autour
+  du timestamp d'émission réel, appliqué après l'inférence pour l'évaluation.
 - Premier passage audio : anciens et nouveaux arbitres exécutés en parallèle
   sur les mêmes observations. Les sorties historiques sont reproduites
   exactement : S613, ErrorPrediction, FNRecovery et contrôle69.

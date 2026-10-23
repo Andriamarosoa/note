@@ -1,0 +1,20 @@
+{
+  "schema": "ONSET_ERROR_HEAD_HARDNEGATIVE_NATIVE256_69D_V1",
+  "training_hop_samples": 256,
+  "decision_hop_samples": 256,
+  "feature_dim": 69,
+  "checkpoint_sha256": "08d9c4a71da582a4d594b9c635a5d55bdccd102e1a770359e27c9e9e6bcdf2d4",
+  "frozen_before_outer": true,
+  "train_compositions": [
+    "Funk2",
+    "Jazz1",
+    "Rock3"
+  ],
+  "cal_composition": "BN1",
+  "outer_composition": "SS1",
+  "selected_expert": "balanced",
+  "calibrated_cut": 0.1,
+  "calibrated_on_only": "CAL_FROZEN_BEFORE_OUTER",
+  "external_outer_for_frozen_S613_teacher": false,
+  "trained_on_labelled_native256_notes": true
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "ONSET_EVENT_CONFIDENCE_HGB69_PCM256_V1",
+  "trained_hop_samples": 256,
+  "feature_dim": 69,
+  "outer": "Funk2",
+  "cal": "Jazz1",
+  "train": [
+    "BN1",
+    "Rock3",
+    "SS1"
+  ],
+  "selected_model": "hgb69_leaves7",
+  "cut": 0.28,
+  "checkpoint_sha256": "743c07cf5dd0241136598912dcbb9d1b3cd37e4e3b5bce40b4a2ae3c9585a184",
+  "frozen_before_outer": true,
+  "calibration": "exact_one_to_one_event_rematching_on_CAL_only",
+  "historical_upstream_overlap": true,
+  "no_state_feedback": true
+}

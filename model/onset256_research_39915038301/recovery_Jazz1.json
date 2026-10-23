@@ -1,0 +1,20 @@
+{
+  "schema": "ONSET_FN_RECOVERY_69D_SUPERVISED_NATIVE256_V1",
+  "checkpoint_sha256": "0f9f851f53dd217b05d95ffd490f97d5513f61f4fe6e6c2e6e4da31153eeb949",
+  "trained_hop_samples": 256,
+  "dim": 69,
+  "frozen_before_outer": true,
+  "calibrated_only_on_cal": true,
+  "train_compositions": [
+    "BN1",
+    "Funk2",
+    "SS1"
+  ],
+  "cal_composition": "Rock3",
+  "outer_composition": "Jazz1",
+  "candidate_policy": "sensitive",
+  "calibrated_cut": 0.75,
+  "enabled": true,
+  "trained_neural_network": "StandardScaler+MLPClassifier_64_32",
+  "fn_labels_attached_post_inference": true
+}
