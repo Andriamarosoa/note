@@ -85,6 +85,12 @@ class FNRecoverySelector:
         result=[]
         seen=set()
         for e in proposals:
+            # CausalSelection also emits NoteOff, including immediately
+            # before a same-hop restrike. Those are not recovery proposals:
+            # they must not consume `seen` or advance the NoteOn cooldown.
+            # Archived candidate-only records omit type and mean NoteOn.
+            if e.get("type", "note_on") != "note_on":
+                continue
             pitch=int(e["pitch"])
             j=pitch-40
             if not 0<=j<49 or int(e["decision_sample"])!=end_sample:

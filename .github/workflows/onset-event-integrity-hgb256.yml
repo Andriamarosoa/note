@@ -1,0 +1,84 @@
+name: Onset PCM256 event integrity and learned HGB exact CAL
+on:
+  push:
+    branches: [codex/note-onset-event-integrity-hgb256]
+    paths:
+      - 'src/**'
+      - 'scripts/onset_event_integrity256.py'
+      - 'tests/**'
+      - '.github/workflows/onset-event-integrity-hgb256.yml'
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: onset-event-integrity-hgb256-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  GH_TOKEN: ${{ github.token }}
+  PYTHONPATH: src
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  paired_audio_train_and_fresh_replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install original numerical versions and validate event integrity
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0 joblib==1.4.2 onnxruntime==1.20.1
+          python -m compileall -q src scripts tests
+          python -m unittest discover -s tests -v
+      - name: Download immutable previous Onset models and signed FIT80 evidence
+        run: |
+          mkdir -p /tmp/onset_event_integrity/{risk,four,fp,s701,manifest,traces}
+          gh run download 39741883968 --repo Andriamarosoa/note --name ONSET_HARDNEGATIVE_HARMONIC_RESTRIKE_MLP69_NATIVE256_REAL_REPLAY --dir /tmp/onset_event_integrity/risk
+          gh run download 39759373185 --repo Andriamarosoa/note --name ONSET_FN_RECOVERY_FOUR_NEURAL_HEADS_TRAINED256_AND_REAL_WAV --dir /tmp/onset_event_integrity/four
+          gh run download 39775357133 --repo Andriamarosoa/note --name ONSET_FP_69_70_74_SAME_TRAIN_NEURAL_PCM256_REAL_80WAV_ABLATION --dir /tmp/onset_event_integrity/fp
+          gh run download 39085408073 --repo Andriamarosoa/note --name S701_CAUSAL_ONSET_LEARNED_TRAIN_HELD_COMPOSITION --dir /tmp/onset_event_integrity/s701
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/onset_event_integrity/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/onset_event_integrity/traces
+          python - <<'PY'
+          import json, urllib.request
+          from pathlib import Path
+          rec=json.loads(Path('analysis/evidence/v273-s613-strict-live/protocol.json').read_text())['guitar_archives']['GuitarSet_audio']
+          target=Path('/tmp/onset_event_integrity/GuitarSet_audio.zip')
+          with urllib.request.urlopen(rec['url'],timeout=180) as src,target.open('wb') as out:
+              for block in iter(lambda:src.read(2**20),b''):out.write(block)
+          PY
+      - name: Audit old and corrected selectors on all 80 real WAVs
+        run: |
+          python -m scripts.onset_event_integrity256 --root /tmp/onset_event_integrity --out /tmp/onset_event_results --workers 3 --phase collect
+      - name: Train ten HGB experts and freeze choices using exact CAL event matching
+        run: |
+          python -m scripts.onset_event_integrity256 --root /tmp/onset_event_integrity --out /tmp/onset_event_results --workers 3 --phase train
+      - name: Fresh causal PCM256 audio replay with sealed heads and exact event parity
+        run: |
+          python -m scripts.onset_event_integrity256 --root /tmp/onset_event_integrity --out /tmp/onset_event_results --workers 3 --phase replay
+      - name: Report measured scores without treating a refuted hypothesis as a CI crash
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          for phase in ('collected','trained','replayed'):
+              path=Path('/tmp/onset_event_results')/phase/'report.json'
+              if path.exists():
+                  r=json.loads(path.read_text())
+                  print(phase,json.dumps(r.get('totals',r.get('event_cache_oof'))))
+                  if phase=='replayed':
+                      assert r['complete'] and r['tracks']==80 and r['frames']==306536
+                      assert r['exact_event_parity_with_sealed_cache']
+                      assert r['hop_samples']==256 and r['added_hold_samples']==0
+                      print('ONSET_MEASURED_IMPROVEMENT',r['f1_improved_vs_control69'])
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ONSET_EVENT_INTEGRITY_HGB69_PCM256_PAIRED_AND_FRESH_REPLAY
+          path: /tmp/onset_event_results/
+          if-no-files-found: warn
+          retention-days: 60
