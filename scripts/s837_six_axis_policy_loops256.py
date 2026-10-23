@@ -237,6 +237,58 @@ def audit_event_change(axis, src, baseline_label, candidate_label, candidate_par
         examples_removed_fp=[explain_fp(x) for x in removed[:20]],
         instrumentation_only=True)
 
+def audit_count_change(axis, src, candidate_label, candidate_params):
+    """Every valid PCM256 frame: recovered/lost exact count vs K0..K6.
+
+    No selection from OUTER truth. Called only after the selection has frozen.
+    """
+    if axis not in ("exact_k","active_exact_k"):
+        raise ValueError("count audit requires a K-axis")
+    d0=new_decoder(axis,"reference",{})
+    d1=new_decoder(axis,candidate_label,candidate_params)
+    old=np.fromiter((d0.step(f).count for f in src.snapshots),
+                    dtype=np.int16,count=len(src.snapshots))
+    new=np.fromiter((d1.step(f).count for f in src.snapshots),
+                    dtype=np.int16,count=len(src.snapshots))
+    _,target=ground_truth(src.truth,src.frame_ends)
+    valid=target>0 if axis=="active_exact_k" else np.ones(len(target),bool)
+    if not valid.any():
+        raise AssertionError("zero truth frames for count audit")
+    changed=valid&(old!=new)
+    recover=valid&(old!=target)&(new==target)
+    regress=valid&(old==target)&(new!=target)
+    bothwrong=valid&(old!=target)&(new!=target)
+    across={}
+    for k in range(7):
+        mask=valid&(target==k)
+        across[str(k)]=dict(frames=int(mask.sum()),
+            correct_old=int((mask&(old==k)).sum()),
+            correct_new=int((mask&(new==k)).sum()),
+            recovered=int((mask&recover).sum()),
+            lost_correct=int((mask&regress).sum()),
+            candidate_over=int((mask&(new>k)).sum()),
+            candidate_under=int((mask&(new<k)).sum()))
+    return dict(
+        name=src.name,composition=src.composition,
+        valid_frames=int(valid.sum()),
+        frames_changed=int(changed.sum()),
+        recovered_correct=int(recover.sum()),
+        lost_correct=int(regress.sum()),
+        both_wrong_changed=int((bothwrong&changed).sum()),
+        candidate_changed_to_higher_K=int((changed&(new>old)).sum()),
+        candidate_changed_to_lower_K=int((changed&(new<old)).sum()),
+        per_true_K=across,
+        first_lost_examples=[
+            dict(sample=int(src.frame_ends[i]),truth=int(target[i]),
+                 previous=int(old[i]),candidate=int(new[i]))
+            for i in np.flatnonzero(regress)[:20]],
+        first_recovered_examples=[
+            dict(sample=int(src.frame_ends[i]),truth=int(target[i]),
+                 previous=int(old[i]),candidate=int(new[i]))
+            for i in np.flatnonzero(recover)[:20]],
+        source_truth_used_after_policy_locked=True)
+
+
 def aggregate(axis, counts):
     result=Counter()
     for item in counts:
@@ -309,7 +361,12 @@ def select_across_compositions(axis, src, all_results):
             [audit_event_change(axis,s,"reference",name,param_map[name])
              for s in src if s.composition==outer]
             if axis in ("onset","offset") else [])
+        count_audits=(
+            [audit_count_change(axis,s,name,param_map[name])
+             for s in src if s.composition==outer]
+            if axis in ("exact_k","active_exact_k") else [])
         per_outer[outer]=dict(
+            count_confusion_postmortems=count_audits,
             event_identity_postmortems=event_audits,
             selected_on_other_four=name,
             candidate_parameters=param_map[name],
