@@ -61,6 +61,28 @@ class FakePortAudio:
 
 
 class LiveNotePCM256Tests(unittest.TestCase):
+    def test_mic_automatic_default_requires_no_fold_or_device(self):
+        args=live.make_parser().parse_args(["--mic"])
+        self.assertTrue(args.mic)
+        self.assertIsNone(args.input_device)
+        self.assertEqual(args.fold,"BN1")
+        self.assertEqual(args.variant,"recovery-hgb")
+        audio=FakePortAudio()
+        engine=FakeOnset()
+        args=live.make_parser().parse_args(["--mic","--duration-s","0.006"])
+        with patch.object(live,"load_engine",return_value=engine),redirect_stdout(StringIO()) as output:
+            self.assertEqual(live.run(args,sd=audio),0)
+        self.assertIsNone(audio.open_kwargs["device"])
+        self.assertEqual(engine.starts,[0,256])
+        self.assertIn("AUTO_MIC_INPUT",output.getvalue())
+        self.assertIn("RESEARCH_FOLD_NOTICE",output.getvalue())
+
+    def test_device_alias_is_compatible_with_old_note_cli(self):
+        args=live.make_parser().parse_args(["--mic","--device","0","--fold","SS1"])
+        self.assertTrue(args.mic)
+        self.assertEqual(args.input_device,"0")
+        self.assertEqual(args.fold,"SS1")
+
     def test_device_listing_does_not_load_neural_model(self):
         p=FakePortAudio()
         with patch.object(live,"load_engine",side_effect=AssertionError("loaded")),redirect_stdout(StringIO()) as output:
