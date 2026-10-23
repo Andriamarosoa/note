@@ -5,7 +5,8 @@ import numpy as np
 from causal_note.s834_native256_decoders import AXES, Fragment, AxisDecision
 from scripts.s837_six_axis_policy_loops256 import (
     Source, choices, new_decoder, score_axis, score, evaluate,
-    select_across_compositions, audit_event_change, COMPS,
+    select_across_compositions, audit_event_change, audit_count_change,
+    original_for_axis, COMPS,
 )
 
 
@@ -71,6 +72,20 @@ class IndependentLoopTest(unittest.TestCase):
             self.assertEqual(d["lost_gt"],0)
             self.assertEqual(d["new_fp_events"],0)
             self.assertEqual(d["removed_fp_events"],0)
+
+    def test_k_postmortem_explains_each_changed_frame_without_claiming_cause(self):
+        s=source("BN1")
+        for axis in ("exact_k","active_exact_k"):
+            d=audit_count_change(axis,s,"reference",{})
+            self.assertEqual(d["frames_changed"],0)
+            self.assertEqual(d["recovered_correct"],0)
+            self.assertEqual(d["lost_correct"],0)
+            self.assertEqual(set(d["per_true_K"]),set(str(i) for i in range(7)))
+
+    def test_onset_and_offset_count_keys_canonicalized_exactly(self):
+        s=source("Rock3")
+        for axis in ("onset","offset"):
+            self.assertEqual(original_for_axis(axis,s),s.baseline[axis])
 
     def test_no_cross_axis_private_state_is_shared(self):
         first=source("SS1")
