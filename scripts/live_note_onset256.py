@@ -96,6 +96,7 @@ def run(args, *, sd=None):
         raise ValueError("--duration-s must be positive")
     index = device_index(sd, args.input_device)
     # Compiling/training artifacts are loaded before the microphone is opened.
+    # Default fold is a fixed, explicitly disclosed research selection.
     engine = load_engine(args)
     print("NOTE_PCM256_LIVE start | 44100 Hz | block=256 | "
           "fold=%s | variant=%s | Onset ONLY (not full MIDI)" %
@@ -103,7 +104,8 @@ def run(args, *, sd=None):
     if index is not None:
         print("Selected device:", index, sd.query_devices(index)["name"], flush=True)
     else:
-        print("Input: system-default device (check Realtek gain)", flush=True)
+        print("AUTO_MIC_INPUT: Windows default input (check Realtek gain; --list-devices to override)", flush=True)
+    print("RESEARCH_FOLD_NOTICE: %s is fixed, not inferred from guitar audio or best Live calibration" % args.fold, flush=True)
 
     out = None
     if args.jsonl is not None:
@@ -165,10 +167,12 @@ def run(args, *, sd=None):
 def make_parser():
     p = argparse.ArgumentParser(description="NOTE Onset PCM256 microphone Live (not MIDI)")
     p.add_argument("--list-devices",action="store_true")
-    p.add_argument("--input-device",default=None,
-                   help="Input index or unique substring from --list-devices")
-    p.add_argument("--fold",choices=FOLDS,default=None,
-                   help="Explicit research fold, not auto-selected from live audio")
+    p.add_argument("--mic", action="store_true",
+                   help="Launch automatic microphone input (default input when --device omitted)")
+    p.add_argument("--input-device", "--device", dest="input_device", default=None,
+                   help="Optional input index or unique substring; if omitted, use Windows default input")
+    p.add_argument("--fold",choices=FOLDS,default="BN1",
+                   help="Fixed default research fold BN1; not an automatic best-model selection")
     p.add_argument("--variant",choices=("recovery-hgb","research-original"),
                    default="recovery-hgb")
     p.add_argument("--base-bundle",type=Path,
@@ -185,8 +189,6 @@ def make_parser():
 
 def main(argv=None):
     args = make_parser().parse_args(argv)
-    if not args.list_devices and args.fold is None:
-        raise SystemExit("Select a research fold explicitly: --fold BN1 (or Funk2/Jazz1/Rock3/SS1)")
     try:
         return run(args)
     except (ValueError,FileNotFoundError,BufferError,RuntimeError) as e:
