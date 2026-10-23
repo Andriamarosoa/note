@@ -12,6 +12,7 @@ import time
 import numpy as np
 from causal_note.strict_live import HOP
 from causal_note.s706_sharp_spectra import sharp_track
+from causal_note.s836_incremental_sharp256 import IncrementalSharp256
 from causal_note.s712_s708_live import latest_s708_acoustic_features
 from causal_note.s827_s708_activek_only import (
     S827S708ActiveKOnly,PAST_AUDIO
@@ -25,9 +26,14 @@ SCHEMA="S834_S809_NATIVE256_S708_SIX_SHADOW_REALPCM_V1"
 
 class S834S809Native256(S827S708ActiveKOnly):
     """Six READ-ONLY shadow outputs and one fresh temporal S708 call per PCM256."""
-    def __init__(self,native_heads,original_s708_model,frozen_policy,*,modes=None):
+    def __init__(self,native_heads,original_s708_model,frozen_policy,*,modes=None,
+                 sharp_engine="reference"):
         super().__init__(native_heads,original_s708_model,frozen_policy,
                          capture_features=False)
+        if sharp_engine not in ("reference","incremental"):
+            raise ValueError("S836 sharp engine must be reference or incremental")
+        self.sharp_engine=sharp_engine
+        self.sharp_cache=IncrementalSharp256() if sharp_engine=="incremental" else None
         self.six=SixIndependentAxes(default_pipelines(modes))
         self.last_decision=0
         self.decisions={}
@@ -48,9 +54,12 @@ class S834S809Native256(S827S708ActiveKOnly):
         acoustic=latest_s708_acoustic_features(
             self.native_feat,self.native_post,self.native_k)
         n=len(self.audio)
-        sharp_ends=(np.array([n],np.int64) if end==HOP else
-                    np.array([n-HOP,n],np.int64))
-        spectral=sharp_track(self.audio,sharp_ends)[-1]
+        if self.sharp_cache is None:
+            sharp_ends=(np.array([n],np.int64) if end==HOP else
+                        np.array([n-HOP,n],np.int64))
+            spectral=sharp_track(self.audio,sharp_ends)[-1]
+        else:
+            spectral=self.sharp_cache.step(self.audio,end=int(end))
         X=np.concatenate((acoustic,spectral),axis=1)
         if X.shape!=(49,288) or not np.isfinite(X).all():
             raise AssertionError("S834 must have fresh 288D S708 PCM256 acoustics")
@@ -84,6 +93,7 @@ class S834S809Native256(S827S708ActiveKOnly):
     def diagnostics(self):
         d=super().diagnostics()
         d.update(schema=SCHEMA,decision_hop_samples=HOP,
+            s836_sharp_engine=self.sharp_engine,
             current_source_S708_nn_calls=self.model_calls,
             six_independent_axes=True,all_six_private=True,
             share_only_immutable_S708_acoustic_snapshot=True,
