@@ -41,6 +41,7 @@ jobs:
           allowed={'scripts/s838_fragment_risk_gates256.py',
                    'test/test_s838_fragment_risk_gates256.py',
                    'series/S838/resume.md','series/S838/resultat.md',
+                   'series/S838/audit_loop1.md',
                    
                    '.github/workflows/note-s838-fragment-risk-gates256.yml'}
           assert touched and touched<=allowed,touched-allowed
@@ -50,7 +51,7 @@ jobs:
         run: |
           python -m compileall -q scripts/s838_fragment_risk_gates256.py
           python -m unittest -v test.test_s838_fragment_risk_gates256 test.test_s837_six_axis_policy_loops256 test.test_s836_incremental_sharp256 test.test_s834_s809_native256_axes test.test_s835_best_six_registry
-          python -m scripts.verify_series_reports --series S837
+          python -m scripts.verify_series_reports --series S838
   real_five:
     runs-on: ubuntu-24.04
     needs: strict_six_independent
