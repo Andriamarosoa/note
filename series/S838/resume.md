@@ -1,53 +1,45 @@
 ---
 serie: S838
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s838-fragment-risk-gates256
-run_id: en_attente
-commit_sha: en_attente
+run_id: 40000089112
+commit_sha: 4448f460a656a3c524114f18a6b7385e96fb74f4
 promotion: false
 ---
 
-# S838 — Sélection apprise PAR FRAGMENT des corrections de K
+# S838 — Sélection apprise PAR FRAGMENT : boucles K terminées, non promues
 
 ## Objectif
-Continuer les boucles d'amélioration des six caractéristiques de NOTE vers **plus de 80 %** avec la priorité immédiate Exact-K et Active Exact-K, actuellement sous 80. Préserver S837 et les autres axes, et corriger **l'échec de généralisation des politiques fixes** en entraînant un sélecteur indépendant à chaque décision PCM256, sans retard ni futur.
+Continuer vers >80 % sur **les six caractéristiques NOTE** en traitant d'abord les régressions K de S837, sans perdre les plus petites corrections, sans audio futur ni attente ajoutée. Les six modèles ne sont pas fusionnés ; l'objectif musical ne peut être prétendu atteint avant six scores supérieurs à 80 sur la même métrique/cohorte.
 
 ## Hypothèse
-Le S837 #39997037972 démontre une régression Exact-K de 66 blocs corrects nets (Jazz1 −22, Rock3 −44) et une régression Active-K de 254 blocs corrects nets (BN1 −112, SS1 −194 malgré Jazz1 +31 et Rock3 +21). Une politique constante par composition ne choisit pas le bon expert pour chaque fragment. Un petit arbre de décision appris à partir de la confiance K0–K6 et des observations causales Onset/Sustain/Release **de la propre banque acoustique source en lecture seule** peut accepter les corrections là où le témoin est faible et rejeter les contre-exemples, sans jamais regarder la vérité du futur ni les décisions d'un autre axe.
+Le choix d'une politique uniforme par composition peut réussir sur un type de fragment mais créer plus de pertes sur d'autres. Un **arbre privé de sélection du meilleur expert à chaque fragment 256**, entraîné sur trois compositions, calibré sur la quatrième et évalué uniquement sur OUTER, devrait récupérer de petites corrections sans sacrifier tous les K0–K6.
 
 ## Modifications
-- Branche de recherche S838 distincte de S837 ; aucun pipeline officiel Live, aucun modèle natif S708, aucun des six décodeurs de production ni aucune sortie MIDI modifiés.
-- `scripts/s838_fragment_risk_gates256.py` : pour chaque vraie piste, une inférence S836/S708 gelée par frontière 256 ; extraction privée de 30 caractéristiques de confiance/sustain/attaque/release **du fragment courant**, pas de futur ni de notes GT en entrée.
-- Exact-K : banque d'experts du posterior K original et de quatre seuils de soutiens causaux.
-- Active Exact-K : banque d'experts privés avec hystérésis indépendante par variation `on/off`, état propre à chaque expert, jamais l'état d'Exact-K ou d'une autre tête.
-- Selector K : `DecisionTreeClassifier(max_depth=4, min_samples_leaf=90)` pour identifier quelle alternative corrige un K faux du témoin ; seuil de risque calibré sur composition CAL et recours au témoin par défaut. Aucun `sleep`, hold, calcul sur prochain bloc ni relecture d'une attaque.
-- Split fixe par OUTER : **trois compositions TRAIN, une CAL, une OUTER**, sans lecture de la composition OUTER pour entraîner l'arbre ni choisir sa politique.
-- `test/test_s838_fragment_risk_gates256.py` : causalité de l'entrée, exactitude du compte par référence, veto candidat incertain, récupération/perte par vrai K0–K6.
-- Rapports `series/S838/resume.md` et `resultat.md`, tests et GitHub CI isolés.
+- `scripts/s838_fragment_risk_gates256.py` : entrée acoustique S708 vraie à chaque PCM256, caractéristiques causales privées 30D, banques K privées, décision arbre de risque pour chaque fragment, seuil fixé uniquement sur CAL, sans sortie d'une autre caractéristique.
+- `test/test_s838_fragment_risk_gates256.py` et workflow GitHub CI : **36 tests PASS** sur [run #40000089112](https://github.com/Andriamarosoa/note/actions/runs/40000089112).
+- `series/S838/audit_loop1.md` : explication de chaque régression du gate Exact-K SS1 et de chaque petite correction Active-K, catégories K0–K6.
+- Source S708, six caractéristiques, moteur microphone et MIDI officiel demeurent **inchangés**. Uniquement des sorties SHADOW pour deux têtes de nombre.
 
 ## Protocole
-- 44 100 Hz, exactement **256 nouveaux échantillons par décision**, 5,805 ms de cadence, zéro audio futur, zéro hold et aucun mécanisme de prédiction différée.
-- Chaque tête possède sa banque d'experts, son entraînement et son sélecteur privés. La seule entrée partagée est le snapshot acoustique causal S708/NOTE en lecture seule ; **aucune sortie d'une tête alimente une autre tête**.
-- Les comptes issus du S834 original doivent être reproduits strictement sur chaque piste avant de comparer ; ne jamais déplacer le témoin pour simuler un gain.
-- Première preuve : les cinq vraies pistes GuitarSet FIT80 signées, chacune d'une composition distincte, 20 062 blocs PCM256. Les 75 autres pistes et les solos restent non vérifiés sur cette série.
-- La sélection de la meilleure confiance `THRESHOLDS` se fait exclusivement sur CAL. OUTER n'intervient qu'après le choix gelé de la politique.
-- Audits par composition et vrai K0–K6 : blocs récupérés/perdus, surcomptage/souscomptage, cas où les deux experts se trompent, liste des échantillons. Chaque perte entraîne une nouvelle hypothèse testable, pas un oubli.
-- Aucune métrique CAL32 mélangée avec FIT80. Exact-K / Active-K en accuracy de trames. Ne jamais confondre ces scores avec Onset/Offset F1 ni Full Note F1 ou prétendre un MIDI unifié.
-- Le modèle S708 a historiquement été entraîné à pas 1024. Cette série mesure **une inférence causale 256**, et non un vrai nouvel entraînement de la source S708 à 256.
-- Les propres champs de `FIT80` ont déjà été explorés historiquement ; sans nouveau test externe indépendant, pas de prétention de généralisation ni de promotion.
-- Si gain isolé, conserver le témoin et ses scores ; ne pas fusionner les têtes sans tests des six scores + budget p95/p99 physique Windows/iRig.
+- 44 100 Hz, décisions sans attente toutes les **256 valeurs** = 5,805 ms ; zéro hold, zéro future PCM et aucune entrée GT au runtime.
+- Original GuitarSet FIT80 déjà exploré, cinq vrais WAV `_comp`, un par composition, **20 062** blocs ; ne pas traiter ces scores comme preuve externe HELD ou résultats 80 pistes.
+- Pour chaque OUTER, entraîner sur 3 compositions disjointes, calibrer le seuil sur une quatrième, évaluer OUTER après choix verrouillé. Aucun événement des autres têtes ne sert d'entrée au sélecteur K.
+- Le modèle-source S708 n'a pas été réentraîné à 256, il a été appris sur une cadence historique 1024. Non-régression obligatoire des six métriques à protocole apparié, puis budget CPU sur Windows/iRig avant toute promotion.
+- Après toute petite progression ou régression, audit par échantillon et vrai K0–K6 ; conserver les exemples qui contredisent l'hypothèse, distinguer cause prouvée (mauvaise transférabilité) d'une origine harmonique encore à démontrer.
+- Les quatre autres axes restent gelés. Seul Frame Pitch dépassait déjà 80 % sur S837 et cette nouvelle boucle n'autorise pas de toucher à son résultat.
 
 ## Audits obligatoires
-| Rôle | Protocole |
+| Rôle | État |
 |---|---|
-| Données | SHA source WAV original, composition disjointe TRAIN/CAL/OUTER |
-| Acoustique | cadence 256 exacte, aucune caractéristique du futur |
-| Architecture | deux sélecteurs K privés, quatre autres axes inchangés |
-| Apprentissage | arbre entraîné sur TRAIN uniquement, seuil CAL seulement |
-| Métriques | par vrai K0–K6, recouvrement et régressions, OUTER gelé |
-| LIVE | absence d'attente logique et budget CPU 5,805 ms à mesurer sur matériel |
+| Données | PASS vraie musique 5 compos et SHA |
+| Acoustique | PASS causal PCM256 |
+| Architecture | PASS têtes K séparées, quatre autres inchangées |
+| Apprentissage | PASS TRAIN/CAL/OUTER séparés ; source préentraînée 1024 |
+| Métriques | FAIL un K régresse, autre +0,47 point seulement |
+| LIVE | UNKNOWN p99 Windows/iRig et six têtes unifiées |
 
 ## Statut
-En cours et non promu. Cette boucle répond directement aux régressions S837 mais ne promet pas un passage automatique au-dessus de 80 %. Les quatre axes non expérimentés (Onset, Offset, Frame Pitch, Full Note) restent gelés.
+Série expérimentale terminée, non promue. **Exact-K 56,599541→55,926627 % (−135 blocs), Active Exact-K 46,772514→47,241020 % (+90 blocs)** sur cinq WAV. Un petit gain Active-K constitue une piste de nouveau sélecteur, pas une performance de production. [Run #40000089112](https://github.com/Andriamarosoa/note/actions/runs/40000089112) SUCCESS, artifact `S838_REAL5_PRIVATE_K_FRAGMENT_GATES_TRAIN_CAL_OUTER` ID `12521936945`. La prochaine correction doit améliorer l'identification des risques K1/K4 qui régressent sur SS1, sans sélectionner a posteriori sur cette composition OUTER.
