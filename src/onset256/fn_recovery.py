@@ -22,7 +22,7 @@ CANDIDATE_POLICIES={
 EVAL_DEDUP_SAMPLES=round(.080*SR/HOP)*HOP
 
 class FNRecoveryModel:
-    """A separate StandardScaler+MLP(64,32) with fitted 69D weights."""
+    """An independently fitted binary 69D classifier (historical MLP or HGB)."""
     trained_hop_samples=256
     name="fn_recovery"
     def __init__(self,estimator,*,candidate_policy,calibrated_cut,enabled=True):

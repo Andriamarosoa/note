@@ -1,0 +1,27 @@
+{
+  "schema": "ONSET_FN_RECOVERY_69D_SUPERVISED_NATIVE256_V1",
+  "trained_hop_samples": 256,
+  "dim": 69,
+  "outer_composition": "Funk2",
+  "train_compositions": [
+    "BN1",
+    "Jazz1",
+    "Rock3",
+    "SS1"
+  ],
+  "cal_composition": "four_inner_compositions",
+  "cal_compositions": [
+    "BN1",
+    "Jazz1",
+    "Rock3",
+    "SS1"
+  ],
+  "candidate_policy": "cautious",
+  "calibrated_cut": 0.375,
+  "enabled": true,
+  "checkpoint_sha256": "4abb102cc7ec9fd2b77faf12b9351341c527ab9a3f49ce91704a06ac64f70e49",
+  "frozen_before_outer": true,
+  "calibrated_only_on_cal": true,
+  "calibration": "4x_grouped_inner_OOF_micro_F1",
+  "historical_upstream_overlap": true
+}

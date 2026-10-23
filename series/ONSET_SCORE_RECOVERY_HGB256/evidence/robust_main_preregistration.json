@@ -1,0 +1,83 @@
+{
+  "seed": 2026102302,
+  "specs": [
+    {
+      "name": "hgb7_320",
+      "max_leaf_nodes": 7,
+      "max_iter": 320,
+      "l2_regularization": 20.0,
+      "min_samples_leaf": 30
+    },
+    {
+      "name": "hgb15_320",
+      "max_leaf_nodes": 15,
+      "max_iter": 320,
+      "l2_regularization": 30.0,
+      "min_samples_leaf": 30
+    },
+    {
+      "name": "hgb31_320",
+      "max_leaf_nodes": 31,
+      "max_iter": 320,
+      "l2_regularization": 40.0,
+      "min_samples_leaf": 40
+    },
+    {
+      "name": "hgb63_240",
+      "max_leaf_nodes": 63,
+      "max_iter": 240,
+      "l2_regularization": 60.0,
+      "min_samples_leaf": 40
+    }
+  ],
+  "thresholds": [
+    0.0,
+    0.02,
+    0.04,
+    0.06,
+    0.08,
+    0.1,
+    0.12,
+    0.14,
+    0.16,
+    0.18,
+    0.2,
+    0.22,
+    0.24,
+    0.26,
+    0.28,
+    0.3,
+    0.32,
+    0.34,
+    0.36,
+    0.38,
+    0.4,
+    0.42,
+    0.44,
+    0.46,
+    0.48,
+    0.5,
+    0.52,
+    0.54,
+    0.56,
+    0.58,
+    0.6,
+    0.62,
+    0.64,
+    0.66,
+    0.68,
+    0.7000000000000001,
+    0.72,
+    0.74,
+    0.76,
+    0.78,
+    0.8,
+    1.0
+  ],
+  "objective": "maximum inner OOF micro event F1; low cut breaks ties",
+  "calibration": "four compositions, each held out of its inner model",
+  "historical_upstream_models_not_nested": true,
+  "hop_samples": 256,
+  "added_hold_samples": 0,
+  "performance_optimization_deferred": true
+}

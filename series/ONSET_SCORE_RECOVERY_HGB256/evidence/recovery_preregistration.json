@@ -1,0 +1,88 @@
+{
+  "seed": 2026102303,
+  "specs": [
+    {
+      "name": "recovery_hgb15",
+      "max_leaf_nodes": 15,
+      "max_iter": 320,
+      "learning_rate": 0.04,
+      "l2_regularization": 15.0,
+      "min_samples_leaf": 25
+    },
+    {
+      "name": "recovery_hgb31",
+      "max_leaf_nodes": 31,
+      "max_iter": 400,
+      "learning_rate": 0.04,
+      "l2_regularization": 30.0,
+      "min_samples_leaf": 30
+    }
+  ],
+  "cuts": [
+    0.0,
+    0.025,
+    0.05,
+    0.07500000000000001,
+    0.1,
+    0.125,
+    0.15000000000000002,
+    0.17500000000000002,
+    0.2,
+    0.225,
+    0.25,
+    0.275,
+    0.30000000000000004,
+    0.325,
+    0.35000000000000003,
+    0.375,
+    0.4,
+    0.42500000000000004,
+    0.45,
+    0.47500000000000003,
+    0.5,
+    0.525,
+    0.55,
+    0.5750000000000001,
+    0.6000000000000001,
+    0.625,
+    0.65,
+    0.675,
+    0.7000000000000001,
+    0.7250000000000001,
+    0.75,
+    0.775,
+    0.8,
+    0.8250000000000001,
+    0.8500000000000001,
+    0.875,
+    0.9,
+    0.925,
+    0.9500000000000001,
+    0.9750000000000001,
+    1.0
+  ],
+  "policies": {
+    "sensitive": {
+      "onset": 0.06,
+      "active_on": 0.1,
+      "onset_reset": 0.025
+    },
+    "moderate": {
+      "onset": 0.12,
+      "active_on": 0.2,
+      "onset_reset": 0.05
+    },
+    "cautious": {
+      "onset": 0.2,
+      "active_on": 0.3,
+      "onset_reset": 0.08
+    }
+  },
+  "objective": "inner composition OOF micro event F1",
+  "train_only_causally_eligible_proposals": true,
+  "relabel_to_frozen_filtered_main": true,
+  "hop_samples": 256,
+  "added_hold_samples": 0,
+  "performance_optimization_deferred": true,
+  "historical_upstream_models_not_nested": true
+}

@@ -1,0 +1,32 @@
+{
+  "complete": true,
+  "tracks": 80,
+  "baseline": {
+    "tp": 8012,
+    "fp": 4264,
+    "fn": 3255,
+    "f1": 0.6806269379433377,
+    "precision": 0.6526555881394591,
+    "recall": 0.7111032217981716
+  },
+  "candidates": {
+    "sensitive": {
+      "candidates": 33518,
+      "eligible": 32106,
+      "positive": 2077
+    },
+    "moderate": {
+      "candidates": 25102,
+      "eligible": 22979,
+      "positive": 1819
+    },
+    "cautious": {
+      "candidates": 20438,
+      "eligible": 17247,
+      "positive": 1503
+    }
+  },
+  "old_recovery_exact_event_parity": true,
+  "labels_after_audio": true,
+  "preparation_sha256": "75d152d30b9288681eadd27bbb69b7a7cc9c492407e6d676aec827b0dba1a2f4"
+}

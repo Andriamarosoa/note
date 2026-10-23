@@ -1,0 +1,70 @@
+name: Onset score recovery HGB PCM256
+on:
+  push:
+    branches: [codex/note-onset-score-robust256]
+    paths:
+      - 'src/onset256/**'
+      - 'scripts/onset_*256.py'
+      - 'tests/**'
+      - '.github/workflows/onset-score-recovery-hgb256.yml'
+  workflow_dispatch:
+    inputs:
+      full_training_and_audio:
+        description: Reproduce training and the full 80-WAV validation
+        type: boolean
+        default: false
+permissions: {contents: read, actions: read}
+env:
+  GH_TOKEN: ${{ github.token }}
+  PYTHONPATH: src
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  tests:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: python -m pip install -r requirements-onset256.txt
+      - run: python -m unittest discover -s tests -v
+  full_reproduction:
+    if: github.event_name == 'workflow_dispatch' && inputs.full_training_and_audio
+    needs: tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: python -m pip install -r requirements-onset256.txt
+      - name: Download signed observations, weights and original audio
+        run: |
+          mkdir -p /tmp/onset_score/{risk,four,fp,s701,manifest,traces,fn_audit} /tmp/onset_previous
+          gh run download 39915038301 --repo Andriamarosoa/note --name ONSET_EVENT_INTEGRITY_HGB69_PCM256_PAIRED_AND_FRESH_REPLAY --dir /tmp/onset_previous
+          gh run download 39754613388 --repo Andriamarosoa/note --name ONSET_FN_80_WAV_REAL256_CAUSAL_AUDIT_AND_RESUE_CANDIDATES --dir /tmp/onset_score/fn_audit
+          gh run download 39741883968 --repo Andriamarosoa/note --name ONSET_HARDNEGATIVE_HARMONIC_RESTRIKE_MLP69_NATIVE256_REAL_REPLAY --dir /tmp/onset_score/risk
+          gh run download 39759373185 --repo Andriamarosoa/note --name ONSET_FN_RECOVERY_FOUR_NEURAL_HEADS_TRAINED256_AND_REAL_WAV --dir /tmp/onset_score/four
+          gh run download 39775357133 --repo Andriamarosoa/note --name ONSET_FP_69_70_74_SAME_TRAIN_NEURAL_PCM256_REAL_80WAV_ABLATION --dir /tmp/onset_score/fp
+          gh run download 39085408073 --repo Andriamarosoa/note --name S701_CAUSAL_ONSET_LEARNED_TRAIN_HELD_COMPOSITION --dir /tmp/onset_score/s701
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/onset_score/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/onset_score/traces
+          python - <<'PY'
+          import json,urllib.request
+          from pathlib import Path
+          rec=json.loads(Path('analysis/evidence/v273-s613-strict-live/protocol.json').read_text())['guitar_archives']['GuitarSet_audio']
+          with urllib.request.urlopen(rec['url'],timeout=180) as src,Path('/tmp/onset_score/GuitarSet_audio.zip').open('wb') as out:
+              for data in iter(lambda:src.read(2**20),b''):out.write(data)
+          PY
+      - name: Train recovery for F1 and verify every emitted attack on original PCM256
+        run: |
+          python -m scripts.onset_recovery_hgb256 --root /tmp/onset_score --previous /tmp/onset_previous --out /tmp/onset_result --phase all --workers 3
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ONSET_SCORE_RECOVERY_HGB_PCM256
+          path: /tmp/onset_result/
+          if-no-files-found: warn
+          retention-days: 60
