@@ -24,9 +24,6 @@ class OnsetSolutionEffectAuditTests(unittest.TestCase):
         got=reasons(baseline,direct,scores,True,policy)
         self.assertEqual(got,[
             "accepted_hgb_addition","past_gate_duplicate_guard",
-            "already_selected_by_acoustic","accepted_hgb_addition",
-        ] if False else [
-            "accepted_hgb_addition","past_gate_duplicate_guard",
             "already_selected_by_acoustic","accepted_hgb_addition"])
         merged=replay_precomputed(direct,baseline,scores,policy)
         self.assertEqual(int(merged.sum()),3)
