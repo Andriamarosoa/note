@@ -33,7 +33,7 @@ jobs:
           python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
       - name: Verify S836 source MIDI acoustic network and protected heads unchanged
         run: |
-          git fetch origin codex/note-s837-six-axis-80pct-independent-loops256 --depth=1
+          git fetch origin 6216833aaeeec2880c804c4c0d04d4b9b3d34b1a --depth=1  # immutable S837 signed code baseline
           git diff --name-only FETCH_HEAD HEAD >/tmp/s838_changed_files.txt
           python - <<'PY'
           from pathlib import Path
