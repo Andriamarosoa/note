@@ -210,6 +210,8 @@ def original_for_axis(axis, src):
         item=b[axis]
         return dict(correct=int(item["correct"]),
                     total=int(item["frames"] if axis=="exact_k" else item["active_frames"]))
+    if axis=="full_note":
+        return {key:int(b[axis][key]) for key in ("tp","fp","fn")}
     return dict(b[axis])
 
 
