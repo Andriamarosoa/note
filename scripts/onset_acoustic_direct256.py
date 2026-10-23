@@ -184,10 +184,16 @@ def mask_events(mask):
     return [dict(sample=int((f+1)*256),pitch=int(p+40)) for f,p in zip(frame,pitch)]
 
 
-def probabilities(model, row, directory):
+def probabilities(model, row, directory, *, reference_model=None):
     x=load_features(directory/'features',row['index'])
     flat=x.reshape(-1,DIM)
     q=np.empty(len(flat),np.float32)
+    if reference_model is not None:
+        prefix=np.asarray(flat[:8192],np.float32)
+        expected=np.asarray(reference_model.predict_proba(prefix),np.float32)
+        observed=np.asarray(model.predict_proba(prefix),np.float32)
+        if not np.array_equal(expected,observed):
+            raise AssertionError('compiled model changed original float32 probabilities')
     for start in range(0,len(flat),8192):
         q[start:start+8192]=model.predict_proba(flat[start:start+8192])[:,1]
     return q.reshape(row['frames'],49)
@@ -207,13 +213,22 @@ def policies():
 def fit_fold(task):
     from sklearn.ensemble import HistGradientBoostingClassifier
     directory,outer=Path(task[0]),task[1]
+    sparse=bool(len(task)>2 and task[2])
+    resume=bool(len(task)>3 and task[3])
     rows=json.loads((directory/'collection_report.json').read_text())['per_track']
     reference=json.loads(Path('series/ONSET_SCORE_RECOVERY_HGB256/evidence/sealed_predictions.json').read_text())
     cal=COMPS[(COMPS.index(outer)+1)%len(COMPS)]
     train=[c for c in COMPS if c not in (outer,cal)]
     cal_rows=[r for r in rows if r['composition']==cal]
     output=directory/'trained'/outer
-    output.mkdir(parents=True)
+    output.mkdir(parents=True,exist_ok=resume)
+    if resume and (output/'result.json').exists():
+        result=json.loads((output/'result.json').read_text())
+        sealed=json.loads((output/'predictions.json').read_text())
+        records=[dict(track=r['track'],composition=outer,
+            score=counts([dict(sample=s,pitch=p) for s,p in sealed[r['track']]],r['truth']))
+            for r in rows if r['composition']==outer]
+        return result,records,sealed
     cache={r['track']:dict(baseline=baseline_mask(r,reference),truth=truth_arrays(r['truth']))
            for r in cal_rows}
     baseline=sum_scores([metric(*count_cache(v['baseline'],*v['truth'])) for v in cache.values()])
@@ -221,26 +236,42 @@ def fit_fold(task):
     history=[]
     with threadpool_limits(limits=1):
         for width in PREREGISTRATION['target_width_hops']:
-            groups=[np.load(directory/'samples'/f'{c}_w{width}.npz') for c in train]
-            x=np.concatenate([g['X'] for g in groups]);y=np.concatenate([g['y'] for g in groups])
-            for g in groups:g.close()
-            model=HistGradientBoostingClassifier(**PREREGISTRATION['model'],
-                early_stopping=False,random_state=SEED+COMPS.index(outer))
-            print('ACOUSTIC_TRAIN_BEGIN',outer,cal,width,len(y),int(y.sum()),flush=True)
-            started=time.monotonic();model.fit(x,y);del x,y
             cp=output/f'acoustic_w{width}.joblib'
-            joblib.dump(model,cp,compress=3)
-            print('ACOUSTIC_TRAIN_DONE',outer,width,round(time.monotonic()-started,2),flush=True)
-            q={r['track']:probabilities(model,r,directory) for r in cal_rows}
+            if resume and cp.exists():
+                model=joblib.load(cp)
+                expected=dict(**PREREGISTRATION['model'],early_stopping=False,
+                    random_state=SEED+COMPS.index(outer))
+                if (model.n_features_in_!=DIM or
+                        any(model.get_params()[k]!=v for k,v in expected.items())):
+                    raise ValueError('partial checkpoint does not match original experiment')
+                print('ACOUSTIC_REUSE_IMMUTABLE_CHECKPOINT',outer,width,digest(cp),flush=True)
+            else:
+                groups=[np.load(directory/'samples'/f'{c}_w{width}.npz') for c in train]
+                x=np.concatenate([g['X'] for g in groups]);y=np.concatenate([g['y'] for g in groups])
+                for g in groups:g.close()
+                model=HistGradientBoostingClassifier(**PREREGISTRATION['model'],
+                    early_stopping=False,random_state=SEED+COMPS.index(outer))
+                print('ACOUSTIC_TRAIN_BEGIN',outer,cal,width,len(y),int(y.sum()),flush=True)
+                started=time.monotonic();model.fit(x,y);del x,y
+                joblib.dump(model,cp,compress=3)
+                print('ACOUSTIC_TRAIN_DONE',outer,width,round(time.monotonic()-started,2),flush=True)
+            from onset256.compiled_inference import accelerated
+            predictor=accelerated(model) if sparse else model
+            q={r['track']:probabilities(predictor,r,directory,
+                reference_model=model if sparse else None) for r in cal_rows}
             candidates=[]
-            for policy in policies():
-                scores=[]
-                for r in cal_rows:
-                    v=cache[r['track']]
-                    mask=decode_cache(q[r['track']],v['baseline'],policy)
-                    scores.append(metric(*count_cache(mask,*v['truth'])))
-                scores=sum_scores(scores)
-                candidates.append(dict(policy=asdict(policy),score=scores))
+            if sparse:
+                from onset256.sparse_calibration import score_policies
+                candidates=score_policies(q,cache,list(policies()))
+            else:
+                for policy in policies():
+                    scores=[]
+                    for r in cal_rows:
+                        v=cache[r['track']]
+                        mask=decode_cache(q[r['track']],v['baseline'],policy)
+                        scores.append(metric(*count_cache(mask,*v['truth'])))
+                    scores=sum_scores(scores)
+                    candidates.append(dict(policy=asdict(policy),score=scores))
             choice=max(candidates,key=lambda r:(r['score']['f1'],r['score']['tp'],-r['score']['fp']))
             # The optimized count routine must agree with the original scorer
             # for the selected calibration policy, on every CAL recording.
@@ -259,6 +290,8 @@ def fit_fold(task):
                   outer_composition=outer,cal_composition=cal,train_compositions=train,
                   selected=best,cal_reference=baseline,history=history,
                   frozen_before_outer=True,historical_upstream_overlap=True,
+                  calibration_backend='sparse_equivalent' if sparse else 'original_dense',
+                  probability_backend='existing_compiled_binary_trees' if sparse else 'sklearn_original',
                   external_generalization_proven=False,added_hold_samples=0,
                   future_audio_samples=0)
         if best['name']!='reference':
@@ -268,11 +301,13 @@ def fit_fold(task):
         # Freeze the entire new model and decoder BEFORE any OUTER prediction.
         policy=AttackPolicy(**best['policy'])
         model=joblib.load(cp) if best['name']!='reference' else None
+        predictor=accelerated(model) if sparse and model is not None else model
         selected={};q_hashes={}
         outer_rows=[r for r in rows if r['composition']==outer]
         for r in outer_rows:
             base=baseline_mask(r,reference)
-            prob=probabilities(model,r,directory) if model else np.zeros(base.shape,np.float32)
+            prob=probabilities(predictor,r,directory,
+                reference_model=model if sparse else None) if model else np.zeros(base.shape,np.float32)
             p=output/f"probability_{r['index']:03d}.npy";np.save(p,prob)
             q_hashes[p.name]=digest(p)
             selected[r['track']]=decode_cache(prob,base,policy)
@@ -292,10 +327,13 @@ def fit_fold(task):
 
 
 def train(args):
-    if (args.out/'trained').exists():raise FileExistsError('immutable training experiment')
-    (args.out/'trained').mkdir()
+    if (args.out/'trained').exists() and (not getattr(args,'resume_training',False)
+            or (args.out/'trained/report.json').exists()):
+        raise FileExistsError('immutable training experiment')
+    (args.out/'trained').mkdir(exist_ok=True)
     with ProcessPoolExecutor(max_workers=args.workers) as pool:
-        results=list(pool.map(fit_fold,[(str(args.out),c) for c in COMPS]))
+        results=list(pool.map(fit_fold,[(str(args.out),c,getattr(args,'sparse_calibration',False),
+            getattr(args,'resume_training',False)) for c in COMPS]))
     folds=[];rows=[];sealed={}
     for fold,records,predicted in results:
         folds.append(fold);rows.extend(records);sealed.update(predicted)
@@ -441,6 +479,10 @@ def main():
                    help='lossless research-cache storage only; no model/decoder change')
     p.add_argument('--resume-collection',action='store_true',
                    help='reuse SHA-verified completed caches in this reproduction only')
+    p.add_argument('--resume-training',action='store_true',
+                   help='reuse completed checkpoints in an interrupted reproduction only')
+    p.add_argument('--sparse-calibration',action='store_true',
+                   help='evaluate the identical exhaustive policy grid with sparse event traversal')
     p.add_argument('--phase',choices=['collect','samples','train','replay','audit'],default='collect')
     args=p.parse_args()
     {'collect':collect,'samples':make_samples,'train':train,'replay':replay,'audit':audit}[args.phase](args)

@@ -27,7 +27,7 @@ REFERENCE = (8050, 4231, 3217)
 ANNOUNCED_CANDIDATE = (7585, 3068, 3682)
 
 
-def decoded_trace(q, baseline, policy):
+def decoded_trace(q, baseline, policy, *, force_rearm=False):
     """Observe the exact selector, including state BEFORE each decision."""
     selector = DirectAttackSelector(policy)
     output = np.zeros(q.shape, bool)
@@ -36,6 +36,8 @@ def decoded_trace(q, baseline, policy):
     eligible = np.zeros(q.shape, bool)
     for frame, scores in enumerate(q):
         end = (frame + 1) * HOP
+        if force_rearm:
+            selector.armed[:] = True
         wide = scores.astype(np.float64)
         armed[frame] = selector.armed | (wide < policy.cut * policy.reset_ratio)
         gap[frame] = end - selector.last >= policy.gap_hops * HOP
@@ -46,7 +48,8 @@ def decoded_trace(q, baseline, policy):
         output[frame, np.asarray(chosen, int) - 40] = True
     if selector.finish():
         raise AssertionError("audit selector accumulated pending events")
-    np.testing.assert_array_equal(output, decode_cache(q, baseline, policy))
+    if not force_rearm:
+        np.testing.assert_array_equal(output, decode_cache(q, baseline, policy))
     return dict(output=output, armed=armed, gap=gap, eligible=eligible)
 
 
@@ -226,6 +229,8 @@ def audit(args):
             'remove_refractory_exclusion': replace(policy, gap_hops=1),
         }
         masks = {k: decode_cache(q, base, v) for k,v in alternatives.items()}
+        masks['remove_rearming_requirement'] = decoded_trace(q, base, policy,
+            force_rearm=True)['output']
         masks['union_all_reference_events'] = trace['output'] | base
         for kind, mask in masks.items():
             alt_events = sorted((e['sample'],e['pitch']) for e in mask_events(mask))

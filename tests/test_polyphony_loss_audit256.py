@@ -47,6 +47,9 @@ class PolyphonyLossAuditTests(unittest.TestCase):
         result=loss_mechanism(dict(time=41*256/44100.,pitch=40),
             (41*256,40),q,base,trace,policy)
         self.assertEqual(result['decoder_mechanism'],'score_crosses_cut_but_not_rearmed')
+        counterfactual=decoded_trace(q,base,policy,force_rearm=True)
+        self.assertEqual(int(trace['output'].sum()),1)
+        self.assertEqual(int(counterfactual['output'].sum()),4)
 
     def test_reference_veto_is_not_called_weak_fundamental(self):
         q=np.zeros((50,49),np.float32);q[30,0]=.1

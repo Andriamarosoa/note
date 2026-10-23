@@ -52,8 +52,9 @@ Un faible score n'est pas une preuve de fondamentale absente ou de masquage.
 Les valeurs acoustiques au premier bloc disponible sont des observations,
 pas des causes physiques établies.
 
-Trois contre-expériences fixes rejouent **toute** la piste : passage de référence
-sans veto, suppression de l'exclusion réfractaire (1 hop), union exacte avec
+Quatre contre-expériences fixes rejouent **toute** la piste : passage de référence
+sans veto, suppression de l'exclusion réfractaire (1 hop), suppression du besoin
+de réarmement (score et exclusion réfractaire inchangés), union exacte avec
 tous les événements de référence. Rapporter les récupérations, les nouveaux
 FP et les TP détruits. Ces diagnostics ne sont pas des politiques promues et
 ne sont pas sélectionnés a posteriori sur OUTER.
@@ -65,7 +66,7 @@ python -m pip install -r requirements-onset256-cache.txt
 export PYTHONPATH=src OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1
 python -m scripts.onset_acoustic_direct256 --root "$ONSET_DATA_DIR" --out "$ONSET_EXPERIMENT_DIR" --phase collect --cache-format npz --workers 2
 python -m scripts.onset_acoustic_direct256 --root "$ONSET_DATA_DIR" --out "$ONSET_EXPERIMENT_DIR" --phase samples
-python -m scripts.onset_acoustic_direct256 --root "$ONSET_DATA_DIR" --out "$ONSET_EXPERIMENT_DIR" --phase train --workers 2
+python -m scripts.onset_acoustic_direct256 --root "$ONSET_DATA_DIR" --out "$ONSET_EXPERIMENT_DIR" --phase train --workers 2 --sparse-calibration
 python -m scripts.onset_acoustic_direct256 --root "$ONSET_DATA_DIR" --out "$ONSET_EXPERIMENT_DIR" --phase replay --workers 2
 python -m scripts.audit_onset_polyphony_losses256 --data "$ONSET_DATA_DIR" --experiment "$ONSET_EXPERIMENT_DIR" --out "$ONSET_AUDIT_DIR"
 ```
@@ -75,6 +76,23 @@ Les dossiers de sortie doivent être neufs. En cas d'interruption de collecte,
 Les caches incomplets, sans métadonnées de piste, sont recalculés ; les modèles
 et résultats ne sont jamais remplacés. `repack_onset_features256` ne traite
 que des caches intermédiaires reproductibles, avec vérification bit à bit.
+
+La calibration parcourt toujours exactement les 288 politiques originales
+par modèle. `--sparse-calibration` calcule leurs mêmes comptes en parcourant
+les blocs susceptibles d'émettre, plutôt que chaque case silencieuse ; les
+tests confrontent toute la grille au décodeur original. Le choix CAL retenu
+est encore vérifié contre le compteur original et l'appariement hongrois sur
+chaque piste CAL. Cette accélération du calcul de recherche ne change pas
+l'inférence Live ni ses scores. Une reprise d'apprentissage interrompu peut
+utiliser `--resume-training` : les checkpoints déjà écrits sont conservés et
+leurs hyperparamètres/seed sont contrôlés. Aucun checkpoint complet n'est réécrit.
+
+Cette option utilise aussi le parcours compilé des arbres déjà présent dans
+`compiled_inference.py`, sans réentraînement ni export modifiant les poids.
+Sur chaque piste CAL et OUTER, les 8192 premières lignes (environ une seconde
+audio, 49 hauteurs par bloc) sont comparées aux probabilités float32 du modèle
+scikit-learn original. Toute divergence bloque la reproduction. Le replay Live
+complet vérifie ensuite toutes les caractéristiques et tous les événements.
 
 ## Portée
 
