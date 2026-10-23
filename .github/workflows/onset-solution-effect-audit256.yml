@@ -4,6 +4,9 @@ on:
     branches: [codex/note-onset-solution-effect-audit256]
     paths:
       - 'scripts/audit_onset_solution_effect256.py'
+      - 'scripts/live_note_onset256.py'
+      - 'tests/test_live_note_onset256.py'
+      - 'README_LIVE_NOTE_PCM256.md'
       - 'tests/test_onset_solution_effect_audit256.py'
       - 'series/ONSET_SOLUTION_EFFECT_POSTMORTEM256/**'
       - '.github/workflows/onset-solution-effect-audit256.yml'
@@ -30,4 +33,17 @@ jobs:
         run: |
           python -m compileall -q scripts/audit_onset_solution_effect256.py tests/test_onset_solution_effect_audit256.py
           python -m unittest discover -s tests -v
+          python - <<'PY'
+          import numpy as np
+          from onset256.acoustic_live import current_reference
+          from scripts.live_note_onset256 import checked_hop
+          engine = current_reference(
+              fold='BN1',
+              base_bundle='model/onset256_research_39915038301',
+              recovery_bundle='model/onset256_recovery_20261023',
+              native_path='model/live/strict_note/NOTE_strict_live.npz')
+          decision = checked_hop(engine,np.zeros(256,np.float32),0)
+          assert decision.sample == 256
+          print('NOTE_REAL_SIGNED_WEIGHTS_LOADED_PCM256_BN1')
+          PY
           echo "UNIT_TESTS_ONLY_NO_FULL_AUDIO_RUN"
