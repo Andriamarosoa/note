@@ -97,5 +97,54 @@ class S836IncrementalSharpTests(unittest.TestCase):
             self.assertEqual(set(dec0),set(AXES))
 
 
+    def test_real_s834_step_invokes_temporal_net_in_both_engines(self):
+        from collections import deque
+        from types import SimpleNamespace
+        from causal_note.s834_s809_native256_audio import S834S809Native256
+        class DummyNative:
+            def predict(self, features):
+                p=np.zeros((49,3),np.float32)
+                k=np.zeros(7,np.float32); k[0]=1.
+                return p,k
+        class DummyTemporal:
+            def __init__(self):self.calls=0
+            def step(self, x):
+                assert x.shape==(49,288)
+                self.calls+=1
+                p=np.zeros((49,3),np.float32)
+                k=np.zeros(7,np.float32);k[0]=1.
+                return p,k
+        engines=[]
+        for mode in ("reference","incremental"):
+            obj=object.__new__(S834S809Native256)
+            obj.native_heads=DummyNative()
+            obj.native_feat=deque(maxlen=65)
+            obj.native_post=deque(maxlen=65)
+            obj.native_k=deque(maxlen=65)
+            obj.temporal=DummyTemporal()
+            obj.decoder=SimpleNamespace(policy=SimpleNamespace(blend=.55))
+            obj.audio=np.zeros(256,np.float32)
+            obj.six=SixIndependentAxes()
+            obj.sharp_engine=mode
+            obj.sharp_cache=IncrementalSharp256() if mode=="incremental" else None
+            obj.model_calls=0
+            obj.model_call_ms=deque(maxlen=10)
+            obj.last_decision=0
+            obj.source_k=[]
+            obj.source_post=[]
+            obj.decisions={}
+            obj.selection={}
+            end,decisions,selections,snapshot=obj._step(256,np.zeros((49,126),np.float32))
+            self.assertEqual(end,256)
+            self.assertEqual(obj.temporal.calls,1)
+            self.assertEqual(obj.model_calls,1)
+            self.assertEqual(set(decisions),set(AXES))
+            self.assertEqual(obj.s836_last_input_288d.shape,(49,288))
+            engines.append((decisions,selections,obj.s836_last_input_288d.copy()))
+        self.assertEqual(engines[0][0],engines[1][0])
+        self.assertEqual(engines[0][1],engines[1][1])
+        np.testing.assert_array_equal(engines[0][2],engines[1][2])
+
+
 if __name__=="__main__":
     unittest.main()
