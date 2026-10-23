@@ -196,6 +196,7 @@ def audit(experiment, gate, out):
             raise AssertionError("HGB candidate mismatch")
         hgb_events = [((int(f)+1)*256,int(p)+40) for f,p in hgb_locs]
         hgb_matched = matched(hgb_events,row["truth"])
+        hgb_truth_to_candidate = {j:i for i,j in hgb_matched.items()}
         for index, ((f,p),event,state,gate_prob) in enumerate(zip(
                 hgb_locs,hgb_events,event_states,prob)):
             f,p = int(f),int(p)
@@ -217,10 +218,26 @@ def audit(experiment, gate, out):
         for i,note in enumerate(row["truth"]):
             t=float(note["time"])
             active=true_active_pitches(row["truth"],t)
+            possible = hgb_truth_to_candidate.get(i)
+            reason = event_states[possible] if possible is not None else None
+            outcome = labels[i]
+            mechanism = ("matching_reassignment_without_direct_deletion"
+                         if outcome=="lost_tp" else
+                         "added_hgb_recovers_truth" if outcome=="recovered_tp" else
+                         "hgb_not_proposed" if possible is None and outcome=="persistent_fn" else
+                         "hgb_proposed_but_not_recovered" if outcome=="persistent_fn" else
+                         "retained_direct_true_attack")
             per_note.append(dict(track=name,composition=comp,texture=texture(name),
                 truth_index=i,pitch=int(note["pitch"]), register=register(int(note["pitch"])),
                 time=t, polyphony_distinct=len(active),
-                cohort=labels[i]))
+                cohort=outcome, decoder_mechanism=mechanism,
+                hgb_reference_proposed=possible is not None,
+                hgb_gate_decision_reason=reason,
+                acoustic_probability_at_hgb=float(q[hgb_locs[possible][0],
+                                                     hgb_locs[possible][1]])
+                   if possible is not None else None,
+                gate_probability_at_hgb=float(prob[possible])
+                   if possible is not None else None))
         per_track.append(t_summary)
         print("ONSET_EFFECT_TRACK",comp,name,
               dict(delta_f1_points=t_summary["delta_f1_points"],
@@ -245,6 +262,9 @@ def audit(experiment, gate, out):
                           if r["polyphony_distinct"]==v))
                           for v in sorted(set(r["polyphony_distinct"] for r in per_note))}
     reasons_count=dict(Counter(e["decision_reason"] for e in per_event))
+    fn_causes=dict(Counter(
+        n["decoder_mechanism"] for n in per_note if n["cohort"] in
+        ("lost_tp", "persistent_fn")))
     fp = [e for e in per_event if e["outcome"]=="accepted_fp"]
     rescues = [e for e in per_event if e["outcome"]=="rejected_potential_tp"]
     caveats = [
@@ -263,13 +283,17 @@ def audit(experiment, gate, out):
              by_decoder_reason=dict(Counter(e["decision_reason"] for e in rescues))),
         dict(failure="destroyed_prior_TPs_through_matching",n=pooled["lost_tp"],
              evidence="truth formerly paired with direct but reassigned in union despite immutable direct emissions"),
+        dict(failure="false_negatives_without_HGB_proposals",
+             n=fn_causes.get("hgb_not_proposed",0),
+             evidence="neither the direct branch nor the reference-HGB event list provides a matched attack"),
     ]
     disposition=("REGRESSION_REQUIRES_CAUSAL_AUDIT" if pooled["delta_f1_points"]<0 else
                  "SMALL_GAIN_REQUIRES_CAUSAL_AUDIT" if pooled["delta_f1_points"]<.25 else
                  "GAIN_REQUIRES_COUNTEREXAMPLE_AUDIT")
     report=dict(schema=SCHEMA,complete=True,hop_samples=256,
                 candidate=pooled,groups=groups,folds=fold_deltas,
-                gate_decision_reasons=reasons_count,root_cause_hypotheses=diagnoses,
+                gate_decision_reasons=reasons_count,fn_decoder_mechanisms=fn_causes,
+                root_cause_hypotheses=diagnoses,
                 status=disposition,association_only=True,
                 no_outer_tuning=True, unchanged_axes=True,
                 factual_audio_reference_verified=True, caveats=caveats)
