@@ -1,0 +1,442 @@
+{
+  "dataset": "GuitarSet FIT80",
+  "tracks": 80,
+  "pcm256_decisions": 306536,
+  "reference": {
+    "tp": 8050,
+    "fp": 4231,
+    "fn": 3217,
+    "f1": 0.6837098692033293,
+    "precision": 0.6554840811008875,
+    "recall": 0.7144759030797906
+  },
+  "candidate": {
+    "tp": 7585,
+    "fp": 3068,
+    "fn": 3682,
+    "f1": 0.6920620437956204,
+    "precision": 0.7120060076973622,
+    "recall": 0.6732049347652437
+  },
+  "cohorts": {
+    "persistent_fn": 2857,
+    "retained": 7225,
+    "recovered": 360,
+    "lost": 825
+  },
+  "groups_by_texture": {
+    "comp": {
+      "before": {
+        "tp": 5606,
+        "fp": 3391,
+        "fn": 2675,
+        "f1": 0.6489176988077324,
+        "precision": 0.6230965877514727,
+        "recall": 0.6769713802680836
+      },
+      "after": {
+        "tp": 5097,
+        "fp": 2223,
+        "fn": 3184,
+        "f1": 0.6534196525863727,
+        "precision": 0.6963114754098361,
+        "recall": 0.615505373747132
+      },
+      "truth": 8281,
+      "cohorts": {
+        "persistent_fn": 2382,
+        "retained": 4804,
+        "recovered": 293,
+        "lost": 802
+      },
+      "loss_rate_among_reference_tp": 0.14306100606493044,
+      "lost_decoder_mechanisms": {
+        "one_to_one_matching_competition": 25,
+        "refractory_blocks_eligible_proposal": 1,
+        "score_below_direct_cut_and_no_reference_bypass": 705,
+        "score_crosses_cut_but_not_rearmed": 71
+      }
+    },
+    "solo": {
+      "before": {
+        "tp": 2444,
+        "fp": 840,
+        "fn": 542,
+        "f1": 0.779585326953748,
+        "precision": 0.7442143727161997,
+        "recall": 0.8184862692565305
+      },
+      "after": {
+        "tp": 2488,
+        "fp": 845,
+        "fn": 498,
+        "f1": 0.7874663712612755,
+        "precision": 0.7464746474647465,
+        "recall": 0.8332217012726055
+      },
+      "truth": 2986,
+      "cohorts": {
+        "persistent_fn": 475,
+        "retained": 2421,
+        "recovered": 67,
+        "lost": 23
+      },
+      "loss_rate_among_reference_tp": 0.009410801963993453,
+      "lost_decoder_mechanisms": {
+        "one_to_one_matching_competition": 2,
+        "score_below_direct_cut_and_no_reference_bypass": 19,
+        "score_crosses_cut_but_not_rearmed": 2
+      }
+    }
+  },
+  "groups_by_composition": {
+    "BN1": {
+      "before": {
+        "tp": 1213,
+        "fp": 606,
+        "fn": 488,
+        "f1": 0.6892045454545455,
+        "precision": 0.6668499175371083,
+        "recall": 0.7131099353321576
+      },
+      "after": {
+        "tp": 1243,
+        "fp": 615,
+        "fn": 458,
+        "f1": 0.698510817645406,
+        "precision": 0.6689989235737352,
+        "recall": 0.7307466196355086
+      },
+      "truth": 1701,
+      "cohorts": {
+        "persistent_fn": 458,
+        "retained": 1213,
+        "recovered": 30
+      },
+      "loss_rate_among_reference_tp": 0.0,
+      "lost_decoder_mechanisms": {}
+    },
+    "Funk2": {
+      "before": {
+        "tp": 1747,
+        "fp": 617,
+        "fn": 731,
+        "f1": 0.721602643535729,
+        "precision": 0.7390016920473773,
+        "recall": 0.7050040355125101
+      },
+      "after": {
+        "tp": 1777,
+        "fp": 613,
+        "fn": 701,
+        "f1": 0.7300739523418242,
+        "precision": 0.7435146443514644,
+        "recall": 0.7171105730427765
+      },
+      "truth": 2478,
+      "cohorts": {
+        "persistent_fn": 697,
+        "retained": 1743,
+        "recovered": 34,
+        "lost": 4
+      },
+      "loss_rate_among_reference_tp": 0.0022896393817973667,
+      "lost_decoder_mechanisms": {
+        "one_to_one_matching_competition": 3,
+        "refractory_blocks_eligible_proposal": 1
+      }
+    },
+    "Jazz1": {
+      "before": {
+        "tp": 1223,
+        "fp": 500,
+        "fn": 462,
+        "f1": 0.7177230046948356,
+        "precision": 0.709808473592571,
+        "recall": 0.7258160237388724
+      },
+      "after": {
+        "tp": 1241,
+        "fp": 510,
+        "fn": 444,
+        "f1": 0.7223515715948777,
+        "precision": 0.7087378640776699,
+        "recall": 0.7364985163204748
+      },
+      "truth": 1685,
+      "cohorts": {
+        "retained": 1223,
+        "persistent_fn": 444,
+        "recovered": 18
+      },
+      "loss_rate_among_reference_tp": 0.0,
+      "lost_decoder_mechanisms": {}
+    },
+    "Rock3": {
+      "before": {
+        "tp": 2444,
+        "fp": 1389,
+        "fn": 875,
+        "f1": 0.6834451901565995,
+        "precision": 0.6376206626663188,
+        "recall": 0.7363663754142814
+      },
+      "after": {
+        "tp": 1962,
+        "fp": 648,
+        "fn": 1357,
+        "f1": 0.6618316748186878,
+        "precision": 0.7517241379310344,
+        "recall": 0.5911419102139198
+      },
+      "truth": 3319,
+      "cohorts": {
+        "retained": 1803,
+        "lost": 641,
+        "persistent_fn": 716,
+        "recovered": 159
+      },
+      "loss_rate_among_reference_tp": 0.2622749590834697,
+      "lost_decoder_mechanisms": {
+        "score_below_direct_cut_and_no_reference_bypass": 584,
+        "score_crosses_cut_but_not_rearmed": 41,
+        "one_to_one_matching_competition": 16
+      }
+    },
+    "SS1": {
+      "before": {
+        "tp": 1423,
+        "fp": 1119,
+        "fn": 661,
+        "f1": 0.6152183311716386,
+        "precision": 0.5597954366640441,
+        "recall": 0.6828214971209213
+      },
+      "after": {
+        "tp": 1362,
+        "fp": 682,
+        "fn": 722,
+        "f1": 0.6598837209302325,
+        "precision": 0.6663405088062623,
+        "recall": 0.6535508637236085
+      },
+      "truth": 2084,
+      "cohorts": {
+        "retained": 1243,
+        "persistent_fn": 542,
+        "lost": 180,
+        "recovered": 119
+      },
+      "loss_rate_among_reference_tp": 0.12649332396345747,
+      "lost_decoder_mechanisms": {
+        "score_below_direct_cut_and_no_reference_bypass": 140,
+        "score_crosses_cut_but_not_rearmed": 32,
+        "one_to_one_matching_competition": 8
+      }
+    }
+  },
+  "lost_decoder_mechanisms": {
+    "one_to_one_matching_competition": 27,
+    "refractory_blocks_eligible_proposal": 1,
+    "score_below_direct_cut_and_no_reference_bypass": 724,
+    "score_crosses_cut_but_not_rearmed": 73
+  },
+  "counterfactuals": {
+    "restore_reference_path": {
+      "score": {
+        "tp": 8376,
+        "fp": 4578,
+        "fn": 2891,
+        "f1": 0.691631229098716,
+        "precision": 0.6465956461324688,
+        "recall": 0.7434099582852578
+      },
+      "lost_recovered": 809,
+      "candidate_tp_lost": 21,
+      "candidate_fn_recovered": 812,
+      "delta": {
+        "tp": 791,
+        "fp": 1510,
+        "fn": -791
+      },
+      "diagnostic_only": true,
+      "promoted": false,
+      "tuned_on_outer": false
+    },
+    "remove_refractory_exclusion": {
+      "score": {
+        "tp": 7608,
+        "fp": 4387,
+        "fn": 3659,
+        "f1": 0.6541140056744906,
+        "precision": 0.6342642767819925,
+        "recall": 0.6752462944883287
+      },
+      "lost_recovered": 4,
+      "candidate_tp_lost": 0,
+      "candidate_fn_recovered": 23,
+      "delta": {
+        "tp": 23,
+        "fp": 1319,
+        "fn": -23
+      },
+      "diagnostic_only": true,
+      "promoted": false,
+      "tuned_on_outer": false
+    },
+    "remove_rearming_requirement": {
+      "score": {
+        "tp": 7688,
+        "fp": 4249,
+        "fn": 3579,
+        "f1": 0.6626443716600586,
+        "precision": 0.644047918237413,
+        "recall": 0.6823466761338421
+      },
+      "lost_recovered": 33,
+      "candidate_tp_lost": 0,
+      "candidate_fn_recovered": 103,
+      "delta": {
+        "tp": 103,
+        "fp": 1181,
+        "fn": -103
+      },
+      "diagnostic_only": true,
+      "promoted": false,
+      "tuned_on_outer": false
+    },
+    "union_all_reference_events": {
+      "score": {
+        "tp": 8478,
+        "fp": 9156,
+        "fn": 2789,
+        "f1": 0.5866925019895506,
+        "precision": 0.48077577407281386,
+        "recall": 0.7524629448832875
+      },
+      "lost_recovered": 825,
+      "candidate_tp_lost": 0,
+      "candidate_fn_recovered": 893,
+      "delta": {
+        "tp": 893,
+        "fp": 6088,
+        "fn": -893
+      },
+      "diagnostic_only": true,
+      "promoted": false,
+      "tuned_on_outer": false
+    }
+  },
+  "rock3": {
+    "phase": "counterfactual_on_frozen_causal_probabilities_verified_by_complete_fresh_audio_replay",
+    "composition": "Rock3",
+    "before": {
+      "tp": 2444,
+      "fp": 1389,
+      "fn": 875,
+      "f1": 0.6834451901565995,
+      "precision": 0.6376206626663188,
+      "recall": 0.7363663754142814
+    },
+    "after": {
+      "tp": 1962,
+      "fp": 648,
+      "fn": 1357,
+      "f1": 0.6618316748186878,
+      "precision": 0.7517241379310344,
+      "recall": 0.5911419102139198
+    },
+    "cohorts": {
+      "lost": 641,
+      "gained": 159
+    },
+    "mechanisms": {
+      "score_below_direct_cut_and_no_reference_bypass": 584,
+      "score_crosses_cut_but_not_rearmed": 41,
+      "one_to_one_matching_competition": 16
+    },
+    "lost_by_texture": {
+      "comp": 633,
+      "solo": 8
+    },
+    "q_peak_median": 0.8172215819358826,
+    "policy": {
+      "cut": 0.9,
+      "reset_ratio": 0.5,
+      "gap_hops": 14,
+      "use_baseline": false,
+      "baseline_cut": 0.0,
+      "enabled": true
+    },
+    "counterfactuals": {
+      "restore_reference": {
+        "score": {
+          "tp": 2576,
+          "fp": 1559,
+          "fn": 743,
+          "f1": 0.6911725248188891,
+          "precision": 0.6229746070133011,
+          "recall": 0.7761373907803555
+        },
+        "old_lost_recovered": 629,
+        "candidate_tp_lost": 18
+      },
+      "remove_refractory": {
+        "score": {
+          "tp": 1962,
+          "fp": 650,
+          "fn": 1357,
+          "f1": 0.661608497723824,
+          "precision": 0.7511485451761103,
+          "recall": 0.5911419102139198
+        },
+        "old_lost_recovered": 0,
+        "candidate_tp_lost": 0
+      },
+      "remove_rearming": {
+        "score": {
+          "tp": 1988,
+          "fp": 684,
+          "fn": 1331,
+          "f1": 0.6636621599065264,
+          "precision": 0.7440119760479041,
+          "recall": 0.5989755950587526
+        },
+        "old_lost_recovered": 7,
+        "candidate_tp_lost": 0
+      },
+      "union_reference": {
+        "score": {
+          "tp": 2639,
+          "fp": 3466,
+          "fn": 680,
+          "f1": 0.5600594227504244,
+          "precision": 0.43226863226863227,
+          "recall": 0.7951190117505272
+        },
+        "old_lost_recovered": 641,
+        "candidate_tp_lost": 0
+      }
+    },
+    "complete_real_audio_verified": true
+  },
+  "audit_source_commit": "5458458ed91a192870ed0946c98e27a9d2a6b477",
+  "training_source_commit": "2e2274e9171bb27b358f450ab5842e5868a84545",
+  "full_audio_event_feature_reference_parity": true,
+  "physical_acoustic_cause_proven": false,
+  "independent_external_validation": false,
+  "promoted": false,
+  "evidence_package": {
+    "file_name": "NOTE_ONSET_AUDIT_PCM256_2026-10-23.zip",
+    "size_bytes": 61732388,
+    "sha256": "495dbc86dda288dd22c859f80d8764f98f31c857ae2d6c745f649004578df68f",
+    "contains_code": false
+  },
+  "tests": {
+    "count": 96,
+    "passed": true,
+    "ci_run": 39945139684,
+    "ci_code_commit": "5458458ed91a192870ed0946c98e27a9d2a6b477",
+    "ci_is_not_audio_replay": true
+  }
+}

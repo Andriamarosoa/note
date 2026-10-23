@@ -1,12 +1,9 @@
-# Résultat — apprentissage acoustique direct PCM256
+# Résultat reproduit — acoustique directe Onset PCM256
 
-**Entraînement en cours ; aucun gain revendiqué avant mesure.**
+Le replay des 80 WAV signés et des 306536 decisions PCM256 confirme **TP 7585 / FP 3068 / FN 3682 / F1 69,206204 %**. La référence HGB est reproduite à TP 8050 / FP 4231 / FN 3217 / F1 68,370987 %.
 
-Les 80 WAV originaux ont été parcourus, soit 306536 décisions PCM256.
-Les nouvelles caractéristiques 195D sont calculées sur chaque bloc courant.
-88 tests passent, y compris les contrôles du sélecteur immédiat, des réattaques,
-du score apparié un-à-un, de l'équivalence cache/flux et des entrées acoustiques.
+Gain de F1 : +0,835217 point, avec -1163 FP et +465 FN nets. L'audit paire à paire identifie 825 anciens TP perdus et 360 nouvelles récupérations ; 802 pertes sont en accompagnement. Les 821 pertes de Rock3 et SS1 se concentrent dans les deux politiques qui désactivent la référence HGB.
 
-La référence vérifiée reste **68,3709869203 % F1**, TP8050 / FP4231 / FN3217.
-Le score des nouvelles prédictions sera distingué de sa confirmation par un
-replay audio complet. Aucun modèle n'est promu à ce stade.
+Les 80 replays vérifient chaque bloc : mêmes caractéristiques, mêmes événements de référence et mêmes événements candidats que les predictions scellées, sans futur ni attente ajoutee. 96 tests passent. L'audio complet à été exécuté localement ; la CI de tests est distincte.
+
+Voir [le rapport de l'audit](../ONSET_POLYPHONY_LOSS_AUDIT256/résultat.md) et l'archive experimentale fournie avec cette serie. Aucune promotion dans le MIDI officiel ni validation externe indépendante.
