@@ -65,8 +65,9 @@ jobs:
           PREVIOUS="$(find /tmp/onset_gate/fpsource -path '*/replayed/report.json' -type f -print -quit)"
           RISK="$(find /tmp/onset_gate/risk -path '*/trained/report.json' -type f -print -quit)"
           FOUR="$(find /tmp/onset_gate/four -path '*/trained/report.json' -type f -print -quit)"
+          FOUR_REPLAY="$(find /tmp/onset_gate/four -path '*/replayed/report.json' -type f -print -quit)"
           S701="$(find /tmp/onset_gate/s701 -name s701_onset_shadow.joblib -type f -print -quit)"
-          for file in "$EVIDENCE" "$SOURCE" "$PREVIOUS" "$RISK" "$FOUR" "$S701"; do
+          for file in "$EVIDENCE" "$SOURCE" "$PREVIOUS" "$FOUR_REPLAY" "$RISK" "$FOUR" "$S701"; do
             if test ! -s "$file"; then
               find /tmp/onset_gate -maxdepth 5 -type f | head -100
               echo "Required SIGNED original real WAV evidence is missing"
@@ -74,7 +75,8 @@ jobs:
             fi
           done
           printf '%s\n' "$EVIDENCE" > /tmp/onset_gate/evidence_path
-          printf '%s\n' "$PREVIOUS" > /tmp/onset_gate/previous_path
+          printf '%s\n' "$FOUR_REPLAY" > /tmp/onset_gate/previous_path
+          printf '%s\n' "$PREVIOUS" > /tmp/onset_gate/fp_previous_path
           printf '%s\n' "$(dirname "$SOURCE")" > /tmp/onset_gate/source_model_path
           printf '%s\n' "$(dirname "$RISK")" > /tmp/onset_gate/risk_model_path
           printf '%s\n' "$(dirname "$FOUR")" > /tmp/onset_gate/four_model_path
@@ -82,7 +84,7 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           import json
-          r=json.loads(Path(Path("/tmp/onset_gate/previous_path").read_text().strip()).read_text())
+          r=json.loads(Path(Path("/tmp/onset_gate/fp_previous_path").read_text().strip()).read_text())
           assert r["complete"] and r["tracks"]==80 and r["frames"]==306536
           assert r["fifth_head_three_ablations"]["control69"]["tp"]==8127
           assert r["fifth_head_three_ablations"]["control69"]["fp"]==4519
