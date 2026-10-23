@@ -1,0 +1,175 @@
+name: Onset two independent real PCM256 track-sampling 69D MLP ablations
+on:
+  push:
+    branches: [codex/note-fp-track-sampling-69d-256]
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: onset-fp-track-sampling69-two-ablations-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  GH_TOKEN: ${{ github.token }}
+  PYTHONPATH: src
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Verify all existing native256 Onset contracts and both controlled samplers
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0 joblib==1.4.2 onnxruntime==1.20.1
+          python -m compileall -q src/onset256 scripts tests
+          python -m unittest discover -s tests -v
+          python - <<'PY'
+          from onset256.acoustics import HOP,SR
+          from scripts.train_onset_fp_track_sampling256 import MODES
+          from scripts.replay_onset_fp_track_sampling256 import FROZEN_HISTORICAL_69_FP
+          assert HOP==256 and SR==44100
+          assert MODES==("track_uniform","track_class")
+          assert FROZEN_HISTORICAL_69_FP==4519
+          print("ONSET_FP_TRACK_SAMPLING_ISSUE144_BOTH_PREDECLARED_ABLATIONS_SMOKE_PASS")
+          PY
+  train_and_true_replay:
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        sampler: [track_uniform, track_class]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Pin original true ML dependencies for each independently heldout 69D network
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 scikit-learn==1.4.2 threadpoolctl==3.5.0 joblib==1.4.2 onnxruntime==1.20.1
+      - name: Load SHA-pinned FP events and ORIGINAL immutable FP69/70/74 reference checkpoints
+        run: |
+          mkdir -p /tmp/onset_track/evidence /tmp/onset_track/fpsource /tmp/onset_track/four /tmp/onset_track/risk /tmp/onset_track/s701
+          gh run download 39772165153 --repo Andriamarosoa/note --name ONSET_MLP69_RESIDUAL_FP_80_GUITARSET_NATIVE256_FORENSICS --dir /tmp/onset_track/evidence
+          gh run download 39775357133 --repo Andriamarosoa/note --name ONSET_FP_69_70_74_SAME_TRAIN_NEURAL_PCM256_REAL_80WAV_ABLATION --dir /tmp/onset_track/fpsource
+          gh run download 39759373185 --repo Andriamarosoa/note --name ONSET_FN_RECOVERY_FOUR_NEURAL_HEADS_TRAINED256_AND_REAL_WAV --dir /tmp/onset_track/four
+          gh run download 39741883968 --repo Andriamarosoa/note --name ONSET_HARDNEGATIVE_HARMONIC_RESTRIKE_MLP69_NATIVE256_REAL_REPLAY --dir /tmp/onset_track/risk
+          gh run download 39085408073 --repo Andriamarosoa/note --name S701_CAUSAL_ONSET_LEARNED_TRAIN_HELD_COMPOSITION --dir /tmp/onset_track/s701
+          EVIDENCE="$(find /tmp/onset_track/evidence -name fp_signals74.jsonl -type f -print -quit)"
+          FP_TRAIN="$(find /tmp/onset_track/fpsource -path '*/trained/report.json' -type f -print -quit)"
+          FP_REPLAY="$(find /tmp/onset_track/fpsource -path '*/replayed/report.json' -type f -print -quit)"
+          FOUR_TRAIN="$(find /tmp/onset_track/four -path '*/trained/report.json' -type f -print -quit)"
+          FOUR_REPLAY="$(find /tmp/onset_track/four -path '*/replayed/report.json' -type f -print -quit)"
+          RISK_TRAIN="$(find /tmp/onset_track/risk -path '*/trained/report.json' -type f -print -quit)"
+          S701="$(find /tmp/onset_track/s701 -name s701_onset_shadow.joblib -type f -print -quit)"
+          for file in "$EVIDENCE" "$FP_TRAIN" "$FP_REPLAY" "$FOUR_TRAIN" "$FOUR_REPLAY" "$RISK_TRAIN" "$S701"; do
+            if ! test -s "$file";then find /tmp/onset_track -maxdepth 5 -type f|head -100;exit 1;fi
+          done
+          printf '%s\n' "$EVIDENCE" > /tmp/onset_track/evidence_path
+          printf '%s\n' "$(dirname "$FP_TRAIN")" > /tmp/onset_track/fp_source_path
+          printf '%s\n' "$(dirname "$FOUR_TRAIN")" > /tmp/onset_track/four_model_path
+          printf '%s\n' "$FOUR_REPLAY" > /tmp/onset_track/four_reference_path
+          printf '%s\n' "$(dirname "$RISK_TRAIN")" > /tmp/onset_track/risk_model_path
+          printf '%s\n' "$S701" > /tmp/onset_track/s701_path
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          j=json.loads(next(Path("/tmp/onset_track/fpsource").rglob("replayed/report.json")).read_text())
+          assert j["complete"] and j["frames"]==306536 and j["tracks"]==80
+          assert j["fifth_head_three_ablations"]["control69"]["tp"]==8127
+          assert j["fifth_head_three_ablations"]["control69"]["fp"]==4519
+          assert j["fifth_head_three_ablations"]["control69"]["fn"]==3140
+          assert j["old_four_head"]["tp"]==8160 and j["old_four_head"]["fp"]==4605
+          print("ONSET_TRACK_SAMPLING_FIXED_ORIGINAL_69_CONTROL69_80WAV_VERIFIED")
+          PY
+      - name: Load identical signed 80 GuitarSet annotations and real WAV manifest
+        run: |
+          mkdir -p /tmp/onset_track/manifest /tmp/onset_track/traces
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/onset_track/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/onset_track/traces
+          META="$(find /tmp/onset_track/manifest -name report.json -type f -print -quit)"
+          TRACE="$(find /tmp/onset_track/traces -name fit_000.json -type f -print -quit)"
+          test -s "$META";test -s "$TRACE"
+          printf '%s\n' "$META" > /tmp/onset_track/manifest_path
+          printf '%s\n' "$(dirname "$TRACE")" > /tmp/onset_track/traces_path
+      - name: Train five genuinely new native256 69D neural networks from TRAIN only
+        run: |
+          python -m scripts.train_onset_fp_track_sampling256 \
+            --signals "$(cat /tmp/onset_track/evidence_path)" \
+            --original-fp-models "$(cat /tmp/onset_track/fp_source_path)" \
+            --four-reference "$(cat /tmp/onset_track/four_reference_path)" \
+            --mode ${{ matrix.sampler }} \
+            --out /tmp/onset_track/trained
+      - name: Verify full original GuitarSet real PCM audio against source SHA256
+        run: |
+          python - <<'PY'
+          import hashlib,json,urllib.request
+          from pathlib import Path
+          record=json.loads(Path("analysis/evidence/v273-s613-strict-live/protocol.json").read_text())["guitar_archives"]["GuitarSet_audio"]
+          f=Path("/tmp/onset_track/GuitarSet_audio.zip")
+          with urllib.request.urlopen(record["url"],timeout=180) as inp,f.open("wb") as out:
+              for block in iter(lambda:inp.read(2*1024*1024),b""):out.write(block)
+          assert f.stat().st_size==record["size"]
+          h=hashlib.sha256()
+          with f.open("rb") as source:
+              for block in iter(lambda:source.read(2*1024*1024),b""):h.update(block)
+          assert h.hexdigest()==record["sha256"]
+          print("ONSET_TRACK_SAMPLING_SHA256_SIGNED_WAV_80_COMPLETE")
+          PY
+      - name: Genuine 80 WAV native PCM256 run, recompute TP FP FN for both controls and sampler
+        run: |
+          python -m scripts.replay_onset_fp_track_sampling256 \
+            --audio-zip /tmp/onset_track/GuitarSet_audio.zip \
+            --traces "$(cat /tmp/onset_track/traces_path)" \
+            --manifest "$(cat /tmp/onset_track/manifest_path)" \
+            --native-model model/live/strict_note/NOTE_strict_live.npz \
+            --s701-model "$(cat /tmp/onset_track/s701_path)" \
+            --old-risk-models "$(cat /tmp/onset_track/risk_model_path)" \
+            --old-fn-models "$(cat /tmp/onset_track/four_model_path)" \
+            --fp-models /tmp/onset_track/trained \
+            --mode ${{ matrix.sampler }} \
+            --out /tmp/onset_track/replayed
+      - name: Preserve preregistered TP FP FN and REAL F1 even if the model regressions are unacceptable
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("/tmp/onset_track/trained/report.json")
+          if p.is_file():
+              m=json.loads(p.read_text())
+              assert m["complete"] and m["models_really_trained"]==5
+              assert m["only_training_sampling_changed"]
+              assert m["original_70D_74D_SHA_frozen"]
+              assert len(m["folds"])==5 and m["composition_holdout_untouched"]
+              print("ONSET_TRACK_SAMPLING_CAL_ONLY_PROXY_NOT_WAV_F1",
+                    [(v["outer"],v["selected_cut"],v["selected_CAL_proxy"]["f1"]) for v in m["folds"]])
+          p=Path("/tmp/onset_track/replayed/report.json")
+          if p.is_file():
+              r=json.loads(p.read_text())
+              assert r["complete"] and r["tracks"]==80 and r["frames"]==306536
+              assert r["old_four_head"]["tp"]==8160 and r["old_four_head"]["fp"]==4605
+              assert r["fifth_head_three_ablations"]["control70"]["tp"]==8137
+              assert r["fifth_head_three_ablations"]["temporal74"]["fp"]==4290
+              assert r["original_five_other_axes_unchanged"]
+              assert r["production_midi_untouched"] and not r["promoted"]
+              print("ONSET_TRACK_SAMPLING_REPLAY_REAL_PCM256_FINAL",
+                   r["track_sampling_mode"],r["new_control69_real"],
+                   r["FP_reduced_vs_frozen_baseline"],
+                   r["F1_improved_vs_frozen_baseline"],
+                   r["issue144_both_preregistered_gates"])
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ONSET_TRACK_SAMPLING_ISSUE144_${{ matrix.sampler }}_REAL_PCM256_80WAV
+          path: |
+            /tmp/onset_track/trained/report.json
+            /tmp/onset_track/trained/checkpoints/
+            /tmp/onset_track/replayed/report.json
+          if-no-files-found: warn
+          retention-days: 45
