@@ -138,6 +138,7 @@ def real_blocks(mic,hex_audio,notes,*,seed=0,sequences=28,seq_hops=8):
     rng=np.random.default_rng(seed)
     attacks=[max(0,min(num_frames-seq_hops,int(t*SR/HOP)))
              for t,off,p,ch in notes if 40<=p<=88]
+    rng.shuffle(attacks)
     random_starts=rng.choice(candidate,min(sequences,len(candidate)),replace=False).tolist()
     chosen=list(dict.fromkeys((attacks[:sequences//2]+random_starts)))[:sequences]
     inputs=[];targets=[];pitch=[];strings=[]
@@ -168,7 +169,19 @@ def data_from_real_archives(mic_zip,hex_zip,jams_zip,out,*,sequences=28,
         names=sorted(Path(name).name.removesuffix("_mic.wav") for name in mic.namelist()
                      if name.endswith("_mic.wav"))
         for player in sorted({name[:2] for name in names}):
-            selected=sorted(n for n in names if n.startswith(player+"_"))[:max_tracks_per_player]
+            # Diversity: same five reference compositions, rather than
+            # alphabetical BN-only tracks hiding E2/E3/overlap examples.
+            by_comp=defaultdict(list)
+            for stem in names:
+                if stem.startswith(player+"_"):
+                    by_comp[stem.split("_",1)[1].split("-",1)[0]].append(stem)
+            selected=[]
+            preferred=("BN1","Funk2","Jazz1","Rock3","SS1")
+            groups=[sorted(by_comp[k]) for k in preferred if by_comp[k]]
+            while len(selected)<max_tracks_per_player and any(groups):
+                for group in groups:
+                    if group and len(selected)<max_tracks_per_player:
+                        selected.append(group.pop(0))
             for stem in selected:
                 orig=wav_in_zip(mic,stem+"_mic.wav",1)
                 target=wav_in_zip(hex_data,stem+"_hex_cln.wav",6)
