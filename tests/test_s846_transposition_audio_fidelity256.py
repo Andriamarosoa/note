@@ -20,7 +20,7 @@ class TranspositionAudioGateTests(unittest.TestCase):
         self.assertFalse(a["passed"])
         self.assertGreater(a["spectral_median_ratio"],7.)
         self.assertGreater(a["estimated"]["energy_above_10khz_fraction"],.45)
-        self.assertLess(a["source_envelope_cv"] if not np.isfinite(a["source_envelope_cv"]) else 0,1.)
+        self.assertGreater(a["source_envelope_cv"],a["estimated_envelope_cv"])
 
     def test_reject_silent_predictions(self):
         source=np.ones(44100,np.float32)*.1
