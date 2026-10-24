@@ -1,0 +1,91 @@
+name: S843 neural real guitar string reconstruction strict PCM256
+on:
+  push:
+    branches: [codex/note-s843-real-audio-transpose-reconstruction256]
+    paths:
+      - 'src/onset256/real_audio_transpose_head256.py'
+      - 'scripts/s843_train_real_hex_transpose256.py'
+      - 'tests/test_s843_real_audio_transpose_head256.py'
+      - 'series/S843/**'
+      - '.github/workflows/note-s843-real-audio-transpose256.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s843-code-guard
+  cancel-in-progress: true
+env:
+  PYTHONPATH: .:src
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  causal_reconstruction_unit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install CPU PyTorch and WAV test runtime
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Original Onset, five other heads and public MIDI never changed
+        run: |
+          git fetch origin 53cafaad80223baf119922eca130bbff4b7ca5fd --depth=1
+          git diff --name-only FETCH_HEAD HEAD > /tmp/s843_modified.txt
+          python - <<'PY'
+          from pathlib import Path
+          modified=set(Path('/tmp/s843_modified.txt').read_text().splitlines())
+          allowed={
+              'src/onset256/real_audio_transpose_head256.py',
+              'scripts/s843_train_real_hex_transpose256.py',
+              'tests/test_s843_real_audio_transpose_head256.py',
+              'series/S843/resume.md','series/S843/resultat.md',
+              '.github/workflows/note-s843-real-audio-transpose256.yml'
+          }
+          assert modified and modified<=allowed,modified-allowed
+          print('S843_FROZEN_PREVIOUS_ONSET_AND_FIVE_OTHER_HEADS_NO_MIDI_EDIT')
+          PY
+      - name: Learned waveform and string GT, genuine provenance guards, causal recurrent PCM256
+        run: |
+          python -m compileall -q src/onset256/real_audio_transpose_head256.py scripts/s843_train_real_hex_transpose256.py
+          python -m unittest discover -s tests -p 'test_s843_real_audio_transpose_head256.py' -v
+      - name: Ensure documentation never claims unproven live scores
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          a=Path('series/S843/resume.md').read_text()
+          b=Path('series/S843/resultat.md').read_text()
+          for doc in (a,b):
+              for required in ('serie: S843','reference: S708','promotion: false',
+                               'codex/note-s843-real-audio-transpose-reconstruction256'):
+                  assert required in doc,required
+          for heading in ('Objectif','Hypothèse','Modifications','Protocole','Audits obligatoires','Statut'):
+              assert ('## '+heading+'\n') in a,heading
+          for heading in ('Exécution','Métriques','Comparaison à S708','Audits','Verdict','Prochaine action'):
+              assert ('## '+heading+'\n') in b,heading
+          for axis in ('Onset','Exact-K','Active Exact-K','Offset','Frame Pitch','Full Note'):
+              assert axis in b,axis
+          assert '69,2584331' in b and 'NON MESURÉ' in b
+          print('S843_NO_FABRICATED_ONSET_F1_OR_REAL_HEX_TRAIN_STATUS')
+          PY
+      - name: One exact PCM256 hop, no future, no direct MIDI
+        run: |
+          python - <<'PY'
+          from onset256.real_audio_transpose_head256 import (
+              NeuralAcousticTransposeHead256,CausalRealAudioTransposeStream256)
+          import numpy as np
+          x=CausalRealAudioTransposeStream256(NeuralAcousticTransposeHead256())
+          result=x.push(np.zeros(256,np.float32),start_sample=0)
+          assert result.sample==256
+          assert result.strings.shape==(6,256)
+          assert result.plain_probabilities.shape==(49,)
+          assert result.note_probabilities.shape==(49,)
+          assert x.added_hold_samples==x.future_samples==0
+          assert not hasattr(result,'intents') and not hasattr(result,'midi')
+          print('S843_SIX_REAL_STRING_ACOUSTIC_ESTIMATES_RAW256_NO_LOOKAHEAD')
+          PY
