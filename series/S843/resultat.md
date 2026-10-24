@@ -4,8 +4,8 @@ statut: en_cours
 type: experience
 reference: S708
 branche: codex/note-s843-real-audio-transpose-reconstruction256
-run_id: en_attente
-commit_sha: en_attente
+run_id: 40086388674
+commit_sha: 52e06ebbcdd37f38721c974628af6d5339e33c53
 promotion: false
 ---
 
@@ -17,6 +17,13 @@ Nouvelle tête neuronale `real_audio_transpose_head256.py` et entraîneur indép
 Les six sorties ne sont ni des oscillateurs synthétiques ni des extraits stockés. Elles sont des valeurs calculées par le réseau qui doit être entraîné contre de **vrais enregistrements hexaphoniques d'origine**. Avant un apprentissage validé, ces sorties sont sans valeur musicale. Le son de micro et le son hex proviennent de capteurs différents ; aucune garantie d'identité acoustique exacte, de séparation parfaite ou d'alignement de phase parfait.
 
 La vérification technique CI et l'entraînement réel doivent être rapportés distinctement, sans scores inventés.
+
+### Actions réelles du 24 octobre 2026
+
+- [Contrôle logiciel S843 #40086388674](https://github.com/Andriamarosoa/note/actions/runs/40086388674) : **SUCCESS**, test de blocs 256, causality/état GRU, gradients, vraie provenance exigée, ablations et absence de MIDI.
+- [Entraînement hex réel #40086388680](https://github.com/Andriamarosoa/note/actions/runs/40086388680) : **en cours à la dernière vérification** ; téléchargement des trois archives GuitarSet originales, total de plusieurs Go. Aucune archive hex n'a encore été validée par ce run au moment de la rédaction, et aucun nouveau poids entraîné sur de vraies cordes n'est encore confirmé.
+- Ces tests unitaires utilisent des tenseurs de contrôle **artificiels uniquement pour éprouver le logiciel** ; ils ne sont PAS des exemples musicaux d'entraînement, ni un résultat scientifique sur guitare.
+
 
 ## Métriques
 | Axe | Résultat actuellement prouvé | Statut |
@@ -40,8 +47,8 @@ S708/H0 historique donne 73,252019 % de F1 mais avec modèle entraîné à 1024.
 | Rôle | Statut | Interprétation |
 |---|---|---|
 | Données | UNKNOWN | trois archives officielles GuitarSet et mapping hex/JAMS à vérifier |
-| Acoustique | CODE | 256 nouveaux PCM, reconstruction par réseau contre vrais signaux hex |
-| Architecture | CODE | CNN+GRU causal, transporteur +12/−12 et sans-vues, six autres têtes inchangées |
+| Acoustique | PASS tests | 256 nouveaux PCM, reconstruction par réseau contre vrais signaux hex |
+| Architecture | PASS tests | CNN+GRU causal, transporteur +12/−12 et sans-vues, six autres têtes inchangées |
 | Apprentissage | UNKNOWN | aucune prétention de vraies poids tant que le run réel n'a pas réussi |
 | Métriques | UNKNOWN | pas d'évaluation de vraies attaques Onset ni de vraies séparations hex |
 | LIVE | UNKNOWN | aucun timing CPU Windows/iRig validé, aucun MIDI |
