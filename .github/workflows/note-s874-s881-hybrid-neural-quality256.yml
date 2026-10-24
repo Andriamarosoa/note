@@ -1,0 +1,61 @@
+name: S874-S881 Hybrid -12 Neural Audio Quality Research PCM256
+on:
+  push:
+    branches: [codex/note-s874-s881-quality-audits-standard-ai256]
+    paths:
+      - 'research/transpose256/s876_neural_eq256.py'
+      - 'research/transpose256/test_s876_neural_eq256.py'
+      - 'series/S874/**'
+      - 'series/S875/**'
+      - 'series/S876/**'
+      - 'series/S877/**'
+      - 'series/S878/**'
+      - 'series/S879/**'
+      - 'series/S880/**'
+      - 'series/S881/**'
+      - 'README_TRANSPOSEUR_HYBRIDE_S874_S881.md'
+      - '.github/workflows/note-s874-s881-hybrid-neural-quality256.yml'
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s874-s881-quality-research-neural256
+  cancel-in-progress: true
+jobs:
+  isolation_and_streaming:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: research/transpose256
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Assert no official NOTE or MIDI regressions by file diff
+        run: |
+          git fetch origin codex/note-s872-s873-standard-ai-down12-256 --depth=1
+          git diff --name-only FETCH_HEAD HEAD > /tmp/modified
+          python - <<'PY'
+          from pathlib import Path
+          paths=Path('/tmp/modified').read_text().splitlines()
+          allowed=(
+            'research/transpose256/s876_neural_eq256.py',
+            'research/transpose256/test_s876_neural_eq256.py',
+            'README_TRANSPOSEUR_HYBRIDE_S874_S881.md',
+            '.github/workflows/note-s874-s881-hybrid-neural-quality256.yml',
+          )
+          assert paths
+          bad=[p for p in paths if p not in allowed and not p.startswith(tuple(f'series/S{i}/' for i in range(874,882)))]
+          assert not bad,('Official NOTE code modified',bad)
+          print('UNCHANGED_OFFICIAL_NOTE_HEADS_AND_MIDI')
+          PY
+      - name: Install CPU-only validation dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Run genuine causal PCM256 and standard bypass unit tests
+        run: |
+          python -m compileall -q research/transpose256/s876_neural_eq256.py
+          python -m unittest discover -s research/transpose256 -p test_s876_neural_eq256.py -v
+          echo 'SOFTWARE_STRUCTURAL_TESTS_NOT_A_MUSICAL_QUALITY_CERTIFICATION'
