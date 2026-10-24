@@ -1,0 +1,71 @@
+name: S840 neural latent note transposition raw PCM256
+on:
+  push:
+    branches: [codex/note-s840-onset-neural-latent-transposition256]
+    paths:
+      - 'src/onset256/learned_latent_transposer256.py'
+      - 'scripts/train_onset_neural_transpose256.py'
+      - 'tests/test_onset_neural_latent_transposition256.py'
+      - 'series/S840/**'
+      - '.github/workflows/note-s840-neural-latent-transposition256.yml'
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s840-transposition256
+  cancel-in-progress: true
+env:
+  PYTHONPATH: .:src
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+jobs:
+  strict256_research_smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install independent CPU neural experiment dependencies
+        run: |
+          python -m pip install numpy==1.26.4
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Freeze original Onset, remaining five heads and official MIDI
+        run: |
+          git fetch origin 33dd90b52c623db8b26dbc191fefd8d10a5b8623 --depth=1
+          git diff --name-only FETCH_HEAD HEAD > /tmp/s840_files.txt
+          python - <<'PY'
+          from pathlib import Path
+          touched=set(Path('/tmp/s840_files.txt').read_text().splitlines())
+          allowed={
+             'src/onset256/learned_latent_transposer256.py',
+             'scripts/train_onset_neural_transpose256.py',
+             'tests/test_onset_neural_latent_transposition256.py',
+             'series/S840/resume.md','series/S840/resultat.md',
+             '.github/workflows/note-s840-neural-latent-transposition256.yml',
+          }
+          assert touched and touched<=allowed,touched-allowed
+          print('S840_ONSET_REFERENCE_69258433_OTHER_HEADS_AND_MIDI_FROZEN')
+          PY
+      - name: Neural gradient, causality, split security and research-only smoke
+        run: |
+          python -m compileall -q src/onset256/learned_latent_transposer256.py scripts/train_onset_neural_transpose256.py
+          python -m unittest discover -s tests -p 'test_onset_neural_latent_transposition256.py' -v
+          python -m scripts.verify_series_reports --series S840
+      - name: No fabricated guitar results and no MIDI publication
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from onset256.learned_latent_transposer256 import (
+              HOP,MODEL_ABI,NeuralLatentTransposer256,CausalNeuralTransposerStream256)
+          import numpy as np
+          assert HOP==256
+          stream=CausalNeuralTransposerStream256(NeuralLatentTransposer256())
+          actual=stream.push(np.zeros(256,np.float32),start_sample=0)
+          assert actual.sample==256 and actual.note_probabilities.shape==(49,)
+          assert not hasattr(actual,'intents')
+          assert MODEL_ABI=='ONSET_LEARNED_LATENT_TRANSPOSE_RAW256_V1'
+          report=Path('series/S840/resultat.md').read_text()
+          assert 'NON MESURÉ' in report and '69,2584331' in report
+          print('S840_NEURAL_TRANSPOSE_RAW256_SHADOW_ONLY_ONSET_F1_NOT_MEASURED')
+          PY
