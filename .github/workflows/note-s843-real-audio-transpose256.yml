@@ -5,6 +5,8 @@ on:
     paths:
       - 'src/onset256/real_audio_transpose_head256.py'
       - 'scripts/s843_train_real_hex_transpose256.py'
+      - 'scripts/s843_evaluate_real_hex_reconstruction256.py'
+      - '.github/workflows/note-s843-real-hex-train.yml'
       - 'tests/test_s843_real_audio_transpose_head256.py'
       - 'series/S843/**'
       - '.github/workflows/note-s843-real-audio-transpose256.yml'
@@ -43,6 +45,8 @@ jobs:
           allowed={
               'src/onset256/real_audio_transpose_head256.py',
               'scripts/s843_train_real_hex_transpose256.py',
+              'scripts/s843_evaluate_real_hex_reconstruction256.py',
+              '.github/workflows/note-s843-real-hex-train.yml',
               'tests/test_s843_real_audio_transpose_head256.py',
               'series/S843/resume.md','series/S843/resultat.md',
               '.github/workflows/note-s843-real-audio-transpose256.yml'
@@ -52,7 +56,7 @@ jobs:
           PY
       - name: Learned waveform and string GT, genuine provenance guards, causal recurrent PCM256
         run: |
-          python -m compileall -q src/onset256/real_audio_transpose_head256.py scripts/s843_train_real_hex_transpose256.py
+          python -m compileall -q src/onset256/real_audio_transpose_head256.py scripts/s843_train_real_hex_transpose256.py scripts/s843_evaluate_real_hex_reconstruction256.py
           python -m unittest discover -s tests -p 'test_s843_real_audio_transpose_head256.py' -v
       - name: Ensure documentation never claims unproven live scores
         run: |
