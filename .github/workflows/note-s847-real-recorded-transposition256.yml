@@ -1,0 +1,158 @@
+name: S847 AI trained real recorded guitar note transposer PCM256
+on:
+  push:
+    branches: [codex/note-s847-real-recorded-transposition256]
+    paths:
+      - '.github/workflows/note-s847-real-recorded-transposition256.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s847-real-guitar-shift-training
+  cancel-in-progress: true
+env:
+  PYTHONPATH: .:src
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  genuine_hex_supervision:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 160
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Real six-string training CPU dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Confirm S844 isolated changes and freeze other six NOTE axes
+        run: |
+          git fetch origin codex/note-s846-transpose-audio-fidelity-gate256 --depth=1
+          git diff --name-only FETCH_HEAD HEAD > /tmp/s847_changes.txt
+          python - <<'PY'
+          from pathlib import Path
+          changed=set(Path('/tmp/s847_changes.txt').read_text().splitlines())
+          permitted={
+              'src/onset256/real_recorded_transposer256.py',
+              'scripts/s847_train_real_recorded_transposer256.py',
+              'tests/test_s847_real_recorded_transposer256.py',
+              'series/S847/resume.md','series/S847/resultat.md',
+              '.github/workflows/note-s847-real-recorded-transposition256.yml',
+          }
+          assert changed and changed<=permitted,changed-permitted
+          print('S847_NO_OFFICIAL_MIDI_OR_ANY_SIX_NOTE_AXIS_CHANGED')
+          PY
+      - name: Verify neural learned shift and original captured sample output on strict PCM256
+        run: |
+          python -m compileall -q src/onset256/real_recorded_transposer256.py scripts/s847_train_real_recorded_transposer256.py
+          python -m unittest discover -s tests -p 'test_s847_real_recorded_transposer256.py' -v
+      - name: Confirm S843 unit checks and frozen legacy MIDI
+        run: |
+          python -m unittest discover -s tests -p 'test_s843_real_audio_transpose_head256.py' -v
+          python -m unittest discover -s tests -p 'test_s844_real_hex_rare_note_audit256.py' -v
+          python -m unittest discover -s tests -p 'test_s845_raw_waveform_acoustic256.py' -v
+          python -m compileall -q src/onset256/real_audio_transpose_head256.py scripts/s843_train_real_hex_transpose256.py scripts/s843_evaluate_real_hex_reconstruction256.py
+      - name: Download original simultaneous GuitarSet microphone, six-string pickup and annotations
+        run: |
+          df -h .
+          mkdir -p /tmp/s847_originals
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          spec=json.loads(Path('analysis/evidence/v273-s613-strict-live/protocol.json').read_text())['guitar_archives']
+          Path('/tmp/s847_originals/original_sources.json').write_text(json.dumps(spec,indent=2))
+          print('GUITARSET_REAL_ARCHIVE_SOURCES',list(spec),flush=True)
+          PY
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          spec=json.loads(Path('/tmp/s847_originals/original_sources.json').read_text())
+          root=Path('/tmp/s847_originals')
+          (root/'download_list.tsv').write_text(
+              str(root/'audio_mono-mic.zip')+'\t'+spec['GuitarSet_audio']['url']+'\n'+
+              str(root/'annotation.zip')+'\t'+spec['GuitarSet_annotations']['url']+'\n'+
+              str(root/'audio_hex-pickup_debleeded.zip')+'\t'+
+              'https://zenodo.org/records/3371780/files/audio_hex-pickup_debleeded.zip?download=1'+'\n')
+          PY
+          while IFS="$(printf '\t')" read -r destination url; do
+            echo "DOWNLOADING_AUTHENTIC_GUITARSET_ARCHIVE $(basename "$destination")"
+            curl --location --fail --retry 4 --retry-delay 8 --connect-timeout 45 --max-time 6000 --output "$destination" "$url"
+            test -s "$destination"
+          done < /tmp/s847_originals/download_list.tsv
+          python - <<'PY'
+          from scripts.s843_train_real_hex_transpose256 import authenticate
+          from pathlib import Path
+          root=Path('/tmp/s847_originals')
+          checks=authenticate(root/'audio_mono-mic.zip',
+                              root/'audio_hex-pickup_debleeded.zip',
+                              root/'annotation.zip')
+          print('S843_ALL_THREE_ORIGINAL_WAV_ARCHIVES_AUTHENTICATED',checks,flush=True)
+          PY
+      - name: Extract signed same-take real mono and six-string hex 256 samples
+        run: |
+          python -m scripts.s843_train_real_hex_transpose256 --phase prepare --mic-zip /tmp/s847_originals/audio_mono-mic.zip --hex-zip /tmp/s847_originals/audio_hex-pickup_debleeded.zip --annotation-zip /tmp/s847_originals/annotation.zip --data /tmp/s847_dataset --max-tracks-per-player 16
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          src=json.loads(Path('/tmp/s847_dataset/provenance.json').read_text())
+          assert src['source_hashes']['hex_clean_md5']=='c31d97279464c9a67e640cb9061fb0c6'
+          assert set(src['split_tracks'])=={'train','cal','outer'}
+          print('S845_VERIFIED_REAL_AUDIO_SOURCE_AND_PLAYER_SPLITS',
+                {k:len(v['tracks']) for k,v in src['split_tracks'].items()},
+                flush=True)
+          PY
+      - name: Extract authentic physical GuitarSet hex notes (never synthetic)
+        run: |
+          python -m scripts.s847_train_real_recorded_transposer256 --phase bank \
+            --mic-zip /tmp/s847_originals/audio_mono-mic.zip \
+            --hex-zip /tmp/s847_originals/audio_hex-pickup_debleeded.zip \
+            --annotation-zip /tmp/s847_originals/annotation.zip \
+            --bank-out /tmp/s847_real_audio_bank
+      - name: Train learned octave note transposition from real mic and JAMS labels
+        run: |
+          python -m scripts.s847_train_real_recorded_transposer256 --phase train \
+            --data /tmp/s847_dataset --out /tmp/s847_selector --epochs 7
+      - name: Audit native PCM256 model and real guitar physical output bank
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from scripts.s847_train_real_recorded_transposer256 import read_recorded_bank
+          from onset256.real_recorded_transposer256 import NeuralShiftSelector256,RecordedAudioNeuralTransposeStream256
+          import torch,numpy as np
+          data=Path('/tmp/s847_selector/resultat.json')
+          model=json.loads(data.read_text())
+          bank,manifest=read_recorded_bank('/tmp/s847_real_audio_bank')
+          bundle=torch.load('/tmp/s847_selector/s847_neural_target_selector.pt',
+                            map_location='cpu',weights_only=True)
+          network=NeuralShiftSelector256()
+          network.load_state_dict(bundle['model_state'],strict=True)
+          stream=RecordedAudioNeuralTransposeStream256(network,bank,shift=12,threshold=0)
+          result=stream.push(np.zeros(256,np.float32),start_sample=0)
+          assert result.end_sample==256
+          assert result.sample_bank_is_real_not_reconstructed
+          assert len(result.physical_recorded_wave256)==256
+          assert not hasattr(result,'midi')
+          assert model['all_six_official_NOTE_heads_and_MIDI_unchanged']
+          print('S847_GENUINE_RECORDED_WAVE_DIRECT_COPY_NOT_MUSICAL_TRANSPOSE_PROOF',
+            dict(notes=len(bank),source=manifest['source_guitarist'],
+                 e2=40 in bank,e3=52 in bank,
+                 metric=model['report_frame_note_not_NoteOn_F1']),flush=True)
+          PY
+      - name: Save ONLY authentic physical recordings, trained selection weights and scores
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S847_REAL_RECORDED_GUITAR_NEURAL_NOTE_TRANSPOSE_PCM256
+          path: |
+            /tmp/s847_real_audio_bank/physically_recorded_guitar_notes256.npz
+            /tmp/s847_real_audio_bank/recorded_bank_provenance.json
+            /tmp/s847_selector/resultat.json
+            /tmp/s847_selector/s847_neural_target_selector.pt
+            /tmp/s847_dataset/provenance.json
+          if-no-files-found: warn
+          retention-days: 60
