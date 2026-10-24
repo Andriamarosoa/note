@@ -1,0 +1,55 @@
+name: S863-S867 experimental 256-PCM isolated neural stream contracts
+on:
+  push:
+    branches: [codex/note-s863-s867-causal-neural-octave256]
+    paths:
+      - 'research/transpose256/**'
+      - 'series/S863/**'
+      - 'series/S864/**'
+      - 'series/S865/**'
+      - 'series/S866/**'
+      - 'series/S867/**'
+      - 'README_TRANSPOSEUR_IA_S863_S867_2026-10-24.md'
+      - '.github/workflows/note-s863-s867-shadow-contract256.yml'
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s863-s867-independent-neural256
+  cancel-in-progress: true
+jobs:
+  causal_contracts_only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      OMP_NUM_THREADS: '2'
+      PYTHONPATH: research/transpose256
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Enforce no official NOTE/MIDI implementation changes
+        run: |
+          git fetch origin codex/note-s852-s854-waveform-research256 --depth=1
+          git diff --name-only FETCH_HEAD HEAD > /tmp/s863_changed
+          python - <<'PY'
+          from pathlib import Path
+          changed=Path('/tmp/s863_changed').read_text().splitlines()
+          allowed=('research/transpose256/','series/S863/','series/S864/','series/S865/',
+                   'series/S866/','series/S867/')
+          static=('README_TRANSPOSEUR_IA_S863_S867_2026-10-24.md',
+                  '.github/workflows/note-s863-s867-shadow-contract256.yml')
+          assert changed
+          bad=[x for x in changed if not x.startswith(allowed) and x not in static]
+          assert not bad,('Official heads or unrelated code changed',bad)
+          print('OFFICIAL_NOTE_MIDI_UNTOUCHED_SHADOW_ONLY')
+          PY
+      - name: Install CPU-only test dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Run exactly-256 and future-audio-isolation structural tests
+        run: |
+          python -m compileall -q research/transpose256
+          python -m unittest discover -s research/transpose256 -p 'test_s863_live_shadow256.py' -v
+          echo "STRUCTURAL_TEST_SUCCESS_IS_NOT_MUSICAL_TRANSPOSE_VALIDATION"
