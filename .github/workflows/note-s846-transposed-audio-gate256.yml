@@ -1,0 +1,93 @@
+name: S846 reject fake high-frequency neural guitar transposition demos
+on:
+  push:
+    branches: [codex/note-s846-transpose-audio-fidelity-gate256]
+    paths:
+      - 'scripts/s845_make_real_audio_ab_demo256.py'
+      - 'tests/test_s846_transposition_audio_fidelity256.py'
+      - 'series/S846/**'
+      - '.github/workflows/note-s846-transposed-audio-gate256.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+env:
+  PYTHONPATH: .:src
+  GH_TOKEN: ${{ github.token }}
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+jobs:
+  reject_audio_without_physical_evidence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install software-only test dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Enforce original Onset, other NOTE heads, and MIDI frozen
+        run: |
+          git fetch origin codex/note-s845-raw-wave-acoustic-decoder256 --depth=1
+          git diff --name-only FETCH_HEAD HEAD > /tmp/s846_changed.txt
+          python - <<'PY'
+          from pathlib import Path
+          changes=set(Path('/tmp/s846_changed.txt').read_text().splitlines())
+          allowed={
+              'scripts/s845_make_real_audio_ab_demo256.py',
+              'tests/test_s846_transposition_audio_fidelity256.py',
+              'series/S846/resume.md','series/S846/resultat.md',
+              '.github/workflows/note-s846-transposed-audio-gate256.yml',
+          }
+          assert changes and changes<=allowed, changes-allowed
+          print('S846_NOTE_SIX_HEADS_MIDI_AND_BASELINE_FROZEN')
+          PY
+      - name: Prove software rejects silent or ultrahigh noise candidates
+        run: |
+          python -m compileall -q scripts/s845_make_real_audio_ab_demo256.py
+          python -m unittest discover -s tests -p 'test_s846_transposition_audio_fidelity256.py' -v
+      - name: Download and audit EXACT previously shared REAL WAV demo
+        run: |
+          mkdir -p /tmp/s846bad
+          gh run download 40091786843 --repo Andriamarosoa/note --name S845_DEMO_REAL_GUITAR_ORIGINAL_VS_NEURAL_PLUS12_WAV --dir /tmp/s846bad
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from scipy.io import wavfile
+          from scripts.s845_make_real_audio_ab_demo256 import audit_transposed_audio
+          import numpy as np
+          folder=Path('/tmp/s846bad')
+          wavs=list(folder.rglob('*.wav'))
+          reports=list(folder.rglob('*.json'))
+          assert len(wavs)==1 and len(reports)==1,(wavs,reports)
+          info=json.loads(reports[0].read_text())
+          rate,pcm=wavfile.read(wavs[0])
+          assert rate==44100 and pcm.ndim==1
+          x=pcm.astype(np.float32)/32768.
+          split=round(info['segment_duration_s']*rate)
+          right=round((info['segment_duration_s']+info['separator_s'])*rate)
+          original=x[:split]
+          estimate=x[right:]
+          assert len(original)==len(estimate)
+          diagnostics=audit_transposed_audio(original,estimate)
+          print('S846_ACTUAL_BROKEN_DEMO_SPECTRAL_AUDIT',json.dumps(diagnostics),flush=True)
+          assert diagnostics['passed'] is False
+          assert diagnostics['original']['spectral_centroid_hz']<1500.
+          assert diagnostics['estimated']['spectral_centroid_hz']>8000.
+          assert diagnostics['estimated']['energy_above_10khz_fraction']>.45
+          print('S846_REAL_DEMO_CORRECTLY_REJECTED_NOT_A_GUITAR_TRANSPOSE')
+          PY
+      - name: No false acoustic reconstruction success declared
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text=Path('series/S846/resultat.md').read_text()
+          assert 'NON VALIDÉ' in text
+          assert '14,31' in text
+          assert '69,2584' in text
+          print('S846_QUALITY_GATE_IS_NECESSARY_NOT_PROOF_OF_CORRECT_OCTAVE')
+          PY
