@@ -1,0 +1,128 @@
+name: S842 real GuitarSet neural octave note detector PCM256
+on:
+  push:
+    branches: [codex/note-s842-real-guitarset-neural-transpose256]
+    paths:
+      - 'src/onset256/learned_latent_transposer256.py'
+      - 'scripts/s842_extract_real_octave_pairs256.py'
+      - 'scripts/s842_compare_neural_e2_e3_probe256.py'
+      - 'tests/test_s842_real_octave_pairs256.py'
+      - 'series/S842/**'
+      - '.github/workflows/note-s842-real-guitarset-neural-transposition256.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+env:
+  GH_TOKEN: ${{ github.token }}
+  PYTHONPATH: .:src
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  train_real_semantic_octave_pcm256:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install reproducible GuitarSet and CPU PyTorch dependencies
+        run: |
+          python -m pip install -r requirements-onset256-cache.txt
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Prove other axes, reference onset and official MIDI frozen
+        run: |
+          git fetch origin afed37989d7592f8298e305dd30f294f9485e66b --depth=1
+          git diff --name-only FETCH_HEAD HEAD > /tmp/s842_touched.txt
+          python - <<'PY'
+          from pathlib import Path
+          changes=set(Path('/tmp/s842_touched.txt').read_text().splitlines())
+          allowed={
+              'src/onset256/learned_latent_transposer256.py',
+              'scripts/s842_extract_real_octave_pairs256.py',
+              'scripts/s842_compare_neural_e2_e3_probe256.py',
+              'tests/test_s842_real_octave_pairs256.py',
+              'series/S842/resume.md',
+              'series/S842/resultat.md',
+              '.github/workflows/note-s842-real-guitarset-neural-transposition256.yml',
+          }
+          assert changes and changes<=allowed,changes-allowed
+          print('S842_S840_INDEPENDENT_OTHER_HEADS_MIDI_PROTECTED')
+          PY
+      - name: Test true overlap and supervised neural transport
+        run: |
+          python -m unittest discover -s tests -p 'test_s842_real_octave_pairs256.py' -v
+          python -m unittest discover -s tests -p 'test_onset_neural_latent_transposition256.py' -v
+      - name: Fetch original 80 GuitarSet WAVs and immutable S800 annotations
+        run: |
+          mkdir -p /tmp/s842_input/manifest /tmp/s842_input/traces
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/s842_input/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/s842_input/traces
+          python - <<'PY'
+          from pathlib import Path
+          import shutil
+          root=Path('/tmp/s842_input')
+          manifests=list((root/'manifest').rglob('report.json'))
+          traces=list((root/'traces').rglob('fit_000.json'))
+          assert len(manifests)==1 and len(traces)==1,(manifests,traces)
+          if manifests[0]!=root/'manifest/report.json':
+              shutil.move(str(manifests[0]),str(root/'manifest/report.json'))
+          src=traces[0].parent
+          if src!=root/'traces':
+              for p in src.glob('fit_*.json'):
+                  shutil.move(str(p),str(root/'traces'/p.name))
+          assert len(list((root/'traces').glob('fit_*.json')))==80
+          print('S842_SIGNED_ANNOTATIONS_80_VERIFIED')
+          PY
+          python - <<'PY'
+          import json,hashlib,urllib.request
+          from pathlib import Path
+          info=json.loads(Path('analysis/evidence/v273-s613-strict-live/protocol.json').read_text())['guitar_archives']['GuitarSet_audio']
+          dest=Path('/tmp/s842_input/GuitarSet_audio.zip')
+          with urllib.request.urlopen(info['url'],timeout=180) as src,dest.open('wb') as fd:
+              for part in iter(lambda:src.read(1048576),b''):
+                  fd.write(part)
+          h=hashlib.sha256()
+          with dest.open('rb') as fd:
+              for part in iter(lambda:fd.read(1048576),b''):
+                  h.update(part)
+          assert dest.stat().st_size==info['size'] and h.hexdigest()==info['sha256']
+          print('S842_ORIGINAL_GUITARSET_AUDIO_ZIP_SIGNED')
+          PY
+      - name: Prepare independently recorded REAL octave GT pairs and E2 E3 probes
+        run: |
+          python -m scripts.s842_extract_real_octave_pairs256 --root /tmp/s842_input --out /tmp/s842_data
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from scripts.train_onset_neural_transpose256 import load_verified_pairs
+          root=Path('/tmp/s842_data')
+          data,digest=load_verified_pairs(root/'real_octave_pairs256.npz',
+                                          root/'real_octave_pairs_manifest.json')
+          r=json.loads((root/'extraction_report.json').read_text())
+          print('S842_REAL_DATA_VERIFIED',dict(
+              count=r['pairs'],splits=r['pairs_by_split'],
+              probes=r['probe_counts'],sha256=digest),flush=True)
+          PY
+      - name: Train S840/S842 actual learned latent transport on real note pairs
+        run: |
+          python -m scripts.train_onset_neural_transpose256 --pairs /tmp/s842_data/real_octave_pairs256.npz --manifest /tmp/s842_data/real_octave_pairs_manifest.json --out /tmp/s842_model --epochs 8 --batch-size 128 --seed 842
+      - name: Evaluate E2 E3 and true overlap, same encoder with vs without views
+        run: |
+          python -m scripts.s842_compare_neural_e2_e3_probe256 --probe /tmp/s842_data/e2_e3_probe256.npz --checkpoint /tmp/s842_model/neural_latent_transposer256.pt --out /tmp/s842_evaluation
+      - name: Save model, complete real GT diagnostics and calibration evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S842_REAL_GUITARSET_NEURAL_OCTAVE_PCM256
+          path: |
+            /tmp/s842_data/extraction_report.json
+            /tmp/s842_data/real_octave_pairs_manifest.json
+            /tmp/s842_model/resultat.json
+            /tmp/s842_model/neural_latent_transposer256.pt
+            /tmp/s842_evaluation/probe_report.json
+          if-no-files-found: warn
+          retention-days: 60
