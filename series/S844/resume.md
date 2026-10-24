@@ -1,11 +1,11 @@
 ---
 serie: S844
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s844-real-hex-rare-note-coverage256
-run_id: en_attente
-commit_sha: en_attente
+run_id: 40087751049
+commit_sha: f5b82d620e72db706e7ed64bae9d5d567a8c82f7
 promotion: false
 ---
 
@@ -43,4 +43,4 @@ La forte asymétrie positif/négatif des GT rendait la réponse « aucune note �
 | LIVE | p95/p99 appareil Windows/iRig inconnu; code sans attente, pas d'intégration au MIDI |
 
 ## Statut
-En cours. Aucune promesse de gain ; aucune promotion. La référence Onset PCM256 à préserver est **69,2584331 % F1** (7 607 TP / 3 093 FP / 3 660 FN). Le résultat S843 prouve le fonctionnement technique de l'IA et l'échec de sa calibration/détection, pas l'atteinte de notre objectif musical.
+**Terminé, refusé :** [GitHub Actions #40087751049](https://github.com/Andriamarosoa/note/actions/runs/40087751049) SUCCESS technique avec 16 TRAIN, 16 CAL, 64 OUTER et 49 152 pas. La reconstruction réelle hex s'est révélée moins bonne que le silence (MAE réseau 0,029785 vs 0,029205) et les vues latentes de transposition n'apportent aucun gain net E2/E3/joint sur les mêmes exemples. Aucun Onset F1 nouveau ; aucune promotion.  La référence Onset PCM256 à préserver est **69,2584331 % F1** (7 607 TP / 3 093 FP / 3 660 FN). Le résultat S843 prouve le fonctionnement technique de l'IA et l'échec de sa calibration/détection, pas l'atteinte de notre objectif musical.
