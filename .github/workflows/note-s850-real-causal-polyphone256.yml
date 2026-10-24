@@ -1,0 +1,122 @@
+name: S850 long-causal neural polyphonic real GuitarSet PCM256 A/B loops
+on:
+  push:
+    branches: [codex/note-s850-causal-multinote-rank256]
+    paths:
+      - 'src/onset256/s850_causal_polyphonic_transposer256.py'
+      - 'scripts/s850_prepare_real_mic_longcontext256.py'
+      - 'scripts/s850_train_real_causal_poly_note256.py'
+      - 'tests/test_s850_causal_polyphonic_transpose256.py'
+      - 'series/S850/**'
+      - '.github/workflows/note-s850-real-causal-polyphone256.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: s850-real-audio-learned-shift-loop
+  cancel-in-progress: true
+env:
+  PYTHONPATH: .:src
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  real_causes_and_heldout_results:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install tested raw-256 neural and authentic audio stack
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Prove official MIDI and six independent NOTE heads unchanged
+        run: |
+          git fetch origin codex/note-s849-transpose-constant-note-audit256 --depth=1
+          git diff --name-only FETCH_HEAD HEAD > /tmp/s850_changes.txt
+          python - <<'PY'
+          from pathlib import Path
+          modified=set(Path('/tmp/s850_changes.txt').read_text().splitlines())
+          allowed={
+            'src/onset256/s850_causal_polyphonic_transposer256.py',
+            'scripts/s850_prepare_real_mic_longcontext256.py',
+            'scripts/s850_train_real_causal_poly_note256.py',
+            'tests/test_s850_causal_polyphonic_transpose256.py',
+            'series/S850/resume.md','series/S850/resultat.md',
+            '.github/workflows/note-s850-real-causal-polyphone256.yml',
+          }
+          assert modified and modified<=allowed,modified-allowed
+          print('S850_MIDI_AND_ALL_NOTE_AXIS_HEADS_FROZEN')
+          PY
+      - name: Verify exact 256 current samples, 32-hop causal unroll and GT rank
+        run: |
+          python -m compileall -q src/onset256/s850_causal_polyphonic_transposer256.py scripts/s850_prepare_real_mic_longcontext256.py scripts/s850_train_real_causal_poly_note256.py
+          python -m unittest discover -s tests -p 'test_s850_causal_polyphonic_transpose256.py' -v
+      - name: Reuse immutable verified authentic GuitarSet mic and JAMS archives when cached
+        uses: actions/cache@v4
+        with:
+          path: /tmp/s850_signed_sources
+          key: real-guitarset-mic-237cdc-annotation-8daa-v1
+      - name: Download only ORIGINAL mono GuitarSet 44.1 kHz + original JAMS
+        run: |
+          mkdir -p /tmp/s850_signed_sources
+          python - <<'PY'
+          from pathlib import Path
+          import json,subprocess
+          specs=json.loads(Path('analysis/evidence/v273-s613-strict-live/protocol.json').read_text())['guitar_archives']
+          dest=Path('/tmp/s850_signed_sources')
+          for filename,key in (('audio_mono-mic.zip','GuitarSet_audio'),('annotation.zip','GuitarSet_annotations')):
+              dst=dest/filename
+              if dst.exists():
+                  print('S850_USING_SIGNED_CACHED_ARCHIVE',filename,flush=True)
+                  continue
+              url=specs[key]['url']
+              subprocess.run(['curl','--location','--fail','--retry','4','--retry-delay','8','--connect-timeout','45','--max-time','3600','--output',str(dst),url],check=True)
+          PY
+          python - <<'PY'
+          from pathlib import Path
+          from scripts.s850_prepare_real_mic_longcontext256 import sha256,SOURCE_SHA256
+          root=Path('/tmp/s850_signed_sources')
+          for kind,name in (('mic','audio_mono-mic.zip'),('jams','annotation.zip')):
+              assert sha256(root/name)==SOURCE_SHA256[kind],name+' authentic source failed'
+              print('S850_REAL_GUITAR_ARCHIVE_SHA_VERIFIED',name,flush=True)
+          PY
+      - name: Construct real PCM256 32-hop training and independent test guitarists
+        run: |
+          python -m scripts.s850_prepare_real_mic_longcontext256 --mic /tmp/s850_signed_sources/audio_mono-mic.zip --jams /tmp/s850_signed_sources/annotation.zip --out /tmp/s850_actual_data --hops 32 --sequences-per-track 48 --tracks-per-player 16
+      - name: Multi-loop TRAIN only BCE versus ranking, select on CAL, freeze OUTER
+        run: |
+          python -m scripts.s850_train_real_causal_poly_note256 --data /tmp/s850_actual_data --out /tmp/s850_neural_results --epochs 3
+      - name: Validate best variant choice uses CAL exclusively
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/s850_neural_results/resultat.json').read_text())
+          assert set(r['variant_results'])=={'BCE','RANK'}
+          assert r['selected_variant_on_CAL'] in ('BCE','RANK')
+          assert r['winner_selected_before_OUTER_comparison']
+          assert r['exact_new_samples_per_hop']==256
+          assert r['original_Onset_reference_F1']>.69
+          print('S850_VERIFIED_REAL_TRAIN_CAL_OUTER',r['selected_variant_on_CAL'],
+                {key:{'CAL':v['CAL_selection_score'],
+                      'OUTER_top1_plus12':v['ranks']['12']['OUTER_top1_contains_GT_note'],
+                      'OUTER_top1_minus12':v['ranks']['-12']['OUTER_top1_contains_GT_note']}
+                  for key,v in r['variant_results'].items()},flush=True)
+          PY
+      - name: Preserve independent models, signed GT counts and audited results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S850_REAL_GUITAR_MULTI_NOTE_RANK_CAUSAL_PCM256
+          path: |
+            /tmp/s850_actual_data/provenance.json
+            /tmp/s850_neural_results/resultat.json
+            /tmp/s850_neural_results/s850_bce_real_model.pt
+            /tmp/s850_neural_results/s850_rank_real_model.pt
+          if-no-files-found: warn
+          retention-days: 60
