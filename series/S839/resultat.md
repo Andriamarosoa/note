@@ -2,7 +2,7 @@
 serie: S839
 statut: en_cours
 type: experience
-reference: S834
+reference: S708
 branche: codex/note-s839-strict-trained-pcm256-contract
 run_id: en_attente
 commit_sha: en_attente
