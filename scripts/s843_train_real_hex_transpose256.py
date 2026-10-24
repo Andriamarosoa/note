@@ -183,6 +183,7 @@ def data_from_real_archives(mic_zip,hex_zip,jams_zip,out,*,sequences=28,
                 for key,value in zip(("mic","hex","note_gt","string_gt"),
                                      (pcm,stems,gt,stringgt)):
                     split_data[split][key].append(value)
+                split_data[split]["track_id"].append(np.full(len(pcm),len(split_data[split]["tracks"]),np.int32))
                 split_data[split]["tracks"].append(stem)
                 sample_meta.append(dict(track=stem,player=stem[:2],
                     split=split,seq_count=len(pcm),samples_per_decision=HOP))
@@ -201,7 +202,7 @@ def data_from_real_archives(mic_zip,hex_zip,jams_zip,out,*,sequences=28,
         if not split_data[split]["tracks"]:
             raise ValueError("missing required real player split "+split)
         arrays={}
-        for key in ("mic","hex","note_gt","string_gt"):
+        for key in ("mic","hex","note_gt","string_gt","track_id"):
             arrays[key]=np.concatenate(split_data[split][key],axis=0)
         np.savez_compressed(out/(split+".npz"),**arrays)
         record["split_tracks"][split]=dict(
@@ -218,18 +219,25 @@ def pair_pool(real):
     """
     d=real
     pcm=d["mic"];notes=d["note_gt"]
+    if "track_id" not in d or len(d["track_id"])!=len(pcm):
+        raise ValueError("paired recordings require original distinct track provenance")
     bank=defaultdict(list)
     for i in range(len(pcm)):
         for t in range(pcm.shape[1]):
             y=notes[i,t]
             if int(y.sum())==1:
                 pitch=int(np.flatnonzero(y)[0])+40
-                bank[pitch].append(pcm[i,t].copy())
+                bank[pitch].append((pcm[i,t].copy(),int(d["track_id"][i])))
     rng=np.random.default_rng(SEED)
     pairs=[]
     for pitch in range(40,77):
-        for k in range(min(len(bank[pitch]),len(bank[pitch+12]),32)):
-            a=bank[pitch][k];b=bank[pitch+12][k]
+        lower=bank[pitch]
+        upper=bank[pitch+12]
+        if not lower or not upper:continue
+        for k,(a,source_id) in enumerate(lower[:32]):
+            valid=[(b,target_id) for b,target_id in upper if source_id!=target_id]
+            if not valid:continue
+            b,target_id=valid[k%len(valid)]
             if not np.array_equal(a,b):
                 pairs.append((a,b,pitch,pitch+12,12))
                 pairs.append((b,a,pitch+12,pitch,-12))
@@ -285,7 +293,7 @@ def train(data_dir,out,*,epochs=4,batch_size=32,seed=SEED):
             val=[]
             for start in range(0,len(cal["mic"]),batch_size):
                 sl=slice(start,start+batch_size)
-                t={k:torch.from_numpy(v[sl]) for k,v in cal.items()}
+                t={k:torch.from_numpy(cal[k][sl]) for k in ("mic","hex","note_gt","string_gt")}
                 v,parts,_=reconstruction_loss(net,t["mic"],t["hex"],
                                                t["note_gt"],t["string_gt"])
                 val.append(float(v))
