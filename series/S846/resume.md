@@ -1,11 +1,11 @@
 ---
 serie: S846
-statut: en_cours
+statut: termine
 type: audit
 reference: S708
 branche: codex/note-s846-transpose-audio-fidelity-gate256
-run_id: en_attente
-commit_sha: en_attente
+run_id: 40092562504
+commit_sha: 31a7409de5cbc729a7fc1306abac36ec3e7c64e0
 promotion: false
 ---
 
@@ -43,3 +43,6 @@ Tout reste causal avec exactement 256 nouveaux échantillons par décision, sans
 
 ## Statut
 Démo S845 **INVALIDÉE**. Une sortie audio estimée par l'IA n'est pas automatiquement un vrai son de guitare transposé, même lorsqu'une source originale était réelle. Aucune nouvelle démo fiable ne peut être annoncée avant une nouvelle méthode réussie et un test d'écoute et de référence. Témoin Onset **69,2584331 % F1** intact.
+
+## Validation automatisée du vrai WAV initial
+[GitHub Actions #40092562504](https://github.com/Andriamarosoa/note/actions/runs/40092562504) **SUCCESS** après 4 tests. L'audit a retéléchargé exactement la démo précédemment fournie et prouvé : médiane source 199,18 Hz vs sortie 11714,06 Hz (facteur 58,81), énergie au-dessus de 10kHz 1,57 % vs 56,52 %, coefficient de variation d'enveloppe 46,78 % vs 1,10 %. **Trois raisons indépendantes de rejet** ; la règle interdit désormais de publier une démo S845 présentant ce défaut sonore. L'ancien WAV reste un témoin d'échec, pas une démonstration valide. Les six têtes NOTE et le MIDI restent intacts. 
