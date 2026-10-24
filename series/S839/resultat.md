@@ -22,6 +22,17 @@ Contrat de conformité `s839_native256_contract.py`, tests de non-régression `t
 | Nouveau modèle entraîné strictement PCM256 | **NON MESURÉ** | Aucune donnée pour affirmer un score |
 | Objectif utilisateur | **>80 % F1** | 80 pistes, sans latence, autres têtes indépendantes |
 
+### Transparence sur les six axes (sans mélanger les protocoles)
+
+| Axe | Nouvelle mesure S839 réellement entraînée PCM256 | Décision |
+|---|---|---|
+| Onset F1 | NON MESURÉ | Aucun nouveau checkpoint entraîné |
+| Exact-K | NON MESURÉ | Tête originale inchangée |
+| Active Exact-K | NON MESURÉ | Tête originale inchangée |
+| Offset | NON MESURÉ | Tête originale inchangée |
+| Frame Pitch F1 | NON MESURÉ | Tête originale inchangée |
+| Full Note F1 | NON MESURÉ | Tête originale inchangée |
+
 Les chiffres H0/S834 ne sont pas de nouveaux scores du modèle **entraîné** en PCM256 ; ils restent dans les archives sans être effacés ni modifiés. Le score Live complet à six têtes n'est pas non plus certifié.
 
 ## Comparaison à S708
