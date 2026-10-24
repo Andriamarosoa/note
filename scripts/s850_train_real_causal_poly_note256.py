@@ -80,8 +80,8 @@ def metrics(truth,prob,threshold):
         return dict(status="NO_POSITIVE_EVAL",f1=None,tp=0,
                     fp=int(np.count_nonzero(prob>=threshold)),fn=0)
     p=prob>=threshold
-    tp=int(np.count_nonzero(p&gt));fp=int(np.count_nonzero(p&~gt))
-    fn=int(np.count_nonzero(~p&gt))
+    tp=int(np.count_nonzero(p & gt));fp=int(np.count_nonzero(p&~gt))
+    fn=int(np.count_nonzero(~p & gt))
     return dict(status="MEASURED_FRAME_GT_NOT_ONSET",
                 tp=tp,fp=fp,fn=fn,f1=2*tp/max(1,2*tp+fp+fn),
                 precision=tp/max(1,tp+fp),recall=tp/max(1,tp+fn))
