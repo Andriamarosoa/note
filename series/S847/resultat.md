@@ -4,8 +4,8 @@ statut: en_cours
 type: experience
 reference: S708
 branche: codex/note-s847-real-recorded-transposition256
-run_id: en_attente
-commit_sha: en_attente
+run_id: 40094119273
+commit_sha: 2cf7d4670abca5d7d8c8070700f5fe6dfc6766ce
 promotion: false
 ---
 
@@ -48,3 +48,6 @@ En développement, non promu. S846 démontre seulement que le vieux modèle ne p
 
 ## Prochaine action
 Lancer téléchargement du même GuitarSet certifié, extraction de clips physiquement enregistrés, entraînement CNN+GRU et validation held-out. Sans précision de notes raisonnable et contrôle temporel, ne pas publier une nouvelle démo sonore comme si la guitare avait été transposée.
+
+## Traçabilité du run de recherche
+[GitHub Actions S847 #40094119273](https://github.com/Andriamarosoa/note/actions/runs/40094119273). Cette expérience vérifie l'intégrité des sources mic/hex/JAMS avant la banque de vrais clips, l'entraînement et le test extérieur. À la dernière vérification, le téléchargement des archives officielles n'était pas terminé. **Aucun nouveau score ni démo S847 fidèle ne sont revendiqués avant résultat validé.** Tests de conformité PCM256 antérieurs à la phase de téléchargement effectués sans échec.
