@@ -1,0 +1,65 @@
+name: S839 strict PCM256 training and inference contract
+on:
+  push:
+    branches: [codex/note-s839-strict-trained-pcm256-contract]
+    paths:
+      - 'src/causal_note/s839_native256_contract.py'
+      - 'test/test_s839_native256_contract.py'
+      - 'series/S839/**'
+      - '.github/workflows/note-s839-native256-training-contract.yml'
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  strict_input_and_training_guard:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install basic verified numerical dependency
+        run: python -m pip install 'numpy>=1.24,<3'
+      - name: Verify no legacy head, MIDI script or trained weights changed
+        run: |
+          git fetch origin f1d900d584155bdd0aafd4607a53991f1199a6d4 --depth=1
+          git diff --name-only FETCH_HEAD HEAD > /tmp/s839_changed.txt
+          python - <<'PY'
+          from pathlib import Path
+          paths=set(Path('/tmp/s839_changed.txt').read_text().splitlines())
+          allowed={
+              'src/causal_note/s839_native256_contract.py',
+              'test/test_s839_native256_contract.py',
+              'series/S839/resume.md',
+              'series/S839/resultat.md',
+              '.github/workflows/note-s839-native256-training-contract.yml',
+          }
+          assert paths and paths<=allowed,paths-allowed
+          print('S839_OTHER_FIVE_HEADS_AND_LEGACY_LIVE_MIDI_FROZEN')
+          PY
+      - name: Reject 1024 teacher, non-256 training windows and future/wait
+        env:
+          PYTHONPATH: src
+        run: |
+          python -m unittest -v test.test_s839_native256_contract
+          python -m scripts.verify_series_reports --series S839
+          python - <<'PY'
+          from causal_note.s839_native256_contract import (
+              provenance_from_observed_training, verify_native256,
+              Native256Violation
+          )
+          new=provenance_from_observed_training(
+              observed_train_shapes=[(32,1,256)],
+              actual_step_samples=256)
+          verify_native256(new)
+          old=dict(new,train_hop_samples=1024,
+                   pretraining_source_hop_samples=1024)
+          try:
+              verify_native256(old,live_input_samples=256)
+          except Native256Violation:
+              print('S839_S708_1024_TRAINING_IS_NOT_NATIVE_PCM256_PASS')
+          else:
+              raise AssertionError('1024 teacher illegally classified as native256')
+          PY
