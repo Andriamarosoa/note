@@ -1,0 +1,56 @@
+name: S849 true PCM256 note saturation forensic audit
+on:
+  push:
+    branches: [codex/note-s849-transpose-constant-note-audit256]
+    paths:
+      - 'scripts/s849_audit_neural_note_saturation256.py'
+      - 'series/S849/**'
+      - '.github/workflows/note-s849-neural-saturation256.yml'
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+env:
+  GH_TOKEN: ${{ github.token }}
+  PYTHONPATH: .:src
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Verify unchanged NOTE architecture and six official heads
+        run: |
+          git fetch origin codex/note-s848-ia-vs-standard-transpose256 --depth=1
+          git diff --name-only FETCH_HEAD HEAD > /tmp/s849_changes
+          python - <<'PY'
+          from pathlib import Path
+          modified=set(Path('/tmp/s849_changes').read_text().splitlines())
+          permitted={'scripts/s849_audit_neural_note_saturation256.py',
+                     'series/S849/resume.md','series/S849/resultat.md',
+                     '.github/workflows/note-s849-neural-saturation256.yml'}
+          assert modified and modified<=permitted,modified-permitted
+          print('S849_OFFICIAL_MIDI_ALL_SIX_HEADS_FROZEN')
+          PY
+      - name: Download actual trained S847 model and exact identical S848 recorded original
+        run: |
+          mkdir -p /tmp/s849_pretrained /tmp/s849_original
+          gh run download 40094119273 --repo Andriamarosoa/note --name S847_REAL_RECORDED_GUITAR_NEURAL_NOTE_TRANSPOSE_PCM256 --dir /tmp/s849_pretrained
+          gh run download 40095759550 --repo Andriamarosoa/note --name S848_REAL_GUITAR_STANDARD_VS_AI_PLUS12_AB_AUDIO --dir /tmp/s849_original
+      - name: Audit untouched model note choices for 8, 32 or continuous history
+        run: |
+          python -m scripts.s849_audit_neural_note_saturation256 --wav /tmp/s849_original/01_entree_guitare_reelle.wav --model /tmp/s849_pretrained/s847_selector/s847_neural_target_selector.pt --bank /tmp/s849_pretrained/s847_real_audio_bank --out /tmp/s849_result
+      - name: Preserve factual audit JSON
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S849_REAL_NOTE_SATURATION_256
+          path: /tmp/s849_result/
+          if-no-files-found: warn
+          retention-days: 60
