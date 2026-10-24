@@ -1,0 +1,54 @@
+name: S868-S871 -12 Neural Audio PCM256 Structural Safety
+on:
+  push:
+    branches: [codex/note-s868-s870-neural-down-octave256]
+    paths:
+      - 'research/transpose256/s868_down12_inference256.py'
+      - 'research/transpose256/test_s868_down12_inference256.py'
+      - 'series/S868/**'
+      - 'series/S869/**'
+      - 'series/S870/**'
+      - 'series/S871/**'
+      - 'README_TRANSPOSEUR_IA_DOWN12_S868_S871.md'
+      - '.github/workflows/note-s868-s871-down-octave256.yml'
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: s868-down12-shadow-only
+  cancel-in-progress: true
+jobs:
+  causal_shadow_contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      OMP_NUM_THREADS: '1'
+      PYTHONPATH: research/transpose256
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check official NOTE and MIDI untouched
+        run: |
+          git fetch origin codex/note-s863-s867-causal-neural-octave256 --depth=1
+          git diff --name-only FETCH_HEAD HEAD > /tmp/changed
+          python - <<'PY'
+          from pathlib import Path
+          files=Path('/tmp/changed').read_text().splitlines()
+          allowed=('research/transpose256/s868_down12_inference256.py',
+                   'research/transpose256/test_s868_down12_inference256.py',
+                   'README_TRANSPOSEUR_IA_DOWN12_S868_S871.md',
+                   '.github/workflows/note-s868-s871-down-octave256.yml')
+          assert files
+          assert all(p.startswith(('series/S868/','series/S869/','series/S870/','series/S871/')) or p in allowed for p in files),files
+          print('OFFICIAL_NOTE_AND_MIDI_CODE_FROZEN')
+          PY
+      - name: Install minimal CPU-only test dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Run strict 256 no future and recurrent parity tests
+        run: |
+          python -m compileall -q research/transpose256/s868_down12_inference256.py
+          python -m unittest discover -s research/transpose256 -p 'test_s868_down12_inference256.py' -v
+          echo 'STRUCTURAL_PASS_NOT_NOTE_ACCURACY_PROOF'
