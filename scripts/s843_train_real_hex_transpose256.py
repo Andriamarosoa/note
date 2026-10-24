@@ -297,6 +297,19 @@ def train(data_dir,out,*,epochs=4,batch_size=32,seed=SEED):
                 ds["note_gt"].shape!=(*ds["mic"].shape[:2],49) or
                 ds["string_gt"].shape!=(*ds["mic"].shape[:2],6)):
             raise ValueError("training must use original aligned RAW PCM256 arrays")
+    # Derive weights ONLY from TRAIN ground truth, never CAL or OUTER.
+    per_pitch=tr["note_gt"].reshape(-1,49).sum(axis=0)
+    total_frame_rows=int(tr["note_gt"].shape[0]*tr["note_gt"].shape[1])
+    ratios=(total_frame_rows-per_pitch)/np.maximum(per_pitch,1)
+    # Pitches not observed in TRAIN cannot gain supervision by inventing GT.
+    bounded=np.where(per_pitch>0,np.minimum(np.sqrt(np.maximum(ratios,1)),20),1)
+    note_positive_weight=torch.from_numpy(bounded.astype(np.float32))
+    print("S844_TRAIN_NOTE_SUPPORT",dict(
+        E2=int(per_pitch[0]),E3=int(per_pitch[12]),
+        E2_E3=int(((tr["note_gt"][...,0]>.5)&(tr["note_gt"][...,12]>.5)).sum()),
+        E2_weight=float(bounded[0]),E3_weight=float(bounded[12]),
+        unique_positive_pitches=int(np.count_nonzero(per_pitch))),
+        flush=True)
     pool=pair_pool(tr)
     net=NeuralAcousticTransposeHead256()
     optimizer=torch.optim.AdamW(net.parameters(),lr=.001,weight_decay=.0001)
@@ -310,7 +323,8 @@ def train(data_dir,out,*,epochs=4,batch_size=32,seed=SEED):
             ids=indices[first:first+batch_size]
             def make(k):return torch.from_numpy(tr[k][ids])
             loss,parts,_=reconstruction_loss(net,make("mic"),make("hex"),
-                                               make("note_gt"),make("string_gt"))
+                                               make("note_gt"),make("string_gt"),
+                                               note_positive_weight=note_positive_weight)
             if pool:
                 idx=rng.integers(0,len(pool),size=min(16,len(pool)))
                 pairs=[pool[int(i)] for i in idx]
@@ -320,7 +334,7 @@ def train(data_dir,out,*,epochs=4,batch_size=32,seed=SEED):
                 for j,(_,_,p,q,offset) in enumerate(pairs):
                     sy[j,p-40]=1.;ty[j,q-40]=1.
                 shifts=torch.tensor([p[4] for p in pairs],dtype=torch.long)
-                loss=loss+.2*real_shift_pair_loss(net,src,tgt,sy,ty,shifts)
+                loss=loss+.15*real_shift_pair_loss(net,src,tgt,sy,ty,shifts)
             optimizer.zero_grad();loss.backward()
             torch.nn.utils.clip_grad_norm_(net.parameters(),1.)
             optimizer.step()
@@ -332,7 +346,8 @@ def train(data_dir,out,*,epochs=4,batch_size=32,seed=SEED):
                 sl=slice(start,start+batch_size)
                 t={k:torch.from_numpy(cal[k][sl]) for k in ("mic","hex","note_gt","string_gt")}
                 v,parts,_=reconstruction_loss(net,t["mic"],t["hex"],
-                                               t["note_gt"],t["string_gt"])
+                                               t["note_gt"],t["string_gt"],
+                                               note_positive_weight=note_positive_weight)
                 val.append(float(v))
             val_loss=float(np.mean(val))
         history.append(dict(epoch=epoch+1,train_loss=float(np.mean(losses)),
@@ -348,6 +363,10 @@ def train(data_dir,out,*,epochs=4,batch_size=32,seed=SEED):
                     promoted=False),out/"s843_real_hex_neural.pt")
     results=dict(abi=ABI,real_training_source=root.as_posix(),
         best_cal_epoch=best_epoch,history=history,shift_real_pairs=len(pool),
+        training_note_positive_hops=dict(E2=int(per_pitch[0]),E3=int(per_pitch[12]),
+            E2_E3=int(((tr["note_gt"][...,0]>.5)&(tr["note_gt"][...,12]>.5)).sum())),
+        note_positive_weight_E2=float(bounded[0]),
+        note_positive_weight_E3=float(bounded[12]),
         trained_on_real_microphone_and_hex_recordings=True,
         pitch_shift_DSP_used=False,has_future_audio=False,added_hold_samples=0,
         guitarset_ONSET_80_F1_NOT_MEASURED=True,
