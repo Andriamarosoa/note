@@ -37,7 +37,8 @@ def audit(root,out):
     trace_dir=root/"traces"
     report=dict(schema="S841_REAL_GUITARSET_E2_E3_PCM256_V1",
                 complete=False,hop_samples=HOP,source="signed GuitarSet original mono WAV",
-                onset_only_truth_not_proof_of_simultaneous_sustain=True,
+                gt_note_duration_verified_overlap=True,
+                near_onsets_not_equivalent_to_simultaneous_sustain=True,
                 pairs_are_independently_recorded=False,
                 piano_pitch_labels={"E2":40,"E3":52},
                 tracks=0,frames=0,counts=dict(),by_composition=dict(),
@@ -62,8 +63,24 @@ def audit(root,out):
             if any(not (0<=t<end/SR) for t,p in onset):
                 raise ValueError("invalid GT onset timestamp")
             starts={E2:[],E3:[]}
-            for sec,pitch in onset:
-                if pitch in starts:starts[pitch].append(sec)
+            intervals={E2:[],E3:[]}
+            gt_has_note_durations=all("duration" in n for n in notes)
+            if not gt_has_note_durations:
+                raise ValueError("signed GT lacks note duration; cannot prove overlap")
+            for n in notes:
+                sec,pitch,duration=float(n["time"]),int(n["pitch"]),float(n["duration"])
+                if duration<0 or not np.isfinite(duration):
+                    raise ValueError("invalid GT note length")
+                if pitch in starts:
+                    starts[pitch].append(sec)
+                    intervals[pitch].append((sec,min(end/SR,sec+duration)))
+            actual_intersections=[]
+            for begin_e2,end_e2 in intervals[E2]:
+                for begin_e3,end_e3 in intervals[E3]:
+                    overlap_start=max(begin_e2,begin_e3)
+                    overlap_stop=min(end_e2,end_e3)
+                    if overlap_stop-overlap_start >= HOP/SR:
+                        actual_intersections.append((overlap_start,overlap_stop))
             within_hop=0
             within_80ms=0
             for t in starts[E2]:
@@ -77,11 +94,15 @@ def audit(root,out):
                          composition=item["composition"],texture=texture,
                          e2_onsets=len(starts[E2]),e3_onsets=len(starts[E3]),
                          both_onsets_within_one_256_hop=within_hop,
-                         both_onsets_within_80ms=within_80ms)
+                         both_onsets_within_80ms=within_80ms,
+                         simultaneous_sustain_gt_intersections=len(actual_intersections),
+                         simultaneous_sustain_gt_seconds=sum(stop-start for start,stop in actual_intersections))
             report["examples"].append(summary)
             metrics=dict(tracks=1,e2_onsets=len(starts[E2]),e3_onsets=len(starts[E3]),
                 near_256_e2_e3=within_hop,near_80ms_e2_e3=within_80ms,
-                e2_tracks=int(bool(starts[E2])),e3_tracks=int(bool(starts[E3])))
+                sustained_e2_e3_gt=len(actual_intersections),
+                e2_tracks=int(bool(starts[E2])),e3_tracks=int(bool(starts[E3])),
+                sustained_e2_e3_tracks=int(bool(actual_intersections)))
             global_counts.update(metrics)
             by_comp[item["composition"]].update(metrics)
             by_texture[texture].update(metrics)
@@ -89,7 +110,8 @@ def audit(root,out):
             report["tracks"]+=1
             print("S841_REAL_E2E3_TRACK",meta["name"],
                   "E2",len(starts[E2]),"E3",len(starts[E3]),
-                  "near256",within_hop,"near80ms",within_80ms,flush=True)
+                  "near256",within_hop,"near80ms",within_80ms,
+                  "actual_sustain_overlap",len(actual_intersections),flush=True)
     if report["tracks"]!=80 or report["frames"]!=306536:
         raise AssertionError("not 80 signed PCM256 tracks")
     report["complete"]=True
