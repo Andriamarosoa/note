@@ -1,0 +1,95 @@
+name: S841 real GuitarSet E2 E3 octave GT audit PCM256
+on:
+  push:
+    branches: [codex/note-s841-real-e2-e3-octave256]
+    paths:
+      - 'scripts/s841_audit_real_guitarset_e2e3_256.py'
+      - 'tests/test_s841_real_guitarset_e2e3_audit256.py'
+      - 'series/S841/**'
+      - '.github/workflows/note-s841-real-guitarset-e2e3-256.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+env:
+  GH_TOKEN: ${{ github.token }}
+  PYTHONPATH: .:src
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+jobs:
+  real_e2_e3_inventory:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install pinned Onset read-only dependencies
+        run: python -m pip install -r requirements-onset256-cache.txt
+      - name: Check source models, six heads and MIDI unmodified
+        run: |
+          git fetch origin 6c55f6f02b9117a75b290890e1fa750ce56714c2 --depth=1
+          git diff --name-only FETCH_HEAD HEAD > /tmp/s841_changed.txt
+          python - <<'PY'
+          from pathlib import Path
+          paths=set(Path('/tmp/s841_changed.txt').read_text().splitlines())
+          allowed={
+              'scripts/s841_audit_real_guitarset_e2e3_256.py',
+              'tests/test_s841_real_guitarset_e2e3_audit256.py',
+              'series/S841/resume.md',
+              'series/S841/resultat.md',
+              '.github/workflows/note-s841-real-guitarset-e2e3-256.yml',
+          }
+          assert paths and paths<=allowed, paths-allowed
+          print('S841_ONSET_692584_BASE_AND_ALL_FIVE_OTHER_HEADS_FROZEN')
+          PY
+      - name: Run scientific guards for E2 E3 PCM256
+        run: python -m unittest discover -s tests -p 'test_s841_real_guitarset_e2e3_audit256.py' -v
+      - name: Fetch signed GuitarSet 80 real annotations and original WAVs
+        run: |
+          mkdir -p /tmp/s841/manifest /tmp/s841/traces
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_PARITY_AND_MANIFEST --dir /tmp/s841/manifest
+          gh run download 39352880035 --repo Andriamarosoa/note --name S800_FIT80_FIVE_HEAD_FULL_OOF_TRACES --dir /tmp/s841/traces
+          python - <<'PY'
+          from pathlib import Path
+          import shutil
+          root=Path('/tmp/s841')
+          manifest=list((root/'manifest').rglob('report.json'))
+          traces=list((root/'traces').rglob('fit_000.json'))
+          assert len(manifest)==1 and len(traces)==1,(manifest,traces)
+          if manifest[0] != root/'manifest/report.json':
+              shutil.move(str(manifest[0]),str(root/'manifest/report.json'))
+          src=traces[0].parent
+          if src != root/'traces':
+              for file in sorted(src.glob('fit_*.json')):
+                  shutil.move(str(file),str(root/'traces'/file.name))
+          assert len(list((root/'traces').glob('fit_*.json')))==80
+          print('S841_80_SIGNED_GT_TRACES_DOWNLOADED')
+          PY
+          python - <<'PY'
+          from pathlib import Path
+          import json,hashlib,urllib.request
+          info=json.loads(Path('analysis/evidence/v273-s613-strict-live/protocol.json').read_text())['guitar_archives']['GuitarSet_audio']
+          dest=Path('/tmp/s841/GuitarSet_audio.zip')
+          with urllib.request.urlopen(info['url'],timeout=180) as src,dest.open('wb') as f:
+              for chunk in iter(lambda:src.read(1048576),b''):
+                  f.write(chunk)
+          h=hashlib.sha256()
+          with dest.open('rb') as f:
+              for chunk in iter(lambda:f.read(1048576),b''):
+                  h.update(chunk)
+          assert h.hexdigest()==info['sha256'] and dest.stat().st_size==info['size']
+          print('S841_GUITARSET_ORIGINAL_WAV_SHA256_VERIFIED')
+          PY
+      - name: Audit real E2/E3 GT and strict one-hop proximity
+        run: |
+          python -m scripts.s841_audit_real_guitarset_e2e3_256 --root /tmp/s841 --out /tmp/s841_results
+      - name: Preserve original evidence and GT availability report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S841_SIGNED_REAL_GUITARSET_E2_E3_GT_PCM256
+          path: /tmp/s841_results/
+          if-no-files-found: warn
+          retention-days: 60
