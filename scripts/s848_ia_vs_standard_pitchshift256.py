@@ -21,7 +21,7 @@ import librosa
 import numpy as np
 import torch
 from scipy.io import wavfile
-from scipy.signal import welch
+from scipy.signal import welch, resample_poly
 
 from onset256.real_recorded_transposer256 import (
     HOP,SR,ABI,NeuralShiftSelector256,RecordedAudioNeuralTransposeStream256)
@@ -33,17 +33,25 @@ DECISION_THRESHOLD=.23  # set before OUTER: S847 CAL pitch gates around .21-.25
 
 def read_original(path):
     sr,raw=wavfile.read(path)
-    if sr!=SR or raw.ndim!=1:
-        raise ValueError("same original mono recorded guitar must be 44100 Hz")
-    if raw.dtype==np.int16:
-        x=raw.astype(np.float32)/32768
-    elif raw.dtype==np.float32:
-        x=raw.copy()
+    if raw.ndim not in (1,2) or sr<8000:
+        raise ValueError("original guitar audio must be real mono/stereo PCM")
+    if np.issubdtype(raw.dtype,np.integer):
+        pcm=raw.astype(np.float32)/float(max(abs(np.iinfo(raw.dtype).min),
+                                           np.iinfo(raw.dtype).max))
+    elif raw.dtype in (np.float32,np.float64):
+        pcm=raw.astype(np.float32)
     else:
-        raise ValueError("only real original mono PCM16 / float32, no synth")
-    if len(x)<SR*2 or not np.isfinite(x).all():
+        raise ValueError("only physically recorded PCM WAV, no synthesis")
+    if pcm.ndim==2:
+        pcm=pcm.mean(axis=1)
+    if sr!=SR:
+        # Both models receive THE SAME prepared 44.1k source. This converts
+        # SAMPLE RATE only and never shifts the original musical pitch.
+        ratio=math.gcd(sr,SR)
+        pcm=resample_poly(pcm,SR//ratio,sr//ratio).astype(np.float32)
+    if len(pcm)<SR*2 or not np.isfinite(pcm).all():
         raise ValueError("need at least 2s valid physically recorded guitar")
-    return x
+    return pcm
 
 
 def spec_profile(wave):
