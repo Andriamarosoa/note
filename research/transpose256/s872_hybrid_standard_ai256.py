@@ -119,7 +119,7 @@ class StandardPlusAI256:
 
 def load_checkpoint(path):
     item=torch.load(path,map_location="cpu",weights_only=True)
-    if item.get("kind")!="S872_NEURAL_STANDARD_MIXER":
+    if item.get("kind") not in ("S872_NEURAL_STANDARD_MIXER","S873_NEURAL_STANDARD_MIXER"):
         raise ValueError("unrecognized research checkpoint")
     network=NeuralGate256()
     network.load_state_dict(item["model"],strict=True)
