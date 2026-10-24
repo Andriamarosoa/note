@@ -1,0 +1,89 @@
+name: S845 demo true recorded guitar versus learned plus12 PCM256
+on:
+  push:
+    branches: [codex/note-s845-raw-wave-acoustic-decoder256]
+    paths:
+      - 'scripts/s845_make_real_audio_ab_demo256.py'
+      - '.github/workflows/note-s845-real-audio-demo256.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+env:
+  GH_TOKEN: ${{ github.token }}
+  PYTHONPATH: .:src
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  real_recorded_audio_comparison:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install real PCM256 neural inference dependencies
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Download actual S845 PyTorch model trained from signed real GuitarSet
+        run: |
+          mkdir -p /tmp/s845model
+          gh run download 40089022537 --repo Andriamarosoa/note --name S845_GENUINE_HEX_RAW_WAVEFORM_NEURAL_PCM256 --dir /tmp/s845model
+          test -s /tmp/s845model/s845_trained/s843_real_hex_neural.pt
+          python - <<'PY'
+          import torch
+          from pathlib import Path
+          ckpt=torch.load('/tmp/s845model/s845_trained/s843_real_hex_neural.pt',weights_only=True,map_location='cpu')
+          assert ckpt['trained_hop_samples']==256 and ckpt['promoted'] is False
+          assert 'local_string_filters.0.weight' in ckpt['state_dict']
+          assert 'transport.0.weight' in ckpt['state_dict']
+          print('S845_DEMO_GENUINE_TRAINED_CHECKPOINT_CONFIRMED')
+          PY
+      - name: Fetch manually recorded, CC0 acoustic guitar reference, not sound synthesis
+        run: |
+          mkdir -p /tmp/s845source
+          curl --location --fail --retry 4 --connect-timeout 30 --max-time 300             --output /tmp/s845source/gc.wav             https://raw.githubusercontent.com/pdx-cs-sound/wavs/main/gc.wav
+          python - <<'PY'
+          import hashlib
+          from pathlib import Path
+          data=Path('/tmp/s845source/gc.wav').read_bytes()
+          blob=hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
+          assert blob=='e1e382b27dbdc5ec30e796ca39405a03742b86b5',blob
+          print('S845_CC0_REAL_GUITAR_GIT_BLOB_SHA_VERIFIED',len(data),blob)
+          PY
+      - name: Create ONE guitar audio WAV demo real performance, then learned estimated plus12
+        run: |
+          python -m scripts.s845_make_real_audio_ab_demo256             --wav /tmp/s845source/gc.wav             --model /tmp/s845model/s845_trained/s843_real_hex_neural.pt             --out /tmp/s845demo/S845_demo_guitare_reelle_original_puis_transposition_IA_plus12.wav
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          import numpy as np
+          from scipy.io import wavfile
+          folder=Path('/tmp/s845demo')
+          wav=folder/'S845_demo_guitare_reelle_original_puis_transposition_IA_plus12.wav'
+          report=json.loads(wav.with_suffix('.json').read_text())
+          rate,pcm=wavfile.read(wav)
+          assert rate==44100 and pcm.ndim==1
+          assert len(pcm)>=4*rate
+          first=pcm[:round(report['segment_duration_s']*rate)]
+          k=round((report['segment_duration_s']+report['separator_s'])*rate)
+          second=pcm[k:]
+          print('S845_REAL_DEMO_CHECKED',dict(
+              original_RMS=float(np.sqrt(np.mean((first.astype(np.float32)/32768)**2))),
+              estimated_plus12_RMS=float(np.sqrt(np.mean((second.astype(np.float32)/32768)**2))),
+              learned_volume_gain=report['estimated_plus12_volume_gain'],
+              model_is_not_proven_musically_correct=True,
+              original_input_recorded_real=True),flush=True)
+          assert np.max(np.abs(first))>0 and np.max(np.abs(second))>0
+          PY
+      - name: Deliver one actual playable 44.1 kHz WAV and scientific caveat
+        uses: actions/upload-artifact@v4
+        with:
+          name: S845_DEMO_REAL_GUITAR_ORIGINAL_VS_NEURAL_PLUS12_WAV
+          path: /tmp/s845demo/
+          if-no-files-found: error
+          retention-days: 60
