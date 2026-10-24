@@ -5,6 +5,7 @@ on:
     paths:
       - 'src/onset256/learned_latent_transposer256.py'
       - 'scripts/s842_extract_real_octave_pairs256.py'
+      - 'scripts/train_onset_neural_transpose256.py'
       - 'scripts/s842_compare_neural_e2_e3_probe256.py'
       - 'tests/test_s842_real_octave_pairs256.py'
       - 'series/S842/**'
@@ -43,6 +44,7 @@ jobs:
           allowed={
               'src/onset256/learned_latent_transposer256.py',
               'scripts/s842_extract_real_octave_pairs256.py',
+              'scripts/train_onset_neural_transpose256.py',
               'scripts/s842_compare_neural_e2_e3_probe256.py',
               'tests/test_s842_real_octave_pairs256.py',
               'series/S842/resume.md',
