@@ -97,7 +97,7 @@ def measure(model,data,ids,batch_size):
         for start in range(0,len(ids),batch_size):
             ix=ids[start:start+batch_size]
             x=torch.from_numpy(data["source_pcm"][ix])
-            logits,control,_=model(x)
+            logits,control,_=model(x,shifts=(-12,12))
             full.append(logits);plain.append(control)
             gt.append(torch.from_numpy(data["source_note_mask"][ix]))
     truth=torch.cat(gt)
