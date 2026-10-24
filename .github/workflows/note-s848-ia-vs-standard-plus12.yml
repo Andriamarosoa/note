@@ -1,0 +1,137 @@
+name: S848 real guitar AI vs standard +12 pitch shifter benchmark
+on:
+  push:
+    branches: [codex/note-s848-ia-vs-standard-transpose256]
+    paths:
+      - 'scripts/s848_ia_vs_standard_pitchshift256.py'
+      - 'tests/test_s848_ia_vs_standard_pitchshift256.py'
+      - 'series/S848/**'
+      - '.github/workflows/note-s848-ia-vs-standard-plus12.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: s848-fair-audio-comparison
+  cancel-in-progress: true
+env:
+  GH_TOKEN: ${{ github.token }}
+  PYTHONPATH: .:src
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  identical_source_ab_with_audio:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install offline conventional pitch shifting reference plus neural CPU
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 librosa==0.10.2.post1
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Freeze original Onset, MIDI and all other 5 independent heads
+        run: |
+          git fetch origin codex/note-s847-real-recorded-transposition256 --depth=1
+          git diff --name-only FETCH_HEAD HEAD > /tmp/s848_changed.txt
+          python - <<'PY'
+          from pathlib import Path
+          changed=set(Path('/tmp/s848_changed.txt').read_text().splitlines())
+          allowed={
+             'scripts/s848_ia_vs_standard_pitchshift256.py',
+             'tests/test_s848_ia_vs_standard_pitchshift256.py',
+             'series/S848/resume.md','series/S848/resultat.md',
+             '.github/workflows/note-s848-ia-vs-standard-plus12.yml'
+          }
+          assert changed and changed<=allowed,changed-allowed
+          print('S848_REFERENCE_AND_NOTE_SIX_HEADS_AND_MIDI_FROZEN')
+          PY
+      - name: Quality metrics and benchmark invariants
+        run: |
+          python -m compileall -q scripts/s848_ia_vs_standard_pitchshift256.py
+          python -m unittest discover -s tests -p 'test_s848_ia_vs_standard_pitchshift256.py' -v
+          python -m unittest discover -s tests -p 'test_s847_real_recorded_transposer256.py' -v
+      - name: Download successful trained S847 neural checkpoint and genuine note WAV bank
+        run: |
+          mkdir -p /tmp/s848_real_bank
+          gh run download 40094119273 --repo Andriamarosoa/note \
+            --name S847_REAL_RECORDED_GUITAR_NEURAL_NOTE_TRANSPOSE_PCM256 \
+            --dir /tmp/s848_real_bank
+          python - <<'PY'
+          from pathlib import Path
+          import torch,json
+          root=Path('/tmp/s848_real_bank')
+          required=('s847_neural_target_selector.pt','recorded_bank_provenance.json',
+                    'physically_recorded_guitar_notes256.npz')
+          for name in required:
+              files=list(root.rglob(name))
+              assert len(files)==1,(name,files)
+          model=list(root.rglob('s847_neural_target_selector.pt'))[0]
+          bank=list(root.rglob('recorded_bank_provenance.json'))[0].parent
+          metadata=json.loads((bank/'recorded_bank_provenance.json').read_text())
+          bundle=torch.load(model,map_location='cpu',weights_only=True)
+          assert bundle['trained_with_original_PCM_HOP']==256
+          assert bundle['promoted'] is False
+          assert metadata['bank_real_recorded_note_count']==39
+          print('S848_AUTHENTIC_MODEL_BANK',model,bank,
+                'E2',40 in metadata['available_recorded_midi'],
+                'E3',52 in metadata['available_recorded_midi'])
+          (root/'paths.txt').write_text(str(model)+'\n'+str(bank)+'\n')
+          PY
+      - name: Download the same physically recorded guitar mic audio used in previous demo
+        run: |
+          mkdir -p /tmp/s848_input
+          curl --location --fail --retry 3 --connect-timeout 30 --max-time 300 \
+            --output /tmp/s848_input/gc.wav \
+            https://raw.githubusercontent.com/pdx-cs-sound/wavs/main/gc.wav
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          b=Path('/tmp/s848_input/gc.wav').read_bytes()
+          h=hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()
+          assert h=='e1e382b27dbdc5ec30e796ca39405a03742b86b5',h
+          print('S848_IDENTICAL_REAL_GUITAR_SOURCE_VERIFIED_GIT_SHA',h)
+          PY
+      - name: Run SAME audio input, conventional +12 and independently learned AI +12
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from scripts.s848_ia_vs_standard_pitchshift256 import make_comparison
+          model,bank=Path('/tmp/s848_real_bank/paths.txt').read_text().splitlines()
+          make_comparison(
+              '/tmp/s848_input/gc.wav',model,bank,
+              '/tmp/s848_comparison')
+          PY
+          python - <<'PY'
+          from pathlib import Path
+          import json, numpy as np
+          from scipy.io import wavfile
+          root=Path('/tmp/s848_comparison')
+          report=json.loads((root/'comparaison_resultat.json').read_text())
+          wavs=[root/filename for filename in (
+              '01_entree_guitare_reelle.wav',
+              '02_transposeur_standard_plus12.wav',
+              '03_transposeur_IA_S847_plus12.wav')]
+          arrays=[wavfile.read(f) for f in wavs]
+          assert all(sr==44100 and a.ndim==1 for sr,a in arrays)
+          assert len({len(a) for sr,a in arrays})==1
+          assert report['shift_semitones']==12
+          assert report['standard_used_for_AI_training'] is False
+          print('S848_VALID_IDENTICAL_SOURCE_DURATION',len(arrays[0][1]),
+                'IA_AUDIBLE',np.max(np.abs(arrays[2][1]))>0)
+          print('S848_REAL_BENCHMARK_FINAL',json.dumps(report['comparison']),
+                json.dumps(report['acoustic']),json.dumps(report['note_decisions']),
+                flush=True)
+          PY
+      - name: Upload ONE three-stage playable WAV and full measured JSON
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S848_REAL_GUITAR_STANDARD_VS_AI_PLUS12_AB_AUDIO
+          path: /tmp/s848_comparison/
+          if-no-files-found: warn
+          retention-days: 60
