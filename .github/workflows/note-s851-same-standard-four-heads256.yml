@@ -34,8 +34,12 @@ jobs:
           python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
       - name: Freeze existing NOTE heads, MIDI and S850 learned weights
         run: |
-          git fetch origin codex/note-s850-causal-multinote-rank256 --depth=1
-          git diff --name-only FETCH_HEAD HEAD > /tmp/s851_changed
+          # Compare with the common ancestor: S850 may receive documentation commits after S851 forks.
+          git fetch --unshallow origin
+          git fetch origin codex/note-s850-causal-multinote-rank256
+          BASE_SHA="$(git merge-base FETCH_HEAD HEAD)"
+          test -n "$BASE_SHA"
+          git diff --name-only "$BASE_SHA" HEAD > /tmp/s851_changed
           python - <<'PY'
           from pathlib import Path
           changed=set(Path('/tmp/s851_changed').read_text().splitlines())
