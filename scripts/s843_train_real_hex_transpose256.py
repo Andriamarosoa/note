@@ -127,7 +127,7 @@ def player_split(stem):
     raise ValueError("unknown guitarist, impossible player-disjoint split")
 
 
-def real_blocks(mic,hex_audio,notes,*,seed=0,sequences=28,seq_hops=8):
+def real_blocks(mic,hex_audio,notes,*,seed=0,sequences=96,seq_hops=8):
     n=min(len(mic),len(hex_audio))
     num_frames=n//HOP
     if num_frames < seq_hops+1:
@@ -136,11 +136,29 @@ def real_blocks(mic,hex_audio,notes,*,seed=0,sequences=28,seq_hops=8):
     # Use only valid samples, and choose a mix of random blocks and note
     # neighborhoods. This is offline DATASET SAMPLING, never Live lookahead.
     rng=np.random.default_rng(seed)
-    attacks=[max(0,min(num_frames-seq_hops,int(t*SR/HOP)))
-             for t,off,p,ch in notes if 40<=p<=88]
+    # S844: foreground rare real E2/E3 and *annotated sustained overlap*.
+    # Training data sampling may consult JAMS, Live may NEVER consult JAMS.
+    def start_hop(t):
+        return max(0,min(num_frames-seq_hops,int(t*SR/HOP)-2))
+    rare=[]
+    for t,off,p,ch in notes:
+        if p in (40,52):
+            rare.extend([start_hop(t),start_hop((t+off)*.5)])
+    low=[(t,off) for t,off,p,ch in notes if p==40]
+    high=[(t,off) for t,off,p,ch in notes if p==52]
+    for a,b in low:
+        for c,d in high:
+            lo=max(a,c);hi=min(b,d)
+            if hi-lo >= HOP/SR:
+                rare.extend([start_hop(lo),start_hop((lo+hi)*.5)])
+    rare=list(dict.fromkeys(rare))
+    rng.shuffle(rare)
+    attacks=[start_hop(t) for t,off,p,ch in notes if 40<=p<=88]
     rng.shuffle(attacks)
     random_starts=rng.choice(candidate,min(sequences,len(candidate)),replace=False).tolist()
-    chosen=list(dict.fromkeys((attacks[:sequences//2]+random_starts)))[:sequences]
+    chosen=list(dict.fromkeys(
+        rare[:max(1,sequences//2)]+attacks[:max(1,sequences//3)]+
+        random_starts))[:sequences]
     inputs=[];targets=[];pitch=[];strings=[]
     for start in chosen:
         begins=start*HOP;end=(start+seq_hops)*HOP
@@ -154,7 +172,7 @@ def real_blocks(mic,hex_audio,notes,*,seed=0,sequences=28,seq_hops=8):
     return (np.stack(inputs),np.stack(targets),np.stack(pitch),np.stack(strings))
 
 
-def data_from_real_archives(mic_zip,hex_zip,jams_zip,out,*,sequences=28,
+def data_from_real_archives(mic_zip,hex_zip,jams_zip,out,*,sequences=96,
                             max_tracks_per_player=8):
     if out.exists():
         raise FileExistsError("original real datasets and experiment are immutable")
@@ -218,10 +236,16 @@ def data_from_real_archives(mic_zip,hex_zip,jams_zip,out,*,sequences=28,
         for key in ("mic","hex","note_gt","string_gt","track_id"):
             arrays[key]=np.concatenate(split_data[split][key],axis=0)
         np.savez_compressed(out/(split+".npz"),**arrays)
+        note_gt=arrays["note_gt"]
+        e2=int((note_gt[...,0]>.5).sum())
+        e3=int((note_gt[...,12]>.5).sum())
+        joint=int(((note_gt[...,0]>.5)&(note_gt[...,12]>.5)).sum())
         record["split_tracks"][split]=dict(
             tracks=list(split_data[split]["tracks"]),
             examples=len(arrays["mic"]),
+            observed_note_active_hops=dict(E2=e2,E3=e3,E2_E3=joint),
             sha256=digest_file(out/(split+".npz")))
+        print("S844_REAL_GT_SUPPORT",split,record["split_tracks"][split]["observed_note_active_hops"],flush=True)
     (out/"provenance.json").write_text(json.dumps(record,indent=2)+"\n")
     return record
 
@@ -343,7 +367,7 @@ def main():
     p.add_argument("--data",type=Path,default=Path("/tmp/s843_data"))
     p.add_argument("--out",type=Path,default=Path("/tmp/s843_model"))
     p.add_argument("--epochs",type=int,default=4)
-    p.add_argument("--max-tracks-per-player",type=int,default=8)
+    p.add_argument("--max-tracks-per-player",type=int,default=16)
     a=p.parse_args()
     if a.phase=="prepare":
         if not all((a.mic_zip,a.hex_zip,a.annotation_zip)):
