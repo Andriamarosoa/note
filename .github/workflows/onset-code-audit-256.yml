@@ -1,0 +1,58 @@
+name: Onset PCM256 code audit — immutable reference and repro checks
+on:
+  push:
+    branches: [codex/note-onset-code-audit-256-20261024]
+    paths:
+      - 'tests/test_onset_code_audit_pcm256.py'
+      - 'series/ONSET_CODE_AUDIT256/**'
+      - '.github/workflows/onset-code-audit-256.yml'
+  workflow_dispatch:
+permissions: {contents: read}
+env:
+  PYTHONPATH: src
+  OPENBLAS_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install identical Onset PCM256 pinned dependencies
+        run: python -m pip install -r requirements-onset256-cache.txt
+      - name: Verify no modifications to six heads, models, source or MIDI
+        run: |
+          git fetch origin e26cf43535c61795e5c2b1a63fbde85841edb79d --depth=1
+          git diff --name-only FETCH_HEAD HEAD > /tmp/onset_audit_changes.txt
+          python - <<'PY'
+          from pathlib import Path
+          changed=set(Path("/tmp/onset_audit_changes.txt").read_text().splitlines())
+          allowed={
+              "tests/test_onset_code_audit_pcm256.py",
+              "series/ONSET_CODE_AUDIT256/resume.md",
+              "series/ONSET_CODE_AUDIT256/resultat.md",
+              ".github/workflows/onset-code-audit-256.yml",
+          }
+          assert changed and changed<=allowed, changed-allowed
+          print("AUDIT_REFERENCE_ONSET_69_2584_AND_OTHER_HEADS_UNCHANGED")
+          PY
+      - name: Prove duplicate 195D inference and candidate limitation without changing models
+        run: |
+          python -m compileall -q src/onset256 scripts/onset_learned_hgb_arbiter256.py
+          python -m unittest discover -s tests -p 'test_onset_code_audit_pcm256.py' -v
+          python - <<'PY'
+          ref=(7607,3093,3660)
+          gate=(7607,3096,3660)
+          tp,fp,fn=ref
+          positive_by_comp=(0,4,0,631,167)
+          assert sum(positive_by_comp)==802
+          best=2*(tp+802)/(2*(tp+802)+fp+(fn-802))
+          assert abs(best-0.7386358645526813)<1e-12
+          assert 2*gate[0]/(2*gate[0]+gate[1]+gate[2]) < 2*tp/(2*tp+fp+fn)
+          print("ONSET_AUDIT_802_CANDIDATE_CEILING_F1",best)
+          print("ONSET_AUDIT_GATE_REJECTED_HGB_ADDED_THREE_FP")
+          PY
