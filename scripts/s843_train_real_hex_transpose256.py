@@ -68,8 +68,8 @@ def unique_zip_name(archive,basename):
 def wav_in_zip(archive,basename,channels):
     name=unique_zip_name(archive,basename)
     sr,a=wavfile.read(io.BytesIO(archive.read(name)))
-    if sr!=SR or (a.ndim!=1 if channels==1 else
-                   a.ndim!=2 or a.shape[1]!=channels):
+    if (sr!=SR or a.ndim!=(1 if channels==1 else 2) or
+            (channels>1 and a.shape[1]!=channels)):
         raise ValueError("raw GuitarSet audio must be mono mic or six-channel hex 44100Hz")
     if a.dtype.kind=="i":
         scale=float(np.iinfo(a.dtype).max+1)
