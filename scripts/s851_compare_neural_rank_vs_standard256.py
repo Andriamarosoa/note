@@ -37,7 +37,7 @@ def sha256(path):
         for data in iter(lambda:f.read(1048576),b''):h.update(data)
     return h.hexdigest()
 
-def play_shadow(model,original,bank,gate_threshold,*,max_notes=1):
+def play_shadow(model,original,bank,gate_threshold,*,reset_hops=0):
     """A real bank of authentic notes, *never* generated pitches/synthesis."""
     stream=CausalPolyphonicTransposeStream256(model,shift=12)
     notes=[]
@@ -46,6 +46,8 @@ def play_shadow(model,original,bank,gate_threshold,*,max_notes=1):
     previous=None
     active=[]
     for sample in range(0,len(original),HOP):
+        if reset_hops and (sample//HOP)%reset_hops==0:
+            stream.state=None  # reset past state, NOT delay or future audio
         x=np.zeros(HOP,np.float32)
         duration=min(HOP,len(original)-sample)
         x[:duration]=original[sample:sample+duration]
@@ -73,8 +75,8 @@ def safe_corr(x,y):
         return envelope_similarity(x,y)
     except ValueError:return None
 
-def result_for(model,original,standard,bank,gate_cut):
-    audio,notes,gate=play_shadow(model,original,bank,gate_cut)
+def result_for(model,original,standard,bank,gate_cut,*,reset_hops=0):
+    audio,notes,gate=play_shadow(model,original,bank,gate_cut,reset_hops=reset_hops)
     histogram=Counter(str(p) for p in notes if p is not None)
     fraction=max(histogram.values())/len(notes) if histogram else 0
     non_silent=int(np.count_nonzero(audio))
@@ -89,6 +91,7 @@ def result_for(model,original,standard,bank,gate_cut):
         reasons.append("audio differs from standard at least as much as rejected S847")
     record=dict(
         confidence_gate_from_CAL_only=gate_cut,
+        recurrent_state_reset_diagnostic_every_hops=reset_hops,
         output_all_256_audio_causal_no_midi=True,
         output_is_real_recorded_note_playback_not_faithful_input_transposition=True,
         source_future_pcm_used=0,source_added_hold=0,
@@ -143,12 +146,17 @@ def evaluate(source_wav,standard_wav,trained_results,model_dir,real_bank_dir,out
         model.load_state_dict(payload["model_state"],strict=True)
         threshold=training["variant_results"][variant]["ranks"]["12"]["activity_threshold_CAL"]
         if threshold is None:threshold=1.0
-        audio,metrics=result_for(model,input_wav,standard,bank,threshold)
-        output=out/("s850_"+variant.lower()+"_real_recording_plus12.wav")
-        wavfile.write(output,SR,np.int16(np.clip(audio,-1,1-1/32768)*32768))
-        report['variants'][variant]=metrics
+        report['variants'][variant]={}
+        for reset in (0,32):
+            label='continuous' if reset==0 else 'reset32'
+            audio,metrics=result_for(model,input_wav,standard,bank,threshold,
+                                     reset_hops=reset)
+            output=out/("s850_"+variant.lower()+"_"+label+"_real_recording_plus12.wav")
+            wavfile.write(output,SR,
+                          np.int16(np.clip(audio,-1,1-1/32768)*32768))
+            report['variants'][variant][label]=metrics
     preferred=training['selected_variant_on_CAL']
-    report['CAL_preferred_quality']=report['variants'][preferred]
+    report['CAL_preferred_quality']=report['variants'][preferred]['continuous']
     report["selected_model_promoted"]=False
     report['all_model_outputs_are_real_clip_playback_not_true_guitar_transpose']=True
     (out/"resultat.json").write_text(json.dumps(report,indent=2,sort_keys=True)+"\n")
