@@ -164,7 +164,7 @@ class NeuralAcousticTransposeHead256(nn.Module):
 
 
 def reconstruction_loss(model,pcm,real_hex,pitch_targets,string_targets,
-                        *,state=None,views=DEFAULT_VIEWS):
+                        *,state=None,views=DEFAULT_VIEWS,note_positive_weight=None):
     """Use only real, time-matched hex pickup stems; no simulated note audio.
 
     raw real_hex: [B,T,6,256] from physically recorded hex pickup;
@@ -192,11 +192,21 @@ def reconstruction_loss(model,pcm,real_hex,pitch_targets,string_targets,
     mic=F.smooth_l1_loss(estimated["mic_reconstructed"],pcm)
     active=F.binary_cross_entropy_with_logits(
         estimated["stem_presence_logits"],string_targets)
+    if note_positive_weight is not None:
+        if (note_positive_weight.shape!=(PITCHES,) or
+            bool((note_positive_weight<1).any()) or
+            bool((note_positive_weight>30).any())):
+            raise ValueError("note positive weights must be a bounded TRAIN-only 49D vector")
     note=F.binary_cross_entropy_with_logits(
-        estimated["plain_note_logits"],pitch_targets)
+        estimated["plain_note_logits"],pitch_targets,
+        pos_weight=note_positive_weight)
     combined=F.binary_cross_entropy_with_logits(
-        estimated["note_logits"],pitch_targets)
-    total=waveform+.2*mic+.5*active+note+.5*combined
+        estimated["note_logits"],pitch_targets,
+        pos_weight=note_positive_weight)
+    # S844: a faint E2 must count. S843 learned the all-negative solution
+    # because virtually every row/pitch was silent. Keep audio supervision
+    # but give the observed rare TRUE notes substantial gradient strength.
+    total=.25*waveform+.2*mic+.5*active+2.*note+2.*combined
     return total,{k:val.detach() for k,val in dict(
         waveform=waveform,mic_cycle=mic,string_activity=active,
         note_activity=note,fused_note_activity=combined).items()},h
