@@ -1,11 +1,11 @@
 ---
 serie: S848
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s848-ia-vs-standard-transpose256
-run_id: en_attente
-commit_sha: en_attente
+run_id: 40095759550
+commit_sha: 61e1d4132fcbfa895a13194f0dc03de7bc69b31d
 promotion: false
 ---
 
@@ -33,4 +33,4 @@ S847 : réseau CNN brut PCM256 + GRU passé, code d'intervalle de 12 demi-tons, 
 - Préserver toutes les caractéristiques Onset/Offset/Exact-K/Active Exact-K/Frame Pitch/Full Note, référence F1 Onset **69,2584331 %** et MIDI officiel.
 
 ## Statut
-Expérience non promue, comparaison en cours. Précédente démo S845 invalidée par S846 (médiane de spectre sortie 11,7kHz et 56,5 % énergie >10kHz). Toute sortie similaire, inaudible ou sémantiquement incorrecte doit être explicitement rejetée.
+**TERMINÉ, NON PROMU.** [Run S848 #40095759550](https://github.com/Andriamarosoa/note/actions/runs/40095759550) SUCCESS pour le test A/B/C. **S847 échoue face au transposeur standard** : 603/603 blocs sortent MIDI 73, corrélation de dynamique standard avec la source 90,4 %, sortie IA avec standard **11,6 %** ; distance log-mel **18,377 dB**. Source, standard et IA WAV séparés ainsi que compilation audio ont été archivés comme `S848_REAL_GUITAR_STANDARD_VS_AI_PLUS12_AB_AUDIO`. Comparaison validée techniquement, résultat musical IA rejeté. Voir `resultat.md` pour le protocole, les mesures et les limites de référence offline.
