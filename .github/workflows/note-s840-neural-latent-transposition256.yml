@@ -51,7 +51,60 @@ jobs:
         run: |
           python -m compileall -q src/onset256/learned_latent_transposer256.py scripts/train_onset_neural_transpose256.py
           python -m unittest discover -s tests -p 'test_onset_neural_latent_transposition256.py' -v
-          python -m scripts.verify_series_reports --series S840
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          a=Path('series/S840/resume.md').read_text()
+          b=Path('series/S840/resultat.md').read_text()
+          for content in (a,b):
+              assert 'serie: S840' in content
+              assert 'reference: S708' in content
+              assert 'promotion: false' in content
+              assert 'codex/note-s840-onset-neural-latent-transposition256' in content
+          for heading in ('Objectif','Hypothèse','Modifications','Protocole','Audits obligatoires','Statut'):
+              assert re.search(r'^## '+heading+r'
+      - name: No fabricated guitar results and no MIDI publication
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from onset256.learned_latent_transposer256 import (
+              HOP,MODEL_ABI,NeuralLatentTransposer256,CausalNeuralTransposerStream256)
+          import numpy as np
+          assert HOP==256
+          stream=CausalNeuralTransposerStream256(NeuralLatentTransposer256())
+          actual=stream.push(np.zeros(256,np.float32),start_sample=0)
+          assert actual.sample==256 and actual.note_probabilities.shape==(49,)
+          assert not hasattr(actual,'intents')
+          assert MODEL_ABI=='ONSET_LEARNED_LATENT_TRANSPOSE_RAW256_V1'
+          report=Path('series/S840/resultat.md').read_text()
+          assert 'NON MESURÉ' in report and '69,2584331' in report
+          print('S840_NEURAL_TRANSPOSE_RAW256_SHADOW_ONLY_ONSET_F1_NOT_MEASURED')
+          PY
+,a,flags=re.M),heading
+          for heading in ('Exécution','Métriques','Comparaison à S708','Audits','Verdict','Prochaine action'):
+              assert re.search(r'^## '+heading+r'
+      - name: No fabricated guitar results and no MIDI publication
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from onset256.learned_latent_transposer256 import (
+              HOP,MODEL_ABI,NeuralLatentTransposer256,CausalNeuralTransposerStream256)
+          import numpy as np
+          assert HOP==256
+          stream=CausalNeuralTransposerStream256(NeuralLatentTransposer256())
+          actual=stream.push(np.zeros(256,np.float32),start_sample=0)
+          assert actual.sample==256 and actual.note_probabilities.shape==(49,)
+          assert not hasattr(actual,'intents')
+          assert MODEL_ABI=='ONSET_LEARNED_LATENT_TRANSPOSE_RAW256_V1'
+          report=Path('series/S840/resultat.md').read_text()
+          assert 'NON MESURÉ' in report and '69,2584331' in report
+          print('S840_NEURAL_TRANSPOSE_RAW256_SHADOW_ONLY_ONSET_F1_NOT_MEASURED')
+          PY
+,b,flags=re.M),heading
+          for token in ('Onset F1','Exact-K','Active Exact-K','Offset','Frame Pitch F1','Full Note F1'):
+              assert token in b,token
+          print('S840_REPORTS_VERIFIED_NATIVE_SOURCE_BRANCH_NO_PROMOTION')
+          PY
       - name: No fabricated guitar results and no MIDI publication
         run: |
           python - <<'PY'
