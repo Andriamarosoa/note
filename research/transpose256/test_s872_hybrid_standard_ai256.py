@@ -28,8 +28,9 @@ class TestIndependentHybridStandardAI(unittest.TestCase):
                 x=rng.normal(0,.02,14*HOP).astype(np.float32)
                 y=x.copy()
                 y[7*HOP:]=rng.normal(0,.03,7*HOP)
+                model=NeuralGate256().eval()
                 def process(data):
-                    s=StandardPlusAI256(NeuralGate256().eval(),
+                    s=StandardPlusAI256(model,
                       ai_enabled=enabled,grain_fast=size0,grain_quality=size1)
                     return np.concatenate([s.push(data[i:i+HOP],i)
                                           for i in range(0,len(data),HOP)])
