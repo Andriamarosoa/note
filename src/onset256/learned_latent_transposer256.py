@@ -124,7 +124,7 @@ class NeuralLatentTransposer256(nn.Module):
     def plain(self,x):
         return self.plain_note_head(self.encoder(x))
 
-    def forward(self,x,shifts=(-12,-7,7,12)):
+    def forward(self,x,shifts=(-12,12)):
         """Produce NOTE hypotheses in the original tuning, no MIDI events."""
         z=self.encoder(x)
         base=self.plain_note_head(z)
@@ -158,8 +158,16 @@ def recorded_pair_training_loss(model,source,target,source_labels,target_labels,
                  bce(model.shifted_note_head(mapped),target_labels)+
                  bce(original_logits,source_labels))
     alignment=(1.-F.cosine_similarity(mapped,actual_target.detach(),dim=-1)).mean()
-    return supervision+0.3*alignment,dict(supervised=supervision.detach(),
-                                         physical_pair_alignment=alignment.detach())
+    # S842: also train the multi-view confidence/gating on the original note
+    # labels. S840's first prototype did NOT train its view_quality weights:
+    # without this, a test of multi-view inference could be meaningless.
+    # At infer time all views still see the exact same RAW PCM256 input.
+    fused,plain,view_weights=model(source,shifts=(-12,12))
+    fused_supervision=bce(fused,source_labels)
+    loss=supervision+0.3*alignment+0.75*fused_supervision
+    return loss,dict(supervised=supervision.detach(),
+                     physical_pair_alignment=alignment.detach(),
+                     fused_view_loss=fused_supervision.detach())
 
 
 @dataclass(frozen=True)
@@ -177,7 +185,7 @@ class CausalNeuralTransposerStream256:
     future_audio_samples=0
     history_raw_samples=0
 
-    def __init__(self,model,*,shifts=(-12,-7,7,12)):
+    def __init__(self,model,*,shifts=(-12,12)):
         if not isinstance(model,NeuralLatentTransposer256):
             raise TypeError("trained neural latent transposer required")
         self.model=model.eval().cpu()
