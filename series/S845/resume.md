@@ -43,3 +43,20 @@ Le décodeur S844 reconstruit six formes d'onde de 256 valeurs essentiellement �
 
 ## Statut
 En cours, non promu. Le résultat Onset actuel demeure **69,2584331 % F1** (7607 TP, 3093 FP, 3660 FN). S844 a montré que la transposition ne battait pas l'encodeur sans vues sur les graves ; S845 cible donc en priorité le signal reconstruit. Toute forme d'onde sortie du modèle est une **estimation neuronale à valider**, pas un « vrai son » garanti.
+
+## Utilisation — vrai microphone vers six WAV reconstruits par IA (prévisualisation)
+
+Le script `scripts/s845_export_real_audio_estimates256.py` produit six WAV estimés sur les cordes, un WAV micro estimé et, en option, six WAV estimés de transposition neuronale −12 / +12. Les noms contiennent toujours `estimated_` ; **ce n'est pas une preuve qu'un son de corde original a été physiquement isolé**, et les vues transposées ne sont pas de vrais enregistrements indépendants. Ces sorties servent uniquement aux audits acoustiques et à l'écoute critique ; aucun NoteOn/NoteOff/MIDI.
+
+La source d'entrée doit être une **vraie prise de guitare** WAV mono, 44100Hz, PCM16 ou float32. Ne pas fournir un son fabriqué pour revendiquer la reconstruction. Utiliser **uniquement un checkpoint issu de l'apprentissage S845**, car les poids S843/S844 n'ont pas les nouvelles convolutions locales et ne sont pas compatibles :
+
+```bash
+python -m scripts.s845_export_real_audio_estimates256 \
+  --wav chemin/ma_guitare_reelle.wav \
+  --model chemin/s845_trained/s843_real_hex_neural.pt \
+  --out chemin/estimations_s845
+```
+
+Le nom `s843_real_hex_neural.pt` est le nom de sortie hérité du trainer, **pas** une autorisation de charger les anciens poids S843. Vérifier que le checkpoint a été extrait de l'artefact **S845** et non d'un run antérieur. L'inférence refuse un fichier ou un tenseur incompatible. Les WAV peuvent être écoutés en les comparant à la vraie source ; si leur énergie est quasi nulle ou leur forme d'onde infidèle, le résultat est un **échec**, pas un résultat à promouvoir.
+
+La sortie JSON contient les cinq hypothèses de notes les plus probables à chaque frontière PCM256 ; ce ne sont pas des Onset NoteOn et aucun score réel de détection n'est induit. Les tests du script avec signaux artificiels ne servent qu'à vérifier la robustesse du logiciel, jamais à revendiquer une vraie qualité de guitare.
