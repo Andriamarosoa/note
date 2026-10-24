@@ -1,11 +1,11 @@
 ---
 serie: S841
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s841-real-e2-e3-octave256
-run_id: en_attente
-commit_sha: en_attente
+run_id: 40083001531
+commit_sha: afed37989d7592f8298e305dd30f294f9485e66b
 promotion: false
 ---
 
@@ -36,4 +36,4 @@ N'utiliser que les fichiers WAV mono 44100Hz int16 signés avec SHA, 306536 bloc
 | LIVE | 5,805ms par hop, p99 Windows/iRig non encore démontré |
 
 ## Statut
-Recherche en cours, non promue ; la référence acoustique Onset PCM256 est toujours **69,2584331 % F1**, et non le score de S834/H0. Aucun gain E2/E3 prouvé avant les rapports GitHub et l'entraînement S840 réel.
+Recherche en cours, non promue ; La référence acoustique Onset PCM256 est toujours **69,2584331 % F1**, et non le score de S834/H0. Aucun gain E2/E3 prouvé avant les rapports GitHub et l'entraînement S840 réel.
