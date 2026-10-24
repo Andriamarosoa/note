@@ -19,7 +19,7 @@ import json
 import numpy as np
 import torch
 from scipy.io import wavfile
-from scipy.signal import resample_poly
+from scipy.signal import resample_poly, welch
 from onset256.real_audio_transpose_head256 import (
     ABI,SR,HOP,NeuralAcousticTransposeHead256,CausalRealAudioTransposeStream256)
 
@@ -45,6 +45,63 @@ def read_real_guitar(path):
     if pcm.size < SR*2 or not np.isfinite(pcm).all():
         raise ValueError("need >=2 seconds of recorded guitar audio")
     return pcm
+
+
+def _spectrum_statistics(x, sr=SR):
+    """Independent audit of audio ENERGY LOCATION, not proof of correct pitch."""
+    x=np.asarray(x,np.float64)
+    if x.ndim!=1 or len(x)<8192 or not np.isfinite(x).all():
+        raise ValueError("not enough finite audio for independent quality audit")
+    freqs,psd=welch(x,fs=sr,nperseg=8192)
+    total=float(psd.sum())
+    if not np.isfinite(total) or total<1e-15:
+        raise ValueError("audible reconstructed waveform energy is effectively zero")
+    centroid=float((freqs*psd).sum()/total)
+    median=float(freqs[np.searchsorted(np.cumsum(psd),total*.5)])
+    high=float(psd[freqs>=10000].sum()/total)
+    bass=float(psd[(freqs>=80)&(freqs<250)].sum()/total)
+    return dict(spectral_centroid_hz=centroid,spectral_median_hz=median,
+                energy_above_10khz_fraction=high,energy_80_to_250hz_fraction=bass)
+
+
+def audit_transposed_audio(genuine,estimated):
+    """FAIL CLOSED for clearly invalid neural transposition.
+
+    256-hop causality is NOT sufficient evidence of meaningful audio.
+    This catches high-frequency stationary noise from S845; passing it alone
+    never proves that an octave was reconstructed correctly.
+    """
+    if len(genuine)!=len(estimated):
+        raise ValueError("original and learned audio lengths differ")
+    source=_spectrum_statistics(genuine)
+    predicted=_spectrum_statistics(estimated)
+    # Guitar in E2-E5 generally has a spectral median well below 1.5 kHz.
+    # A learned +12 approximation may change timbre, so these are broad
+    # sanity bounds, *not* a DSP pitch-shift or inverse note calculation.
+    reasons=[]
+    ratio=predicted["spectral_median_hz"]/max(source["spectral_median_hz"],1.)
+    if source["spectral_median_hz"]<1500. and ratio>7.:
+        reasons.append("predicted spectral median is >7x source, not an octave-like guitar")
+    if (source["energy_above_10khz_fraction"]<.15 and
+        predicted["energy_above_10khz_fraction"]>.45):
+        reasons.append("prediction dominated by high-frequency noise absent in the recorded guitar")
+    # A constant synthetic-esque output cannot reproduce genuine playing
+    # dynamics, even if raw samples and amplitude normalization are legal.
+    size=max(1,int(round(.25*SR)))
+    N=len(genuine)//size
+    src_env=np.array([np.sqrt(np.mean(genuine[k*size:(k+1)*size]**2))
+                      for k in range(N)])
+    est_env=np.array([np.sqrt(np.mean(estimated[k*size:(k+1)*size]**2))
+                      for k in range(N)])
+    source_cv=float(src_env.std()/max(src_env.mean(),1e-12))
+    estimated_cv=float(est_env.std()/max(est_env.mean(),1e-12))
+    if source_cv>.30 and estimated_cv<.04:
+        reasons.append("estimated dynamics nearly constant across changing recorded performance")
+    return dict(passed=not bool(reasons),fail_reasons=reasons,
+                original=source,estimated=predicted,
+                spectral_median_ratio=ratio,
+                source_envelope_cv=source_cv,
+                estimated_envelope_cv=estimated_cv)
 
 
 def produce(genuine_recording, checkpoint, target, *,seconds=3.5):
@@ -86,6 +143,11 @@ def produce(genuine_recording, checkpoint, target, *,seconds=3.5):
         confidence.append(float(view.note_probabilities.max()))
     plus12=np.concatenate(processed)
     direct=np.concatenate(estimated)
+    acoustic_audit=audit_transposed_audio(original,plus12)
+    print("S846_TRANSPOSE_AUDIO_QUALITY_GATE",json.dumps(acoustic_audit),flush=True)
+    if not acoustic_audit["passed"]:
+        raise ValueError("reject false S845 guitar transposition demo: "+
+                         "; ".join(acoustic_audit["fail_reasons"]))
     def rms(x):return float(np.sqrt(np.mean(np.asarray(x,np.float64)**2)))
     signal_rms=rms(original)
     predicted_rms=rms(plus12)
@@ -126,6 +188,8 @@ def produce(genuine_recording, checkpoint, target, *,seconds=3.5):
         valid_native_PCM256_decisions=int(math.ceil(len(original)/HOP)),
         no_synthetic_guitar_source=True,no_DSP_pitch_shifter_used=True,
         no_guarantee_of_correct_musical_transposition=True,
+        sonic_sanity_checks_not_pitch_accuracy_proof=True,
+        acoustic_quality_gate=acoustic_audit,
         official_note_MIDI_unchanged=True,
         original_duration_s=len(original)/SR,
         final_duration_s=len(final)/SR,
