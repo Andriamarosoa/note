@@ -1,0 +1,118 @@
+name: S851 authentic guitar same standard +12 vs S850 BCE and RANK PCM256
+on:
+  push:
+    branches: [codex/note-s851-identical-guitar-standard-ab256]
+    paths:
+      - 'scripts/s851_compare_neural_rank_vs_standard256.py'
+      - 'tests/test_s851_identical_standard_audio256.py'
+      - 'series/S851/**'
+      - '.github/workflows/note-s851-same-standard-four-heads256.yml'
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+concurrency:
+  group: s851-independent-standard-ab256
+  cancel-in-progress: true
+env:
+  GH_TOKEN: ${{ github.token }}
+  PYTHONPATH: .:src
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  same_real_guitar_source_and_standard:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install neural CPU and standard offline analysis only
+        run: |
+          python -m pip install numpy==1.26.4 scipy==1.14.1 librosa==0.10.2.post1
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Freeze existing NOTE heads, MIDI and S850 learned weights
+        run: |
+          git fetch origin codex/note-s850-causal-multinote-rank256 --depth=1
+          git diff --name-only FETCH_HEAD HEAD > /tmp/s851_changed
+          python - <<'PY'
+          from pathlib import Path
+          changed=set(Path('/tmp/s851_changed').read_text().splitlines())
+          allowed={
+            'scripts/s851_compare_neural_rank_vs_standard256.py',
+            'tests/test_s851_identical_standard_audio256.py',
+            'series/S851/resume.md','series/S851/resultat.md',
+            '.github/workflows/note-s851-same-standard-four-heads256.yml'
+          }
+          assert changed and changed<=allowed,changed-allowed
+          print('S851_ALL_OFFICIAL_NOTE_HEADS_MIDI_AND_S850_MODELS_FROZEN')
+          PY
+      - name: Audit raw256 live and real recorded audio replay safeguards
+        run: |
+          python -m compileall -q scripts/s851_compare_neural_rank_vs_standard256.py
+          python -m unittest discover -s tests -p 'test_s851_identical_standard_audio256.py' -v
+          python -m unittest discover -s tests -p 'test_s850_causal_polyphonic_transpose256.py' -v
+      - name: Download real trained S850 independent BCE and RANK checkpoint from RUN
+        run: |
+          mkdir -p /tmp/s851_s850
+          gh run download 40097584744 --repo Andriamarosoa/note --name S850_REAL_GUITAR_MULTI_NOTE_RANK_CAUSAL_PCM256 --dir /tmp/s851_s850
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=Path('/tmp/s851_s850/s850_neural_results')
+          assert r.is_dir(),list(Path('/tmp/s851_s850').rglob('*'))
+          report=json.loads((r/'resultat.json').read_text())
+          assert report['selected_variant_on_CAL']=='BCE'
+          for name in ('bce','rank'):
+              assert (r/('s850_'+name+'_real_model.pt')).stat().st_size>1000
+          print('S851_BOTH_REAL_NEURAL_MODEL_FROM_S850_VERIFIED_CAL_SELECTED',report['selected_variant_on_CAL'])
+          PY
+      - name: Download ORIGINAL S848 source and standard plus12, and actual S847 GuitarSet audio bank
+        run: |
+          mkdir -p /tmp/s851_identical_standard /tmp/s851_genuine_note_bank
+          gh run download 40095759550 --repo Andriamarosoa/note --name S848_REAL_GUITAR_STANDARD_VS_AI_PLUS12_AB_AUDIO --dir /tmp/s851_identical_standard
+          gh run download 40094119273 --repo Andriamarosoa/note --name S847_REAL_RECORDED_GUITAR_NEURAL_NOTE_TRANSPOSE_PCM256 --dir /tmp/s851_genuine_note_bank
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          root=Path('/tmp/s851_identical_standard')
+          originals=[root/'01_entree_guitare_reelle.wav',root/'02_transposeur_standard_plus12.wav']
+          assert all(path.stat().st_size>100000 for path in originals)
+          bank=Path('/tmp/s851_genuine_note_bank/s847_real_audio_bank')
+          assert (bank/'physically_recorded_guitar_notes256.npz').is_file()
+          print('S851_EACH_VARIANT_WILL_COMPARE_WITH_EXACT_SAME_FROZEN_STANDARD_WAV')
+          PY
+      - name: Loop model BCE/RANK with continuous/reset32 on the identical standard reference
+        run: |
+          python -m scripts.s851_compare_neural_rank_vs_standard256 \
+            --source /tmp/s851_identical_standard/01_entree_guitare_reelle.wav \
+            --standard /tmp/s851_identical_standard/02_transposeur_standard_plus12.wav \
+            --trained-results /tmp/s851_s850/s850_neural_results/resultat.json \
+            --model-dir /tmp/s851_s850/s850_neural_results \
+            --real-bank-dir /tmp/s851_genuine_note_bank/s847_real_audio_bank \
+            --out /tmp/s851_real_comparison
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('/tmp/s851_real_comparison')
+          r=json.loads((root/'resultat.json').read_text())
+          assert r['selected_variant_from_CAL_only']=='BCE'
+          assert set(r['variants'])=={'BCE','RANK'}
+          assert all(set(x)=={'continuous','reset32'} for x in r['variants'].values())
+          assert len(list(root.glob('*.wav')))==4
+          print('S851_REAL_STANDARD_COMPARE_VERDICT',
+             json.dumps({k:{s:{'stuck':p['largest_single_note_fraction'],
+                 'envelope':p['envelope_correlation_to_standard'],
+                 'logmel':p['absolute_logmel_distance_to_standard_db'],
+                 'pass':p['musical_promotion_passed']} for s,p in v.items()}
+                      for k,v in r['variants'].items()}),flush=True)
+          PY
+      - name: Archive true signed reference comparisons and transparently failed audio
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: S851_REAL_GUITAR_STANDARD_BCE_RANK_PCM256
+          path: /tmp/s851_real_comparison/
+          if-no-files-found: warn
+          retention-days: 60
