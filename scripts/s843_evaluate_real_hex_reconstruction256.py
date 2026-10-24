@@ -31,10 +31,19 @@ def best_cut_cal_only(prob,truth):
     if not bool(np.any(truth)):
         return None
     good=None
-    for cut in np.arange(.05,.951,.05):
+    flat=np.asarray(prob,dtype=np.float64).reshape(-1)
+    # S843's fixed .05 floor could not separate probabilities clustering
+    # below .05; tune only CAL with a deterministic, explicitly recorded
+    # candidate grid including quantiles and the exact score at CAL positives.
+    # Never inspect OUTER scores for selecting a cutoff.
+    quantiles=np.quantile(flat,np.linspace(0,1,101))
+    candidates=np.unique(np.concatenate((np.linspace(0,1,101),
+                                           quantiles,flat[np.asarray(truth).reshape(-1)],
+                                           np.array([np.nextafter(flat.max(),1.)]))))
+    for cut in candidates:
         c=f1_counts(prob>=cut,truth)
         rank=(c["f1"],c["tp"],-c["fp"])
-        if good is None or rank>good[0]:good=(rank,float(round(cut,2)))
+        if good is None or rank>good[0]:good=(rank,float(cut))
     return good[1]
 
 
@@ -65,11 +74,19 @@ def predictions(net,d,batch_size=24):
 def measure_one(name,cal_p,outer_p,cal_y,outer_y):
     threshold=best_cut_cal_only(cal_p,cal_y)
     if threshold is None:
-        return dict(status="UNASSESSED_NO_POSITIVE_CAL",threshold=None,
-                    outer_positive=int(outer_y.sum()))
+        return dict(status="UNASSESSED_NO_POSITIVE_CAL",threshold_cal=None,
+                    cal_positive=int(np.count_nonzero(cal_y)),
+                    outer_positive=int(np.count_nonzero(outer_y)),
+                    f1=None)
     score=f1_counts(outer_p>=threshold,outer_y)
+    if not bool(np.any(outer_y)):
+        return dict(status="UNASSESSABLE_NO_POSITIVE_OUTER",
+                    threshold_cal=threshold,cal_positive=int(np.count_nonzero(cal_y)),
+                    outer_positive=0,f1=None,fp=score["fp"],
+                    true_negative=int(np.count_nonzero(np.asarray(outer_p)<threshold)))
     return dict(status="MEASURED_GT_ACTIVITY_NOT_ONSET_F1",
-                threshold_cal=threshold,outer_positive=int(outer_y.sum()),
+                threshold_cal=threshold,cal_positive=int(np.count_nonzero(cal_y)),
+                outer_positive=int(np.count_nonzero(outer_y)),
                 **score)
 
 
@@ -129,7 +146,12 @@ def evaluation(model_file,data_dir,out):
         target_absolute_mean=float(np.mean(np.abs(target))),
         estimated_absolute_mean=float(np.mean(np.abs(reconstructed))),
         mean_absolute_error_within_paired_pickup_domain=True,
-        exact_mic_hex_string_equivalence_unproven=True)
+        exact_mic_hex_string_equivalence_unproven=True,
+        silent_zero_prediction_mae=float(np.mean(np.abs(target))),
+        learned_vs_silent_mae_improvement=float(
+            np.mean(np.abs(target))-np.mean(np.abs(reconstructed-target))),
+        learned_beats_silence=bool(
+            np.mean(np.abs(reconstructed-target))<np.mean(np.abs(target))))
     result["metrics"]["mic"]=dict(
         mean_absolute_error=float(np.mean(np.abs(op["mic_reconstructed"]-outer["mic"]))))
     real_present=outer["string_gt"]>.5
