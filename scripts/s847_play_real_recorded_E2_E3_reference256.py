@@ -57,7 +57,13 @@ def create_recorded_reference(real_bank_dir,out):
     # The inserted silence is an A/B separator, not a generated musical note.
     pause=np.zeros(11025,np.float32)
     wave=np.concatenate((clips[0],pause,clips[1]))
-    if np.max(np.abs(wave))>1.:raise ValueError("original physical capture clips out of range")
+    peak=float(np.max(np.abs(wave)))
+    if not np.isfinite(peak) or peak<.012 or peak>1.:
+        raise ValueError("recorded notes inaudible or physically clipped; reject audio demo")
+    # A global gain adjusts monitoring volume only; no frequency or
+    # time-domain audio pitch change. Preserve relative E2/E3 dynamics.
+    monitoring_gain=min(8.,.75/peak)
+    wave=wave*monitoring_gain
     out.parent.mkdir(parents=True,exist_ok=True)
     wavfile.write(out,SR,(np.clip(wave,-1.,1.-1/32768)*32768).astype(np.int16))
     report=dict(
@@ -71,6 +77,7 @@ def create_recorded_reference(real_bank_dir,out):
         sound_part_2="real GuitarSet note E3 from TRAIN guitarist 04",
         source_provenance=meta["source_checksums"],
         measured=diagnostic,
+        monitoring_volume_gain_only=monitoring_gain,
         measured_model_GuitarSet_F1_NOT_IMPLIED=True)
     out.with_suffix(".json").write_text(json.dumps(report,indent=2)+"\n")
     print("S847_AUDITABLE_PHYSICALLY_RECORDED_GUITAR_AUDIO",json.dumps({
