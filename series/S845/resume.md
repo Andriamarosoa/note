@@ -1,11 +1,11 @@
 ---
 serie: S845
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s845-raw-wave-acoustic-decoder256
-run_id: en_attente
-commit_sha: en_attente
+run_id: 40089022537
+commit_sha: 0a1653d50289c9f8b67c88d6e3067300959f0cd2
 promotion: false
 ---
 
@@ -42,7 +42,7 @@ Le décodeur S844 reconstruit six formes d'onde de 256 valeurs essentiellement �
 | LIVE | zéro futur/hold, budget 5,805 ms, p99 complet non certifié |
 
 ## Statut
-En cours, non promu. Le résultat Onset actuel demeure **69,2584331 % F1** (7607 TP, 3093 FP, 3660 FN). S844 a montré que la transposition ne battait pas l'encodeur sans vues sur les graves ; S845 cible donc en priorité le signal reconstruit. Toute forme d'onde sortie du modèle est une **estimation neuronale à valider**, pas un « vrai son » garanti.
+**Terminé, non promu.** [Run #40089022537](https://github.com/Andriamarosoa/note/actions/runs/40089022537) : 16 TRAIN, 16 CAL, 64 OUTER, 49 152 blocs PCM256 ; MAE audio S845 0,029422 contre 0,029205 pour le silence (échec), note F1 transposée E2 14,31 %, E3 17,22 %, E2+E3 10,05 %, fortes erreurs. La sortie estimée moyenne vaut 0,000856 contre 0,029205 pour la vraie cible hex : son quasi silencieux. Aucun modèle Onset/MIDI promu. Le résultat Onset actuel demeure **69,2584331 % F1** (7607 TP, 3093 FP, 3660 FN). S844 a montré que la transposition ne battait pas l'encodeur sans vues sur les graves ; S845 cible donc en priorité le signal reconstruit. Toute forme d'onde sortie du modèle est une **estimation neuronale à valider**, pas un « vrai son » garanti.
 
 ## Utilisation — vrai microphone vers six WAV reconstruits par IA (prévisualisation)
 
