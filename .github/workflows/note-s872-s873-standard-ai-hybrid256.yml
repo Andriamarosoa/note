@@ -1,0 +1,55 @@
+name: S872-S873 Standard plus neural -12 causal PCM256 research
+on:
+  push:
+    branches: [codex/note-s872-s873-standard-ai-down12-256]
+    paths:
+      - 'research/transpose256/s872_hybrid_standard_ai256.py'
+      - 'research/transpose256/test_s872_hybrid_standard_ai256.py'
+      - 'series/S872/**'
+      - 'series/S873/**'
+      - 'README_TRANSPOSEUR_HYBRIDE_S872_S873.md'
+      - '.github/workflows/note-s872-s873-standard-ai-hybrid256.yml'
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: note-s872-s873-independent-hybrid256
+  cancel-in-progress: true
+jobs:
+  validate_causal_shadow_contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: research/transpose256
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Prove no NOTE six-head or MIDI changes
+        run: |
+          git fetch origin codex/note-s868-s870-neural-down-octave256 --depth=1
+          git diff --name-only FETCH_HEAD HEAD > /tmp/note_hybrid_changed
+          python - <<'PY'
+          from pathlib import Path
+          files=Path('/tmp/note_hybrid_changed').read_text().splitlines()
+          allow=(
+            'research/transpose256/s872_hybrid_standard_ai256.py',
+            'research/transpose256/test_s872_hybrid_standard_ai256.py',
+            'README_TRANSPOSEUR_HYBRIDE_S872_S873.md',
+            '.github/workflows/note-s872-s873-standard-ai-hybrid256.yml',
+          )
+          assert files
+          invalid=[f for f in files if f not in allow and not f.startswith(('series/S872/','series/S873/'))]
+          assert not invalid,invalid
+          print('S872_S873_NOTE_SIX_HEADS_AND_MIDI_UNTOUCHED')
+          PY
+      - name: Install CPU Torch and NumPy
+        run: |
+          python -m pip install numpy==1.26.4
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Causality, exact hop and fallback tests
+        run: |
+          python -m compileall -q research/transpose256/s872_hybrid_standard_ai256.py
+          python -m unittest discover -s research/transpose256 -p test_s872_hybrid_standard_ai256.py -v
+          echo 'Tests certify software invariants only, NOT musical correctness.'
