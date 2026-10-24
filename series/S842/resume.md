@@ -1,11 +1,11 @@
 ---
 serie: S842
-statut: en_cours
+statut: termine
 type: experience
 reference: S708
 branche: codex/note-s842-real-guitarset-neural-transpose256
-run_id: en_attente
-commit_sha: en_attente
+run_id: 40083706274
+commit_sha: d99beb4186d9faf5eeff3a06ac4a3e5e92e8593d
 promotion: false
 ---
 
@@ -43,4 +43,4 @@ Le transpositeur S840 peut apprendre à associer deux **véritables enregistreme
 | LIVE | aucune écriture MIDI, pas de délai, p99 réel encore UNKNOWN |
 
 ## Statut
-En cours, expérience **recherche**. Un gain sur les notes individuelles ou accords n'a pas encore été établi ; aucun modèle de production n'est autorisé et aucun score Onset de référence n'a été remplacé.
+**Terminé, non promu.** [Run CI #40083706274](https://github.com/Andriamarosoa/note/actions/runs/40083706274) terminé SUCCESS, 8 945 paires audio réelles GT, 8 époques d'entraînement de l'IA. Sur SS1 OUTER, les proxys de classification d'activité ont régressé : E2 **12,22→0 %**, E3 **77,86→66,85 %**, E2+E3 **13,48→0 %**. Il ne s'agit pas de F1 Onset ; son contrôle reste **69,2584331 %** sans changement. Les autres cinq têtes et MIDI restent inchangés. Voir `resultat.md` pour TP/FP/FN complets, succès technique distinct de l'échec scientifique et audit hypothèses ouvertes.
