@@ -70,8 +70,6 @@ class BandCorrectionStream256:
             raise ValueError("256 new contiguous float32 samples")
         reference=self.standard.push(block)
         self.count+=HOP
-        if not self.ai_enabled:
-            return reference.copy()   # exact standard fallback
         hist=np.concatenate((self.previous,reference))
         self.previous=hist[-128:].copy()
         low=[lfilter(f,[1],hist)[-HOP:].astype(np.float32)
@@ -84,7 +82,7 @@ class BandCorrectionStream256:
                 torch.from_numpy(reference[None,None].copy()),
                 torch.from_numpy(bands[None,None].copy()),
                 self.state,self.previous_gain)
-        return out[0,0].numpy().copy()
+        return reference.copy() if not self.ai_enabled else out[0,0].numpy().copy()
 
 def load_checkpoint(path):
     item=torch.load(str(path),map_location="cpu",weights_only=True)
