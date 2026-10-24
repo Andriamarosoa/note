@@ -4,8 +4,8 @@ statut: en_cours
 type: experience
 reference: S708
 branche: codex/note-s847-real-recorded-transposition256
-run_id: en_attente
-commit_sha: en_attente
+run_id: 40094119273
+commit_sha: 2cf7d4670abca5d7d8c8070700f5fe6dfc6766ce
 promotion: false
 ---
 
@@ -45,3 +45,6 @@ Le modèle S845 créait du bruit aigu car sa sortie audio de transposition laten
 
 ## Statut
 En développement, non promu. L'ancien S845 n'avait que **14,31 % F1 E2, 17,22 % E3, 10,05 % E2+E3**, et sa démo sonore est invalidée ; ce ne sont PAS des références valables d'une transposition audio fidèle. Onset PCM256 reste **69,2584331 % F1**.
+
+## Traçabilité du run de recherche
+[GitHub Actions S847 #40094119273](https://github.com/Andriamarosoa/note/actions/runs/40094119273). Cette expérience vérifie l'intégrité des sources mic/hex/JAMS avant la banque de vrais clips, l'entraînement et le test extérieur. À la dernière vérification, le téléchargement des archives officielles n'était pas terminé. **Aucun nouveau score ni démo S847 fidèle ne sont revendiqués avant résultat validé.** Tests de conformité PCM256 antérieurs à la phase de téléchargement effectués sans échec.
