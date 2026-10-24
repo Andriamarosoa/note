@@ -124,7 +124,7 @@ class NeuralLatentTransposer256(nn.Module):
     def plain(self,x):
         return self.plain_note_head(self.encoder(x))
 
-    def forward(self,x,shifts=(-12,12)):
+    def forward(self,x,shifts=(-12,-7,7,12)):
         """Produce NOTE hypotheses in the original tuning, no MIDI events."""
         z=self.encoder(x)
         base=self.plain_note_head(z)
@@ -185,7 +185,7 @@ class CausalNeuralTransposerStream256:
     future_audio_samples=0
     history_raw_samples=0
 
-    def __init__(self,model,*,shifts=(-12,12)):
+    def __init__(self,model,*,shifts=(-12,-7,7,12)):
         if not isinstance(model,NeuralLatentTransposer256):
             raise TypeError("trained neural latent transposer required")
         self.model=model.eval().cpu()
