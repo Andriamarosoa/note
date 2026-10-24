@@ -83,6 +83,14 @@ class NeuralAcousticTransposeHead256(nn.Module):
         self.stem_waveform=nn.Sequential(
             nn.Linear(hidden,hidden*2),nn.GELU(),
             nn.Linear(hidden*2,STRINGS*HOP),nn.Tanh())
+        # S845: learn *local waveform-preserving* filtering of the ORIGINAL
+        # recorded microphone samples. No oscillator or predefined pitch
+        # shift. Recurrent latent only conditions the dynamic string gains.
+        self.local_string_filters=nn.Sequential(
+            nn.Conv1d(1,24,kernel_size=17,padding=8),
+            nn.GELU(),
+            nn.Conv1d(24,STRINGS,kernel_size=17,padding=8))
+        self.string_condition=nn.Linear(hidden,STRINGS)
         self.stem_presence=nn.Linear(hidden,STRINGS)
         self.source_note=nn.Linear(hidden,PITCHES)
         self.shifted_note=nn.Linear(hidden,PITCHES)
@@ -114,17 +122,30 @@ class NeuralAcousticTransposeHead256(nn.Module):
         shifted=h+self.transport_gate(x)*self.transport(x)
         return torch.where((offset==0)[:,None],h,shifted)
 
-    def reconstruct(self,h):
+    def reconstruct(self,h,raw_pcm=None):
+        # Train a waveform output against actual *simultaneously recorded*
+        # hex pickup. Preserve the current real microphone's local temporal
+        # structure so the network doesn't have to invent every sample from
+        # the bottleneck alone. This is neural separation, NOT DSP pitch shift.
         waveform=self.stem_waveform(h).reshape(-1,STRINGS,HOP)
         presence_logits=self.stem_presence(h)
-        # The reconstructed string waveforms are neural outputs, NOT a sum
-        # of perfect physical microphone-stem equality or synthesizer waves.
-        estimated=waveform*torch.sigmoid(presence_logits)[:,:,None]
+        if raw_pcm is not None:
+            if raw_pcm.shape!=(len(h),HOP):
+                raise ValueError("raw current PCM must remain exactly 256")
+            local=self.local_string_filters(raw_pcm[:,None,:])
+            gains=1.+torch.tanh(self.string_condition(h))[:,:,None]
+            estimated=torch.tanh(.5*waveform + gains*local)
+        else:
+            # Latent transposed audio has no authentic direct PCM. These
+            # shifted waveform outputs remain unverified neural estimates.
+            estimated=torch.tanh(waveform)
+        # Do not force the waveform toward zero with a presence sigmoid:
+        # a masked quiet estimate can win BCE yet lose all real acoustics.
         mic=self.reverse_mic(estimated.flatten(1))
         return estimated,presence_logits,mic
 
-    def from_latent(self,h,*,views=DEFAULT_VIEWS):
-        stems,presence,mic=self.reconstruct(h)
+    def from_latent(self,h,*,views=DEFAULT_VIEWS,original_pcm=None):
+        stems,presence,mic=self.reconstruct(h,original_pcm)
         base=self.source_note(h)
         candidate=[base];quality=[torch.zeros((len(h),1),device=h.device,dtype=h.dtype)]
         shifted_audio=[]
@@ -153,7 +174,7 @@ class NeuralAcousticTransposeHead256(nn.Module):
         rows=[]
         for t in range(T):
             h=self.encode_hop(blocks[:,t,:],h)
-            rows.append(self.from_latent(h,views=views))
+            rows.append(self.from_latent(h,views=views,original_pcm=blocks[:,t,:]))
         keys=("stems","stem_presence_logits","mic_reconstructed",
               "plain_note_logits","note_logits","view_weights")
         data={k:torch.stack([row[k] for row in rows],dim=1) for k in keys}
